@@ -27,6 +27,7 @@ dev = [
     "ruff>=0.7",
     "mypy>=1.13",
     "pre-commit>=4.0",
+    "langgraph-cli[inmem]>=0.2",
 ]
 
 [build-system]
