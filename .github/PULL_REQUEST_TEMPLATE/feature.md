@@ -19,3 +19,12 @@ about: 新功能、重构等功能开发 (feature/*) 的 Pull Request
 - [ ] Commit message 符合 `<type>(<scope>): <summary>` 规范（允许类型：`feat` / `refactor` / `test` / `docs`）
 - [ ] 如引入新依赖，已通过 `uv add` 写入 `pyproject.toml` 并提交 `uv.lock`
 - [ ] CHANGELOG.md `[Unreleased]` 区块已更新（如 CHANGELOG.md 存在）
+
+## 文档自检（A1-A10，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` §7.1）
+- [ ] 新功能涉及的 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` / `[ADR]` / `[SPEC]` 已同 PR 落地或更新
+- [ ] frontmatter 完整且 `state`、`domain`、`version` 合法
+- [ ] 新增/修改 `[SKILL]` 时对应 `src/mj_agent/skills/<name>/` 目录存在（A7）
+- [ ] 新增/修改 `[PROMPT]` state=active 时 `eval_references` 非空（A8，Phase 2 起强制）
+- [ ] 新增/修改 `[CONTRACT]` state=active 时 `schema_ref` 存在（A10）
+- [ ] 触发 allowlist 时 `CLAUDE.md` 已同步检查（A6）
+- [ ] 相关 `docs/**/INDEX.md` 已同步或可重建（A5）
