@@ -1,9 +1,10 @@
 ---
-title: PLAN B — 撰写 docs/db_access.md（Phase 0 退出标准 #6 / PR2）
-type: PLAN
-status: 草案
+type: plan
+summary: PLAN B — 撰写 docs/db_access.md（Phase 0 退出标准 #6 / PR2）
 owner: ranzuozhou
 created: 2026-04-24
+updated: 2026-04-27
+state: draft
 related:
   - ../README.md
   - ../src/mj_agent/tools/sql/guardrail.py

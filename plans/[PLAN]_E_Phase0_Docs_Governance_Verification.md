@@ -1,8 +1,9 @@
 ---
+type: plan
 summary: 验证 Phase 0 文档治理 v1.0 交付物端到端可用——loader 剥离、运行时无泄露、A-rules 可执行
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-24
+updated: 2026-04-27
 state: draft
 ---
 

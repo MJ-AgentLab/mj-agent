@@ -1,4 +1,5 @@
 ---
+type: plan
 summary: 双轨分轨骨架交付与 plugin 构建计划 — Phase 0.5 起逐 phase 落地 Meta v2.0 / Code_Side / Agent_Side 三 STANDARDs + mj-agent-agent-doc / mj-agent-code-doc 双 plugin
 owner: 项目负责人
 created: 2026-04-27

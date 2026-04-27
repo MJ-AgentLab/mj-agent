@@ -1,3 +1,11 @@
+---
+summary: mj-agent v1.6 整体 roadmap — Phase 0/1/2 交付路径、ADR 编号空间、安全主线（数据-LLM 边界三原则）
+owner: ranzuozhou
+created: 2026-04-24
+updated: 2026-04-27
+state: active
+---
+
 # mj-agent (data-agent) 构建路径图
 
 > 版本：v1.6

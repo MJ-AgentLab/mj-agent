@@ -1,9 +1,10 @@
 ---
-title: Phase 0 — 在 LangGraph Studio 跑通 mj-agent
-type: PLAN
-status: 草案
+type: plan
+summary: PLAN Phase 0 — 在 LangGraph Studio 跑通 mj-agent，完成 roadmap Phase 0 退出标准 #1
 owner: ranzuozhou
 created: 2026-04-24
+updated: 2026-04-27
+state: draft
 related:
   - ../README.md
   - ../.env.example

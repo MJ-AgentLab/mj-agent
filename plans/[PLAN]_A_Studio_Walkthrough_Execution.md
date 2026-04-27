@@ -1,9 +1,10 @@
 ---
-title: PLAN A — 执行 LangGraph Studio Walkthrough 并归档证据
-type: PLAN
-status: 草案
+type: plan
+summary: PLAN A — 执行 LangGraph Studio Walkthrough 并归档证据，完成 Phase 0 退出标准 #1
 owner: ranzuozhou
 created: 2026-04-24
+updated: 2026-04-27
+state: draft
 related:
   - ./[PLAN]_Phase0_LangGraph_Studio_Walkthrough.md
   - ../README.md

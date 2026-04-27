@@ -1,9 +1,10 @@
 ---
-title: PLAN D — 实现 scripts/setup-env.ps1 与 encrypt-secrets.ps1（Phase 0 / PR2）
-type: PLAN
-status: 草案
+type: plan
+summary: PLAN D — 实现 scripts/setup-env.ps1 与 encrypt-secrets.ps1（Phase 0 / PR2 姊妹交付物）
 owner: ranzuozhou
 created: 2026-04-24
+updated: 2026-04-27
+state: draft
 related:
   - ../README.md
   - ../.env.example
