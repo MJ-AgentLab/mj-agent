@@ -25,3 +25,7 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 - [ ] 无引入新的回归问题
 - [ ] 仅包含 `fix` 类型 commit
 - [ ] 合并后已计划同步到 develop（`git checkout develop && git merge main`）
+
+## 文档自检（hotfix 紧急通道，最小化要求）
+- [ ] 若触及 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` 的行为，frontmatter 的 `updated` 字段已同步修改
+- [ ] 事故根因值得沉淀时，Release 后补 `[POSTMORTEM]`（本次 PR 不强制）

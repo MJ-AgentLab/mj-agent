@@ -21,3 +21,8 @@ about: 常规 Bug 修复 (bugfix/*) 的 Pull Request
 - [ ] 无残留调试代码
 - [ ] Commit message 符合规范（仅含 `fix` / `test` / `docs` 类型）
 - [ ] CHANGELOG.md `[Unreleased]` 区块已更新（如 CHANGELOG.md 存在）
+
+## 文档自检（A1-A10，仅在触及文档时勾选）
+- [ ] 如修复涉及 `[SKILL]` / `[PROMPT]` 的行为变更，对应 SKILL.md / prompt.md 已同步更新（`updated` 字段、Change log）
+- [ ] 如修复源于某个 `[ADR]` 的假设变化，对应 ADR 已追加变更说明或新增 superseding ADR
+- [ ] `src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 的 frontmatter 仍然合法

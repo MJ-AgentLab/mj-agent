@@ -3,7 +3,7 @@
 MJ-AgentLab **数据智能体** — 公司内部数据分析团队使用，基于 LangChain 1.x +
 LangGraph 1.1.8 构建。Python 3.13、使用 [`uv`](https://github.com/astral-sh/uv) 管理依赖。
 
-当前阶段：**Phase 0 Foundation**（见 `docs/mj-agent-roadmap-v1.6.md`）。
+当前阶段：**Phase 0 Foundation**（路线图：[plans/mj-agent-roadmap-v1.6.md](./plans/mj-agent-roadmap-v1.6.md)；canonical 文档入口：[docs/INDEX.md](./docs/INDEX.md)）。
 
 ## Clone
 
@@ -31,7 +31,7 @@ git remote add gitee  https://gitee.com/ranzuozhou/mj-agent.git
 使用 PowerShell 脚本克隆 bare 仓库（worktree 工作流）：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\mj-agent-clone-bare.ps1 `
+powershell -ExecutionPolicy Bypass -File ..\mj-agent-clone-bare.ps1 `
     -RepoUrl https://github.com/MJ-AgentLab/mj-agent
 ```
 
@@ -91,7 +91,7 @@ mj-agent 仅访问 mj-system 业务指标域：
 
 ## 项目结构（Phase 0）
 
-```
+```text
 src/mj_agent/
 ├── agent.py              # create_agent — LangGraph 编译入口
 ├── config.py             # pydantic-settings

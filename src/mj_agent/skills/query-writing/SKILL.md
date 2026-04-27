@@ -1,3 +1,23 @@
+---
+type: skill
+domain: SKILL
+summary: 针对 mj-system biz 域编写与精炼 SQL 查询：表选择、时间谓词、聚合优先、可审计输出
+owner: 项目负责人
+created: 2026-04-24
+updated: 2026-04-24
+state: active
+version: v0.1
+activation:
+  when_to_use: 用户提出需要查询业务数据的自然语言问题（指标、排名、同比、明细查看）
+  when_not_to_use: 非 SQL 场景（如解释业务概念、查看系统状态、讨论方案）
+tool_dependencies:
+  - list_biz_tables
+  - describe_biz_table
+  - execute_sql
+related_prompts:
+  - system
+---
+
 # Skill: query-writing
 
 Use this skill whenever you need to write or refine SQL against the
