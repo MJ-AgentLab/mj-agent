@@ -28,7 +28,7 @@ def load_prompt(name: str) -> str:
     Raises ``FileNotFoundError`` if the prompt does not exist.
     """
     path = _PROMPTS_DIR / f"{name}.md"
-    return frontmatter.load(path).content
+    return str(frontmatter.load(path).content)
 
 
 @lru_cache(maxsize=32)

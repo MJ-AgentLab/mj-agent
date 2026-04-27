@@ -28,7 +28,7 @@ def load_skill(name: str) -> str:
     Raises ``FileNotFoundError`` if the skill is not present.
     """
     path = _SKILLS_DIR / name / "SKILL.md"
-    return frontmatter.load(path).content
+    return str(frontmatter.load(path).content)
 
 
 @lru_cache(maxsize=32)
