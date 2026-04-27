@@ -4,8 +4,8 @@ domain: SYS
 summary: 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Framework v1.1 §4 字段语义互补
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-25
-state: draft
+updated: 2026-04-27
+state: active
 version: v1.0
 derives_from: mj-system/develop@[STANDARD]_Obsidian_Markdown.md
 tags:

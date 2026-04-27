@@ -4,8 +4,8 @@ domain: SYS
 summary: 定义 mj-agent 文档治理的三层模型、Agent 专属类型扩展、in-source 治理和自动校验边界
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-25
-state: draft
+updated: 2026-04-27
+state: active
 version: v1.1
 derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0
 supersedes:

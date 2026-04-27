@@ -9,7 +9,7 @@ state: active
 version: v1.0
 model_binding: deepseek-v3
 token_budget_estimate: 480
-eval_references: []
+eval_references: []  # TODO Phase 2: link to outcome EVAL once dataset lands (Agent_Side v1.0 §2.4 transitional allowance)
 supersedes: []
 ---
 

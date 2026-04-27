@@ -4,8 +4,8 @@ domain: SYS
 summary: mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例
 owner: 项目负责人
 created: 2026-04-25
-updated: 2026-04-25
-state: draft
+updated: 2026-04-27
+state: active
 version: v1.0
 derives_from: mj-system/develop@[STANDARD]_Commit_Message_Convention.md
 tags:

@@ -1,8 +1,10 @@
 ---
+type: standard
+domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-25
+updated: 2026-04-27
 state: draft
 ---
 
@@ -70,6 +72,7 @@ state: draft
 |------|------|-----------|
 | `src/mj_agent/prompts/system.md` | `[PROMPT]` | agent 的基础 system prompt |
 | `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` | SQL 查询编写 skill |
+| `src/mj_agent/skills/probe-fixture/SKILL.md` | `[SKILL]` (fixture) | 治理框架 v1.1 自检用 dummy skill；`state: draft`，**不被** `agent.py` 加载 |
 
 *Phase 1+ 新增的 skill 都会出现在此表，并由 `docs/design/skills/INDEX.md` 补充详细目录。*
 

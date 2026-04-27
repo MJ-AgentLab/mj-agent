@@ -4,8 +4,8 @@ domain: SYS
 summary: 评估 mj-system git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据
 owner: 项目负责人
 created: 2026-04-25
-updated: 2026-04-25
-state: draft
+updated: 2026-04-27
+state: active
 version: v1.0
 dimensions:
   - fit-for-mj-agent
