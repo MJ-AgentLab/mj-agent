@@ -20,11 +20,25 @@ about: 新功能、重构等功能开发 (feature/*) 的 Pull Request
 - [ ] 如引入新依赖，已通过 `uv add` 写入 `pyproject.toml` 并提交 `uv.lock`
 - [ ] CHANGELOG.md `[Unreleased]` 区块已更新（如 CHANGELOG.md 存在）
 
-## 文档自检（A1-A11，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` §7.1；A1-A6/OB1-OB5 in `Code_Side_Documentation_Framework_v1.0.md`，A7-A11 in `Agent_Side_Documentation_Framework_v1.0.md`）
-- [ ] 新功能涉及的 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` / `[ADR]` / `[SPEC]` 已同 PR 落地或更新
-- [ ] frontmatter 完整且 `state`、`domain`、`version` 合法
+## 文档自检（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §7.1）
+
+<details>
+<summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side §7.1]]</summary>
+
+- [ ] 新功能涉及的 `[ADR]` / `[SPEC]` 已同 PR 落地或更新
+- [ ] frontmatter 完整且 `state`、`domain`、`version` 合法（A2-A3）
+- [ ] 触发 allowlist 时 `CLAUDE.md` 已同步检查（A6）
+- [ ] 相关 `docs/**/INDEX.md` 已同步或可重建（A5）
+- [ ] OB1-OB5：非阻塞观察项（Code_Side §7.2；Phase 1 填充阈值）
+
+</details>
+
+<details>
+<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side §7.1]]</summary>
+
+- [ ] 新功能涉及的 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` 已同 PR 落地或更新
 - [ ] 新增/修改 `[SKILL]` 时对应 `src/mj_agent/skills/<name>/` 目录存在（A7）
 - [ ] 新增/修改 `[PROMPT]` state=active 时 `eval_references` 非空（A8，Phase 2 起强制）
 - [ ] 新增/修改 `[CONTRACT]` state=active 时 `schema_ref` 存在（A10）
-- [ ] 触发 allowlist 时 `CLAUDE.md` 已同步检查（A6）
-- [ ] 相关 `docs/**/INDEX.md` 已同步或可重建（A5）
+
+</details>

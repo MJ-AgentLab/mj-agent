@@ -81,7 +81,80 @@ Aligned with mj-system's naming so co-deployment can merge .env files
 safely: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
 PASSWORD` + `MJ_CONFIG_PROFILE`. See `.env.example` for the full list.
 
-## Repo conventions
+## Documentation
+
+> **元规则段（cross-track meta）**: this section governs both tracks.
+> Per Meta_Framework v2.0 §6.4.1, this 元规则 段 sits **above** the
+> `Code-Side Documentation` and `Agent-Side Documentation` sections so
+> Claude reads cross-track rules first before track-specific guidance.
+
+All canonical documentation follows the v2.0 trio (derived from mj-agent
+Framework v1.1, which itself derived from mj-system v5.0):
+
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` —
+  cross-track meta rules (types / layers / lifecycle / archive / `track`
+  frontmatter field / CLAUDE.md dual-track sync §6.4.1).
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
+  (Track A) — authoring depth + PR gates A1-A6 + OB1-OB5 for code-side
+  canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
+  / STANDARD-code / ISSUE-code / ASSESSMENT-code).
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
+  (Track B) — authoring depth + PR gates A7-A10 + loader frontmatter-strip
+  contract for agent-side canonical types (SKILL / PROMPT / EVAL /
+  agent-facing CONTRACT).
+
+Markdown + YAML syntax (GFM rendering target):
+`docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
+`docs/INDEX.md`. ADR-012 documents the v1.1 → v2.0 dual-track split
+(`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
+predecessor lives at
+`docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
+(state: deprecated). The corpus-wide guard `scripts/check_wikilinks.py`
+enforces that any reference to the v1.1 filename outside `docs/archive/`
+must be frozen (archive-prefixed) — living refs are migrated to the v2.0
+trio.
+
+Versioning rule (Meta_Framework v2.0 §4.2 + §5.6 sustained from Framework
+v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/CONTRACT/
+ASSESSMENT) carry `_vX.Y` in the filename. On formal version evolution
+(HITL judgment at PR review), the old file moves to
+`docs/archive/<original-subdir>/`, the new file lands as `_v<new>.md`,
+`state` flips to `deprecated` on the archive copy, and corpus-wide
+references are audited (Living updates to `_v<new>`; Frozen pins to
+`_v<old>`). Daily edits stay in-place — the rename + archive ceremony
+fires only when the change qualifies as substantive evolution. ADR-011
+documents the rationale.
+
+`track` frontmatter field (Meta v2.0 §4.3.1): every canonical doc declares
+`track: code | agent | shared`. Boundary rules are written into ADR-012
+§Decision 决策点 4 to avoid per-PR re-litigation. Phase 1 末 will collapse
+the implicit default and require `track` explicitly.
+
+## Code-Side Documentation
+
+> **Track A (code-side)** — governed by Code_Side_Framework v1.0 §7.1
+> (A1-A6 阻塞式) + §7.2 (OB1-OB5 非阻塞观察). Reviewer: SWE Reviewer
+> 充分（per Code_Side §8）. Failures are **loud** (compile / test /
+> deploy break).
+
+PR gates A1-A6 (blocking, see Code_Side §7.1):
+
+- **A1**: 路径与文件名合法 — `[TYPE][_Subject]_Description[_vX.Y].md` or
+  type-specific format.
+- **A2**: Frontmatter schema 完整 — `type / domain / summary / owner /
+  created / updated / state`; types with `version` (STANDARD/SPEC/EVAL/
+  CONTRACT/ASSESSMENT) also carry `version`.
+- **A3**: `state` 取值在 `draft / active / deprecated`; type-specific
+  enums legal (`decision` / `resolution` / `eval_kind` / `contract_kind`).
+- **A4**: 内部 Wikilink `[[...]]` 目标存在于仓库中.
+- **A5**: 必要的 `docs/INDEX.md` / `docs/**/INDEX.md` 已同步或可重建.
+- **A6**: allowlist 文档（框架/架构/核心运行入口）变更已同步检查
+  `CLAUDE.md` (this file).
+
+Non-blocking observations OB1-OB5 (see Code_Side §7.2; Phase 1 fills the
+thresholds): 文档长度区间 / 时态一致性 / 内容边界 / 摘要质量 / 内部一致性.
+
+Repo conventions (code-side, all governed by Track A standards):
 
 - Branches follow MJ-AgentLab's worktree model: 5 types
   (`feature/bugfix/documentation/maintain/hotfix`). See
@@ -97,43 +170,32 @@ PASSWORD` + `MJ_CONFIG_PROFILE`. See `.env.example` for the full list.
   for the git/commit adoption rationale and Keep/Adapt/Defer matrix.
   See ADR-011 for the doc versioning + archive convention installed in v1.1
   of the Framework standard.
+- Templates: `docs/_templates/TEMPLATE_{ADR,SKILL,PROMPT,CONTRACT}.md`.
+  Copy, don't improvise frontmatter.
 
-## Documentation
+## Agent-Side Documentation
 
-All canonical documentation follows the v2.0 trio (derived from mj-agent
-Framework v1.1, which itself derived from mj-system v5.0):
+> **Track B (agent-side)** — governed by Agent_Side_Framework v1.0 §7.1
+> (A7-A10 阻塞式) + §7.5 (frontmatter strip 契约). Reviewer: Domain
+> Expert / Prompt Engineer **+** SWE (≥ 2 reviewers per Agent_Side §8).
+> Failures are **silent** (wrong answers / hallucinations / business
+> decision drift) — every LLM call that consumes SKILL/PROMPT body is a
+> production output.
 
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` —
-  cross-track meta rules (types / layers / lifecycle / archive / `track`
-  frontmatter field).
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
-  (Track A) — authoring depth + PR gates A1-A6 + OB1-OB5 for code-side
-  canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
-  / STANDARD-code / ISSUE-code / ASSESSMENT-code).
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
-  (Track B) — authoring depth + PR gates A7-A11 + loader frontmatter-strip
-  contract for agent-side canonical types (SKILL / PROMPT / EVAL /
-  agent-facing CONTRACT).
+PR gates A7-A10 (blocking, see Agent_Side §7.1):
 
-Markdown + YAML syntax (GFM rendering target):
-`docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
-`docs/INDEX.md`. ADR-012 documents the v1.1 → v2.0 dual-track split;
-the archived predecessor lives at
-`docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
-(state: deprecated).
+- **A7**: 新增/修改 `[SKILL]` 时 `src/mj_agent/skills/<name>/` 目录与
+  文档身份一致（同名）.
+- **A8**: 新增/修改 `[PROMPT]` 时 `version` 填写; `state: active` 时
+  `eval_references` 非空（Phase 2 起强制）.
+- **A9**: 新增/修改 `[EVAL]` 时 `dataset_path` 存在、`baseline_metric`
+  / `baseline_value` 填写（Phase 2 起强制）.
+- **A10**: 新增/修改 `[CONTRACT]` `state: active` 时 `schema_ref`
+  存在并指向存在 schema 文件.
 
-Versioning rule (Meta_Framework v2.0 §4.2 + §5.6 sustained from Framework
-v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/CONTRACT/
-ASSESSMENT) carry `_vX.Y` in the filename. On formal version evolution
-(HITL judgment at PR review), the old file moves to
-`docs/archive/<original-subdir>/`, the new file lands as `_v<new>.md`,
-`state` flips to `deprecated` on the archive copy, and corpus-wide
-references are audited (Living updates to `_v<new>`; Frozen pins to
-`_v<old>`). Daily edits stay in-place — the rename + archive ceremony
-fires only when the change qualifies as substantive evolution. ADR-011
-documents the rationale.
-
-Key implications for code changes:
+Frontmatter strip 契约 (Agent_Side §7.5, hard constraint): code that
+loads in-source canonical docs as LLM input **must** strip YAML
+frontmatter. Implementation:
 
 - **In-source canonical**: `src/mj_agent/skills/**/SKILL.md` and
   `src/mj_agent/prompts/*.md` carry YAML frontmatter and are governed as
@@ -142,13 +204,16 @@ Key implications for code changes:
   bypass them, do not read these files with `open().read()`. Companion
   `load_skill_meta` / `load_prompt_meta` return the frontmatter dict for
   documentation tooling (A7/A8 validation, INDEX generation in Phase 2).
-- **Templates**: `docs/_templates/TEMPLATE_{ADR,SKILL,PROMPT,CONTRACT}.md`.
-  Copy, don't improvise frontmatter.
-- **PR gates**: the A1-A10 checklist in the STANDARD §7.1 applies to every
-  PR touching canonical docs or in-source canonical files. PR templates
-  already embed the checklist.
+
+Agent-side authoring quick reference:
+
 - **New skill**: create `src/mj_agent/skills/<name>/` with a `SKILL.md`
-  based on `TEMPLATE_SKILL.md`, then wire it in `src/mj_agent/agent.py`.
+  based on `TEMPLATE_SKILL.md` (body 五段式 per Agent_Side §2.1: Purpose
+  / When to use / Planning workflow / Common patterns / Anti-patterns),
+  then wire it in `src/mj_agent/agent.py`.
 - **New prompt version**: update `src/mj_agent/prompts/<name>.md` body +
   bump `version` in frontmatter; promote to `state: active` only with an
   accompanying `[EVAL]` reference (Phase 2 onwards).
+- **PR template**: the dual-track A1-A10 checklist in PR templates is
+  visually grouped (Code-Side `<details>` block A1-A6 + OB1-OB5;
+  Agent-Side `<details>` block A7-A10) so reviewers self-select by track.
