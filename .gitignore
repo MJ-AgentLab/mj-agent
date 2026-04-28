@@ -55,3 +55,6 @@ htmlcov/
 
 # ========== LangGraph Studio（mj-agent 独有）==========
 .langgraph_api/
+
+# ========== Git worktrees（并行 agent 隔离） ==========
+.worktrees/
