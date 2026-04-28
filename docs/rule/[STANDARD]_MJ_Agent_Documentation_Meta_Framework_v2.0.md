@@ -70,7 +70,69 @@ aliases:
 
 ## 2. 三层文档模型
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §2 全部规则。**目录结构无变化**。新增 §2.5 显式标注双轨子框架位置。
+### 2.1 目录结构
+
+```text
+mj-agent/
+├── README.md
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+├── GLOSSARY.md
+├── CLAUDE.md
+├── docs/                              # canonical 层
+│   ├── INDEX.md
+│   ├── _templates/
+│   ├── adr/
+│   ├── api/
+│   ├── assessments/
+│   ├── contracts/                     # [CONTRACT] 默认目录
+│   ├── design/
+│   │   ├── agent/
+│   │   ├── gateway/                   # Phase 2
+│   │   ├── memory/                    # Phase 2
+│   │   ├── prompts/                   # 历史/实验 PROMPT 版本
+│   │   ├── skills/                    # skill 目录索引与跨 skill 模式
+│   │   └── ui/                        # Phase 1/3
+│   ├── evaluation/                    # [EVAL] 默认目录
+│   ├── guide/
+│   ├── infrastructure/
+│   ├── issues/
+│   ├── postmortem/
+│   ├── rule/                          # 含 v2.0 trio：Meta + Code_Side + Agent_Side
+│   ├── runbook/
+│   └── archive/
+│       ├── rule/                      # 版本退役搬迁目的（如 v1.1 → 此处）
+│       └── legacy/                    # pre-framework 历史归档
+├── plans/                             # working 层
+├── src/mj_agent/
+│   ├── skills/<name>/SKILL.md         # canonical (in-source)
+│   └── prompts/*.md                   # canonical (in-source)
+└── evaluation/                        # Phase 2+ 数据集与 judge 代码
+```
+
+### 2.2 三层定义
+
+| 层级 | 路径 | 作用 | 强治理 | 示例 |
+|------|------|------|-----|------|
+| **Canonical** | `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md` | 项目权威文档 | 是 | `[STANDARD]`、`[SKILL]`、`[ADR]` |
+| **Working** | `plans/**` | 任务计划 | 否，轻治理 | `[PLAN]_Phase0_LangGraph_Studio_Walkthrough.md` |
+| **Legacy** | `docs/archive/legacy/**` | 历史材料 | 否，仅保留可读性 | 暂无 |
+
+### 2.3 in-source canonical 的设计理由
+
+Agent runtime 从 `src/mj_agent/skills/` 和 `src/mj_agent/prompts/` 加载 SKILL.md 与 prompt 文件作为 system prompt 的组成部分。把它们"复制"到 `docs/` 会产生**双份真相源**，带来同步漂移风险。
+
+本元框架的选择是把治理范围**扩展到 `src/`**：这两类文件留在 `src/`，但同样要求符合 canonical frontmatter 和合并门禁（见 §4.6 / §7.5；具体由 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]] §3 / §7.5 治理）。这与 Anthropic 官方 skills 仓库（在 SKILL.md 内使用 YAML frontmatter）的做法一致。
+
+### 2.4 分层规则
+
+| 规则 | 正确 | 错误 |
+|------|------|------|
+| 权威文档进 canonical | `docs/rule/[STANDARD]_Commit_Message_Convention.md` | `plans/[STANDARD]_Commit_Message_Convention.md` |
+| 运行时 skill 进 in-source canonical | `src/mj_agent/skills/query-writing/SKILL.md` | `docs/design/skills/[SKILL]_Query_Writing.md` |
+| 任务计划进 working | `plans/[PLAN]_Phase0_Studio_Walkthrough.md` | `docs/plans/...` |
+| 历史材料进 legacy | `docs/archive/legacy/<file>.md` | `docs/postmortem/<legacy-report>.md` |
+| 版本退役进 archive subdir | `docs/archive/rule/[STANDARD]_..._v1.1.md`（由 §5.6.2 流程触发） | `docs/rule/old/...`（自创目录） |
 
 ### 2.5 双轨子框架（v2.0 新增）
 
@@ -105,6 +167,29 @@ docs/rule/
 | **PROMPT** | **agent** | Agent_Side §3.2 |
 | **EVAL** | **agent** | Agent_Side §3.3 |
 | **CONTRACT** | shared | Agent_Side（agent-facing tool）/ Code_Side（cross-service） |
+
+§3.1-§3.4（根目录文件、Canonical/Working 类型详述、Agent 专属类型详述）由子框架按 track 落实：Code_Side §3.0-§3.x（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM / STANDARD-code / ISSUE / ASSESSMENT），Agent_Side §3 / §5（SKILL / PROMPT / EVAL / agent-facing CONTRACT）。
+
+### 3.5 目录归属优先级
+
+当一份文档可能同时落入多个目录时，按以下优先级判断：
+
+1. **Agent 专属**：进入对应专属目录（`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`、`docs/evaluation/`、`docs/contracts/`）
+2. **子系统专属**：进入 `docs/design/{agent|gateway|memory|prompts|skills|ui}/`
+3. **基础设施专属**：进入 `docs/infrastructure/{domain}/`
+4. **跨子系统 API 约定**：进入 `docs/api/`
+5. **跨领域通用规则**：进入 `docs/rule/`
+6. **跨领域操作指南**：进入 `docs/guide/`
+
+### 3.6 新目录准入规则
+
+| 规则 | 说明 |
+|------|------|
+| canonical 顶级目录新增必须修改本元框架 | 防止 `docs/` 顶层膨胀；trio 任一新增顶级目录均回到本文 §2.1 / §3 修订 |
+| `src/` 内 canonical 范围只有 skills/ 与 prompts/ | 其他源码目录不受文档治理（loader 契约见 Agent_Side §7.5） |
+| working 层仅允许 `plans/` | 任务计划统一聚合 |
+| legacy 层禁止作为新文档默认落点 | 仅用于迁移和存档 |
+| `docs/archive/<subdir>/` 仅作版本退役搬迁目的 | 由 §5.6.2 流程触发；不可作为新文档默认落点；与 `docs/archive/legacy/` 并存（后者用于 pre-framework 历史归档） |
 
 ---
 
@@ -145,16 +230,27 @@ archive 时保留原 `track` 字段值；living/frozen 引用判断不受 track 
 
 > 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §6 全部规则。
 
-### 6.4.1 CLAUDE.md 双轨分段（v2.0 新增）
+### 6.4 CLAUDE.md 同步策略
 
-> **TODO Phase 1**：填充完整规则。
+只有以下文档变更要求同步检查 `CLAUDE.md`（三类 allowlist）：
 
-CLAUDE.md 内部按 track 分两段：
+| 类别 | 示例 |
+|------|------|
+| 全局高频标准 | 本元框架 v2.0 trio（Meta + Code_Side + Agent_Side）、Commit 规范、SQL guardrail 规范 |
+| 高频运行信息 | 环境变量、部署入口、默认模型 |
+| 项目目录入口 | `docs/INDEX.md`、核心子系统目录位置 |
 
-- `## Code-Side Documentation`：由 `mj-agent-code-doc-sync` skill 自动维护
-- `## Agent-Side Documentation`：由 `mj-agent-agent-doc-sync` skill 自动维护
+allowlist 之外的 canonical 文档变更，不触发 CLAUDE.md 同步检查（避免 `CLAUDE.md` 膨胀为另一份索引）。
 
-跨轨段（如 Meta_Framework 自身、`track: shared` 的 ADR）放在文档顶部独立段。
+#### 6.4.1 CLAUDE.md 双轨分段（v2.0 新增）
+
+CLAUDE.md 内部按 track 分段，元规则放最顶。落地结构（详见 [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]）：
+
+- 顶部 **元规则段**：Meta_Framework v2.0 自身 + `track: shared` 的 ADR（如 ADR-011 / ADR-012）
+- `## Code-Side Documentation`：所属 allowlist 中 `track: code` 的项；Phase 1+ 由 `mj-agent-code-doc-sync` skill 自动维护
+- `## Agent-Side Documentation`：所属 allowlist 中 `track: agent` 的项；Phase 1+ 由 `mj-agent-agent-doc-sync` skill 自动维护
+
+PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应段；`shared` 落入元规则段。
 
 ---
 
@@ -171,16 +267,16 @@ CLAUDE.md 内部按 track 分两段：
 | A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side]] §7.1 |
 | **A11**（v2.0 新增） | SKILL `state: active` 时 `eval_references` 非空（解 v1.1 Gap A4，与 A8 对称） | Agent_Side §7.1 |
 | A7.x（语义校验） | 行为对齐（doc 描述 vs 代码实现） | Agent_Side §7.1（draft，Phase 2 实现） |
-| §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5（沿用 v1.1 §7.5） |
+| §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5（沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5） |
 | §7.6 `.claude/` 边界 | TODO Phase 1 细化 | Meta（本文）§7.6 |
 
 ### 7.6 `.claude/` 边界（待细化）
 
 > **TODO Phase 1**：区分两类 `.claude/` 用法：
-> 1. **marketplace 配置 / 用户私有**（如 `~/.claude/settings.json`、`.claude/*.local.json`）：保持出 governance（沿用 v1.1 §7.6）
+> 1. **marketplace 配置 / 用户私有**（如 `~/.claude/settings.json`、`.claude/*.local.json`）：保持出 governance（沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6）
 > 2. **项目级 `.claude/settings.json`**（团队共享、提交到 git）：纳入 §6.4 sync allowlist
 
-当前阶段沿用 v1.1 §7.6 整体排除作为过渡。
+当前阶段沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6 整体排除作为过渡。
 
 ---
 
