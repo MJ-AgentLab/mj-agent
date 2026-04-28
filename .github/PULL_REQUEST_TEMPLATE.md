@@ -13,7 +13,7 @@ Closes #<issue-id>
 - [ ] 无硬编码（密钥、令牌、绝对路径）
 - [ ] Commit message 符合 `<type>(<scope>): <summary>` 规范
 
-## 文档自检（A1-A10，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` §7.1）
+## 文档自检（A1-A11，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` §7.1；A1-A6/OB1-OB5 in `Code_Side_Documentation_Framework_v1.0.md`，A7-A11 in `Agent_Side_Documentation_Framework_v1.0.md`）
 - [ ] A1-A3：新增/修改 canonical 文档（含 `src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md`）路径/命名合法、frontmatter schema 完整、state 与专属字段枚举合法
 - [ ] A4-A5：内部 Wikilink 目标存在；必要的 `docs/**/INDEX.md` 已同步
 - [ ] A6：allowlist 文档（框架/架构/运行入口）变更已同步检查 `CLAUDE.md`

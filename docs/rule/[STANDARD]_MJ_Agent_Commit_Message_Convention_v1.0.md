@@ -337,7 +337,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 决策记录
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 决策依据
-- [[[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1]] §6.4 —— CLAUDE.md 同步触发条件
+- [[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]] §6.4 —— CLAUDE.md 同步触发条件（v2.0 §6.4.1 在元框架基础上引入双轨分段）
 - [[[STANDARD]_GitHub_Markdown_v1.0|GitHub-Flavored Markdown 编写规范 v1.0]] —— 本文 Markdown/YAML 语法依据
 - `CLAUDE.md §Repo conventions` —— 仓库级 commit 约定（待与本规范同步）
 

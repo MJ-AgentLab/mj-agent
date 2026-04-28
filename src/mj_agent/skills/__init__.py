@@ -1,9 +1,11 @@
 """Loader for packaged skill definitions (SKILL.md).
 
-SKILL.md files are in-source canonical documentation per
-``[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1``. They carry
-YAML frontmatter with documentation governance metadata which MUST NOT be
-injected into the LLM system prompt. This module strips frontmatter on load.
+SKILL.md files are in-source canonical documentation per the v2.0 trio
+(``[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0`` + Track B
+``[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0`` §7.5).
+They carry YAML frontmatter with documentation governance metadata which
+MUST NOT be injected into the LLM system prompt. This module strips
+frontmatter on load.
 """
 
 from __future__ import annotations

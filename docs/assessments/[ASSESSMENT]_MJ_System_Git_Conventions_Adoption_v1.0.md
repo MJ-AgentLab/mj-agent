@@ -56,7 +56,7 @@ mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008
 - 双远端：`origin` (GitHub `MJ-AgentLab/mj-agent`) + `gitee` (`gitee.com/ranzuozhou/mj-agent`)
 - `.github/PULL_REQUEST_TEMPLATE/` 下 6 份模板（feature / bugfix / documentation / maintain / hotfix / release），每份对应一种分支类型
 - `CLAUDE.md` §Repo conventions 声明 "Commits follow Conventional Commits"，但**首个 commit `b932007` 不符合 `type(scope):` 格式**
-- 文档治理框架 [[../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] 自身也声明 `derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0`
+- 文档治理框架 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]] 自身也声明 `derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0`
 
 继承本身合理（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已论证 co-deployment 路径），但 mj-system 的规则是为：
 
@@ -234,7 +234,7 @@ A5 / A6 在本 PR 内已同步落地。剩余对齐项不阻塞门禁，但建�
 
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 本评估的决策落地
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— 本评估的规范产出
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1]] —— 本评估自身遵循的治理框架（§3.2 ASSESSMENT 类型 / §4.4 ASSESSMENT 专属字段；本 PR 同时把 Framework 升至 v1.1，详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）
+- [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] —— 本评估自身遵循的治理框架（§3.2 ASSESSMENT 类型 / §4.4 ASSESSMENT 专属字段；本 PR 同时把 Framework 升至 v1.1，详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]；后续 v2.0 trio 演进见 [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]）
 - [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Co-Deployment with mj-system]] —— 继承 mj-system 治理的部署上下文
 - `plans/mj-agent-roadmap-v1.6.md` —— Phase 0 范围与退出条件
 

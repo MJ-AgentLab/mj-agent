@@ -1,7 +1,7 @@
 ---
 type: skill
 domain: SKILL
-summary: 治理框架 v1.1 端到端验收用 dummy skill：仅用于走 PR 模板 A1-A10 自检，不在 agent 运行期被加载
+summary: 治理框架 v1.1 端到端验收用 dummy skill：仅用于走 PR 模板 A1-A10 自检，不在 agent 运行期被加载（v1.1 已归档；本 fixture 保留用作历史 PLAN E §V11 现场记录）
 owner: 项目负责人
 created: 2026-04-27
 updated: 2026-04-27
@@ -27,8 +27,8 @@ related_prompts: []
 
 完成 [PLAN]_E §V11 的"dummy skill 走 PR 模板 A1-A10 自检全绿"——
 本 skill 的存在本身就是一次"先治后码"的演练：在没有任何业务诉求的情况下，
-把 v1.1 治理框架（[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1）
-的 PR 检查清单跑一遍，暴露任何文档级缺口。
+把当时的 v1.1 治理框架（位于 docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md，
+state: deprecated；现 canonical 为 v2.0 trio）的 PR 检查清单跑一遍，暴露任何文档级缺口。
 
 ## When to use
 
@@ -52,4 +52,4 @@ related_prompts: []
 - Prompts: 无（`related_prompts: []`）
 - Tools: 无（`tool_dependencies: []`）
 - Evals: Phase 2 起若 `state: active`，则需关联 `[EVAL]`；当前 `state: draft`，A11 不触发
-- 上游: [PLAN]_E §V11、[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1 §7.1
+- 上游: [PLAN]_E §V11、docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md §7.1（当时的 PR 校验门禁定义；现迁移至 v2.0 trio §7.1）

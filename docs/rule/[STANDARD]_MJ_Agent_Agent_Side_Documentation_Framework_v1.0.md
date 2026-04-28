@@ -4,8 +4,8 @@ domain: SYS
 summary: Track B 智能体侧文档治理 — SKILL/PROMPT/EVAL/agent-facing CONTRACT 的 authoring 深度规则；A7-A10 + A11 + 渐进披露 + EVAL coupling + frontmatter strip §7.5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-27
-state: draft
+updated: 2026-04-28
+state: active
 version: v1.0
 track: agent
 derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
@@ -222,7 +222,7 @@ eval_references:
 
 ### 7.3 frontmatter strip 契约（§7.5，硬约束）
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §7.5。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5。
 
 加载 in-source canonical（`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`）作为 LLM prompt 输入的代码必须：
 

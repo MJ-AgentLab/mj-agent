@@ -24,7 +24,7 @@ aliases:
 > **目标受众**：开发 / 文档撰写者 / AI Agent
 > **版本**：v1.0
 > **最后更新**：2026-04-24
-> **与 Framework v1.1 的关系**：本标准管 **语法 / 排版**（怎么写合法的 Markdown 与 YAML）；[[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] §4 管 **字段语义**（哪些字段必填、取值约束）。两篇在各自对应章节互引。
+> **与 Meta_Framework v2.0 的关系**：本标准管 **语法 / 排版**（怎么写合法的 Markdown 与 YAML）；[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §4 管 **字段语义**（哪些字段必填、取值约束）。两篇在各自对应章节互引。
 
 ---
 
@@ -54,7 +54,7 @@ aliases:
 | **GitHub 渲染优先** | 文档的"基线视觉"是 GitHub 网页端渲染结果。Obsidian、VS Code Preview 等其他渲染器是加分项而非标准 |
 | **CommonMark + GFM 基底** | 仅使用 [CommonMark](https://commonmark.org/) 定义的核心语法加 [GitHub Flavored Markdown](https://github.github.com/gfm/) 扩展；不依赖特定工具的方言扩展 |
 | **Docs-as-Code** | 文档与代码同仓、同 PR、同 review；Markdown 是源文件，不是排版中间产物 |
-| **AI 可读** | 结构（heading 层级、frontmatter 字段）必须可被 `python-frontmatter` 等工具机读；Claude Code 加载器依赖 frontmatter 剥离行为（见 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] §7.5） |
+| **AI 可读** | 结构（heading 层级、frontmatter 字段）必须可被 `python-frontmatter` 等工具机读；Claude Code 加载器依赖 frontmatter 剥离行为（见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §7.5） |
 | **与 Obsidian 双模共存** | Framework v1.0 §6.3 允许在正文内部使用 Obsidian Wikilink。本标准**不禁用**，但在 §5.4 明确这些语法在 GitHub 侧的降级行为，让作者知情选择 |
 
 > [!IMPORTANT]
@@ -162,12 +162,12 @@ GFM 会按源文件序号渲染，但为可读性 **建议** 手动写对序号�
 ## 5 链接
 
 > [!NOTE]
-> 链接写法的 **业务层** 选择（何时用 Wikilink、何时用相对链接）由 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] §6.3 定义。本节补充 GitHub 渲染侧的语法细节与降级行为。
+> 链接写法的 **业务层** 选择（何时用 Wikilink、何时用相对链接）由 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §6.3 定义。本节补充 GitHub 渲染侧的语法细节与降级行为。
 
 ### 5.1 相对链接（GitHub 渲染的首选）
 
 ```markdown
-[文档管理框架](./[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md)
+[文档治理元框架](./[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md)
 [ADR-001](../adr/[ADR]_001_Python_Only_Agent_Runtime.md)
 ```
 
@@ -493,7 +493,7 @@ GFM 允许少量内联 HTML（如 `<br>`、`<sub>`、`<kbd>`）。本项目：
 ## 13 YAML Frontmatter 语法规范
 
 > [!IMPORTANT]
-> 本节定义 **YAML 语法**（缩进、引号、多行、日期格式）。字段名、必填字段、字段语义见 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] §4.3-4.7。
+> 本节定义 **YAML 语法**（缩进、引号、多行、日期格式）。字段名、必填字段、字段语义见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §4.3-4.7。
 
 ### 13.1 位置与界定符
 
@@ -584,7 +584,7 @@ description: >
 
 ### 14.2 项目内部关联
 
-- [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1]] —— frontmatter 字段语义、文档治理规则（§4 / §6.3 / §7.5）
+- [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]] —— frontmatter 字段语义、文档治理规则（§4 / §6.3 / §7.5 委托 Agent_Side v1.0）
 - `docs/_templates/TEMPLATE_*.md` —— 各 canonical 类型的骨架（frontmatter 已符合本标准）
 - `CLAUDE.md §Documentation` —— 运行时 loader 对 frontmatter 的消费约束
 

@@ -100,20 +100,38 @@ PASSWORD` + `MJ_CONFIG_PROFILE`. See `.env.example` for the full list.
 
 ## Documentation
 
-All canonical documentation follows
-`docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
-(derived from mj-system v5.0) for field semantics, and
-`docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md` for Markdown + YAML syntax
-(GFM rendering target). Entry point: `docs/INDEX.md`.
+All canonical documentation follows the v2.0 trio (derived from mj-agent
+Framework v1.1, which itself derived from mj-system v5.0):
 
-Versioning rule (Framework v1.1 §4.2 + §5.6): types with `version` frontmatter
-(STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT) carry `_vX.Y` in the filename. On
-formal version evolution (HITL judgment at PR review), the old file moves to
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` —
+  cross-track meta rules (types / layers / lifecycle / archive / `track`
+  frontmatter field).
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
+  (Track A) — authoring depth + PR gates A1-A6 + OB1-OB5 for code-side
+  canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
+  / STANDARD-code / ISSUE-code / ASSESSMENT-code).
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
+  (Track B) — authoring depth + PR gates A7-A11 + loader frontmatter-strip
+  contract for agent-side canonical types (SKILL / PROMPT / EVAL /
+  agent-facing CONTRACT).
+
+Markdown + YAML syntax (GFM rendering target):
+`docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
+`docs/INDEX.md`. ADR-012 documents the v1.1 → v2.0 dual-track split;
+the archived predecessor lives at
+`docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
+(state: deprecated).
+
+Versioning rule (Meta_Framework v2.0 §4.2 + §5.6 sustained from Framework
+v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/CONTRACT/
+ASSESSMENT) carry `_vX.Y` in the filename. On formal version evolution
+(HITL judgment at PR review), the old file moves to
 `docs/archive/<original-subdir>/`, the new file lands as `_v<new>.md`,
-`state` flips to `deprecated` on the archive copy, and corpus-wide references
-are audited (Living updates to `_v<new>`; Frozen pins to `_v<old>`). Daily
-edits stay in-place — the rename + archive ceremony fires only when the
-change qualifies as substantive evolution. ADR-011 documents the rationale.
+`state` flips to `deprecated` on the archive copy, and corpus-wide
+references are audited (Living updates to `_v<new>`; Frozen pins to
+`_v<old>`). Daily edits stay in-place — the rename + archive ceremony
+fires only when the change qualifies as substantive evolution. ADR-011
+documents the rationale.
 
 Key implications for code changes:
 
