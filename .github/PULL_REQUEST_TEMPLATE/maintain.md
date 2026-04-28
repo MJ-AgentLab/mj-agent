@@ -18,6 +18,20 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 - [ ] 无硬编码敏感信息（密钥、令牌、IP、密码）
 - [ ] Commit message 符合规范（仅含 `infra` / `docs` 类型）
 
-## 文档自检
+## 文档自检（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §7.1）
+
+<details>
+<summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side §7.1]]</summary>
+
 - [ ] 若变更影响运行入口、关键环境变量、依赖版本，`CLAUDE.md` 已同步检查（A6）
-- [ ] 若新增/修改 PR 模板或 CI 工作流涉及 A1-A11 校验，v2.0 trio (`[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` + `Code_Side_Documentation_Framework_v1.0.md` + `Agent_Side_Documentation_Framework_v1.0.md`) 已同步
+- [ ] 若新增/修改 PR 模板或 CI 工作流涉及 A1-A10 校验，v2.0 trio ([[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] + [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]] + [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]) 已同步
+- [ ] OB1-OB5：非阻塞观察项（Code_Side §7.2；Phase 1 填充阈值）
+
+</details>
+
+<details>
+<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side §7.1]]</summary>
+
+- [ ] 若维护脚本触及 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` 的 loader 路径/契约，A7-A10 + §7.5 frontmatter strip 仍然成立
+
+</details>
