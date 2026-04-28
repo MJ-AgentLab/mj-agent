@@ -7,6 +7,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 state: draft
 version: v0.1
+track: agent
 activation:
   when_to_use: 用户问题触发此 skill 的典型情形
   when_not_to_use: 明显不应该走这个 skill 的情形

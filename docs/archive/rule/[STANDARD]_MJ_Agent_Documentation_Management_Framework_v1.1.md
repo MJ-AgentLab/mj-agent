@@ -7,6 +7,7 @@ created: 2026-04-24
 updated: 2026-04-28
 state: deprecated
 version: v1.1
+track: shared
 derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0
 supersedes:
   - "mj-agent@[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0"

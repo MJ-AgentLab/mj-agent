@@ -7,6 +7,7 @@ created: 2026-04-25
 updated: 2026-04-25
 state: active
 decision: accepted
+track: code
 ---
 
 # ADR-010: Git and Commit Conventions Adopted from mj-system

@@ -7,6 +7,7 @@ created: 2026-04-25
 updated: 2026-04-25
 state: active
 decision: accepted
+track: shared
 ---
 
 # ADR-011: Document Versioning and Archive Convention

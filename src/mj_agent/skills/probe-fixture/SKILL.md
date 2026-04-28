@@ -7,6 +7,7 @@ created: 2026-04-27
 updated: 2026-04-27
 state: draft
 version: v0.1
+track: agent
 activation:
   when_to_use: 永远不应在生产路径触发。本 skill 只为 [PLAN]_E V11 的治理框架自检存在
   when_not_to_use: 任何业务查询、任何用户交互、任何被 agent.py 显式加载的场景

@@ -7,6 +7,7 @@ created: 2026-04-24
 updated: 2026-04-24
 state: active
 version: v0.1
+track: agent
 activation:
   when_to_use: 用户提出需要查询业务数据的自然语言问题（指标、排名、同比、明细查看）
   when_not_to_use: 非 SQL 场景（如解释业务概念、查看系统状态、讨论方案）

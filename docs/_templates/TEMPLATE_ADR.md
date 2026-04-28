@@ -7,6 +7,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 state: draft
 decision: accepted
+track: shared
 ---
 
 # ADR NNN: <决策标题>

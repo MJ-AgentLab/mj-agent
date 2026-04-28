@@ -7,6 +7,7 @@ created: 2026-04-24
 updated: 2026-04-24
 state: active
 decision: accepted
+track: code
 ---
 
 # ADR-001: Python-Only Agent Runtime
