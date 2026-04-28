@@ -7,6 +7,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 state: draft
 version: v1.0
+track: shared
 contract_kind: tool
 parties: []
 schema_ref: ""

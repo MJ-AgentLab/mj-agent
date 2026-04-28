@@ -7,6 +7,7 @@ created: 2026-04-24
 updated: 2026-04-27
 state: active
 version: v1.0
+track: code
 derives_from: mj-system/develop@[STANDARD]_Obsidian_Markdown.md
 tags:
   - standard

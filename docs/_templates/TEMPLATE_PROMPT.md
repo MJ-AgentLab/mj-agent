@@ -7,6 +7,7 @@ created: YYYY-MM-DD
 updated: YYYY-MM-DD
 state: draft
 version: v1.0
+track: agent
 model_binding: deepseek-v3
 token_budget_estimate: 0
 eval_references: []

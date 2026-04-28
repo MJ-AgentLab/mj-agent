@@ -7,6 +7,7 @@ created: 2026-04-25
 updated: 2026-04-27
 state: active
 version: v1.0
+track: code
 derives_from: mj-system/develop@[STANDARD]_Commit_Message_Convention.md
 tags:
   - standard
