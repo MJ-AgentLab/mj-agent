@@ -4,13 +4,13 @@ domain: SYS
 summary: 元框架（v1.1 升级）—— 引入 track 字段与双轨子框架，治理 types/layers/lifecycle/archive 跨轨规则；骨架交付 Phase 0.5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-27
-state: draft
+updated: 2026-04-28
+state: active
 version: v2.0
 track: shared
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1
+derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1
 supersedes:
-  - "mj-agent@[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1"
+  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1"
 tags:
   - standard
   - documentation
@@ -26,7 +26,7 @@ aliases:
 # MJ-Agent 文档治理元框架 v2.0
 
 > **骨架状态（Phase 0.5）**：本文档以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
-> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]]
+> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 > **首要变更**：引入 `track` frontmatter 字段 + 双轨子框架（Code_Side + Agent_Side）+ 跨轨治理协议
 > **决策记录**：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
 
@@ -51,7 +51,7 @@ aliases:
 
 > 元框架的职责是治"跨轨共同规则"，**不**治某一轨的具体内容深度。
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §1.1 全部核心原则；新增双轨原则：
+承接 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §1.1 全部核心原则；新增双轨原则：
 
 | 原则 | 说明 |
 |---|---|
@@ -70,7 +70,7 @@ aliases:
 
 ## 2. 三层文档模型
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §2 全部规则。**目录结构无变化**。新增 §2.5 显式标注双轨子框架位置。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §2 全部规则。**目录结构无变化**。新增 §2.5 显式标注双轨子框架位置。
 
 ### 2.5 双轨子框架（v2.0 新增）
 
@@ -87,7 +87,7 @@ docs/rule/
 
 ## 3. 类型与目录
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §3。**类型枚举不变**（12 类 canonical）。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §3。**类型枚举不变**（12 类 canonical）。
 
 每类的"track 倾向"在 Code_Side / Agent_Side 子框架的对应章节详细定义。简表：
 
@@ -110,7 +110,7 @@ docs/rule/
 
 ## 4. 命名与 Frontmatter
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §4 全部规则。**新增 `track` 字段**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §4 全部规则。**新增 `track` 字段**：
 
 ### 4.3.1 track 字段（v2.0 新增）
 
@@ -133,7 +133,7 @@ track: code | agent | shared
 
 ## 5. 状态与生命周期
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程）。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程）。
 
 ### 5.7 双轨语境下的 archive（v2.0 新增）
 
@@ -143,7 +143,7 @@ archive 时保留原 `track` 字段值；living/frozen 引用判断不受 track 
 
 ## 6. 索引与引用规则
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §6 全部规则。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §6 全部规则。
 
 ### 6.4.1 CLAUDE.md 双轨分段（v2.0 新增）
 
@@ -160,7 +160,7 @@ CLAUDE.md 内部按 track 分两段：
 
 ## 7. 自动校验与 PR 集成
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §7 全部规则。**校验门禁按轨重新分配**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7 全部规则。**校验门禁按轨重新分配**：
 
 ### 7.1 PR 校验门禁（v2.0 重新分配）
 
@@ -205,7 +205,7 @@ CLAUDE.md 内部按 track 分两段：
 
 ## 9. Domain 枚举
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §9 全部 15 项。**新增 track 倾向**列：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §9 全部 15 项。**新增 track 倾向**列：
 
 | 编号 | Domain | 默认 track | 说明 |
 |---|---|---|---|
@@ -231,7 +231,7 @@ CLAUDE.md 内部按 track 分两段：
 
 ## 10. 快速操作清单
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §10。**新增 §10.6**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §10。**新增 §10.6**：
 
 ### 10.6 选择 track（v2.0 新增）
 
@@ -248,7 +248,7 @@ CLAUDE.md 内部按 track 分两段：
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]]
+- 派生自：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 - 决策记录：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
 - 子框架：
   - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]

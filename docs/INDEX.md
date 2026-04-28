@@ -10,7 +10,7 @@ state: draft
 
 # mj-agent 文档索引
 
-> 本索引是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|mj-agent 文档管理框架 v1.1]] §6.2，
+> 本索引是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]] §6.2，
 > 进入 Phase 2 后将改为从各文档 frontmatter `summary` 字段扫描生成。
 
 ---
@@ -19,8 +19,10 @@ state: draft
 
 | 文档 | 摘要 |
 |------|------|
-| [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|mj-agent 文档管理框架 v1.1]] | 定义 mj-agent 文档治理的三层模型、Agent 专属类型扩展、in-source 治理、自动校验边界、Major.Minor 版本演进与 docs/archive/ 归档机制（v1.1 新增 §5.6） |
-| [[STANDARD]_GitHub_Markdown_v1.0\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Framework v1.1 §4 字段语义互补 |
+| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|mj-agent 文档治理元框架 v2.0]] | 元框架（v1.1 升级）—— 引入 track 字段与双轨子框架，治理 types/layers/lifecycle/archive 跨轨规则；骨架交付 Phase 0.5 |
+| [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|mj-agent 代码侧文档治理框架 v1.0（Track A）]] | Track A 代码侧文档治理 — GUIDE/ADR-code/SPEC-code/RUNBOOK/POSTMORTEM-code/STANDARD-code/ISSUE-code/ASSESSMENT-code 的 authoring 深度规则；A1-A6 + OB1-OB5 |
+| [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|mj-agent 智能体侧文档治理框架 v1.0（Track B）]] | Track B 智能体侧文档治理 — SKILL/PROMPT/EVAL/agent-facing CONTRACT 的 authoring 深度规则；A7-A10 + A11 + 渐进披露 + EVAL coupling + frontmatter strip §7.5 |
+| [[STANDARD]_GitHub_Markdown_v1.0\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.0 §4 字段语义互补 |
 | [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft；派生自 mj-system v2.0） |
 
 ## 架构决策（docs/adr/）
@@ -45,11 +47,12 @@ state: draft
 
 ## 归档（docs/archive/）
 
-> 由 Framework v1.1 §5.6.2 流程触发的版本退役搬迁。详见 [[adr/[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011]]。
+> 由 Meta_Framework §5 / 历史 Framework v1.1 §5.6.2 流程触发的版本退役搬迁。详见 [[adr/[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011]]。
 
 | 归档文档 | 取代者 | 归档原因 |
 |---|---|---|
-| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0\|Framework v1.0（archive）]] | [[rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1]] | v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）和 §4.2 filename `_vX.Y` 强制规则 |
+| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0\|Framework v1.0（archive）]] | [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）和 §4.2 filename `_vX.Y` 强制规则 |
+| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：[[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0]] + [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0]] + [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0]] | v2.0 引入 `track` frontmatter 字段与双轨子框架（Code_Side / Agent_Side），把 authoring 深度规则与 PR 校验门禁按轨拆分；详见 [[adr/[ADR]_012_Two_Track_Documentation_Governance\|ADR-012]] |
 
 ## 模板（docs/\_templates/）
 
@@ -66,7 +69,7 @@ state: draft
 
 ## 运行时 canonical（in-source）
 
-按 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|框架]] §2.3、§4.6，以下文件虽位于 `src/` 但属于 canonical 治理范围：
+按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0]] §2.3 / §4.6（沿用 v1.1 §2.3、§4.6 不变），以下文件虽位于 `src/` 但属于 canonical 治理范围：
 
 | 文件 | 类型 | 运行时作用 |
 |------|------|-----------|

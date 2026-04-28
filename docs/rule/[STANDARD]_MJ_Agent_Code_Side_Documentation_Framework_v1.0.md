@@ -4,8 +4,8 @@ domain: SYS
 summary: Track A 代码侧文档治理 — GUIDE/ADR-code/SPEC-code/RUNBOOK/POSTMORTEM-code/STANDARD-code/ISSUE-code/ASSESSMENT-code 的 authoring 深度规则；A1-A6 + OB1-OB5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-27
-state: draft
+updated: 2026-04-28
+state: active
 version: v1.0
 track: code
 derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
@@ -133,7 +133,7 @@ aliases:
 
 ### 7.1 阻塞式检查（A1-A6，Code_Side 范围）
 
-沿用 [[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1]] §7.1 的 A1-A6 定义：
+沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.1 的 A1-A6 定义：
 
 | 编号 | 检查项 | 自动化阶段 |
 |---|---|---|

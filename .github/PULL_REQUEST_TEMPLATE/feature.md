@@ -20,7 +20,7 @@ about: 新功能、重构等功能开发 (feature/*) 的 Pull Request
 - [ ] 如引入新依赖，已通过 `uv add` 写入 `pyproject.toml` 并提交 `uv.lock`
 - [ ] CHANGELOG.md `[Unreleased]` 区块已更新（如 CHANGELOG.md 存在）
 
-## 文档自检（A1-A10，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` §7.1）
+## 文档自检（A1-A11，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` §7.1；A1-A6/OB1-OB5 in `Code_Side_Documentation_Framework_v1.0.md`，A7-A11 in `Agent_Side_Documentation_Framework_v1.0.md`）
 - [ ] 新功能涉及的 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` / `[ADR]` / `[SPEC]` 已同 PR 落地或更新
 - [ ] frontmatter 完整且 `state`、`domain`、`version` 合法
 - [ ] 新增/修改 `[SKILL]` 时对应 `src/mj_agent/skills/<name>/` 目录存在（A7）

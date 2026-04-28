@@ -20,4 +20,4 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 
 ## 文档自检
 - [ ] 若变更影响运行入口、关键环境变量、依赖版本，`CLAUDE.md` 已同步检查（A6）
-- [ ] 若新增/修改 PR 模板或 CI 工作流涉及 A1-A10 校验，`[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` 已同步
+- [ ] 若新增/修改 PR 模板或 CI 工作流涉及 A1-A11 校验，v2.0 trio (`[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` + `Code_Side_Documentation_Framework_v1.0.md` + `Agent_Side_Documentation_Framework_v1.0.md`) 已同步

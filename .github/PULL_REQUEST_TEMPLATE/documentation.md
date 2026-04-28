@@ -9,7 +9,7 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 ## 变更原因
 <!-- 为什么需要这次文档更新 -->
 
-## 自检结果（A1-A10，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` §7.1）
+## 自检结果（A1-A11，详见 `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` §7.1；A1-A6/OB1-OB5 in `Code_Side_Documentation_Framework_v1.0.md`，A7-A11 in `Agent_Side_Documentation_Framework_v1.0.md`）
 - [ ] **A1** 路径与文件名符合命名约定（`[TYPE][_Subject]_Description[_vX.Y].md` 或类型专属格式）
 - [ ] **A2** Canonical 文档 frontmatter schema 完整（`type` / `domain` / `summary` / `owner` / `created` / `updated` / `state`；`[STANDARD]`/`[SPEC]`/`[SKILL]`/`[PROMPT]`/`[EVAL]`/`[CONTRACT]` 还需 `version`）
 - [ ] **A3** `state` 取值在 `draft / active / deprecated`；类型专属字段枚举合法（`decision` / `resolution` / `eval_kind` / `contract_kind`）

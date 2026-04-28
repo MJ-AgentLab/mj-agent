@@ -20,7 +20,7 @@ tags:
 
 ## Context
 
-mj-agent Phase 0 Foundation 已交付 [[../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]]（含 SKILL / PROMPT / EVAL / CONTRACT 4 类自有 + A7-A10 + 15 domain），覆盖了"文档治理范畴"。但在 Phase 0 收口前的 brainstorming 评估中，发现两个相关问题：
+mj-agent Phase 0 Foundation 已交付 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]（含 SKILL / PROMPT / EVAL / CONTRACT 4 类自有 + A7-A10 + 15 domain），覆盖了"文档治理范畴"。但在 Phase 0 收口前的 brainstorming 评估中，发现两个相关问题：
 
 ### 问题 1：单一 Framework 文档无法支撑 Documents-Driven-Development × Claude Code
 

@@ -109,7 +109,7 @@ Browse-without-git **未被** 列入动机——deprecated 版本不需要从工
 
 ## References
 
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] §4.2 / §5.5 / §5.6 / §3.6 —— 本决策的执行
+- [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]] §4.2 / §5.5 / §5.6 / §3.6 —— 本决策的执行（v1.1 已归档；后续由 ADR-012 升级至 v2.0 trio）
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0|Framework v1.0（archive）]] —— 被本决策归档的前版本
 - [[[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions]] —— Phase 0 governance KEEP/ADAPT/DEFER 模式先例
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ System Git Conventions Adoption Assessment v1.0]] —— 同期 governance 评估文档

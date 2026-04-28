@@ -4,8 +4,8 @@ domain: SYS
 summary: 定义 mj-agent 文档治理的三层模型、Agent 专属类型扩展、in-source 治理和自动校验边界
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-27
-state: active
+updated: 2026-04-28
+state: deprecated
 version: v1.1
 derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0
 supersedes:
@@ -19,6 +19,11 @@ aliases:
   - MJ Agent Documentation Management Framework v1.1
   - mj-agent 文档管理框架 v1.1
 ---
+
+> **DEPRECATED** — Superseded by the v2.0 trio (`Meta_Framework_v2.0`,
+> `Code_Side_Documentation_Framework_v1.0`, `Agent_Side_Documentation_Framework_v1.0`).
+> See `docs/INDEX.md` for current canonical references. Frozen refs in archive/,
+> plans/, and ASSESSMENT docs continue to point here intentionally.
 
 # MJ-Agent 文档管理体系框架
 
