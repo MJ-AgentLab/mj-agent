@@ -44,10 +44,10 @@ def repo_root() -> Path:
 
 def is_skipped(rel: Path) -> bool:
     parts = rel.parts
-    for skip in SKIP_PATH_PARTS:
-        if len(parts) >= len(skip) and parts[: len(skip)] == skip:
-            return True
-    return False
+    return any(
+        len(parts) >= len(skip) and parts[: len(skip)] == skip
+        for skip in SKIP_PATH_PARTS
+    )
 
 
 def is_text_file(path: Path) -> bool:
