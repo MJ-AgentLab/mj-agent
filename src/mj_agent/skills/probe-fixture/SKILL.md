@@ -47,6 +47,30 @@ related_prompts: []
 3. 提交 PR 时按 `documentation.md` 模板逐项核对 A1-A10；
 4. 把核对结果作为 PR 评论贴出（见本 PR #4 评论）。
 
+## Common patterns
+
+- **作为 loader 烟测样例**：`load_skill("probe-fixture")` 与
+  `load_skill_meta("probe-fixture")` 应分别返回剥离 frontmatter 的纯 body 与
+  完整的 frontmatter dict —— 这是验证 `python-frontmatter` strip 契约
+  （Agent_Side §1.4 "frontmatter strip 契约"）的最小样例。
+- **作为 PR 模板自检的已知良好样例**：新建 SKILL 的 PR 走 A1-A10 时，
+  本目录的 frontmatter（`type/domain/summary/owner/created/updated/state/version`
+  八字段 + `activation` 双子段 + `tool_dependencies` + `related_prompts`）
+  即"通过态"参考。
+- **命名约定**：`-fixture` 后缀显式声明非运行期身份，避免被未来的
+  动态 skill selector（ADR-003）误选。
+
+## Anti-patterns
+
+- 不要在 `agent.py:_build_system_prompt()` 里硬编码加载本 skill —— 一旦加载，
+  fixture 身份失效，治理自检失去"非运行期"语义保证。
+- 不要把任何业务语义（biz 表名、SQL 范式、工具调用约定）写进本 skill ——
+  它的 body 应只服务于治理框架验收，混入业务内容会让"dummy"的角色定位崩塌。
+- 不要在 `state: draft` 时挂 `[EVAL]` 引用：A11 在 draft 态不触发，
+  提前耦合 EVAL 反而会让治理框架的状态机出现伪阳性失败。
+- 不要重命名为不带 `-fixture` 后缀的形态 —— 命名即合同，命名层兜底
+  防止 selector 误选。
+
 ## Related
 
 - Prompts: 无（`related_prompts: []`）

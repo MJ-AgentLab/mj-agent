@@ -23,6 +23,22 @@ related_prompts:
 Use this skill whenever you need to write or refine SQL against the
 mj-system biz domain.
 
+## Purpose
+
+把分析师的自然语言诉求翻译成一条可审计、低成本、读 DWS 优先的 SQL，并
+对结果做简短的业务化解读。该 skill 的边界严格落在 mj-system biz 域：
+`biz_dws.*` 全部表 + `biz_dwd` 的两张维度表（`dwd_dim_product_interface`、
+`dwd_dim_institution`）—— 由 `analyst` 角色 + L1 guardrail 双重把关。
+
+## When to use
+
+触发：用户提出指标、排名、同比、明细查看一类需要直接落到业务数据的问题
+（"上周 Q1 销售榜"、"某机构本月接口调用量"、"同比环比"等）。
+
+不触发：用户是在解释业务概念、查看系统/进程状态、讨论方案或追问上一次
+查询的解读时——这些场景应留给会话上下文或其他 skill 处理，本 skill 不
+应被激活。
+
 ## Planning workflow
 
 1. **Scope the question.** What dimension(s) and time period does the
@@ -51,7 +67,7 @@ mj-system biz domain.
 - **Period-over-period:** DWS tables already carry `prev_*_*` and
   `*_diff` / `*_rate` columns — use them instead of computing yourself.
 
-## Things to avoid
+## Anti-patterns
 
 - Do NOT use `biz_ods.*` — you lack permission; the call will fail.
 - Do NOT reference the `ops_*` schemas; they are out of scope.
