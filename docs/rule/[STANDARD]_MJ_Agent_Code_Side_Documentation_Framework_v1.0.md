@@ -4,7 +4,7 @@ domain: SYS
 summary: Track A 代码侧文档治理 — GUIDE/ADR-code/SPEC-code/RUNBOOK/POSTMORTEM-code/STANDARD-code/ISSUE-code/ASSESSMENT-code 的 authoring 深度规则；A1-A6 + OB1-OB5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-28
+updated: 2026-04-29
 state: active
 version: v1.0
 track: code
@@ -176,14 +176,14 @@ mj-system v5.0 §7.2 定义了 5 项非阻塞观察项；mj-agent v1.1 漏继承
 
 ## 9. Plugin 关联
 
-本框架的执行工具是 `mj-agent-code-doc` plugin（marketplace `mj-agentlab-marketplace/plugins/mj-agent-code-doc/`，骨架交付 Phase 1）。详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §B-2。
+本框架的执行工具是 `mj-agent-code-doc` plugin（marketplace `mj-agentlab-marketplace/plugins/mj-agent-code-doc/`）。**2026-04-29 sequencing 更新**：`plan` + `author` 两 skill 提前到 Phase 0.5 部分骨架（原全推迟 Phase 1）；`validate` + `sync` 仍 Phase 1（依赖 §7.2 OB1-OB5 阈值定稿 + §7.6 `.claude/` 边界细化）。详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-5 Revision banner；marketplace 仓内容蓝图见独立 PLAN（`temp-ai-chat/mj-agentlab-marketplace/[PLAN]_Marketplace_Plugin_Construction.md`）。
 
-| Skill | 章节对应 |
-|---|---|
-| `mj-agent-code-doc-plan` | 跨章节（Track A 文档治理需求规划） |
-| `mj-agent-code-doc-author` | §3.1-§3.8（按 type dispatch 处理 8 继承类） |
-| `mj-agent-code-doc-validate` | §7.1（A1-A6）+ §7.2（OB1-OB5） |
-| `mj-agent-code-doc-sync` | Meta v2.0 §6（INDEX 同步 + CLAUDE.md `Code-Side` 段维护） |
+| Skill | 章节对应 | Phase |
+|---|---|---|
+| `mj-agent-code-doc-plan` | 跨章节（Track A 文档治理需求规划） | **Phase 0.5（部分骨架）** |
+| `mj-agent-code-doc-author` | §3.1-§3.8（按 type dispatch 处理 8 继承类） | **Phase 0.5（部分骨架）** |
+| `mj-agent-code-doc-validate` | §7.1（A1-A6）+ §7.2（OB1-OB5） | Phase 1 |
+| `mj-agent-code-doc-sync` | Meta v2.0 §6（INDEX 同步 + CLAUDE.md `Code-Side` 段维护） | Phase 1 |
 
 ---
 

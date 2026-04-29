@@ -4,7 +4,7 @@ domain: SYS
 summary: Track B 智能体侧文档治理 — SKILL/PROMPT/EVAL/agent-facing CONTRACT 的 authoring 深度规则；A7-A10 + A11 + 渐进披露 + EVAL coupling + frontmatter strip §7.5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-28
+updated: 2026-04-29
 state: active
 version: v1.0
 track: agent
@@ -177,7 +177,7 @@ eval_references:
 
 ---
 
-## 5. CONTRACT (agent-facing tool) Authoring（§3.4，Phase 0.5 紧迫）
+## 5. CONTRACT (agent-facing tool) Authoring（§3.4，~~Phase 0.5 紧迫~~ → phase 推迟，待项目负责人决议）
 
 仅治理 `contract_kind: tool` 与 agent-facing `contract_kind: mcp`；跨服务 CONTRACT 见 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side]]（或 `track: shared`）。
 
@@ -269,17 +269,19 @@ PR 流程建议：
 
 ## 9. Plugin 关联
 
-本框架的执行工具是 `mj-agent-agent-doc` plugin（marketplace `mj-agentlab-marketplace/plugins/mj-agent-agent-doc/`，骨架交付 Phase 0.5）。详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §B-1。
+本框架的执行工具是 `mj-agent-agent-doc` plugin（marketplace `mj-agentlab-marketplace/plugins/mj-agent-agent-doc/`）。**2026-04-29 sequencing 翻转**：原 Phase 0.5 紧迫的 plugin 骨架（含 skill-author / validate / tool-contract-author 三 skill）整体推迟，phase 时间窗待项目负责人决议；详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-4 Revision banner。
 
 | Skill | 章节对应 | Phase |
 |---|---|---|
-| `mj-agent-agent-doc-plan` | 跨章节（agent-side 文档需求规划） | Phase 1 |
-| `mj-agent-agent-doc-skill-author` | §2（SKILL Authoring 全套） | **Phase 0.5（紧迫）** |
-| `mj-agent-agent-doc-prompt-author` | §3（PROMPT Authoring） | Phase 1 |
-| `mj-agent-agent-doc-tool-contract-author` | §5（agent-facing CONTRACT） | **Phase 0.5（紧迫）** |
+| `mj-agent-agent-doc-plan` | 跨章节（agent-side 文档需求规划） | 推迟（待决） |
+| `mj-agent-agent-doc-skill-author` | §2（SKILL Authoring 全套） | ~~Phase 0.5（紧迫）~~ → 推迟（待决） |
+| `mj-agent-agent-doc-prompt-author` | §3（PROMPT Authoring） | 推迟（待决） |
+| `mj-agent-agent-doc-tool-contract-author` | §5（agent-facing CONTRACT） | ~~Phase 0.5（紧迫）~~ → 推迟（待决） |
 | `mj-agent-agent-doc-eval-author` | §4（EVAL Authoring） | Phase 2 |
-| `mj-agent-agent-doc-validate` | §7.1 + §7.2 + §7.3 + §7.4 | **Phase 0.5（紧迫）** |
-| `mj-agent-agent-doc-sync` | Meta v2.0 §6（INDEX 同步 + CLAUDE.md `Agent-Side` 段维护） | Phase 1 |
+| `mj-agent-agent-doc-validate` | §7.1 + §7.2 + §7.3 + §7.4 | ~~Phase 0.5（紧迫）~~ → 推迟（待决） |
+| `mj-agent-agent-doc-sync` | Meta v2.0 §6（INDEX 同步 + CLAUDE.md `Agent-Side` 段维护） | 推迟（待决） |
+
+> 注：本表所有 phase 标签于 **2026-04-29** 调整为"推迟（待决）"或保留原 phase。仅 `eval-author` 仍按原 Phase 2 计划（其专属依赖是 EVAL infra，与 plugin sequencing 无关）。
 
 ---
 
