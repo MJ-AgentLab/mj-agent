@@ -15,6 +15,7 @@ state: draft
 |---|---|---|
 | 2026-04-27 | 初稿 | 全文 |
 | 2026-04-29 | **plugin sequencing 翻转**：agent-doc 整体推迟（原 Phase 0.5 紧迫）；code-doc 的 `plan` + `author` 提前到 Phase 0.5 部分骨架（原全推迟 Phase 1）。详细 sequencing 由独立 PLAN 承载（外部笔记 `D:\Document\My_Local_Vault\temp-ai-chat\mj-agentlab-marketplace\[PLAN]_Marketplace_Plugin_Construction.md`） | §Context, §V-skel-4, §V-skel-5, §V-content-2, §Exit 判据 |
+| 2026-04-29 | **schema 修正**：marketplace plugin SKILL.md 改用 Claude Code 原生 schema（name + description 两字段），不再引用 in-source 13 字段 schema。决策由 [[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation\|ADR-013]] 锁定；body 结构与 marketplace 现存 mj-sys-* plugin 风格对齐，不强制本仓 Agent_Side §2.1 五段式 | §V-skel-4 schema correction sub-banner, §V-skel-5 schema correction sub-banner |
 
 ## Context — 为什么现在做
 
@@ -102,6 +103,8 @@ PLAN E 全绿且本 worktree 合并到 develop 后，开 Phase 0.5 promote PR：
 ### V-skel-4 mj-agent-agent-doc plugin 骨架（marketplace 仓，~~Phase 0.5 紧迫~~ → **整体推迟**）
 
 > **⚠️ REVISED 2026-04-29**：原 Phase 0.5 紧迫的 agent-doc plugin 整体推迟到后续 phase 决议。理由（项目负责人决定）：runtime 侧 SKILL/PROMPT/EVAL/CONTRACT 框架尚未到使用密度阈值，agent-doc plugin 即使现在交付也短期内利用率低；优先验证 plugin 构建工艺于 code-doc（参考实例多）。本节以下 marketplace 仓动作清单 / plugin.json 模板等保留作 future reference，但 **不在 Phase 0.5 执行**。
+
+> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：本节后续示例（含 plugin.json 模板与"三 skill 骨架 SKILL.md 关键 frontmatter"段的 13 字段 yaml）**错误地把 mj-agent in-source SKILL.md 的 schema 套用到了 marketplace plugin SKILL.md**。修订决策：marketplace plugin SKILL.md 使用 Claude Code 原生 schema（仅 `name` + `description` 两字段）；body 结构与 marketplace 现存 mj-sys-* 4 plugin 风格对齐（如 `Overview` / `Workflow` / `Quick Reference` / `Examples` / `Anti-patterns`），不强制 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2.1 的 Purpose / When to use / Planning workflow / Common patterns / Anti-patterns 五段式（§2.1 五段式仅适用于 in-source SKILL.md）。具体范本与理由见 ADR-013 + Agent_Side v1.0 §9.1。本节以下 13 字段 yaml 示例保留作 in-source 模板 reference，**不作为 plugin SKILL.md 模板**。
 
 > **位置**：本 PR 在 mj-agent 仓不动；动作发生在 [mj-agentlab-marketplace](https://github.com/MJ-AgentLab/mj-agentlab-marketplace) 仓的独立 PR。
 
@@ -204,6 +207,8 @@ TODO Phase 1。
 ### V-skel-5 mj-agent-code-doc plugin 骨架（~~推迟到 Phase 1~~ → **plan + author Phase 0.5 部分提前；validate + sync 仍 Phase 1**）
 
 > **⚠️ REVISED 2026-04-29**：原全推迟 Phase 1 的 code-doc plugin 部分提前——`plan` + `author` 两个 skill 现在 Phase 0.5 部分骨架交付（内容来自 Code_Side §3-§4 active + mj-agent 已有 PLAN/ADR/STANDARD 正例，vacuum < 30%）。`validate` + `sync` 仍 Phase 1（依赖 §7.2 OB1-OB5 阈值定稿 + §7.6 `.claude/` 边界细化，目前 100% TODO）。
+
+> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：与 §V-skel-4 同一修订——`mj-agent-code-doc-plan` 与 `mj-agent-code-doc-author` 两 skill 的 SKILL.md 使用 Claude Code 原生 schema（`name` + `description`），body 结构与 marketplace 现存 mj-sys-* plugin 风格对齐，不强制本仓 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2.1 五段式。详细内容蓝图（按修订后 schema）参见 working notes `[PLAN]_Marketplace_Plugin_Construction.md` 的 §11 修订清单（M-wn-1/M-wn-2/M-wn-3）。
 
 **Phase 0.5 部分骨架范围**：
 
