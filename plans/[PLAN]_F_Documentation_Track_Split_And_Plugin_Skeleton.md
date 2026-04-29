@@ -3,18 +3,25 @@ type: plan
 summary: 双轨分轨骨架交付与 plugin 构建计划 — Phase 0.5 起逐 phase 落地 Meta v2.0 / Code_Side / Agent_Side 三 STANDARDs + mj-agent-agent-doc / mj-agent-code-doc 双 plugin
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-27
+updated: 2026-04-29
 state: draft
 ---
 
 # PLAN F — 双轨分轨骨架交付与 plugin 构建
+
+## Revision History
+
+| 日期 | 修订 | 受影响章节 |
+|---|---|---|
+| 2026-04-27 | 初稿 | 全文 |
+| 2026-04-29 | **plugin sequencing 翻转**：agent-doc 整体推迟（原 Phase 0.5 紧迫）；code-doc 的 `plan` + `author` 提前到 Phase 0.5 部分骨架（原全推迟 Phase 1）。详细 sequencing 由独立 PLAN 承载（外部笔记 `D:\Document\My_Local_Vault\temp-ai-chat\mj-agentlab-marketplace\[PLAN]_Marketplace_Plugin_Construction.md`） | §Context, §V-skel-4, §V-skel-5, §V-content-2, §Exit 判据 |
 
 ## Context — 为什么现在做
 
 [[../docs/adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 决定了双轨治理 + skeleton-first 演进。本 PLAN 落地 Phase 0.5 起的逐步骨架交付与内容填充计划，覆盖：
 
 - 3 STANDARD 骨架（[[../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] + [[../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side]] + [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]]）的 promote 路径
-- 双 plugin 骨架（`mj-agent-agent-doc` + `mj-agent-code-doc`）在 mj-agentlab-marketplace 仓的构建
+- 双 plugin 骨架（`mj-agent-agent-doc` + `mj-agent-code-doc`）在 mj-agentlab-marketplace 仓的构建（**2026-04-29 翻转**：agent-doc 推迟、code-doc plan/author 提前——见 §V-skel-4 / §V-skel-5 banner）
 - 11 个 skill（agent-doc 7 + code-doc 4）的逐 phase 引入时序
 - frontmatter `track` 字段的 rollout（Phase 0.5 引入，Phase 1 末收紧为 explicit required）
 
@@ -92,7 +99,9 @@ PLAN E 全绿且本 worktree 合并到 develop 后，开 Phase 0.5 promote PR：
 | CLAUDE.md 同步更新（按 Meta v2.0 §6.4） | CLAUDE.md `## Documentation` 段引用 v2.0 |
 | Wikilink 全仓审计（PLAN E V12 同款） | 所有 `[[...]]` 解析成功 |
 
-### V-skel-4 mj-agent-agent-doc plugin 骨架（marketplace 仓，Phase 0.5 紧迫）
+### V-skel-4 mj-agent-agent-doc plugin 骨架（marketplace 仓，~~Phase 0.5 紧迫~~ → **整体推迟**）
+
+> **⚠️ REVISED 2026-04-29**：原 Phase 0.5 紧迫的 agent-doc plugin 整体推迟到后续 phase 决议。理由（项目负责人决定）：runtime 侧 SKILL/PROMPT/EVAL/CONTRACT 框架尚未到使用密度阈值，agent-doc plugin 即使现在交付也短期内利用率低；优先验证 plugin 构建工艺于 code-doc（参考实例多）。本节以下 marketplace 仓动作清单 / plugin.json 模板等保留作 future reference，但 **不在 Phase 0.5 执行**。
 
 > **位置**：本 PR 在 mj-agent 仓不动；动作发生在 [mj-agentlab-marketplace](https://github.com/MJ-AgentLab/mj-agentlab-marketplace) 仓的独立 PR。
 
@@ -192,9 +201,36 @@ TODO Phase 1。
 
 `mj-agent-agent-doc-validate` 与 `mj-agent-agent-doc-tool-contract-author` 的骨架按相同模板。
 
-### V-skel-5 mj-agent-code-doc plugin 骨架（推迟到 Phase 1）
+### V-skel-5 mj-agent-code-doc plugin 骨架（~~推迟到 Phase 1~~ → **plan + author Phase 0.5 部分提前；validate + sync 仍 Phase 1**）
 
-Phase 0.5 不动 code-doc plugin（紧迫度低；Track A 内容继承自 v1.1 + mj-sys-doc 间接服务可用）。Phase 1 PR 创建。
+> **⚠️ REVISED 2026-04-29**：原全推迟 Phase 1 的 code-doc plugin 部分提前——`plan` + `author` 两个 skill 现在 Phase 0.5 部分骨架交付（内容来自 Code_Side §3-§4 active + mj-agent 已有 PLAN/ADR/STANDARD 正例，vacuum < 30%）。`validate` + `sync` 仍 Phase 1（依赖 §7.2 OB1-OB5 阈值定稿 + §7.6 `.claude/` 边界细化，目前 100% TODO）。
+
+**Phase 0.5 部分骨架范围**：
+
+```
+plugins/mj-agent-code-doc/
+├── .claude-plugin/plugin.json     ← 创建（必填）
+├── README.md                       ← 创建（明确标注：v0.1 仅含 plan + author）
+├── CHANGELOG.md
+├── skills/
+│   ├── mj-agent-code-doc-plan/SKILL.md           ← Phase 0.5 部分提前（plan）
+│   └── mj-agent-code-doc-author/SKILL.md         ← Phase 0.5 部分提前（author）
+└── （validate + sync 留 Phase 1）
+```
+
+`marketplace.json` 追加 1 条 `mj-agent-code-doc` 条目（version: 0.1.0）。
+
+**详细内容蓝图**：plugin.json 字段 / SKILL.md 五段式 body 大纲 / bundled refs 清单 / verification checklist 见独立 PLAN：
+
+> `D:\Document\My_Local_Vault\temp-ai-chat\mj-agentlab-marketplace\[PLAN]_Marketplace_Plugin_Construction.md`
+
+（该 PLAN 是 marketplace 仓的内容蓝图，跨仓 working layer 文档；不在本仓 plans/ 范围。）
+
+**原 Phase 1 全推迟理由（部分仍生效）**：
+
+- ~~"Track A 内容继承自 v1.1 + mj-sys-doc 间接服务可用"~~——v1.1 已 archive 到 `docs/archive/rule/`，Code_Side v1.0 已 active；Track A 已有自治 STANDARD，不再依赖 v1.1；mj-sys-doc 仅服务 mj-system 仓
+- ✓ "validate 依赖 OB1-OB5 阈值"——仍生效，留 Phase 1
+- ✓ "sync 依赖 .claude/ 边界细化"——仍生效，留 Phase 1
 
 ---
 
@@ -214,12 +250,14 @@ Phase 0.5 不动 code-doc plugin（紧迫度低；Track A 内容继承自 v1.1 +
 
 ### V-content-2 双 plugin skill 完整化
 
-| 验证项 | Pass 判据 |
-|---|---|
-| mj-agent-agent-doc 增 4 skill | plan + prompt-author + sync 共 3 skill 加入；外加 ADR-003 progressive disclosure 落地相关功能 |
-| mj-agent-code-doc plugin 创建（marketplace PR） | 4 skill（plan / author / validate / sync）全部上线；plugin.json + marketplace.json 添加 |
-| 双 plugin 的 validate skill 实现 | Code_Side validate 实现 A1-A6 + OB1-OB5；Agent_Side validate 实现 A7-A10 + A11 + §7.5 自检 |
-| INDEX 自动生成 | `docs/design/skills/INDEX.md` 由 agent-doc-sync 重建 |
+> **⚠️ REVISED 2026-04-29**：sequencing 翻转后，本节"全部完整化"改为分两步：(1) Phase 1 内补完 code-doc 的 validate + sync（OB1-OB5 阈值定稿后）；(2) agent-doc plugin 整体（含 7 skill）于后续 phase 启动并完整化，时间窗待项目负责人决议。
+
+| 验证项 | Pass 判据 | Sequencing 注记 |
+|---|---|---|
+| mj-agent-agent-doc plugin 整体上线 | plugin.json + marketplace.json + 7 skill 完整化 | **整体推迟**（2026-04-29 翻转） |
+| mj-agent-code-doc plugin 完整化 | 4 skill（plan / author / validate / sync）全部上线 | plan + author 已在 Phase 0.5 部分骨架交付；validate + sync 仍 Phase 1 |
+| 双 plugin 的 validate skill 实现 | Code_Side validate 实现 A1-A6 + OB1-OB5；Agent_Side validate 实现 A7-A10 + A11 + §7.5 自检 | Code_Side validate Phase 1；Agent_Side validate 推迟（随 agent-doc plugin） |
+| INDEX 自动生成 | `docs/design/skills/INDEX.md` 由 agent-doc-sync 重建 | 推迟（依赖 agent-doc plugin） |
 
 ### V-content-3 frontmatter `track` 字段收紧
 
@@ -257,9 +295,10 @@ Phase 0.5 不动 code-doc plugin（紧迫度低；Track A 内容继承自 v1.1 +
 
 本 PLAN 视为**全部完成**当且仅当：
 
-- [ ] V-skel-1 至 V-skel-4 全 Pass（Phase 0.5 末）
-- [ ] V-content-1 至 V-content-3 全 Pass（Phase 1 末）
+- [ ] V-skel-1 至 V-skel-3 全 Pass + V-skel-5 部分 Pass（plan + author 骨架，Phase 0.5 末）
+- [ ] V-content-1 至 V-content-3 全 Pass（Phase 1 末——其中 V-content-2 仅含 code-doc validate/sync；agent-doc plugin 完整化推迟）
 - [ ] V-eval（Phase 2 EVAL 体系 + A11 激活）全 Pass（Phase 2 末）
+- [ ] V-skel-4（agent-doc plugin 整体上线）：phase 时间窗待项目负责人决议（**2026-04-29 翻转后未定**）
 
 任一 Pass 失败 → 归入对应阶段处理；不阻塞已 Pass 的阶段。
 

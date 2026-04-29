@@ -4,7 +4,7 @@ domain: SYS
 summary: 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架（mj-agent-agent-doc / mj-agent-code-doc）
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-27
+updated: 2026-04-29
 state: draft
 decision: accepted
 track: shared
@@ -190,3 +190,16 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
   - Mitchell et al. 2019, "Model Cards for Model Reporting"
   - Gebru et al. 2018, "Datasheets for Datasets"
   - NIST AI RMF + SPDX-AI 提案（2024）
+
+---
+
+## Revision Notes（本 ADR 决策不变；仅记录执行 sequencing 调整）
+
+> ADR 决策本身（双 plugin / 双 STANDARD / Meta 元层 / skeleton-first / 命名）**不变**。本节仅记录 plugin 构建 sequencing 在 Phase 0.5 期间的调整轨迹，方便 reviewer 追溯。
+
+| 日期 | sequencing 调整 | 触发原因 | 承载文档 |
+|---|---|---|---|
+| 2026-04-27 | 初稿 sequencing：agent-doc Phase 0.5 紧迫（3 skill 骨架）；code-doc Phase 1 全推迟 | brainstorming + ADR-012 决策 | PLAN F §V-skel-4 / §V-skel-5（初稿） |
+| 2026-04-29 | **sequencing 翻转**：agent-doc 整体推迟到后续 phase 决议；code-doc 的 `plan` + `author` 提前到 Phase 0.5 部分骨架；code-doc 的 `validate` + `sync` 仍 Phase 1 | 项目负责人决定（runtime 侧 SKILL/PROMPT/EVAL/CONTRACT 框架尚未到使用密度阈值，agent-doc 短期利用率低；优先用 code-doc 验证 plugin 构建工艺） | PLAN F §Revision History + §V-skel-4/5 Revision banner；marketplace 内容蓝图见外部笔记 `temp-ai-chat/mj-agentlab-marketplace/[PLAN]_Marketplace_Plugin_Construction.md` |
+
+> 注：上文 §Decision 决策点 2 中 `mj-agent-agent-doc/` 描述为"7 skills，紧迫度高"——这是 ADR 起草时的上下文判断，不是 ADR 决策的一部分；2026-04-29 起，"紧迫度高"应解读为"ADR 起草时的上下文"，当前实际 sequencing 由 PLAN F 主导。
