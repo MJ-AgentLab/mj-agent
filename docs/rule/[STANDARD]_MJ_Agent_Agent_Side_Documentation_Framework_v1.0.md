@@ -61,6 +61,10 @@ aliases:
 
 ## 2. SKILL Authoring（§3.1，Phase 0.5 主体填充）
 
+> **Scope（[[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] 锁定，2026-04-29）**：本节（§2 全部子节，包含 13 字段 frontmatter + 五段式 body + 渐进披露 + 触发描述质量 + EVAL 耦合）**仅适用于 mj-agent 仓内 in-source SKILL.md**（路径 `src/mj_agent/skills/**/SKILL.md`），由 mj-agent loader（§7.3/§7.5 frontmatter strip）解析。
+> **不适用于 marketplace plugin SKILL.md**（路径 `mj-agentlab-marketplace/plugins/<plugin>/skills/<skill>/SKILL.md`）。Plugin SKILL.md 由 Claude Code 加载，使用 Claude Code 原生 schema（仅 `name` + `description` 两字段）；body 结构与 marketplace 现存 mj-sys-* plugin 风格对齐，不强制本节五段式。详见 ADR-013 §Decision + 本文件 §9 Plugin 关联。
+> **范围速记**：`src/mj_agent/**` → 本节生效；`mj-agentlab-marketplace/plugins/**` → ADR-013 决策生效。
+
 ### 2.1 body 五段式（解 Meta v1.1 Gap A1）
 
 每个 `SKILL.md` body 必须含以下五段（顺序固定，便于 LLM 解析）：
@@ -270,6 +274,28 @@ PR 流程建议：
 ## 9. Plugin 关联
 
 本框架的执行工具是 `mj-agent-agent-doc` plugin（marketplace `mj-agentlab-marketplace/plugins/mj-agent-agent-doc/`）。**2026-04-29 sequencing 翻转**：原 Phase 0.5 紧迫的 plugin 骨架（含 skill-author / validate / tool-contract-author 三 skill）整体推迟，phase 时间窗待项目负责人决议；详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-4 Revision banner。
+
+### 9.1 Plugin SKILL.md schema（[[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）
+
+marketplace plugin SKILL.md **不复用本框架 §2 的 13 字段 schema**，改用 Claude Code 原生格式：
+
+```yaml
+---
+name: <plugin-name>-<skill-name>
+description: <长 description；含「Make sure to use this skill whenever...」式触发短语；含"不适用于"反例；可中英双语 trigger 词>
+---
+```
+
+理由（详见 ADR-013 §Context）：
+1. Claude Code plugin loader 只读 `description` 字段做触发匹配，不识别 §2 的 `type / domain / state / version / track / owner / summary / activation.triggers / related_prompts / eval_references` 等字段。
+2. marketplace 现存 4 个 mj-sys-* plugin（v2.0+）已使用 2 字段 schema 作为既定事实标准。
+3. §7.3 / §7.5 frontmatter strip 契约只对 mj-agent in-source loader 有意义，与 Claude Code plugin loader 无关。
+
+mj-agent 仓内 in-source SKILL.md（`src/mj_agent/skills/**/SKILL.md`）与 marketplace plugin SKILL.md 的内容同步由 `mj-agent-code-doc-sync` skill（Phase 1，PLAN F §V-content-2）处理；同步的是 body 中的概念性内容，不同步 frontmatter schema。
+
+`docs/_templates/TEMPLATE_SKILL.md` 仅服务 in-source SKILL.md；plugin SKILL.md 起草时不引用此模板，可参考 ADR-013 §Decision 内嵌范本或 marketplace 现存 mj-sys-* plugin 实例。
+
+### 9.2 Plugin Skill 章节对应表（既有内容）
 
 | Skill | 章节对应 | Phase |
 |---|---|---|
