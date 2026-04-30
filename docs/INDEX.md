@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-27
+updated: 2026-04-30
 state: draft
 track: shared
 ---
@@ -82,6 +82,14 @@ track: shared
 
 ---
 
+## 基础设施（docs/infrastructure/）
+
+| 子目录 | 摘要 |
+|---|---|
+| [[infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范，派生自 mj-system v5.0 同名目录 |
+
+---
+
 ## 尚未建立的 canonical 子目录
 
 以下目录将在相应阶段启用：
@@ -96,7 +104,6 @@ track: shared
 | `docs/postmortem/` | 事故复盘 | 首次事故发生时 |
 | `docs/issues/` | 延后问题 | 首次需要时 |
 | `docs/api/` | 对外 API 规范 | 如有外部调用方出现 |
-| `docs/infrastructure/` | 基础设施文档 | 有独立基础设施内容时 |
 | `docs/archive/legacy/` | 历史归档 | 首次需要归档时 |
 
 ---
