@@ -20,9 +20,6 @@
     ]
   },
   "enabledPlugins": {
-    "mj-doc@mj-agentlab-marketplace": true,
-    "mj-git@mj-agentlab-marketplace": true,
-    "mj-ops@mj-agentlab-marketplace": true,
-    "mj-n8n@mj-agentlab-marketplace": true
+    "mj-agent-code-doc@mj-agentlab-marketplace": true
   }
 }
