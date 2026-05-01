@@ -14,6 +14,8 @@
 - **依赖锁定与复现**：`pyproject.toml` pin `langchain==1.2.*` / `langgraph==1.1.8` / `langchain-openai>=1.0,<2`；`uv.lock` 入库
 - **开发者文档**：`README.md` 重写（Quick start + LLM provider + 测试矩阵 + 数据边界摘要 + Phase 0 结构图）、`CLAUDE.md` 升级为 Phase 0 架构说明、`plans/[PLAN]_Phase0_LangGraph_Studio_Walkthrough.md` 新增 run-book 风格 Studio 端到端手册（前置 / 步骤 / happy-path+red-line case / 9 项故障矩阵 / 完成标志）
 - **`.gitignore` 对齐 mj-system**：分节风格 + `.claude/settings.local.json` 窄忽略保留 marketplace 配置 + mj-agent 独有节（pytest/mypy/ruff 缓存、LangGraph Studio `.langgraph_api/`）
+- **Phase 0 setup-env 加密注入工具链（PLAN D）**：`scripts/setup-env.ps1` + `scripts/encrypt-secrets.ps1`（OpenSSL AES-256-CBC + PBKDF2，复用 mj-system 已上线骨架）+ `config/{secrets.example,README.md,secrets.enc}` 4-key schema（`POSTGRES_ANALYST_{USER,PASSWORD}` + `ARK_API_KEY` + `LANGSMITH_API_KEY`）+ `README.md` Quick start §2 切到脚本注入；与 mj-system 独立口令（ADR-006 数据边界精神）；§端到端验证 §1-§6 + §8 通过
+- **`.env.example` 转 ASCII**：解决 python-dotenv 在 langgraph_api 内部 `DotEnv()` 不传 encoding 时，中文 Windows GBK 撞 UTF-8 字节导致 `uv run langgraph dev` `UnicodeDecodeError` 启动失败；所有中文注释翻成英文，`##### N. Title #####` 章节风格 / 变量名 / 默认值 / 章节顺序 0 改动
 
 ### Removed
 - 删除 `main.py` Hello World 占位（由 `langgraph dev` 启动入口取代）

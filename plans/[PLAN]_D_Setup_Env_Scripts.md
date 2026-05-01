@@ -3,8 +3,8 @@ type: plan
 summary: PLAN D — 实现 scripts/setup-env.ps1 与 encrypt-secrets.ps1（Phase 0 / PR2 姊妹交付物）
 owner: ranzuozhou
 created: 2026-04-24
-updated: 2026-04-27
-state: draft
+updated: 2026-04-30
+state: completed
 related:
   - ../README.md
   - ../.env.example
@@ -204,3 +204,60 @@ mj-system 脚本默认后续还要跑 MCP plugin 的 `setup-ops-env.ps1` / `setu
 - **bash 版本脚本** —— Phase 0 全员 Windows，暂不维护 `.sh` 等价物
 - **CI 集成** —— CI 走 GitHub Secrets（与 mj-system 同策略），不跑 `setup-env.ps1`
 - **ADR-006/008/009 正文落地** —— 仅在 `config/README.md` 引用名称；正文在 mj-system 侧，由另外的 PLAN C 负责回填到 mj-agent
+
+## 执行结果（2026-04-30）
+
+分支：`maintain/setup-env-secrets`（worktree-style，从 `develop@7322a5c` 切出）。
+
+### §交付物 实际产出
+
+| 文件 | 状态 | 说明 |
+| --- | --- | --- |
+| `scripts/setup-env.ps1` | ✅ 落地 | 复用 mj-system 骨架，标题改 `mj-agent — .env Setup`，Next steps 重写为 `Review .env / uv sync / langgraph dev`（去 mj-ops/mj-git plugin 引用） |
+| `scripts/encrypt-secrets.ps1` | ✅ 落地 | 仅改标题为 `mj-agent — Encrypt Secrets` |
+| `config/secrets.example` | ✅ 落地 | 4-key schema：`POSTGRES_ANALYST_{USER,PASSWORD}` + `ARK_API_KEY` + `LANGSMITH_API_KEY` |
+| `config/README.md` | ✅ 落地 | 口令获取/轮换流程 + 与 mj-system 独立口令的 ADR-006 边界理由 |
+| `config/secrets.enc` | ✅ 落地 | 管理员首次加密产物，AES-256-CBC + PBKDF2 |
+| `README.md:44` | ✅ 改 | Quick start §2 切到 `.\scripts\setup-env.ps1`，保留 fallback 提示 |
+
+### §交付物 之外的修复（方案 C）
+
+执行过程中发现 **`uv run langgraph dev` 在中文 Windows 上启动 fail**：
+
+```
+File "...\dotenv\parser.py", line 71, in __init__
+    self.string = stream.read()
+UnicodeDecodeError: 'gbk' codec can't decode byte 0xaf in position 99
+```
+
+根因：`langgraph_api/cli.py:222` 内部 `DotEnv(dotenv_path=env).dict()` 调用 python-dotenv 时 **不传 `encoding`**，落到 Python `open()` 默认编码；中文 Windows 默认 GBK 撞 UTF-8 字节 0xaf 直接抛 `UnicodeDecodeError`。
+
+`setup-env.ps1` 第 200 行 UTF-8 无 BOM 写入是对的（pydantic-settings 也期望 UTF-8）；问题在 `.env.example` 模板的中文注释会被原样拷进 `.env`。
+
+**纳入同一 maintain 分支的判断**：本分支目标是"setup-env 链路在 mj-agent 上端到端可用"，未消除 `langgraph dev` 启动崩溃就不算交付完成；方案 C 是必要的临门一脚。
+
+**改法**：所有中文注释翻成英文，`##### N. Title #####` 章节风格保持，变量名 / 默认值 / 章节顺序 0 改动。验证：3164 bytes、0 个 non-ASCII 字节。
+
+未来若团队希望恢复中文注释 / 中文 README，应在上游推 langgraph_api PR 让 `DotEnv()` 显式传 `encoding='utf-8'`，或本仓引入 `PYTHONUTF8=1` 启动包装层 —— 见 `[ISSUE] Python_Dotenv_GBK_On_Chinese_Windows`（如未来再撞到再起）。
+
+### §端到端验证 实证矩阵
+
+| § | 描述 | 状态 | 备注 |
+| --- | --- | --- | --- |
+| §1 | 静态 lint | ✅ | `Parser::ParseFile()` 0 errors（两脚本各跑一次） |
+| §2 | 首次加密 | ✅ | `secrets.enc` 已生成；`secrets.conf` 按提示手工删除 |
+| §3 | 首次解密 + 注入 | ✅ | `[OK] Decrypted 4 secrets` + `[Done] .env generated with 4 secrets injected` |
+| §4 | 幂等重跑 | ✅ | 4 × `[SKIP]` + `[SKIP] .env is already up-to-date` |
+| §5 | 篡改 [CHANGED] 检测 | ✅ | 第一次因 `Set-Content -NoNewline` 误用导致 `.env` 折成单行，4 key 全判 `[NEW]`（脚本行为正确，是测试方法 bug）；去掉 `-NoNewline` 后 `[CHANGED] ARK_API_KEY = chan**** -> 4541****` + 其余 3 个 `[SKIP]`，输 `n` 触发 `[ABORT]` |
+| §6 | 错口令 catch | ✅ | openssl `bad decrypt` → 脚本 `[ERROR] Decryption failed`；`$LASTEXITCODE = 1`；`Test-Path config\secrets.conf = False`（`finally` 块清理） |
+| §7 | openssl PATH fallback | ⏸️ skip | PLAN 允许跳过；本机 Git for Windows openssl 可用 |
+| §8 | Python 联动 | ✅ 隐含 | `uv run langgraph dev` 成功 `Application started up in 11.743s`（make_graph → make_llm 隐含验证 settings + ark_api_key） |
+| §9 | smoke | ⏸️ 视真实 key | 当前 `secrets.enc` 是测试值，未跑 `pytest tests/smoke -m smoke` |
+
+### Commit 拆分
+
+按 STANDARD §6.4 拆三个 commit（同一 maintain 分支内合规：§5.2 允许 `infra` + `docs`）：
+
+1. `infra(infra): land setup-env.ps1 secrets-injection toolchain (PLAN D)` —— 主交付物（c8be5e2）
+2. `infra(infra): convert .env.example to ASCII-only` —— 方案 C（94e9645）
+3. `docs: backfill PLAN D execution log + CHANGELOG entry + CLAUDE.md note` —— 文档回填（本提交）

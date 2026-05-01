@@ -81,6 +81,16 @@ Aligned with mj-system's naming so co-deployment can merge .env files
 safely: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
 PASSWORD` + `MJ_CONFIG_PROFILE`. See `.env.example` for the full list.
 
+The standard way to provision `.env` is `.\scripts\setup-env.ps1`, which
+decrypts `config/secrets.enc` (AES-256-CBC + PBKDF2) using a
+team-distributed password and merges 4 secrets (`POSTGRES_ANALYST_USER/
+PASSWORD`, `ARK_API_KEY`, `LANGSMITH_API_KEY`) into `.env`. Manual
+`cp .env.example .env` is a fallback for developers without the team
+password. Rotation/onboarding flow lives in `config/README.md`.
+`.env.example` is intentionally ASCII-only — python-dotenv used inside
+`langgraph_api` opens the file with the OS default encoding, which
+fails on Chinese Windows if the file is UTF-8 with non-ASCII content.
+
 ## Documentation
 
 > **元规则段（cross-track meta）**: this section governs both tracks.

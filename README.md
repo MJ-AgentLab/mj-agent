@@ -41,9 +41,9 @@ powershell -ExecutionPolicy Bypass -File ..\mj-agent-clone-bare.ps1 `
 # 1. 安装依赖
 uv sync
 
-# 2. 准备 .env（Phase 0：手工 copy .env.example；PR2 起用 setup-env.ps1）
-cp .env.example .env
-#  然后把 POSTGRES_ANALYST_USER / POSTGRES_ANALYST_PASSWORD 填好
+# 2. 准备 .env（解密团队密钥注入）
+.\scripts\setup-env.ps1
+# 没有团队口令？向管理员申请，或手工 copy .env.example 并填入本地可用的 ARK_API_KEY（不推荐）
 
 # 3. 启动 LangGraph Studio
 uv run langgraph dev
