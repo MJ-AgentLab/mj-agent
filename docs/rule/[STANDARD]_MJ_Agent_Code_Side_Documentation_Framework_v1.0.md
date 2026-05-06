@@ -4,7 +4,7 @@ domain: SYS
 summary: Track A 代码侧文档治理 — GUIDE/ADR-code/SPEC-code/RUNBOOK/POSTMORTEM-code/STANDARD-code/ISSUE-code/ASSESSMENT-code 的 authoring 深度规则；A1-A6 + OB1-OB5
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-29
+updated: 2026-05-06
 state: active
 version: v1.0
 track: code
@@ -73,12 +73,71 @@ aliases:
 
 ### 3.1 GUIDE Authoring
 
-> **TODO Phase 1**：
-> - body 模板：`Purpose / Prerequisites / Steps / Verification / Troubleshooting`
-> - 沿用 v1.1 §3.2 GUIDE 类定义；增补字段表与示例
-> - 配套 `docs/_templates/TEMPLATE_GUIDE.md`（Phase 0.5 不存在，Phase 1 创建）
+> **2026-05-06 更新**：`docs/_templates/TEMPLATE_GUIDE.md` 已落地（Phase 0.5 PLAN
+> G PR1）；以下规格 codified 自 4 份 reference GUIDE
+> （`docs/infrastructure/git/[GUIDE]_*.md`）的实际收敛形态，替换 v1.0 原 5-part
+> EN 占位（`Purpose / Prerequisites / Steps / Verification / Troubleshooting`）。
 
-引用：v1.1 §3.2
+#### 3.1.1 Frontmatter schema
+
+继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+§4 通用必填字段（`type / domain / summary / owner / created / updated /
+state`），并补 GUIDE 特有：
+
+| 字段 | 必填? | 说明 |
+| --- | --- | --- |
+| `type: guide` | ✅ | 锁死 |
+| `domain` | ✅ | `SYS / SQL / AGENT / PROMPT / EVAL / TOOL / INFRA` 七选一 |
+| `summary` | ✅ | 20-60 字一句话；INDEX.md 抽取此字段 |
+| `tags` | ✅ | 至少含 `guide` + 至少 1 个领域 tag |
+| `aliases` | ❌ | 兼顾历史链接 / 别名搜索 |
+| `state` | ✅ | `draft / active / deprecated`（v2.0 §5） |
+| `version` | ✅ | `vX.Y`；演进规则见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011]] |
+| `track: code` | ✅ | GUIDE 默认 code；少量 cross-track GUIDE 用 `shared` |
+| `derives_from` | ✅ | 派生路径（如 `mj-system/develop@<file>`）；mj-agent 原生留空 |
+| `owner` | ✅ | 责任人 |
+
+#### 3.1.2 Body 骨架（CN-numbered，codified）
+
+```markdown
+# <GUIDE 标题>
+
+> **适用范围** / **目标受众** / **版本** / **最后更新** / **派生自** /
+> **关联文档**（header block，每行一项）
+
+## TL;DR
+- 阅读时间 / 涵盖范围 / 适用场景
+
+## Prerequisites
+- 目标读者 / 必备知识 / 建议了解
+
+## 目录
+- §0 适用场景
+- §1 ... §N
+
+## §0 适用场景
+## §1 <主体 1>
+## §2 <主体 2>
+## §N <主体 N>
+
+## 关联文档
+## 更新记录（表格：日期 | 版本 | 变更）
+```
+
+#### 3.1.3 复用原则
+
+GUIDE 自身**不复述**已在其它 canonical 来源（README / CLAUDE.md / 其它 GUIDE
+/ STANDARD）讲过的命令、配置、字段；改为 wikilink 引用 + GUIDE 内只写"读哪份 /
+顺序怎么连"。规避点：与 README / CLAUDE.md 的内容漂移。
+
+#### 3.1.4 实例参考
+
+- [[../infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning|GitHub Setup and Versioning]]
+- [[../infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git Branch Strategy]]
+- [[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git Push Workflow]]
+- [[../infrastructure/git/[GUIDE]_PR_Description_Convention|PR Description Convention]]
+
+模板：[[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]]。引用：v1.1 §3.2。
 
 ### 3.2 ADR-code Authoring
 
