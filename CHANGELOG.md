@@ -5,6 +5,13 @@
 
 ## [Unreleased]
 
+### Added — Plan G Phase 0.5 governance / onboarding skeleton
+
+- **PR1 TEMPLATE_GUIDE + Code_Side §3.1 codify（`docs(infra)`，08b7cea）**：`docs/_templates/TEMPLATE_GUIDE.md` 新增（mirror 4 reference GUIDE 的 CN-numbered 形态：TL;DR / Prerequisites / 目录 / §0 适用场景 / §1..§N / 关联文档 / 更新记录）；Code_Side `[STANDARD]_*Code_Side*_v1.0.md` §3.1 GUIDE Authoring 段从 Phase 1 占位翻为详规（§3.1.1 frontmatter + §3.1.2 body 骨架 + §3.1.3 复用原则 + §3.1.4 实例参考）；CLAUDE.md Templates 行加 `TEMPLATE_GUIDE`；docs/INDEX.md Templates 表加 TEMPLATE_GUIDE 行；STANDARD `version` 不升（ADR-011：填占位非结构性）。
+- **PR2 Developer Onboarding GUIDE（`docs(infra)`，c6e5c7a）**：`docs/guide/[GUIDE]_Developer_Onboarding.md` v0.1 新增（mj-agent 新成员 Day-1 与长假回归者端到端上手路径：§1 仓库与远端 → §2 工作目录与分支 → §3 本地环境 → §4 测试运行 → §5 双轨道文档 → §6 提交推送 → §7 Studio 首跑 → §8 速查表）；`docs/guide/INDEX.md` 新增；Push_Workflow §0:84 / §6 冲突解决段 / §文末延伸阅读 三处 forward-ref 升级为 active wikilink；docs/INDEX.md 加「上手指南 (docs/guide/)」节；CLAUDE.md §Documentation 元规则段加 onboarding 入口。
+- **PR3 Release Process RUNBOOK + cicd/INDEX（`docs(infra)`，f1e6d58）**：`docs/infrastructure/cicd/INDEX.md` 新增；`docs/infrastructure/cicd/[RUNBOOK]_Release_Process.md` v0.1 新增（Phase 0.5 Minimal 起步版：Trigger / Pre-checks / 7-Step 主流程 / Rollback / Post-mortem trigger；Steps 1-6 当前可执行——CHANGELOG cut → version bump → infra(release) commit → annotated tag → 双推 origin+gitee → GitHub Release；Step 7 deploy/CD 留 Phase 1 stub）；docs/INDEX.md 基础设施表加 cicd/ 行。
+- **PR4 CHANGELOG §2/§10 状态翻转 + audit（本 PR）**：Push_Workflow §2 删除 "Phase 0.5+ 目标态" IMPORTANT 段头与 5 处「Phase 0.5+ 启用后」限定语；§2 流程从前瞻 stub 翻转为 active；§10 加 2026-05-06 行；CHANGELOG `[Unreleased]` 补 Plan G PR1-PR4 4 条 entry。
+
 ### Changed — Plan C C2 closeout (ADR roster alignment)
 
 - **CLAUDE.md + docs/INDEX.md ADR 表对齐实际**：`docs/adr/` 实际有 11 条 ADR（000/001/002/003/006/008/009/010/011/012/013），但 CLAUDE.md "Repo conventions, code-side" 段只列到 011，docs/INDEX.md ADR 表也只到 011。本次同步 + 补 012/013 两行（state: draft，decision: accepted）。

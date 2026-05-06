@@ -11,7 +11,7 @@ aliases:
   - mj-agent Git Push Workflow
   - mj-agent Git 推送工作流
 created: 2026-04-30
-updated: 2026-04-30
+updated: 2026-05-06
 state: draft
 version: v1.0
 track: code
@@ -81,9 +81,9 @@ Issue → 创建分支 → 编码 → 自测 → 提交 → ★ 推送 → 创�
 | 前置步骤 | 参考文档 |
 |---------|---------|
 | 创建开发分支 | [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]] |
-| 本地开发与自测 | `uv run pytest tests/unit` / `uv run ruff check` / `uv run mypy src/mj_agent`；完整流程 Phase 0.5 `docs/guide/[GUIDE]_Developer_Onboarding.md` 落地 |
+| 本地开发与自测 | `uv run pytest tests/unit` / `uv run ruff check` / `uv run mypy src/mj_agent`；完整流程见 [[../../guide/[GUIDE]_Developer_Onboarding\|开发者上手指南]] |
 | 提交代码 | [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] |
-| 更新 CHANGELOG.md | 本指南 [[#2 CHANGELOG 更新确认]]（Phase 0.5+ 启用） |
+| 更新 CHANGELOG.md | 本指南 [[#2 CHANGELOG 更新确认]] |
 
 ---
 
@@ -151,10 +151,8 @@ git commit --amend -m "<type>(<scope>): <修正后的摘要>"
 
 ## 2 CHANGELOG 更新确认
 
-> [!IMPORTANT]
-> 本节描述 Phase 0.5+ 目标态。mj-agent 当前 `CHANGELOG.md` 尚未引入（见 [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]] §Defer 与 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit STANDARD]] §9 促活条件）。在 CHANGELOG 引入前，可跳过本节；下方表格保留作为前瞻性指引。
-
-Phase 0.5+ 启用后：开发过程中应在 `CHANGELOG.md` 的 `[Unreleased]` 区块下记录变更。
+开发过程中应在 `CHANGELOG.md` 的 `[Unreleased]` 区块下记录变更。`CHANGELOG.md`
+已就位（PLAN G PR4 落地，2026-05-06）；推送前必须确保本节流程被执行。
 
 ### 2.1 哪些变更需要记录
 
@@ -171,14 +169,14 @@ Phase 0.5+ 启用后：开发过程中应在 `CHANGELOG.md` 的 `[Unreleased]` �
 ### 2.2 验证 CHANGELOG 已更新
 
 ```bash
-# 查看 CHANGELOG 相对于 develop 的差异（Phase 0.5+ 启用后）
+# 查看 CHANGELOG 相对于 develop 的差异
 git diff develop -- CHANGELOG.md
 ```
 
 如果输出为空但本次变更包含 `feat` 或 `fix` 类型的 commit，说明遗漏了 CHANGELOG 更新。
 
 > [!WARNING]
-> 补充 CHANGELOG（Phase 0.5+ 启用后）
+> 补充 CHANGELOG
 > 如果发现 CHANGELOG 未更新，创建一条额外的 commit：
 > ```bash
 > # 编辑 CHANGELOG.md，在 [Unreleased] 区块添加变更记录
@@ -357,7 +355,7 @@ git merge origin/main
 git merge --abort
 ```
 
-> 详细的冲突解决方法待 Phase 0.5 `docs/guide/[GUIDE]_Developer_Onboarding.md` 落地后引用。
+> 详细的冲突解决方法见 [[../../guide/[GUIDE]_Developer_Onboarding|开发者上手指南]]。
 
 > [!TIP]
 > 在功能开发周期中**定期同步** develop 分支（而非仅在推送前），可以显著减少冲突规模。
@@ -519,7 +517,7 @@ gh pr create \
 
 - [ ] `git log --oneline develop..HEAD` — Commit message 格式正确
 - [ ] Commit 类型与分支类型一致
-- [ ] `git diff develop -- CHANGELOG.md` — CHANGELOG 已更新（Phase 0.5+ 启用后）
+- [ ] `git diff develop -- CHANGELOG.md` — CHANGELOG 已更新
 - [ ] `git status --short` — 输出为空
 - [ ] `git branch --show-current` — 分支名符合规范
 - [ ] `git fetch origin && git merge origin/develop` — 已同步基准分支
@@ -644,7 +642,7 @@ fi
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
 - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
-- 开发者上手指南 —— Phase 0.5 待 `docs/guide/[GUIDE]_Developer_Onboarding.md` 启用
+- [[../../guide/[GUIDE]_Developer_Onboarding|开发者上手指南]] —— mj-agent 新成员端到端上手路径
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 
 ---
@@ -654,3 +652,5 @@ fi
 | 日期 | 版本 | 内容 |
 |------|------|------|
 | 2026-04-30 | v1.0 | 派生自 mj-system v5.0 同名 GUIDE：推送流程逐字保留；§2 CHANGELOG 章节加注 Phase 0.5+ 启用；§10 删除 Q6（Gitee shallow fetch），原 Q7 重编号为 Q6；§6.5 双推说明改 mj-agent 实际（Phase 0 CI 仅 compileall） |
+| 2026-05-06 | v1.0 (patch) | §0:84 / §6 冲突解决段 / §文末延伸阅读 — 三处 `Phase 0.5 待 docs/guide/[GUIDE]_Developer_Onboarding.md 启用` forward-reference 升级为 active wikilink（PLAN G PR2 落地）；非结构性补丁，version 不升 |
+| 2026-05-06 | v1.0 (patch) | §2 删除 Phase 0.5+ 目标态 IMPORTANT 段头与 5 处「Phase 0.5+ 启用后」限定语；§2 流程从前瞻 stub 翻转为 active（PLAN G PR4 落地）；非结构性补丁，version 不升 |

@@ -94,6 +94,15 @@ track: shared
 | 子目录 | 摘要 |
 |---|---|
 | [[infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范，派生自 mj-system v5.0 同名目录 |
+| [[infrastructure/cicd/INDEX\|infrastructure/cicd/]] | CI/CD 与发布运维 RUNBOOK 入口；首份为 Release Process（Phase 0.5 Minimal 起步版） |
+
+---
+
+## 上手指南（docs/guide/）
+
+| 子目录 | 摘要 |
+|---|---|
+| [[guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；首份为 `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径） |
 
 ---
 
@@ -111,7 +120,6 @@ track: shared
 
 | 目录 | 用途 | 启用阶段 |
 |------|------|---------|
-| `docs/guide/` | 开发者与运维上手指南 | Phase 0.5 |
 | `docs/contracts/` | `[CONTRACT]` 文档 | Phase 0.5 起首份 SQL 工具契约 |
 | `docs/design/` | 子系统设计文档（agent/gateway/memory/prompts/skills/ui） | Phase 1+ 按子系统启用 |
 | `docs/evaluation/` | `[EVAL]` 文档 | Phase 2 |

@@ -139,7 +139,10 @@ Framework v1.1, which itself derived from mj-system v5.0):
 
 Markdown + YAML syntax (GFM rendering target):
 `docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
-`docs/INDEX.md`. ADR-012 documents the v1.1 → v2.0 dual-track split
+`docs/INDEX.md`. New-member onboarding path:
+`docs/guide/[GUIDE]_Developer_Onboarding.md` (mj-agent end-to-end day-1 +
+refresher; covers repo / branches / env / tests / docs / commit / Studio).
+ADR-012 documents the v1.1 → v2.0 dual-track split
 (`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
 predecessor lives at
 `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
