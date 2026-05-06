@@ -77,7 +77,9 @@
 - 使用现有 Volcengine Ark + DeepSeek V3 provider，不切换模型。
 - 数据范围只包含 `biz_dws.*` 和两张 `biz_dwd` 维表。
 - **mj-system 上游契约状态**：截至本 plan 起草时，mj-system 的 `[GUIDE]_Biz_Domain_External_Consumer_Contract.md`、`[ADR]_008_Biz_Domain_External_Consumer_Boundary.md`、`[STANDARD]_Biz_DWS_Naming_Stability.md` 仅以 staged 草稿形态存在于 `D:\Document\My-Local-Vault\temp-ai-chat\mj-system\Biz_Domain_External_Support_For_MJ_Agent_OUTPUT` bundle，**尚未合并到 mj-system/develop**。本 plan 在合并前以该 bundle 路径作为权威引用；**mj-system PR1/PR2 一旦合并，由 mj-agent owner（@ranzuozhou）触发一次 catalog 同步 PR**，把所有引用切到 mj-system 仓库相对路径，并 diff 检查 enumeration 是否被 mj-system 端微调（特别是 §6.1 用例 SQL 与 §3 命名条款）。
+- **drift detected & corrected (2026-05-06，DEV profile 端到端验证落地)**：在 PR4 跑 integration + smoke 时实测发现 staged STANDARD 草案与 DEV DB schema 显著漂移——时间列实为 `data_date / week / month / quarter / year`（非 STANDARD §2.1 的 `stat_*`）；metric 列实为 `<period>_<metric>` 或 `<period>_<metric>_sum + daily_<metric>_avg/max/min/std/q25/median/q75` 分位数族（非 STANDARD §3 的扁平 `qrynum / tntcnt`）；`biz_dwd.dwd_dim_institution` join key 实为 `tenant_id`（非 STANDARD §4 的 `tenant_code`）。已通过 commit `593b803` 把 catalog YAML 升级到 v0.2.0、`source.status: drift_detected`，下游 SKILL/prompt/test 同步落到实际 DB 列名。**这正好印证了上一条 Assumption 的必要性**：mj-system PR1/PR2 真合并时仍需要 owner 触发同步 PR，再做一次 diff 检查。
 - **破坏性 schema 变更**：本 MVP 暂不实现"双写迁移期检测"等高级机制；若 mj-system 触发 R-3.x 类破坏性变更（rename/drop/type narrowing），mj-agent catalog 与 prompt 由 owner 手动同步；自动化检测列入 Phase 1 之后工作。
+- **Red line UX 硬化（2026-05-06，prompt v1.3 by commit 0f99672）**：端到端验证发现 v1.2 prompt 在 `biz_ods` 请求与无界导出请求时表现"软拒绝"——操作面安全（数据通道未穿透）但 UX 面不显式声明边界。v1.3 hard rule 2 强制首句声明"`<schema>` 不在分析师角色可访问范围（ADR-006 / ADR-008）"再提替代；hard rule 3 强制无界请求先反询、禁止任何探索性 `execute_sql`。R1 实测落到 explicit-boundary + substitute；R2 实测 0 工具调用直接反询。
 
 ## Coordination with Parallel Plans
 

@@ -14,6 +14,14 @@
 
 > 累计：162 unit/eval 测试 ✅，ruff + mypy strict ✅，6 smoke 测试 marker gated 等待 DB+LLM 凭据。
 
+### Added — MVP 端到端验证后的修订（DEV profile 实测后落地）
+
+- **Catalog 漂移修正（`fix(agent)`，593b803）**：端到端验证发现 staged STANDARD 草案与实际 DEV DB schema 显著漂移——时间列 `stat_date / stat_week / stat_month / stat_quarter / stat_year` 实际为 `data_date / week / month / quarter / year`；metric 列 `qrynum / tntcnt` 在 daily 周期实为 `<period>_<metric>`（如 `day_qrynum`）、weekly+ 实为 `<period>_<metric>_sum + daily_<metric>_avg/max/min/std/q25/median/q75` 分位数族；`biz_dwd.dwd_dim_institution` join key 实为 `tenant_id` 而非 STANDARD §4 的 `tenant_code`。`biz_catalog/qcm_catalog.yaml` v0.1.0→v0.2.0：mirror 实际 DB；`source.status: drift_detected` + `drift_notes`；新增 `metric_column_shapes` 块说明各周期 metric 列形状。3 个 SKILL.md 全部重写 SQL 示例；prompt v1.1→v1.2 文档漂移；7 个测试文件断言更新到实际列名；`tests/integration/test_mj_system_db.py` 第二个用例补时间谓词；smoke GUIDE §6.1 case 1 用 `data_date` 替代 `stat_date`。新增运行时依赖 `socksio>=1.0` 修 SOCKS proxy 环境；`tests/conftest.py` 模块导入时 `load_dotenv()` 让 skip-gates 看到 `.env` 凭据。
+- **Plan A walkthrough evidence 回填（`docs(runbook)`，ffad3b5）**：新增 `scripts/capture_walkthrough_evidence.py` 5-case 捕获脚本（H1/H2/H3 happy path + R1/R2 red line 各跑一次）；`docs/runbook/walkthrough_evidence.md` 入库实测快照；`docs/runbook/dev_studio_walkthrough.md` §4 表格从 reference 升级为 inline 预期 vs 实际并列。首次跑捕获到两个软拒绝问题：R1 silent substitute、R2 4-call gradual degradation；安全合规口径未被穿透，但 prompt 应硬化（即下一条）。
+- **Prompt v1.3 hard refusal + clarifying turn（`feat(prompt)`，0f99672）**：system.md hard rule 2 显式要求"碰到 `biz_ods` / `biz_ads` / `ops_*` 时首句声明边界 + 引用 ADR-006/008 + 提供 DWS 替代"；hard rule 3 显式要求"无界请求必须先反询时间窗 / 聚合 / Top-N，禁止任何探索性 `execute_sql`"。重跑 capture 实测：R1 60s/3-call silent → 48s/3-call explicit-boundary（"根据数据治理策略，`biz_ods.ods_query_volume_daily` 原始数据层对分析师角色不可访问"）；R2 53s/4-call gradual → **10s/0-call clarifying turn**（直接列时间窗 / 聚合 / 数据量控制 3 选 1）。
+
+> MVP 验证后累计：167 unit/eval/integration 测试 ✅（5 条 live DB integration 实跑），ruff + mypy strict ✅，6+4 = 10 条 smoke 全过（GUIDE §6.1 6 条镜像 + agent trajectory 4 条 H1-H3+R1）。
+
 ### Added — earlier Phase 0
 - **Phase 0 Foundation 垂直切片**：最小可跑通的 agent 骨架 —— LangChain 1.2.* + LangGraph 1.1.8；`langchain.agents.create_agent` 驱动；`src/mj_agent/{agent,config,llm,state}.py` + `integrations/mj_system_db.py` + `tools/sql/{guardrail,execute,introspect}.py` + `prompts/system.md` + `skills/query-writing/SKILL.md`；`langgraph.json` 指向 `make_graph` 工厂供 LangGraph Studio 使用
 - **Volcengine Ark + DeepSeek V3 作为唯一 LLM provider**：`src/mj_agent/llm.py:make_llm` 构造 `ChatOpenAI`（OpenAI 兼容端点），环境变量 `ARK_API_KEY` / `ARK_BASE_URL` / `LLM_MODEL_ID` / `LLM_THINKING_ENABLED` / `LLM_TIMEOUT_SEC`；缺 key 时 `LLMConfigError` fail-fast
