@@ -207,7 +207,7 @@ Repo conventions (code-side, all governed by Track A standards):
 - 操作性 git 指南（分支、推送、PR 描述、初始化与版本管理）见
   `docs/infrastructure/git/INDEX.md`（4 份 GUIDE，派生自 mj-system v5.0
   `docs/infrastructure/git/`，按 mj-agent scope 与 Phase 0 状态改造）。
-- Templates: `docs/_templates/TEMPLATE_{ADR,SKILL,PROMPT,CONTRACT}.md`.
+- Templates: `docs/_templates/TEMPLATE_{ADR,GUIDE,SKILL,PROMPT,CONTRACT}.md`.
   Copy, don't improvise frontmatter.
 
 ## Agent-Side Documentation

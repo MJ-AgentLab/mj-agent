@@ -62,11 +62,12 @@ track: shared
 | 模板 | 用途 |
 |------|------|
 | `TEMPLATE_ADR.md` | 架构决策记录骨架 |
+| `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.1 |
 | `TEMPLATE_SKILL.md` | skill 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`） |
 | `TEMPLATE_PROMPT.md` | prompt 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
 
-*Phase 0.5 将补 `TEMPLATE_GUIDE.md` / `TEMPLATE_RUNBOOK.md`；Phase 2 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ASSESSMENT.md`。*
+*Phase 0.5 将补 `TEMPLATE_RUNBOOK.md`；Phase 2 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ASSESSMENT.md`。*
 
 ---
 
