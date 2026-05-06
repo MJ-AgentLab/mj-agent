@@ -65,9 +65,11 @@ def list_biz_tables() -> list[dict[str, Any]]:
           - row_estimate (int): pg_class.reltuples approximation (cheap, no
             COUNT(*) scan; may be stale shortly after ETL)
 
-    The result is filtered by the analyst role's GRANTs, so it always
-    reflects what is actually queryable — never lists a table that would
-    fail with 42501 at execute time.
+    The result is filtered by the analyst role's GRANTs *and* the
+    application-level table allowlist, so it always reflects what is
+    actually queryable through mj-agent — never lists a table that
+    would fail with 42501 at execute time, and never lists a biz_dwd
+    fact table that the application contract excludes.
     """
     with readonly_cursor() as cur:
         cur.execute(_LIST_TABLES_SQL, (list(settings.biz_allowed_schemas),))
@@ -81,6 +83,7 @@ def list_biz_tables() -> list[dict[str, Any]]:
             "row_estimate": int(r["row_estimate"]) if r["row_estimate"] is not None else 0,
         }
         for r in rows
+        if settings.is_table_allowed(r["table_schema"], r["table_name"])
     ]
 
 
@@ -108,9 +111,11 @@ def describe_biz_table(name: str) -> dict[str, Any]:
     else:
         schema, table = settings.biz_allowed_schemas[0], name
 
-    if schema.lower() not in {s.lower() for s in settings.biz_allowed_schemas}:
+    if not settings.is_table_allowed(schema, table):
         raise ValueError(
-            f"schema '{schema}' not in allowlist {settings.biz_allowed_schemas}"
+            f"table '{schema}.{table}' is not in the allowlist "
+            f"(allowed schemas: {settings.biz_allowed_schemas}; "
+            f"biz_dwd restricted to: {settings.biz_allowed_dwd_tables})"
         )
 
     with readonly_cursor() as cur:

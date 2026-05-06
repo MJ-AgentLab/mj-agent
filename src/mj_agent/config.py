@@ -48,6 +48,13 @@ class Settings(BaseSettings):
         default_factory=lambda: ["biz_dws", "biz_dwd"]
     )
 
+    # Table-level allowlist for biz_dwd. mj-system exposes exactly these two
+    # dimension tables; everything else in biz_dwd is rejected at L1 guardrail
+    # even though the schema is whitelisted. Treats biz_dws as wildcard.
+    biz_allowed_dwd_tables: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["dwd_dim_product_interface", "dwd_dim_institution"]
+    )
+
     # ── 2. LLM Provider (Volcengine Ark, OpenAI-compatible) ───────────
     llm_model_id: str = "deepseek-v3-2-251201"
     llm_thinking_enabled: bool = False
@@ -65,12 +72,27 @@ class Settings(BaseSettings):
     sql_max_rows: int = 500
     sql_statement_timeout_sec: int = 60
 
-    @field_validator("biz_allowed_schemas", mode="before")
+    @field_validator("biz_allowed_schemas", "biz_allowed_dwd_tables", mode="before")
     @classmethod
     def _split_csv(cls, v: object) -> object:
         if isinstance(v, str):
             return [s.strip() for s in v.split(",") if s.strip()]
         return v
+
+    def is_table_allowed(self, schema: str, table: str) -> bool:
+        """Return True if (schema, table) is reachable per the contract.
+
+        biz_dws.* is wildcard-allowed; biz_dwd is restricted to the
+        explicit ``biz_allowed_dwd_tables`` list. Schemas outside
+        ``biz_allowed_schemas`` are rejected outright.
+        """
+        s = schema.lower()
+        t = table.lower()
+        if s not in {x.lower() for x in self.biz_allowed_schemas}:
+            return False
+        if s == "biz_dwd":
+            return t in {x.lower() for x in self.biz_allowed_dwd_tables}
+        return True
 
     @cached_property
     def biz_pg_host(self) -> str:

@@ -4,14 +4,15 @@ domain: SKILL
 summary: 针对 mj-system biz 域编写与精炼 SQL 查询：表选择、时间谓词、聚合优先、可审计输出
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-24
+updated: 2026-05-06
 state: active
-version: v0.1
+version: v0.2
 track: agent
 activation:
   when_to_use: 用户提出需要查询业务数据的自然语言问题（指标、排名、同比、明细查看）
   when_not_to_use: 非 SQL 场景（如解释业务概念、查看系统状态、讨论方案）
 tool_dependencies:
+  - find_biz_context
   - list_biz_tables
   - describe_biz_table
   - execute_sql
@@ -42,19 +43,30 @@ mj-system biz domain.
 
 ## Planning workflow
 
-1. **Scope the question.** What dimension(s) and time period does the
+1. **Recall the catalog.** Call `find_biz_context(question=...)` first.
+   The result tells you which metric family (`qrynum` / `tntcnt`),
+   period (`daily/weekly/monthly/quarterly/yearly`), dimension suffix
+   (`_total / _by_industry / _by_tenant / ...`), time column
+   (`stat_date / stat_week / ...`), period-over-period column pattern
+   (`prev_<period>_<metric>` / `<period_abbrev>_<metric>_diff` /
+   `<period_abbrev>_<metric>_rate`), and best-guess fact table names.
+2. **Scope the question.** What dimension(s) and time period does the
    user care about? What is the output unit (count, sum, ratio)?
-2. **Find the right table.** If you are not sure, call
-   `list_biz_tables` to enumerate candidates, then `describe_biz_table`
-   to pick one. Prefer DWS aggregates over DWD/ODS whenever possible.
-3. **Write the SQL.**
+3. **Find the right table.** Use the catalog's `candidate_table_names`
+   to pick 1-2 targets; call `list_biz_tables` only if you need to
+   verify availability, and `describe_biz_table` to confirm columns.
+   Prefer DWS aggregates over DWD/ODS whenever possible.
+4. **Write the SQL.**
    - Always qualify tables: `biz_dws.dws_xxx` or `biz_dwd.dwd_dim_xxx`.
-   - Always include a time predicate if the table has one; unbounded
-     scans are expensive and can truncate.
+   - `biz_dwd` is restricted to `dwd_dim_product_interface` and
+     `dwd_dim_institution`; other `biz_dwd.*` references will be rejected.
+   - Always include a time predicate using the period's time column
+     (e.g. `stat_date` for `_daily` tables); unbounded scans are
+     expensive and can truncate.
    - Prefer ordered, limited output: `ORDER BY ... LIMIT N`.
    - Avoid `SELECT *` on wide tables; list the columns you actually need.
-4. **Execute.** Call `execute_sql(sql=...)`.
-5. **Interpret.** Explain the result in a sentence or two; cite the
+5. **Execute.** Call `execute_sql(sql=...)`.
+6. **Interpret.** Explain the result in a sentence or two; cite the
    column names, not raw numbers out of context.
 
 ## Common patterns
