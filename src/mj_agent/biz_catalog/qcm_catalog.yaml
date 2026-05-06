@@ -1,0 +1,165 @@
+# QCM Biz Catalog — static enumeration mirroring mj-system contract.
+#
+# Source bundle (staged, NOT yet merged to mj-system/develop as of 2026-05-06):
+#   D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT
+#
+# Authoritative documents this YAML mirrors:
+#   - PR1/docs/infrastructure/database/[GUIDE]_Biz_Domain_External_Consumer_Contract.md
+#   - PR1/docs/adr/[ADR]_008_Biz_Domain_External_Consumer_Boundary.md
+#   - PR2/docs/infrastructure/database/[STANDARD]_Biz_DWS_Naming_Stability.md (§2-§4)
+#
+# Sync policy: when mj-system PR1/PR2 land, owner triggers a catalog sync PR
+# that diffs this YAML against the merged STANDARD §2-§4 and updates accordingly.
+
+version: "0.1.0"
+catalog_kind: qcm
+source:
+  guide: "[GUIDE]_Biz_Domain_External_Consumer_Contract.md"
+  standard: "[STANDARD]_Biz_DWS_Naming_Stability.md"
+  adr: "[ADR]_008_Biz_Domain_External_Consumer_Boundary.md"
+  bundle_path: "D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT"
+  status: staged-not-merged
+
+# §3 — metric families exposed in DWS layer.
+metrics:
+  qrynum:
+    description: 查询量 (Query Number)
+    column_root: qrynum
+  tntcnt:
+    description: 机构数 (Tenant Count)
+    column_root: tntcnt
+
+# §2.1 + §3.2 — period granularities, time column, abbreviation.
+periods:
+  daily:
+    suffix: _daily
+    time_column: stat_date
+    time_column_type: DATE
+    abbreviation: dod
+  weekly:
+    suffix: _weekly
+    time_column: stat_week
+    time_column_type: DATE
+    abbreviation: wow
+  monthly:
+    suffix: _monthly
+    time_column: stat_month
+    time_column_type: DATE
+    abbreviation: mom
+  quarterly:
+    suffix: _quarterly
+    time_column: stat_quarter
+    time_column_type: DATE
+    abbreviation: qoq
+  yearly:
+    suffix: _yearly
+    time_column: stat_year
+    time_column_type: DATE
+    abbreviation: yoy
+
+# §3 — dimension suffixes appended to the metric+period root.
+dimensions:
+  - suffix: _total
+    description: 全量汇总（无维度）
+    has_dim_column: false
+  - suffix: _by_industry
+    description: 按行业拆分
+    has_dim_column: true
+    dim_column: industry
+  - suffix: _by_tenant
+    description: 按机构（租户）拆分
+    has_dim_column: true
+    dim_column: tenant_code
+    join_table: biz_dwd.dwd_dim_institution
+    join_key: tenant_code
+  - suffix: _by_pcat_l1
+    description: 按产品一级分类
+    has_dim_column: true
+    dim_column: pcat_l1
+  - suffix: _by_pcat_l2
+    description: 按产品二级分类
+    has_dim_column: true
+    dim_column: pcat_l2
+  - suffix: _by_tenant_pcat_l1
+    description: 按机构 × 产品一级
+    has_dim_column: true
+    dim_columns: [tenant_code, pcat_l1]
+    join_table: biz_dwd.dwd_dim_institution
+    join_key: tenant_code
+  - suffix: _by_tenant_pcat_l2
+    description: 按机构 × 产品二级
+    has_dim_column: true
+    dim_columns: [tenant_code, pcat_l2]
+    join_table: biz_dwd.dwd_dim_institution
+    join_key: tenant_code
+  - suffix: _by_scenario
+    description: 按业务场景
+    has_dim_column: true
+    dim_column: scenario
+
+# §3.1 — period-over-period column conventions on DWS fact tables.
+period_over_period_columns:
+  previous_value:
+    pattern: prev_<period>_<metric>
+    example: prev_day_qrynum
+    description: 上期值
+  diff:
+    pattern: <period_abbrev>_<metric>_diff
+    example: dod_qrynum_diff
+    description: 绝对差值（current - previous）
+  rate:
+    pattern: <period_abbrev>_<metric>_rate
+    example: dod_qrynum_rate
+    description: 相对变化率
+    type: NUMERIC(20,10)
+
+# §3 — three QCM metadata signal tables. Distinguished from fact tables.
+signal_tables:
+  - name: biz_dws.dws_qcm_preprocessed_data
+    purpose: QCM 预处理数据状态
+    role: signal
+  - name: biz_dws.dws_qcm_etl_metrics
+    purpose: QCM ETL 执行指标（成功/失败/运行时长）
+    role: signal
+  - name: biz_dws.dws_qcm_ready_signal
+    purpose: QCM 数据就绪信号（指示当日数据是否可用于消费）
+    role: signal
+
+# §4 — dimension tables: the only biz_dwd tables exposed to analyst.
+dimension_tables:
+  - name: biz_dwd.dwd_dim_product_interface
+    primary_key: interface_id
+    join_key: interface_id
+    description: 产品接口维度
+    stable: true
+  - name: biz_dwd.dwd_dim_institution
+    primary_key: tenant_code
+    join_key: tenant_code
+    description: 机构（租户）维度
+    stable: true
+
+# Fact table naming pattern: 65 metric tables total.
+fact_table_pattern:
+  template: biz_dws.dws_qcm_<metric>_<period>_<dimension>
+  example: biz_dws.dws_qcm_qrynum_daily_by_tenant
+  total_count: 65
+
+# Forbidden access (mirror of GUIDE §2 + §3).
+forbidden_access:
+  schemas:
+    - biz_ods
+    - biz_ads
+    - ops_ods
+    - ops_dwd
+    - ops_dws
+  notes:
+    - biz_dwd.* 除 2 张维表以外的所有表均不可访问
+    - 任何 INSERT/UPDATE/DELETE/DDL 均被 DB GRANT 拒绝
+
+# DB-side runtime constraints — mj-agent must be resilient to these.
+runtime_constraints:
+  statement_timeout_sec: 60
+  recommended_client:
+    default_transaction_read_only: true
+    lock_timeout_ms: 5000
+    idle_in_transaction_session_timeout_ms: 10000

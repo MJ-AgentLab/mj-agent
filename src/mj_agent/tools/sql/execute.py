@@ -38,7 +38,11 @@ def execute_sql(sql: str) -> dict[str, Any]:
         RuntimeError: the database returned an error (timeout, syntax,
             permission denied, etc.).
     """
-    ok, reason = is_safe_select(sql, settings.biz_allowed_schemas)
+    ok, reason = is_safe_select(
+        sql,
+        settings.biz_allowed_schemas,
+        allowed_tables_per_schema={"biz_dwd": settings.biz_allowed_dwd_tables},
+    )
     if not ok:
         raise ValueError(f"SQL rejected by guardrail: {reason}")
 
