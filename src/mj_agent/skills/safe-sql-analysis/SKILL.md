@@ -42,7 +42,9 @@ SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 正则 guardrail �
 1. **撰写守则自检**（不调工具，agent 自己跑一遍清单）：
    - [ ] 全部 schema 限定：`biz_dws.<table>` 或 `biz_dwd.<table>`
    - [ ] 仅 `dwd_dim_product_interface` / `dwd_dim_institution` 两张维表
-   - [ ] 时间列谓词存在（按周期：`stat_date/stat_week/stat_month/stat_quarter/stat_year`）
+   - [ ] 时间列谓词存在（按周期，**实际 DB 列名**：
+     `data_date`(daily) / `week` / `month` / `quarter` / `year`；STANDARD 草案
+     的 `stat_*` 在实际 DB 不存在）
    - [ ] 没有 `SELECT *`（含 `JOIN` 时也是）
    - [ ] 明细查询带 `LIMIT N`（N ≤ 1000）；聚合查询免 LIMIT
    - [ ] 单语句，不带分号链
@@ -57,7 +59,8 @@ SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 正则 guardrail �
    - `business_summary`：启发式占位句，**必须重写**成业务结论
 4. **失败修正回路**：
    - `no_select_star` → 改成显式列名后重试
-   - `require_time_range` → 加上 `WHERE stat_date >= ...` 后重试
+   - `require_time_range` → 加上时间谓词（按周期 `data_date / week / month /
+     quarter / year`）后重试
    - `multi-statement` → 拆成单语句
    - `schema/table not in allowlist` → 检查表名拼写；返回 `find_biz_context` 重新选表
    - `database error: ... permission denied` → 该表分析师角色无权访问，告诉用户
@@ -68,10 +71,10 @@ SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 正则 guardrail �
 ### 模式 A：聚合优先
 
 ```sql
-SELECT industry, SUM(qrynum) AS total_qrynum
+SELECT ana_ind_name, SUM(month_qrynum_sum) AS total_qrynum
 FROM biz_dws.dws_qcm_qrynum_monthly_by_industry
-WHERE stat_month = '2026-04-01'
-GROUP BY industry
+WHERE month = '2026-04-01'
+GROUP BY ana_ind_name
 ORDER BY total_qrynum DESC
 LIMIT 20
 ```
@@ -79,21 +82,21 @@ LIMIT 20
 ### 模式 B：明细查询带 LIMIT
 
 ```sql
-SELECT stat_date, tenant_code, qrynum
+SELECT data_date, tenant_id, day_qrynum
 FROM biz_dws.dws_qcm_qrynum_daily_by_tenant
-WHERE stat_date >= '2026-04-25'
-ORDER BY stat_date DESC, qrynum DESC
+WHERE data_date >= '2026-04-25'
+ORDER BY data_date DESC, day_qrynum DESC
 LIMIT 100
 ```
 
 ### 模式 C：维表 JOIN（注意时间谓词在 fact 侧）
 
 ```sql
-SELECT i.tenant_code, i.tenant_name, a.qrynum
+SELECT i.tenant_id, i.tenant_name, a.month_qrynum_sum
 FROM biz_dws.dws_qcm_qrynum_monthly_by_tenant a
-JOIN biz_dwd.dwd_dim_institution i ON i.tenant_code = a.tenant_code
-WHERE a.stat_month = '2026-04-01'
-ORDER BY a.qrynum DESC
+JOIN biz_dwd.dwd_dim_institution i ON i.tenant_id = a.tenant_id
+WHERE a.month = '2026-04-01'
+ORDER BY a.month_qrynum_sum DESC
 LIMIT 10
 ```
 

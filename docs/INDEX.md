@@ -74,11 +74,15 @@ track: shared
 
 | 文件 | 类型 | 运行时作用 |
 |------|------|-----------|
-| `src/mj_agent/prompts/system.md` | `[PROMPT]` | agent 的基础 system prompt |
-| `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` | SQL 查询编写 skill |
+| `src/mj_agent/prompts/system.md` | `[PROMPT]` v1.2 | agent 基础 system prompt（身份 + ADR-000 P1/P2/P3 + 工具清单 + envelope 字段说明 + 硬规则） |
+| `src/mj_agent/skills/biz-domain-context/SKILL.md` | `[SKILL]` v0.1 | 用 `find_biz_context` 把自然语言映射到 catalog（metric / period / dimension / 时间列 / 同环比列 / 信号表 / 维表 join key），产出"目标表+目标列"提案 |
+| `src/mj_agent/skills/qcm-analysis/SKILL.md` | `[SKILL]` v0.1 | QCM 五类高频分析模板（趋势 / Top-N / 同环比 / ETL 健康度 / Ready 信号），含 curated NL→SQL 示例（源头：`tests/eval/golden_seed.jsonl` 的 reference_sql） |
+| `src/mj_agent/skills/safe-sql-analysis/SKILL.md` | `[SKILL]` v0.1 | SQL 撰写守则与执行 envelope（时间谓词必填 / `SELECT *` 禁用 / LIMIT 策略），失败 → 修正回路 |
+| `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` v0.2 (`state: deprecated`) | MVP PR3 拆分为上述 3 个 skill；保留作历史参考，`agent.py` 不加载 |
 | `src/mj_agent/skills/probe-fixture/SKILL.md` | `[SKILL]` (fixture) | 治理框架 v1.1 自检用 dummy skill；`state: draft`，**不被** `agent.py` 加载 |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` | catalog data | 静态镜像 mj-system `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4：metric / period / dimension / 同环比列 / 信号表 / 维表 join key；由 `find_biz_context` 召回 |
 
-*Phase 1+ 新增的 skill 都会出现在此表，并由 `docs/design/skills/INDEX.md` 补充详细目录。*
+*MVP 阶段 3 个 skill 静态全载（`agent.py:_ACTIVE_SKILLS`）。Phase 1+ 新增 skill 由 `docs/design/skills/INDEX.md` 补充详细目录；dynamic skill selector 推迟到 1.5。*
 
 ---
 
@@ -90,6 +94,14 @@ track: shared
 
 ---
 
+## 运维手册（docs/runbook/）
+
+| 文档 | 摘要 |
+|---|---|
+| `docs/runbook/dev_studio_walkthrough.md` | MVP 开发态 LangGraph Studio 试用与诊断 walkthrough：前置依赖、`.env` 配置、Studio 启动、H1/H2/H3/R1/R2 验证矩阵（引用 Plan A）、LangSmith trace 开关、常见诊断、测试与回归命令矩阵 |
+
+---
+
 ## 尚未建立的 canonical 子目录
 
 以下目录将在相应阶段启用：
@@ -97,7 +109,6 @@ track: shared
 | 目录 | 用途 | 启用阶段 |
 |------|------|---------|
 | `docs/guide/` | 开发者与运维上手指南 | Phase 0.5 |
-| `docs/runbook/` | 运维操作手册 | Phase 0.5 |
 | `docs/contracts/` | `[CONTRACT]` 文档 | Phase 0.5 起首份 SQL 工具契约 |
 | `docs/design/` | 子系统设计文档（agent/gateway/memory/prompts/skills/ui） | Phase 1+ 按子系统启用 |
 | `docs/evaluation/` | `[EVAL]` 文档 | Phase 2 |

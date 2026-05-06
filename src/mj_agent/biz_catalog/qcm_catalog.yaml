@@ -1,24 +1,43 @@
 # QCM Biz Catalog — static enumeration mirroring mj-system contract.
 #
-# Source bundle (staged, NOT yet merged to mj-system/develop as of 2026-05-06):
+# IMPORTANT — drift between staged STANDARD and actual DB (detected 2026-05-06):
+#
+#   The mj-system OUTPUT bundle's [STANDARD]_Biz_DWS_Naming_Stability.md
+#   §2-§4 specifies time columns `stat_date / stat_week / ...` and
+#   metric columns `qrynum / tntcnt` and join key `tenant_code`.
+#
+#   The actual DEV DB uses time columns `data_date / week / month / quarter /
+#   year`, metric columns `<period>_<metric>` (e.g. `day_qrynum`,
+#   `week_qrynum_sum`), and join key `tenant_id`.
+#
+#   This YAML reflects the **actual DB** so the agent generates SQL that
+#   actually runs. The STANDARD draft is treated as forward-looking
+#   nomenclature; when mj-system PR1/PR2 land and the DB migrates to
+#   the STANDARD, this YAML must be re-synced (per MVP plan v2 §Assumptions
+#   §mj-system 上游契约状态).
+#
+# Bundle path:
 #   D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT
 #
-# Authoritative documents this YAML mirrors:
+# Authoritative documents this YAML mirrors (with drift annotations):
 #   - PR1/docs/infrastructure/database/[GUIDE]_Biz_Domain_External_Consumer_Contract.md
 #   - PR1/docs/adr/[ADR]_008_Biz_Domain_External_Consumer_Boundary.md
 #   - PR2/docs/infrastructure/database/[STANDARD]_Biz_DWS_Naming_Stability.md (§2-§4)
-#
-# Sync policy: when mj-system PR1/PR2 land, owner triggers a catalog sync PR
-# that diffs this YAML against the merged STANDARD §2-§4 and updates accordingly.
 
-version: "0.1.0"
+version: "0.2.0"
 catalog_kind: qcm
 source:
   guide: "[GUIDE]_Biz_Domain_External_Consumer_Contract.md"
   standard: "[STANDARD]_Biz_DWS_Naming_Stability.md"
   adr: "[ADR]_008_Biz_Domain_External_Consumer_Boundary.md"
   bundle_path: "D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT"
-  status: staged-not-merged
+  status: drift_detected
+  drift_notes: |
+    DEV DB (verified 2026-05-06) deviates from staged STANDARD on:
+      - time columns (data_date / week / month / quarter / year vs stat_*)
+      - metric columns (carry period prefix + sum/avg variants)
+      - join key for dwd_dim_institution (tenant_id vs tenant_code)
+    This YAML mirrors actual DB names so the agent SQL runs.
 
 # §3 — metric families exposed in DWS layer.
 metrics:
@@ -29,35 +48,89 @@ metrics:
     description: 机构数 (Tenant Count)
     column_root: tntcnt
 
-# §2.1 + §3.2 — period granularities, time column, abbreviation.
+# §2.1 + §3.2 — period granularities, time column (actual DB), abbreviation.
 periods:
   daily:
     suffix: _daily
-    time_column: stat_date
+    time_column: data_date
     time_column_type: DATE
     abbreviation: dod
   weekly:
     suffix: _weekly
-    time_column: stat_week
+    time_column: week
     time_column_type: DATE
     abbreviation: wow
   monthly:
     suffix: _monthly
-    time_column: stat_month
+    time_column: month
     time_column_type: DATE
     abbreviation: mom
   quarterly:
     suffix: _quarterly
-    time_column: stat_quarter
+    time_column: quarter
     time_column_type: DATE
     abbreviation: qoq
   yearly:
     suffix: _yearly
-    time_column: stat_year
+    time_column: year
     time_column_type: DATE
     abbreviation: yoy
 
+# Metric column shapes by period (actual DB conventions, drifted from STANDARD §3).
+# Daily _total carries a single `<period>_<metric>` count column;
+# weekly+ _total carries `<period>_<metric>_sum` plus a daily_*_avg/min/max
+# quantile family.
+metric_column_shapes:
+  daily:
+    primary: "<period>_<metric>"
+    examples: [day_qrynum, day_tntcnt]
+  weekly:
+    primary: "<period>_<metric>_sum"
+    quantile_family:
+      - "daily_<metric>_avg"
+      - "daily_<metric>_max"
+      - "daily_<metric>_min"
+      - "daily_<metric>_std"
+      - "daily_<metric>_q25"
+      - "daily_<metric>_median"
+      - "daily_<metric>_q75"
+    examples: [week_qrynum_sum, daily_qrynum_avg, daily_qrynum_max]
+  monthly:
+    primary: "<period>_<metric>_sum"
+    quantile_family:
+      - "daily_<metric>_avg"
+      - "daily_<metric>_max"
+      - "daily_<metric>_min"
+      - "daily_<metric>_std"
+      - "daily_<metric>_q25"
+      - "daily_<metric>_median"
+      - "daily_<metric>_q75"
+    examples: [month_qrynum_sum, daily_qrynum_avg]
+  quarterly:
+    primary: "<period>_<metric>_sum"
+    quantile_family:
+      - "daily_<metric>_avg"
+      - "daily_<metric>_max"
+      - "daily_<metric>_min"
+      - "daily_<metric>_std"
+      - "daily_<metric>_q25"
+      - "daily_<metric>_median"
+      - "daily_<metric>_q75"
+    examples: [quarter_qrynum_sum, daily_qrynum_avg]
+  yearly:
+    primary: "<period>_<metric>_sum"
+    quantile_family:
+      - "daily_<metric>_avg"
+      - "daily_<metric>_max"
+      - "daily_<metric>_min"
+      - "daily_<metric>_std"
+      - "daily_<metric>_q25"
+      - "daily_<metric>_median"
+      - "daily_<metric>_q75"
+    examples: [year_qrynum_sum, daily_qrynum_avg]
+
 # §3 — dimension suffixes appended to the metric+period root.
+# tntcnt has no _by_tenant family (a tenant count broken down by tenant is moot).
 dimensions:
   - suffix: _total
     description: 全量汇总（无维度）
@@ -65,64 +138,74 @@ dimensions:
   - suffix: _by_industry
     description: 按行业拆分
     has_dim_column: true
-    dim_column: industry
+    dim_column: ana_ind_name
   - suffix: _by_tenant
-    description: 按机构（租户）拆分
+    description: 按机构（租户）拆分；仅 qrynum 系列有此分支
     has_dim_column: true
-    dim_column: tenant_code
+    dim_column: tenant_id
     join_table: biz_dwd.dwd_dim_institution
-    join_key: tenant_code
+    join_key: tenant_id
+    metric_families: [qrynum]
   - suffix: _by_pcat_l1
     description: 按产品一级分类
     has_dim_column: true
-    dim_column: pcat_l1
+    dim_column: prod_pcat_l1
   - suffix: _by_pcat_l2
     description: 按产品二级分类
     has_dim_column: true
-    dim_column: pcat_l2
+    dim_column: prod_pcat_l2
   - suffix: _by_tenant_pcat_l1
-    description: 按机构 × 产品一级
+    description: 按机构 × 产品一级；仅 qrynum 系列
     has_dim_column: true
-    dim_columns: [tenant_code, pcat_l1]
+    dim_columns: [tenant_id, prod_pcat_l1]
     join_table: biz_dwd.dwd_dim_institution
-    join_key: tenant_code
+    join_key: tenant_id
+    metric_families: [qrynum]
   - suffix: _by_tenant_pcat_l2
-    description: 按机构 × 产品二级
+    description: 按机构 × 产品二级；仅 qrynum 系列
     has_dim_column: true
-    dim_columns: [tenant_code, pcat_l2]
+    dim_columns: [tenant_id, prod_pcat_l2]
     join_table: biz_dwd.dwd_dim_institution
-    join_key: tenant_code
+    join_key: tenant_id
+    metric_families: [qrynum]
   - suffix: _by_scenario
     description: 按业务场景
     has_dim_column: true
-    dim_column: scenario
+    dim_column: usage_scenario
 
 # §3.1 — period-over-period column conventions on DWS fact tables.
+# Pattern abstraction: STANDARD-aligned. Concrete column names embed the
+# metric column shape (so `<period>_<metric>` becomes `day_qrynum` →
+# `prev_day_qrynum` / `dod_qrynum_diff` / `dod_qrynum_rate`).
 period_over_period_columns:
   previous_value:
-    pattern: prev_<period>_<metric>
+    pattern: prev_<period>_<metric_column>
     example: prev_day_qrynum
     description: 上期值
   diff:
-    pattern: <period_abbrev>_<metric>_diff
+    pattern: <period_abbrev>_<metric_part>_diff
     example: dod_qrynum_diff
     description: 绝对差值（current - previous）
   rate:
-    pattern: <period_abbrev>_<metric>_rate
+    pattern: <period_abbrev>_<metric_part>_rate
     example: dod_qrynum_rate
     description: 相对变化率
     type: NUMERIC(20,10)
+  cross_year_yoy:
+    pattern: yoy_<metric_part>_diff / yoy_<metric_part>_rate
+    example: yoy_daily_avg_diff / yoy_daily_avg_rate
+    description: 跨年同比；monthly/quarterly/yearly _total 表均有 yoy_* 列
 
 # §3 — three QCM metadata signal tables. Distinguished from fact tables.
 signal_tables:
   - name: biz_dws.dws_qcm_preprocessed_data
-    purpose: QCM 预处理数据状态
+    purpose: QCM 预处理数据明细（每日扁平化的 tenant×scenario×product 行）
     role: signal
   - name: biz_dws.dws_qcm_etl_metrics
-    purpose: QCM ETL 执行指标（成功/失败/运行时长）
+    purpose: QCM ETL 执行指标（成功/失败/运行时长/插入行数 by phase 与 table）
     role: signal
   - name: biz_dws.dws_qcm_ready_signal
-    purpose: QCM 数据就绪信号（指示当日数据是否可用于消费）
+    purpose: QCM 数据就绪信号（指示当批 ETL 是否可用于消费）
     role: signal
 
 # §4 — dimension tables: the only biz_dwd tables exposed to analyst.
@@ -133,12 +216,13 @@ dimension_tables:
     description: 产品接口维度
     stable: true
   - name: biz_dwd.dwd_dim_institution
-    primary_key: tenant_code
-    join_key: tenant_code
+    primary_key: tenant_id
+    join_key: tenant_id
     description: 机构（租户）维度
     stable: true
+    drift_note: STANDARD §4 specifies tenant_code; actual DB uses tenant_id
 
-# Fact table naming pattern: 65 metric tables total.
+# Fact table naming pattern.
 fact_table_pattern:
   template: biz_dws.dws_qcm_<metric>_<period>_<dimension>
   example: biz_dws.dws_qcm_qrynum_daily_by_tenant

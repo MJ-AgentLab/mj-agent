@@ -8,28 +8,40 @@ code in this repository.
 `mj-agent` is the MJ-AgentLab data agent — a LangChain 1.x + LangGraph 1.1.8
 Python 3.13 service (managed with `uv`) that lets internal analysts explore
 the mj-system business metrics warehouse through natural language. Currently
-in **Phase 0 Foundation** per `plans/mj-agent-roadmap-v1.6.md`; canonical
-docs entry: `docs/INDEX.md`.
+executing the **data-agent MVP** as a Phase 1 sub-milestone per
+`plans/[PLAN]_mj-agent-data-agent-mvp-framework.md` (Studio + Claude Code
+入口；Chainlit + 5 skills 仍是 Phase 1 终态——见
+`plans/mj-agent-roadmap-v1.6.md`）。Canonical docs entry: `docs/INDEX.md`.
 
 ## Architecture
 
 ```
 Entry   : LangGraph Studio (langgraph.json) / CLI
 Runtime : langchain.agents.create_agent(model, tools, system_prompt)
-Skills  : src/mj_agent/prompts/system.md + src/mj_agent/skills/*/SKILL.md
-Tools   : src/mj_agent/tools/sql/{guardrail,execute,introspect}.py
+Skills  : src/mj_agent/prompts/system.md
+        + src/mj_agent/skills/{biz-domain-context,qcm-analysis,
+          safe-sql-analysis}/SKILL.md (statically full-loaded)
+Tools   : src/mj_agent/tools/biz_context.py            (find_biz_context)
+          src/mj_agent/tools/sql/introspect.py          (list/describe)
+          src/mj_agent/tools/sql/guardrail.py           (L1 regex)
+          src/mj_agent/tools/sql/precheck.py            (L1b sqlglot AST)
+          src/mj_agent/tools/sql/execute.py             (envelope + DB)
+Catalog : src/mj_agent/biz_catalog/qcm_catalog.yaml     (mirror STANDARD §2-§4)
+          src/mj_agent/biz_catalog/{loader,finder}.py
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
 Config  : src/mj_agent/config.py — pydantic-settings over .env
 ```
 
-The agent is wired in `src/mj_agent/agent.py`: `_build_system_prompt()`
-concatenates `prompts/system.md` with the active skills, and `make_graph()`
-calls `create_agent(model, tools, system_prompt)`. `make_graph` is the
+The agent is wired in `src/mj_agent/agent.py`: `_ACTIVE_SKILLS` lists
+the three MVP skills; `_build_system_prompt()` concatenates
+`prompts/system.md` with them in order, and `make_graph()` calls
+`create_agent(model, tools, system_prompt)`. `make_graph` is the
 symbol `langgraph.json` points at — Studio calls it lazily, so importing
 the module never forces `make_llm()` (matters for unit tests and
 type-checking with no `ARK_API_KEY`). The wired tool registry lives in
-`src/mj_agent/tools/__init__.py:ALL_TOOLS` — `execute_sql`,
-`list_biz_tables`, `describe_biz_table`.
+`src/mj_agent/tools/__init__.py:ALL_TOOLS` — `find_biz_context`,
+`list_biz_tables`, `describe_biz_table`, `execute_sql` (called in this
+default order by the LLM per the system prompt).
 
 ## Data boundary
 
@@ -38,14 +50,21 @@ PostgreSQL role. Visibility is enforced at four layers (see ADR-006):
 
 | Layer | Mechanism | Location |
 | --- | --- | --- |
-| L1 guardrail | regex: single-statement, SELECT-only, schema allowlist | `tools/sql/guardrail.py` |
-| L2 semantics | SKILL.md lists the visible tables | `skills/*/SKILL.md` |
-| L3 connection | `default_transaction_read_only=on` | `integrations/mj_system_db.py` |
+| L1 guardrail | regex: single-statement, SELECT-only, **schema + biz_dwd table allowlist** | `tools/sql/guardrail.py` |
+| L1b precheck | **sqlglot AST**: `no_select_star`, `require_time_range` on biz_dws fact tables, `require_limit` advisory; rule source shared with `[PROMPT]_component_judge.md` | `tools/sql/precheck.py` |
+| L2 semantics | SKILL.md lists the visible tables; `qcm_catalog.yaml` mirrors mj-system STANDARD §2-§4 | `skills/*/SKILL.md` + `biz_catalog/qcm_catalog.yaml` |
+| L3 connection | `default_transaction_read_only=on` + `lock_timeout=5s` + `idle_in_transaction_session_timeout=10s` | `integrations/mj_system_db.py` |
 | L4 role | GRANT + `statement_timeout=60s` | mj-system `R__analyst_permissions.sql` |
 
-Accessible schemas: `biz_dws` (all tables) + `biz_dwd` (two dimension tables
-only — enforced DB-side). `biz_ods`, `biz_ads`, and any `ops_*` schema are
-not reachable.
+Accessible schemas: `biz_dws` (all tables) + `biz_dwd` (only
+`dwd_dim_product_interface` / `dwd_dim_institution` — enforced both at
+L1 via `BIZ_ALLOWED_DWD_TABLES` and DB-side via GRANT). `biz_ods`,
+`biz_ads`, and any `ops_*` schema are not reachable.
+
+`statement_timeout` (60s) is caught explicitly in `execute_sql` and
+re-raised as a friendly Chinese hint. The result envelope carries
+`executed_sql / columns / rows / row_count / truncated /
+statement_timeout_hit / business_summary / precheck_warnings`.
 
 ## Commands
 
@@ -53,11 +72,16 @@ not reachable.
 uv sync                                    # install / lock dependencies
 uv run langgraph dev                       # LangGraph Studio (local)
 uv run pytest tests/unit                   # fast, no external deps
+uv run pytest tests/eval                   # seed schema + Component check (no DB)
 uv run pytest tests/integration            # needs live biz DB
 uv run pytest tests/smoke -m smoke         # needs biz DB + LLM
 uv run ruff check                          # lint
 uv run mypy src/mj_agent                   # type-check
 ```
+
+Studio dev walkthrough (env + verification matrix + LangSmith trace
+toggles + diagnostic table) lives in
+`docs/runbook/dev_studio_walkthrough.md`.
 
 `pyproject.toml` pins `addopts = "-m 'not smoke'"`, so plain `uv run pytest`
 excludes smoke by default — pass `-m smoke` to opt in. `tests/conftest.py`
