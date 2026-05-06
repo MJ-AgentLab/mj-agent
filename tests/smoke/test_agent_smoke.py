@@ -104,11 +104,13 @@ def test_smoke_04_deny_ods_request(agent: Any) -> None:
 
 
 def test_guide_61_case_1_dws_count_succeeds() -> None:
+    # data_date is the actual time column for daily-period tables (drift
+    # from STANDARD §2.1 — see qcm_catalog.yaml source.drift_notes).
     from mj_agent.tools import execute_sql
 
     r = execute_sql(
         "SELECT COUNT(*) AS n FROM biz_dws.dws_qcm_qrynum_daily_total "
-        "WHERE stat_date >= '2026-01-01'"
+        "WHERE data_date >= CURRENT_DATE - INTERVAL '60 days'"
     )
     assert r["row_count"] == 1
     assert r["columns"] == ["n"]

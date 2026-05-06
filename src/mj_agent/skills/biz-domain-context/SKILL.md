@@ -60,16 +60,23 @@ _by_tenant_pcat_l1 / _by_tenant_pcat_l2 / _by_scenario`），再据此提出"目
 
 ## Common patterns
 
+> **漂移说明**：实际 DB 列名与 STANDARD 草案不一致。Daily 周期用
+> `data_date / day_qrynum`；weekly+ 用 `week / month / quarter / year` 作时间列、
+> `<period>_<metric>_sum` 作主指标列、`daily_<metric>_avg/max/min/q25/median/q75`
+> 作分位数族；维表 join key 用 `tenant_id`（非 `tenant_code`）。所有结论都来自
+> `find_biz_context` 输出与 `describe_biz_table` 实际列名，不要凭 STANDARD 想当然。
+
 - **指标 + 总量**："最近 7 天的查询量" →
   `find_biz_context` → 候选 `dws_qcm_qrynum_daily_total` → `describe_biz_table` 取
-  `stat_date / qrynum` → 交给下游 skill 写 SQL。
+  `data_date / day_qrynum` → 交给下游 skill 写 SQL。
 - **指标 + 维度**："Top 10 机构月度查询量" →
-  候选 `dws_qcm_qrynum_monthly_by_tenant` → 列含 `stat_month / tenant_code / qrynum` →
-  下游 SQL 加 `ORDER BY qrynum DESC LIMIT 10`，并 JOIN
-  `biz_dwd.dwd_dim_institution` (`tenant_code`) 取机构名称。
+  候选 `dws_qcm_qrynum_monthly_by_tenant` → 列含 `month / tenant_id / month_qrynum_sum` →
+  下游 SQL 加 `ORDER BY month_qrynum_sum DESC LIMIT 10`，并 JOIN
+  `biz_dwd.dwd_dim_institution` (`tenant_id`) 取机构名称。
 - **同环比**："某行业月度同比变化" →
-  候选 `dws_qcm_qrynum_monthly_by_industry`；列含 `prev_month_qrynum / mom_qrynum_diff
-  / mom_qrynum_rate`——直接取列，不要自己 LAG()。
+  候选 `dws_qcm_qrynum_monthly_by_industry`；列含 `prev_month_daily_qrynum_avg /
+  mom_daily_avg_diff / mom_daily_avg_rate / yoy_daily_avg_diff / yoy_daily_avg_rate`
+  ——直接取列，不要自己 LAG()。
 - **信号检查**："今天的 QCM 数据准备好了吗" → 只读 `signal_tables` 列表里的 3 张表
   （`dws_qcm_preprocessed_data` / `dws_qcm_etl_metrics` / `dws_qcm_ready_signal`），
   **不要去 fact 表用 COUNT 推断**。

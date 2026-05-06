@@ -55,67 +55,72 @@ skill 把"目标表+目标列"提案转成五类 SQL 模板：(1) 时间趋势 (
 
 ## Common patterns
 
-> 以下示例选自 `golden_seed.jsonl` 的分析模式，并改写为 QCM 表族表名。**实际 SQL
-> 中的表名应根据 `find_biz_context` 当时给出的候选表替换**——不要照搬。
+> 以下示例使用**实际 DB 列名**（与 staged STANDARD 草案漂移；详见
+> `qcm_catalog.yaml` 的 `source.drift_notes`）。**实际 SQL 中表名与列名应根据
+> `find_biz_context` + `describe_biz_table` 复核后再写**——不要照搬。
 
 ### 模式 1：日度总量趋势
 
 ```sql
-SELECT stat_date, qrynum
+SELECT data_date, day_qrynum
 FROM biz_dws.dws_qcm_qrynum_daily_total
-WHERE stat_date BETWEEN '2026-04-25' AND '2026-05-01'
-ORDER BY stat_date
+WHERE data_date BETWEEN '2026-04-25' AND '2026-05-01'
+ORDER BY data_date
 ```
 
 ### 模式 2：Top-N 机构 + 维表 JOIN
 
 ```sql
-SELECT i.tenant_code,
-       i.tenant_name,           -- 假定列名以 describe_biz_table 复核为准
-       a.qrynum
+SELECT i.tenant_id,
+       i.tenant_name,            -- 列名以 describe_biz_table 复核为准
+       a.month_qrynum_sum
 FROM biz_dws.dws_qcm_qrynum_monthly_by_tenant a
 JOIN biz_dwd.dwd_dim_institution i
-  ON i.tenant_code = a.tenant_code
-WHERE a.stat_month = '2026-04-01'
-ORDER BY a.qrynum DESC
+  ON i.tenant_id = a.tenant_id
+WHERE a.month = '2026-04-01'
+ORDER BY a.month_qrynum_sum DESC
 LIMIT 10
 ```
 
 ### 模式 3：行业月度同比
 
 ```sql
-SELECT industry,
-       qrynum,
-       prev_year_qrynum,
-       yoy_qrynum_diff,
-       yoy_qrynum_rate
+SELECT ana_ind_name,
+       month_qrynum_sum,
+       daily_qrynum_avg,
+       prev_month_daily_qrynum_avg,
+       mom_daily_avg_diff,
+       mom_daily_avg_rate,
+       yoy_daily_avg_diff,
+       yoy_daily_avg_rate
 FROM biz_dws.dws_qcm_qrynum_monthly_by_industry
-WHERE stat_month = '2026-04-01'
-ORDER BY yoy_qrynum_rate DESC
+WHERE month = '2026-04-01'
+ORDER BY yoy_daily_avg_rate DESC
 LIMIT 20
 ```
 
-> 注意：catalog 已经把同环比写进列里（`prev_<period>_<metric>` /
-> `<period_abbrev>_<metric>_diff` / `<period_abbrev>_<metric>_rate`），**不要用
-> 窗口函数自己算**。
+> 注意：catalog 已经把同环比写进列里（`prev_<period>_<metric_column>` /
+> `<period_abbrev>_<metric_part>_diff` / `<period_abbrev>_<metric_part>_rate`），
+> **不要用窗口函数自己算**。weekly+ 表上同时存在 mom/qoq/yoy 多个对比口径。
 
 ### 模式 4：ETL 健康度
 
 ```sql
-SELECT pipeline, last_run_at, status, duration_sec
+SELECT etl_batch_at, phase, table_name, status, rows_inserted, duration_ms
 FROM biz_dws.dws_qcm_etl_metrics
-WHERE last_run_at >= CURRENT_DATE - INTERVAL '7 days'
-ORDER BY last_run_at DESC
+WHERE etl_batch_at >= CURRENT_DATE - INTERVAL '7 days'
+ORDER BY etl_batch_at DESC
 LIMIT 50
 ```
 
 ### 模式 5：Ready 信号
 
 ```sql
-SELECT stat_date, ready, ready_at
+SELECT etl_batch_at, status, table_name, phase, rows_inserted, tables_processed, duration_ms
 FROM biz_dws.dws_qcm_ready_signal
-WHERE stat_date >= CURRENT_DATE - INTERVAL '7 days'
-ORDER BY stat_date DESC
+WHERE etl_batch_at >= CURRENT_DATE - INTERVAL '7 days'
+ORDER BY etl_batch_at DESC
+LIMIT 20
 ```
 
 ## Anti-patterns
@@ -124,7 +129,8 @@ ORDER BY stat_date DESC
   会带，先 `describe_biz_table` 确认。
 - 不要为了"求精确"用 LAG() 窗口函数自己算同比——QCM 已经把列固化在表里。
 - 不要把 fact 表的 COUNT(*) 当作就绪信号——用 `dws_qcm_ready_signal` 才是契约。
-- 不要 JOIN 维表却忘记加 stat_date 谓词——会触发 `require_time_range` 拦截。
+- 不要 JOIN 维表却忘记加 fact 侧时间谓词（按周期：`data_date / week / month /
+  quarter / year`）——会触发 `require_time_range` 拦截。
 
 ## Related
 

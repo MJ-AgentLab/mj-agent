@@ -34,7 +34,7 @@ def test_yoy_keyword_triggers_period_over_period() -> None:
     ctx = find_biz_context("查询量同比")
     assert ctx["needs_period_over_period"] is True
     pop = ctx["period_over_period_patterns"]
-    assert pop["diff"]["pattern"] == "<period_abbrev>_<metric>_diff"
+    assert pop["diff"]["pattern"] == "<period_abbrev>_<metric_part>_diff"
 
 
 def test_no_keywords_returns_sensible_defaults() -> None:
@@ -76,7 +76,7 @@ def test_signal_tables_always_returned() -> None:
 
 def test_time_columns_match_periods() -> None:
     ctx = find_biz_context("月度查询量")
-    assert ctx["time_columns"]["monthly"] == "stat_month"
+    assert ctx["time_columns"]["monthly"] == "month"
 
 
 def test_period_abbreviations_match_standard() -> None:

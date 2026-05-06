@@ -60,9 +60,10 @@ The `execute_sql` tool enforces:
 - `biz_dwd` is restricted to the two dimension tables — other
   `biz_dwd.*` references are rejected at L1 even before reaching the DB.
 - AST precheck rejects `SELECT *` and `biz_dws` fact-table queries with
-  no time-column predicate (use `stat_date`/`stat_week`/`stat_month`/
-  `stat_quarter`/`stat_year` per the period suffix). Detail queries
-  without `LIMIT` are allowed but flagged as `precheck_warnings`.
+  no time-column predicate. Time columns by period (actual DB names —
+  the staged STANDARD draft uses `stat_*`; we mirror the live DB):
+  `data_date` (daily) / `week` / `month` / `quarter` / `year`. Detail
+  queries without `LIMIT` are allowed but flagged as `precheck_warnings`.
 - Results are capped at a fixed row limit; the `truncated` flag signals
   when the cap was hit. The DB-side `statement_timeout` is 60s; on
   timeout the tool raises with a friendly hint (use aggregation, narrow
