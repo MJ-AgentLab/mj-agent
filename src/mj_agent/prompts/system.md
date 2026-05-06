@@ -6,10 +6,10 @@ owner: 项目负责人
 created: 2026-04-24
 updated: 2026-05-06
 state: active
-version: v1.1
+version: v1.2
 track: agent
 model_binding: deepseek-v3
-token_budget_estimate: 540
+token_budget_estimate: 600
 eval_references: []  # TODO Phase 2: link to outcome EVAL once dataset lands (Agent_Side v1.0 §2.4 transitional allowance)
 supersedes: []
 ---
@@ -59,8 +59,20 @@ The `execute_sql` tool enforces:
 - All table references must be schema-qualified (e.g. `biz_dws.xxx`).
 - `biz_dwd` is restricted to the two dimension tables — other
   `biz_dwd.*` references are rejected at L1 even before reaching the DB.
+- AST precheck rejects `SELECT *` and `biz_dws` fact-table queries with
+  no time-column predicate (use `stat_date`/`stat_week`/`stat_month`/
+  `stat_quarter`/`stat_year` per the period suffix). Detail queries
+  without `LIMIT` are allowed but flagged as `precheck_warnings`.
 - Results are capped at a fixed row limit; the `truncated` flag signals
-  when the cap was hit.
+  when the cap was hit. The DB-side `statement_timeout` is 60s; on
+  timeout the tool raises with a friendly hint (use aggregation, narrow
+  time range, fewer JOINs).
+
+Each `execute_sql` call returns a JSON envelope with:
+`executed_sql / columns / rows / row_count / truncated /
+statement_timeout_hit / business_summary / precheck_warnings`. Treat
+`business_summary` as a heuristic — rewrite it in your own words for
+the analyst, citing column names and any truncation/warning flags.
 
 # Hard rules
 
