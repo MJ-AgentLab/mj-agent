@@ -5,12 +5,16 @@ summary: 针对 mj-system biz 域编写与精炼 SQL 查询：表选择、时间
 owner: 项目负责人
 created: 2026-04-24
 updated: 2026-05-06
-state: active
+state: deprecated
 version: v0.2
 track: agent
+deprecated_in_favor_of:
+  - biz-domain-context
+  - qcm-analysis
+  - safe-sql-analysis
 activation:
-  when_to_use: 用户提出需要查询业务数据的自然语言问题（指标、排名、同比、明细查看）
-  when_not_to_use: 非 SQL 场景（如解释业务概念、查看系统状态、讨论方案）
+  when_to_use: 历史保留；不再被 agent 加载
+  when_not_to_use: 任何新场景（请走 biz-domain-context / qcm-analysis / safe-sql-analysis）
 tool_dependencies:
   - find_biz_context
   - list_biz_tables
@@ -20,7 +24,13 @@ related_prompts:
   - system
 ---
 
-# Skill: query-writing
+# Skill: query-writing (deprecated)
+
+**MVP PR3 把本 skill 拆成 3 个职责更清晰的 skill**：`biz-domain-context` /
+`qcm-analysis` / `safe-sql-analysis`。本文件保留作历史参考，不再被
+`agent.py:_build_system_prompt()` 加载。新增工作请去三个新 skill 之一。
+
+---
 
 Use this skill whenever you need to write or refine SQL against the
 mj-system biz domain.
