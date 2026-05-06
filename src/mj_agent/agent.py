@@ -20,19 +20,29 @@ from mj_agent.prompts import load_prompt
 from mj_agent.skills import load_skill
 from mj_agent.tools import ALL_TOOLS
 
+_ACTIVE_SKILLS: tuple[str, ...] = (
+    "biz-domain-context",
+    "qcm-analysis",
+    "safe-sql-analysis",
+)
+
 
 def _build_system_prompt() -> str:
     """Compose the system prompt from the base identity + active skills.
 
-    Phase 0 statically concatenates the active skills. Phase 1 will split
-    this into a dynamic selector (ADR-003 progressive disclosure).
+    MVP PR3 splits the legacy ``query-writing`` monolith into three
+    cooperating skills, statically loaded in order:
+
+      1. ``biz-domain-context`` — catalog recall via find_biz_context
+      2. ``qcm-analysis`` — QCM-domain SQL templates + curated examples
+      3. ``safe-sql-analysis`` — write/execute/interpret discipline
+
+    A dynamic selector (ADR-003 progressive disclosure) is deferred; if
+    token budget pressure surfaces, swap this with a selector that picks
+    1-2 skills per turn.
     """
-    return "\n\n".join(
-        [
-            load_prompt("system"),
-            load_skill("query-writing"),
-        ]
-    )
+    parts = [load_prompt("system"), *(load_skill(name) for name in _ACTIVE_SKILLS)]
+    return "\n\n".join(parts)
 
 
 def make_graph() -> Any:

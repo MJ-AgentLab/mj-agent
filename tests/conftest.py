@@ -3,14 +3,25 @@
 Unit tests never touch the database or a real LLM — they import modules
 only. Integration and smoke tests do hit external systems; the fixtures
 here make that explicit with ``live_db`` and ``agent`` scopes.
+
+`.env` is loaded once at module import via python-dotenv so the
+integration / smoke skip-gates see the credentials a developer just
+provisioned via ``scripts/setup-env.ps1``. ``override=False`` keeps any
+already-exported OS env vars (CI / shell) authoritative.
 """
 
 from __future__ import annotations
 
 import os
 from collections.abc import Iterator
+from pathlib import Path
 
 import pytest
+from dotenv import load_dotenv
+
+_ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
+if _ENV_PATH.exists():
+    load_dotenv(_ENV_PATH, override=False)
 
 
 @pytest.fixture(scope="session")

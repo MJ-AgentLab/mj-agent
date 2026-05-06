@@ -50,14 +50,14 @@ def test_catalog_periods_match_standard() -> None:
 
 
 def test_catalog_period_time_columns() -> None:
-    """STANDARD §2.1 — exact time column per period."""
+    """Actual DB time columns by period (STANDARD §2.1 drifted; see drift_notes)."""
     catalog = load_catalog()
     expected = {
-        "daily": "stat_date",
-        "weekly": "stat_week",
-        "monthly": "stat_month",
-        "quarterly": "stat_quarter",
-        "yearly": "stat_year",
+        "daily": "data_date",
+        "weekly": "week",
+        "monthly": "month",
+        "quarterly": "quarter",
+        "yearly": "year",
     }
     actual = {p: cfg["time_column"] for p, cfg in catalog["periods"].items()}
     assert actual == expected
@@ -98,11 +98,11 @@ def test_catalog_dimension_tables_exact() -> None:
 
 
 def test_catalog_dimension_join_keys() -> None:
-    """STANDARD §4 — join keys are stable, locked names."""
+    """Actual DB join keys (STANDARD §4 specifies tenant_code; DB drifted to tenant_id)."""
     catalog = load_catalog()
     by_name = {t["name"]: t for t in catalog["dimension_tables"]}
     assert by_name["biz_dwd.dwd_dim_product_interface"]["join_key"] == "interface_id"
-    assert by_name["biz_dwd.dwd_dim_institution"]["join_key"] == "tenant_code"
+    assert by_name["biz_dwd.dwd_dim_institution"]["join_key"] == "tenant_id"
 
 
 def test_catalog_signal_tables_three() -> None:
@@ -117,12 +117,12 @@ def test_catalog_signal_tables_three() -> None:
 
 
 def test_catalog_pop_columns_pattern() -> None:
-    """STANDARD §3.1 — period-over-period column conventions."""
+    """Period-over-period column conventions (STANDARD §3.1 abstract pattern)."""
     catalog = load_catalog()
     pop = catalog["period_over_period_columns"]
-    assert pop["previous_value"]["pattern"] == "prev_<period>_<metric>"
-    assert pop["diff"]["pattern"] == "<period_abbrev>_<metric>_diff"
-    assert pop["rate"]["pattern"] == "<period_abbrev>_<metric>_rate"
+    assert pop["previous_value"]["pattern"] == "prev_<period>_<metric_column>"
+    assert pop["diff"]["pattern"] == "<period_abbrev>_<metric_part>_diff"
+    assert pop["rate"]["pattern"] == "<period_abbrev>_<metric_part>_rate"
 
 
 def test_catalog_load_is_cached() -> None:

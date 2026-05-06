@@ -30,11 +30,17 @@ def test_describe_table_has_columns() -> None:
 
 
 def test_execute_sql_returns_dict_rows() -> None:
+    # precheck requires a time-column predicate on biz_dws fact tables.
+    # data_date is the actual time column for daily-period tables (drift
+    # from STANDARD §2.1 — see qcm_catalog.yaml source.drift_notes).
     result = execute_sql(
         "SELECT data_date FROM biz_dws.dws_qcm_qrynum_daily_total "
+        "WHERE data_date >= CURRENT_DATE - INTERVAL '60 days' "
         "ORDER BY data_date DESC LIMIT 3"
     )
     assert "rows" in result and "columns" in result
+    assert "executed_sql" in result
+    assert "precheck_warnings" in result
     assert result["truncated"] is False
 
 
@@ -44,5 +50,7 @@ def test_execute_sql_rejects_ods() -> None:
 
 
 def test_execute_sql_rejects_drop() -> None:
-    with pytest.raises(ValueError, match="blocked"):
+    # DROP fails L1 _STMT_START before _BLOCKED, so message is
+    # "only SELECT or WITH ... SELECT is allowed"; either reason is fine.
+    with pytest.raises(ValueError, match="blocked|only SELECT"):
         execute_sql("DROP TABLE biz_dws.dws_qcm_qrynum_daily_total")
