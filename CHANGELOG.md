@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Changed — Plan C C2 closeout (ADR roster alignment)
+
+- **CLAUDE.md + docs/INDEX.md ADR 表对齐实际**：`docs/adr/` 实际有 11 条 ADR（000/001/002/003/006/008/009/010/011/012/013），但 CLAUDE.md "Repo conventions, code-side" 段只列到 011，docs/INDEX.md ADR 表也只到 011。本次同步 + 补 012/013 两行（state: draft，decision: accepted）。
+- Plan C C2 "ADR backfill" 至此完成：原 plan §4.2 决策矩阵的三选一（mirror / reference / stub）均不适用——mj-agent-design 仓库无 `adr/` 子目录，mj-agent 已是单一权威源。Plan C 整体（C1 已在 PR4 stack 完成 + C2 本 PR）可在 vault 标 `已执行`。
+
 ### Added — MVP (data-agent-mvp PR1-PR4, branched off develop@9f0cdfe)
 
 - **PR1 — biz 域语义上下文层（`feat(agent)`，6a0206c）**：新增 `src/mj_agent/biz_catalog/` 包（`qcm_catalog.yaml` 静态镜像 mj-system `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4 + `loader.py` + `finder.py`）；新增 LLM 工具 `find_biz_context(question)` 一次性回吐候选 metric / period / dimension / 时间列 / 同环比列 / 信号表 / 维表 join key；表级 allowlist 收紧——`BIZ_ALLOWED_DWD_TABLES=dwd_dim_product_interface,dwd_dim_institution`，guardrail/`introspect`/`execute_sql` 全部走 `settings.is_table_allowed`；prompt v1.0→v1.1 + skill v0.1→v0.2 钉死工具调用顺序 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`；新增 `pyyaml` 运行时依赖与 `types-PyYAML` 开发依赖；新增 27 单元测试。
