@@ -1,0 +1,18 @@
+# Default: let git handle line endings using its own heuristics + .editorconfig.
+* text=auto
+
+# Shell scripts MUST be LF (otherwise bash chokes on CRLF inside Linux containers).
+*.sh text eol=lf
+
+# Dockerfile: Docker BuildKit accepts CRLF, but pin LF for consistency.
+Dockerfile text eol=lf
+**/Dockerfile text eol=lf
+
+# Python source: standard LF (PEP 8 / Black assumes LF).
+*.py text eol=lf
+
+# YAML / TOML / JSON: cross-tool consistency expects LF.
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.json text eol=lf

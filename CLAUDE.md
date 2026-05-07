@@ -33,6 +33,8 @@ Memory  : src/mj_agent/memory/checkpointer.py           (Phase 1 sub 1.A;
 CLI     : src/mj_agent/server/cli.py                    (typer; `mj-agent
           serve` / `mj-agent check`)
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
+          infra/docker/{Dockerfile, entrypoint.sh,           (Phase 1 sub
+          docker-compose.mj-agent.yml, README.md}            1.H; E2)
 Config  : src/mj_agent/config.py — pydantic-settings over .env
 ```
 
@@ -83,6 +85,11 @@ uv run pytest tests/integration            # needs live biz DB
 uv run pytest tests/smoke -m smoke         # needs biz DB + LLM
 uv run ruff check                          # lint
 uv run mypy src/mj_agent                   # type-check
+
+# Phase 1 sub 1.H — Docker (DEV co-deploy with mj-system)
+docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
+docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
+# co-deploy snippet: infra/docker/docker-compose.mj-agent.yml
 ```
 
 Studio dev walkthrough (env + verification matrix + LangSmith trace

@@ -1,0 +1,66 @@
+# =============================================
+# Drop-in service definition: mj-agent attached to mj-system's DEV stack
+#
+# Usage A — co-deploy with mj-system (recommended for DEV):
+#   from mj-system repo root, run:
+#     docker compose \
+#       -f docker-compose.yml \
+#       -f docker-compose.override.yml \
+#       -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
+#       up -d mj-agent
+#
+# Usage B — standalone (no mj-system):
+#   from mj-agent repo root, run:
+#     docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#       --env-file .env up
+#   (set POSTGRES_DEV_HOST=host.docker.internal in .env first; mj-system DB
+#    must be reachable from the container.)
+#
+# Co-deploy notes:
+#   - Network mj-system-backend-network is created by mj-system compose; we
+#     declare it as `external: true` so we attach without ownership.
+#   - Host port 8001 → container 8000 (mj-system mj-app already owns 8000).
+#   - mj-postgres hostname resolves on the shared network — no host.docker.internal.
+#   - Reads .env from mj-agent project root via env_file (keeps secrets out of YAML).
+# =============================================
+
+services:
+  mj-agent:
+    build:
+      # Build context = mj-agent project root (relative to this file's location).
+      context: ../../
+      dockerfile: infra/docker/Dockerfile
+    image: mj-agent:0.1
+    container_name: mj-agent
+    hostname: mj-agent
+    env_file:
+      # Path relative to *this compose file*. From mj-system repo's working dir
+      # the relative path is ../mj-agent/.env once you `-f ../mj-agent/...yml`.
+      - ../../.env
+    environment:
+      # Override .env values for the in-cluster DNS layout.
+      POSTGRES_DEV_HOST: mj-postgres
+      POSTGRES_DEV_PORT: "5432"
+      MJ_AGENT_MEMORY_HOST: mj-postgres
+      MJ_AGENT_MEMORY_PORT: "5432"
+      CHAINLIT_HOST: 0.0.0.0
+      CHAINLIT_PORT: "8000"
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mj-agent", "check"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3
+    networks:
+      - mj-backend-network
+    labels:
+      com.mj-agent.environment: "development"
+      com.mj-agent.service: "agent"
+
+networks:
+  mj-backend-network:
+    name: mj-system-backend-network
+    external: true

@@ -1,0 +1,57 @@
+# Build context filter — keep the layer cacheable.
+# Anything not in this allowlist still ships if not excluded; this file lists
+# common bulky/sensitive items to exclude.
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Local dev / state
+.venv
+.env
+.env.*
+!.env.example
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+*.egg-info
+
+# Editor / OS
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Project artifacts not needed in image
+artifacts/
+docs/
+plans/
+notes/
+research/
+logs/
+.chainlit/
+*.log
+*.sqlite
+
+# Worktrees / sibling repos co-located on disk
+**/.bare
+worktrees/
+.claude/
+
+# Test outputs / capture artifacts (don't bloat image)
+walkthrough_*.json
+walkthrough_*.md
+capture_*.json
+
+# Secrets — never bake into image; injected via env at runtime
+config/secrets.enc
+config/secrets.conf
