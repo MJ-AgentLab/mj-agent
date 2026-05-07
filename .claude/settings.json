@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Edit",
+      "Read",
+      "Write",
+      "WebFetch",
+      "mcp__*",
+      "Skill",
+      "Agent"
+    ],
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(Remove-Item*)",
+      "Bash(del *)",
+      "Read(./.env)",
+      "Edit(./.env)",
+      "Write(./.env)"
+    ]
+  },
+  "enabledPlugins": {
+    "mj-agent-code-doc@mj-agentlab-marketplace": true
+  }
+}

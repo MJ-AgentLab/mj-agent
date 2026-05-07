@@ -1,10 +1,66 @@
-# Python-generated files
+# ========== Python ==========
 __pycache__/
-*.py[oc]
-build/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
 dist/
+build/
 wheels/
-*.egg-info
 
-# Virtual environments
-.venv
+# ========== 虚拟环境 ==========
+.venv/
+venv/
+env/
+
+# ========== 环境配置（敏感信息）==========
+.env
+.env.local
+.env.*.local
+
+# ========== 加密配置（解密后的明文）==========
+config/secrets.conf
+
+# ========== IDE ==========
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ========== Claude Code 本地配置 ==========
+.claude/settings.local.json
+
+# ========== Serena 本地配置 ==========
+.serena/
+
+# ========== OS ==========
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# ========== 临时文件 ==========
+*.tmp
+*.bak
+nul
+
+# ========== 日志 ==========
+*.log
+
+# ========== Python 测试/类型/Lint 缓存（mj-agent 独有）==========
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ========== LangGraph Studio（mj-agent 独有）==========
+.langgraph_api/
+
+# ========== Chainlit（auto-generated config + translations）==========
+# `.chainlit/` is regenerated on first `chainlit run` from defaults; we
+# only commit it back when project-specific UI customization is added.
+.chainlit/
+chainlit.md
+
+# ========== Git worktrees（并行 agent 隔离） ==========
+.worktrees/

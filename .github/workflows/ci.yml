@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches:
+      - 'feature/*'
+      - 'bugfix/*'
+      - 'documentation/*'
+      - 'maintain/*'
+      - 'hotfix/*'
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+      # Action references below are pinned to commit SHA + version comment
+      # (supply-chain hardening). Dependabot recognises the `# vX.Y.Z` comment
+      # and bumps SHA + comment together when upstream publishes new versions.
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Read Python version
+        id: pyver
+        shell: bash
+        run: echo "version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+
+      - name: Sync dependencies
+        run: uv sync --frozen || uv sync
+
+      - name: Syntax check (compileall)
+        run: uv run python -m compileall -q .
+
+      - name: Lint (ruff)
+        run: uv run ruff check
+
+      - name: Type check (mypy strict)
+        run: uv run mypy src/mj_agent
+
+      - name: Frontmatter schema (canonical docs)
+        # Locks down Phase 1 末 governance: all canonical docs declare
+        # explicit track + required base fields. See scripts/check_frontmatter.py
+        # for schema; non-zero exit on any violation.
+        run: uv run python scripts/check_frontmatter.py
+
+      - name: Wikilinks (canonical docs)
+        # Belt-and-suspenders alongside the frontmatter validator: catches
+        # broken `[[...]]` references that mypy / ruff / pytest can't see.
+        run: uv run python scripts/check_wikilinks.py
+
+      - name: Tests (unit + eval + integration; smoke + contract excluded by default)
+        # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
+        # this runs unit + eval + integration. The integration suite session-
+        # skips cleanly when POSTGRES_ANALYST_USER is unset (CI's case).
+        run: uv run pytest
+
+      - name: Contract tests (skip on missing analyst creds)
+        # tests/contract/* is gated by the `contract` pytest marker AND the
+        # `live_db` session fixture (skip when POSTGRES_ANALYST_USER unset).
+        # CI runs without DB creds → tests skip cleanly; locally with .env
+        # provisioned the same command exercises the contract.
+        run: uv run pytest tests/contract -m contract

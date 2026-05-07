@@ -1,0 +1,8 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "mj_agent": "./src/mj_agent/agent.py:make_graph"
+  },
+  "env": ".env",
+  "python_version": "3.13"
+}

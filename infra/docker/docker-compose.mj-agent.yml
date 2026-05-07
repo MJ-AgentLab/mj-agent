@@ -1,0 +1,224 @@
+# =============================================
+# mj-agent compose stack — INDEPENDENT project (decoupled from mj-system)
+#
+# Design (post storage-stack-standalone PR):
+#   - This file declares its own `name: mj-agent` so docker compose
+#     creates a dedicated project visible separately in Docker Desktop /
+#     Portainer. mj-system's project is unaffected.
+#   - mj-agent attaches to mj-system's existing `mj-system-backend-network`
+#     as `external: true` to reach the biz pg (read-only analyst role).
+#     mj-system stack must be running first; mj-agent does not own that
+#     network's lifecycle.
+#   - mj-agent owns its own storage stack (mj-agent-postgres + mj-agent-
+#     redis) on a private `mj-agent-storage` bridge network — neither
+#     visible to mj-system nor coupled to its lifecycle.
+#
+# Services:
+#   mj-agent             chainlit UI + agent runtime
+#   mj-agent-postgres    langgraph AsyncPostgresSaver backing store
+#   mj-agent-redis       reserved for future use (no Python client wired)
+#
+# Pre-requisite:
+#   - mj-system stack running locally (or at minimum: the mj-system-
+#     backend-network exists and mj-postgres is reachable on it). Verify:
+#       docker network ls --filter name=mj-system-backend-network
+#       docker ps --filter name=mj-system-postgres
+#
+# Usage — standalone (recommended; from mj-agent repo root):
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml ps
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml down
+#
+# Path resolution:
+#   With single `-f`, project_directory = the compose file's directory
+#   (infra/docker/). All relative paths in this file resolve from there:
+#     `../../`             = mj-agent repo root
+#     `../../.env`         = mj-agent/.env
+#     `./postgres-init`    = infra/docker/postgres-init/
+#
+#   Do NOT include this file via mj-system's `docker compose -f` chain
+#   anymore — that pattern (storage-stack PR / hotfix PR #43) merged
+#   project names and forced you to use ${MJ_AGENT_ROOT}. The standalone
+#   pattern is simpler and gives Docker Desktop a clean per-project view.
+#
+# Port map (host → container):
+#   8001 → 8000   chainlit (avoid mj-app's 8000)
+#   5433 → 5432   memory pg (avoid mj-postgres's 5432)
+#   6379 → 6379   redis (no clash; mj-system has no redis)
+# =============================================
+
+name: mj-agent
+
+services:
+  mj-agent:
+    build:
+      # Build context = mj-agent project root (resolved from project_directory
+      # = this compose file's dir when invoked with single -f).
+      context: ../../
+      dockerfile: infra/docker/Dockerfile
+    image: mj-agent:0.1
+    container_name: mj-agent
+    hostname: mj-agent
+    env_file:
+      - ../../.env
+    environment:
+      # Override .env values for the in-cluster DNS layout.
+      # Biz queries → mj-system's pg (via external network).
+      POSTGRES_DEV_HOST: mj-postgres
+      POSTGRES_DEV_PORT: "5432"
+      # Memory checkpointer → mj-agent's own pg.
+      MJ_AGENT_MEMORY_HOST: mj-agent-postgres
+      MJ_AGENT_MEMORY_PORT: "5432"
+      # Redis (future) → mj-agent's own redis.
+      MJ_AGENT_REDIS_HOST: mj-agent-redis
+      MJ_AGENT_REDIS_PORT: "6379"
+      CHAINLIT_HOST: 0.0.0.0
+      CHAINLIT_PORT: "8000"
+    ports:
+      - "8001:8000"
+    depends_on:
+      mj-agent-postgres:
+        condition: service_healthy
+      mj-agent-redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mj-agent", "check"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    networks:
+      - mj-system-network
+      - mj-agent-storage
+    labels:
+      com.mj-agent.environment: "development"
+      com.mj-agent.service: "agent"
+
+  # ========================================
+  # Memory store — postgres dedicated to langgraph checkpointer
+  # ========================================
+  mj-agent-postgres:
+    # Digest-pinned (PR #52 supply-chain hardening; Dependabot bumps via docker ecosystem).
+    image: postgres:16-alpine@sha256:4e6e670bb069649261c9c18031f0aded7bb249a5b6664ddec29c013a89310d50
+    container_name: mj-agent-postgres
+    hostname: mj-agent-postgres
+    environment:
+      # Super-user for the container itself (used by init script + healthcheck).
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${MJ_AGENT_PG_SUPERUSER_PASSWORD:-local-dev-only-replace}
+      # The init script reads these and CREATEs role + database.
+      MJ_AGENT_MEMORY_DB: ${MJ_AGENT_MEMORY_DB:-mj_agent_memory}
+      MJ_AGENT_MEMORY_USER: ${MJ_AGENT_MEMORY_USER:-mj_agent_memory}
+      MJ_AGENT_MEMORY_PASSWORD: ${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod}
+      TZ: Asia/Shanghai
+    volumes:
+      - mj-agent-postgres-data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+    ports:
+      # Host:5433 → container:5432. 5432 is taken by mj-system's mj-postgres.
+      - "5433:5432"
+    healthcheck:
+      # Use `psql -c 'SELECT 1'` instead of `pg_isready -d <db>` because
+      # pg_isready returns 0 as soon as the SERVER accepts connections —
+      # it does NOT validate that the named DB actually exists. If the
+      # init script fails (or hasn't run yet because PGDATA was already
+      # initialized but the role/DB wasn't created), pg_isready greenlights
+      # the container, mj-agent's depends_on fires, and mj-agent then dies
+      # on `password authentication failed for user "mj_agent_memory"`.
+      # The psql probe forces server-up + DB-exists + super-user reachable,
+      # so failures surface here instead of cascading to mj-agent.
+      # Local socket connection uses `trust` per the alpine image's
+      # default pg_hba.conf — no password needed.
+      # start_period bumped 15s → 30s so the init script (which runs
+      # before the server accepts external connections) has time to
+      # CREATE ROLE + DATABASE before the first probe lands.
+      test: ["CMD-SHELL", "psql -U postgres -d $${MJ_AGENT_MEMORY_DB:-mj_agent_memory} -tc 'SELECT 1' > /dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - mj-agent-storage
+    labels:
+      com.mj-agent.environment: "development"
+      com.mj-agent.service: "memory-postgres"
+
+  # ========================================
+  # Redis — reserved for future use (session cache / streaming / rate limit).
+  # No Python client is wired in agent code yet; container ships ready.
+  # ========================================
+  mj-agent-redis:
+    # Digest-pinned (PR #52 supply-chain hardening; Dependabot bumps via docker ecosystem).
+    image: redis:7-alpine@sha256:286bd4264adb303147270bb2d735352497e950f7b73b2ca42364d63d7daf61ee
+    container_name: mj-agent-redis
+    hostname: mj-agent-redis
+    # Optional auth: if MJ_AGENT_REDIS_PASSWORD is set in .env we enable
+    # requirepass; otherwise redis runs open on the internal network only
+    # (which is acceptable for DEV since the network is bridge-isolated).
+    command: >
+      sh -c '
+        if [ -n "$$MJ_AGENT_REDIS_PASSWORD" ]; then
+          exec redis-server --requirepass "$$MJ_AGENT_REDIS_PASSWORD" --appendonly yes;
+        else
+          exec redis-server --appendonly yes;
+        fi
+      '
+    environment:
+      MJ_AGENT_REDIS_PASSWORD: ${MJ_AGENT_REDIS_PASSWORD:-}
+      TZ: Asia/Shanghai
+    volumes:
+      - mj-agent-redis-data:/data
+    ports:
+      # Host:6379 → container:6379. mj-system has no redis so no clash.
+      - "6379:6379"
+    healthcheck:
+      # Branch on whether requirepass is enabled — `redis-cli ping` fails
+      # with `NOAUTH Authentication required` when the server is started
+      # with `--requirepass`. `--no-auth-warning` silences the auth-warning
+      # noise on stderr when -a is used.
+      test: ["CMD-SHELL", "if [ -z \"$$MJ_AGENT_REDIS_PASSWORD\" ]; then redis-cli ping; else redis-cli -a \"$$MJ_AGENT_REDIS_PASSWORD\" --no-auth-warning ping; fi"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - mj-agent-storage
+    labels:
+      com.mj-agent.environment: "development"
+      com.mj-agent.service: "redis"
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  # External network owned by mj-system; we attach to read biz pg only.
+  # Renamed alias from `mj-backend-network` to `mj-system-network` so the
+  # cross-project intent is unambiguous when reading this file standalone.
+  mj-system-network:
+    name: mj-system-backend-network
+    external: true
+  # Internal-only bridge for mj-agent's own storage stack.
+  mj-agent-storage:
+    name: mj-agent-storage
+    driver: bridge
+    labels:
+      com.mj-agent.network.type: "storage"
+      com.mj-agent.network.isolation: "internal"
+
+# ============================================================
+# Volumes (named at compose-spec level → docker creates as `mj-agent-*-data`)
+# ============================================================
+volumes:
+  mj-agent-postgres-data:
+    name: mj-agent-postgres-data
+    labels:
+      com.mj-agent.volume.service: "memory-postgres"
+      com.mj-agent.volume.backup: "daily"
+  mj-agent-redis-data:
+    name: mj-agent-redis-data
+    labels:
+      com.mj-agent.volume.service: "redis"
+      com.mj-agent.volume.backup: "daily"

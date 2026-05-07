@@ -1,0 +1,47 @@
+# Customer name → codename mapping (ADR-014 落地, Phase 1 sub 1.C 起草版).
+#
+# Phase 1: stub format only — codenames are placeholder hashes; the
+# "anonymize_customer_names" runtime config is **off** in Phase 1, so this
+# file is read but not consulted by the LLM call path. The entity resolver
+# (src/mj_agent/entity/resolver.py) joins this codebook into its output so
+# Phase 2 can flip on anonymization without changing the resolver API.
+#
+# Phase 2 (per ADR-014):
+#   - Codenames re-randomized to avoid size-rank inference (e.g. CUST_<hash>)
+#   - File encrypted at rest; RBAC-controlled access via mj-agent-gateway
+#   - LLM Gateway substitutes canonical → codename on outbound; reverses on
+#     UI inbound based on user role
+#
+# Coverage parity: every institution in src/mj_agent/entity/aliases.yaml
+# SHOULD have an entry here so the resolver can return a codename when
+# anonymization is on. Mismatches are flagged by Phase 2 contract test.
+
+version: "0.1"
+schema_revision: 1
+anonymization_enabled: false  # Phase 2 flips this via runtime config
+
+mappings:
+  - canonical: 上海银行股份有限公司
+    codename: CUST_a1b2
+  - canonical: 江苏银行股份有限公司
+    codename: CUST_c3d4
+  - canonical: 重庆京东盛际小额贷款有限公司
+    codename: CUST_e5f6
+  - canonical: 重庆美团三快小额贷款有限公司
+    codename: CUST_g7h8
+  - canonical: 重庆市与众融资担保有限公司
+    codename: CUST_i9j0
+  - canonical: 天津明东华融资担保有限责任公司
+    codename: CUST_k1l2
+  - canonical: 天津越信融资担保有限责任公司
+    codename: CUST_m3n4
+  - canonical: 华鑫国际信托有限公司
+    codename: CUST_o5p6
+  - canonical: 马上消费金融股份有限公司
+    codename: CUST_q7r8
+  - canonical: 北京银行股份有限公司
+    codename: CUST_s9t0
+  - canonical: 招商银行股份有限公司
+    codename: CUST_u1v2
+  - canonical: 平安银行股份有限公司
+    codename: CUST_w3x4
