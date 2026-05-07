@@ -7,16 +7,17 @@
 #
 # Scope (Phase 1 maintain):
 #   - github-actions: bumps for actions/* + astral-sh/setup-uv used in
-#     `.github/workflows/ci.yml`
+#     `.github/workflows/ci.yml` (PR #51 pinned them to commit SHA;
+#     Dependabot bumps SHA + `# vX.Y.Z` comment together)
+#   - docker: bumps for FROM image digests in `infra/docker/Dockerfile`
+#     and `image:` digests in `docker-compose.mj-agent.yml` (PR #52
+#     pinned them to digest; Dependabot bumps digest + `# tag` comment)
 #
 # Out of scope (deferred):
 #   - pip / uv ecosystem updates: Dependabot's uv support is still
 #     evolving; we manage `uv.lock` manually via `uv sync` for now.
 #     Revisit once Dependabot ships stable uv lock support OR after
 #     Phase 2 plan picks up dependency hygiene as a track.
-#   - docker ecosystem: Dockerfile FROM image bumps could be added but
-#     image tag pinning policy is still TBD; revisit with Phase 2 prod
-#     readiness ADR.
 
 version: 2
 updates:
@@ -48,6 +49,58 @@ updates:
     # potentially breaking changes worth reviewing in isolation.
     groups:
       gha-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── Dockerfile FROM image digests ────────────────────────────────
+  - package-ecosystem: "docker"
+    directory: "/infra/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 3
+    target-branch: "develop"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "maintain(infra)"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "/"
+    groups:
+      docker-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ── docker-compose service image digests ─────────────────────────
+  # Note: Dependabot's `docker-compose` ecosystem watches `image:` lines
+  # in compose files. Same digest-pinning convention as Dockerfile FROM.
+  - package-ecosystem: "docker-compose"
+    directory: "/infra/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 3
+    target-branch: "develop"
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "maintain(infra)"
+      include: "scope"
+    pull-request-branch-name:
+      separator: "/"
+    groups:
+      compose-minor-patch:
         applies-to: version-updates
         update-types:
           - "minor"

@@ -16,7 +16,12 @@
 # =============================================
 
 # ========== Builder ==========
-FROM python:3.13-slim AS builder
+# Pinned to digest for supply-chain hardening (same pattern as PR #51 for
+# CI actions). Dependabot's `docker` ecosystem (.github/dependabot.yml)
+# bumps both the digest AND the `# 3.13-slim` tag comment when upstream
+# publishes new images.
+FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d AS builder
+# tag: 3.13-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc libc6-dev libpq-dev libffi-dev \
@@ -38,7 +43,8 @@ COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
 # ========== Runtime ==========
-FROM python:3.13-slim
+FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d
+# tag: 3.13-slim
 
 # libpq5 = analyst psycopg client; tini = PID-1 signal handling.
 RUN apt-get update && apt-get install -y --no-install-recommends \
