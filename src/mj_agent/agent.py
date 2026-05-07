@@ -22,6 +22,7 @@ from mj_agent.tools import ALL_TOOLS
 
 _ACTIVE_SKILLS: tuple[str, ...] = (
     "biz-domain-context",
+    "mj-ddd-semantics",
     "qcm-analysis",
     "safe-sql-analysis",
 )
@@ -30,16 +31,20 @@ _ACTIVE_SKILLS: tuple[str, ...] = (
 def _build_system_prompt() -> str:
     """Compose the system prompt from the base identity + active skills.
 
-    MVP PR3 splits the legacy ``query-writing`` monolith into three
-    cooperating skills, statically loaded in order:
+    MVP PR3 split the legacy ``query-writing`` into three skills; Phase 1
+    sub 1.D inserts ``mj-ddd-semantics`` between context recall and
+    template authoring so business-concept → physical-column resolution
+    happens *before* SQL drafting:
 
       1. ``biz-domain-context`` — catalog recall via find_biz_context
-      2. ``qcm-analysis`` — QCM-domain SQL templates + curated examples
-      3. ``safe-sql-analysis`` — write/execute/interpret discipline
+      2. ``mj-ddd-semantics``   — DDD layer; metric_part / time_column /
+                                  prev/diff/rate column choice
+      3. ``qcm-analysis``       — QCM SQL templates + curated examples
+      4. ``safe-sql-analysis``  — write/execute/interpret discipline
 
     A dynamic selector (ADR-003 progressive disclosure) is deferred; if
-    token budget pressure surfaces, swap this with a selector that picks
-    1-2 skills per turn.
+    token budget pressure surfaces above ~8k, swap this with a selector
+    that picks 1-2 skills per turn (Phase 1.5 / Phase 2).
     """
     parts = [load_prompt("system"), *(load_skill(name) for name in _ACTIVE_SKILLS)]
     return "\n\n".join(parts)
