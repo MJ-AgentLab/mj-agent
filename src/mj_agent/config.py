@@ -1,8 +1,12 @@
 """Runtime configuration loaded from .env via pydantic-settings.
 
 Profile-aware: `MJ_CONFIG_PROFILE=dev|test|prod` selects the matching
-POSTGRES_{PROFILE}_HOST/PORT pair. Variable naming aligns with mj-system so
-that a merged .env works in co-deployment (ADR-008).
+POSTGRES_{PROFILE}_HOST/PORT pair. Variable naming follows mj-system
+convention for **operational consistency** across DEV/TEST/PROD profile
+matrix (ADR-008) — **not** to share .env files between projects. mj-agent
+is an independent compose project with its own secrets pipeline (separate
+secrets.enc + separate team password); biz pg is accessed only as a
+consumer via the analyst RO role.
 """
 
 from __future__ import annotations

@@ -162,8 +162,12 @@ memory namespace 设计为 `(team, role, user, memory_type)`：
 
 memory 检索、skill 加载均按用户角色权限过滤，防止低权限用户意外触发高权限能力。**这不涉及数据隔离**（客户业务数据在内部允许跨团队使用），而是能力/视图层面的分层。
 
-**ADR-008 Co-deployment with mj-system**
-mj-agent 作为 mj-system 的兄弟服务部署在同一 Docker 环境中（DEV/TEST/PROD 三套）。
+**ADR-008 Cross-System Boundary with mj-system**
+mj-agent 是**独立 compose project**（自带 mj-agent-postgres + mj-agent-redis 存储栈），
+通过 `mj-system-backend-network` (external=true) 仅以 consumer 身份访问 mj-system 的 biz pg
+（analyst RO role）。DEV/TEST/PROD 三环境矩阵与 mj-system 时间表对齐保持运维一致性，
+但 lifecycle / compose project / 解密管道全部独立——mj-system 与 mj-agent 互不影响。
+storage-stack PR (#42-#46) 实施了从早期"兄弟服务"形态到当前独立形态的演进。
 
 **ADR-009 biz 域为主数据源**
 mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层。
@@ -180,11 +184,12 @@ mj-agent 作为 MJ-AgentLab 的一级仓库存在，与 mj-system、mj-agentlab-
 - **契约管理**：biz 域访问契约文档化存于 mj-agent 仓库 `docs/contracts/mj-agent-to-mj-system.md`
 - **向 marketplace 贡献**：mj-agent 的通用 skills（特别是 `mj-ddd-semantics`）可发布到 marketplace
 
-**ADR-011 biz schema 三层同步机制**
+**Future ADR (Phase 2): biz schema 三层同步机制**
+> ⚠️ ADR 编号待立项；早期 plan 占位编号 "ADR-011" 已被 [[../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011 Doc Versioning]] 占用。下方设计纲要保留作为 Phase 2 参考。
 - L1 结构层（自动化）：cross-repo dispatch + 自动 PR
 - L2 语义层（半自动）：PR review gate + 人工补充
 - L3 经验层（异步）：episodic memory 运行时积累
-- 兜底：CI 必跑契约测试
+- 兜底：CI 必跑契约测试（Phase 1 已落地，见 `tests/contract/*`）
 
 ---
 
@@ -1002,7 +1007,7 @@ roles:
 ## 12. 与 MJ-AgentLab 生态的深度对接
 
 ### 12.1 mj-system（一级仓库，核心依赖）
-数据依赖（biz 域只读） + 部署依赖（docker-compose 兄弟服务） + 基础设施依赖 + 生命周期耦合 + 运维契约 + CONTRACT 文档。
+数据依赖（biz 域只读 consumer 关系） + 部署依赖（独立 compose project，通过 `mj-system-backend-network` external attach；ADR-008） + 基础设施依赖（mj-system 提供 biz pg）+ 环境矩阵对齐（DEV/TEST/PROD 时间表）+ 运维契约 + CONTRACT 文档。
 
 ### 12.2 mj-agentlab-marketplace（一级仓库，插件生态）
 作为消费者：复用 mj-doc / mj-git / mj-n8n / mj-ops 插件。

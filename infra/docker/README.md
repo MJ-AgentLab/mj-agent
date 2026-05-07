@@ -43,7 +43,7 @@ mj-postgres (biz)  ◄────────────────  mj-agent
 
 ## Quick start
 
-### 单独跑 (no mj-system co-deploy)
+### 单独跑 (no mj-system stack)
 
 ```bash
 # 1. 配 .env（用 setup-env.ps1 注密钥；或手填 POSTGRES_ANALYST_USER/PASSWORD + ARK_API_KEY）
@@ -111,7 +111,7 @@ Compose 文件里 mj-agent 的 `environment:` 段已经把 `POSTGRES_DEV_HOST` /
 
 Chainlit 暴露在 host:**8001**；mj-agent-postgres host:**5433**；mj-agent-redis host:**6379**。
 
-> **为何 standalone 而非 co-deploy via `-f` chain？** 历史上 storage-stack PR + hotfix PR #43 推荐 "from mj-system root with multiple `-f`" 的形态，但那会把 mj-agent 全部容器并入 mj-system compose project（Docker Desktop 列表里看不到独立 mj-agent group）+ 强制使用 `${MJ_AGENT_ROOT}` 路径变量解决跨 project_directory 解析问题。本 PR (storage-stack-standalone) 改成 standalone：mj-agent 完全独立 compose project，路径相对当前 compose 文件位置（无需 env var），mj-system 栈不受任何影响。
+> **为何 standalone 而非 multi-`-f` chain（历史路径）？** 历史上 storage-stack PR + hotfix PR #43 推荐 "from mj-system root with multiple `-f`" 的形态，但那会把 mj-agent 全部容器并入 mj-system compose project（Docker Desktop 列表里看不到独立 mj-agent group）+ 强制使用 `${MJ_AGENT_ROOT}` 路径变量解决跨 project_directory 解析问题。PR #44 standalone 改造后：mj-agent 完全独立 compose project，路径相对当前 compose 文件位置（无需 env var），mj-system 栈不受任何影响。
 >
 > **不推荐**继续用 `docker compose -f mj-system.yml -f mj-agent.yml ...` 形态——会触发 `name: mj-agent` 与 mj-system 隐式 project name 的冲突，把 mj-system 容器名也重命名为 `mj-agent-*`。两边各自 `up`/`down`，仅靠 `mj-system-backend-network` (external) 串联。
 

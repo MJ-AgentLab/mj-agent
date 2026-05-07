@@ -18,4 +18,15 @@ Out of scope for 1.G (Phase 2):
   - cross-repo skill drift (SKILL referring to mj-system table that no
     longer exists in mj-system)
   - column-level contract (currently only table + time-column level)
+
+**Note on schema sync intent (Phase 1)**:
+  Contract tests here are a **defensive fail-then-manual-fix** mechanism —
+  when biz schema drifts, the relevant test fails on the analyst's local
+  run, signalling the maintainer to update ``qcm_catalog.yaml`` /
+  ``mj-ddd-semantics/SKILL.md`` by hand. mj-agent does **not** actively
+  pull mj-system schema changes; the automated sync mechanism is planned
+  for Phase 2 (see ``plans/mj-agent-roadmap-v1.6.md`` §4.4 "schema
+  自动同步"). CI runs these tests in skip-clean mode (no analyst creds in
+  the runner) so the gate is informational on PRs and authoritative on
+  local maintainer runs.
 """

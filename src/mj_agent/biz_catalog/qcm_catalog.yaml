@@ -16,8 +16,17 @@
 #   the STANDARD, this YAML must be re-synced (per MVP plan v2 §Assumptions
 #   §mj-system 上游契约状态).
 #
-# Bundle path:
+# Bundle path (LOCAL DEV ONLY — for offline drift detection reference):
 #   D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT
+#
+#   ⚠️ This path is **not** consumed by runtime code or CI/Docker containers.
+#   It only exists as a hint for the maintainer running drift checks
+#   locally (scripts/diff_biz_schema.py). The authoritative upstream
+#   contract lives in mj-system repo:
+#     `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4
+#   When mj-agent is deployed in containers / CI environments where this
+#   local vault path doesn't exist, the catalog still works correctly —
+#   the YAML body itself is the only data source loaded at runtime.
 #
 # Authoritative documents this YAML mirrors (with drift annotations):
 #   - PR1/docs/infrastructure/database/[GUIDE]_Biz_Domain_External_Consumer_Contract.md

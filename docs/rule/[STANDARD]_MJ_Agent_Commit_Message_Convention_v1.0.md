@@ -54,7 +54,7 @@ aliases:
 - **可读性**：贡献者一眼即知变更性质（feat / fix / infra ...）
 - **可追溯性**：`git log --grep` 可按类型与子系统筛选
 - **自动化友好**：为后续 PR-title 校验与 CHANGELOG 生成（详见 [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]] §References 中的 `amannn/action-semantic-pull-request` 计划）提供结构化输入
-- **co-deployment 一致性**：与 mj-system 的 commit 习惯保持表层相同（同一开发者切换两仓时无需切换语法），仅在 scope 列表上针对 mj-agent 模块重建
+- **跨项目运维一致性**：与 mj-system 的 commit 习惯保持表层相同（同一开发者切换两仓时无需切换语法）；仅在 scope 列表上针对 mj-agent 模块重建。ADR-008 已确定两项目独立 compose project + 环境矩阵对齐
 
 > [!NOTE]
 > 与 mj-system 规范的差异点：

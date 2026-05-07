@@ -147,7 +147,7 @@ LANGSMITH_API_KEY=
 
 mj-system 脚本默认后续还要跑 MCP plugin 的 `setup-ops-env.ps1` / `setup-git-env.ps1`（见 mj-system setup-env.ps1 210-211 行的 "Next steps" 文案）。mj-agent 无此分层，**此段文案必须彻底改写**，否则会把开发者引到不存在的路径。
 
-两项目的加密文件 **故意不交叉可解**（独立口令），满足 ADR-006 安全边界精神 —— 即便 mj-system 口令泄漏，mj-agent 的 analyst 凭据与 Ark Key 仍受保护。这也意味着日后 co-deployment 合并 `.env` 的场景下，开发者需要**依次**运行两个项目的 `setup-env.ps1`；这不是缺陷，是刻意设计。
+两项目的加密文件 **故意不交叉可解**（独立口令），满足 ADR-006 安全边界精神 —— 即便 mj-system 口令泄漏，mj-agent 的 analyst 凭据与 Ark Key 仍受保护。mj-agent 与 mj-system 是独立项目（ADR-008），各自拥有 secrets 解密管道；同时部署在一台开发机时，分别运行两仓的 `setup-env.ps1`——这不是缺陷，是刻意设计。
 
 ## 端到端验证（执行人在实现完成后按序执行）
 

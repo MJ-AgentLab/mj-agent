@@ -1,8 +1,15 @@
 # mj-agent secrets
 
-本目录承载 mj-agent 运行所需的 4 个敏感变量的加密分发与解密注入：
-`POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` /
-`ARK_API_KEY` / `LANGSMITH_API_KEY`。
+本目录承载 mj-agent 运行所需的 6 个敏感变量的加密分发与解密注入：
+
+- `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD`（biz pg consumer access；mj-system 颁发的 analyst RO role）
+- `ARK_API_KEY`（Volcengine Ark LLM）
+- `LANGSMITH_API_KEY`（observability，可选）
+- `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（mj-agent 自家 memory pg 的 RW role；storage-stack PR 加入）
+
+**与 mj-system 的关系**：mj-agent 是独立 compose project（[[../docs/adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]），
+**不共享 mj-system 的 secrets.enc / 团队口令**。变量命名虽与 mj-system 对齐（操作一致性），
+但解密管道完全独立——本 secrets.enc 由 mj-agent 团队自管。
 
 ## 文件清单
 
@@ -54,5 +61,6 @@ Remove-Item config\secrets.conf  # 切勿提交
 
 mj-agent 的 `secrets.enc` 与 mj-system 的同名文件**故意采用不同口令**，
 契合 ADR-006 数据边界隔离精神：mj-system 口令泄漏时 mj-agent 的
-`analyst` 凭据与 Ark API key 仍受保护。co-deployment 场景下需要
-**依次**运行两个仓的 `setup-env.ps1`，这是刻意设计而非缺陷。
+`analyst` 凭据与 Ark API key 仍受保护。mj-agent 与 mj-system 同时部署
+在一台开发机时，分别在各自仓库运行 `setup-env.ps1` 即可——两个
+解密管道**完全独立**，这是刻意设计而非缺陷。
