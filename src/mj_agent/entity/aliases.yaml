@@ -1,0 +1,81 @@
+# Entity dictionary for mj-agent (Phase 1 sub 1.C).
+#
+# Purpose: map user-typed names (短名 / 别称 / 拼音缩写) → canonical name +
+# the runtime DB key (tenant_id / pcat_l1) that the LLM should put into SQL.
+#
+# Two layers per entity family:
+#   L1 exact: query exactly matches one of {canonical, aliases[]}
+#   L2 fuzzy: rapidfuzz.process.extract score ≥ FUZZY_THRESHOLD on aliases[]
+#
+# Phase 1 starter — covers the 10-20 most-asked-about institutions + the
+# product families seen in MVP walkthrough trace. Phase 2:
+#   - tenant_id filled from biz_dwd.dwd_dim_institution snapshot
+#   - alias coverage extended via LangSmith trace miss audit (E8 ≥ 80%)
+#   - codename column joins config/customer_codebook.yaml (ADR-014)
+
+version: "0.1"
+schema_revision: 1
+
+institutions:
+  - canonical: 上海银行股份有限公司
+    aliases: [上海银行, SHB, 上海银行股份]
+    tenant_id: ""
+    industry: 商业银行
+  - canonical: 江苏银行股份有限公司
+    aliases: [江苏银行, JSB, 江苏银行股份]
+    tenant_id: ""
+    industry: 商业银行
+  - canonical: 重庆京东盛际小额贷款有限公司
+    aliases: [京东小贷, 重庆京东, 京东盛际, JD小贷]
+    tenant_id: ""
+    industry: 小额贷款
+  - canonical: 重庆美团三快小额贷款有限公司
+    aliases: [美团小贷, 重庆美团, 美团三快, MT小贷]
+    tenant_id: ""
+    industry: 小额贷款
+  - canonical: 重庆市与众融资担保有限公司
+    aliases: [与众担保, 与众融资担保, 重庆与众]
+    tenant_id: ""
+    industry: 融资担保
+  - canonical: 天津明东华融资担保有限责任公司
+    aliases: [明东华担保, 天津明东华, 明东华融资担保]
+    tenant_id: ""
+    industry: 融资担保
+  - canonical: 天津越信融资担保有限责任公司
+    aliases: [越信担保, 天津越信, 越信融资担保]
+    tenant_id: ""
+    industry: 融资担保
+  - canonical: 华鑫国际信托有限公司
+    aliases: [华鑫信托, 华鑫国际, HX信托]
+    tenant_id: ""
+    industry: 信托
+  - canonical: 马上消费金融股份有限公司
+    aliases: [马上消金, 马上金融, MS消金]
+    tenant_id: ""
+    industry: 消费金融
+  - canonical: 北京银行股份有限公司
+    aliases: [北京银行, BJB, 北京银行股份]
+    tenant_id: ""
+    industry: 商业银行
+  - canonical: 招商银行股份有限公司
+    aliases: [招商银行, 招行, CMB, China Merchants Bank]
+    tenant_id: ""
+    industry: 商业银行
+  - canonical: 平安银行股份有限公司
+    aliases: [平安银行, PAB, Ping An Bank]
+    tenant_id: ""
+    industry: 商业银行
+
+products:
+  - canonical: 百云系列
+    aliases: [百云, BY, 百云产品]
+    pcat_l1: 百云
+  - canonical: 蚂蚁系列
+    aliases: [蚂蚁, MY, 蚂蚁产品]
+    pcat_l1: 蚂蚁
+  - canonical: 京东系列
+    aliases: [京东, JD, 京东产品]
+    pcat_l1: 京东
+  - canonical: 美团系列
+    aliases: [美团, MT, 美团产品]
+    pcat_l1: 美团
