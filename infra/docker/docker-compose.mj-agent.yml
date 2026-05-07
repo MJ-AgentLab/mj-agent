@@ -15,7 +15,7 @@
 #
 # Services:
 #   mj-agent             chainlit UI + agent runtime
-#   mj-agent-postgres    langgraph PostgresSaver backing store
+#   mj-agent-postgres    langgraph AsyncPostgresSaver backing store
 #   mj-agent-redis       reserved for future use (no Python client wired)
 #
 # Pre-requisite:

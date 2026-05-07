@@ -1,8 +1,8 @@
 -- 001_checkpoint_tables.sql
 --
--- Reference DDL for the LangGraph PostgresSaver checkpoint tables.
+-- Reference DDL for the LangGraph AsyncPostgresSaver checkpoint tables.
 -- The actual tables are created **at runtime** by
--- ``PostgresSaver.setup()`` (called from ``open_checkpointer()``);
+-- ``AsyncPostgresSaver.setup()`` (called from ``open_checkpointer()``);
 -- this file exists for ops / DBA review and as a quick visualization
 -- of the schema langgraph owns.
 --

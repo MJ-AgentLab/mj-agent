@@ -49,4 +49,4 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
     GRANT CREATE  ON DATABASE "${MJ_AGENT_MEMORY_DB}" TO "${MJ_AGENT_MEMORY_USER}";
 EOSQL
 
-echo "[mj-agent-memory init] done. langgraph PostgresSaver.setup() will create checkpoint tables on first agent run."
+echo "[mj-agent-memory init] done. langgraph AsyncPostgresSaver.setup() will create checkpoint tables on first agent run."
