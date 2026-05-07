@@ -23,6 +23,7 @@ track: code
 | 文档 | 类型 | 摘要 |
 |------|------|------|
 | [Developer Onboarding](./[GUIDE]_Developer_Onboarding.md) | GUIDE | mj-agent 新成员（或长假回归者）端到端上手路径——仓库与远端 / 分支 / 本地环境 / 测试 / 双轨道文档 / 提交推送 / Studio 试跑 |
+| [Analyst Day-One](./[GUIDE]_Analyst_Day_One.md) | GUIDE | mj-agent 试用分析师 day-1 上手指南—— 30 分钟内拿到内网 Chainlit URL、跑通月报场景闭环、知道何时该写 ISSUE 反馈 |
 
 ---
 
