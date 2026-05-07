@@ -1,0 +1,54 @@
+# Dependabot configuration for mj-agent
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Goal: catch action / dependency deprecations early (e.g. the Node.js 20
+# deprecation that surfaced in PR #46 / fixed in PR #48) by letting
+# Dependabot open weekly PRs against the develop branch.
+#
+# Scope (Phase 1 maintain):
+#   - github-actions: bumps for actions/* + astral-sh/setup-uv used in
+#     `.github/workflows/ci.yml`
+#
+# Out of scope (deferred):
+#   - pip / uv ecosystem updates: Dependabot's uv support is still
+#     evolving; we manage `uv.lock` manually via `uv sync` for now.
+#     Revisit once Dependabot ships stable uv lock support OR after
+#     Phase 2 plan picks up dependency hygiene as a track.
+#   - docker ecosystem: Dockerfile FROM image bumps could be added but
+#     image tag pinning policy is still TBD; revisit with Phase 2 prod
+#     readiness ADR.
+
+version: 2
+updates:
+  # ── GitHub Actions used in CI workflows ──────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 5
+    target-branch: "develop"
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      # Align with mj-agent commit conv (STANDARD §4): infra scope.
+      prefix: "maintain(infra)"
+      include: "scope"
+    # Keep major version bumps gated behind manual review (security +
+    # breaking-change scrutiny). Minor / patch can auto-merge once
+    # we add a workflow for that (Phase 2). Patch / minor still go
+    # through CI which is now mandatory (PR #46).
+    pull-request-branch-name:
+      separator: "/"
+    # Group all minor/patch bumps into one PR per week to avoid PR
+    # churn; majors remain individual PRs because each carries
+    # potentially breaking changes worth reviewing in isolation.
+    groups:
+      gha-minor-patch:
+        applies-to: version-updates
+        update-types:
+          - "minor"
+          - "patch"
