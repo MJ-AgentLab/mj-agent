@@ -105,9 +105,14 @@ docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 # Storage-stack PR — full DEV stack (mj-agent + mj-agent-postgres + mj-agent-redis)
-# from mj-system repo root, with mj-agent at ../mj-agent:
+# Sibling layout (mj-agent at ../mj-agent from mj-system root):
 #   docker compose -f docker-compose.yml -f docker-compose.override.yml \
 #                  -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
+#                  up -d mj-agent
+# Worktree layout (e.g. projects/mj-{agent,system}/develop) — set MJ_AGENT_ROOT:
+#   MJ_AGENT_ROOT=../../mj-agent/develop docker compose -f docker-compose.yml \
+#                  -f docker-compose.override.yml \
+#                  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
 #                  up -d mj-agent
 # (depends_on automatically pulls in mj-agent-postgres + mj-agent-redis)
 ```

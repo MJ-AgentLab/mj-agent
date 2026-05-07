@@ -3,12 +3,35 @@
 # (mj-agent-postgres for memory checkpointer; mj-agent-redis reserved
 # for future use — session cache / streaming buffer / rate limit).
 #
+# Path resolution (storage-stack hotfix PR):
+#   Docker Compose v2 resolves ALL relative paths in compose files
+#   relative to the project_directory (= directory of the FIRST
+#   compose file passed to `-f`), NOT relative to this compose file.
+#   When this compose is included as the 3rd `-f` from mj-system root,
+#   project_directory = mj-system/develop, and `../../.env` would
+#   resolve to projects/.env (wrong) instead of mj-agent/.env.
+#
+#   Fix: parametrize all mj-agent-side paths with ${MJ_AGENT_ROOT}.
+#   Default = `../mj-agent` works for the documented sibling layout
+#   (mj-system and mj-agent as sibling repos). Worktree layouts that
+#   put mj-agent elsewhere (e.g. projects/mj-agent/develop next to
+#   projects/mj-system/develop) override via shell env:
+#       MJ_AGENT_ROOT=../../mj-agent/develop docker compose ...
+#
 # Usage A — co-deploy with mj-system (recommended for DEV):
 #   from mj-system repo root, run:
+#     # for sibling layout (../mj-agent):
 #     docker compose \
 #       -f docker-compose.yml \
 #       -f docker-compose.override.yml \
 #       -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
+#       up -d mj-agent
+#
+#     # for worktree layout (../../mj-agent/develop):
+#     MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
+#       -f docker-compose.yml \
+#       -f docker-compose.override.yml \
+#       -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
 #       up -d mj-agent
 #
 #   This brings up mj-agent + mj-agent-postgres + mj-agent-redis on top
@@ -22,7 +45,7 @@
 #
 # Usage B — standalone (no mj-system):
 #   docker run mj-agent + manually export POSTGRES_DEV_HOST. Storage
-#   stack only spins biz queries will fail until a real biz pg is
+#   stack only spins; biz queries will fail until a real biz pg is
 #   reachable. See infra/docker/README.md §Quick start.
 #
 # Co-deploy notes:
@@ -39,16 +62,14 @@
 services:
   mj-agent:
     build:
-      # Build context = mj-agent project root (relative to this file's location).
-      context: ../../
+      # Build context = mj-agent project root.
+      context: ${MJ_AGENT_ROOT:-../mj-agent}
       dockerfile: infra/docker/Dockerfile
     image: mj-agent:0.1
     container_name: mj-agent
     hostname: mj-agent
     env_file:
-      # Path relative to *this compose file*. From mj-system repo's working dir
-      # the relative path is ../mj-agent/.env once you `-f ../mj-agent/...yml`.
-      - ../../.env
+      - ${MJ_AGENT_ROOT:-../mj-agent}/.env
     environment:
       # Override .env values for the in-cluster DNS layout.
       # Biz queries → mj-system's pg.
@@ -101,7 +122,7 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - mj-agent-postgres-data:/var/lib/postgresql/data
-      - ./postgres-init:/docker-entrypoint-initdb.d:ro
+      - ${MJ_AGENT_ROOT:-../mj-agent}/infra/docker/postgres-init:/docker-entrypoint-initdb.d:ro
     ports:
       # Host:5433 → container:5432. 5432 is taken by mj-system's mj-postgres.
       # If running standalone (no mj-system), 5432 → 5432 also works.

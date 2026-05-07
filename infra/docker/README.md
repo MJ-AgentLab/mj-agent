@@ -88,13 +88,22 @@ mj-system 已经在 `docker-compose.yml` + `docker-compose.override.yml` 起了�
 mj-agent + 存储栈加进同一 stack：
 
 ```bash
-# from mj-system repo root, with mj-agent checked out at ../mj-agent
+# Sibling layout (mj-agent at ../mj-agent from mj-system root)
 docker compose \
   -f docker-compose.yml \
   -f docker-compose.override.yml \
   -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
   up -d mj-agent
+
+# Worktree layout (e.g. projects/mj-{agent,system}/develop) — set MJ_AGENT_ROOT
+MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.override.yml \
+  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
+  up -d mj-agent
 ```
+
+> **Path resolution gotcha** (storage-stack hotfix): Docker Compose v2 resolves all relative paths in compose files relative to the **project_directory** (= directory of the FIRST `-f` file), NOT to the compose file location. Mj-agent's compose path defaults to `../mj-agent` (sibling layout). For other layouts, set `MJ_AGENT_ROOT` in the shell before running compose. Without this, `env_file` / `build.context` / `postgres-init` bind mount all silently resolve to wrong paths and the deploy looks healthy but mj-agent can't connect to memory DB.
 
 `up -d mj-agent` 会同时拉起 `mj-agent-postgres` + `mj-agent-redis`（mj-agent service depends_on 它们 healthy）。
 
