@@ -26,7 +26,7 @@ def test_mj_ddd_semantics_loadable_and_active() -> None:
 
 
 def test_mj_ddd_semantics_in_system_prompt() -> None:
-    """system prompt now embeds 4 skills in expected order."""
+    """system prompt embeds mj-ddd-semantics between recall and templates."""
     prompt = _build_system_prompt()
     assert prompt.count("# Skill: biz-domain-context") == 1
     assert prompt.count("# Skill: mj-ddd-semantics") == 1
@@ -50,8 +50,9 @@ def test_mj_ddd_semantics_in_system_prompt() -> None:
     )
 
 
-def test_active_skills_count_four() -> None:
-    assert len(_ACTIVE_SKILLS) == 4
+def test_active_skills_count() -> None:
+    """Skill count: 4 after 1.D, 8 after 1.E (Phase 1 sub 1.E expansion)."""
+    assert len(_ACTIVE_SKILLS) == 8
 
 
 @pytest.mark.parametrize(
