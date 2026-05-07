@@ -39,16 +39,17 @@ from mj_agent import config as _cfg
 def memory_conn_string() -> str:
     """Build the libpq URI for the memory DB.
 
-    Resolves host/port from ``MJ_CONFIG_PROFILE`` (same machine as biz DB
-    in DEV; ops can override per-profile in TEST/PROD). ``settings`` is
-    looked up via the module so tests can ``monkeypatch.setattr(config,
-    "settings", ...)`` to inject overrides.
+    Reads dedicated ``MJ_AGENT_MEMORY_HOST/PORT`` (storage-stack PR);
+    biz-domain pg credentials are not reused so a hostile checkpointer
+    leak cannot reach biz tables. ``settings`` is looked up via the
+    module so tests can ``monkeypatch.setattr(config, "settings", ...)``
+    to inject overrides.
     """
     s = _cfg.settings
     user = quote_plus(s.mj_agent_memory_user)
     password = quote_plus(s.mj_agent_memory_password.get_secret_value())
-    host = s.biz_pg_host
-    port = s.biz_pg_port
+    host = s.mj_agent_memory_host
+    port = s.mj_agent_memory_port
     db = s.mj_agent_memory_db
     return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
