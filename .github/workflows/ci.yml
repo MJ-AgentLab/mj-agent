@@ -19,8 +19,11 @@ jobs:
     name: ci
     runs-on: ubuntu-latest
     steps:
+      # Action references below are pinned to commit SHA + version comment
+      # (supply-chain hardening). Dependabot recognises the `# vX.Y.Z` comment
+      # and bumps SHA + comment together when upstream publishes new versions.
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Read Python version
         id: pyver
@@ -28,15 +31,12 @@ jobs:
         run: echo "version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ steps.pyver.outputs.version }}
 
       - name: Install uv
-        # astral-sh/setup-uv hasn't published a moving `v8` major tag yet
-        # (v1-v7 exist as moving tags; v8.0.0 / v8.1.0 are specific releases).
-        # Pin to v8.1.0 explicit; revisit when @v8 lands.
-        uses: astral-sh/setup-uv@v8.1.0
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Sync dependencies
         run: uv sync --frozen || uv sync
