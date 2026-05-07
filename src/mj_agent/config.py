@@ -72,13 +72,26 @@ class Settings(BaseSettings):
     sql_max_rows: int = 500
     sql_statement_timeout_sec: int = 60
 
-    # ── 5. Memory DB (Phase 1 sub 1.A) ────────────────────────────────
-    # Separate database from biz domain; checkpointer needs RW. Reuses
-    # POSTGRES_{PROFILE}_HOST/PORT but with its own user/db.
+    # ── 5. Memory storage (mj-agent-owned) ────────────────────────────
+    # Phase 1 sub 1.A introduced the checkpointer; storage-stack PR moves
+    # the actual host/port out of POSTGRES_{PROFILE}_* (biz domain) onto
+    # a dedicated mj-agent postgres container. Defaults fall back to
+    # localhost:5432 so non-Docker dev still works (point them at any
+    # local postgres you own).
+    mj_agent_memory_host: str = "localhost"
+    mj_agent_memory_port: int = 5432
     mj_agent_memory_db: str = "mj_agent_memory"
     mj_agent_memory_user: str = ""
     mj_agent_memory_password: SecretStr = SecretStr("")
     mj_agent_memory_pool_max: int = 10
+
+    # Redis: container is provisioned in the storage stack but no Python
+    # client is wired yet. Settings are declared so future code (session
+    # cache / streaming buffers / rate limit) can pick them up without a
+    # config migration. Empty host disables — checkpointer / agent ignore.
+    mj_agent_redis_host: str = ""
+    mj_agent_redis_port: int = 6379
+    mj_agent_redis_password: SecretStr = SecretStr("")
 
     # ── 6. Chainlit UI (Phase 1 sub 1.A) ──────────────────────────────
     chainlit_host: str = "127.0.0.1"

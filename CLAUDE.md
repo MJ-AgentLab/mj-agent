@@ -29,12 +29,26 @@ Tools   : src/mj_agent/tools/biz_context.py            (find_biz_context)
 Catalog : src/mj_agent/biz_catalog/qcm_catalog.yaml     (mirror STANDARD §2-§4)
           src/mj_agent/biz_catalog/{loader,finder}.py
 Memory  : src/mj_agent/memory/checkpointer.py           (Phase 1 sub 1.A;
-          PostgresSaver against mj_agent_memory DB; thread persistence)
+          PostgresSaver against mj_agent_memory DB on the dedicated
+          mj-agent-postgres container — storage-stack PR; was originally
+          colocated with mj-system's mj-postgres in 1.A and 1.H, then
+          decoupled to its own pg + a redis container (future use))
 CLI     : src/mj_agent/server/cli.py                    (typer; `mj-agent
           serve` / `mj-agent check`)
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
           infra/docker/{Dockerfile, entrypoint.sh,           (Phase 1 sub
-          docker-compose.mj-agent.yml, README.md}            1.H; E2)
+          docker-compose.mj-agent.yml, README.md,            1.H; E2)
+          postgres-init/01-bootstrap-mj-agent-memory.sh      (storage-stack
+          }                                                   PR; auto-creates
+                                                             memory DB on
+                                                             container init)
+Storage : mj-agent-postgres container — memory checkpointer (langgraph
+          PostgresSaver tables). Decoupled from mj-system's mj-postgres
+          so analyst-RO biz queries and mj-agent's own RW state never
+          share connection pools.
+          mj-agent-redis container — provisioned but no Python client
+          wired yet; reserved for session cache / streaming buffer /
+          rate limit (storage-stack PR).
 Config  : src/mj_agent/config.py — pydantic-settings over .env
 ```
 
@@ -89,7 +103,13 @@ uv run mypy src/mj_agent                   # type-check
 # Phase 1 sub 1.H — Docker (DEV co-deploy with mj-system)
 docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
-# co-deploy snippet: infra/docker/docker-compose.mj-agent.yml
+
+# Storage-stack PR — full DEV stack (mj-agent + mj-agent-postgres + mj-agent-redis)
+# from mj-system repo root, with mj-agent at ../mj-agent:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml \
+#                  -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
+#                  up -d mj-agent
+# (depends_on automatically pulls in mj-agent-postgres + mj-agent-redis)
 ```
 
 Studio dev walkthrough (env + verification matrix + LangSmith trace
@@ -118,7 +138,10 @@ Aligned with mj-system's naming so co-deployment can merge .env files
 safely: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
 PASSWORD` + `MJ_CONFIG_PROFILE`. Phase 1 sub 1.A added `MJ_AGENT_MEMORY_*`
 (separate RW user + database for langgraph checkpointer) and
-`CHAINLIT_HOST/PORT`. See `.env.example` for the full list.
+`CHAINLIT_HOST/PORT`. The storage-stack PR added
+`MJ_AGENT_MEMORY_HOST/PORT` (decoupled from biz pg) +
+`MJ_AGENT_REDIS_HOST/PORT/PASSWORD` (future use; container ready, no
+Python client wired). See `.env.example` for the full list.
 
 The standard way to provision `.env` is `.\scripts\setup-env.ps1`, which
 decrypts `config/secrets.enc` (AES-256-CBC + PBKDF2) using a

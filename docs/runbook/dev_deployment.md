@@ -24,8 +24,9 @@ track: code
 | mj-system DEV 栈已起 | `docker ps --filter name=mj-system` 看到 `mj-app` + `mj-postgres` healthy | 先在 mj-system repo 跑 `docker compose up -d` |
 | `analyst` 角色凭据 | `.env` 中 `POSTGRES_ANALYST_USER/PASSWORD` 非空 | `scripts\setup-env.ps1` 解密 secrets.enc |
 | Volcengine Ark API key | `.env` 中 `ARK_API_KEY` 非空 | 同上 |
-| `mj_agent_memory` DB 已建 | `psql ... -c '\\l mj_agent_memory'` 命中 | 跑 `src/mj_agent/memory/migrations/001_checkpoint_tables.sql` 中 DBA 段 |
+| Memory DB 角色密码 | `.env` 中 `MJ_AGENT_MEMORY_USER/PASSWORD` 非空（首次 up 时被 init script 用来创 role；不需在 mj-system pg 上预建任何东西——storage-stack PR 后 mj-agent 自带 postgres 容器自动 bootstrap）| `.env.example` 已给 DEV 默认值，照抄即可 |
 | 内网入口端口 (host:8001) 未被占用 | `netstat -ano \| findstr :8001` 空 | 改 docker-compose.mj-agent.yml ports 映射 |
+| host 5433 / 6379 未被占用 | `netstat -ano \| findstr ":5433 :6379"` 空 | mj-agent-postgres / mj-agent-redis 端口；改 ports 映射 |
 
 ## 2. 部署步骤
 
@@ -43,12 +44,18 @@ docker image ls mj-agent:0.1   # 验证镜像存在；体积 ~ 780MB
 ```bash
 cp .env.example .env
 .\scripts\setup-env.ps1        # 注入 4 个团队密钥（Windows）
-# 编辑 .env，将 POSTGRES_DEV_HOST 改为 docker compose 内的 service name：
-#     POSTGRES_DEV_HOST=mj-postgres
-# (compose 文件已自动覆盖此值，但本地 docker run 模式需要手动改)
+
+# .env 需要的 6 个键（前 4 个由 setup-env.ps1 注入；后 2 个是 .env.example 默认值，照抄即可改）：
+#   POSTGRES_ANALYST_USER  / POSTGRES_ANALYST_PASSWORD   ← 团队密钥
+#   ARK_API_KEY                                          ← 团队密钥
+#   LANGSMITH_API_KEY                                    ← 团队密钥
+#   MJ_AGENT_MEMORY_USER=mj_agent_memory                 ← .env.example 默认；首次 up 时被 mj-agent-postgres 容器 init 用来创 role
+#   MJ_AGENT_MEMORY_PASSWORD=local-dev-only-replace-in-prod ← 同上；DEV 占位密码可保留
+#
+# Compose 文件已自动覆盖 POSTGRES_DEV_HOST / MJ_AGENT_MEMORY_HOST / MJ_AGENT_REDIS_HOST 为 service name；不需手动改。
 ```
 
-### 2.3 加入 mj-system DEV 栈
+### 2.3 加入 mj-system DEV 栈（含存储栈）
 
 mj-system repo 根目录（mj-agent checkout 在同级 `../mj-agent/`）：
 
@@ -59,15 +66,19 @@ docker compose \
   -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
   up -d mj-agent
 
-docker ps --filter name=mj-agent --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker ps --filter "name=mj-agent" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 ```
 
 期望输出：
 
 ```
-NAMES       STATUS                      PORTS
-mj-agent    Up 30 seconds (healthy)     0.0.0.0:8001->8000/tcp
+NAMES                STATUS                      PORTS
+mj-agent             Up 30 seconds (healthy)     0.0.0.0:8001->8000/tcp
+mj-agent-postgres    Up 45 seconds (healthy)     0.0.0.0:5433->5432/tcp
+mj-agent-redis       Up 45 seconds (healthy)     0.0.0.0:6379->6379/tcp
 ```
+
+`up -d mj-agent` 会自动拉起 mj-agent-postgres + mj-agent-redis（depends_on）。首次 up 时 mj-agent-postgres 跑 init script 建 mj_agent_memory DB + role + GRANT；mj-agent 容器看到 storage 栈 healthy 后才 start。
 
 ### 2.4 内网入口验证
 
@@ -86,15 +97,17 @@ docker exec mj-agent mj-agent check
 
 | ID | 验证 | 命令 / 操作 | 期望 |
 |----|------|-------------|------|
-| V1 | 容器 healthy | `docker inspect mj-agent --format '{{.State.Health.Status}}'` | `healthy` |
+| V1 | 3 容器 healthy | `docker ps --filter name=mj-agent --format "{{.Names}}: {{.Status}}"` | mj-agent / mj-agent-postgres / mj-agent-redis 全 `healthy` |
 | V2 | biz DB 可达 | `docker exec mj-agent mj-agent check` | `CHECK OK` |
 | V3 | memory DB 可达 | 同 V2，输出含 `memory db = mj_agent_memory` | OK |
+| V3b | mj-agent-postgres 可直连 | `psql -h localhost -p 5433 -U postgres -d mj_agent_memory -c '\dt'` | 列出 langgraph 检查点表 (checkpoints / checkpoint_writes / checkpoint_blobs / checkpoint_migrations) |
+| V3c | redis 可 ping | `docker exec mj-agent-redis redis-cli ping` | `PONG` |
 | V4 | Chainlit 监听 | `docker logs mj-agent \| grep "available at"` | `http://0.0.0.0:8000` |
 | V5 | 内网访问 | 浏览器打开 `http://<DEV-IP>:8001` | Chainlit Welcome |
 | V6 | 一次最小问答 | 在 Chainlit 输入"biz 域有哪些表？" | LLM 调用 list_biz_tables → 输出 65+ 张表 |
 | V7 | 数据边界 | 输入"select * from biz_ods.foo" | L1 guardrail 友好拒绝 |
 | V8 | LangSmith trace | 上述 V6 完成后看 LangSmith UI mj-agent-dev project | 有新 trace 含 4 个工具调用 |
-| V9 | 容器 OOM 阈值 | `docker stats mj-agent` | 内存 < 800MB（无大查询时） |
+| V9 | 容器 OOM 阈值 | `docker stats mj-agent mj-agent-postgres mj-agent-redis` | 三容器内存合 < 1GB（无大查询时） |
 
 ## 4. 故障排查
 
@@ -102,22 +115,27 @@ docker exec mj-agent mj-agent check
 |------|---------|------|
 | 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose up -d --force-recreate mj-agent` |
 | Chainlit 502 / connection refused | `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
-| `mj-agent check` 报 `memory DB unreachable` | mj_agent_memory DB 未建 / 凭据错 | 跑 migrations/001_checkpoint_tables.sql 中 DBA bootstrap 段 |
+| `mj-agent check` 报 `memory DB unreachable` | mj-agent-postgres 没起 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init script 是否跑通；如 .env 改过 MJ_AGENT_MEMORY_USER/PASSWORD 但 volume 持久了旧值 → `docker volume rm mj-agent-postgres-data` 重建（**会丢 checkpoint 历史**）|
+| 容器内连 mj-agent-postgres 走 5432 但 host 端口 5433 → 不一致引发误解 | 这是**正常**的：mj-agent → 容器名 mj-agent-postgres:5432（容器内端口）；DBA 从 host 走 5433 是 ports 映射 | 文档写清楚即可，不动配置 |
 | 跑 SQL 触发 `statement_timeout` | 单查询 > 60s，DB 侧 GRANT 强制超时 | 改用 aggregate / drill_down 工具拆分；或加 LIMIT |
 | LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose restart mj-agent` |
 
 ## 5. 回滚 / 拆栈
 
 ```bash
+# 软停（保留 volume 中的 checkpoint 数据）
 docker compose \
   -f docker-compose.yml \
   -f docker-compose.override.yml \
   -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
-  rm -sf mj-agent
-docker image rm mj-agent:0.1   # 可选；保留则下次 up 秒级
+  rm -sf mj-agent mj-agent-postgres mj-agent-redis
+
+# 完全清干净（含 checkpoint 历史 + redis AOF）
+docker volume rm mj-agent-postgres-data mj-agent-redis-data    # ⚠️ 丢历史
+docker image rm mj-agent:0.1                                   # 可选；保留则下次 up 秒级
 ```
 
-> **回滚不影响 mj-system**：mj-agent service 走 drop-in compose 文件，只附 `mj-system-backend-network` 不持有它。`docker compose down` 不会带走 mj-postgres。
+> **回滚不影响 mj-system**：mj-agent + storage 栈走 drop-in compose 文件，只附 `mj-system-backend-network` 不持有它；mj-agent-storage network 是本栈专属的。`docker compose down` 不会带走 mj-postgres / mj-app / mj-n8n。
 
 ## 6. 与试用闭环的衔接
 

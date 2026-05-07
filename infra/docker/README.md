@@ -9,7 +9,35 @@
 | `Dockerfile` | 多阶段 production 镜像（Python 3.13-slim + uv；non-root；TZ=Asia/Shanghai） |
 | `entrypoint.sh` | 子命令路由 (`serve` / `check` / `shell` / passthrough) |
 | `.dockerignore` | 构建上下文过滤（.venv / .git / docs / artifacts / 密钥） |
-| `docker-compose.mj-agent.yml` | drop-in service 定义；co-deploy mj-system DEV 栈 |
+| `docker-compose.mj-agent.yml` | drop-in service 定义；mj-agent + 自带存储栈（postgres + redis）；co-deploy mj-system DEV 栈 |
+| `postgres-init/01-bootstrap-mj-agent-memory.sh` | mj-agent-postgres 容器首次初始化时自动建 mj_agent_memory DB + role + GRANT |
+
+## 存储栈架构 (storage-stack PR)
+
+mj-agent 现在自带 2 个存储容器，与 mj-system 的 mj-postgres 完全分离：
+
+```
+mj-system 仓                        mj-agent 仓 (本仓)
+─────────────────                   ────────────────────────────
+mj-postgres (biz)  ◄────────────────  mj-agent (chainlit + agent)
+  analyst RO                            │ ▲
+                                        │ │ memory checkpointer (RW)
+                                        ▼ │
+                                     mj-agent-postgres
+                                       (langgraph PostgresSaver)
+
+                                     mj-agent-redis (future use;
+                                       container ready，no Python
+                                       client wired yet)
+```
+
+| 容器 | 用途 | 网络 |
+|---|---|---|
+| `mj-agent` | chainlit UI + agent runtime | `mj-system-backend-network` (访问 biz pg) + `mj-agent-storage` (访问 memory/redis) |
+| `mj-agent-postgres` | langgraph 检查点 / 线程持久化 | `mj-agent-storage`（**没**有 biz 域可见性） |
+| `mj-agent-redis` | 预留（session cache / streaming buffer / rate limit；当前无业务）| `mj-agent-storage` |
+
+理由：mj-agent 的状态生命周期（线程 / 检查点 / 未来缓存）与 mj-system 的业务数据生命周期完全脱钩；存储栈分离让 mj-system DBA 不需要为 mj-agent 的写流量审计；备份策略也分离。
 
 设计约束 mirror mj-system v3.2.2：相同 Python 基础镜像 / 时区 / non-root uid / healthcheck 节奏，方便分析师在同一台开发机/同一 Portainer Stack 共部署。
 
@@ -57,7 +85,7 @@ mj-system 已经在 `docker-compose.yml` + `docker-compose.override.yml` 起了�
 - `mj-app` — FastAPI 主程序，host:8000
 - `mj-n8n` — workflow 平台，host:5678
 
-mj-agent 加进同一 `mj-system-backend-network`：
+mj-agent + 存储栈加进同一 stack：
 
 ```bash
 # from mj-system repo root, with mj-agent checked out at ../mj-agent
@@ -68,16 +96,27 @@ docker compose \
   up -d mj-agent
 ```
 
-Chainlit 暴露在 host:**8001**（避开 mj-app 占用的 8000）。容器内 mj-agent 通过 service name `mj-postgres:5432` 直连数据库——`POSTGRES_DEV_HOST` 在 compose 文件里被覆盖为 `mj-postgres`。
+`up -d mj-agent` 会同时拉起 `mj-agent-postgres` + `mj-agent-redis`（mj-agent service depends_on 它们 healthy）。
 
-> **mj-system 仓 PR 协调**（详见 plan §3.H）：当前 `docker-compose.mj-agent.yml` 走 mj-agent 仓侧 drop-in 形态，**不**强制 mj-system 仓收编 service 定义。如需把 mj-agent 写进 mj-system `docker-compose.yml` 主文件（以便 Portainer 一键 stack 部署），起 mj-system 配套 PR：拷贝本文件 services 段进 mj-system `docker-compose.yml` + 把 `mj-system-backend-network` 上 `external: true` 改回主 compose 内。本仓 PR 不依赖 mj-system 改动；任何一边都能独立 review/合并。
+容器内的 service-name DNS：
+- biz 查询：`mj-postgres:5432`（在 `mj-system-backend-network`）
+- memory checkpointer：`mj-agent-postgres:5432`（在 `mj-agent-storage`）
+- redis（未来）：`mj-agent-redis:6379`（在 `mj-agent-storage`）
+
+Compose 文件里 mj-agent 的 `environment:` 段已经把 `POSTGRES_DEV_HOST` / `MJ_AGENT_MEMORY_HOST` / `MJ_AGENT_REDIS_HOST` 都覆盖为各自的 service name，分析师只需在 .env 里填 `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（首次 up 时被 init script 用来创 role）以及现有的 4 个团队密钥即可。
+
+Chainlit 暴露在 host:**8001**（避开 mj-app 占用的 8000）；mj-agent-postgres 暴露 host:**5433**（避开 mj-postgres 的 5432，方便 DBA 用 psql 连查 checkpoint 表）；mj-agent-redis 暴露 host:**6379**（mj-system 无 redis，无冲突）。
+
+> **mj-system 仓 PR 协调**（详见 plan §3.H）：当前 `docker-compose.mj-agent.yml` 走 mj-agent 仓侧 drop-in 形态，**不**强制 mj-system 仓收编 service 定义。如需把 mj-agent + 存储栈写进 mj-system `docker-compose.yml` 主文件（以便 Portainer 一键 stack 部署），起 mj-system 配套 PR：拷贝本文件 services 段（含 3 个服务 + `mj-agent-storage` network + 2 个 volume）进 mj-system `docker-compose.yml`。本仓 PR 不依赖 mj-system 改动；任何一边都能独立 review/合并。
 
 ## 端口约定
 
-| 容器内 | 宿主机 | 说明 |
-|---|---|---|
-| 8000 (chainlit) | 8001 | mj-agent UI；避开 mj-system mj-app 的 8000 |
-| 5432 (postgres) | 5432 | mj-system 已映射；mj-agent 不再映射 |
+| 容器 | 容器内 | 宿主机 | 说明 |
+|---|---|---|---|
+| mj-agent | 8000 (chainlit) | **8001** | mj-agent UI；避开 mj-system mj-app 的 8000 |
+| mj-postgres (mj-system) | 5432 | 5432 | mj-system 已映射；mj-agent 不再映射 |
+| mj-agent-postgres | 5432 | **5433** | memory DB；避开 mj-postgres 的 5432 |
+| mj-agent-redis | 6379 | 6379 | redis；mj-system 无冲突 |
 
 ## 数据边界 (ADR-006 / ADR-009)
 
@@ -93,19 +132,44 @@ Chainlit 暴露在 host:**8001**（避开 mj-app 占用的 8000）。容器内 m
 
 ## 密钥处理 (Docker vs 本地)
 
-- **本地 dev**: `scripts/setup-env.ps1` 解密 `config/secrets.enc` (AES-256-CBC + PBKDF2)，注入 4 个密钥到 `.env`
+- **本地 dev**: `scripts/setup-env.ps1` 解密 `config/secrets.enc` (AES-256-CBC + PBKDF2)，注入 **6 个团队密钥**到 `.env`
 - **Docker 容器**: 不解密；密钥通过 `--env-file .env` / Compose `environment` / Portainer Stack 变量 / Docker secrets 注入；`config/secrets.enc` 不打包进镜像（被 `.dockerignore` 排除）
 
 理由：`setup-env.ps1` 依赖 OpenSSL CLI + 团队口令，不适合容器场景；orchestrator-side secrets 是更标准做法。
+
+### secrets.enc bundle（团队共管，6 把键）
+
+| 变量 | 用途 |
+|---|---|
+| `POSTGRES_ANALYST_USER` | biz 域只读 role 用户名（ADR-006 L4） |
+| `POSTGRES_ANALYST_PASSWORD` | biz 域只读 role 密码 |
+| `ARK_API_KEY` | Volcengine Ark LLM 出口；缺则 LLMConfigError fail-fast |
+| `LANGSMITH_API_KEY` | LangSmith tracing；可选（LANGSMITH_TRACING=false 时无关） |
+| `MJ_AGENT_MEMORY_USER` | mj-agent-postgres 上的 RW role 用户名（storage-stack PR 加入） |
+| `MJ_AGENT_MEMORY_PASSWORD` | 同上密码；首次 docker compose up 时 init script 用此创建 role |
+
+更新流程：编辑 `config/secrets.conf`（解密后产物）→ 跑 `.\scripts\encrypt-secrets.ps1` 重打包 → `git commit config/secrets.enc`。
+
+### 容器自管密钥（不在 secrets.enc，每实例独立）
+
+| 变量 | 来源 | 说明 |
+|---|---|---|
+| `MJ_AGENT_PG_SUPERUSER_PASSWORD` | `.env`（可选） | mj-agent-postgres 自己的 super-user 密码；只在 DBA 直连查 checkpoint 表时用，可不设让其 fall back 到默认占位 |
+| `MJ_AGENT_REDIS_PASSWORD` | `.env`（可选） | 留空 → redis 不开 requirepass（仅内部网络可达，DEV 可接受）；填值 → 启用 |
+
+理由：这 2 个密钥是**容器自管**的——每个 mj-agent 部署实例可有不同的值（DBA 给不同 DBA 不同直连密码；redis password 按部署环境威胁面定）；不需要团队集中分发；不进 `secrets.enc`。PROD 阶段（Phase 2/3）会换成 Docker secrets。
 
 ## Troubleshooting
 
 | 现象 | 排查 |
 |---|---|
-| `mj-agent check` 容器内退出码 1 | `docker logs mj-agent`；常见：`POSTGRES_ANALYST_USER` 未注入 / `ARK_API_KEY` 未注入 / mj-postgres 还没起 healthy |
+| `mj-agent check` 容器内退出码 1 | `docker logs mj-agent`；常见：`POSTGRES_ANALYST_USER` 未注入 / `ARK_API_KEY` 未注入 / mj-postgres 还没起 healthy / mj-agent-postgres 还没起 healthy |
 | Chainlit 访问 connection refused | 确认 host port 8001 → container 8000，且 `CHAINLIT_HOST=0.0.0.0`（默认在 Dockerfile 里设了）|
 | 容器内 `host.docker.internal` 解析不了（Linux） | 加 `--add-host=host.docker.internal:host-gateway`，或共部署到 mj-system 网络用 `mj-postgres` service name |
 | 镜像构建失败 in `uv sync --frozen` | 检查 `uv.lock` 是否提交；本仓不允许漂移 lock |
+| mj-agent-postgres 启动失败：`MJ_AGENT_MEMORY_USER missing` | `.env` 里没填这 2 个值；填上后 `docker compose up -d --force-recreate mj-agent-postgres` |
+| 改了 `MJ_AGENT_MEMORY_USER` / `_PASSWORD` 后 connect 失败 | postgres 持久卷里 role 已用旧值创建；要么改回原值，要么 `docker volume rm mj-agent-postgres-data` 全清重建（**会丢所有 checkpoint 历史**）|
+| mj-agent-redis 报 `Setting 'requirepass' is not allowed` | redis 命令注入 vs requirepass 冲突；通常是 .env 里的 `MJ_AGENT_REDIS_PASSWORD` 含特殊字符（` ` / `'` / `"` / `$`），换成 a-z A-Z 0-9 或 set 空 |
 
 ## 构建产出验证
 
