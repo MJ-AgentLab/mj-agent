@@ -57,8 +57,9 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
     "smoke: end-to-end tests hitting live biz domain and LLM (disabled by default)",
+    "contract: catalog ⇄ live DB alignment tests (skip when no analyst creds; not run by default)",
 ]
-addopts = "-ra --strict-markers -m 'not smoke'"
+addopts = "-ra --strict-markers -m 'not smoke and not contract'"
 
 [tool.ruff]
 line-length = 100
