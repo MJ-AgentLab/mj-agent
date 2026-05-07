@@ -104,16 +104,11 @@ uv run mypy src/mj_agent                   # type-check
 docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
-# Storage-stack PR — full DEV stack (mj-agent + mj-agent-postgres + mj-agent-redis)
-# Sibling layout (mj-agent at ../mj-agent from mj-system root):
-#   docker compose -f docker-compose.yml -f docker-compose.override.yml \
-#                  -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
-#                  up -d mj-agent
-# Worktree layout (e.g. projects/mj-{agent,system}/develop) — set MJ_AGENT_ROOT:
-#   MJ_AGENT_ROOT=../../mj-agent/develop docker compose -f docker-compose.yml \
-#                  -f docker-compose.override.yml \
-#                  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
-#                  up -d mj-agent
+# Storage-stack — independent compose project (mj-agent + 自带 postgres + redis)
+# From mj-agent repo root, single -f, no env var, mj-system stack untouched:
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml down
+# Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
 # (depends_on automatically pulls in mj-agent-postgres + mj-agent-redis)
 ```
 

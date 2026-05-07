@@ -1,78 +1,69 @@
 # =============================================
-# Drop-in service definitions: mj-agent + dedicated storage stack
-# (mj-agent-postgres for memory checkpointer; mj-agent-redis reserved
-# for future use — session cache / streaming buffer / rate limit).
+# mj-agent compose stack — INDEPENDENT project (decoupled from mj-system)
 #
-# Path resolution (storage-stack hotfix PR):
-#   Docker Compose v2 resolves ALL relative paths in compose files
-#   relative to the project_directory (= directory of the FIRST
-#   compose file passed to `-f`), NOT relative to this compose file.
-#   When this compose is included as the 3rd `-f` from mj-system root,
-#   project_directory = mj-system/develop, and `../../.env` would
-#   resolve to projects/.env (wrong) instead of mj-agent/.env.
+# Design (post storage-stack-standalone PR):
+#   - This file declares its own `name: mj-agent` so docker compose
+#     creates a dedicated project visible separately in Docker Desktop /
+#     Portainer. mj-system's project is unaffected.
+#   - mj-agent attaches to mj-system's existing `mj-system-backend-network`
+#     as `external: true` to reach the biz pg (read-only analyst role).
+#     mj-system stack must be running first; mj-agent does not own that
+#     network's lifecycle.
+#   - mj-agent owns its own storage stack (mj-agent-postgres + mj-agent-
+#     redis) on a private `mj-agent-storage` bridge network — neither
+#     visible to mj-system nor coupled to its lifecycle.
 #
-#   Fix: parametrize all mj-agent-side paths with ${MJ_AGENT_ROOT}.
-#   Default = `../mj-agent` works for the documented sibling layout
-#   (mj-system and mj-agent as sibling repos). Worktree layouts that
-#   put mj-agent elsewhere (e.g. projects/mj-agent/develop next to
-#   projects/mj-system/develop) override via shell env:
-#       MJ_AGENT_ROOT=../../mj-agent/develop docker compose ...
+# Services:
+#   mj-agent             chainlit UI + agent runtime
+#   mj-agent-postgres    langgraph PostgresSaver backing store
+#   mj-agent-redis       reserved for future use (no Python client wired)
 #
-# Usage A — co-deploy with mj-system (recommended for DEV):
-#   from mj-system repo root, run:
-#     # for sibling layout (../mj-agent):
-#     docker compose \
-#       -f docker-compose.yml \
-#       -f docker-compose.override.yml \
-#       -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
-#       up -d mj-agent
+# Pre-requisite:
+#   - mj-system stack running locally (or at minimum: the mj-system-
+#     backend-network exists and mj-postgres is reachable on it). Verify:
+#       docker network ls --filter name=mj-system-backend-network
+#       docker ps --filter name=mj-system-postgres
 #
-#     # for worktree layout (../../mj-agent/develop):
-#     MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
-#       -f docker-compose.yml \
-#       -f docker-compose.override.yml \
-#       -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
-#       up -d mj-agent
+# Usage — standalone (recommended; from mj-agent repo root):
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml ps
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml down
 #
-#   This brings up mj-agent + mj-agent-postgres + mj-agent-redis on top
-#   of the existing mj-system stack (mj-postgres / mj-app / mj-n8n stay
-#   as-is). mj-agent reaches:
-#     - biz domain via `mj-postgres:5432` on `mj-system-backend-network`
-#       (analyst RO; mj-system owns the data)
-#     - memory checkpointer via `mj-agent-postgres:5432` on
-#       `mj-agent-storage` (mj-agent owns)
-#     - redis (future) via `mj-agent-redis:6379` on `mj-agent-storage`
+# Path resolution:
+#   With single `-f`, project_directory = the compose file's directory
+#   (infra/docker/). All relative paths in this file resolve from there:
+#     `../../`             = mj-agent repo root
+#     `../../.env`         = mj-agent/.env
+#     `./postgres-init`    = infra/docker/postgres-init/
 #
-# Usage B — standalone (no mj-system):
-#   docker run mj-agent + manually export POSTGRES_DEV_HOST. Storage
-#   stack only spins; biz queries will fail until a real biz pg is
-#   reachable. See infra/docker/README.md §Quick start.
+#   Do NOT include this file via mj-system's `docker compose -f` chain
+#   anymore — that pattern (storage-stack PR / hotfix PR #43) merged
+#   project names and forced you to use ${MJ_AGENT_ROOT}. The standalone
+#   pattern is simpler and gives Docker Desktop a clean per-project view.
 #
-# Co-deploy notes:
-#   - Network `mj-system-backend-network` is created by mj-system compose;
-#     declared `external: true` so we attach without ownership.
-#   - Network `mj-agent-storage` is internal to this compose — mj-agent
-#     storage services have NO biz-domain visibility.
-#   - Host port 8001 → container 8000 (mj-system mj-app already owns 8000).
-#   - mj-agent-postgres host port 5433 (avoid clash with mj-system mj-postgres
-#     on 5432). mj-agent-redis on 6379 (no clash; mj-system has no redis).
-#   - Reads .env from mj-agent project root via env_file (keeps secrets out of YAML).
+# Port map (host → container):
+#   8001 → 8000   chainlit (avoid mj-app's 8000)
+#   5433 → 5432   memory pg (avoid mj-postgres's 5432)
+#   6379 → 6379   redis (no clash; mj-system has no redis)
 # =============================================
+
+name: mj-agent
 
 services:
   mj-agent:
     build:
-      # Build context = mj-agent project root.
-      context: ${MJ_AGENT_ROOT:-../mj-agent}
+      # Build context = mj-agent project root (resolved from project_directory
+      # = this compose file's dir when invoked with single -f).
+      context: ../../
       dockerfile: infra/docker/Dockerfile
     image: mj-agent:0.1
     container_name: mj-agent
     hostname: mj-agent
     env_file:
-      - ${MJ_AGENT_ROOT:-../mj-agent}/.env
+      - ../../.env
     environment:
       # Override .env values for the in-cluster DNS layout.
-      # Biz queries → mj-system's pg.
+      # Biz queries → mj-system's pg (via external network).
       POSTGRES_DEV_HOST: mj-postgres
       POSTGRES_DEV_PORT: "5432"
       # Memory checkpointer → mj-agent's own pg.
@@ -98,7 +89,7 @@ services:
       start_period: 30s
       retries: 3
     networks:
-      - mj-backend-network
+      - mj-system-network
       - mj-agent-storage
     labels:
       com.mj-agent.environment: "development"
@@ -122,10 +113,9 @@ services:
       TZ: Asia/Shanghai
     volumes:
       - mj-agent-postgres-data:/var/lib/postgresql/data
-      - ${MJ_AGENT_ROOT:-../mj-agent}/infra/docker/postgres-init:/docker-entrypoint-initdb.d:ro
+      - ./postgres-init:/docker-entrypoint-initdb.d:ro
     ports:
       # Host:5433 → container:5432. 5432 is taken by mj-system's mj-postgres.
-      # If running standalone (no mj-system), 5432 → 5432 also works.
       - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d $${MJ_AGENT_MEMORY_DB:-mj_agent_memory}"]
@@ -184,9 +174,13 @@ services:
 # Networks
 # ============================================================
 networks:
-  mj-backend-network:
+  # External network owned by mj-system; we attach to read biz pg only.
+  # Renamed alias from `mj-backend-network` to `mj-system-network` so the
+  # cross-project intent is unambiguous when reading this file standalone.
+  mj-system-network:
     name: mj-system-backend-network
     external: true
+  # Internal-only bridge for mj-agent's own storage stack.
   mj-agent-storage:
     name: mj-agent-storage
     driver: bridge
@@ -195,7 +189,7 @@ networks:
       com.mj-agent.network.isolation: "internal"
 
 # ============================================================
-# Volumes
+# Volumes (named at compose-spec level → docker creates as `mj-agent-*-data`)
 # ============================================================
 volumes:
   mj-agent-postgres-data:

@@ -9,7 +9,7 @@
 | `Dockerfile` | 多阶段 production 镜像（Python 3.13-slim + uv；non-root；TZ=Asia/Shanghai） |
 | `entrypoint.sh` | 子命令路由 (`serve` / `check` / `shell` / passthrough) |
 | `.dockerignore` | 构建上下文过滤（.venv / .git / docs / artifacts / 密钥） |
-| `docker-compose.mj-agent.yml` | drop-in service 定义；mj-agent + 自带存储栈（postgres + redis）；co-deploy mj-system DEV 栈 |
+| `docker-compose.mj-agent.yml` | **独立** compose project (`name: mj-agent`)；自带存储栈（postgres + redis）；attach mj-system biz pg via external network |
 | `postgres-init/01-bootstrap-mj-agent-memory.sh` | mj-agent-postgres 容器首次初始化时自动建 mj_agent_memory DB + role + GRANT |
 
 ## 存储栈架构 (storage-stack PR)
@@ -77,46 +77,43 @@ docker run --rm --env-file .env mj-agent:0.1 check
 docker run --rm -it --env-file .env mj-agent:0.1 shell
 ```
 
-### Co-deploy with mj-system (推荐 DEV)
+### Standalone deploy (推荐；mj-agent 独立 compose project)
 
-mj-system 已经在 `docker-compose.yml` + `docker-compose.override.yml` 起了：
-
-- `mj-postgres` — biz 数据库（mj-agent 走 analyst role）
-- `mj-app` — FastAPI 主程序，host:8000
-- `mj-n8n` — workflow 平台，host:5678
-
-mj-agent + 存储栈加进同一 stack：
+**前提**：mj-system 栈已经在跑（mj-postgres 容器存在 + `mj-system-backend-network` 网络存在）。验证：
 
 ```bash
-# Sibling layout (mj-agent at ../mj-agent from mj-system root)
-docker compose \
-  -f docker-compose.yml \
-  -f docker-compose.override.yml \
-  -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
-  up -d mj-agent
-
-# Worktree layout (e.g. projects/mj-{agent,system}/develop) — set MJ_AGENT_ROOT
-MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
-  -f docker-compose.yml \
-  -f docker-compose.override.yml \
-  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
-  up -d mj-agent
+docker network ls --filter name=mj-system-backend-network    # 应见 mj-system-backend-network
+docker ps --filter name=mj-system-postgres                    # 应见 healthy
 ```
 
-> **Path resolution gotcha** (storage-stack hotfix): Docker Compose v2 resolves all relative paths in compose files relative to the **project_directory** (= directory of the FIRST `-f` file), NOT to the compose file location. Mj-agent's compose path defaults to `../mj-agent` (sibling layout). For other layouts, set `MJ_AGENT_ROOT` in the shell before running compose. Without this, `env_file` / `build.context` / `postgres-init` bind mount all silently resolve to wrong paths and the deploy looks healthy but mj-agent can't connect to memory DB.
+**启动 mj-agent 栈**（**从 mj-agent 仓根目录**，单 `-f`，独立 project）：
 
-`up -d mj-agent` 会同时拉起 `mj-agent-postgres` + `mj-agent-redis`（mj-agent service depends_on 它们 healthy）。
+```bash
+docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+docker compose -f infra/docker/docker-compose.mj-agent.yml ps
+docker compose -f infra/docker/docker-compose.mj-agent.yml logs -f mj-agent
+docker compose -f infra/docker/docker-compose.mj-agent.yml down       # 拆栈，保留 volume
+```
+
+`up -d` 会拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 自动等 storage healthy）。Docker Desktop / Portainer 视图里现在看到 **2 个独立的 compose project**：
+
+```
+mj-system    (mj-system 仓自管；含 mj-postgres / mj-app / mj-n8n / ...)
+mj-agent     (本仓；含 mj-agent / mj-agent-postgres / mj-agent-redis)
+```
 
 容器内的 service-name DNS：
-- biz 查询：`mj-postgres:5432`（在 `mj-system-backend-network`）
-- memory checkpointer：`mj-agent-postgres:5432`（在 `mj-agent-storage`）
-- redis（未来）：`mj-agent-redis:6379`（在 `mj-agent-storage`）
+- biz 查询：`mj-postgres:5432`（在 mj-agent 跨 project attach 的 `mj-system-backend-network` 上）
+- memory checkpointer：`mj-agent-postgres:5432`（在 `mj-agent-storage` 私有网络）
+- redis（未来）：`mj-agent-redis:6379`（同上）
 
-Compose 文件里 mj-agent 的 `environment:` 段已经把 `POSTGRES_DEV_HOST` / `MJ_AGENT_MEMORY_HOST` / `MJ_AGENT_REDIS_HOST` 都覆盖为各自的 service name，分析师只需在 .env 里填 `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（首次 up 时被 init script 用来创 role）以及现有的 4 个团队密钥即可。
+Compose 文件里 mj-agent 的 `environment:` 段已经把 `POSTGRES_DEV_HOST` / `MJ_AGENT_MEMORY_HOST` / `MJ_AGENT_REDIS_HOST` 都覆盖为各自的 service name，分析师只需在 `.env` 里填 6 把团队密钥（4 个走 secrets.enc 注入 + `MJ_AGENT_MEMORY_USER/PASSWORD` 也走 bundle）。
 
-Chainlit 暴露在 host:**8001**（避开 mj-app 占用的 8000）；mj-agent-postgres 暴露 host:**5433**（避开 mj-postgres 的 5432，方便 DBA 用 psql 连查 checkpoint 表）；mj-agent-redis 暴露 host:**6379**（mj-system 无 redis，无冲突）。
+Chainlit 暴露在 host:**8001**；mj-agent-postgres host:**5433**；mj-agent-redis host:**6379**。
 
-> **mj-system 仓 PR 协调**（详见 plan §3.H）：当前 `docker-compose.mj-agent.yml` 走 mj-agent 仓侧 drop-in 形态，**不**强制 mj-system 仓收编 service 定义。如需把 mj-agent + 存储栈写进 mj-system `docker-compose.yml` 主文件（以便 Portainer 一键 stack 部署），起 mj-system 配套 PR：拷贝本文件 services 段（含 3 个服务 + `mj-agent-storage` network + 2 个 volume）进 mj-system `docker-compose.yml`。本仓 PR 不依赖 mj-system 改动；任何一边都能独立 review/合并。
+> **为何 standalone 而非 co-deploy via `-f` chain？** 历史上 storage-stack PR + hotfix PR #43 推荐 "from mj-system root with multiple `-f`" 的形态，但那会把 mj-agent 全部容器并入 mj-system compose project（Docker Desktop 列表里看不到独立 mj-agent group）+ 强制使用 `${MJ_AGENT_ROOT}` 路径变量解决跨 project_directory 解析问题。本 PR (storage-stack-standalone) 改成 standalone：mj-agent 完全独立 compose project，路径相对当前 compose 文件位置（无需 env var），mj-system 栈不受任何影响。
+>
+> **不推荐**继续用 `docker compose -f mj-system.yml -f mj-agent.yml ...` 形态——会触发 `name: mj-agent` 与 mj-system 隐式 project name 的冲突，把 mj-system 容器名也重命名为 `mj-agent-*`。两边各自 `up`/`down`，仅靠 `mj-system-backend-network` (external) 串联。
 
 ## 端口约定
 
