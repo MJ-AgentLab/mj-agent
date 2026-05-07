@@ -55,27 +55,18 @@ cp .env.example .env
 # Compose 文件已自动覆盖 POSTGRES_DEV_HOST / MJ_AGENT_MEMORY_HOST / MJ_AGENT_REDIS_HOST 为 service name；不需手动改。
 ```
 
-### 2.3 加入 mj-system DEV 栈（含存储栈）
+### 2.3 启动 mj-agent 栈（独立 compose project）
 
-从 mj-system repo 根目录跑。**Compose v2 把所有相对路径相对于 first `-f` 的目录解析**，所以 mj-agent 不在 `../mj-agent` 时必须用 `MJ_AGENT_ROOT` 显式覆盖（否则 env_file / build context / postgres-init bind mount 都会指向错误位置——deploy 表面 healthy 但 mj-agent 连不上 memory DB）。
+mj-agent 是**独立 compose project**（`name: mj-agent`），与 mj-system 解耦。前提：mj-system 栈已在跑（`mj-system-backend-network` 网络存在 + `mj-postgres` healthy）。
+
+**从 mj-agent 仓根目录跑**（单 `-f`，无需 cd 到 mj-system，无需 env var）：
 
 ```bash
-# Layout A — sibling repos (mj-agent at ../mj-agent)
-docker compose \
-  -f docker-compose.yml \
-  -f docker-compose.override.yml \
-  -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
-  up -d mj-agent
-
-# Layout B — worktree (e.g. projects/mj-{agent,system}/develop)
-MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
-  -f docker-compose.yml \
-  -f docker-compose.override.yml \
-  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
-  up -d mj-agent
-
-docker ps --filter "name=mj-agent" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+docker compose -f infra/docker/docker-compose.mj-agent.yml ps
 ```
+
+`up -d` 会自动拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 等 storage healthy 后启动 mj-agent）。首次 up 时 mj-agent-postgres 跑 init script 建 mj_agent_memory DB + role + GRANT。Docker Desktop / Portainer 视图里 mj-system 与 mj-agent 是 **2 个独立 compose project group**。
 
 期望输出：
 
@@ -121,12 +112,13 @@ docker exec mj-agent mj-agent check
 
 | 现象 | 根因排查 | 处置 |
 |------|---------|------|
-| 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose up -d --force-recreate mj-agent` |
+| 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose -f infra/docker/docker-compose.mj-agent.yml up -d --force-recreate mj-agent` |
 | Chainlit 502 / connection refused | `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
 | `mj-agent check` 报 `memory DB unreachable` | mj-agent-postgres 没起 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init script 是否跑通；如 .env 改过 MJ_AGENT_MEMORY_USER/PASSWORD 但 volume 持久了旧值 → `docker volume rm mj-agent-postgres-data` 重建（**会丢 checkpoint 历史**）|
+| `network mj-system-backend-network not found` | mj-system 栈没起；mj-agent 单独跑会报这个 | 先在 mj-system 仓 `docker compose up -d`；再回 mj-agent 跑 up |
 | 容器内连 mj-agent-postgres 走 5432 但 host 端口 5433 → 不一致引发误解 | 这是**正常**的：mj-agent → 容器名 mj-agent-postgres:5432（容器内端口）；DBA 从 host 走 5433 是 ports 映射 | 文档写清楚即可，不动配置 |
 | 跑 SQL 触发 `statement_timeout` | 单查询 > 60s，DB 侧 GRANT 强制超时 | 改用 aggregate / drill_down 工具拆分；或加 LIMIT |
-| LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose restart mj-agent` |
+| LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose -f infra/docker/docker-compose.mj-agent.yml restart mj-agent` |
 
 ## 5. 回滚 / 拆栈
 
