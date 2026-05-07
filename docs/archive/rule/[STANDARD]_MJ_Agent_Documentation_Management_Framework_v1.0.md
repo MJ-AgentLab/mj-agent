@@ -7,6 +7,7 @@ created: 2026-04-24
 updated: 2026-04-25
 state: deprecated
 version: v1.0
+track: shared
 derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0
 tags:
   - standard

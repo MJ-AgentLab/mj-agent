@@ -5,6 +5,7 @@ owner: ranzuozhou
 created: 2026-04-24
 updated: 2026-04-27
 state: draft
+track: shared
 related:
   - ../tests/smoke/test_agent_smoke.py
   - ../tests/conftest.py
