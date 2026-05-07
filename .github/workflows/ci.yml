@@ -40,3 +40,10 @@ jobs:
 
       - name: Syntax check (compileall)
         run: uv run python -m compileall -q .
+
+      - name: Contract tests (skip on missing analyst creds)
+        # tests/contract/* is gated by the `contract` pytest marker AND the
+        # `live_db` session fixture (skip when POSTGRES_ANALYST_USER unset).
+        # CI runs without DB creds → tests skip cleanly; locally with .env
+        # provisioned the same command exercises the contract.
+        run: uv run pytest tests/contract -m contract
