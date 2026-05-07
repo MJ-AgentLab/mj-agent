@@ -74,6 +74,49 @@ def _get_or_build_graph() -> Any:
     return _GRAPH
 
 
+_IMAGE_KIND = "image/png"
+_EXCEL_KIND = (
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
+
+
+async def _surface_artifact(tool_msg: Any, parent_id: str) -> None:
+    """Render chart PNG / Excel file from a tool reply when present.
+
+    Phase 1 sub 1.F — chart_* and excel_export return a dict envelope
+    containing ``file_path`` + ``kind``. We pick those up off ToolMessage
+    instances and attach the artifact to the reply via ``cl.Image`` /
+    ``cl.File``. Agent's text reply continues streaming above.
+    """
+    import json
+
+    raw = getattr(tool_msg, "content", None)
+    if not isinstance(raw, str):
+        return
+    try:
+        payload = json.loads(raw)
+    except (json.JSONDecodeError, ValueError):
+        return
+    if not isinstance(payload, dict):
+        return
+    path = payload.get("file_path")
+    kind = payload.get("kind")
+    if not path or not kind:
+        return
+    if kind == _IMAGE_KIND:
+        await cl.Image(
+            path=str(path),
+            name=payload.get("title") or "chart",
+            display="inline",
+        ).send(for_id=parent_id)
+    elif kind == _EXCEL_KIND:
+        await cl.File(
+            path=str(path),
+            name=f"{payload.get('sheet_name') or 'export'}.xlsx",
+            display="inline",
+        ).send(for_id=parent_id)
+
+
 @cl.on_chat_start
 async def on_chat_start() -> None:
     graph = _get_or_build_graph()
@@ -125,6 +168,7 @@ async def on_message(message: cl.Message) -> None:
                             author="tools",
                             parent_id=reply.id,
                         ).send()
+                    await _surface_artifact(tm, parent_id=reply.id)
                 del node
 
     if not reply.content:
