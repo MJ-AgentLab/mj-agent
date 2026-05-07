@@ -12,6 +12,8 @@ from mj_agent.tools.analysis import (
     estimate_tokens,
 )
 from mj_agent.tools.biz_context import find_biz_context
+from mj_agent.tools.charts import chart_bar, chart_line, chart_trend
+from mj_agent.tools.excel import excel_export
 from mj_agent.tools.sql.execute import execute_sql
 from mj_agent.tools.sql.introspect import describe_biz_table, list_biz_tables
 
@@ -29,17 +31,26 @@ ALL_TOOLS: list[Callable[..., Any]] = [
     drill_down,
     compare_periods,
     detect_anomaly,
+    # Phase 1 sub 1.F: presentation (charts + Excel)
+    chart_line,
+    chart_bar,
+    chart_trend,
+    excel_export,
 ]
 
 __all__ = [
     "ALL_TOOLS",
     "aggregate",
+    "chart_bar",
+    "chart_line",
+    "chart_trend",
     "compare_periods",
     "describe_biz_table",
     "detect_anomaly",
     "drill_down",
     "entity_lookup",
     "estimate_tokens",
+    "excel_export",
     "execute_sql",
     "find_biz_context",
     "list_biz_tables",
