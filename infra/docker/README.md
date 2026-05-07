@@ -132,21 +132,32 @@ Chainlit 暴露在 host:**8001**（避开 mj-app 占用的 8000）；mj-agent-po
 
 ## 密钥处理 (Docker vs 本地)
 
-- **本地 dev**: `scripts/setup-env.ps1` 解密 `config/secrets.enc` (AES-256-CBC + PBKDF2)，注入 4 个团队密钥（`POSTGRES_ANALYST_USER/PASSWORD`、`ARK_API_KEY`、`LANGSMITH_API_KEY`）到 `.env`
+- **本地 dev**: `scripts/setup-env.ps1` 解密 `config/secrets.enc` (AES-256-CBC + PBKDF2)，注入 **6 个团队密钥**到 `.env`
 - **Docker 容器**: 不解密；密钥通过 `--env-file .env` / Compose `environment` / Portainer Stack 变量 / Docker secrets 注入；`config/secrets.enc` 不打包进镜像（被 `.dockerignore` 排除）
 
 理由：`setup-env.ps1` 依赖 OpenSSL CLI + 团队口令，不适合容器场景；orchestrator-side secrets 是更标准做法。
 
-### Memory / Redis 密钥（容器自管，不进 secrets.enc）
+### secrets.enc bundle（团队共管，6 把键）
+
+| 变量 | 用途 |
+|---|---|
+| `POSTGRES_ANALYST_USER` | biz 域只读 role 用户名（ADR-006 L4） |
+| `POSTGRES_ANALYST_PASSWORD` | biz 域只读 role 密码 |
+| `ARK_API_KEY` | Volcengine Ark LLM 出口；缺则 LLMConfigError fail-fast |
+| `LANGSMITH_API_KEY` | LangSmith tracing；可选（LANGSMITH_TRACING=false 时无关） |
+| `MJ_AGENT_MEMORY_USER` | mj-agent-postgres 上的 RW role 用户名（storage-stack PR 加入） |
+| `MJ_AGENT_MEMORY_PASSWORD` | 同上密码；首次 docker compose up 时 init script 用此创建 role |
+
+更新流程：编辑 `config/secrets.conf`（解密后产物）→ 跑 `.\scripts\encrypt-secrets.ps1` 重打包 → `git commit config/secrets.enc`。
+
+### 容器自管密钥（不在 secrets.enc，每实例独立）
 
 | 变量 | 来源 | 说明 |
 |---|---|---|
-| `MJ_AGENT_MEMORY_USER` | `.env` | DEV 默认 `mj_agent_memory`；改它就改 init 创出来的 role 名 |
-| `MJ_AGENT_MEMORY_PASSWORD` | `.env` | DEV 用 `local-dev-only-replace-in-prod` 占位；PROD 走 Docker secrets |
 | `MJ_AGENT_PG_SUPERUSER_PASSWORD` | `.env`（可选） | mj-agent-postgres 自己的 super-user 密码；只在 DBA 直连查 checkpoint 表时用，可不设让其 fall back 到默认占位 |
 | `MJ_AGENT_REDIS_PASSWORD` | `.env`（可选） | 留空 → redis 不开 requirepass（仅内部网络可达，DEV 可接受）；填值 → 启用 |
 
-理由：这 3 个密钥是**容器自管**的，每个 mj-agent 部署实例可以有不同的值；不需要团队集中分发；不进 `secrets.enc`。PROD 阶段（Phase 2/3）会换成 Docker secrets。
+理由：这 2 个密钥是**容器自管**的——每个 mj-agent 部署实例可有不同的值（DBA 给不同 DBA 不同直连密码；redis password 按部署环境威胁面定）；不需要团队集中分发；不进 `secrets.enc`。PROD 阶段（Phase 2/3）会换成 Docker secrets。
 
 ## Troubleshooting
 
