@@ -37,7 +37,11 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
     \$\$;
 
     -- Create the database if it doesn't exist (CREATE DATABASE can't run in DO; check first).
-    SELECT 'CREATE DATABASE "${MJ_AGENT_MEMORY_DB}" ENCODING ''UTF8'' LC_COLLATE ''C'' LC_CTYPE ''C'' OWNER "${MJ_AGENT_MEMORY_USER}"'
+    -- Storage-stack hotfix: drop LC_COLLATE/LC_CTYPE specifiers — they conflicted
+    -- with the default postgres:16-alpine template (en_US.utf8). The default locale
+    -- is fine for langgraph checkpoint payloads; switch to TEMPLATE template0 + C
+    -- collation later if performance tuning warrants.
+    SELECT 'CREATE DATABASE "${MJ_AGENT_MEMORY_DB}" OWNER "${MJ_AGENT_MEMORY_USER}"'
     WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${MJ_AGENT_MEMORY_DB}')\\gexec
 
     -- Grants (idempotent).

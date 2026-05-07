@@ -57,13 +57,21 @@ cp .env.example .env
 
 ### 2.3 加入 mj-system DEV 栈（含存储栈）
 
-mj-system repo 根目录（mj-agent checkout 在同级 `../mj-agent/`）：
+从 mj-system repo 根目录跑。**Compose v2 把所有相对路径相对于 first `-f` 的目录解析**，所以 mj-agent 不在 `../mj-agent` 时必须用 `MJ_AGENT_ROOT` 显式覆盖（否则 env_file / build context / postgres-init bind mount 都会指向错误位置——deploy 表面 healthy 但 mj-agent 连不上 memory DB）。
 
 ```bash
+# Layout A — sibling repos (mj-agent at ../mj-agent)
 docker compose \
   -f docker-compose.yml \
   -f docker-compose.override.yml \
   -f ../mj-agent/infra/docker/docker-compose.mj-agent.yml \
+  up -d mj-agent
+
+# Layout B — worktree (e.g. projects/mj-{agent,system}/develop)
+MJ_AGENT_ROOT=../../mj-agent/develop docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.override.yml \
+  -f ../../mj-agent/develop/infra/docker/docker-compose.mj-agent.yml \
   up -d mj-agent
 
 docker ps --filter "name=mj-agent" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
