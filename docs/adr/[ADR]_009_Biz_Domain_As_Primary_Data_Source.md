@@ -40,7 +40,7 @@ mj-agent 的数据访问边界：
 | `ops_*.*` | **不可读** |
 
 可读范围由 **mj-system 的 `analyst` PostgreSQL 角色** GRANT 精确限定（见 [[ADR]_006_Fail_Safe_Reads|ADR-006]] 的 L4）。
-mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保持同步（详见 ADR-011）。
+mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保持同步；自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）。Phase 1 阶段，对齐通过 `tests/contract/*` 防守性 fail-then-manual-fix + manual review 维持。
 
 ## Consequences
 
@@ -55,7 +55,7 @@ mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保
 - 两张 biz_dwd 维度表是"例外开口"，数量上升时需要重新评估边界
 
 **中性**
-- biz_dws 全表可读，意味着所有现有 DWS 表的添加、删除都会影响 mj-agent，需要 schema 同步机制（ADR-011，Phase 0.5）
+- biz_dws 全表可读，意味着所有现有 DWS 表的添加、删除都会影响 mj-agent；biz schema **自动同步机制**规划在 Phase 2（见 [[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4）。Phase 1 阶段通过静态 `qcm_catalog.yaml` 镜像 + `tests/contract/*` 防守性 fail-then-manual-fix + manual review 维持对账
 
 ## Alternatives considered
 
@@ -69,6 +69,6 @@ mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保
 
 - [[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]（P1 最小必要出网）
 - [[ADR]_006_Fail_Safe_Reads|ADR-006]]（L4 角色权限实现本 ADR 的数据范围）
-- ADR-011 biz schema 三层同步机制（Phase 0.5）
+- **Future work** — biz schema 自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4）；Phase 1 通过 `qcm_catalog.yaml` + `tests/contract/*` + manual review 维持
 - `src/mj_agent/skills/query-writing/SKILL.md`（当前 skill 的表清单对齐此 ADR）
 - mj-system `R__analyst_permissions.sql`（L4 GRANT 定义）

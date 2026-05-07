@@ -31,7 +31,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 1. **scope 列表不可直接用**：mj-system 的 scope 缩写（`aec/dqv/qcm` 等）是 mj-system 的 ETL 微服务名，对 mj-agent 无意义。继续直接套用会让首个 commit 起就漂移
 2. **重量级与 Phase 0 规模的张力**：[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套评估文档]] §4 的社区调查显示，8 个数据 Agent OSS 项目（LangChain / LangGraph / Vanna / DB-GPT / WrenAI / AutoGPT / Aider / Open Interpreter）**0/8** 使用 GitFlow `develop`+`main` 双干、**0/8** 使用 6 份 PR 模板、**0/8** 发明自定义 footer 关键字。mj-agent 当前是 1 人团队 + Phase 0，重量级流程缺乏直接收益证据
-3. **co-deployment 一致性**：但 mj-agent 与 mj-system 在 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 中已确定共部署，运维与开发者同时面对两个仓库；保持 git 操作肌肉记忆相同有运维收益
+3. **跨项目运维一致性**：但 mj-agent 与 mj-system 是相邻 consumer 关系（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已确定独立 compose project + 环境矩阵对齐），运维与开发者同时面对两个仓库；保持 git 操作肌肉记忆相同有运维收益
 4. **首份 commit 不合规**已成事实——再不固化规则，后续提交将继续漂移
 
 ## Decision
@@ -41,7 +41,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 | mj-system 规则 | mj-agent 决策 | 再评估触发器 |
 |---|---|---|
 | Bare-repo Worktree 布局 | **KEEP**（已安装、与 mj-system 切换零摩擦） | 团队 < 1 dev 或工作树破坏工具链 |
-| 双远端（Gitee + GitHub） | **KEEP**（mj-system co-deployment 共用 CI 路径） | mj-agent 与 mj-system 完全分离 OR Gitee 镜像连续 90 天未使用 |
+| 双远端（Gitee + GitHub） | **KEEP**（与 mj-system 环境矩阵对齐 + CI 路径共用） | mj-agent 与 mj-system 完全分离 OR Gitee 镜像连续 90 天未使用 |
 | `develop` + `main` 双干模型 | **KEEP**（mj-system 一致性） | 首次 hotfix 暴露混乱 OR Phase 1 review |
 | 5 类临时分支（feature/bugfix/documentation/maintain/hotfix） | **KEEP** | 同上 |
 | 6 份 PR 模板（每分支类型一份） | **KEEP**（已安装、零边际成本） | 首次贡献者选错模板 |
@@ -86,7 +86,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 **A. 严格社区对齐简化**：把 6 PR 模板压成 1 份（LangGraph 风格 ~40 行），废弃 `develop` 改用 trunk-on-`main`，废弃双远端。
 
-拒绝原因：当前阶段没有任何具体痛点，强行对齐社区只制造迁移成本。重量级元素已安装，留它"备用"的成本只是 review 注解噪声；但移除它的成本是切换 mj-system co-deployment 流程 + 重训肌肉记忆。社区证据的价值是**告诉未来的我们何时简化**，而不是**强制此刻就简化**。
+拒绝原因：当前阶段没有任何具体痛点，强行对齐社区只制造迁移成本。重量级元素已安装，留它"备用"的成本只是 review 注解噪声；但移除它的成本是切换跨项目运维流程 + 重训肌肉记忆。社区证据的价值是**告诉未来的我们何时简化**，而不是**强制此刻就简化**。
 
 **C. 验证现状（不动 scope 列表）**：保留 mj-system 的 `aec/dqv/qcm` scope 列表不动，理由是"反正不用就是"。
 
@@ -96,7 +96,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 本决策的证据
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— 本决策的执行
-- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Co-Deployment with mj-system]] —— co-deployment 上下文
+- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 跨项目边界（独立 compose project + consumer 关系）上下文
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] §6.4 / §7.1 A6 —— CLAUDE.md 同步约束（本 PR 故意不过的门禁；v1.1 已归档，等价语义见 v2.0 trio Meta + Code_Side §7.1 A6）
 - mj-system 源文档：
   - `mj-system/develop/docs/rule/[STANDARD]_Commit_Message_Convention.md`

@@ -149,7 +149,8 @@ annotated tag 一起带上。
 
 > **当前留 stub**：Phase 0.5 阶段 release 仅限仓库层（tag + 包版本号），未涉及
 > 生产部署。Phase 1+ 由后续 RUNBOOK 章节或新 RUNBOOK 覆盖部署到 DEV/TEST/PROD
-> profile 的步骤（参考 ADR-008 mj-agent 与 mj-system 兄弟服务部署模型）。
+> profile 的步骤（参考 ADR-008 mj-agent 独立 compose project + 通过
+> mj-system-backend-network external 作为 consumer 访问 mj-system biz pg 的部署模型）。
 
 ---
 
@@ -193,7 +194,7 @@ Phase 0.5 阶段 release 未涉及生产部署；rollback **仅限仓库层**（
 模板待 Phase 1 落地；当前以普通 markdown 临时记录于 `docs/postmortem/`）：
 
 - 发生 rollback（Step 1 或 Step 2 路径之一）
-- 影响外部下游（mj-system co-deployment 中下游服务、analyst 用户）
+- 影响外部下游（mj-system 栈下游服务、analyst 用户）
 - 误推 tag 在线保留 ≥ 1 小时（即使后续删除也算）
 
 记录内容至少含：时间线、根因、临时缓解、永久修复、预防措施。

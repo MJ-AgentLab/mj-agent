@@ -35,7 +35,7 @@ track: shared
 | [[ADR]_002_Skills_As_First_Class_Citizens\|ADR-002 Skills as First-Class Citizens]] | SKILL | accepted | 所有专业能力以 `skills/{name}/SKILL.md` 格式封装，对齐 Claude Code skills 约定 |
 | [[ADR]_003_Progressive_Disclosure\|ADR-003 Progressive Disclosure]] | PROMPT | accepted | 全局 system prompt 只含身份与原则；具体能力按需加载 |
 | [[ADR]_006_Fail_Safe_Reads\|ADR-006 Fail-Safe Reads]] | GUARDRAIL | accepted | biz 库访问用只读账号 + SQL guardrail middleware 双层保护 |
-| [[ADR]_008_Co_Deployment_With_MJ_System\|ADR-008 Co-Deployment with mj-system]] | OPS | accepted | mj-agent 作为 mj-system 的兄弟服务部署在同一 Docker 环境（DEV/TEST/PROD 三套） |
+| [[ADR]_008_Co_Deployment_With_MJ_System\|ADR-008 Cross-System Boundary with mj-system]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 mj-system-backend-network (external) 仅以 consumer 身份访问 mj-system biz pg；环境矩阵与 mj-system 时间表对齐但 lifecycle 解耦 |
 | [[ADR]_009_Biz_Domain_As_Primary_Data_Source\|ADR-009 Biz Domain as Primary Data Source]] | INTEGRATION | accepted | mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层 |
 | [[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010 Git and Commit Conventions Adopted from mj-system]] | SYS | accepted | mj-agent 从 mj-system 继承 git 工作流与 commit 规范，附 Keep/Adapt/Defer 矩阵与再评估触发器 |
 | [[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011 Document Versioning and Archive Convention]] | SYS | accepted | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发，A3 模式 = git branch + PR review）；本 PR 同时把 Framework v1.0 升至 v1.1 |

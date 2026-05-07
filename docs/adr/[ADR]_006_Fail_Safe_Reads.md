@@ -45,7 +45,7 @@ mj-agent 面向内部分析师，访问 mj-system biz 域的汇总数据。
 **负面**
 - 每次 SQL 执行经过四层校验，有固定延迟（实测 < 5ms，可接受）
 - L1 的正则较为保守，某些复杂合法 SQL（例如动态窗口函数）可能被误拒；需要靠 SKILL.md 引导 LLM 写更朴素的等价形式
-- L2 与 L4 的表清单必须保持同步，mj-system schema 变更时需要触发契约同步（ADR-011 biz schema 三层同步机制）
+- L2 与 L4 的表清单必须保持同步，mj-system schema 变更时需要触发契约同步；自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）。Phase 1 阶段通过 `tests/contract/*` 防守性 fail-then-manual-fix + manual review 维持
 
 **中性**
 - Guardrail 的细节规则本身不是 ADR，将在 `[STANDARD]_SQL_Guardrail_Rules_v1.0.md`（Phase 0.5）里明确

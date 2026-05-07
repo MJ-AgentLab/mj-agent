@@ -102,7 +102,7 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
 | Artifact / 范例 | 归属 | 理由 |
 |---|---|---|
 | ADR-002 (Skills as First-Class Citizens) | `agent` | 决策影响 agent runtime |
-| ADR-008 (Co-Deployment) | `code` | 部署 / 运维决策 |
+| ADR-008 (Cross-System Boundary) | `code` | 部署 / 运维决策 |
 | ADR-006 (Fail Safe Reads) | `shared` | guardrail 跨代码 + agent；reviewer 双轨 |
 | `[CONTRACT]_Tool_SQLExecute` | `agent` | agent-facing tool |
 | `[CONTRACT]_MJ_Agent_To_MJ_System_Biz` | `shared` | 跨服务契约 |

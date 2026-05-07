@@ -100,7 +100,8 @@ uv run pytest tests/smoke -m smoke         # needs biz DB + LLM
 uv run ruff check                          # lint
 uv run mypy src/mj_agent                   # type-check
 
-# Phase 1 sub 1.H — Docker (DEV co-deploy with mj-system)
+# Phase 1 sub 1.H — Docker (independent compose project; attaches
+# mj-system-backend-network for biz pg consumer access via analyst RO role)
 docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
@@ -138,8 +139,11 @@ Missing `ARK_API_KEY` raises `LLMConfigError` at graph build time.
 
 ## Environment variables
 
-Aligned with mj-system's naming so co-deployment can merge .env files
-safely: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
+Aligned with mj-system's naming for **operational consistency** (DEV/TEST/
+PROD profile 矩阵统一)，**not** for shared .env files. mj-agent 与
+mj-system 是独立 compose project（ADR-008），各自有独立的 secrets 解密
+管道（独立 `secrets.enc` + 独立团队口令；详见 `config/README.md`）.
+Common keys: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
 PASSWORD` + `MJ_CONFIG_PROFILE`. Phase 1 sub 1.A added `MJ_AGENT_MEMORY_*`
 (separate RW user + database for langgraph checkpointer) and
 `CHAINLIT_HOST/PORT`. The storage-stack PR added

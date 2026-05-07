@@ -51,7 +51,7 @@ aliases:
 
 ## 1 背景
 
-mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Co-Deployment with mj-system]] 决定的"兄弟服务"关系出发，把 mj-system 已经成熟的一整套 git 治理文档**几乎原封不动地继承下来**。继承的可观察痕迹：
+mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] 决定的跨项目运维一致性出发（注：ADR-008 早期形态为"兄弟服务"，PR #42-#46 后演进为独立 compose project + consumer 关系；本评估以早期 framing 为背景），把 mj-system 已经成熟的一整套 git 治理文档**几乎原封不动地继承下来**。继承的可观察痕迹：
 
 - `.bare/` 与兄弟工作树（Bare-repo Worktree）— 与 mj-system [[GUIDE]_Git_Branch_Strategy|分支策略指南]] §6 描述的结构完全一致
 - 双远端：`origin` (GitHub `MJ-AgentLab/mj-agent`) + `gitee` (`gitee.com/ranzuozhou/mj-agent`)
@@ -59,7 +59,7 @@ mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008
 - `CLAUDE.md` §Repo conventions 声明 "Commits follow Conventional Commits"，但**首个 commit `b932007` 不符合 `type(scope):` 格式**
 - 文档治理框架 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]] 自身也声明 `derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0`
 
-继承本身合理（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已论证 co-deployment 路径），但 mj-system 的规则是为：
+继承本身合理（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已论证跨项目运维一致性路径），但 mj-system 的规则是为：
 
 - 多服务平台（aec / dqv / qvl / qcm / sac / fc 共 6 个 ETL 服务）
 - 含 PM / DBA / SRE 角色的团队
@@ -137,7 +137,7 @@ frontmatter `dimensions` 列出的 4 个维度，每条规则按这 4 维打分�
 | scope = subpackage / ship-unit | **5 / 8** | LangChain / LangGraph / WrenAI / DB-GPT / Angular | AutoGPT 用 path / Aider 不用 scope / Vanna 不用 | 应采纳；mj-agent scope = `src/mj_agent/` 模块名 |
 | 自定义 footer 关键字（`Eval-Score:`、`Prompt-Version:`） | **0 / 8** | — | 全员 | **不要发明**；prompt 版本在 frontmatter，eval 分数在 PR 描述 |
 | 数据 Agent 专属 scope (`prompt`/`agent`/`rag`/`model`/`eval`) | DB-GPT release-drafter labels / WrenAI eval branches / LangChain `model-profiles` | DB-GPT / WrenAI / LangChain | — | 借鉴子集：`prompt / agent / skill / sql / eval` |
-| 双远端 / 镜像（Gitee + GitHub） | **0 / 8** | — | 全员 | 视为 mj-agent ↔ mj-system co-deployment 的运维细节，不是 git 工作流 |
+| 双远端 / 镜像（Gitee + GitHub） | **0 / 8** | — | 全员 | 视为 mj-agent ↔ mj-system 跨项目运维一致性细节（ADR-008），不是 git 工作流 |
 | 角色门禁字段（PM / DBA / SRE 必审） | **0 / 8** | — | 全员（只用 CODEOWNERS，不在 PR 模板里写角色） | mj-agent 团队规模 < 4，DEFER 直至触发 |
 | Release commit `release(scope): x.y.z` | **2 / 8** | LangChain / LangGraph | 其他 | Phase 1 follow-up，非 Phase 0 关切 |
 
@@ -158,8 +158,8 @@ frontmatter `dimensions` 列出的 4 个维度，每条规则按这 4 维打分�
 | Branch Strategy §1-§2 | 5 类临时分支命名 (feature/bugfix/documentation/maintain/hotfix) | 分支 type 与 commit type 不混淆，清晰角色 | **KEEP** | mj-system 一致；6 PR 模板与之绑定；社区虽简单但 mj-agent 已配套 | Phase 1 review 决定是否简化 |
 | Branch Strategy §3 | 分支 × commit type 对齐矩阵 | feature/* 只允许 feat/perf/refactor/test/docs；hotfix/* 只允许 fix | **KEEP**（写入 STANDARD §5.2） | 干净的提交分类，PR review 可直接照表 | N/A |
 | Push Workflow §1-§7 | 7 步 pre-push 检查清单 | 1.commit 格式 2.类型/分支匹配 3.CHANGELOG 4.工作目录干净 5.分支命名 6.同步基线 7.推送验证 | **KEEP** as guidance, **NOT** as hook | Phase 0 用人工自检；hook 自动化推迟到 Phase 1 | 重复的 push-time 错误超 3 次 |
-| Push Workflow §6 | 双远端 dual-push alias | `git pushall = git push gitee && git push origin` | **KEEP** | mj-system co-deployment；CI 走 Gitee 镜像；mj-agent 后续若进入同一 CI 也需要 | mj-agent 与 mj-system 完全分离，或 Gitee 90 天未用 |
-| GitHub Setup §1-§2 | GitHub + Gitee 镜像配置 | 两个仓库为同一真相源，GitHub 主，Gitee 镜像供 CI | **KEEP** | 已配置；mj-system co-deployment 决策 | 同上 |
+| Push Workflow §6 | 双远端 dual-push alias | `git pushall = git push gitee && git push origin` | **KEEP** | 跨项目运维一致性（ADR-008）；CI 走 Gitee 镜像；mj-agent 后续若进入同一 CI 也需要 | mj-agent 与 mj-system 完全分离，或 Gitee 90 天未用 |
+| GitHub Setup §1-§2 | GitHub + Gitee 镜像配置 | 两个仓库为同一真相源，GitHub 主，Gitee 镜像供 CI | **KEEP** | 已配置；ADR-008 跨项目运维一致性决策 | 同上 |
 | GitHub Setup §3-§4 | SemVer + 多文件版本号同步（`pyproject.toml` + `Dockerfile` + `main.py` + 4 处） | mj-system 的发版要在 8 个文件改版本号 | **DEFER**，集中到单一 `pyproject.toml` | mj-agent Phase 0 仅 `pyproject.toml` 持有 version；Docker 与 CHANGELOG 尚不存在 | 首次发版时配套写入 RUNBOOK |
 | GitHub Setup §5 | PowerShell 版本号批量更新脚本 | 在 8 个文件上 sed | **DROP** | mj-agent 单一 source 不需要批量 | N/A |
 | PR Description §1-§3 | 6 份 PR 模板（feature/bugfix/doc/maintain/hotfix/release） | 不同分支类型审核关注点不同 | **KEEP** | 已安装；社区 0/8 但移除成本 > 维持成本 | 首位外部贡献者选错模板 |
@@ -236,7 +236,7 @@ A5 / A6 在本 PR 内已同步落地。剩余对齐项不阻塞门禁，但建�
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 本评估的决策落地
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— 本评估的规范产出
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] —— 本评估自身遵循的治理框架（§3.2 ASSESSMENT 类型 / §4.4 ASSESSMENT 专属字段；本 PR 同时把 Framework 升至 v1.1，详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]；后续 v2.0 trio 演进见 [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]）
-- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Co-Deployment with mj-system]] —— 继承 mj-system 治理的部署上下文
+- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 继承 mj-system 治理的跨项目运维上下文
 - `plans/mj-agent-roadmap-v1.6.md` —— Phase 0 范围与退出条件
 
 ### 8.2 mj-system 源文档（被评估对象）

@@ -159,7 +159,7 @@ docker image rm mj-agent:0.1                                   # 可选；保留
 
 ## 关联文档
 
-- [[infra/docker/README|infra/docker README]]: build / run / co-deploy 详情
+- [[infra/docker/README|infra/docker README]]: build / run / standalone 部署详情
 - [[GUIDE]_Analyst_Day_One|Analyst Day-One GUIDE]]: 1.I 试用阶段 day-1 流程
 - [[adr/[ADR]_006_Mj_System_Db_Boundary|ADR-006]]: 4 层数据边界
 - [[adr/[ADR]_009_Read_Only_Connection|ADR-009]]: 只读连接策略

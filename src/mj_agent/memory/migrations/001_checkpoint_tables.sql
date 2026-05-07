@@ -12,7 +12,7 @@
 -- the delta; this file should be re-synced manually as a doc artifact.
 --
 -- DBA pre-flight (Phase 1 sub 1.A; storage-stack PR makes this auto):
---   * Docker co-deploy: the storage-stack PR ships
+--   * Docker deployment: the storage-stack PR ships
 --     ``infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh`` which
 --     runs on the dedicated ``mj-agent-postgres`` container's first init
 --     and performs the CREATE ROLE + CREATE DATABASE + GRANT below
