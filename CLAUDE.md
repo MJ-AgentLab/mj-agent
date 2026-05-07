@@ -121,8 +121,12 @@ excludes smoke by default — pass `-m smoke` to opt in. `tests/conftest.py`
 session fixtures `live_db` and `agent` *skip* (not fail) when
 `POSTGRES_ANALYST_USER` / `ARK_API_KEY` are unset, so empty-env runs of
 integration/smoke look green without actually exercising those paths.
-CI (`.github/workflows/ci.yml`) currently runs only `python -m compileall`;
-ruff / mypy / pytest are **local-only gates** for now.
+CI (`.github/workflows/ci.yml`) runs the same gates locally devs run:
+`python -m compileall` + `ruff check` + `mypy src/mj_agent` (strict) +
+`pytest` (default selection: unit + eval + integration; smoke + contract
+deselected) + `pytest tests/contract -m contract` (skip-clean without
+DB creds). Smoke (`-m smoke`) is the only band CI never touches — it
+needs live biz DB + Ark and runs locally only.
 
 ## LLM provider
 

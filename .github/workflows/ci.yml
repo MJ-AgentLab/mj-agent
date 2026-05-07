@@ -41,6 +41,18 @@ jobs:
       - name: Syntax check (compileall)
         run: uv run python -m compileall -q .
 
+      - name: Lint (ruff)
+        run: uv run ruff check
+
+      - name: Type check (mypy strict)
+        run: uv run mypy src/mj_agent
+
+      - name: Tests (unit + eval + integration; smoke + contract excluded by default)
+        # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
+        # this runs unit + eval + integration. The integration suite session-
+        # skips cleanly when POSTGRES_ANALYST_USER is unset (CI's case).
+        run: uv run pytest
+
       - name: Contract tests (skip on missing analyst creds)
         # tests/contract/* is gated by the `contract` pytest marker AND the
         # `live_db` session fixture (skip when POSTGRES_ANALYST_USER unset).
