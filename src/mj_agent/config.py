@@ -72,6 +72,18 @@ class Settings(BaseSettings):
     sql_max_rows: int = 500
     sql_statement_timeout_sec: int = 60
 
+    # ── 5. Memory DB (Phase 1 sub 1.A) ────────────────────────────────
+    # Separate database from biz domain; checkpointer needs RW. Reuses
+    # POSTGRES_{PROFILE}_HOST/PORT but with its own user/db.
+    mj_agent_memory_db: str = "mj_agent_memory"
+    mj_agent_memory_user: str = ""
+    mj_agent_memory_password: SecretStr = SecretStr("")
+    mj_agent_memory_pool_max: int = 10
+
+    # ── 6. Chainlit UI (Phase 1 sub 1.A) ──────────────────────────────
+    chainlit_host: str = "127.0.0.1"
+    chainlit_port: int = 8000
+
     @field_validator("biz_allowed_schemas", "biz_allowed_dwd_tables", mode="before")
     @classmethod
     def _split_csv(cls, v: object) -> object:

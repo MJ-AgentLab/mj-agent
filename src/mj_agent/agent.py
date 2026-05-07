@@ -45,14 +45,22 @@ def _build_system_prompt() -> str:
     return "\n\n".join(parts)
 
 
-def make_graph() -> Any:
+def make_graph(checkpointer: Any | None = None) -> Any:
     """Build and return the compiled LangGraph agent.
+
+    Args:
+        checkpointer: optional ``BaseCheckpointSaver`` for thread persistence
+            (used by the Chainlit UI in Phase 1; left ``None`` for Studio
+            and unit tests so no DB is required at import time).
 
     ``make_llm()`` raises ``LLMConfigError`` if ``ARK_API_KEY`` is missing,
     so this call site naturally fails fast on misconfiguration.
     """
-    return create_agent(
-        model=make_llm(),
-        tools=ALL_TOOLS,
-        system_prompt=_build_system_prompt(),
-    )
+    kwargs: dict[str, Any] = {
+        "model": make_llm(),
+        "tools": ALL_TOOLS,
+        "system_prompt": _build_system_prompt(),
+    }
+    if checkpointer is not None:
+        kwargs["checkpointer"] = checkpointer
+    return create_agent(**kwargs)

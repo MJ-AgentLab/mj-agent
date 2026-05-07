@@ -16,8 +16,8 @@ executing the **data-agent MVP** as a Phase 1 sub-milestone per
 ## Architecture
 
 ```
-Entry   : LangGraph Studio (langgraph.json) / CLI
-Runtime : langchain.agents.create_agent(model, tools, system_prompt)
+Entry   : LangGraph Studio (langgraph.json) / Chainlit (src/mj_agent/ui.py) / CLI
+Runtime : langchain.agents.create_agent(model, tools, system_prompt[, checkpointer])
 Skills  : src/mj_agent/prompts/system.md
         + src/mj_agent/skills/{biz-domain-context,qcm-analysis,
           safe-sql-analysis}/SKILL.md (statically full-loaded)
@@ -28,6 +28,10 @@ Tools   : src/mj_agent/tools/biz_context.py            (find_biz_context)
           src/mj_agent/tools/sql/execute.py             (envelope + DB)
 Catalog : src/mj_agent/biz_catalog/qcm_catalog.yaml     (mirror STANDARD §2-§4)
           src/mj_agent/biz_catalog/{loader,finder}.py
+Memory  : src/mj_agent/memory/checkpointer.py           (Phase 1 sub 1.A;
+          PostgresSaver against mj_agent_memory DB; thread persistence)
+CLI     : src/mj_agent/server/cli.py                    (typer; `mj-agent
+          serve` / `mj-agent check`)
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
 Config  : src/mj_agent/config.py — pydantic-settings over .env
 ```
@@ -71,6 +75,8 @@ statement_timeout_hit / business_summary / precheck_warnings`.
 ```bash
 uv sync                                    # install / lock dependencies
 uv run langgraph dev                       # LangGraph Studio (local)
+uv run mj-agent serve                      # Phase 1: Chainlit UI on CHAINLIT_HOST:PORT
+uv run mj-agent check                      # Phase 1: probe DB + LLM creds (Docker healthcheck)
 uv run pytest tests/unit                   # fast, no external deps
 uv run pytest tests/eval                   # seed schema + Component check (no DB)
 uv run pytest tests/integration            # needs live biz DB
@@ -103,7 +109,9 @@ Missing `ARK_API_KEY` raises `LLMConfigError` at graph build time.
 
 Aligned with mj-system's naming so co-deployment can merge .env files
 safely: `POSTGRES_{DEV,TEST,PROD}_HOST/PORT` + `POSTGRES_ANALYST_USER/
-PASSWORD` + `MJ_CONFIG_PROFILE`. See `.env.example` for the full list.
+PASSWORD` + `MJ_CONFIG_PROFILE`. Phase 1 sub 1.A added `MJ_AGENT_MEMORY_*`
+(separate RW user + database for langgraph checkpointer) and
+`CHAINLIT_HOST/PORT`. See `.env.example` for the full list.
 
 The standard way to provision `.env` is `.\scripts\setup-env.ps1`, which
 decrypts `config/secrets.enc` (AES-256-CBC + PBKDF2) using a

@@ -56,5 +56,11 @@ htmlcov/
 # ========== LangGraph Studio（mj-agent 独有）==========
 .langgraph_api/
 
+# ========== Chainlit（auto-generated config + translations）==========
+# `.chainlit/` is regenerated on first `chainlit run` from defaults; we
+# only commit it back when project-specific UI customization is added.
+.chainlit/
+chainlit.md
+
 # ========== Git worktrees（并行 agent 隔离） ==========
 .worktrees/

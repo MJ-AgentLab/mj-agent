@@ -18,10 +18,17 @@ dependencies = [
     "pyyaml>=6.0",
     "sqlglot>=25.0",
     "socksio>=1.0",
+    "chainlit>=1.3",
+    "langgraph-checkpoint-postgres>=3.0.5",
+    "langsmith>=0.1",
+    "typer>=0.12",
 ]
 
 [project.optional-dependencies]
 langsmith = ["langsmith>=0.1"]
+
+[project.scripts]
+mj-agent = "mj_agent.server.cli:main"
 
 [dependency-groups]
 dev = [
@@ -76,3 +83,9 @@ files = ["src/mj_agent"]
 [[tool.mypy.overrides]]
 module = ["tests.*"]
 strict = false
+
+# Chainlit ships without complete type stubs as of 2.x; the UI module is
+# a thin handler layer and is exercised by smoke / runtime, not by mypy.
+[[tool.mypy.overrides]]
+module = ["mj_agent.ui"]
+disallow_untyped_calls = false
