@@ -21,30 +21,43 @@ from mj_agent.skills import load_skill
 from mj_agent.tools import ALL_TOOLS
 
 _ACTIVE_SKILLS: tuple[str, ...] = (
+    # Recall + entity (前置)
+    "biz-schema-exploration",
     "biz-domain-context",
+    # Metric & query authoring (中段)
     "mj-ddd-semantics",
     "qcm-analysis",
+    "query-writing",
+    "monthly-report",
+    # Execute / optimize / discipline (后段)
     "safe-sql-analysis",
+    "query-optimization",
 )
 
 
 def _build_system_prompt() -> str:
     """Compose the system prompt from the base identity + active skills.
 
-    MVP PR3 split the legacy ``query-writing`` into three skills; Phase 1
-    sub 1.D inserts ``mj-ddd-semantics`` between context recall and
-    template authoring so business-concept → physical-column resolution
-    happens *before* SQL drafting:
+    Phase 1 sub 1.E rounds out the skill set to **8 active skills**
+    organized in three bands:
 
-      1. ``biz-domain-context`` — catalog recall via find_biz_context
-      2. ``mj-ddd-semantics``   — DDD layer; metric_part / time_column /
-                                  prev/diff/rate column choice
-      3. ``qcm-analysis``       — QCM SQL templates + curated examples
-      4. ``safe-sql-analysis``  — write/execute/interpret discipline
+      1. Recall & entity (前置):
+         - ``biz-schema-exploration`` — meta-question routing
+         - ``biz-domain-context``     — catalog recall via find_biz_context
+      2. Metric & query authoring (中段):
+         - ``mj-ddd-semantics``       — DDD layer; column choice
+         - ``qcm-analysis``           — QCM 5 templates
+         - ``query-writing``          — ad-hoc SQL outside QCM templates
+                                        (revived v1.0; scope narrowed)
+         - ``monthly-report``         — composite "monthly report" (E4)
+      3. Execute / optimize / discipline (后段):
+         - ``safe-sql-analysis``      — execute discipline
+         - ``query-optimization``     — rewrite on timeout / truncated /
+                                        budget overflow
 
-    A dynamic selector (ADR-003 progressive disclosure) is deferred; if
-    token budget pressure surfaces above ~8k, swap this with a selector
-    that picks 1-2 skills per turn (Phase 1.5 / Phase 2).
+    Token-budget watchpoint (plan §5 risk): 8 active skills bring the
+    composed prompt close to ~8k tokens. Phase 1.5 / Phase 2 introduces
+    a dynamic skill selector (ADR-003 progressive disclosure).
     """
     parts = [load_prompt("system"), *(load_skill(name) for name in _ACTIVE_SKILLS)]
     return "\n\n".join(parts)

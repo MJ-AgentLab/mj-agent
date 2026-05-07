@@ -1,4 +1,4 @@
-"""Sanity tests for the active skill load (MVP PR3 + Phase 1 sub 1.D)."""
+"""Sanity tests for the active skill load (MVP PR3 → Phase 1 sub 1.D → 1.E)."""
 
 from __future__ import annotations
 
@@ -7,26 +7,24 @@ import pytest
 from mj_agent.agent import _ACTIVE_SKILLS, _build_system_prompt
 from mj_agent.skills import load_skill, load_skill_meta
 
-
-def test_active_skills_phase1() -> None:
-    """Phase 1 sub 1.D inserts mj-ddd-semantics between context and templates."""
-    assert _ACTIVE_SKILLS == (
-        "biz-domain-context",
-        "mj-ddd-semantics",
-        "qcm-analysis",
-        "safe-sql-analysis",
-    )
-
-
-@pytest.mark.parametrize(
-    "name",
-    [
-        "biz-domain-context",
-        "mj-ddd-semantics",
-        "qcm-analysis",
-        "safe-sql-analysis",
-    ],
+_PHASE1_SUB_E_SKILLS = (
+    "biz-schema-exploration",
+    "biz-domain-context",
+    "mj-ddd-semantics",
+    "qcm-analysis",
+    "query-writing",
+    "monthly-report",
+    "safe-sql-analysis",
+    "query-optimization",
 )
+
+
+def test_active_skills_phase1_sub_e() -> None:
+    """Phase 1 sub 1.E expands to 8 active skills (3 bands)."""
+    assert _ACTIVE_SKILLS == _PHASE1_SUB_E_SKILLS
+
+
+@pytest.mark.parametrize("name", _PHASE1_SUB_E_SKILLS)
 def test_active_skills_loadable(name: str) -> None:
     body = load_skill(name)
     # Must include the canonical heading
@@ -37,19 +35,31 @@ def test_active_skills_loadable(name: str) -> None:
     assert meta.get("track") == "agent"
 
 
-def test_query_writing_deprecated() -> None:
+def test_query_writing_revived_v10() -> None:
+    """1.E revives query-writing from deprecated → active v1.0 with narrowed scope."""
     meta = load_skill_meta("query-writing")
-    assert meta.get("state") == "deprecated"
-    # And it should NOT be in the active list.
-    assert "query-writing" not in _ACTIVE_SKILLS
+    assert meta.get("state") == "active"
+    assert meta.get("version") == "v1.0"
+    assert "query-writing" in _ACTIVE_SKILLS
 
 
-def test_system_prompt_concatenates_active_skills() -> None:
+def test_system_prompt_concatenates_eight_skills() -> None:
     prompt = _build_system_prompt()
-    # Each active skill heading appears once
-    assert prompt.count("# Skill: biz-domain-context") == 1
-    assert prompt.count("# Skill: mj-ddd-semantics") == 1
-    assert prompt.count("# Skill: qcm-analysis") == 1
-    assert prompt.count("# Skill: safe-sql-analysis") == 1
-    # query-writing must NOT be loaded into the active prompt
-    assert "# Skill: query-writing" not in prompt
+    for name in _PHASE1_SUB_E_SKILLS:
+        assert prompt.count(f"# Skill: {name}") == 1, f"missing or duplicate: {name}"
+
+
+def test_system_prompt_band_ordering() -> None:
+    """3-band ordering: recall & entity → authoring → execute & optimize."""
+    prompt = _build_system_prompt()
+    idx = {name: prompt.index(f"# Skill: {name}") for name in _PHASE1_SUB_E_SKILLS}
+    # Recall & entity 前
+    assert idx["biz-schema-exploration"] < idx["mj-ddd-semantics"]
+    assert idx["biz-domain-context"] < idx["mj-ddd-semantics"]
+    # Authoring 中段
+    assert idx["mj-ddd-semantics"] < idx["safe-sql-analysis"]
+    assert idx["qcm-analysis"] < idx["safe-sql-analysis"]
+    assert idx["query-writing"] < idx["safe-sql-analysis"]
+    assert idx["monthly-report"] < idx["safe-sql-analysis"]
+    # Execute / optimize 后段
+    assert idx["safe-sql-analysis"] < idx["query-optimization"]
