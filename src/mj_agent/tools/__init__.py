@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from typing import Any
 
+from mj_agent.entity.tools import entity_lookup
 from mj_agent.tools.analysis import (
     aggregate,
     compare_periods,
@@ -15,8 +16,9 @@ from mj_agent.tools.sql.execute import execute_sql
 from mj_agent.tools.sql.introspect import describe_biz_table, list_biz_tables
 
 ALL_TOOLS: list[Callable[..., Any]] = [
-    # Catalog recall
+    # Catalog recall + entity resolution (call before writing SQL)
     find_biz_context,
+    entity_lookup,
     # SQL plan + execute
     list_biz_tables,
     describe_biz_table,
@@ -36,6 +38,7 @@ __all__ = [
     "describe_biz_table",
     "detect_anomaly",
     "drill_down",
+    "entity_lookup",
     "estimate_tokens",
     "execute_sql",
     "find_biz_context",
