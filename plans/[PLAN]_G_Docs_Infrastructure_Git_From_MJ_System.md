@@ -5,6 +5,7 @@ owner: 项目负责人
 created: 2026-04-30
 updated: 2026-04-30
 state: draft
+track: code
 tags:
   - plan
   - documentation

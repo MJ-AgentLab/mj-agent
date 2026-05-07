@@ -5,6 +5,7 @@ owner: 项目负责人
 created: 2026-04-27
 updated: 2026-04-29
 state: draft
+track: shared
 ---
 
 # PLAN F — 双轨分轨骨架交付与 plugin 构建
