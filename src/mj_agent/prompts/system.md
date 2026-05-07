@@ -6,7 +6,7 @@ owner: 项目负责人
 created: 2026-04-24
 updated: 2026-05-07
 state: active
-version: v1.5
+version: v1.6
 track: agent
 model_binding: deepseek-v3
 token_budget_estimate: 820
