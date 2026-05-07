@@ -5,6 +5,7 @@ owner: 项目负责人
 created: 2026-04-24
 updated: 2026-04-27
 state: draft
+track: shared
 ---
 
 # PLAN E — Phase 0 文档治理 v1.0 验证

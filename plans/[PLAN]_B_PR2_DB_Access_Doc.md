@@ -5,6 +5,7 @@ owner: ranzuozhou
 created: 2026-04-24
 updated: 2026-04-27
 state: draft
+track: code
 related:
   - ../README.md
   - ../src/mj_agent/tools/sql/guardrail.py
