@@ -405,7 +405,8 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | runtime | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL | P2（PR-D2，Phase 2） |
 | infra | `/mj-agent-infra-env-setup` | 8 (C-flavor) | **active**（PR-B3b） |
 | infra | `/mj-agent-infra-studio-probe` | 10 sub | **active**（PR-B3b） |
-| infra | `/mj-agent-infra-{docker-compose,storage-stack}` | 8 (C-flavor) | P1（PR-C3） |
+| infra | `/mj-agent-infra-docker-compose` | 8 (C-flavor) | **active**（PR-C3） |
+| infra | `/mj-agent-infra-storage-stack` | 8 (C-flavor) | **active**（PR-C3） |
 
 **v2.1 promote** (Phase B PR-B3c-promote 完成 ✅) ：v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`；v2.1 trio + HITL_Prompt v1.0 + ADR-014/015/016 全部 `state: active`；A12-A14 PR 门禁正式启用（不再 "v2.1 promote 前预自检"）；scripts/check_frontmatter.py TRACK_VALUES 已扩 4 值。
 

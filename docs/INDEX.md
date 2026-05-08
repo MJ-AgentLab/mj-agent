@@ -173,10 +173,10 @@ track: shared
 |---|---|---|
 | `/mj-agent-infra-env-setup` | 8 (C-flavor) | **active**（PR-B3b） |
 | `/mj-agent-infra-studio-probe` | 10 sub Studio H1/H2/H3/R1/R2 | **active**（PR-B3b） |
-| `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
-| `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
+| `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
+| `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 6/6 + 3/4 + 2/4 = 29/32 已落地；flow + git + doc family 完成；runtime 3/4（read-only by design 3 P1 完成；剩 P2 eval-baseline 待 Phase 2）；infra 2/4；剩 runtime-eval-baseline P2 + infra 2 P1）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 6/6 + 3/4 + 4/4 = 31/32 已落地；flow + git + doc + infra family 完成；runtime 3/4（read-only by design 3 P1 完成；剩 P2 eval-baseline 待 Phase 2 EVAL 框架就绪后 PR-D2）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
