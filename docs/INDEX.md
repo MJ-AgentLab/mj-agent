@@ -130,10 +130,10 @@ track: shared
 | `/mj-agent-git-commit` | 12 Commit | **active**（PR-B1） |
 | `/mj-agent-git-push` | 13 Push | **active**（PR-B1） |
 | `/mj-agent-git-pr` | 14 PR | **active**（PR-B1） |
-| `/mj-agent-git-review-pr` | 15 review 别人 PR（架构审查方向） | P1（PR-B3） |
-| `/mj-agent-git-check-merge` | 16 Merge Gate | P1（PR-B3） |
-| `/mj-agent-git-delete` | 17 sub Branch Cleanup | P1（PR-B3） |
-| `/mj-agent-git-sync` | 17 sub / hotfix 同步 | P1（PR-B3） |
+| `/mj-agent-git-review-pr` | 15 review 别人 PR（架构审查方向） | **active**（PR-B3b） |
+| `/mj-agent-git-check-merge` | 16 Merge Gate | **active**（PR-B3b） |
+| `/mj-agent-git-delete` | 17 sub Branch Cleanup | **active**（PR-B3b） |
+| `/mj-agent-git-sync` | 17 sub / hotfix 同步 | **active**（PR-B3b） |
 
 ### flow family（PR-B2 + PR-B3 落地共 9）
 
@@ -173,12 +173,12 @@ track: shared
 
 | Skill | Stage | Status |
 |---|---|---|
-| `/mj-agent-infra-env-setup` | 8 (C-flavor) | P0（PR-C3） |
-| `/mj-agent-infra-studio-probe` | 10 sub Studio H1/H2/H3/R1/R2 | P0（PR-C3） |
+| `/mj-agent-infra-env-setup` | 8 (C-flavor) | **active**（PR-B3b） |
+| `/mj-agent-infra-studio-probe` | 10 sub Studio H1/H2/H3/R1/R2 | **active**（PR-B3b） |
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
 
-合计 32 skills（5/9 + 9/9 + 0/6 + 0/4 + 0/4 = 14/32 已落地；flow family 完成）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 0/6 + 0/4 + 2/4 = 20/32 已落地；flow + git family 完成；infra 2/4）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
