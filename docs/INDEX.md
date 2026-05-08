@@ -69,11 +69,14 @@ track: shared
 |------|------|
 | `TEMPLATE_ADR.md` | 架构决策记录骨架 |
 | `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.1 |
-| `TEMPLATE_SKILL.md` | skill 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`） |
-| `TEMPLATE_PROMPT.md` | prompt 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
+| `TEMPLATE_SKILL.md` | in-source SKILL 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`；13 字段 + 五段式） |
+| `TEMPLATE_PROMPT.md` | in-source PROMPT 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
+| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.4 |
+| `TEMPLATE_SPEC.md` (Phase A PR-A3) | SPEC 骨架；body 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；mj-agent tune（去 SQL DDL / n8n 段，加 EVAL coverage 段） |
+| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] 配套 |
 
-*Phase 0.5 将补 `TEMPLATE_RUNBOOK.md`；Phase 2 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ASSESSMENT.md`。*
+*Phase D 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ISSUE.md` / `TEMPLATE_ASSESSMENT.md`。*
 
 ---
 
