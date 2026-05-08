@@ -26,6 +26,7 @@ track: shared
 | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|mj-agent 代码侧文档治理框架 v1.1（Track A）]] (draft skeleton) | Track A minor bump（v1.0 → v1.1）— §0/§3.9/§7.3 加注 Track C engineering-workflow 共享 A1-A6 + cross-ref 工程流程 STANDARDs；与 Meta v2.1 同 PR 落地 |
 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|mj-agent 智能体侧文档治理框架 v1.0（Track B）]] (active) | Track B 智能体侧文档治理 — SKILL/PROMPT/EVAL/agent-facing CONTRACT 的 authoring 深度规则；A7-A10 + A11 + 渐进披露 + EVAL coupling + frontmatter strip §7.5 |
 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|mj-agent 智能体侧文档治理框架 v1.1（Track B）]] (draft skeleton) | Track B minor bump（v1.0 → v1.1）— §2/§7.5 scope 明确为 in-source only；`.claude/skills/**` 排除出本框架治理（划归 Meta v2.1 §3.10） |
+| [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (draft skeleton) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；派生自 mj-system v1.0；§4 含 mj-agent 专属 3 风味 Implementation + EVAL backlog ticket 自动开单；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+） |
 | [[STANDARD]_GitHub_Markdown_v1.0\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.0 §4 字段语义互补 |
 | [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft；派生自 mj-system v2.0） |
 
@@ -45,6 +46,7 @@ track: shared
 | [[ADR]_012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架（mj-agent-agent-doc / mj-agent-code-doc） |
 | [[ADR]_013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 Agent_Side v1.0 §2 13 字段 schema 独立；两者通过 sync skill（Phase 1）做内容同步，不做 schema 同步 |
 | [[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted (state: draft) | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD），与 v2.0 双轨并行；A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地（v2.1 trio + ADR-014 初次以 state: draft 落地，Phase B promote） |
+| [[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015 HITL_Prompt v1.0 Derivation from mj-system]] | WORKFLOW | accepted (state: draft) | 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 verbatim + §4 mj-agent 适配（去 n8n / 加 3 风味 Implementation / 加 runtime+infra 类目）+ §5 mj-agent skill 矩阵；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+）；Stage 8 Implementation 三风味（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ Stage 17 Post-merge EVAL backlog ticket 自动开单为 mj-agent 专属 |
 
 ## 评估（docs/assessments/）
 
@@ -67,11 +69,14 @@ track: shared
 |------|------|
 | `TEMPLATE_ADR.md` | 架构决策记录骨架 |
 | `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.1 |
-| `TEMPLATE_SKILL.md` | skill 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`） |
-| `TEMPLATE_PROMPT.md` | prompt 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
+| `TEMPLATE_SKILL.md` | in-source SKILL 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`；13 字段 + 五段式） |
+| `TEMPLATE_PROMPT.md` | in-source PROMPT 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
+| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.4 |
+| `TEMPLATE_SPEC.md` (Phase A PR-A3) | SPEC 骨架；body 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；mj-agent tune（去 SQL DDL / n8n 段，加 EVAL coverage 段） |
+| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] 配套 |
 
-*Phase 0.5 将补 `TEMPLATE_RUNBOOK.md`；Phase 2 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ASSESSMENT.md`。*
+*Phase D 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ISSUE.md` / `TEMPLATE_ASSESSMENT.md`。*
 
 ---
 
