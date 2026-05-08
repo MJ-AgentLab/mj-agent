@@ -396,7 +396,9 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | doc | `/mj-agent-doc-plan` | 4 sub | **active**（PR-B4） |
 | doc | `/mj-agent-doc-author` | 6 | **active**（PR-B4） |
 | doc | `/mj-agent-doc-validate` | 11 sub | **active**（PR-B4） |
-| doc | `/mj-agent-doc-{sync,review,migrate}` | 8 sub / 15 sub / 罕用 | P1/P2（PR-C1） |
+| doc | `/mj-agent-doc-sync` | 8 sub | **active**（PR-C1） |
+| doc | `/mj-agent-doc-review` | 15 sub | **active**（PR-C1） |
+| doc | `/mj-agent-doc-migrate` | 罕用 / archive workflow | **active**（PR-C1） |
 | runtime | `/mj-agent-runtime-{skill-doc-improve,prompt-version-bump,biz-catalog-sync}` | 8 (B-flavor) sub | **read-only by design**；P1（PR-C2） |
 | runtime | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL | P2（PR-D2，Phase 2） |
 | infra | `/mj-agent-infra-env-setup` | 8 (C-flavor) | **active**（PR-B3b） |
