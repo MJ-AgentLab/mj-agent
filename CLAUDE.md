@@ -372,7 +372,10 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | git | `/mj-agent-git-check-merge` | 16 | P1（PR-B3） |
 | git | `/mj-agent-git-delete` | 17 sub | P1（PR-B3） |
 | git | `/mj-agent-git-sync` | 17 sub / hotfix | P1（PR-B3） |
-| flow | `/mj-agent-flow-{intake,repo-scan,plan,implement}` | 0/3/4/8 | P0（PR-B2） |
+| flow | `/mj-agent-flow-intake` | 0 | **active**（PR-B2） |
+| flow | `/mj-agent-flow-repo-scan` | 3 | **active**（PR-B2） |
+| flow | `/mj-agent-flow-plan` | 4 | **active**（PR-B2） |
+| flow | `/mj-agent-flow-implement` | 8 | **active**（PR-B2） |
 | flow | `/mj-agent-flow-{verify,self-review,scope-drift,review-respond,post-merge}` | 9/10/11/15/17 | P0/P1（PR-B3） |
 | doc | `/mj-agent-doc-{plan,author,validate}` | 4 sub / 6 / 11 sub | P0（PR-B4） |
 | doc | `/mj-agent-doc-{sync,review,migrate}` | 8 sub / 15 sub / 罕用 | P1/P2（PR-C1） |
