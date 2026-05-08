@@ -194,9 +194,13 @@ promote PR archives v2.0 — see ADR-014.
   CONTRACT). v1.1 minor bump: §2/§7.5 scope clarified to in-source only
   (`.claude/skills/**` excluded — governed by Meta v2.1 §3.10 instead).
 - `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0.md`
-  (Track C primary STANDARD; PR-A2 to land) — 17-stage HITL execution
+  (Track C primary STANDARD; draft skeleton) — 17-stage HITL execution
   loop derived from mj-system v1.0; governs `.claude/skills/` workflow
-  + Stage prompts + HITL gates at stages 5/7/9/11/13.
+  + Stage prompts + HITL gates at stages 5/7/9/11/13. Phase A Lite
+  derivation: §4.1 / §4.4 reference mj-system upstream `[STANDARD]_AI_Engineering_Intake.md`
+  / `_Repo_Scan.md` as placeholders pending Phase B+ derivation. Stage 8
+  Implementation has three flavors (A pure code / B in-source canonical
+  always-HITL / C infra) — see ADR-015.
 
 Markdown + YAML syntax (GFM rendering target):
 `docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
