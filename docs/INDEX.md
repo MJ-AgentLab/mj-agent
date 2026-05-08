@@ -143,11 +143,11 @@ track: shared
 | `/mj-agent-flow-repo-scan` | 3 Repo Scan | **active**（PR-B2） |
 | `/mj-agent-flow-plan` | 4 Plan body | **active**（PR-B2） |
 | `/mj-agent-flow-implement` | 8 Implementation 编码 | **active**（PR-B2） |
-| `/mj-agent-flow-verify` | 10 Local Verification | P0（PR-B3） |
-| `/mj-agent-flow-self-review` | 11 AI Self-review | P0（PR-B3） |
-| `/mj-agent-flow-scope-drift` | 9 Scope Drift Gate | P1（PR-B3） |
-| `/mj-agent-flow-review-respond` | 15 Review/CI（own PR） | P1（PR-B3） |
-| `/mj-agent-flow-post-merge` | 17 Post-merge | P1（PR-B3） |
+| `/mj-agent-flow-verify` | 10 Local Verification | **active**（PR-B3a） |
+| `/mj-agent-flow-self-review` | 11 AI Self-review | **active**（PR-B3a） |
+| `/mj-agent-flow-scope-drift` | 9 Scope Drift Gate | **active**（PR-B3a） |
+| `/mj-agent-flow-review-respond` | 15 Review/CI（own PR） | **active**（PR-B3a） |
+| `/mj-agent-flow-post-merge` | 17 Post-merge | **active**（PR-B3a） |
 
 ### doc family（PR-B4 + PR-C1 落地共 6）
 
@@ -178,7 +178,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
 
-合计 32 skills（5/9 + 4/9 + 0/6 + 0/4 + 0/4 = 9/32 已落地）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（5/9 + 9/9 + 0/6 + 0/4 + 0/4 = 14/32 已落地；flow family 完成）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
