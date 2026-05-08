@@ -172,19 +172,31 @@ fails on Chinese Windows if the file is UTF-8 with non-ASCII content.
 > Claude reads cross-track rules first before track-specific guidance.
 
 All canonical documentation follows the v2.0 trio (derived from mj-agent
-Framework v1.1, which itself derived from mj-system v5.0):
+Framework v1.1, which itself derived from mj-system v5.0). A v2.1 trio
+skeleton has landed alongside (`state: draft`); both coexist until Phase B
+promote PR archives v2.0 — see ADR-014.
 
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` —
-  cross-track meta rules (types / layers / lifecycle / archive / `track`
-  frontmatter field / CLAUDE.md dual-track sync §6.4.1).
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`
+  (active) / `_v2.1.md` (draft skeleton) — cross-track meta rules
+  (types / layers / lifecycle / archive / `track` frontmatter field /
+  CLAUDE.md tri-track sync §6.4.1). v2.1 adds the engineering-workflow
+  track + A12-A14 PR gates + §7.7 `.claude/` boundary.
 - `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
-  (Track A) — authoring depth + PR gates A1-A6 + OB1-OB5 for code-side
-  canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
-  / STANDARD-code / ISSUE-code / ASSESSMENT-code).
+  (active) / `_v1.1.md` (draft skeleton; minor bump) — Track A authoring
+  depth + PR gates A1-A6 + OB1-OB5 for code-side canonical types (GUIDE /
+  ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code /
+  ISSUE-code / ASSESSMENT-code). v1.1 minor bump: §0/§3.9/§7.3 cross-ref
+  engineering-workflow STANDARDs.
 - `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
-  (Track B) — authoring depth + PR gates A7-A10 + loader frontmatter-strip
-  contract for agent-side canonical types (SKILL / PROMPT / EVAL /
-  agent-facing CONTRACT).
+  (active) / `_v1.1.md` (draft skeleton; minor bump) — Track B authoring
+  depth + PR gates A7-A10 + A11 + loader frontmatter-strip contract for
+  agent-side canonical types (SKILL / PROMPT / EVAL / agent-facing
+  CONTRACT). v1.1 minor bump: §2/§7.5 scope clarified to in-source only
+  (`.claude/skills/**` excluded — governed by Meta v2.1 §3.10 instead).
+- `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0.md`
+  (Track C primary STANDARD; PR-A2 to land) — 17-stage HITL execution
+  loop derived from mj-system v1.0; governs `.claude/skills/` workflow
+  + Stage prompts + HITL gates at stages 5/7/9/11/13.
 
 Markdown + YAML syntax (GFM rendering target):
 `docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
@@ -211,10 +223,13 @@ references are audited (Living updates to `_v<new>`; Frozen pins to
 fires only when the change qualifies as substantive evolution. ADR-011
 documents the rationale.
 
-`track` frontmatter field (Meta v2.0 §4.3.1): every canonical doc declares
-`track: code | agent | shared`. Boundary rules are written into ADR-012
-§Decision 决策点 4 to avoid per-PR re-litigation. Phase 1 末 will collapse
-the implicit default and require `track` explicitly.
+`track` frontmatter field (Meta v2.0 §4.3.1; v2.1 §4.3.1 extends): every
+canonical doc declares `track: code | agent | engineering-workflow |
+shared`. Boundary rules are written into ADR-012 §Decision 决策点 4 (v2.0
+double-track) + ADR-014 §Decision 决策点 4 (v2.1 tri-track) to avoid
+per-PR re-litigation. Phase 1 末 will collapse the implicit default and
+require `track` explicitly. The path-to-track decision tree is in Meta
+v2.1 §4.3.1 (block quote).
 
 ## Code-Side Documentation
 
@@ -306,3 +321,62 @@ Agent-side authoring quick reference:
 - **PR template**: the dual-track A1-A10 checklist in PR templates is
   visually grouped (Code-Side `<details>` block A1-A6 + OB1-OB5;
   Agent-Side `<details>` block A7-A10) so reviewers self-select by track.
+  Once v2.1 promotes (Phase B end), PR template gains a third
+  `<details>` block A12-A14 for Engineering-Workflow track.
+
+## Engineering-Workflow Documentation
+
+> **Track C (engineering-workflow)** — governed by Meta_Framework v2.1
+> §3.10 / §7.7 (A12-A14 阻塞式) + `[STANDARD]_..._AI_Engineering_Execution_HITL_Prompt_v1.0`
+> (Track C primary STANDARD; PR-A2). Reviewer: Tooling Reviewer + SWE.
+> Failures are **process drift** (HITL skipped / wrong skill invoked /
+> settings.json regression) — distinct from Track A loud failures and
+> Track B silent failures.
+
+PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
+
+- **A12**: `.claude/skills/<name>/SKILL.md` uses ADR-013 native schema
+  only (`name` + `description` only — NO 13-field Agent_Side schema);
+  `description` ≥ 200 chars with positive triggers + `Do not use for:`
+  reverse-trigger block; `name` matches directory and conforms to
+  `mj-agent-<group>-<verb>` namespace; body has `## Overview` +
+  `## Workflow` (other sections flexible).
+- **A13**: `.claude/settings.json` allowlist diffs reviewed against
+  `[STANDARD]_..._Claude_Code_Settings_v1.0` (Phase C+); no bare `Bash`
+  in `permissions.allow`; secret patterns required in `permissions.deny`;
+  `enabledPlugins` changes require PR-body justification.
+- **A14**: `.mcp.json` server changes declare trust posture (first-party
+  / third-party / community) + credential mode (none / OAuth / API key)
+  in PR body; cross-referenced in `[STANDARD]_..._MCP_Server_Governance_v1.0`
+  (Phase C+).
+
+In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
+across 5 families: flow / git / doc / runtime / infra). Slash-command
+namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.0
+§5 Skill Hint Matrix (PR-A2 onwards).
+
+Repo conventions (engineering-workflow track):
+
+- `.claude/skills/<name>/` is **NOT** loaded by `mj-agent` Python loader;
+  `.claude/` resources are read by Claude Code main process.
+  §7.5 frontmatter strip contract does NOT apply here.
+- `.claude/scripts/*.ps1` follows existing `scripts/setup-env.ps1` pattern;
+  prefer reference (call existing top-level `scripts/`) over duplicate.
+- `.mcp.json` server entries declare trust posture + credential mode.
+- New slash commands auto-discover; no registration step.
+- HITL gates fire at HITL_Prompt §1 stages **5 / 7 / 9 / 11 / 13** (Plan
+  / SPEC-design / Self-review / Push / Review-CI). At these stages, AI
+  must pause and ask user before proceeding.
+- **runtime family skills** (`mj-agent-runtime-*`) are **read-only by
+  design** — they propose diffs and run reverse-scans, but do **NOT**
+  modify `src/mj_agent/{skills,prompts,agent.py,tools}/` directly.
+  This is enforced by SKILL.md `## Anti-patterns` text + A12 description
+  quality gate; project-level setting deny-list is a backstop.
+
+Three-source SKILL distinction (avoid confusion):
+
+| Source | Path | Schema | Loader | Governance |
+|---|---|---|---|---|
+| in-source (runtime) | `src/mj_agent/skills/<name>/` | 13-field (Agent_Side §2) | `load_skill()` strip frontmatter | Track B (Agent_Side v1.x) |
+| in-tree (workflow) | `.claude/skills/mj-agent-*/` | 2-field (ADR-013 native) | Claude Code main process | Track C (Meta v2.1 §3.10) |
+| marketplace plugin | `mj-agentlab-marketplace/plugins/<plugin>/` | 2-field (ADR-013 native) | Claude Code plugin loader | out of mj-agent governance |
