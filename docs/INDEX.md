@@ -158,14 +158,14 @@ track: shared
 | `/mj-agent-doc-review` | 15 sub PR-scope 评审 | **active**（PR-C1） |
 | `/mj-agent-doc-migrate` | archive workflow | **active**（PR-C1） |
 
-### runtime family（PR-C2 落地 3 P1 + PR-D2 1 P2；**read-only by design**）
+### runtime family（PR-C2 落地 3 P1 + PR-D2-skill 1 P2；**全部 read-only by design**）
 
 | Skill | Stage | Status |
 |---|---|---|
 | `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | **active**（PR-C2） |
-| `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | P2（PR-D2，Phase 2 EVAL 框架就绪后） |
+| `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | **active**（PR-D2-skill；framework-independent 设计阶段产物 = 填好的 TEMPLATE_EVAL.md 草稿；Phase 2 EVAL framework 落地由 PR-D2-enforcement 跑 baseline_value 实测） |
 
 ### infra family（PR-C3 落地共 4）
 
@@ -176,7 +176,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 6/6 + 3/4 + 4/4 = 31/32 已落地；flow + git + doc + infra family 完成；runtime 3/4（read-only by design 3 P1 完成；剩 P2 eval-baseline 待 Phase 2 EVAL 框架就绪后 PR-D2）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 6/6 + **4/4** + 4/4 = **32/32 全部落地**；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
