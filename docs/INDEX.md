@@ -47,6 +47,7 @@ track: shared
 | [[ADR]_013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 Agent_Side v1.0 §2 13 字段 schema 独立；两者通过 sync skill（Phase 1）做内容同步，不做 schema 同步 |
 | [[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted (state: draft) | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD），与 v2.0 双轨并行；A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地（v2.1 trio + ADR-014 初次以 state: draft 落地，Phase B promote） |
 | [[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015 HITL_Prompt v1.0 Derivation from mj-system]] | WORKFLOW | accepted (state: draft) | 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 verbatim + §4 mj-agent 适配（去 n8n / 加 3 风味 Implementation / 加 runtime+infra 类目）+ §5 mj-agent skill 矩阵；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+）；Stage 8 Implementation 三风味（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ Stage 17 Post-merge EVAL backlog ticket 自动开单为 mj-agent 专属 |
+| [[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted (state: draft) | 决议 mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow 9 / git 9 / doc 6 / runtime 4 / infra 4 = 32）+ 与 marketplace mj-agent-code-doc 插件共存 + lifecycle (P0/P1/P2 + sunset 规则)；PR-B1 起首落地（git family 5 P0 skills + TEMPLATE_WORKFLOW_SKILL.md + 本 ADR） |
 
 ## 评估（docs/assessments/）
 
@@ -75,6 +76,7 @@ track: shared
 | `TEMPLATE_RUNBOOK.md` (Phase A PR-A3) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.4 |
 | `TEMPLATE_SPEC.md` (Phase A PR-A3) | SPEC 骨架；body 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；mj-agent tune（去 SQL DDL / n8n 段，加 EVAL coverage 段） |
 | `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] 配套 |
+| `TEMPLATE_WORKFLOW_SKILL.md` (Phase B PR-B1) | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
 
 *Phase D 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ISSUE.md` / `TEMPLATE_ASSESSMENT.md`。*
 
@@ -115,6 +117,71 @@ track: shared
 
 ---
 
+## 工程编排技能（`.claude/skills/`，Track C engineering-workflow）
+
+按 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] 锁定的 5 family / 命名空间 `mj-agent-<group>-<verb>`，目标态 32 skills；落地状态随 PR-B1...D 推进：
+
+### git family（PR-B1 落地 5 P0；剩 4 个 P1 PR-B3 落地）
+
+| Skill | Stage | Status |
+|---|---|---|
+| `/mj-agent-git-issue` | 1 Issue Draft | **active**（PR-B1） |
+| `/mj-agent-git-branch` | 2 Branch / Worktree | **active**（PR-B1） |
+| `/mj-agent-git-commit` | 12 Commit | **active**（PR-B1） |
+| `/mj-agent-git-push` | 13 Push | **active**（PR-B1） |
+| `/mj-agent-git-pr` | 14 PR | **active**（PR-B1） |
+| `/mj-agent-git-review-pr` | 15 review 别人 PR（架构审查方向） | P1（PR-B3） |
+| `/mj-agent-git-check-merge` | 16 Merge Gate | P1（PR-B3） |
+| `/mj-agent-git-delete` | 17 sub Branch Cleanup | P1（PR-B3） |
+| `/mj-agent-git-sync` | 17 sub / hotfix 同步 | P1（PR-B3） |
+
+### flow family（PR-B2 + PR-B3 落地共 9）
+
+| Skill | Stage | Status |
+|---|---|---|
+| `/mj-agent-flow-intake` | 0 Intake | P0（PR-B2） |
+| `/mj-agent-flow-repo-scan` | 3 Repo Scan | P0（PR-B2） |
+| `/mj-agent-flow-plan` | 4 Plan body | P0（PR-B2） |
+| `/mj-agent-flow-implement` | 8 Implementation 编码 | P0（PR-B2） |
+| `/mj-agent-flow-verify` | 10 Local Verification | P0（PR-B3） |
+| `/mj-agent-flow-self-review` | 11 AI Self-review | P0（PR-B3） |
+| `/mj-agent-flow-scope-drift` | 9 Scope Drift Gate | P1（PR-B3） |
+| `/mj-agent-flow-review-respond` | 15 Review/CI（own PR） | P1（PR-B3） |
+| `/mj-agent-flow-post-merge` | 17 Post-merge | P1（PR-B3） |
+
+### doc family（PR-B4 + PR-C1 落地共 6）
+
+| Skill | Stage | Status |
+|---|---|---|
+| `/mj-agent-doc-plan` | 4 sub Documentation Decision | P0（PR-B4） |
+| `/mj-agent-doc-author` | 6 SPEC/ADR/RUNBOOK | P0（PR-B4） |
+| `/mj-agent-doc-validate` | 11 sub wikilinks/frontmatter/INDEX | P0（PR-B4） |
+| `/mj-agent-doc-sync` | 8 sub code→doc | P1（PR-C1） |
+| `/mj-agent-doc-review` | 15 sub PR-scope 评审 | P1（PR-C1） |
+| `/mj-agent-doc-migrate` | archive workflow | P2（PR-C1） |
+
+### runtime family（PR-C2 落地 3 P1 + PR-D2 1 P2；**read-only by design**）
+
+| Skill | Stage | Status |
+|---|---|---|
+| `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | P1（PR-C2） |
+| `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | P1（PR-C2） |
+| `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | P1（PR-C2） |
+| `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | P2（PR-D2，Phase 2 EVAL 框架就绪后） |
+
+### infra family（PR-C3 落地共 4）
+
+| Skill | Stage | Status |
+|---|---|---|
+| `/mj-agent-infra-env-setup` | 8 (C-flavor) | P0（PR-C3） |
+| `/mj-agent-infra-studio-probe` | 10 sub Studio H1/H2/H3/R1/R2 | P0（PR-C3） |
+| `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
+| `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
+
+合计 32 skills（5/9 + 0/9 + 0/6 + 0/4 + 0/4 = 5/32 已落地）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+
+---
+
 ## 运维手册（docs/runbook/）
 
 | 文档 | 摘要 |
@@ -142,5 +209,5 @@ track: shared
 ## 快速链接
 
 - 派生来源：[[STANDARD]_Documentation_Management_Framework_v5.0\|mj-system 文档管理框架 v5.0]]
-- Claude Code 工作区配置：`.claude/`（不受本框架治理）
+- Claude Code 工作区配置：`.claude/`（v2.0 active 期间整体出 governance；v2.1 draft 起将项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta v2.1]] §7.6 + [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]]）
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）
