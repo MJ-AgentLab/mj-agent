@@ -17,9 +17,15 @@ related_prompts: []
 
 # Skill: <skill-name>
 
-> 复制本模板到 `src/mj_agent/skills/<skill-name>/SKILL.md`。
-> 文件名固定为 `SKILL.md`，**目录名**即 skill 身份（与 frontmatter 中的身份一致）。
-> 目录名使用全小写带连字符：`query-writing`、`mj-ddd-semantics`。
+> **此模板用于 `src/mj_agent/skills/<skill-name>/SKILL.md`**（in-source runtime SKILL；Track B；Agent_Side §2 13-field schema + 五段式 body；由 `load_skill()` Python loader 加载并剥 frontmatter 注入 LLM 上下文）。
+>
+> **不**用本模板：
+> - 起草 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`（in-tree workflow skill；engineering-workflow track；ADR-013 native 2-field schema；由 Claude Code 主进程发现）→ 用 [[TEMPLATE_WORKFLOW_SKILL|TEMPLATE_WORKFLOW_SKILL]]
+> - 起草 marketplace plugin SKILL.md（出本仓 governance）→ 参考 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 内嵌范本
+>
+> 三类 SKILL 区分速查见 [[../../CLAUDE|CLAUDE.md]] §"Three-source SKILL distinction"（in-source / in-tree / marketplace plugin 三类同名同形不同义；治理 track / loader / schema 各异，必须严格区分）。
+>
+> 复制本模板后：文件名固定为 `SKILL.md`，**目录名**即 skill 身份（与 frontmatter 中的身份一致）。目录名使用全小写带连字符：`query-writing`、`mj-ddd-semantics`。
 
 ## Purpose
 
