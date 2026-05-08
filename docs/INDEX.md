@@ -162,9 +162,9 @@ track: shared
 
 | Skill | Stage | Status |
 |---|---|---|
-| `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | P1（PR-C2） |
-| `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | P1（PR-C2） |
-| `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | P1（PR-C2） |
+| `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | **active**（PR-C2） |
+| `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | **active**（PR-C2） |
+| `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | P2（PR-D2，Phase 2 EVAL 框架就绪后） |
 
 ### infra family（PR-C3 落地共 4）
@@ -176,7 +176,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 6/6 + 0/4 + 2/4 = 26/32 已落地；flow + git + doc family 完成；infra 2/4；剩 runtime 4 + infra 2）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 6/6 + 3/4 + 2/4 = 29/32 已落地；flow + git + doc family 完成；runtime 3/4（read-only by design 3 P1 完成；剩 P2 eval-baseline 待 Phase 2）；infra 2/4；剩 runtime-eval-baseline P2 + infra 2 P1）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
