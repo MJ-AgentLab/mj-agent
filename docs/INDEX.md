@@ -151,9 +151,9 @@ track: shared
 
 | Skill | Stage | Status |
 |---|---|---|
-| `/mj-agent-doc-plan` | 4 sub Documentation Decision | P0（PR-B4） |
-| `/mj-agent-doc-author` | 6 SPEC/ADR/RUNBOOK | P0（PR-B4） |
-| `/mj-agent-doc-validate` | 11 sub wikilinks/frontmatter/INDEX | P0（PR-B4） |
+| `/mj-agent-doc-plan` | 4 sub Documentation Decision | **active**（PR-B4） |
+| `/mj-agent-doc-author` | 6 SPEC/ADR/RUNBOOK | **active**（PR-B4） |
+| `/mj-agent-doc-validate` | 11 sub wikilinks/frontmatter/INDEX | **active**（PR-B4） |
 | `/mj-agent-doc-sync` | 8 sub code→doc | P1（PR-C1） |
 | `/mj-agent-doc-review` | 15 sub PR-scope 评审 | P1（PR-C1） |
 | `/mj-agent-doc-migrate` | archive workflow | P2（PR-C1） |
@@ -176,7 +176,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | P1（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | P1（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 0/6 + 0/4 + 2/4 = 20/32 已落地；flow + git family 完成；infra 2/4）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 3/6 + 0/4 + 2/4 = 23/32 已落地；flow + git family 完成；doc 3/6；infra 2/4；剩 doc 3 P1 + runtime 4 + infra 2）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
