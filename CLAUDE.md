@@ -357,7 +357,31 @@ PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
 In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
 across 5 families: flow / git / doc / runtime / infra). Slash-command
 namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.0
-§5 Skill Hint Matrix (PR-A2 onwards).
+§5 Skill Hint Matrix. ADR-016 governs namespace + lifecycle.
+
+Active in-tree skills（按 family 分组；填充随 phase 推进）:
+
+| Family | Skill | Stage | Status |
+|---|---|---|---|
+| git | `/mj-agent-git-issue` | 1 | **active**（PR-B1） |
+| git | `/mj-agent-git-branch` | 2 | **active**（PR-B1） |
+| git | `/mj-agent-git-commit` | 12 | **active**（PR-B1） |
+| git | `/mj-agent-git-push` | 13 | **active**（PR-B1） |
+| git | `/mj-agent-git-pr` | 14 | **active**（PR-B1） |
+| git | `/mj-agent-git-review-pr` | 15 (review 别人 PR) | P1（PR-B3 落地） |
+| git | `/mj-agent-git-check-merge` | 16 | P1（PR-B3） |
+| git | `/mj-agent-git-delete` | 17 sub | P1（PR-B3） |
+| git | `/mj-agent-git-sync` | 17 sub / hotfix | P1（PR-B3） |
+| flow | `/mj-agent-flow-{intake,repo-scan,plan,implement}` | 0/3/4/8 | P0（PR-B2） |
+| flow | `/mj-agent-flow-{verify,self-review,scope-drift,review-respond,post-merge}` | 9/10/11/15/17 | P0/P1（PR-B3） |
+| doc | `/mj-agent-doc-{plan,author,validate}` | 4 sub / 6 / 11 sub | P0（PR-B4） |
+| doc | `/mj-agent-doc-{sync,review,migrate}` | 8 sub / 15 sub / 罕用 | P1/P2（PR-C1） |
+| runtime | `/mj-agent-runtime-{skill-doc-improve,prompt-version-bump,biz-catalog-sync}` | 8 (B-flavor) sub | **read-only by design**；P1（PR-C2） |
+| runtime | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL | P2（PR-D2，Phase 2） |
+| infra | `/mj-agent-infra-{env-setup,studio-probe}` | 8 (C-flavor) / 10 sub | P0（PR-C3） |
+| infra | `/mj-agent-infra-{docker-compose,storage-stack}` | 8 (C-flavor) | P1（PR-C3） |
+
+**v2.1 promote** (Phase B PR-B3 末次) 后：v2.0 trio archive + v2.1 trio + HITL_Prompt v1.0 转 active；A12-A14 PR 门禁强制启用；§5 矩阵全部 P0 不再标占位。
 
 Repo conventions (engineering-workflow track):
 
