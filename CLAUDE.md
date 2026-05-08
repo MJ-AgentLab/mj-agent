@@ -402,7 +402,7 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | runtime | `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | **active read-only by design**（PR-C2） |
 | runtime | `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | **active read-only by design**（PR-C2） |
 | runtime | `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | **active read-only by design**（PR-C2） |
-| runtime | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL | P2（PR-D2，Phase 2） |
+| runtime | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL | **active read-only by design**（PR-D2-skill；framework-independent 设计阶段；Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）|
 | infra | `/mj-agent-infra-env-setup` | 8 (C-flavor) | **active**（PR-B3b） |
 | infra | `/mj-agent-infra-studio-probe` | 10 sub | **active**（PR-B3b） |
 | infra | `/mj-agent-infra-docker-compose` | 8 (C-flavor) | **active**（PR-C3） |

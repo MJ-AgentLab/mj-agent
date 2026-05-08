@@ -75,8 +75,10 @@ track: shared
 | `TEMPLATE_SPEC.md` (Phase A PR-A3) | SPEC 骨架；body 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；mj-agent tune（去 SQL DDL / n8n 段，加 EVAL coverage 段） |
 | `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] 配套 |
 | `TEMPLATE_WORKFLOW_SKILL.md` (Phase B PR-B1) | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
-
-*Phase D 将补 `TEMPLATE_EVAL.md` / `TEMPLATE_POSTMORTEM.md` / `TEMPLATE_ISSUE.md` / `TEMPLATE_ASSESSMENT.md`。*
+| `TEMPLATE_POSTMORTEM.md` (Phase D PR-D1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.5（Phase 2 deferred）|
+| `TEMPLATE_ISSUE.md` (Phase D PR-D1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.7（Phase D 落地） |
+| `TEMPLATE_ASSESSMENT.md` (Phase D PR-D1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.8 |
+| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；mj-system 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
 ---
 
@@ -158,14 +160,14 @@ track: shared
 | `/mj-agent-doc-review` | 15 sub PR-scope 评审 | **active**（PR-C1） |
 | `/mj-agent-doc-migrate` | archive workflow | **active**（PR-C1） |
 
-### runtime family（PR-C2 落地 3 P1 + PR-D2 1 P2；**read-only by design**）
+### runtime family（PR-C2 落地 3 P1 + PR-D2-skill 1 P2；**全部 read-only by design**）
 
 | Skill | Stage | Status |
 |---|---|---|
 | `/mj-agent-runtime-skill-doc-improve` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-prompt-version-bump` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | **active**（PR-C2） |
-| `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | P2（PR-D2，Phase 2 EVAL 框架就绪后） |
+| `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | **active**（PR-D2-skill；framework-independent 设计阶段产物 = 填好的 TEMPLATE_EVAL.md 草稿；Phase 2 EVAL framework 落地由 PR-D2-enforcement 跑 baseline_value 实测） |
 
 ### infra family（PR-C3 落地共 4）
 
@@ -176,7 +178,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 6/6 + 3/4 + 4/4 = 31/32 已落地；flow + git + doc + infra family 完成；runtime 3/4（read-only by design 3 P1 完成；剩 P2 eval-baseline 待 Phase 2 EVAL 框架就绪后 PR-D2）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计 32 skills（9/9 + 9/9 + 6/6 + **4/4** + 4/4 = **32/32 全部落地**；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
