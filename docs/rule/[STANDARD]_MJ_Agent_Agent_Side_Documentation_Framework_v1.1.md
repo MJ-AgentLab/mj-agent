@@ -5,17 +5,17 @@ summary: Track B 智能体侧文档治理（v1.0 → v1.1 minor bump）— §2 s
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 version: v1.1
 track: agent
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0
-supersedes: []
+derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0
+supersedes:
+  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
 tags:
   - standard
   - documentation
   - track-b
   - agent-side
-  - skeleton
 aliases:
   - MJ-Agent Agent-Side Documentation Framework v1.1
   - Track B 子框架 v1.1
@@ -23,10 +23,10 @@ aliases:
 
 # MJ-Agent 智能体侧文档治理框架 v1.1（Track B）
 
-> **骨架状态（Phase A 续作；minor bump）**：以 `state: draft` 落地，与 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0]]（保持 `state: active`）共存；与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
-> **派生自**：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0]]
+> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0（archive）]]
 > **首要变更**：仅 minor bump —— §0 / §2 / §7.5 加 scope 明确条款，把 engineering-workflow `.claude/skills/SKILL.md` 排除出本框架治理（划归 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 / §7.7）。
 
 ---

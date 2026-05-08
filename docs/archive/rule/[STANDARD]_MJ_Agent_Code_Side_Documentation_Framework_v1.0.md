@@ -5,7 +5,7 @@ summary: Track A 代码侧文档治理 — GUIDE/ADR-code/SPEC-code/RUNBOOK/POST
 owner: 项目负责人
 created: 2026-04-27
 updated: 2026-05-06
-state: active
+state: deprecated
 version: v1.0
 track: code
 derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
@@ -20,9 +20,11 @@ aliases:
   - Track A 子框架 v1.0
 ---
 
-# MJ-Agent 代码侧文档治理框架 v1.0（Track A）
+# MJ-Agent 代码侧文档治理框架 v1.0（Track A，archived）
 
-> **骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote 为 active（[[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §0/§3.9/§7.3 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+>
+> **历史骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote 为 active（[[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
 > **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]]。
 > **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]

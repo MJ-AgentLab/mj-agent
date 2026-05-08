@@ -5,7 +5,7 @@ summary: Track B 智能体侧文档治理 — SKILL/PROMPT/EVAL/agent-facing CON
 owner: 项目负责人
 created: 2026-04-27
 updated: 2026-04-29
-state: active
+state: deprecated
 version: v1.0
 track: agent
 derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
@@ -20,9 +20,11 @@ aliases:
   - Track B 子框架 v1.0
 ---
 
-# MJ-Agent 智能体侧文档治理框架 v1.0（Track B）
+# MJ-Agent 智能体侧文档治理框架 v1.0（Track B，archived）
 
-> **骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §2/§7.5 scope 明确 in-source only（`.claude/skills/**` 排除出本框架治理，划归 Meta v2.1 §3.10）；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+>
+> **历史骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
 > **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]

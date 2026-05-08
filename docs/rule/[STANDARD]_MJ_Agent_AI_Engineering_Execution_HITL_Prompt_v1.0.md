@@ -5,9 +5,9 @@ summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 version: v1.0
-track: shared
+track: engineering-workflow
 derives_from: mj-system/develop@[STANDARD]_AI_Engineering_Execution_HITL_Prompt
 tags:
   - standard
@@ -16,7 +16,6 @@ tags:
   - hitl
   - prompt
   - engineering-workflow
-  - skeleton
 aliases:
   - MJ-Agent AI Engineering Execution HITL Prompt Standard
   - mj-agent AI 工程执行闭环与 HITL Prompt 规范
@@ -25,9 +24,7 @@ aliases:
 
 # mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0
 
-> **骨架状态（Phase A 续作）**：本文档以 `state: draft` 进入 `docs/rule/`，与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期落地；Phase B 核心 `.claude/skills/mj-agent-*` 落地后（§5 Skill Hint Matrix 不再指向占位）随 promote PR 转 `state: active`。
->
-> **track 字段过渡说明（skeleton-first 原则）**：本文档当前 `track: shared`，因为 v2.0 元框架（active）的 `track` 允许值仅限 `code | agent | shared`。Phase B promote PR 后 v2.1 元框架（含 `engineering-workflow` 值）转 active，本文档同 PR 内 reclassify 为 `track: engineering-workflow`，与 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致。`scripts/check_frontmatter.py` 同期更新允许值集合。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
 > **适用范围**：mj-agent 仓中 AI Agent / Claude Code 从任务准入到合并收尾的全流程
 > **目标受众**：开发者 / 项目负责人 / Claude Code AI Agent
 > **派生自**：[mj-system v1.0](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md)（17-stage 闭环 + §1-§3 verbatim 引用 + §4 mj-agent 适配 + §5 mj-agent skill 矩阵）
