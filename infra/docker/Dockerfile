@@ -20,7 +20,7 @@
 # CI actions). Dependabot's `docker` ecosystem (.github/dependabot.yml)
 # bumps both the digest AND the `# 3.13-slim` tag comment when upstream
 # publishes new images.
-FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d AS builder
+FROM python:3.14-slim@sha256:5b3879b6f3cb77e712644d50262d05a7c146b7312d784a18eff7ff5462e77033 AS builder
 # tag: 3.13-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -43,7 +43,7 @@ COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
 # ========== Runtime ==========
-FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d
+FROM python:3.14-slim@sha256:5b3879b6f3cb77e712644d50262d05a7c146b7312d784a18eff7ff5462e77033
 # tag: 3.13-slim
 
 # libpq5 = analyst psycopg client; tini = PID-1 signal handling.
