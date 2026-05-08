@@ -134,16 +134,32 @@ uv run pytest tests/smoke -m smoke   # 需 DB + LLM（无凭据时 skip）
 
 `tests/conftest.py` 在凭据缺失时**自动 skip**（不 fail），所以空 env 也能跑出绿。
 
-## §5 双轨道文档约定
+## §5 三轨道文档约定
 
-mj-agent 文档治理走双轨：
+mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级；
+[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10）：
 - **Track A 代码侧**（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
   / STANDARD-code / ISSUE-code / ASSESSMENT-code）——
-  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]
-- **Track B 智能体侧**（SKILL / PROMPT / EVAL / agent-facing CONTRACT）——
-  [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]
+  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]]
+- **Track B 智能体侧**（in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT）——
+  [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]
+- **Track C 工程编排侧**（`.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json`
+  / HITL_Prompt 等）—— [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]]
+  + Meta v2.1 §3.10 / §7.7
 - **Meta 元层**（types / layers / lifecycle / archive / `track`）——
-  [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+  Meta_Framework v2.1
+
+> **⚠️ 两类 "skill" 严格区分**（误判事故防护）：
+> - **Track B 业务 skill**：`src/mj_agent/skills/<name>/SKILL.md` —— 运行时 LLM 输入；
+>   驱动 data agent 业务回答（biz-domain-context / qcm-analysis / safe-sql-analysis 等）；
+>   13 字段 schema + 五段式 body；由 `load_skill()` Python loader 加载剥 frontmatter
+> - **Track C 工程 skill**：`.claude/skills/mj-agent-<group>-<verb>/SKILL.md` —— 开发流程
+>   编排（17-stage HITL 闭环；32 个，5 family：flow / git / doc / runtime / infra）；
+>   ADR-013 native 2 字段 schema；由 Claude Code 主进程发现 + slash command 触发
+>
+> 二者**同名同形不同义**，必须严格区分；混淆会导致施加错误约束 / 套错 schema。
+> 三类完整速查表（含第三类 marketplace plugin SKILL）见
+> [[../../CLAUDE|CLAUDE.md]] §"Three-source SKILL distinction"。
 
 撰写新文档时复制 `docs/_templates/TEMPLATE_*.md` 起步：
 
@@ -152,7 +168,8 @@ mj-agent 文档治理走双轨：
 | GUIDE | [[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]] | Code_Side §3.1 |
 | ADR | [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] | Code_Side §3.2 |
 | CONTRACT | [[../_templates/TEMPLATE_CONTRACT|TEMPLATE_CONTRACT]] | Code_Side §3.x |
-| SKILL | [[../_templates/TEMPLATE_SKILL|TEMPLATE_SKILL]] | Agent_Side §2 |
+| SKILL（Track B；in-source 业务）| [[../_templates/TEMPLATE_SKILL|TEMPLATE_SKILL]] | Agent_Side §2 |
+| WORKFLOW_SKILL（Track C；in-tree 工程）| [[../_templates/TEMPLATE_WORKFLOW_SKILL|TEMPLATE_WORKFLOW_SKILL]] | ADR-013 + ADR-016 |
 | PROMPT | [[../_templates/TEMPLATE_PROMPT|TEMPLATE_PROMPT]] | Agent_Side §3 |
 
 ## §6 提交与推送
