@@ -58,18 +58,21 @@ def _ensure_langsmith_env() -> None:
             )
 
 
-def _get_or_build_graph() -> Any:
-    """Lazy build the graph + checkpointer the first time a chat starts.
+async def _get_or_build_graph() -> Any:
+    """Lazy build the graph + async checkpointer the first time a chat starts.
 
     Both are kept at module scope so multiple Chainlit chat sessions
-    in the same process reuse one connection pool.
+    in the same process reuse one connection pool. The pool's lifecycle
+    is bound to the process — chainlit shutdown cleans it up — so we
+    enter the async context and never explicitly exit it (mirrors the
+    pre-async behaviour intentionally).
     """
     global _GRAPH, _CHECKPOINTER_CTX, _CHECKPOINTER
     if _GRAPH is not None:
         return _GRAPH
     _ensure_langsmith_env()
     _CHECKPOINTER_CTX = open_checkpointer()
-    _CHECKPOINTER = _CHECKPOINTER_CTX.__enter__()
+    _CHECKPOINTER = await _CHECKPOINTER_CTX.__aenter__()
     _GRAPH = make_graph(checkpointer=_CHECKPOINTER)
     return _GRAPH
 
@@ -119,7 +122,7 @@ async def _surface_artifact(tool_msg: Any, parent_id: str) -> None:
 
 @cl.on_chat_start
 async def on_chat_start() -> None:
-    graph = _get_or_build_graph()
+    graph = await _get_or_build_graph()
     thread_id = str(uuid.uuid4())
     cl.user_session.set("graph", graph)
     cl.user_session.set("thread_id", thread_id)

@@ -24,7 +24,7 @@ mj-postgres (biz)  ◄────────────────  mj-agent
                                         │ │ memory checkpointer (RW)
                                         ▼ │
                                      mj-agent-postgres
-                                       (langgraph PostgresSaver)
+                                       (langgraph AsyncPostgresSaver)
 
                                      mj-agent-redis (future use;
                                        container ready，no Python
