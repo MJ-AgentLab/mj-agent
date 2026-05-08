@@ -5,7 +5,7 @@ summary: 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Pro
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 decision: accepted
 track: shared
 tags:

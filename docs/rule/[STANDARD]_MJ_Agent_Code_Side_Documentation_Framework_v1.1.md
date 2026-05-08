@@ -5,17 +5,17 @@ summary: Track A 代码侧文档治理（v1.0 → v1.1 minor bump）— 加注 T
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 version: v1.1
 track: code
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0
-supersedes: []
+derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0
+supersedes:
+  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0"
 tags:
   - standard
   - documentation
   - track-a
   - code-side
-  - skeleton
 aliases:
   - MJ-Agent Code-Side Documentation Framework v1.1
   - Track A 子框架 v1.1
@@ -23,10 +23,10 @@ aliases:
 
 # MJ-Agent 代码侧文档治理框架 v1.1（Track A）
 
-> **骨架状态（Phase A 续作；minor bump）**：以 `state: draft` 落地，与 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0]]（保持 `state: active`）共存；与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
 > **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]；**不**治理 engineering-workflow 资产（`.claude/**` / HITL_Prompt）—— 见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 / §7.7。
-> **派生自**：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0]]
+> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0（archive）]]
 > **首要变更**：仅 minor bump —— §0 / §3.9（新增）/ §7.3 加注 Track C engineering-workflow 共享 A1-A6 hygiene 门禁。
 
 ---

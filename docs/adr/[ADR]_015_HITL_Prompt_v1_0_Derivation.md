@@ -5,9 +5,9 @@ summary: 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 ver
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 decision: accepted
-track: shared
+track: engineering-workflow
 tags:
   - adr
   - hitl

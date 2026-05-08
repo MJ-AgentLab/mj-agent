@@ -1,9 +1,10 @@
-"""Validate canonical doc frontmatter against the v2.0 trio schema.
+"""Validate canonical doc frontmatter against the v2.1 trio schema.
 
 Purpose: locks down the Phase 1 末 治理 collapse — every canonical doc
 under `docs/`, `plans/`, `src/mj_agent/skills/`, and
-`src/mj_agent/prompts/` must declare `track ∈ {code, agent, shared}`
-explicitly (per Meta_Framework v2.0 §4.3.1) plus the required base
+`src/mj_agent/prompts/` must declare `track ∈ {code, agent,
+engineering-workflow, shared}` explicitly (per Meta_Framework v2.1
+§4.3.1; v2.0 only allowed code/agent/shared) plus the required base
 fields (per Code_Side §7.1 A2 + Agent_Side §7.1).
 
 Usage::
@@ -52,7 +53,9 @@ REQUIRED_FIELDS: frozenset[str] = frozenset(
 )
 
 # Allowed enum values.
-TRACK_VALUES: frozenset[str] = frozenset({"code", "agent", "shared"})
+TRACK_VALUES: frozenset[str] = frozenset(
+    {"code", "agent", "engineering-workflow", "shared"}
+)
 STATE_VALUES: frozenset[str] = frozenset({"draft", "active", "deprecated", "completed"})
 
 
@@ -141,8 +144,9 @@ def main() -> int:
         for v in violations:
             print(f"    - {v}", file=sys.stderr)
     print(
-        "\nFix per Meta_Framework v2.0 §4.3.1 (track field) + Code_Side §7.1 A2 "
-        "(required base fields) + Agent_Side §7.1.",
+        "\nFix per Meta_Framework v2.1 §4.3.1 (track field; "
+        "code/agent/engineering-workflow/shared) + Code_Side v1.1 §7.1 A2 "
+        "(required base fields) + Agent_Side v1.1 §7.1.",
         file=sys.stderr,
     )
     return 1

@@ -166,41 +166,51 @@ fails on Chinese Windows if the file is UTF-8 with non-ASCII content.
 
 ## Documentation
 
-> **元规则段（cross-track meta）**: this section governs both tracks.
-> Per Meta_Framework v2.0 §6.4.1, this 元规则 段 sits **above** the
-> `Code-Side Documentation` and `Agent-Side Documentation` sections so
-> Claude reads cross-track rules first before track-specific guidance.
+> **元规则段（cross-track meta）**: this section governs all three tracks.
+> Per Meta_Framework v2.1 §6.4.1, this 元规则 段 sits **above** the
+> `Code-Side Documentation`, `Agent-Side Documentation`, and
+> `Engineering-Workflow Documentation` sections so Claude reads
+> cross-track rules first before track-specific guidance.
 
-All canonical documentation follows the v2.0 trio (derived from mj-agent
-Framework v1.1, which itself derived from mj-system v5.0). A v2.1 trio
-skeleton has landed alongside (`state: draft`); both coexist until Phase B
-promote PR archives v2.0 — see ADR-014.
+All canonical documentation follows the **v2.1 tri-track trio** + HITL_Prompt
+v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
+`docs/archive/rule/` + `state: deprecated`):
 
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`
-  (active) / `_v2.1.md` (draft skeleton) — cross-track meta rules
-  (types / layers / lifecycle / archive / `track` frontmatter field /
-  CLAUDE.md tri-track sync §6.4.1). v2.1 adds the engineering-workflow
-  track + A12-A14 PR gates + §7.7 `.claude/` boundary.
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
-  (active) / `_v1.1.md` (draft skeleton; minor bump) — Track A authoring
-  depth + PR gates A1-A6 + OB1-OB5 for code-side canonical types (GUIDE /
-  ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code /
-  ISSUE-code / ASSESSMENT-code). v1.1 minor bump: §0/§3.9/§7.3 cross-ref
-  engineering-workflow STANDARDs.
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
-  (active) / `_v1.1.md` (draft skeleton; minor bump) — Track B authoring
-  depth + PR gates A7-A10 + A11 + loader frontmatter-strip contract for
-  agent-side canonical types (SKILL / PROMPT / EVAL / agent-facing
-  CONTRACT). v1.1 minor bump: §2/§7.5 scope clarified to in-source only
-  (`.claude/skills/**` excluded — governed by Meta v2.1 §3.10 instead).
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md`
+  (active) — cross-track meta rules (types / layers / lifecycle /
+  archive / `track` frontmatter field with 4 values: code | agent |
+  engineering-workflow | shared / CLAUDE.md tri-track sync §6.4.1 /
+  §3.10 in-tree workflow SKILL governance / §7.7 .claude/ boundary +
+  A12-A14 PR gates).
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1.md`
+  (active) — Track A authoring depth + PR gates A1-A6 + OB1-OB5 for
+  code-side canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK /
+  POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code).
+  v1.1 minor bump: §0/§3.9/§7.3 cross-ref engineering-workflow
+  STANDARDs.
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1.md`
+  (active) — Track B authoring depth + PR gates A7-A10 + A11 + loader
+  frontmatter-strip contract for agent-side canonical types (SKILL /
+  PROMPT / EVAL / agent-facing CONTRACT). v1.1 minor bump: §2/§7.5
+  scope clarified to in-source only (`.claude/skills/**` excluded —
+  governed by Meta v2.1 §3.10 instead).
 - `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0.md`
-  (Track C primary STANDARD; draft skeleton) — 17-stage HITL execution
-  loop derived from mj-system v1.0; governs `.claude/skills/` workflow
-  + Stage prompts + HITL gates at stages 5/7/9/11/13. Phase A Lite
-  derivation: §4.1 / §4.4 reference mj-system upstream `[STANDARD]_AI_Engineering_Intake.md`
-  / `_Repo_Scan.md` as placeholders pending Phase B+ derivation. Stage 8
-  Implementation has three flavors (A pure code / B in-source canonical
-  always-HITL / C infra) — see ADR-015.
+  (Track C primary STANDARD; active) — 17-stage HITL execution loop
+  derived from mj-system v1.0; governs `.claude/skills/` workflow +
+  Stage prompts + HITL gates at stages 5/7/9/11/13. Phase A Lite
+  derivation: §4.1 / §4.4 reference mj-system upstream
+  `[STANDARD]_AI_Engineering_Intake.md` / `_Repo_Scan.md` as
+  placeholders pending Phase B+ derivation. Stage 8 Implementation
+  has three flavors (A pure code / B in-source canonical always-HITL /
+  C infra) — see ADR-015.
+
+Archived (`docs/archive/rule/`, `state: deprecated`):
+- `[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` — replaced
+  by v2.1 (tri-track + A12-A14)
+- `[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md` —
+  replaced by v1.1 (engineering-workflow cross-ref)
+- `[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md` —
+  replaced by v1.1 (in-source only scope)
 
 Markdown + YAML syntax (GFM rendering target):
 `docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
@@ -216,28 +226,30 @@ enforces that any reference to the v1.1 filename outside `docs/archive/`
 must be frozen (archive-prefixed) — living refs are migrated to the v2.0
 trio.
 
-Versioning rule (Meta_Framework v2.0 §4.2 + §5.6 sustained from Framework
-v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/CONTRACT/
-ASSESSMENT) carry `_vX.Y` in the filename. On formal version evolution
-(HITL judgment at PR review), the old file moves to
+Versioning rule (Meta_Framework v2.1 §4.2 + §5.6 sustained from v2.0 +
+Framework v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/
+CONTRACT/ASSESSMENT) carry `_vX.Y` in the filename. On formal version
+evolution (HITL judgment at PR review), the old file moves to
 `docs/archive/<original-subdir>/`, the new file lands as `_v<new>.md`,
 `state` flips to `deprecated` on the archive copy, and corpus-wide
 references are audited (Living updates to `_v<new>`; Frozen pins to
 `_v<old>`). Daily edits stay in-place — the rename + archive ceremony
 fires only when the change qualifies as substantive evolution. ADR-011
-documents the rationale.
+documents the rationale; ADR-014 §决策点 3 skeleton-first describes the
+延迟 promote 变体 used for v2.0 → v2.1.
 
-`track` frontmatter field (Meta v2.0 §4.3.1; v2.1 §4.3.1 extends): every
-canonical doc declares `track: code | agent | engineering-workflow |
-shared`. Boundary rules are written into ADR-012 §Decision 决策点 4 (v2.0
-double-track) + ADR-014 §Decision 决策点 4 (v2.1 tri-track) to avoid
-per-PR re-litigation. Phase 1 末 will collapse the implicit default and
-require `track` explicitly. The path-to-track decision tree is in Meta
-v2.1 §4.3.1 (block quote).
+`track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
+declares `track: code | agent | engineering-workflow | shared`. Boundary
+rules are written into ADR-012 §Decision 决策点 4 (v2.0 dual-track origin)
++ ADR-014 §Decision 决策点 4 (v2.1 tri-track) to avoid per-PR re-litigation.
+Phase 1 末 will collapse the implicit default and require `track`
+explicitly. The path-to-track decision tree is in Meta v2.1 §4.3.1
+(block quote). `scripts/check_frontmatter.py` enforces the 4-value
+TRACK_VALUES enum.
 
 ## Code-Side Documentation
 
-> **Track A (code-side)** — governed by Code_Side_Framework v1.0 §7.1
+> **Track A (code-side)** — governed by Code_Side_Framework v1.1 §7.1
 > (A1-A6 阻塞式) + §7.2 (OB1-OB5 非阻塞观察). Reviewer: SWE Reviewer
 > 充分（per Code_Side §8）. Failures are **loud** (compile / test /
 > deploy break).
@@ -283,7 +295,7 @@ Repo conventions (code-side, all governed by Track A standards):
 
 ## Agent-Side Documentation
 
-> **Track B (agent-side)** — governed by Agent_Side_Framework v1.0 §7.1
+> **Track B (agent-side)** — governed by Agent_Side_Framework v1.1 §7.1
 > (A7-A10 阻塞式) + §7.5 (frontmatter strip 契约). Reviewer: Domain
 > Expert / Prompt Engineer **+** SWE (≥ 2 reviewers per Agent_Side §8).
 > Failures are **silent** (wrong answers / hallucinations / business
@@ -322,11 +334,11 @@ Agent-side authoring quick reference:
 - **New prompt version**: update `src/mj_agent/prompts/<name>.md` body +
   bump `version` in frontmatter; promote to `state: active` only with an
   accompanying `[EVAL]` reference (Phase 2 onwards).
-- **PR template**: the dual-track A1-A10 checklist in PR templates is
+- **PR template**: the tri-track A1-A14 checklist in PR templates is
   visually grouped (Code-Side `<details>` block A1-A6 + OB1-OB5;
-  Agent-Side `<details>` block A7-A10) so reviewers self-select by track.
-  Once v2.1 promotes (Phase B end), PR template gains a third
-  `<details>` block A12-A14 for Engineering-Workflow track.
+  Agent-Side `<details>` block A7-A10 + A11; Engineering-Workflow
+  `<details>` block A12-A14 — PR-B3c-promote 完成后正式启用) so reviewers
+  self-select by track.
 
 ## Engineering-Workflow Documentation
 
@@ -389,7 +401,7 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | infra | `/mj-agent-infra-studio-probe` | 10 sub | **active**（PR-B3b） |
 | infra | `/mj-agent-infra-{docker-compose,storage-stack}` | 8 (C-flavor) | P1（PR-C3） |
 
-**v2.1 promote** (Phase B PR-B3 末次) 后：v2.0 trio archive + v2.1 trio + HITL_Prompt v1.0 转 active；A12-A14 PR 门禁强制启用；§5 矩阵全部 P0 不再标占位。
+**v2.1 promote** (Phase B PR-B3c-promote 完成 ✅) ：v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`；v2.1 trio + HITL_Prompt v1.0 + ADR-014/015/016 全部 `state: active`；A12-A14 PR 门禁正式启用（不再 "v2.1 promote 前预自检"）；scripts/check_frontmatter.py TRACK_VALUES 已扩 4 值。
 
 Repo conventions (engineering-workflow track):
 

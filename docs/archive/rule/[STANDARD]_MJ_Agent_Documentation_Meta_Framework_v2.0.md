@@ -5,7 +5,7 @@ summary: 元框架（v1.1 升级）—— 引入 track 字段与双轨子框架�
 owner: 项目负责人
 created: 2026-04-27
 updated: 2026-04-28
-state: active
+state: deprecated
 version: v2.0
 track: shared
 derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1
@@ -23,9 +23,11 @@ aliases:
   - mj-agent 文档治理元框架 v2.0
 ---
 
-# MJ-Agent 文档治理元框架 v2.0
+# MJ-Agent 文档治理元框架 v2.0（archived）
 
-> **骨架状态（Phase 0.5）**：本文档以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]] 取代。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+>
+> **历史骨架状态（Phase 0.5）**：本文档曾以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
 > **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 > **首要变更**：引入 `track` frontmatter 字段 + 双轨子框架（Code_Side + Agent_Side）+ 跨轨治理协议
 > **决策记录**：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]

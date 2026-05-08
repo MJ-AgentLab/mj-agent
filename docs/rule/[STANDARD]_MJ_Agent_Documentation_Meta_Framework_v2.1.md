@@ -5,11 +5,12 @@ summary: 元框架（v2.0 升级）—— 引入第三轨 engineering-workflow�
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: draft
+state: active
 version: v2.1
 track: shared
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
-supersedes: []
+derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
+supersedes:
+  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
 tags:
   - standard
   - documentation
@@ -17,7 +18,6 @@ tags:
   - meta
   - tri-track
   - engineering-workflow
-  - skeleton
 aliases:
   - MJ-Agent Documentation Meta Framework v2.1
   - mj-agent 文档治理元框架 v2.1
@@ -25,8 +25,8 @@ aliases:
 
 # MJ-Agent 文档治理元框架 v2.1
 
-> **骨架状态（Phase A 续作）**：本文档以 `state: draft` 进入 `docs/rule/`，与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0 trio]]（保持 `state: active`）共存。Phase B 核心 `.claude/skills/` 落地后另起 promote PR：v2.0 trio 移入 `docs/archive/rule/` + state 改 deprecated；本文档及同期 Code_Side v1.1 / Agent_Side v1.1 转 `state: active`。节奏对齐 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] HITL A3 模式。
-> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`。本文档及同期 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] / [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] / [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] 全部转 active；A12-A14 PR 门禁强制启用。节奏对齐 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] HITL A3 模式 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first。
+> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0（archive）]]
 > **首要变更**：引入第三轨 `engineering-workflow`（治理 `.claude/` + 工程流程 STANDARD + HITL_Prompt 类资产）+ A12-A14 PR 门禁 + §6.4.1 CLAUDE.md sync 三段化 + §7.6 `.claude/` 边界从 TODO 升级为正式条款
 > **决策记录**：[[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]
 
