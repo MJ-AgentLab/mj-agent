@@ -7,6 +7,7 @@ created: 2026-05-07
 updated: 2026-05-07
 state: active
 track: code
+last-verified: 2026-05-07
 ---
 
 # DEV Deployment Runbook — mj-agent (Phase 1 1.I 试用前置)

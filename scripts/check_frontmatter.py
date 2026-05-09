@@ -89,6 +89,26 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
             f"state={state!r} not in {sorted(STATE_VALUES)}"
         )
 
+    # 3. Type-specific required fields (ADR-022 C.3.1).
+    # Active or completed docs must declare type-specific frontmatter
+    # (e.g., RUNBOOK last-verified, POSTMORTEM severity etc.). Draft and
+    # deprecated states are lenient — fields can be absent during early
+    # authoring or after archival.
+    type_specific_required: dict[str, tuple[str, ...]] = {
+        "runbook": ("last-verified",),
+        "postmortem": ("severity", "incident-date", "resolved-at"),
+        "assessment": ("dimensions", "period"),
+        "issue": ("priority", "risk-level"),
+    }
+    type_value = meta.get("type")
+    if state in ("active", "completed") and isinstance(type_value, str):
+        for field in type_specific_required.get(type_value, ()):
+            if field not in meta:
+                violations.append(
+                    f"missing type-specific field `{field}` "
+                    f"(required for type={type_value!r} when state={state!r}; ADR-022)"
+                )
+
     return violations
 
 
