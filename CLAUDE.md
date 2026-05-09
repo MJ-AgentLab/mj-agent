@@ -236,7 +236,9 @@ references are audited (Living updates to `_v<new>`; Frozen pins to
 `_v<old>`). Daily edits stay in-place — the rename + archive ceremony
 fires only when the change qualifies as substantive evolution. ADR-011
 documents the rationale; ADR-014 §决策点 3 skeleton-first describes the
-延迟 promote 变体 used for v2.0 → v2.1.
+延迟 promote 变体 used for v2.0 → v2.1. ADR-017 (Phase C-2) 细化 ADR-011
+§5.6.1 HITL trigger，落 Meta v2.1 §5.9 4 类必触发 + 1 类反例归档判定表
+（mj-system v5.2 §10.1 派生，不 supersede ADR-011，仅补充量化条款）。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary

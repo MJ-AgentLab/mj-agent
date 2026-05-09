@@ -4,7 +4,7 @@ domain: SYS
 summary: 元框架（v2.0 升级）—— 引入第三轨 engineering-workflow（治理 .claude/ 与工程流程 STANDARD），track 字段允许值扩到四值，A12-A14 PR 门禁加入；骨架交付 Phase A
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-09
 state: active
 version: v2.1
 track: shared
@@ -303,6 +303,27 @@ track: code | agent | engineering-workflow | shared
 1. Phase A：v2.1 trio + ADR-014 + HITL_Prompt v1.0 以 `state: draft` 落地 `docs/rule/`，与 v2.0 trio（保持 active）共存；不立即 archive v2.0 trio
 2. Phase B（核心 `.claude/skills/` 落地后；HITL_Prompt §5 矩阵不再指向占位）：promote PR — v2.0 trio → archive；v2.1 trio + HITL_Prompt v1.0 → active；CLAUDE.md / INDEX.md / 受影响引用一次性 audit 升级
 3. 此变体的理由：v2.0 trio 已 active 但 engineering-workflow 资产空白；先骨架后促生工具有用，避免一次过载
+
+### 5.9 归档触发判定（v2.1 in-place 加；ADR-017 决议）
+
+> **派生自** mj-system v5.2 `[STANDARD]_Documentation_Management_Framework.md` §10.1。
+> [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 仅给 HITL 触发的文字描述，缺量化标准；本节落显式判定。
+
+| 触发归档？ | 场景 | 说明 |
+|---|---|---|
+| ✅ 是 | **框架大版本升级** | 如 Meta v2.x → v3.0；trio 整体演进 |
+| ✅ 是 | **STANDARD 结构性重构** | 如章节模板换代（12 章 → 5 章）；归档名加 `_pre_<新版本>` |
+| ✅ 是 | **70%+ 内容改写**（量化阈值） | 衡量原文 ≥ 70% 文本被替换 |
+| ✅ 是 | **拆分 / 合并 / 改名** | 1 doc → N doc；N doc → 1 doc；scope / 命名重定义 |
+| ❌ 否 | 小修小补、patch 升级、字段补充、typo / 链接修 | → git 历史承担；不进归档目录 |
+
+**判定优先级**：4 类必触发条件按 (1)→(2)→(3)→(4) 顺序短路判定（满足任一即触发）。
+
+**反例边界**：单段加新内容（如本节加 §5.9）属字段补充；§3 加新类目（如 v2.1 加 SKILL track C）属字段补充；§5 加新生命周期阶段属字段补充。仅当**整文档结构** / **规则枚举集合** / **filename / scope** 发生变化时才升级触发。
+
+**HITL 入口**：本节判定结果直接喂给 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 HITL trigger；reviewer 在 PR review 阶段对照本节 5 类显式 cite。
+
+**Cross-ref**：[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（决策记录 + mj-system §10.1 派生论证 + Alternatives）；ADR-011 §5.6（Living/Frozen + filename rule，部分待 Phase C-1a ADR-018 反转）。
 
 ---
 
