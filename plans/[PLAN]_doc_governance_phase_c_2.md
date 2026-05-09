@@ -4,7 +4,7 @@ summary: Phase C-2 — 引入文档归档量化触发表（mj-system §10.1 借�
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: completed
 track: shared
 ---
 
@@ -124,7 +124,7 @@ uv run pytest                                     # default selection green
 
 ## 9. 完成标准
 
-- [ ] ADR-017 创建（state: active；decision: accepted；track: shared）
+- [ ] ADR-017 创建（state: completed；decision: accepted；track: shared）
 - [ ] Meta v2.1 §5.9 加段（无 version bump，updated 字段刷至 2026-05-09）
 - [ ] docs/INDEX.md ADR 表收录 ADR-017
 - [ ] CLAUDE.md "## Documentation" "Versioning rule" 段同步 ADR-017

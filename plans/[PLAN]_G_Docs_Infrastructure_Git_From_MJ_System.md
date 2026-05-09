@@ -4,7 +4,7 @@ summary: 把 mj-system 4 份 git 基础设施 GUIDE + INDEX 镜像到 mj-agent d
 owner: 项目负责人
 created: 2026-04-30
 updated: 2026-04-30
-state: draft
+state: completed
 track: code
 tags:
   - plan

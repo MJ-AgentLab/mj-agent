@@ -4,7 +4,7 @@ summary: Phase C-1b — archive [DEPRECATED]_ 前缀 + frontmatter (archived/rep
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: completed
 track: shared
 ---
 

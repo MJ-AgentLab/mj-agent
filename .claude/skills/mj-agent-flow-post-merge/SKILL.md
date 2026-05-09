@@ -17,7 +17,7 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 6. schedule 决策
 7. branch 清理
 8. develop 同步
-9. **plan 生命周期标记**（per Meta v2.0 §10.5；自动 active → completed）
+9. **plan 生命周期标记**（per Meta v2.2 §5.11；ADR-021；自动 active → completed）
 
 **Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.0 §10.5 + Git Branch Strategy + PR Description Convention.
 

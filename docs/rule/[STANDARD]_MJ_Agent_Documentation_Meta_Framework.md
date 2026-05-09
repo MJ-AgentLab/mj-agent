@@ -378,6 +378,40 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 4. PR_TEMPLATE drift 同步修（Phase B 漏改）；scripts/check_wikilinks.py NEEDLES 扩 6 模式（C-3 通用化推迟）
 5. CLAUDE.md / docs/INDEX.md / CHANGELOG.md sync
 
+### 5.11 Working 文档生命周期（v2.2 in-place 加；ADR-021 决议）
+
+> **派生自** mj-system v5.2 §10.5 "Working 文档生命周期"。
+> 落实 \`plans/**\` 工作文档的"任务完成"语义；区别于 canonical 文档的 \`deprecated\`（"被新版本替代"）。
+
+#### 5.11.1 Working state 4 态机
+
+\`plans/**\` 使用 4 状态机：
+
+| state | 含义 | 触发 |
+|---|---|---|
+| \`draft\` | 仍在拟订；未对齐 | 新建文档默认 |
+| \`active\` | 已采纳；任务执行期 | 关联 issue/PR open |
+| \`completed\` | 任务自然完成 | 关联 PR merged / Issue closed / Release deployed |
+| \`archived\` | 物理归档（GC；Phase D 范畴） | \`completed\` ≥ 6 月 + 引用 0 时 |
+
+#### 5.11.2 Stage 17 Post-merge 自动化
+
+\`mj-agent-flow-post-merge\` SKILL Step 9 自动识别 PR/Issue 关联的 \`[PLAN]_*.md\` / \`[INTAKE]_*.md\`，state 由 \`active\` 改 \`completed\` 并刷 \`updated\` 字段；**不移动文件位置**；保留所有跨文档 reference。
+
+#### 5.11.3 边界
+
+| 项 | 处理 |
+|---|---|
+| \`completed\` 文件位置 | 保留 \`plans/\` 原路径；不移 \`plans/archive/\`（避免断跨文档引用） |
+| \`completed\` 文件 INDEX | \`plans/\` 不维护 INDEX |
+| 跨文档引用稳定性 | 仅 state 改变 → 引用路径不变 → 全仓 reference 稳定 |
+| 长期 \`draft\` abandon | 保持 \`draft\`（留重启余地）；如确认废弃可手工标 \`archived\`（不移文件） |
+| \`completed\` 文件 grep | 仍可命中；state 字段标识其已落地 |
+
+#### 5.11.4 Cross-ref
+
+[[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（决策记录 + mj-system §10.5 派生论证 + Alternatives）；Stage 17 自动化：[[../../.claude/skills/mj-agent-flow-post-merge/SKILL]] Step 9。
+
 ---
 
 ## 6. 索引与引用规则

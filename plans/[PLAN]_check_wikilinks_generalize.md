@@ -4,7 +4,7 @@ summary: Phase C-3-1 — check_wikilinks.py 通用化（auto-discover NEEDLES fr
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: completed
 track: shared
 ---
 
