@@ -12,9 +12,9 @@ version: v1.0
 track: code
 derives_from: ""
 owner: 项目负责人
-severity: P0 / P1 / P2
-incident_date: YYYY-MM-DD
-resolved_at: YYYY-MM-DD HH:MM
+severity: P2
+incident-date: YYYY-MM-DD
+resolved-at: YYYY-MM-DDTHH:MM
 ---
 
 # <服务/模块缩写> <事故简述>
