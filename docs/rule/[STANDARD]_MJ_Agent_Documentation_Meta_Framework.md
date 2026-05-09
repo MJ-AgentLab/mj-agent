@@ -217,6 +217,34 @@ docs/rule/
 | `.claude/hooks/` 首次启用时需修订 §7.6.x（hooks 子条款，待 Phase C+） | hooks 影响所有工具调用，治理强度高 |
 | `.mcp.json` server 增删需联动 `[STANDARD]_MJ_Agent_MCP_Server_Governance_*`（待 Phase C+） | A14 阻塞门禁 |
 
+### 3.7 STANDARD 归属：全局规则 vs 领域专属（v2.2 加；ADR-022 C.3.2）
+
+> **派生自** mj-system v5.2 §3.6。当前 mj-agent 全 STANDARD 在 `docs/rule/`（全局规则）；本节订立规则为未来引入域专属 STANDARD（如 db / docker）做准备。
+
+| 范畴 | 路径 | 判定 |
+|---|---|---|
+| **全局规则** | `docs/rule/` | 跨领域、跨服务、跨工具的项目级规范（如本框架、Commit_Message_Convention、GitHub_Markdown） |
+| **API 专属** | `docs/api/` | 跨服务的 API 约定（mj-agent 当前空） |
+| **领域专属** | `docs/infrastructure/<domain>/` | 与具体技术领域绑定（database / docker / git / cicd / 等）；与该域 GUIDE / RUNBOOK / SPEC 同目录扁平 |
+
+**就近原则**：领域专属 STANDARD 与对应 GUIDE/RUNBOOK/SPEC 同目录；不引入 `docs/rule/<topic>/` 嵌套；不引入 `docs/infrastructure/<domain>/<sub>/` 嵌套。
+
+### 3.8 STANDARD 大型规范拆分阈值（v2.2 加；ADR-022 C.3.6）
+
+> **派生自** mj-system v5.2 §3.6。订立拆分判定阈值。
+
+当 STANDARD **同时**满足以下三条件时，拆分为多份单一主题 STANDARD（每份用 5 章模板）：
+
+| 条件 | 阈值 |
+|---|---|
+| 行数 | >500 |
+| 主题章节 | ≥5 个独立 |
+| 跨文件引用 | ≥10 处 |
+
+**例外**：单一主题大型 STANDARD 即使满足以上三条件，可不拆（如 Meta v2.2 ~610 行但单一主题"文档治理元框架"）。
+
+**HITL 入口**：拆分判定结果纳入 §5.9 trigger #4（拆分/合并/改名 → archive ceremony）。
+
 ### 3.10 Engineering-workflow `[SKILL]` 治理（v2.1 新增）
 
 > **scope**：仅治 `.claude/skills/<name>/SKILL.md`（in-tree 工程流程技能）。**不**治 `src/mj_agent/skills/<name>/SKILL.md`（运行时；归 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2）。**不**治 marketplace plugin SKILL.md（出 governance；详见 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]）。
@@ -301,6 +329,44 @@ track: code | agent | engineering-workflow | shared
 > 6. 路径在 `docs/rule/` 但治"engineering 流程"？→ **engineering-workflow**
 > 7. 路径在 `docs/rule/` 治文档/代码/数据？→ **code** 或 **shared**
 > 8. 其他 → 默认 `shared` 并 PR body 论证
+
+### 4.5 ISSUE 命名约定（v2.2 加；ADR-022 C.3.3）
+
+> **派生自** mj-system v5.2 §4.1。
+
+`docs/issues/` 文件命名格式：
+
+```
+[ISSUE]_NNN_DomainAbbr_Description.md
+```
+
+- `NNN`：3 位顺序编号（001 起；与 ADR 编号独立）
+- `DomainAbbr`：mj-agent domain 缩写（per §9：`SYS / AGENT / DATA / SKILL / PROMPT / GUARDRAIL / OPS / INTEGRATION / WORKFLOW / ...`）
+- `Description`：英文描述，`_` 连接，无空格
+
+`docs/issues/` 当前空；规则在首个 ISSUE 创建时启用。
+
+### 4.6 supersedes 字段多文档语义（v2.2 加；ADR-022 C.3.4）
+
+> **派生自** mj-system v5.2 §4.4。
+
+任意 canonical 类型的 frontmatter `supersedes` 字段接受 **list**（非单一 string），用于以下场景：
+
+```yaml
+supersedes:
+  - "<old-path-1>"
+  - "<old-path-2>"
+```
+
+**典型用例**：
+
+- 单一替代：1 旧 doc → 1 新 doc，list 含单 string
+- 拆分替代：1 旧 doc → N 新 docs，每个新 doc 的 list 都列旧 doc
+- 合并替代：N 旧 docs → 1 新 doc，list 含 N strings
+
+`scripts/check_frontmatter.py` 已隐式支持 list（YAML 自动解析）；本节仅文档化规则。
+
+mj-agent 当前所有 supersedes 都是 list（含单 string），与本规则一致。
 
 ### 4.4 Active canonical 路径稳定原则（v2.2 新增；ADR-018 决议）
 

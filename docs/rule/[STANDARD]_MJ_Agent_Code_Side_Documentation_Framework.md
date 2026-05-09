@@ -97,23 +97,66 @@ aliases:
 
 > **Phase A PR-A3 落地 `TEMPLATE_RUNBOOK.md`**。body 模板：`Trigger / Pre-checks / Steps / Rollback / Post-mortem trigger`。
 
+#### 3.4.1 类型专属 frontmatter（v1.2 加；ADR-022 C.3.1）
+
+```yaml
+last-verified: <YYYY-MM-DD>     # 最近一次按手册实测验证通过的日期；state: active 时必填
+```
+
+**Why**：RUNBOOK 是操作型文档，过期 RUNBOOK 误导现场操作；`last-verified` 让 reviewer / 自动化工具识别陈旧 RUNBOOK。`scripts/check_frontmatter.py` 在 `state: active` 时强制（draft / deprecated 不强制）。
+
 ### 3.5 POSTMORTEM-code Authoring
 
-> **TODO Phase 2**（沿用 v1.0 §3.5）。
+> **TODO Phase 2**（沿用 v1.0 §3.5）。模板待落 `TEMPLATE_POSTMORTEM.md`。
+
+#### 3.5.1 类型专属 frontmatter（v1.2 加；ADR-022 C.3.1）
+
+```yaml
+severity: P0 | P1 | P2 | P3       # 事故严重程度
+incident-date: <YYYY-MM-DD>       # 事故发生日期
+resolved-at: <YYYY-MM-DDTHH:MM>   # 事故恢复时间戳（ISO 8601）
+```
+
+**Why**：POSTMORTEM 用于复盘统计；上述字段支持后续按 severity / 时段聚合分析。`scripts/check_frontmatter.py` 在 `state: active` 时强制。
 
 ### 3.6 STANDARD-code Authoring
 
 > **TODO Phase 1**（沿用 v1.0 §3.6）。现有范例：
-> - [[STANDARD]_GitHub_Markdown|GitHub_Markdown_v1.0]]
-> - [[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit_Message_Convention_v1.0]]
+> - [[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.0]]
+> - [[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit_Message_Convention v1.0]]
+
+#### 3.6.1 拆分阈值（v1.2 加；ADR-022 C.3.6）
+
+详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.8 STANDARD 大型规范拆分阈值（>500 行 + ≥5 主题 + ≥10 引用）。
 
 ### 3.7 ISSUE-code Authoring
 
-> **TODO Phase 1**（沿用 v1.0 §3.7）。
+> **TODO Phase 1**（沿用 v1.0 §3.7）。模板待落 `TEMPLATE_ISSUE.md`。
+
+#### 3.7.1 类型专属 frontmatter（v1.2 加；ADR-022 C.3.1）
+
+```yaml
+priority: P0 | P1 | P2 | P3       # 处理优先级
+risk-level: Low | Medium | High   # 风险等级
+resolution: open | fixed | wontfix | obsolete  # 已有字段；处理结果
+```
+
+**Why**：ISSUE 是延后问题 / 风险跟踪；`priority` + `risk-level` 支持优先级排序与风险审计。`scripts/check_frontmatter.py` 在 `state: active` 时强制 `priority` + `risk-level`（`resolution` 已有规则）。
 
 ### 3.8 ASSESSMENT-code Authoring
 
-> **TODO Phase 1**（沿用 v1.0 §3.8）。现有范例：[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ_System_Git_Conventions_Adoption_v1.0]]。
+> **TODO Phase 1**（沿用 v1.0 §3.8）。现有范例：[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ_System_Git_Conventions_Adoption v1.0]]。
+
+#### 3.8.1 类型专属 frontmatter（v1.2 加；ADR-022 C.3.1）
+
+```yaml
+dimensions:                       # 评估维度列表
+  - <dim-1>
+  - <dim-2>
+period: <daterange>               # 评估周期（如 "Phase 0" / "2026-04-01 → 2026-05-01"）
+```
+
+**Why**：ASSESSMENT 是结构化评估文档；`dimensions` + `period` 支持跨评估对比与时间序列分析。已有现存实例 `[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0` 含此字段；本 ADR 仅文档化规则。`scripts/check_frontmatter.py` 在 `state: active` 时强制。
 
 ### 3.9 Track C engineering-workflow cross-ref（v1.1 新增）
 

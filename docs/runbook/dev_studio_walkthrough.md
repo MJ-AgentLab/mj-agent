@@ -7,6 +7,7 @@ created: 2026-05-06
 updated: 2026-05-06
 state: active
 track: code
+last-verified: 2026-05-06
 ---
 
 # Dev Studio Walkthrough — mj-agent MVP

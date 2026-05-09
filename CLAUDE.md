@@ -258,6 +258,13 @@ ADR-021 (Phase C-3-3) 引入 plans/ working 文档 4 态机
 （draft → active → completed → archived）— mj-system v5.2 §10.5 派生；落
 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active →
 completed；retroactive 标 7 plans completed；archived 物理归档延后 Phase D。
+ADR-022 (Phase C-4) bundle 5 项 P2 framework rule 增强（mj-system v5.2
+派生）：类型专属 frontmatter（RUNBOOK last-verified / POSTMORTEM
+severity+incident-date+resolved-at / ASSESSMENT dimensions+period /
+ISSUE priority+risk-level）+ STANDARD §3.7 placement 决策矩阵 + ISSUE
+NNN+DomainAbbr 命名 + supersedes list 文档化 + STANDARD §3.8 拆分阈值；落
+Meta v2.2 §3.7/§3.8/§4.5/§4.6 + Code_Side v1.1 §3.4-§3.8；check_frontmatter.py
+type-conditional 校验（state: active/completed 时强制；draft/deprecated 宽松）。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
