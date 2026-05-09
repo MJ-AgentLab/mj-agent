@@ -1202,7 +1202,7 @@ Fallback:
 | 运行时 SKILL.md body 改进（**propose diff，不写 src/**） | `/mj-agent-runtime-skill-doc-improve` | P1；PR-C2 落地 |
 | system.md `version` bump walkthrough | `/mj-agent-runtime-prompt-version-bump` | P1；PR-C2 落地 |
 | qcm_catalog.yaml 镜像同步（与 mj-system 上游 STANDARD §2-§4 比对） | `/mj-agent-runtime-biz-catalog-sync` | P1；PR-C2 落地 |
-| EVAL baseline 设定（A11 强制后） | `/mj-agent-runtime-eval-baseline` | P2；PR-D2 落地（Phase 2） |
+| EVAL baseline 设定（A11 强制后） | `/mj-agent-runtime-eval-baseline` | P1；PR-D2-skill 落地（framework-independent；baseline 实测延 Phase 2 PR-D2-enforcement） |
 
 > **Runtime 类目硬约束**（v1.0 引入）：所有 `mj-agent-runtime-*` 是 **read-only inspect** 设计——它们 propose diff、跑反向扫描、列出影响清单，但**不**直接修改 `src/mj_agent/{skills,prompts,agent.py,tools}/`。SKILL.md "Anti-patterns" 段必须明文写"Do NOT modify src/mj_agent/...";A12 描述质量门禁校验此约束。
 
