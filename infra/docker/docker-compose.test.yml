@@ -1,0 +1,54 @@
+# =============================================
+# mj-agent compose stack — TEST override (-f explicit; override.yml 不会自动加载)
+# Loaded by:
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.test.yml up -d
+# Run on: TEST host (192.168.0.179) — co-located with mj-system test stack
+# Features: Harbor pull (no local build) + MJ_CONFIG_PROFILE=test + 8C/12G + debug log
+# =============================================
+
+services:
+  mj-agent:
+    # TEST: pull from Harbor (CI builds + tags + pushes); no local Dockerfile build.
+    image: 8.135.38.175/mj-agent/mj-agent:0.1
+    environment:
+      # TEST biz queries → mj-system test postgres via mj-system-backend-network.
+      POSTGRES_TEST_HOST: mj-postgres
+      POSTGRES_TEST_PORT: "5432"
+      MJ_CONFIG_PROFILE: test
+      MJ_AGENT_ENV: test
+      MJ_AGENT_LOG_LEVEL: debug
+    deploy:
+      resources:
+        limits:
+          cpus: "8.0"
+          memory: 12G
+        reservations:
+          cpus: "2.0"
+          memory: 4G
+    labels:
+      com.mj-agent.environment: "testing"
+
+  mj-agent-postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+        reservations:
+          cpus: "1.0"
+          memory: 2G
+    labels:
+      com.mj-agent.environment: "testing"
+
+  mj-agent-redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    labels:
+      com.mj-agent.environment: "testing"
