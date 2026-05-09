@@ -35,12 +35,12 @@ from pathlib import Path
 # transition; the ``...`` placeholder breaks the prefix match). Extending
 # this list (Phase C-1b / C-3) requires syncing ``ARCHIVE_PREFIXES``.
 NEEDLES: tuple[str, ...] = (
-    "[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0",
-    "[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1",
-    "[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0",
-    "[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1",  # archived in Phase C-1a (ADR-018)
-    "[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0",
-    "[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0",
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0",
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1",
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0",
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1",  # archived in Phase C-1a (ADR-018)
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0",
+    "[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0",
 )
 
 # A line containing any NEEDLE is permitted only if it also contains

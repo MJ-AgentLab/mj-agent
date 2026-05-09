@@ -220,7 +220,7 @@ refresher; covers repo / branches / env / tests / docs / commit / Studio).
 ADR-012 documents the v1.1 → v2.0 dual-track split
 (`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
 predecessor lives at
-`docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
+`docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
 (state: deprecated). The corpus-wide guard `scripts/check_wikilinks.py`
 enforces that any reference to the v1.1 filename outside `docs/archive/`
 must be frozen (archive-prefixed) — living refs are migrated to the v2.0
@@ -245,6 +245,12 @@ mj-system v5.2 §4.1 派生；partial supersede ADR-011 §4.2 filename rule
 + §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期
 rename（仅 Meta v2.1 触发 archive ceremony；其他 5 解读为 rule
 application）。
+ADR-019 (Phase C-1b) 引入 archive 命名规范化（archive 文件名加
+`[DEPRECATED]_` 前缀；frontmatter 必含 `archived: <date>` +
+`replaced-by: <stable-path>`，直接指向当前活跃稳定路径）— mj-system
+v5.2 §10.2 派生；partial supersede ADR-011 §5.6.2 第 2 段；ADR-011
+§5.6.1/3/4 sustained；6 archived 文件同期 rename + frontmatter 增强；
+3-PR 序列收尾（C → A → B）。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary

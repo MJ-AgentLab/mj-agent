@@ -94,7 +94,7 @@ PLAN E 全绿且本 worktree 合并到 develop 后，开 Phase 0.5 promote PR：
 |---|---|
 | Meta_Framework v2.0 frontmatter `state: draft → active` | grep `state:` Meta v2.0 == active |
 | Code_Side / Agent_Side frontmatter `state: draft → active` | grep == active |
-| v1.1 走 [[../docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|v1.1（archive）]] §5.6.2 archive 流程 | `git mv docs/rule/[STANDARD]_..._Framework_v1.1.md docs/archive/rule/[STANDARD]_..._Framework_v1.1.md`；archive 副本 frontmatter `state: active → deprecated`；body 顶部加状态横幅指向 v2.0 |
+| v1.1 走 [[../docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|v1.1（archive）]] §5.6.2 archive 流程 | `git mv docs/rule/[STANDARD]_..._Framework_v1.1.md docs/archive/rule/[STANDARD]_..._Framework_v1.1.md`；archive 副本 frontmatter `state: active → deprecated`；body 顶部加状态横幅指向 v2.0 |
 | ADR-012 frontmatter `state: draft → active` | grep state == active |
 | 现有 canonical 文档增补 `track` 字段 | 全部 .md frontmatter 含 `track`（默认 `shared`，逐文档审计实际归属） |
 | `docs/INDEX.md` 更新引用 v2.0 + 双轨 | grep `Meta_Framework_v2.0` in INDEX |

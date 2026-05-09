@@ -8,9 +8,9 @@ updated: 2026-05-09
 state: deprecated
 version: v2.1
 track: shared
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
 supersedes:
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
 tags:
   - standard
   - documentation
@@ -21,6 +21,8 @@ tags:
 aliases:
   - MJ-Agent Documentation Meta Framework v2.1
   - mj-agent 文档治理元框架 v2.1
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 ---
 
 # MJ-Agent 文档治理元框架 v2.1（已归档；deprecated）
@@ -29,7 +31,7 @@ aliases:
 > **本副本为 v2.1 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2（stable path）]] 取代。归档原因：v2.2 引入 §4.4 active canonical 路径稳定原则（[[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] 决议；partial supersede ADR-011 §4.2 + §5.6.2）+ filename rename 触发 [[../../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] §5.9 trigger #4。本副本作为 v2.1 时期 cite-by-vintage 参考保留；当前权威以 v2.2 stable path 为准。
 
 > **历史状态（Phase B PR-B3c-promote 完成后）**：`state: active`（已翻为 deprecated）。v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`。本文档及同期 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] / [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] / [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] 全部转 active；A12-A14 PR 门禁强制启用。节奏对齐 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] HITL A3 模式 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0（archive）]]
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0（archive）]]
 > **首要变更**：引入第三轨 `engineering-workflow`（治理 `.claude/` + 工程流程 STANDARD + HITL_Prompt 类资产）+ A12-A14 PR 门禁 + §6.4.1 CLAUDE.md sync 三段化 + §7.6 `.claude/` 边界从 TODO 升级为正式条款
 > **决策记录**：[[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]
 

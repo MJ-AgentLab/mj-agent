@@ -4,31 +4,38 @@ domain: SYS
 summary: 定义 mj-agent 文档治理的三层模型、Agent 专属类型扩展、in-source 治理和自动校验边界
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-25
+updated: 2026-04-28
 state: deprecated
-version: v1.0
+version: v1.1
 track: shared
 derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0
+supersedes:
+  - "mj-agent@[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0"
 tags:
   - standard
   - documentation
   - framework
   - agent
 aliases:
-  - MJ Agent Documentation Management Framework v1.0
-  - mj-agent 文档管理框架 v1.0
+  - MJ Agent Documentation Management Framework v1.1
+  - mj-agent 文档管理框架 v1.1
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 ---
+
+> **DEPRECATED** — Superseded by the v2.0 trio (`Meta_Framework_v2.0`,
+> `Code_Side_Documentation_Framework_v1.0`, `Agent_Side_Documentation_Framework_v1.0`).
+> See `docs/INDEX.md` for current canonical references. Frozen refs in archive/,
+> plans/, and ASSESSMENT docs continue to point here intentionally.
 
 # MJ-Agent 文档管理体系框架
 
-> [!WARNING]
-> **本副本为 v1.0 历史归档（state: deprecated）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] 取代。本副本作为 v1.0 时期 cite-by-vintage 参考保留；当前权威以 v1.1 为准。归档原因：v1.1 引入 §5.6（Major.Minor 版本演进与 docs/archive/）和 §4.2 filename `_vX.Y` 强制规则，详见 [[../../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]。
-
-> **适用范围**：mj-agent 项目文档治理 v1.0 体系（Phase 0 Foundation 起生效）
+> **适用范围**：mj-agent 项目文档治理 v1.1 体系（Phase 0 Foundation 起生效）
 > **目标受众**：开发 / 运维 / 项目负责人 / AI Agent
-> **版本**：v1.0
-> **最后更新**：2026-04-24
+> **版本**：v1.1
+> **最后更新**：2026-04-25
 > **派生自**：[[STANDARD]_Documentation_Management_Framework_v5.0|mj-system 文档管理框架 v5.0]]（仅作血统参考，本标准自包含）
+> **取代**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0|Framework v1.0]]（已归档；见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] 阐述演进决策）
 
 ---
 
@@ -75,10 +82,11 @@ aliases:
 
 ### 1.3 生效边界
 
-本标准定义 **v1.0 目标态**。mj-agent 处于 Phase 0，`docs/` 目录从零新建，不存在 v4.5 或更早版本的迁移遗留。因此：
+本标准定义 **v1.1 目标态**。v1.0 已归档至 `docs/archive/rule/`（详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] 阐述演进决策）；mj-agent 仍处于 Phase 0，`docs/` 目录从零新建，不存在 v4.5 或更早版本的迁移遗留。因此：
 
-- **立即生效**：本文档自身以及 Phase 0 交付的所有 canonical 文档
-- **Phase 0 不引入的**：`[EVAL]`/`[POSTMORTEM]`/`[ASSESSMENT]`/自动校验器/生成式 INDEX——推迟到 Phase 0.5/Phase 1/Phase 2（见 §8）
+- **立即生效**：本文档自身以及 Phase 0 已交付的所有 canonical 文档
+- **v1.1 相对 v1.0 的增量**：§4.2 强制 filename `_vX.Y` 后缀（适用于 `version` 必填类型）；新增 §5.6 定义 Major.Minor 版本演进流程与 `docs/archive/` 归档机制（HITL 触发，A3 模式 = git branch + PR review）；§5.5 in-source canonical 例外说明；§3.6 增加 archive 子目录用途行
+- **Phase 0 不引入的**：`[EVAL]`/`[POSTMORTEM]`/自动校验器/生成式 INDEX——推迟到 Phase 0.5/Phase 1/Phase 2（见 §8）
 
 ---
 
@@ -232,13 +240,14 @@ Agent runtime 从 `src/mj_agent/skills/` 和 `src/mj_agent/prompts/` 加载 SKIL
 | `src/` 内 canonical 范围只有 skills/ 与 prompts/ | 其他源码目录不受文档治理（见 §7.5） |
 | working 层仅允许 `plans/` | 任务计划统一聚合 |
 | legacy 层禁止作为新文档默认落点 | 仅用于迁移和存档 |
+| `docs/archive/<subdir>/` 仅作版本退役搬迁目的 | 由 §5.6.2 流程触发；不可作为新文档默认落点；与 `docs/archive/legacy/` 并存（后者用于 pre-framework 历史归档） |
 
 ---
 
 ## 4 命名与 Frontmatter
 
 > [!NOTE]
-> 本章定义 **字段语义**（必填字段、取值约束、专属字段）。YAML 语法（缩进、引号、多行、日期格式、GitHub 渲染行为）见 [[STANDARD]_GitHub_Markdown|GitHub Markdown 规范]] §13。
+> 本章定义 **字段语义**（必填字段、取值约束、专属字段）。YAML 语法（缩进、引号、多行、日期格式、GitHub 渲染行为）见 [[STANDARD]_GitHub_Markdown|GitHub Markdown 规范 v1.0]] §13。
 
 ### 4.1 文件命名
 
@@ -267,8 +276,11 @@ Canonical 文档命名通用模式：
 |------|------|------|
 | 文件名用英文和下划线 | `[GUIDE]_Developer_Onboarding.md` | `[GUIDE]_开发者上手指南.md` |
 | 仅在消歧时加 Subject | `[SPEC]_Memory_Store_Schema.md` | `[SPEC]_Agent_Memory_Memory_Store.md` |
-| 多主版本并存保留 `_vX.Y` | `[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md` | `..._v1.0_final.md` |
+| `version` 字段必填的类型，filename 必带 `_vX.Y` 后缀（即使当前只有一版） | `[STANDARD]_X_v1.0.md`、`[CONTRACT]_Tool_SQLExecute_v1.0.md`、`[ASSESSMENT]_X_v1.0.md` | `[STANDARD]_X.md`（缺版本号）、`..._v1.0_final.md` |
 | SKILL 目录名全小写带连字符 | `src/mj_agent/skills/query-writing/` | `src/mj_agent/skills/QueryWriting/` |
+
+> [!NOTE]
+> 第三行规则适用类型：STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT（依 §4.3 `version` 字段必填类目）。in-source canonical（SKILL/PROMPT）filename 受 loader 约束不带版本号——见 §5.5 例外说明。版本演进语义（何时 bump、bump 后如何归档）见 §5.6。
 
 ### 4.3 Canonical 文档必填 Frontmatter
 
@@ -395,9 +407,76 @@ stateDiagram-v2
 - 旧 prompt 版本同时改为 `state: deprecated` 并**移动**到 `docs/design/prompts/[PROMPT]_<Name>_v<old>.md`，保留 `supersedes` 链与最后一次 EVAL 引用
 - SKILL 原地版本化（仍在 `src/mj_agent/skills/<name>/SKILL.md`），通过 `version` 字段前进；目录重命名视为替换（旧目录删除或归档）
 
----
+> [!IMPORTANT]
+> in-source canonical（SKILL / PROMPT）的版本演进沿用本节既有规则——PROMPT old 移入 `docs/design/prompts/`，SKILL 原地版本字段前进——**不进入 §5.6 流程**。原因：loader 锁定固定 filename（`SKILL.md` / `<name>.md`），filename 不能 carry version；§5.6 的 git mv + archive 流程不适用。SKILL/PROMPT 的"cite by vintage"由历史 PROMPT 文件（`docs/design/prompts/[PROMPT]_<Name>_vX.Y.md`）承担。
 
-## 6 索引与引用规则
+### 5.6 Major.Minor 版本演进与 docs/archive/
+
+适用于 frontmatter `version` 必填的 canonical 类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT；in-source SKILL / PROMPT 见 §5.5）。
+
+#### 5.6.1 触发：HITL 判断在 PR review 时
+
+不预测、不强制提前分类。所有编辑都在 feature branch 上 in-place 进行（标准 git 流程；正在编辑的文件就是 v_old 的"草稿态"，git diff 即变更可见状态）。判断由作者+reviewer 在 PR review 时共同做出：
+
+- **路由更新**（typo、措辞优化、补充示例、轻量澄清）：merge as-is，git commit 承载历史。`version` 不变，filename 不变。
+- **正式版本演进**（语义变化、规则增删、字段调整、触发器变更、对外契约变更）：在合并前，PR 重构为包含 §5.6.2 完整操作；作者以"本次为 vX.Y → vX.Y+1（或 vX → vX+1）正式演进"在 PR 描述中显式声明。
+
+边界判断由 reviewer 把关；不引入 CI 自动判定。**核心原则**：只有 PR review 时才需要做出版本判断，避免在编辑过程中预测未来。
+
+#### 5.6.2 正式演进：在 PR 内执行的文件操作
+
+> [!NOTE]
+> **执行时机**：在 §5.6.1 判定为正式演进之后、PR 合并之前。可以是同一 feature branch 上的后续 commits，也可以是 PR review 期间的重构提交。
+
+1. 把 PR 已有编辑的当前文件视作 v_new 内容
+2. 用 `git show <PR-base>:<path>` 取出 v_old 快照（即编辑前内容）
+3. 把快照写入 `docs/archive/<original-subdir>/[TYPE]_X_v<old>.md`，frontmatter `state: active → deprecated`，并在 body 顶部加状态横幅指向 v_new
+4. `git mv docs/<subdir>/[TYPE]_X_v<old>.md docs/<subdir>/[TYPE]_X_v<new>.md`
+5. 在 v_new 文件 bump frontmatter `version` 与 `updated`；可选 `supersedes` 字段记录被取代的 v_old 全名
+6. 审计 corpus 中所有 `[TYPE]_X_v<old>` 的引用：
+   - **Living references**（作者意图"引用项目当前权威"）：更新为 `_v<new>`
+   - **Frozen references**（作者意图"引用 vX.Y 当时的具体规则"）：保留 `_v<old>`，目标解析至 archive 副本
+7. A4 校验全部 wikilink 与 MD-link 解析；A5 同步 INDEX
+8. 若触发 §6.4 allowlist，A6 同步 CLAUDE.md
+
+实际命令模板：
+
+```bash
+# 假设 v_old=v1.0、v_new=v1.1、PR base=main
+git show main:docs/rule/[TYPE]_X_v1.0.md > docs/archive/rule/[TYPE]_X_v1.0.md
+git add docs/archive/rule/[TYPE]_X_v1.0.md
+# 手工编辑 archive 副本：state→deprecated，加状态横幅
+git mv docs/rule/[TYPE]_X_v1.0.md docs/rule/[TYPE]_X_v1.1.md
+# 在 v1.1 上 bump frontmatter version+updated；audit corpus refs
+```
+
+> 当 v_old 尚未提交到 base 分支时（例如本规范首次落地时 v1.0 自身仍为 untracked），用普通 `cp` / `mv` 替代 `git show` / `git mv` 即可。
+
+#### 5.6.3 docs/archive/ 的版本归档语义
+
+§3.6 仍约束"legacy 层禁止作为新文档默认落点"。本节定义的 archive 操作是对**已存在 active 文档**的版本退役搬迁，不是新文档落点；不与 §3.6 冲突。
+
+`docs/archive/` 子目录镜像原 canonical 目录结构：
+
+| 原路径 | 归档后路径 |
+|---|---|
+| `docs/rule/[STANDARD]_X_v1.0.md` | `docs/archive/rule/[STANDARD]_X_v1.0.md` |
+| `docs/contracts/[CONTRACT]_X_v1.0.md` | `docs/archive/contracts/[CONTRACT]_X_v1.0.md` |
+| `docs/evaluation/[EVAL]_X_v1.0.md` | `docs/archive/evaluation/[EVAL]_X_v1.0.md` |
+| `docs/assessments/[ASSESSMENT]_X_v1.0.md` | `docs/archive/assessments/[ASSESSMENT]_X_v1.0.md` |
+
+`docs/archive/legacy/`（§2.1）继续作为 pre-framework 历史归档目的，与本节并存。
+
+#### 5.6.4 Living vs Frozen 引用判断
+
+§5.6.2 步骤 6 区分两类 cross-reference：
+
+| 引用类型 | 作者意图 | 升级行为 | 典型场景 |
+|---|---|---|---|
+| **Living** | "指向项目当前权威" | bump 时跟随升级到 `_v<new>` | INDEX 行、PR 模板、CLAUDE.md、loader 文档串、其他 STANDARD 间互引 |
+| **Frozen** | "锁定 vX.Y 当时的具体规则" | bump 时保持 `_v<old>`，自动解析至 archive 副本 | 历史 ADR 中"当时规范状态"段落、past assessment 引用、postmortem 中"事故时规则"段落 |
+
+判断由发起 bump 的作者在 PR 描述中明确列出每条 living/frozen 决策；reviewer 验证一致性。无单一正确答案——同一份文档的不同句子可分别 living / frozen。
 
 ### 6.1 索引职责
 
@@ -515,10 +594,10 @@ mj-agent Phase 0 无历史文档迁移。落地清单：
 
 | 产物 | 路径 |
 |------|------|
-| 本 STANDARD | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md` |
+| 本 STANDARD（当前为 v1.1，v1.0 已归档至 `docs/archive/rule/`） | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md` |
 | 4 份紧迫模板 | `docs/_templates/TEMPLATE_{ADR,SKILL,PROMPT,CONTRACT}.md` |
 | 手写 INDEX | `docs/INDEX.md` |
-| 7 份 ADR（CLAUDE.md 已引用） | `docs/adr/[ADR]_{000,001,002,003,006,008,009}_*.md` |
+| 9 份 ADR（CLAUDE.md 已引用） | `docs/adr/[ADR]_{000,001,002,003,006,008,009,010,011}_*.md`（010 为前一 PR 落地，011 为本 v1.1 同期落地） |
 | 为 `SKILL.md` 加 frontmatter | `src/mj_agent/skills/query-writing/SKILL.md` |
 | 为 `system.md` 加 frontmatter | `src/mj_agent/prompts/system.md` |
 | Loader 剥离改造 | `src/mj_agent/skills/__init__.py`、`src/mj_agent/prompts/__init__.py` |

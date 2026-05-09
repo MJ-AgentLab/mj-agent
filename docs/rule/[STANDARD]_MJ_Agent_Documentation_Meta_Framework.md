@@ -8,10 +8,10 @@ updated: 2026-05-09
 state: active
 version: v2.2
 track: shared
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1
 supersedes:
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1"
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
 tags:
   - standard
   - documentation
@@ -30,7 +30,7 @@ aliases:
 # MJ-Agent 文档治理元框架
 
 > **状态（Phase C-1a 完成后）**：`state: active`，`version: v2.2`（frontmatter）。**Active canonical 路径稳定原则**首次落地：本文档文件名**无 `_vX.Y` 后缀**（stable path = `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`）；版本仅在 frontmatter `version` 字段。详见 §4.4 + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
 > **首要变更**（v2.1 → v2.2）：§4.4 active canonical 路径稳定原则（ADR-018；partial supersede ADR-011 §4.2 + §5.6.2）+ 6 STANDARDs 文件名去后缀
 > **决策记录**：[[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]
 
@@ -41,7 +41,7 @@ aliases:
 > - PR_TEMPLATE drift 同步修（Phase B 漏改）
 > - scripts/check_wikilinks.py NEEDLES 扩 6 模式（临时；C-3 通用化）
 > - **Partial supersede ADR-011** §4.2 filename rule + §5.6.2 file-move-step；ADR-011 §5.6.1（已被 ADR-017 §5.9 细化）/ §5.6.3 / §5.6.4 保留有效
-> - 上一版（v2.1）归档于 [docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md](../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md)
+> - 上一版（v2.1）归档于 [docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md](../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md)
 
 ---
 
@@ -74,7 +74,7 @@ aliases:
 
 > 元框架的职责是治"跨轨共同规则"，**不**治某一轨的具体内容深度。
 
-承接 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §1 全部核心原则；新增三轨原则：
+承接 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §1 全部核心原则；新增三轨原则：
 
 | 原则 | 说明 |
 |---|---|
@@ -147,7 +147,7 @@ mj-agent/
 
 ### 2.3 in-source canonical 设计理由
 
-沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §2.3。仅治 `src/mj_agent/{skills,prompts}/**`；§7.5 frontmatter strip 契约只对此范围有意义。
+沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §2.3。仅治 `src/mj_agent/{skills,prompts}/**`；§7.5 frontmatter strip 契约只对此范围有意义。
 
 ### 2.4 分层规则（v2.1 加 Track C 行）
 
@@ -178,7 +178,7 @@ docs/rule/
 
 ## 3. 类型与目录
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §3 全部规则。**类型枚举不变**（12 类 canonical）；track 默认值表加 engineering-workflow 行：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §3 全部规则。**类型枚举不变**（12 类 canonical）；track 默认值表加 engineering-workflow 行：
 
 | 类型 | 默认 track | 由哪个子框架治理深度规则 |
 |---|---|---|
@@ -272,7 +272,7 @@ slash command 自然成形 `/mj-agent-<group>-<verb>`。
 
 ## 4. 命名与 Frontmatter
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §4 全部规则。**v2.1 扩 §4.3.1（track 字段）；v2.2 加 §4.4（active path stability）**。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §4 全部规则。**v2.1 扩 §4.3.1（track 字段）；v2.2 加 §4.4（active path stability）**。
 
 ### 4.3.1 track 字段（v2.1 扩值）
 
@@ -333,7 +333,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 ## 5. 状态与生命周期
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
 
 ### 5.7 双轨语境下的 archive
 
@@ -382,7 +382,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 ## 6. 索引与引用规则
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §6 全部规则。**仅更新 §6.4.1**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §6 全部规则。**仅更新 §6.4.1**：
 
 ### 6.4 CLAUDE.md 同步策略
 
@@ -403,7 +403,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 7. 自动校验与 PR 集成
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §7 全部规则。**校验门禁加 A12-A14**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §7 全部规则。**校验门禁加 A12-A14**：
 
 ### 7.1 PR 校验门禁（v2.1 三轨重新分配）
 
@@ -493,7 +493,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 9. Domain 枚举
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §9 全部 15 项 + track 倾向。**新增 1 项**（v2.1）：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §9 全部 15 项 + track 倾向。**新增 1 项**（v2.1）：
 
 | 编号 | Domain | 默认 track | 说明 |
 |---|---|---|---|
@@ -506,7 +506,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 10. 快速操作清单
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §10。**更新 §10.6 + §10.7（v2.2 新增）**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §10。**更新 §10.6 + §10.7（v2.2 新增）**：
 
 ### 10.6 选择 track（v2.1 升级）
 
@@ -536,7 +536,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 参考
 
-- 派生自：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
+- 派生自：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
 - 决策记录：
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.0 → v2.1 三轨）
   - [[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（v2.1 §5.9 trigger 量化）

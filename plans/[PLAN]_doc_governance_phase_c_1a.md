@@ -100,12 +100,12 @@ NEEDLES = [
     "Agent_Side_Documentation_Framework_v1.0",
 ]
 ARCHIVE_PREFIXES = [
-    "archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0",
-    "archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1",
-    "archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0",
-    "archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1",  # new
-    "archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0",
-    "archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0",
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0",
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1",
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0",
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1",  # new
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0",
+    "archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0",
 ]
 ```
 

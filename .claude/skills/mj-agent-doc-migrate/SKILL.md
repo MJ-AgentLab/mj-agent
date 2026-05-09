@@ -237,9 +237,9 @@ uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALU
 - [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3（skeleton-first 延迟 promote 变体）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.6 + §5.7（双轨/三轨 archive 不变）+ §5.8（v2.0 → v2.1 升级路径，本 skill PR-B3c-promote 实例）
 - mj-agent 历史 archive 实例：
-  - `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md`（v1.0 → v1.1，2026-04）
-  - `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（v1.1 → v2.0 trio，2026-04）
-  - `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`（v2.0 → v2.1，2026-05 PR-B3c-promote）
+  - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md`（v1.0 → v1.1，2026-04）
+  - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（v1.1 → v2.0 trio，2026-04）
+  - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`（v2.0 → v2.1，2026-05 PR-B3c-promote）
   - 同期 Code_Side v1.0 + Agent_Side v1.0 archive
 - mj-system `.claude/skills/mj-sys-doc-migrate/SKILL.md`（直接派生源；mj-agent 加 skeleton-first 延迟 promote 变体 + 引用 audit living/frozen 显式分类）
 

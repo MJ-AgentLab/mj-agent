@@ -8,9 +8,9 @@ updated: 2026-05-09
 state: active
 version: v1.1
 track: agent
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0
 supersedes:
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
 tags:
   - standard
   - documentation
@@ -26,7 +26,7 @@ aliases:
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0（archive）]]
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0（archive）]]
 > **首要变更**：仅 minor bump —— §0 / §2 / §7.5 加 scope 明确条款，把 engineering-workflow `.claude/skills/SKILL.md` 排除出本框架治理（划归 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 / §7.7）。
 
 ---

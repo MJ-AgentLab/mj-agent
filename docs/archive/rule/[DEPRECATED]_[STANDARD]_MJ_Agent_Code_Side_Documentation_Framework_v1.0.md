@@ -18,6 +18,8 @@ tags:
 aliases:
   - MJ-Agent Code-Side Documentation Framework v1.0
   - Track A 子框架 v1.0
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md"
 ---
 
 # MJ-Agent 代码侧文档治理框架 v1.0（Track A，archived）
@@ -194,7 +196,7 @@ GUIDE 自身**不复述**已在其它 canonical 来源（README / CLAUDE.md / �
 
 ### 7.1 阻塞式检查（A1-A6，Code_Side 范围）
 
-沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.1 的 A1-A6 定义：
+沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.1 的 A1-A6 定义：
 
 | 编号 | 检查项 | 自动化阶段 |
 |---|---|---|
