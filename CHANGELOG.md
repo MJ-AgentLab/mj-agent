@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Phase C-3-2 (archive banner 标准化)
+
+- **PR Phase-C-3-2 — 5 旧 archive banner 格式统一（`docs(rule)`，issue [#84](https://github.com/MJ-AgentLab/mj-agent/issues/84)）**：把 5 个旧 archived 文件的 body 顶部 banner 统一为 mj-system §10.2 step 4 风格（`> [!warning]` callout + archived 日期 + stable path 链接 + ADR cross-refs + cite-by-vintage 语义）。涉：v1.0/v1.1 Documentation_Management_Framework + v2.0 Meta_Framework + v1.0 Code_Side / Agent_Side trio。banner 风格之前参差（v1.0 大写 `[!WARNING]` / v1.1 简短 `**DEPRECATED**` / v2.0 trio 普通 `> **归档状态...**` 块），不一致。本 PR 全部统一。注：v2.1 archive 在 Phase C-1a 已规范，不在本 PR 范围。Phase C-3 P1 三联包子包 2/3；不引入新 ADR（C.3.5 是规范化执行；ADR-019 §Decision 隐含规则）。
+
 ### Changed — Phase C-3-1 (ADR-020 + check_wikilinks.py auto-discovery)
 
 - **PR Phase-C-3-1 — check_wikilinks.py 通用化（`refactor(scripts)`，issue [#82](https://github.com/MJ-AgentLab/mj-agent/issues/82)）**：把 `scripts/check_wikilinks.py` 从硬编码 NEEDLES（6 模式 tuple）改为 auto-discover from `docs/archive/rule/[DEPRECATED]_*.md` glob。落地：(1) 新建 ADR-020（不 supersede ADR-019；仅落实 §References 标记的 Phase C-3 follow-up）；(2) `discover_needles()` 函数 — sorted glob 派生 NEEDLES + ARCHIVE_PREFIXES；(3) docs/INDEX.md ADR 表加 ADR-020；(4) CLAUDE.md "Versioning rule" 段加 ADR-020 mention。零维护：未来新加 archive 自动纳入校验。验证 OK 0 violations。Phase C-3 P1 三联包子包 1/3；out-of-scope：mj-system find_stale_docs.py 完整版（warning-mode CI + path-level rename detection）— Phase D 范畴。

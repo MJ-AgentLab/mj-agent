@@ -23,8 +23,8 @@ replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 
 # MJ-Agent 文档管理体系框架
 
-> [!WARNING]
-> **本副本为 v1.0 历史归档（state: deprecated）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1]] 取代。本副本作为 v1.0 时期 cite-by-vintage 参考保留；当前权威以 v1.1 为准。归档原因：v1.1 引入 §5.6（Major.Minor 版本演进与 docs/archive/）和 §4.2 filename `_vX.Y` 强制规则，详见 [[../../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]。
+> [!warning]
+> **本副本为 v1.0 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta Framework（stable path；当前 v2.2）]] 取代（注：v1.0 → v1.1 → v2.0 trio split → v2.1 三轨 → v2.2 active path stability 演进链；详见 [docs/INDEX.md §归档表](../../INDEX.md)）。归档原因：v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）+ §4.2 filename rule；后续 v2.0 trio split + v2.1 三轨 + v2.2 active path stability 累积演进。详见 [[../../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] / [[../../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] / [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] / [[../../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]]。本副本作为 v1.0 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
 
 > **适用范围**：mj-agent 项目文档治理 v1.0 体系（Phase 0 Foundation 起生效）
 > **目标受众**：开发 / 运维 / 项目负责人 / AI Agent

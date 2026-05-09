@@ -24,9 +24,10 @@ replaced-by: "../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.m
 
 # MJ-Agent 代码侧文档治理框架 v1.0（Track A，archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §0/§3.9/§7.3 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
->
-> **历史骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] 同期 promote 为 active（[[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
+> [!warning]
+> **本副本为 Code_Side v1.0 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side（stable path；当前 v1.1）]] 取代。归档原因：v1.1 minor bump 加 §0/§3.9/§7.3 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同期 promote；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] / [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] / [[../../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]]。本副本作为 v1.0 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
+
+> **历史骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[../[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote 为 active（[[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
 > **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]]。
 > **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
