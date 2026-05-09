@@ -270,6 +270,12 @@ ADR-023 (Phase D-2) scripts/infra 增强：mj-system v5.2 §7.1.1 派生
 4 周观察期；`.github/workflows/check-stale-docs.yml`）+ ADR-021 follow-up
 `scripts/find_old_completed_plans.py` 候选检测 + Meta v2.2 §5.11.5
 archive 实施指引；不 supersede；与 ADR-020/021 互补。
+ADR-024 (Phase D-3) EVAL framework spec：Agent_Side v1.1 → v1.2 archive
+ceremony；§4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/
+integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver
+**延续 Phase E**（前置条件 4 项 roadmap）；check_frontmatter.py EVAL 类型
+条件；不 supersede；mj-agent 原生（mj-system 暂无对位 EVAL framework）；
+Phase D 收尾。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary

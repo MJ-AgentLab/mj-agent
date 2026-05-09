@@ -99,6 +99,15 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
         "postmortem": ("severity", "incident-date", "resolved-at"),
         "assessment": ("dimensions", "period"),
         "issue": ("priority", "risk-level"),
+        # ADR-024 Phase D-3: EVAL frontmatter schema (Agent_Side v1.2 §4.2).
+        # state: active EVAL must declare these fields.
+        "eval": (
+            "eval_kind",
+            "dataset_path",
+            "baseline_metric",
+            "baseline_value",
+            "regression_threshold",
+        ),
     }
     type_value = meta.get("type")
     if state in ("active", "completed") and isinstance(type_value, str):
