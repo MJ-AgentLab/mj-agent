@@ -92,6 +92,6 @@ ADR-008 § Decision 已经明确 "环境矩阵 DEV/TEST/PROD 时间表对齐 mj-
 ## 进度
 
 - ✅ **PR-1** — `feature/98-multi-env-compose-layering`（issue [#98](https://github.com/MJ-AgentLab/mj-agent/issues/98)；PR [#99](https://github.com/MJ-AgentLab/mj-agent/pull/99)；merged 2026-05-09 commit `804310a`）
-- 🔄 **PR-2** — `feature/100-llm-provider-abstraction`（issue [#100](https://github.com/MJ-AgentLab/mj-agent/issues/100)；in-progress；待 commit + push + PR 创建 + merge）
-- ⏳ PR-3 — `feature/mcp-json-and-governance`（blocked by PR-2 merge）
+- ✅ **PR-2** — `feature/100-llm-provider-abstraction`（issue [#100](https://github.com/MJ-AgentLab/mj-agent/issues/100)；PR [#101](https://github.com/MJ-AgentLab/mj-agent/pull/101)；merged 2026-05-09 commit `2f8f056`）
+- 🔄 **PR-3** — `feature/102-mcp-json-and-governance`（issue [#102](https://github.com/MJ-AgentLab/mj-agent/issues/102)；in-progress；待 commit + push + PR 创建 + merge）
 - ⏳ PR-4 — `documentation/env-teardown-and-doc-sync`（blocked by PR-3 merge）
