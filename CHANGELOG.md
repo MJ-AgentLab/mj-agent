@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Added — Phase C-2 (ADR-017 + Meta v2.1 §5.9 archive trigger quantification)
+
+- **PR Phase-C-2 — 引入 4 类必触发 + 1 类反例归档量化判定（`docs(rule)`，issue [#76](https://github.com/MJ-AgentLab/mj-agent/issues/76)）**：新建 `docs/adr/[ADR]_017_Archive_Trigger_Quantification.md`（state: active；decision: accepted；track: shared）记录决策与 mj-system v5.2 §10.1 派生论证；Meta v2.1 §5 加 §5.9（in-place edit，无 version bump）落 4+1 触发表 + cross-ref ADR-017；docs/INDEX.md ADR 表收录 ADR-017；CLAUDE.md "## Documentation" 元规则段加 ADR-017 mention。本 PR 自洽 dogfood：所做改动（in-place 加新段）属 §5.9 反例 ❌（字段补充），不触发 archive ceremony。3-PR 序列第 1 步（C → A → B）；不 supersede ADR-011 §5.6.1（仅细化）；out-of-scope：active 路径稳定化（PR-2 Phase C-1a，ADR-018）+ archive 命名（PR-3 Phase C-1b，ADR-019）。
+
 ### Added — Plan G Phase 0.5 governance / onboarding skeleton
 
 - **PR1 TEMPLATE_GUIDE + Code_Side §3.1 codify（`docs(infra)`，08b7cea）**：`docs/_templates/TEMPLATE_GUIDE.md` 新增（mirror 4 reference GUIDE 的 CN-numbered 形态：TL;DR / Prerequisites / 目录 / §0 适用场景 / §1..§N / 关联文档 / 更新记录）；Code_Side `[STANDARD]_*Code_Side*_v1.0.md` §3.1 GUIDE Authoring 段从 Phase 1 占位翻为详规（§3.1.1 frontmatter + §3.1.2 body 骨架 + §3.1.3 复用原则 + §3.1.4 实例参考）；CLAUDE.md Templates 行加 `TEMPLATE_GUIDE`；docs/INDEX.md Templates 表加 TEMPLATE_GUIDE 行；STANDARD `version` 不升（ADR-011：填占位非结构性）。
