@@ -48,6 +48,7 @@ track: shared
 | [[ADR]_017_Archive_Trigger_Quantification\|ADR-017 Archive Trigger Quantification]] | SYS | accepted | 引入 4 类必触发 + 1 类反例的归档量化判定（mj-system v5.2 §10.1 派生），落 Meta v2.1 §5.9；消除 ADR-011 §5.6.1 HITL 判断模糊；不 supersede ADR-011（仅细化触发条款可执行性）；3-PR 序列（C→A→B）第 1 步 |
 | [[ADR]_018_Active_Path_Stability\|ADR-018 Active Path Stability]] | SYS | accepted | 引入 active canonical 路径稳定原则（active 文件名默认无 `_vX.Y` 后缀；版本仅在 frontmatter；mj-system v5.2 §4.1 派生）；**partial supersede** ADR-011 §4.2 filename rule + §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期 rename（仅 Meta v2.1 触发 archive ceremony）；3-PR 序列（C→A→B）第 2 步 |
 | [[ADR]_019_Archive_Naming_Convention\|ADR-019 Archive Naming Convention]] | SYS | accepted | 引入 archive 命名规范化（`[DEPRECATED]_` 前缀 + `archived` + `replaced-by` frontmatter；`replaced-by` 直接指 stable path；mj-system v5.2 §10.2 派生）；**partial supersede** ADR-011 §5.6.2 第 2 段；ADR-011 §5.6.1/3/4 sustained；6 archived 文件同期 rename + frontmatter 增强；3-PR 序列（C→A→B）收尾 |
+| [[ADR]_020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；删 ADR-019 transitional 硬编码债务；零维护；mj-system find_stale_docs.py 思路借鉴（仅目录扫描，不引入完整 warning CI；那是 Phase D 范畴）；不 supersede ADR-019（仅落实 follow-up）；Phase C-3 P1 三联包子包 1/3 |
 
 ## 评估（docs/assessments/）
 

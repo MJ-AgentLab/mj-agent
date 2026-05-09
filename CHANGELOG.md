@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Phase C-3-1 (ADR-020 + check_wikilinks.py auto-discovery)
+
+- **PR Phase-C-3-1 — check_wikilinks.py 通用化（`refactor(scripts)`，issue [#82](https://github.com/MJ-AgentLab/mj-agent/issues/82)）**：把 `scripts/check_wikilinks.py` 从硬编码 NEEDLES（6 模式 tuple）改为 auto-discover from `docs/archive/rule/[DEPRECATED]_*.md` glob。落地：(1) 新建 ADR-020（不 supersede ADR-019；仅落实 §References 标记的 Phase C-3 follow-up）；(2) `discover_needles()` 函数 — sorted glob 派生 NEEDLES + ARCHIVE_PREFIXES；(3) docs/INDEX.md ADR 表加 ADR-020；(4) CLAUDE.md "Versioning rule" 段加 ADR-020 mention。零维护：未来新加 archive 自动纳入校验。验证 OK 0 violations。Phase C-3 P1 三联包子包 1/3；out-of-scope：mj-system find_stale_docs.py 完整版（warning-mode CI + path-level rename detection）— Phase D 范畴。
+
 ### Changed — Phase C-1b (ADR-019 + Archive [DEPRECATED]_ prefix + frontmatter archived/replaced-by) — 3-PR 序列收尾
 
 - **PR Phase-C-1b — archive 命名规范化（`docs(rule)`，issue [#80](https://github.com/MJ-AgentLab/mj-agent/issues/80)）**：按 mj-system v5.2 §10.2 派生，引入 archive 命名规范化（archive 文件名加 `[DEPRECATED]_` 前缀 + frontmatter 必含 `archived: <date>` + `replaced-by: <stable-path>` 直指当前活跃稳定路径）。落地：(1) 新建 ADR-019（partial supersede ADR-011 §5.6.2 第 2 段；ADR-011 §5.6.1/3/4 sustained）；(2) 6 archived 文件 rename 加 `[DEPRECATED]_` 前缀（git mv 保留 history；rule application 解读，不触发 archive ceremony 套娃）；(3) 6 archived 文件 frontmatter 加 `archived: 2026-05-09` + `replaced-by: ../../rule/<stable-path>`（直接指当前 active，不指 legacy chain；mj-system §10.2 line 653 模式）；(4) ~37 cascading FROZEN refs bulk perl replace（`archive/rule/[STANDARD]_..._v*` → `archive/rule/[DEPRECATED]_[STANDARD]_..._v*`）；(5) `scripts/check_wikilinks.py` NEEDLES + ARCHIVE_PREFIXES 同步加 `[DEPRECATED]_` 前缀；(6) docs/INDEX.md / CLAUDE.md / 本 CHANGELOG sync。**3-PR 序列收尾**（Phase C-2 ADR-017 + Phase C-1a ADR-018 + Phase C-1b ADR-019 三 ADR 共同完成 mj-system v5.2 §4.1 + §10.1 + §10.2 派生）。out-of-scope：Phase C-3+ scripts 通用化（auto-discover archive）。

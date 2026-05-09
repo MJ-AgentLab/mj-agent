@@ -251,6 +251,9 @@ ADR-019 (Phase C-1b) 引入 archive 命名规范化（archive 文件名加
 v5.2 §10.2 派生；partial supersede ADR-011 §5.6.2 第 2 段；ADR-011
 §5.6.1/3/4 sustained；6 archived 文件同期 rename + frontmatter 增强；
 3-PR 序列收尾（C → A → B）。
+ADR-020 (Phase C-3-1) 把 `scripts/check_wikilinks.py` 改为 auto-discover
+NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob — 关闭 ADR-019
+transitional 硬编码债务；零维护；新增 archive 文件自动纳入校验。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
