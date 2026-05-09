@@ -35,6 +35,12 @@ description: This skill should be used when the user asks to start LangGraph Stu
 
 ## Workflow
 
+### Step 0 — LLM endpoint pre-check（PR-2 / ADR-025）
+
+如 `.env` 中 `LLM_PROVIDER=local-openai-compat`（DGX vLLM/SGLang/Ollama 模式）→ **必须先**跑 `/mj-agent-infra-llm-endpoint-probe` 验证 endpoint 可达 + model 加载 + chat smoke。如 endpoint 不通，Studio 起来后 H1/H2/H3 全会 fail，浪费时间。
+
+如 `LLM_PROVIDER=ark`（默认） → 跳过本 step；Ark endpoint 由 ChatOpenAI lazy init + `mj-agent check` 已覆盖。
+
 ### Step 1 — 启 Studio
 
 ```powershell
