@@ -20,7 +20,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 - **双远端**：`origin` = GitHub `MJ-AgentLab/mj-agent`、`gitee` = `gitee.com/ranzuozhou/mj-agent`
 - **6 份 PR 模板**：`.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix,release}.md`
 - **声明 Conventional Commits**（`CLAUDE.md` §Repo conventions），但实际首个 commit `b932007 Initial commit: mj-agent Python 3.13 scaffold` 不符合 `type(scope):` 格式
-- **派生中的文档治理框架**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]（draft；本 ADR 撰写时为 v1.0，由 [[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] 升级至 v1.1；之后由 [[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 升级至 v2.0 trio）
+- **派生中的文档治理框架**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]（draft；本 ADR 撰写时为 v1.0，由 [[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] 升级至 v1.1；之后由 [[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 升级至 v2.0 trio）
 
 源规范来自 mj-system：
 
@@ -97,7 +97,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 本决策的证据
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— 本决策的执行
 - [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 跨项目边界（独立 compose project + consumer 关系）上下文
-- [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] §6.4 / §7.1 A6 —— CLAUDE.md 同步约束（本 PR 故意不过的门禁；v1.1 已归档，等价语义见 v2.0 trio Meta + Code_Side §7.1 A6）
+- [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] §6.4 / §7.1 A6 —— CLAUDE.md 同步约束（本 PR 故意不过的门禁；v1.1 已归档，等价语义见 v2.0 trio Meta + Code_Side §7.1 A6）
 - mj-system 源文档：
   - `mj-system/develop/docs/rule/[STANDARD]_Commit_Message_Convention.md`
   - `mj-system/develop/docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`

@@ -18,6 +18,8 @@ tags:
 aliases:
   - MJ-Agent Agent-Side Documentation Framework v1.0
   - Track B 子框架 v1.0
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md"
 ---
 
 # MJ-Agent 智能体侧文档治理框架 v1.0（Track B，archived）
@@ -228,7 +230,7 @@ eval_references:
 
 ### 7.3 frontmatter strip 契约（§7.5，硬约束）
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5。
 
 加载 in-source canonical（`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`）作为 LLM prompt 输入的代码必须：
 

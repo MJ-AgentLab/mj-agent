@@ -8,9 +8,9 @@ updated: 2026-04-28
 state: deprecated
 version: v2.0
 track: shared
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1
 supersedes:
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1"
 tags:
   - standard
   - documentation
@@ -21,6 +21,8 @@ tags:
 aliases:
   - MJ-Agent Documentation Meta Framework v2.0
   - mj-agent 文档治理元框架 v2.0
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 ---
 
 # MJ-Agent 文档治理元框架 v2.0（archived）
@@ -28,7 +30,7 @@ aliases:
 > **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] 取代。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
 >
 > **历史骨架状态（Phase 0.5）**：本文档曾以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 > **首要变更**：引入 `track` frontmatter 字段 + 双轨子框架（Code_Side + Agent_Side）+ 跨轨治理协议
 > **决策记录**：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
 
@@ -53,7 +55,7 @@ aliases:
 
 > 元框架的职责是治"跨轨共同规则"，**不**治某一轨的具体内容深度。
 
-承接 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §1.1 全部核心原则；新增双轨原则：
+承接 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §1.1 全部核心原则；新增双轨原则：
 
 | 原则 | 说明 |
 |---|---|
@@ -151,7 +153,7 @@ docs/rule/
 
 ## 3. 类型与目录
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §3。**类型枚举不变**（12 类 canonical）。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §3。**类型枚举不变**（12 类 canonical）。
 
 每类的"track 倾向"在 Code_Side / Agent_Side 子框架的对应章节详细定义。简表：
 
@@ -197,7 +199,7 @@ docs/rule/
 
 ## 4. 命名与 Frontmatter
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §4 全部规则。**新增 `track` 字段**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §4 全部规则。**新增 `track` 字段**：
 
 ### 4.3.1 track 字段（v2.0 新增）
 
@@ -220,7 +222,7 @@ track: code | agent | shared
 
 ## 5. 状态与生命周期
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程）。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程）。
 
 ### 5.7 双轨语境下的 archive（v2.0 新增）
 
@@ -230,7 +232,7 @@ archive 时保留原 `track` 字段值；living/frozen 引用判断不受 track 
 
 ## 6. 索引与引用规则
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §6 全部规则。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §6 全部规则。
 
 ### 6.4 CLAUDE.md 同步策略
 
@@ -258,7 +260,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 7. 自动校验与 PR 集成
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7 全部规则。**校验门禁按轨重新分配**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7 全部规则。**校验门禁按轨重新分配**：
 
 ### 7.1 PR 校验门禁（v2.0 重新分配）
 
@@ -269,16 +271,16 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 | A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side]] §7.1 |
 | **A11**（v2.0 新增） | SKILL `state: active` 时 `eval_references` 非空（解 v1.1 Gap A4，与 A8 对称） | Agent_Side §7.1 |
 | A7.x（语义校验） | 行为对齐（doc 描述 vs 代码实现） | Agent_Side §7.1（draft，Phase 2 实现） |
-| §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5（沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5） |
+| §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5（沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5） |
 | §7.6 `.claude/` 边界 | TODO Phase 1 细化 | Meta（本文）§7.6 |
 
 ### 7.6 `.claude/` 边界（待细化）
 
 > **TODO Phase 1**：区分两类 `.claude/` 用法：
-> 1. **marketplace 配置 / 用户私有**（如 `~/.claude/settings.json`、`.claude/*.local.json`）：保持出 governance（沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6）
+> 1. **marketplace 配置 / 用户私有**（如 `~/.claude/settings.json`、`.claude/*.local.json`）：保持出 governance（沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6）
 > 2. **项目级 `.claude/settings.json`**（团队共享、提交到 git）：纳入 §6.4 sync allowlist
 
-当前阶段沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6 整体排除作为过渡。
+当前阶段沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.6 整体排除作为过渡。
 
 ---
 
@@ -303,7 +305,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 9. Domain 枚举
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §9 全部 15 项。**新增 track 倾向**列：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §9 全部 15 项。**新增 track 倾向**列：
 
 | 编号 | Domain | 默认 track | 说明 |
 |---|---|---|---|
@@ -329,7 +331,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 10. 快速操作清单
 
-> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §10。**新增 §10.6**：
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §10。**新增 §10.6**：
 
 ### 10.6 选择 track（v2.0 新增）
 
@@ -346,7 +348,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 参考
 
-- 派生自：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
+- 派生自：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 - 决策记录：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
 - 子框架：
   - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]

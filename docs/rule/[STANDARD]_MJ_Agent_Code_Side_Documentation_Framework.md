@@ -8,9 +8,9 @@ updated: 2026-05-09
 state: active
 version: v1.1
 track: code
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0
 supersedes:
-  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0"
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0"
 tags:
   - standard
   - documentation
@@ -26,7 +26,7 @@ aliases:
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
 > **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]；**不**治理 engineering-workflow 资产（`.claude/**` / HITL_Prompt）—— 见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 / §7.7。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0（archive）]]
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0（archive）]]
 > **首要变更**：仅 minor bump —— §0 / §3.9（新增）/ §7.3 加注 Track C engineering-workflow 共享 A1-A6 hygiene 门禁。
 
 ---
