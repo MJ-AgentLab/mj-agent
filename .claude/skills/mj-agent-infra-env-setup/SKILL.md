@@ -75,25 +75,43 @@ $PSVersionTable
 
 ### Step 3 — `.env` 完整性核对
 
+> **LLM provider 分支**（PR-2 / ADR-025）：mj-agent 现支持两个 LLM provider，secret/config 必填字段不同：
+> - `LLM_PROVIDER=ark`（默认）→ 必须 `ARK_API_KEY` 非空（或新通用 `LLM_API_KEY`）
+> - `LLM_PROVIDER=local-openai-compat`（DGX-Spark 本地 vLLM/SGLang/Ollama）→ 必须 `LLM_BASE_URL` 非空；`LLM_API_KEY` 可填 `EMPTY`
+> - 切换到 local-openai-compat 后，**必须**跑 `/mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康
+
 ```powershell
-# 检查 .env 4 secret 字段非空
-@("POSTGRES_ANALYST_USER","POSTGRES_ANALYST_PASSWORD","ARK_API_KEY") | ForEach-Object {
+# Determine LLM provider
+$provider = (Get-Content .env | Select-String "^LLM_PROVIDER=").Line -replace "^LLM_PROVIDER=",""
+if (-not $provider) { $provider = "ark" }   # default per .env.example
+
+# Provider-aware required secret list
+$requiredSecrets = @("POSTGRES_ANALYST_USER","POSTGRES_ANALYST_PASSWORD")
+if ($provider -eq "ark") {
+    $requiredSecrets += "ARK_API_KEY"
+} elseif ($provider -eq "local-openai-compat") {
+    $requiredSecrets += "LLM_BASE_URL"   # not technically a secret，但 required
+}
+
+$requiredSecrets | ForEach-Object {
     if ((Get-Content .env | Select-String "^$_=" | Select-Object -First 1) -match '=$|=\s*$|=""$') {
-        Write-Warning "$_ is empty in .env"
+        Write-Warning "$_ is empty in .env (required for LLM_PROVIDER=$provider)"
     } else {
         Write-Host "✅ $_ present"
     }
 }
 
 # 必填非 secret 字段（参 .env.example）
-@("MJ_CONFIG_PROFILE","POSTGRES_DEV_HOST","POSTGRES_DEV_PORT","LLM_MODEL_ID") | ForEach-Object {
+@("MJ_CONFIG_PROFILE","POSTGRES_DEV_HOST","POSTGRES_DEV_PORT","LLM_MODEL_ID","LLM_PROVIDER") | ForEach-Object {
     if (-not (Get-Content .env | Select-String "^$_=")) {
         Write-Warning "$_ missing in .env (copy from .env.example)"
     }
 }
 ```
 
-如缺非 secret 字段（`MJ_CONFIG_PROFILE` / `POSTGRES_DEV_HOST` / `LLM_MODEL_ID` 等）→ user 手动从 `.env.example` 拷贝填写（**不**自动改 .env；secret 字段 + 配置字段拼装策略由 user 控制）。
+如缺非 secret 字段（`MJ_CONFIG_PROFILE` / `POSTGRES_DEV_HOST` / `LLM_MODEL_ID` / `LLM_PROVIDER` 等）→ user 手动从 `.env.example` 拷贝填写（**不**自动改 .env；secret 字段 + 配置字段拼装策略由 user 控制）。
+
+如 `LLM_PROVIDER=local-openai-compat` → 跑 `/mj-agent-infra-llm-endpoint-probe` 验证 DGX vLLM endpoint 可达 + model 加载 + chat smoke。
 
 > **重要**：`.env.example` 是 ASCII-only（python-dotenv 在中文 Windows 上对 UTF-8 非 ASCII 内容会失败；详见 CLAUDE.md "Environment variables" 段）。
 
