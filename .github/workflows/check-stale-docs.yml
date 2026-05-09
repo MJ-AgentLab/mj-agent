@@ -1,0 +1,50 @@
+name: check-stale-docs (warning mode)
+
+# Phase D-2 (ADR-023): warning-mode stale doc reference detection.
+# 4-week observation window planned before upgrading to blocking.
+#
+# Runs `scripts/find_stale_docs.py` against the PR diff. Detects
+# backtick-quoted refs to renamed / deleted files in:
+#   - docs/**/*.md
+#   - plans/**/*.md
+#   - CLAUDE.md / CHANGELOG.md / README.md
+#
+# Output goes to GitHub Actions step summary as `::warning::` annotations.
+# Always exits 0 (does not block PR merge during observation period).
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - 'docs/**'
+      - 'plans/**'
+      - 'src/**'
+      - '.claude/**'
+      - 'CLAUDE.md'
+      - 'CHANGELOG.md'
+      - 'README.md'
+
+permissions:
+  contents: read
+
+jobs:
+  check-stale-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history for git diff)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run find_stale_docs.py (warning mode)
+        run: |
+          python scripts/find_stale_docs.py "origin/${{ github.base_ref }}" HEAD | tee stale-docs.log
+          echo "::notice::find_stale_docs.py runs in warning mode (ADR-023 §Decision; 4-week observation period). Review output above; no merge block."
+        continue-on-error: true
