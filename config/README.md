@@ -64,3 +64,45 @@ mj-agent 的 `secrets.enc` 与 mj-system 的同名文件**故意采用不同口�
 `analyst` 凭据与 Ark API key 仍受保护。mj-agent 与 mj-system 同时部署
 在一台开发机时，分别在各自仓库运行 `setup-env.ps1` 即可——两个
 解密管道**完全独立**，这是刻意设计而非缺陷。
+
+## §6 Multi-environment + multi-LLM-provider（ADR-025）
+
+ADR-025 (PR-1/2/3/4 multi-env+DGX+MCP bundle) 引入 4-file docker-compose
+分层 + LLM provider 抽象 + .mcp.json 13 servers，对 secret 管理影响：
+
+### 6.1 LLM provider 分支
+
+`LLM_PROVIDER` 决定 secret 必填项：
+
+| Provider | 必填 secret | 备注 |
+|---|---|---|
+| `ark`（默认） | `ARK_API_KEY` | 现有 Ark + DeepSeek V3；既有流程不变 |
+| `local-openai-compat` | `LLM_BASE_URL`（必）+ `LLM_API_KEY`（可选；vLLM 启用 `--api-key` 时填） | DGX-Spark 192.168.0.189 vLLM/SGLang/Ollama 消费侧；LLM serving 部署责任另议 |
+
+`secrets.example` §2b 已加 `LLM_API_KEY` 占位（可选，vLLM 启用 auth 时启用）。
+
+### 6.2 SSH passwords for ssh-manager MCP（独立命名空间）
+
+`.mcp.json` 中的 `ssh-manager` 9 SSH targets 用 5 个独立 password env vars
+驱动（cloud + 4 hosts × 2 lan/wan；同一 host 的 lan/wan 共享 password）：
+
+```
+MJ_AGENT_SSH_SERVER_CLOUD_PASSWORD
+MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD
+MJ_AGENT_SSH_SERVER_TEST_PASSWORD
+MJ_AGENT_SSH_SERVER_PROD_PASSWORD
+MJ_AGENT_SSH_SERVER_DGX_PASSWORD
+```
+
+**`MJ_AGENT_*` 命名空间独立 from mj-system 的 `MJ_SYS_*`** per ADR-008
+secrets pipeline isolation。即使两 .env 共存于一台开发机，secret 不互相
+污染；mj-system SSH 凭据更换不影响 mj-agent，反之亦然。
+
+### 6.3 .mcp.json postgres URL overrides（可选）
+
+`.mcp.json` 中的 10 个 `pg-mj-{agent-memory,system-biz}-{dev,test-lan,test-wan,
+prod-lan,prod-wan}` 默认值带 `REPLACE_WITH_TEAM_*_PASSWORD` 占位字面量；
+LAN URLs 由 `MJ_AGENT_PG_*_URL` env vars override，WAN URLs（FRP-tunneled
+remote pg）必填 `MJ_AGENT_PG_*_WAN_URL` 否则 MCP server 启动失败。
+
+详见 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` §5。
