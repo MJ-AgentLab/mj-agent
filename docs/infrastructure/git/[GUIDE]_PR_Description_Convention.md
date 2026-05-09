@@ -26,7 +26,7 @@ owner: 项目负责人
 > **版本**：v1.0
 > **最后更新**：2026-04-30
 > **派生自**：mj-system v5.0 同名 GUIDE（6 模板分类 + gh CLI 用法逐字保留；§3 案例与 §4.3 自检对齐表换成 mj-agent 工具链 ruff/mypy/pytest）
-> **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+> **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 
 ---
 
@@ -42,7 +42,7 @@ owner: 项目负责人
 - **必备知识**：
   - Git 分支模型（[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]）
   - `gh` CLI 基础
-- **建议了解**：[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+- **建议了解**：[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 
 ---
 
@@ -377,7 +377,7 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 - [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]] — 分支模型、命名规范、操作流程
 - [[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — 推送前检查 + 推送流程
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 

@@ -4,7 +4,7 @@ domain: SYS
 summary: Track A 代码侧文档治理（v1.0 → v1.1 minor bump）— 加注 Track C engineering-workflow 共享 A1-A6 + §3.9 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同 PR 落地
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-09
 state: active
 version: v1.1
 track: code
@@ -23,9 +23,9 @@ aliases:
 
 # MJ-Agent 代码侧文档治理框架 v1.1（Track A）
 
-> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
-> **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]；**不**治理 engineering-workflow 资产（`.claude/**` / HITL_Prompt）—— 见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 / §7.7。
+> **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]；**不**治理 engineering-workflow 资产（`.claude/**` / HITL_Prompt）—— 见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 / §7.7。
 > **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0（archive）]]
 > **首要变更**：仅 minor bump —— §0 / §3.9（新增）/ §7.3 加注 Track C engineering-workflow 共享 A1-A6 hygiene 门禁。
 
@@ -44,7 +44,7 @@ aliases:
 | ISSUE-code | code | §3.7 |
 | ASSESSMENT-code | code | §3.8 |
 
-跨轨（`track: shared`）文档：本框架 §7.1 校验仍执行；§3 章节按对应类型走；额外审阅角色见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §跨轨治理协议。
+跨轨（`track: shared`）文档：本框架 §7.1 校验仍执行；§3 章节按对应类型走；额外审阅角色见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §跨轨治理协议。
 
 > **v1.1 加注**：第三轨（`track: engineering-workflow`，Meta v2.1 引入）的 canonical 资产**也共享本框架 §7.1 A1-A6 hygiene 门禁**（路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync）—— 这些是通用 hygiene 检查，与 track 失败模式无关。但 engineering-workflow 资产的**专属阻塞门禁**（A12-A14）由 Meta v2.1 §7.7 治理，不属本框架。
 >
@@ -54,7 +54,7 @@ aliases:
 
 ## 1. 设计目标
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]] §1，针对代码侧补充：
+承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] §1，针对代码侧补充：
 
 | 原则 | 说明 |
 |---|---|
@@ -68,7 +68,7 @@ aliases:
 
 ## 2. 派生关系
 
-- 大部分规则继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]] §3-§6（命名 / Frontmatter / 状态生命周期 / 索引）
+- 大部分规则继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] §3-§6（命名 / Frontmatter / 状态生命周期 / 索引）
 - 部分规则间接继承自 mj-system v5.0；本框架自包含使用，不强求读 v5.0
 - 8 类继承类的 frontmatter / body 模板沿用 [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] 等（Phase A PR-A3 补 RUNBOOK / SPEC / HITL_STAGE 模板）
 
@@ -80,7 +80,7 @@ aliases:
 
 ### 3.1 GUIDE Authoring
 
-沿用 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0]] §3.1（含 §3.1.1 frontmatter / §3.1.2 body 骨架 / §3.1.3 复用原则 / §3.1.4 实例参考）。
+沿用 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|v1.0]] §3.1（含 §3.1.1 frontmatter / §3.1.2 body 骨架 / §3.1.3 复用原则 / §3.1.4 实例参考）。
 
 ### 3.2 ADR-code Authoring
 
@@ -104,8 +104,8 @@ aliases:
 ### 3.6 STANDARD-code Authoring
 
 > **TODO Phase 1**（沿用 v1.0 §3.6）。现有范例：
-> - [[STANDARD]_GitHub_Markdown_v1.0|GitHub_Markdown_v1.0]]
-> - [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit_Message_Convention_v1.0]]
+> - [[STANDARD]_GitHub_Markdown|GitHub_Markdown_v1.0]]
+> - [[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit_Message_Convention_v1.0]]
 
 ### 3.7 ISSUE-code Authoring
 
@@ -121,7 +121,7 @@ aliases:
 
 | 代码侧场景 | 引用 engineering-workflow STANDARD |
 |---|---|
-| 新增 CI hook（pre-commit / `.github/workflows/*.yml` 修改） | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] §4.10 Stage 10 Local Verification（PR-A2 落地后激活） |
+| 新增 CI hook（pre-commit / `.github/workflows/*.yml` 修改） | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] §4.10 Stage 10 Local Verification（PR-A2 落地后激活） |
 | 引入 / 删除 MCP server | [[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0\|MCP_Server_Governance v1.0]]（Phase C+ 落地后激活） |
 | 改动 `.claude/settings.json` 共享配置 | [[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0\|Claude_Code_Settings v1.0]]（Phase C+ 落地后激活） |
 | 引入 / 修改 `.claude/hooks/**`（Phase C+ 启用后） | 待定 hooks 子规范（Phase C+） |
@@ -135,7 +135,7 @@ aliases:
 
 ### 7.1 阻塞式检查（A1-A6，全部 track 共享）
 
-沿用 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0]] §7.1 全部 A1-A6 定义。**适用范围扩到全部 track**（v1.1 加注，与 Meta v2.1 §7.1 一致）：
+沿用 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|v1.0]] §7.1 全部 A1-A6 定义。**适用范围扩到全部 track**（v1.1 加注，与 Meta v2.1 §7.1 一致）：
 
 | 编号 | 检查项 | 适用 track | 自动化阶段 |
 |---|---|---|---|
@@ -146,7 +146,7 @@ aliases:
 | A5 | INDEX.md 已同步或可重建 | code / agent / engineering-workflow / shared | Phase 2 CI |
 | A6 | allowlist 文档变更同步检查 CLAUDE.md | code / agent / engineering-workflow / shared | Phase 0 PR review（沿用） |
 
-> **engineering-workflow 专属补丁**：A2 schema 完整在 `track: engineering-workflow` + 路径 `.claude/skills/**` 时，schema 是 ADR-013 native 2 字段（`name` + `description`），不是 13 字段。详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10.1 + §7.7 A12。
+> **engineering-workflow 专属补丁**：A2 schema 完整在 `track: engineering-workflow` + 路径 `.claude/skills/**` 时，schema 是 ADR-013 native 2 字段（`name` + `description`），不是 13 字段。详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10.1 + §7.7 A12。
 
 ### 7.2 非阻塞式观察 OB1-OB5
 
@@ -154,7 +154,7 @@ aliases:
 
 ### 7.3 跨轨文档（`track: shared`）的处理（v1.1 加注三轨）
 
-`track: shared` 文档由 Meta v2.1 + 本框架 §7.1 + [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §7.1 + Meta v2.1 §7.7（engineering-workflow A12-A14）共同执行：
+`track: shared` 文档由 Meta v2.1 + 本框架 §7.1 + [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1 + Meta v2.1 §7.7（engineering-workflow A12-A14）共同执行：
 
 - A1-A6（hygiene）由本框架，对全部 track 生效
 - A7-A11（agent-side 专属）由 Agent_Side，仅对 `track: agent` 或 `track: shared` 触及 SKILL/PROMPT/EVAL/CONTRACT 时生效
@@ -192,16 +192,16 @@ aliases:
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|v1.0]]
-- 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]]
+- 派生自：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|v1.0]]
+- 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]
 - 决策记录：
   - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
-- 同期子框架：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]
+- 同期子框架：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - Track C 引用（cross-ref 用）：
-  - `[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0]]`（PR-A2）
+  - `[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt]]`（PR-A2）
   - `[[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0]]`（Phase C+）
   - `[[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0]]`（Phase C+）
 - 现有 Code_Side STANDARDs（沿用）：
-  - [[STANDARD]_GitHub_Markdown_v1.0]]
-  - [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0]]
+  - [[STANDARD]_GitHub_Markdown]]
+  - [[STANDARD]_MJ_Agent_Commit_Message_Convention]]

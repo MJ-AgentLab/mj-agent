@@ -198,10 +198,10 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §4.7（双段约束）+ §6.4.1（tri-track CLAUDE sync）+ §7.7（A12-A14）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] §7.1（A1-A6 全 track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §7.1（A7-A11 agent track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.6（§12 前置检查）+ §4.9 Rule 5a-5d
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4.7（双段约束）+ §6.4.1（tri-track CLAUDE sync）+ §7.7（A12-A14）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 全 track）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 agent track）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.6（§12 前置检查）+ §4.9 Rule 5a-5d
 - `.github/PULL_REQUEST_TEMPLATE/`（5 PR templates）
 - mj-system `.claude/skills/mj-sys-doc-review/SKILL.md`（直接派生源；mj-agent 加 tri-track A12-A14 + mj-agent 扩展 §7.2.1 反扫）
 

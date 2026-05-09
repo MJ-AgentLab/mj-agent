@@ -25,7 +25,7 @@ aliases:
 
 # MJ-Agent 文档治理元框架 v2.0（archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]] 取代。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] 取代。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
 >
 > **历史骨架状态（Phase 0.5）**：本文档曾以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
 > **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
@@ -124,7 +124,7 @@ mj-agent/
 
 Agent runtime 从 `src/mj_agent/skills/` 和 `src/mj_agent/prompts/` 加载 SKILL.md 与 prompt 文件作为 system prompt 的组成部分。把它们"复制"到 `docs/` 会产生**双份真相源**，带来同步漂移风险。
 
-本元框架的选择是把治理范围**扩展到 `src/`**：这两类文件留在 `src/`，但同样要求符合 canonical frontmatter 和合并门禁（见 §4.6 / §7.5；具体由 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]] §3 / §7.5 治理）。这与 Anthropic 官方 skills 仓库（在 SKILL.md 内使用 YAML frontmatter）的做法一致。
+本元框架的选择是把治理范围**扩展到 `src/`**：这两类文件留在 `src/`，但同样要求符合 canonical frontmatter 和合并门禁（见 §4.6 / §7.5；具体由 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]] §3 / §7.5 治理）。这与 Anthropic 官方 skills 仓库（在 SKILL.md 内使用 YAML frontmatter）的做法一致。
 
 ### 2.4 分层规则
 
@@ -143,7 +143,7 @@ docs/rule/
 ├── [STANDARD]_..._Meta_Framework_v2.0.md            ← 元层（本文）
 ├── [STANDARD]_..._Code_Side_Framework_v1.0.md       ← Track A
 ├── [STANDARD]_..._Agent_Side_Framework_v1.0.md      ← Track B
-├── [STANDARD]_GitHub_Markdown_v1.0.md               ← 归 Code_Side（治渲染语法）
+├── [STANDARD]_GitHub_Markdown.md               ← 归 Code_Side（治渲染语法）
 └── [STANDARD]_..._Commit_Message_Convention_v1.0.md ← 归 Code_Side（治代码规约）
 ```
 
@@ -157,7 +157,7 @@ docs/rule/
 
 | 类型 | 默认 track | 由哪个子框架治理深度规则 |
 |---|---|---|
-| GUIDE | code | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §3.1 |
+| GUIDE | code | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side]] §3.1 |
 | ADR | shared（按主题决定） | Code_Side（code-ADR）/ Agent_Side（agent-ADR） |
 | SPEC | shared | 同 ADR |
 | RUNBOOK | code | Code_Side §3.4 |
@@ -165,7 +165,7 @@ docs/rule/
 | STANDARD | shared | Meta（治跨轨）/ Code_Side（治代码规约） |
 | ISSUE | shared | 按主题 |
 | ASSESSMENT | shared | 按评估对象 |
-| **SKILL** | **agent** | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side]] §3.1 |
+| **SKILL** | **agent** | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side]] §3.1 |
 | **PROMPT** | **agent** | Agent_Side §3.2 |
 | **EVAL** | **agent** | Agent_Side §3.3 |
 | **CONTRACT** | shared | Agent_Side（agent-facing tool）/ Code_Side（cross-service） |
@@ -264,9 +264,9 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 | 编号 | 检查项 | 由哪个子框架治理 |
 |---|---|---|
-| A1-A6 | 路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side]] §7.1（同时被 shared 文档继承） |
+| A1-A6 | 路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side]] §7.1（同时被 shared 文档继承） |
 | **OB1-OB5** | 非阻塞观察项（v2.0 引入，解 v1.1 Gap A9） | Code_Side §7.2 |
-| A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side]] §7.1 |
+| A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side]] §7.1 |
 | **A11**（v2.0 新增） | SKILL `state: active` 时 `eval_references` 非空（解 v1.1 Gap A4，与 A8 对称） | Agent_Side §7.1 |
 | A7.x（语义校验） | 行为对齐（doc 描述 vs 代码实现） | Agent_Side §7.1（draft，Phase 2 实现） |
 | §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5（沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|v1.1（archive）]] §7.5） |
@@ -349,8 +349,8 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 - 派生自：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 - 决策记录：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
 - 子框架：
-  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]
-  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]
+  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
+  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
 - 实施计划：[[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]]
 - 关联现有：[[../../plans/[PLAN]_E_Phase0_Docs_Governance_Verification|PLAN E]]（v1.1 验证；v2.0 promote 必须在 PLAN E 全绿后）
 - 行业精度：Hugging Face Hub / MLflow Model Registry / LangChain Hub / Anthropic Skills 仓 / DSPy / Semantic Kernel / Twelve-Factor App / Google Model Cards (Mitchell 2019) / NIST AI BoM

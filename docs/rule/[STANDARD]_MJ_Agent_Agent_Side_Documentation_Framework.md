@@ -4,7 +4,7 @@ domain: SYS
 summary: Track B 智能体侧文档治理（v1.0 → v1.1 minor bump）— §2 scope 加注 engineering-workflow `.claude/skills/SKILL.md` 不归本节治理；§7.5 frontmatter strip 契约 scope 明确为 in-source only；与 Meta v2.1 同 PR 落地
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-09
 state: active
 version: v1.1
 track: agent
@@ -23,11 +23,11 @@ aliases:
 
 # MJ-Agent 智能体侧文档治理框架 v1.1（Track B）
 
-> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 同期 promote。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
 > **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0（archive）]]
-> **首要变更**：仅 minor bump —— §0 / §2 / §7.5 加 scope 明确条款，把 engineering-workflow `.claude/skills/SKILL.md` 排除出本框架治理（划归 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 / §7.7）。
+> **首要变更**：仅 minor bump —— §0 / §2 / §7.5 加 scope 明确条款，把 engineering-workflow `.claude/skills/SKILL.md` 排除出本框架治理（划归 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 / §7.7）。
 
 ---
 
@@ -55,7 +55,7 @@ aliases:
 
 ## 1. 设计目标
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]] §1，针对智能体侧补充五条独有原则（沿用 v1.0 §1）：
+承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] §1，针对智能体侧补充五条独有原则（沿用 v1.0 §1）：
 
 | 原则 | 说明 |
 |---|---|
@@ -219,7 +219,7 @@ aliases:
 
 沿用 v1.0 §9 与 §9.1（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] 锁定的 dual schema）+ §9.2 plugin skill 章节对应表。
 
-> **v1.1 加注**：随 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] 引入 in-tree `.claude/skills/`（engineering-workflow track；命名空间 `mj-agent-*`），mj-agent 仓内同时存在三种 SKILL 实体：
+> **v1.1 加注**：随 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 引入 in-tree `.claude/skills/`（engineering-workflow track；命名空间 `mj-agent-*`），mj-agent 仓内同时存在三种 SKILL 实体：
 >
 > | 实体 | 路径 | Schema | Loader | 治理章节 |
 > |---|---|---|---|---|
@@ -233,13 +233,13 @@ aliases:
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0]]
-- 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]]
+- 派生自：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|v1.0]]
+- 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]
 - 决策记录：
   - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
   - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 锁定）
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
-- 同期子框架：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]]
+- 同期子框架：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
 - 行业精度：沿用 v1.0（Anthropic Skills 仓 / skill-creator / DSPy / LangChain Hub / Semantic Kernel / Mitchell 2019 / Gebru 2018）
 - 现有 in-source canonical（沿用）：
   - `src/mj_agent/skills/{biz-domain-context, biz-schema-exploration, mj-ddd-semantics, monthly-report, probe-fixture, qcm-analysis, query-optimization, query-writing, safe-sql-analysis}/SKILL.md`

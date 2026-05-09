@@ -136,7 +136,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 
 ## §7 验证计划
 
-> 按 [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §4.7 拆「本地验证」与「AI 自检」双段。
+> 按 [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4.7 拆「本地验证」与「AI 自检」双段。
 
 ### §7.1 本地验证（人类客观可重复检查）
 

@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to stage files, create
 
 ## Overview
 
-暂存文件并创建符合 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention v1.0]] 规范的 Git 提交。6 步 Pre-Commit 工作流覆盖文件筛选、暂存策略、commit message 格式校验、type/branch 纪律（5 branch × 7 type 矩阵）、12 scope 闭合 allowlist 推导、拆分指导。衔接 `/mj-agent-git-branch`（创建分支）与 `/mj-agent-git-push`（推送）之间的缺口。
+暂存文件并创建符合 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]] 规范的 Git 提交。6 步 Pre-Commit 工作流覆盖文件筛选、暂存策略、commit message 格式校验、type/branch 纪律（5 branch × 7 type 矩阵）、12 scope 闭合 allowlist 推导、拆分指导。衔接 `/mj-agent-git-branch`（创建分支）与 `/mj-agent-git-push`（推送）之间的缺口。
 
 **Workflow position**: Stage 12 of HITL_Prompt 17-stage flow.
 
@@ -106,7 +106,7 @@ git add -u
 | `docs/` | 按主题选（`docs(skill)` / `docs(db)`），跨子系统则省略 scope |
 | **`.claude/skills/`**（本类 PR-B1 起首落地） | `docs`（type）+ 省略 scope（跨子系统）；详见 §Multi-scope rules |
 
-> **重要**：scope 是闭合 allowlist；引入新 scope 必须修订 `[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0`（minor 版本号 bump）。
+> **重要**：scope 是闭合 allowlist；引入新 scope 必须修订 `[STANDARD]_MJ_Agent_Commit_Message_Convention`（minor 版本号 bump）。
 
 ### Step 4 — Enforce Type/Branch Discipline
 

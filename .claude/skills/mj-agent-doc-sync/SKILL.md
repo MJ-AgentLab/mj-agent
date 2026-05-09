@@ -169,8 +169,8 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.9 Rule 5a（反向扫描含 in-source canonical）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §6.4.1（CLAUDE.md tri-track sync）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.9 Rule 5a（反向扫描含 in-source canonical）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §6.4.1（CLAUDE.md tri-track sync）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 硬约束）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Architecture" / "Data boundary" / "Commands" 段（high-frequency sync 目标）
 - mj-system `.claude/skills/mj-sys-doc-sync/SKILL.md`（直接派生源；mj-agent 加 mapping 表 + Q-B1 + tri-track CLAUDE.md sync）

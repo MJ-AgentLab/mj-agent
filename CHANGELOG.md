@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Phase C-1a (ADR-018 + Active Path Stability + 6 STANDARDs rename + PR_TEMPLATE drift fix)
+
+- **PR Phase-C-1a — active 路径稳定化（`docs(rule)`，issue [#78](https://github.com/MJ-AgentLab/mj-agent/issues/78)）**：按 mj-system v5.2 §4.1 + changelog 2026-05-05 派生，引入 active canonical 路径稳定原则（active 文件名默认无 `_vX.Y` 后缀；版本仅在 frontmatter）。落地：(1) 新建 ADR-018（partial supersede ADR-011 §4.2 + §5.6.2）；(2) Meta v2.1 → v2.2 archive ceremony（双重触发：rule introduction + filename rename；§5.9 trigger #4 + substantive 演进）；(3) 5 其他 STANDARDs in-place rename（rule application 解读，非 §5.9 #4 改名；ADR-018 §Decision 子条款）— Code_Side / Agent_Side / HITL_Prompt / Commit_Message / GitHub_Markdown；(4) 7 PR_TEMPLATE drift fix（Phase B 漏改）；(5) scripts/check_wikilinks.py NEEDLE → NEEDLES list（6 模式；C-3 通用化推迟）；(6) ~500 ref audit（CLAUDE.md / docs/** / .claude/skills/** / src/mj_agent/{skills,prompts}/__init__.py / 7 PR_TEMPLATEs / etc.）。3-PR 序列第 2 步（C → A → B）；out-of-scope：Phase C-1b（archive `[DEPRECATED]_` 前缀 + frontmatter；ADR-019）。
+
 ### Added — Phase C-2 (ADR-017 + Meta v2.1 §5.9 archive trigger quantification)
 
 - **PR Phase-C-2 — 引入 4 类必触发 + 1 类反例归档量化判定（`docs(rule)`，issue [#76](https://github.com/MJ-AgentLab/mj-agent/issues/76)）**：新建 `docs/adr/[ADR]_017_Archive_Trigger_Quantification.md`（state: active；decision: accepted；track: shared）记录决策与 mj-system v5.2 §10.1 派生论证；Meta v2.1 §5 加 §5.9（in-place edit，无 version bump）落 4+1 触发表 + cross-ref ADR-017；docs/INDEX.md ADR 表收录 ADR-017；CLAUDE.md "## Documentation" 元规则段加 ADR-017 mention。本 PR 自洽 dogfood：所做改动（in-place 加新段）属 §5.9 反例 ❌（字段补充），不触发 archive ceremony。3-PR 序列第 1 步（C → A → B）；不 supersede ADR-011 §5.6.1（仅细化）；out-of-scope：active 路径稳定化（PR-2 Phase C-1a，ADR-018）+ archive 命名（PR-3 Phase C-1b，ADR-019）。

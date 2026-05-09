@@ -82,7 +82,7 @@ gh pr create \
 
 ## PR Title Format
 
-`<type>(<scope>): <summary>` 与 commit message 一致格式（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]]）
+`<type>(<scope>): <summary>` 与 commit message 一致格式（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]）
 
 例：
 
@@ -119,7 +119,7 @@ gh pr create \
 
 ## Self-Check Checklist（按 track 选填）
 
-mj-agent v2.0 trio active + v2.1 trio draft 共存阶段，自检 checklist 按 track 选填（详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §7.1）：
+mj-agent v2.0 trio active + v2.1 trio draft 共存阶段，自检 checklist 按 track 选填（详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）：
 
 ### Code-Side（A1-A6 + OB1-OB5）
 

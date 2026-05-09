@@ -9,7 +9,7 @@ description: This skill performs mj-agent AI self-review (HITL Stage 11) before 
 
 Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `/mj-agent-flow-scope-drift` (Stage 9) with Meta v2.0 §4.7 dual-section discipline（本地验证 / AI 自检 严格不混用）+ mj-agent 12-item checklist + commit message draft via `/mj-agent-git-commit`。
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §4.7（双段约束）.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）.
 
 ## Workflow
 
@@ -126,7 +126,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 
 ## Step 5: 5a/5b/5c/5d 反向扫描（mj-agent 扩展）
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §4.9 Rule 5（拆 5a/5b/5c/5d）+ mj-agent 扩展（5a 反扫目标含 in-source canonical）：
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.9 Rule 5（拆 5a/5b/5c/5d）+ mj-agent 扩展（5a 反扫目标含 in-source canonical）：
 
 ### 5a: 既有文档失真扫描
 
@@ -188,7 +188,7 @@ python scripts/diff_biz_schema.py
 | **Medium** | 1-2 项 checklist ⚠️；或 scope-drift = Low/Medium；或多模块影响 | GO + 提示重点核对 ⚠️ 项 |
 | **High** | 任一 checklist ❌；或 scope-drift = High；或 §3.1 必停 4 项触发；或 in-source canonical 改动未走 §3.1 HITL | **HITL pause** + 3-5 questions |
 
-**HITL questions 格式**：参 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §3.3 7-段格式。
+**HITL questions 格式**：参 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.3 7-段格式。
 
 ## Output Format Example
 
@@ -274,9 +274,9 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.9（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §4.7（双段约束）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention v1.0]]（type/scope 矩阵）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.9（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]]（type/scope 矩阵）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）
 - `.claude/skills/mj-agent-git-commit/SKILL.md`（Stage 12 子例程）

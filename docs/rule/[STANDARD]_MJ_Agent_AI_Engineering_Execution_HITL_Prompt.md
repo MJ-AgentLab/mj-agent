@@ -4,7 +4,7 @@ domain: WORKFLOW
 summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件，是 Track C engineering-workflow 主 STANDARD；派生自 mj-system v1.0
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-05-09
 state: active
 version: v1.0
 track: engineering-workflow
@@ -40,7 +40,7 @@ aliases:
 > - mj-agent **运行时 SKILL.md / system.md body 直接进 LLM 上下文**（in-source canonical；ADR-013 + Agent_Side §2 / §7.5 frontmatter strip 契约）—— 任何 in-source SKILL/PROMPT body 修改是 §3.1 必停 HITL 项
 > - mj-agent **biz catalog**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）镜像 mj-system 上游 STANDARD §2-§4 ——任何镜像漂移检测见 §4.4
 > - mj-agent **数据边界严格只读**（ADR-006 + ADR-009 + analyst-RO PostgreSQL role）—— DB schema 修改无 mj-agent 侧动作；`statement_timeout` 60s 由 mj-system 侧 GRANT
-> - mj-agent **3 种 SKILL 实体共存**（in-source v.s. in-tree workflow v.s. marketplace plugin；详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 的边界表）
+> - mj-agent **3 种 SKILL 实体共存**（in-source v.s. in-tree workflow v.s. marketplace plugin；详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 的边界表）
 
 ---
 
@@ -227,7 +227,7 @@ mj-agent 专属新增：
 
 ### Must Follow
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md`（Lite Phase A 占位，Phase B+ 派生为 mj-agent 版）
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`（v2.0 active；v2.1 promote 后切到 v2.1）
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.0 active；v2.1 promote 后切到 v2.1）
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
@@ -342,7 +342,7 @@ Issue body 必须包含：
 ### Must Follow
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 - `CLAUDE.md`（项目根 AI 高频上下文）
-- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md` §5（branch ↔ commit type 对齐矩阵）
+- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5（branch ↔ commit type 对齐矩阵）
 
 ## Skill Hint
 
@@ -400,9 +400,9 @@ Fallback:
 - `docs/_templates/TEMPLATE_REPO_SCAN_RESULT.md`（Phase B+ 落地；当前未存在，按 mj-system 上游模板执行）
 
 ### Consult If Affected
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`（v2.0 active）
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.0 active）
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`
 - `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`
 
@@ -467,7 +467,7 @@ Fallback:
 
 ### Must Follow
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md`（Lite Phase A 占位）
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`
 
 ### Use As Template
 - `docs/_templates/TEMPLATE_PLAN.md`（Phase B+ 落地；当前 plans/ 目录已有多份范例可参考）
@@ -529,9 +529,9 @@ Plan 不写：
 ## Reference Docs
 
 ### Must Follow
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md`
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`（code-track ADR/SPEC/RUNBOOK 时）
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md`（agent-track ADR/SPEC 时）
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`（code-track ADR/SPEC/RUNBOOK 时）
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`（agent-track ADR/SPEC 时）
 
 ### Use As Template
 - `docs/_templates/TEMPLATE_SPEC.md`（Phase A PR-A3 落地）
@@ -597,8 +597,8 @@ Fallback:
 ### Must Follow
 - 已确认的 Plan
 - 已确认的 SPEC / ADR / RUNBOOK
-- 风味 A 时：`docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md`
-- 风味 B 时：`docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md` §2 + §7.5（frontmatter strip 契约）
+- 风味 A 时：`docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
+- 风味 B 时：`docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md` §2 + §7.5（frontmatter strip 契约）
 - 风味 C 时：相关 RUNBOOK + `docs/runbook/dev_studio_walkthrough.md`
 
 ### Consult If Affected
@@ -761,7 +761,7 @@ Fallback:
 - 已确认的 Plan / SPEC
 - `.github/PULL_REQUEST_TEMPLATE/`
 - `docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`
-- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`
 
 ## Skill Hint
 
@@ -785,8 +785,8 @@ Fallback:
 4. 是否有 hardcode、secret、绝对路径、调试代码（特别检查 `.env` / `secrets.enc` / Ark API key）
 5. 文档同步检查（拆为四段；沿用 mj-system §4.9 Rule 5 拆 5a/5b/5c/5d）：
    - **5a. 既有文档失真扫描**：基于本次 git diff 中 rename / move / delete 的函数 / 类 / 文件 / SQL 对象 / 列 列表，按 mj-system 上游 Repo_Scan §7.2.1 反向扫描动作（Lite Phase A 占位）grep `docs/**/*.md` + `CLAUDE.md` + **`src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md`**（mj-agent 扩展：runtime canonical 是反向扫描目标）中 backtick 包裹的引用，列出所有命中文档；命中后须在 PR description 说明已更新或决定不更新（含理由）。本次任务不涉及上述 5 类改动时，须显式记录"不涉及反向扫描"
-   - **5b. 新文档创建确认**：比对 Repo Scan §7.1 Documentation Decision 表中 Action=Create 的所有行，确认对应 Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / 本地 ISSUE / ASSESSMENT 已创建并填入 frontmatter（schema 按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|文档管理框架]] §4.3 / §4.4）
-   - **5c. INDEX / CLAUDE.md / CHANGELOG.md 同步**：按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|框架]] §6.4 的 allowlist 检查 `CLAUDE.md`；按 §7.1 A5 检查 `INDEX.md`；按 PR template `.github/PULL_REQUEST_TEMPLATE/<type>.md` 的 CHANGELOG 字段判断
+   - **5b. 新文档创建确认**：比对 Repo Scan §7.1 Documentation Decision 表中 Action=Create 的所有行，确认对应 Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / 本地 ISSUE / ASSESSMENT 已创建并填入 frontmatter（schema 按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|文档管理框架]] §4.3 / §4.4）
+   - **5c. INDEX / CLAUDE.md / CHANGELOG.md 同步**：按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|框架]] §6.4 的 allowlist 检查 `CLAUDE.md`；按 §7.1 A5 检查 `INDEX.md`；按 PR template `.github/PULL_REQUEST_TEMPLATE/<type>.md` 的 CHANGELOG 字段判断
    - **5d. SPEC Delta Check**：若本任务创建或更新了 SPEC，对比最终 diff、验证结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约、配置、错误处理、幂等、回滚、验证或可观测性。无漏项时输出 `SPEC Delta: None`；有漏项时使用 SPEC 编写指南（mj-system 上游）§6 的 `SPEC-*` 短码记录。若本任务不涉及 SPEC，显式输出"不涉及 SPEC Delta"
 6. acceptance criteria 是否都有验证证据
 7. 是否有不应提交的文件（`.env` / `*.pyc` / `.venv/` / log files）
@@ -824,7 +824,7 @@ Fallback:
 ## Reference Docs
 
 ### Must Follow
-- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 
 ## Skill Hint
@@ -1256,10 +1256,10 @@ HITL 是风险与决策边界。
 - 派生自：mj-system [[STANDARD]_AI_Engineering_Execution_HITL_Prompt v1.0](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md)
 - 决策记录：[[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
 - 上层框架：
-  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]（active）
-  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]]（draft skeleton）
-  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]（active）
-  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]（active）
+  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（active）
+  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]（draft skeleton）
+  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]（active）
+  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]（active）
 - 实施 ADR：
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track 升级）
   - [[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]（本文派生记录）
@@ -1270,7 +1270,7 @@ HITL 是风险与决策边界。
   - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（archive 工作流，Lite Phase A 同模式）
   - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace SKILL schema 边界）
 - mj-agent 关联 STANDARD（cross-ref）：
-  - [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0]]（§4.10 / §4.12 引用）
+  - [[STANDARD]_MJ_Agent_Commit_Message_Convention]]（§4.10 / §4.12 引用）
 - mj-agent 关联 GUIDE（cross-ref）：
   - [[../infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（§4.3 引用）
   - [[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]]（§4.11 引用）

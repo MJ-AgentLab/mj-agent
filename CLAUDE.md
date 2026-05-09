@@ -176,25 +176,25 @@ All canonical documentation follows the **v2.1 tri-track trio** + HITL_Prompt
 v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
 `docs/archive/rule/` + `state: deprecated`):
 
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`
   (active) — cross-track meta rules (types / layers / lifecycle /
   archive / `track` frontmatter field with 4 values: code | agent |
   engineering-workflow | shared / CLAUDE.md tri-track sync §6.4.1 /
   §3.10 in-tree workflow SKILL governance / §7.7 .claude/ boundary +
   A12-A14 PR gates).
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
   (active) — Track A authoring depth + PR gates A1-A6 + OB1-OB5 for
   code-side canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK /
   POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code).
   v1.1 minor bump: §0/§3.9/§7.3 cross-ref engineering-workflow
   STANDARDs.
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1.md`
+- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`
   (active) — Track B authoring depth + PR gates A7-A10 + A11 + loader
   frontmatter-strip contract for agent-side canonical types (SKILL /
   PROMPT / EVAL / agent-facing CONTRACT). v1.1 minor bump: §2/§7.5
   scope clarified to in-source only (`.claude/skills/**` excluded —
   governed by Meta v2.1 §3.10 instead).
-- `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0.md`
+- `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md`
   (Track C primary STANDARD; active) — 17-stage HITL execution loop
   derived from mj-system v1.0; governs `.claude/skills/` workflow +
   Stage prompts + HITL gates at stages 5/7/9/11/13. Phase A Lite
@@ -205,15 +205,15 @@ v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
   C infra) — see ADR-015.
 
 Archived (`docs/archive/rule/`, `state: deprecated`):
-- `[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` — replaced
+- `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` — replaced
   by v2.1 (tri-track + A12-A14)
-- `[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md` —
+- `[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md` —
   replaced by v1.1 (engineering-workflow cross-ref)
-- `[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md` —
+- `[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md` —
   replaced by v1.1 (in-source only scope)
 
 Markdown + YAML syntax (GFM rendering target):
-`docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md`. Entry point:
+`docs/rule/[STANDARD]_GitHub_Markdown.md`. Entry point:
 `docs/INDEX.md`. New-member onboarding path:
 `docs/guide/[GUIDE]_Developer_Onboarding.md` (mj-agent end-to-end day-1 +
 refresher; covers repo / branches / env / tests / docs / commit / Studio).
@@ -239,6 +239,12 @@ documents the rationale; ADR-014 §决策点 3 skeleton-first describes the
 延迟 promote 变体 used for v2.0 → v2.1. ADR-017 (Phase C-2) 细化 ADR-011
 §5.6.1 HITL trigger，落 Meta v2.1 §5.9 4 类必触发 + 1 类反例归档判定表
 （mj-system v5.2 §10.1 派生，不 supersede ADR-011，仅补充量化条款）。
+ADR-018 (Phase C-1a) 引入 active canonical 路径稳定原则（active 文件名
+默认无 `_vX.Y` 后缀；版本仅在 frontmatter；legacy 反向必带后缀）—
+mj-system v5.2 §4.1 派生；partial supersede ADR-011 §4.2 filename rule
++ §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期
+rename（仅 Meta v2.1 触发 archive ceremony；其他 5 解读为 rule
+application）。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
@@ -277,10 +283,10 @@ Repo conventions (code-side, all governed by Track A standards):
 
 - Branches follow MJ-AgentLab's worktree model: 5 types
   (`feature/bugfix/documentation/maintain/hotfix`). See
-  `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md` §5
+  `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5
   for the branch ↔ commit-type alignment matrix.
 - Commits follow `<type>(<scope>): <summary>` per
-  `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md`
+  `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`
   (state: draft; promotion criteria in §9). Types:
   `feat / fix / perf / refactor / test / docs / infra`. Scopes derive
   from `src/mj_agent/` modules — see STANDARD §4 for the closed allowlist.

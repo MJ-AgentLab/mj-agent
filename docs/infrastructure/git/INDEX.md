@@ -30,8 +30,8 @@ track: code
 ## 关联入口
 
 - [返回上级索引](../../INDEX.md)
-- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]]
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]
 - [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]]
 

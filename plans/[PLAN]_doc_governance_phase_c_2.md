@@ -26,7 +26,7 @@ track: shared
 | 文件 | Action | 说明 |
 |---|---|---|
 | `docs/adr/[ADR]_017_Archive_Trigger_Quantification.md` | **Create** | 新建 ADR；记录"量化归档触发"决策 + mj-system §10.1 派生论证 + Alternatives |
-| `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md` | **Edit (in-place, no version bump)** | §5 末加 §5.9 段；4+1 触发表 + cross-ref ADR-017；`updated:` 刷至 2026-05-09 |
+| `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` | **Edit (in-place, no version bump)** | §5 末加 §5.9 段；4+1 触发表 + cross-ref ADR-017；`updated:` 刷至 2026-05-09 |
 | `docs/INDEX.md` | **Edit** | ADR 区表加 ADR-017 行 |
 | `CLAUDE.md` | **Edit** | "## Documentation" §（元规则段）"Versioning rule" 段末加 ADR-017 mention（A6 allowlist sync） |
 | `CHANGELOG.md` | **Edit** | "Unreleased" 段加入条 |
@@ -63,7 +63,7 @@ track: shared
 
 ## 5. Meta v2.1 §5.9 内容（已落盘）
 
-落盘位置：`docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md` §5.8 后、§6 前
+落盘位置：`docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` §5.8 后、§6 前
 
 ```markdown
 ### 5.9 归档触发判定（v2.1 in-place 加；ADR-017 决议）

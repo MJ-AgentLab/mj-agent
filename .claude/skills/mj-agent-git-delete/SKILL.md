@@ -140,7 +140,7 @@ git push origin --delete documentation/phase-b3a-flow-completion
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.15 Rule 2（branch cleanup 触发依据）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15 Rule 2（branch cleanup 触发依据）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Branch lifecycle）
 - `.claude/skills/mj-agent-flow-post-merge/SKILL.md`（Stage 17 主 orchestrator，Step 7 sub-call 本 skill）
 - mj-system `.claude/skills/mj-sys-git-delete/SKILL.md`（直接派生源；mj-agent 改用 mj-agent 仓 path + 5 branch type）

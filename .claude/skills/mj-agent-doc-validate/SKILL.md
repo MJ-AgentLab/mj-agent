@@ -182,10 +182,10 @@ uv run python scripts/check_frontmatter.py && uv run python scripts/check_wikili
 
 - [[../../../scripts/check_frontmatter.py|scripts/check_frontmatter.py]]（A2 + A3 + 4 值 TRACK_VALUES enum；v2.1 起首）
 - [[../../../scripts/check_wikilinks.py|scripts/check_wikilinks.py]]（A4 wikilink；含 living/frozen archive 判定）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §4 / §6.4.1 / §7（A1-A6 + OB1-OB5 标准）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] §7.1（A1-A6 + OB1-OB5 适用 全 track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §7.1（A7-A11 仅 agent track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §7.7（A12-A14 engineering-workflow）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4 / §6.4.1 / §7（A1-A6 + OB1-OB5 标准）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 + OB1-OB5 适用 全 track）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 仅 agent track）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.7（A12-A14 engineering-workflow）
 - mj-system `.claude/skills/mj-sys-doc-validate/SKILL.md`（直接派生源；mj-agent 改用 2 scripts 包装而非 mj-system 单 validate_doc.py）
 
 ## Anti-patterns

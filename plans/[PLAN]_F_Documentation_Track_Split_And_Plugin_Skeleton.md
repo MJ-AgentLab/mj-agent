@@ -22,7 +22,7 @@ track: shared
 
 [[../docs/adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 决定了双轨治理 + skeleton-first 演进。本 PLAN 落地 Phase 0.5 起的逐步骨架交付与内容填充计划，覆盖：
 
-- 3 STANDARD 骨架（[[../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] + [[../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side]] + [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]]）的 promote 路径
+- 3 STANDARD 骨架（[[../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] + [[../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side]] + [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]]）的 promote 路径
 - 双 plugin 骨架（`mj-agent-agent-doc` + `mj-agent-code-doc`）在 mj-agentlab-marketplace 仓的构建（**2026-04-29 翻转**：agent-doc 推迟、code-doc plan/author 提前——见 §V-skel-4 / §V-skel-5 banner）
 - 11 个 skill（agent-doc 7 + code-doc 4）的逐 phase 引入时序
 - frontmatter `track` 字段的 rollout（Phase 0.5 引入，Phase 1 末收紧为 explicit required）
@@ -68,9 +68,9 @@ track: shared
 
 | 验证项 | Pass 判据 |
 |---|---|
-| Meta_Framework v2.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` 存在；frontmatter `state: draft, version: v2.0, track: shared` |
-| Code_Side v1.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md` 存在；frontmatter `state: draft, track: code` |
-| Agent_Side v1.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md` 存在；frontmatter `state: draft, track: agent` |
+| Meta_Framework v2.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` 存在；frontmatter `state: draft, version: v2.0, track: shared` |
+| Code_Side v1.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md` 存在；frontmatter `state: draft, track: code` |
+| Agent_Side v1.0 文件存在 | `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md` 存在；frontmatter `state: draft, track: agent` |
 | ADR-012 存在 | `docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md` 存在；frontmatter `state: draft, decision: accepted, track: shared` |
 | 本 PLAN 存在 | `plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton.md` 存在；frontmatter `state: draft` |
 | 骨架内容真空率 | 每份 STANDARD 章节大纲 + 引用回 v1.1 + TODO 之外的实质内容 ≥70% |
@@ -105,7 +105,7 @@ PLAN E 全绿且本 worktree 合并到 develop 后，开 Phase 0.5 promote PR：
 
 > **⚠️ REVISED 2026-04-29**：原 Phase 0.5 紧迫的 agent-doc plugin 整体推迟到后续 phase 决议。理由（项目负责人决定）：runtime 侧 SKILL/PROMPT/EVAL/CONTRACT 框架尚未到使用密度阈值，agent-doc plugin 即使现在交付也短期内利用率低；优先验证 plugin 构建工艺于 code-doc（参考实例多）。本节以下 marketplace 仓动作清单 / plugin.json 模板等保留作 future reference，但 **不在 Phase 0.5 执行**。
 
-> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：本节后续示例（含 plugin.json 模板与"三 skill 骨架 SKILL.md 关键 frontmatter"段的 13 字段 yaml）**错误地把 mj-agent in-source SKILL.md 的 schema 套用到了 marketplace plugin SKILL.md**。修订决策：marketplace plugin SKILL.md 使用 Claude Code 原生 schema（仅 `name` + `description` 两字段）；body 结构与 marketplace 现存 mj-sys-* 4 plugin 风格对齐（如 `Overview` / `Workflow` / `Quick Reference` / `Examples` / `Anti-patterns`），不强制 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2.1 的 Purpose / When to use / Planning workflow / Common patterns / Anti-patterns 五段式（§2.1 五段式仅适用于 in-source SKILL.md）。具体范本与理由见 ADR-013 + Agent_Side v1.0 §9.1。本节以下 13 字段 yaml 示例保留作 in-source 模板 reference，**不作为 plugin SKILL.md 模板**。
+> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：本节后续示例（含 plugin.json 模板与"三 skill 骨架 SKILL.md 关键 frontmatter"段的 13 字段 yaml）**错误地把 mj-agent in-source SKILL.md 的 schema 套用到了 marketplace plugin SKILL.md**。修订决策：marketplace plugin SKILL.md 使用 Claude Code 原生 schema（仅 `name` + `description` 两字段）；body 结构与 marketplace 现存 mj-sys-* 4 plugin 风格对齐（如 `Overview` / `Workflow` / `Quick Reference` / `Examples` / `Anti-patterns`），不强制 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]] §2.1 的 Purpose / When to use / Planning workflow / Common patterns / Anti-patterns 五段式（§2.1 五段式仅适用于 in-source SKILL.md）。具体范本与理由见 ADR-013 + Agent_Side v1.0 §9.1。本节以下 13 字段 yaml 示例保留作 in-source 模板 reference，**不作为 plugin SKILL.md 模板**。
 
 > **位置**：本 PR 在 mj-agent 仓不动；动作发生在 [mj-agentlab-marketplace](https://github.com/MJ-AgentLab/mj-agentlab-marketplace) 仓的独立 PR。
 
@@ -209,7 +209,7 @@ TODO Phase 1。
 
 > **⚠️ REVISED 2026-04-29**：原全推迟 Phase 1 的 code-doc plugin 部分提前——`plan` + `author` 两个 skill 现在 Phase 0.5 部分骨架交付（内容来自 Code_Side §3-§4 active + mj-agent 已有 PLAN/ADR/STANDARD 正例，vacuum < 30%）。`validate` + `sync` 仍 Phase 1（依赖 §7.2 OB1-OB5 阈值定稿 + §7.6 `.claude/` 边界细化，目前 100% TODO）。
 
-> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：与 §V-skel-4 同一修订——`mj-agent-code-doc-plan` 与 `mj-agent-code-doc-author` 两 skill 的 SKILL.md 使用 Claude Code 原生 schema（`name` + `description`），body 结构与 marketplace 现存 mj-sys-* plugin 风格对齐，不强制本仓 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2.1 五段式。详细内容蓝图（按修订后 schema）参见 working notes `[PLAN]_Marketplace_Plugin_Construction.md` 的 §11 修订清单（M-wn-1/M-wn-2/M-wn-3）。
+> **⚠️ schema correction（[[../docs/adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]，2026-04-29）**：与 §V-skel-4 同一修订——`mj-agent-code-doc-plan` 与 `mj-agent-code-doc-author` 两 skill 的 SKILL.md 使用 Claude Code 原生 schema（`name` + `description`），body 结构与 marketplace 现存 mj-sys-* plugin 风格对齐，不强制本仓 [[../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]] §2.1 五段式。详细内容蓝图（按修订后 schema）参见 working notes `[PLAN]_Marketplace_Plugin_Construction.md` 的 §11 修订清单（M-wn-1/M-wn-2/M-wn-3）。
 
 **Phase 0.5 部分骨架范围**：
 
@@ -359,9 +359,9 @@ V-skel-3 promote PR 是另一个独立 PR，不在本 PR 写入范围。
 
 | 文件 | 路径 | 大小估算 |
 |---|---|---|
-| Meta_Framework v2.0 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` | ~150 行 |
-| Code_Side v1.0 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md` | ~130 行 |
-| Agent_Side v1.0 | `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0.md` | ~200 行 |
+| Meta_Framework v2.0 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` | ~150 行 |
+| Code_Side v1.0 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md` | ~130 行 |
+| Agent_Side v1.0 | `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md` | ~200 行 |
 | ADR-012 | `docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md` | ~150 行 |
 | 本 PLAN | `plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton.md` | ~230 行 |
 

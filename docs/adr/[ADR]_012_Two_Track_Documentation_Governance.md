@@ -26,7 +26,7 @@ mj-agent Phase 0 Foundation 已交付 [[../archive/rule/[STANDARD]_MJ_Agent_Docu
 
 - **体量**：v1.1 已 ~700 行；若内嵌 SKILL body 模板 + 渐进披露 + B 类（plugin / hook / subagent / command / MCP / marketplace）将膨胀到 1500-2500 行
 - **社区共识**：plugin-dev plugin 7 skills（plugin-structure / hook-development / agent-development / skill-development / command-development / mcp-integration / plugin-settings）；mj-sys-doc plugin 6 skills（plan / author / migrate / sync / review / validate）；Diátaxis 4 quadrants —— 均显著切分
-- **本仓库已开切分先例**：v1.1 + [[../rule/[STANDARD]_GitHub_Markdown_v1.0|GitHub_Markdown_v1.0]] 共存
+- **本仓库已开切分先例**：v1.1 + [[../rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown_v1.0]] 共存
 
 ### 问题 2：代码侧文档与智能体侧文档存在根本性双轨
 
@@ -95,7 +95,7 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
 
 ### 决策点 4：frontmatter `track` 字段
 
-新增三值字段 `track: code | agent | shared`，在 [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §4.3.1 定义。Phase 1 末收紧为 explicit required（移除默认 `shared`）。
+新增三值字段 `track: code | agent | shared`，在 [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §4.3.1 定义。Phase 1 末收紧为 explicit required（移除默认 `shared`）。
 
 边界 artifact 归属规则（**预先写死，避免后续 PR 反复争议**）：
 
@@ -162,9 +162,9 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
 - 上游评估：`C:\Users\Admin\.claude\plans\claude-code-documents-driven-developmen-virtual-finch.md`（本仓外，brainstorming research brief）
 - 实施计划：[[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]]
 - 同期 STANDARDs：
-  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
-  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]
-  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]
+  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
+  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
+  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
 - 互补 ADR：
   - [[[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]]（Track B 起源）
   - [[[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（v1.1 → v2.0 升级遵循的 archive 流程）

@@ -109,7 +109,7 @@ mj-agent 私有评估（用户 2026-05-08 brainstorming，私有计划 `glisteni
 
 - 派生源：[mj-system@docs/rule/[STANDARD]_Documentation_Management_Framework.md §10.1](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/%5BSTANDARD%5D_Documentation_Management_Framework.md) lines 633-641
 - 关联 ADR：[[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（保留 active；本 ADR 不 supersede，仅 cross-ref + 细化 §5.6.1 trigger 可执行性）
-- 落地：[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §5.9（本 ADR 同步落 STANDARD 文）
+- 落地：[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.9（本 ADR 同步落 STANDARD 文）
 - 关联 GitHub Issue：[#76](https://github.com/MJ-AgentLab/mj-agent/issues/76)
 - 后续相关 ADR（待 Phase C-1a / C-1b 起）：
   - ADR-018（Phase C-1a，C.1.1）— active 路径稳定化 + filename rule 反转（部分 supersede ADR-011 §4.2）

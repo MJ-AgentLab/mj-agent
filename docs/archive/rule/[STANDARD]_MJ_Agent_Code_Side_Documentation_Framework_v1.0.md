@@ -8,7 +8,7 @@ updated: 2026-05-06
 state: deprecated
 version: v1.0
 track: code
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
+derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework
 tags:
   - standard
   - documentation
@@ -22,12 +22,12 @@ aliases:
 
 # MJ-Agent 代码侧文档治理框架 v1.0（Track A，archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §0/§3.9/§7.3 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §0/§3.9/§7.3 cross-ref engineering-workflow STANDARDs；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
 >
-> **历史骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote 为 active（[[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
+> **历史骨架状态（Phase 0.5）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] 同期 promote 为 active（[[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3）。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
-> **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]]。
-> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+> **不**治理：4 类自有（SKILL / PROMPT / EVAL / agent-facing CONTRACT）—— 见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]]。
+> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 
 ---
 
@@ -44,13 +44,13 @@ aliases:
 | ISSUE-code | code | §3.7 |
 | ASSESSMENT-code | code | §3.8 |
 
-跨轨（`track: shared`）文档：本框架 §7.1 校验仍执行；§3 章节按对应类型走；额外审阅角色见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework]] §跨轨治理协议（TODO Phase 1）。
+跨轨（`track: shared`）文档：本框架 §7.1 校验仍执行；§3 章节按对应类型走；额外审阅角色见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework]] §跨轨治理协议（TODO Phase 1）。
 
 ---
 
 ## 1. 设计目标
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §1，针对代码侧补充：
+承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §1，针对代码侧补充：
 
 | 原则 | 说明 |
 |---|---|
@@ -63,7 +63,7 @@ aliases:
 
 ## 2. 派生关系
 
-- 大部分规则继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §3-§6（命名 / Frontmatter / 状态生命周期 / 索引）
+- 大部分规则继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §3-§6（命名 / Frontmatter / 状态生命周期 / 索引）
 - 部分规则间接继承自 mj-system v5.0；本框架自包含使用，不强求读 v5.0
 - 8 类继承类的 frontmatter / body 模板沿用 [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] 等（Phase 1 补 GUIDE / RUNBOOK 等模板）
 
@@ -82,7 +82,7 @@ aliases:
 
 #### 3.1.1 Frontmatter schema
 
-继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 §4 通用必填字段（`type / domain / summary / owner / created / updated /
 state`），并补 GUIDE 特有：
 
@@ -171,8 +171,8 @@ GUIDE 自身**不复述**已在其它 canonical 来源（README / CLAUDE.md / �
 
 > **TODO Phase 1**：
 > - 现有范例：
->   - [[STANDARD]_GitHub_Markdown_v1.0|GitHub_Markdown_v1.0]]
->   - [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit_Message_Convention_v1.0]]
+>   - [[STANDARD]_GitHub_Markdown|GitHub_Markdown_v1.0]]
+>   - [[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit_Message_Convention_v1.0]]
 > - 这两份在 v1.1 → v2.0 升级时增补 `track: code` 字段
 > - 跨轨规则的 STANDARD（如 Meta_Framework 自身）归 Meta 治理
 
@@ -223,7 +223,7 @@ mj-system v5.0 §7.2 定义了 5 项非阻塞观察项；mj-agent v1.1 漏继承
 
 ### 7.3 跨轨文档（`track: shared`）的处理
 
-`track: shared` 文档由本框架 §7.1 + [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]] §7.1 共同执行：A1-A6 由本框架；A7-A10 + A11 + §7.5 由 Agent_Side。审阅角色见 §8。
+`track: shared` 文档由本框架 §7.1 + [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]] §7.1 共同执行：A1-A6 由本框架；A7-A10 + A11 + §7.5 由 Agent_Side。审阅角色见 §8。
 
 ---
 
@@ -250,11 +250,11 @@ mj-system v5.0 §7.2 定义了 5 项非阻塞观察项；mj-agent v1.1 漏继承
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+- 派生自：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 - 间接继承：mj-system v5.0
 - 决策记录：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
-- 同期子框架：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]
+- 同期子框架：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
 - 实施计划：[[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]]
 - 现有 Code_Side STANDARDs（升级时补 `track: code`）：
-  - [[STANDARD]_GitHub_Markdown_v1.0]]
-  - [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0]]
+  - [[STANDARD]_GitHub_Markdown]]
+  - [[STANDARD]_MJ_Agent_Commit_Message_Convention]]

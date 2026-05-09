@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to create a GitHub Iss
 
 ## Overview
 
-Creates GitHub Issues for **mj-agent** repo (https://github.com/MJ-AgentLab/mj-agent). mj-agent **does not yet have `.github/ISSUE_TEMPLATE/`** (Phase D PR-D1 will add `TEMPLATE_ISSUE.md`); this skill builds Issue body inline based on branch-type taxonomy ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]] §5) + the Intake Result from Stage 0.
+Creates GitHub Issues for **mj-agent** repo (https://github.com/MJ-AgentLab/mj-agent). mj-agent **does not yet have `.github/ISSUE_TEMPLATE/`** (Phase D PR-D1 will add `TEMPLATE_ISSUE.md`); this skill builds Issue body inline based on branch-type taxonomy ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5) + the Intake Result from Stage 0.
 
 **Workflow position**: optional pre-step before `mj-agent-git-branch`.
 
@@ -43,7 +43,7 @@ If not installed or not logged in → output install/login guidance and **stop**
 
 ### Step 1b: Choose Branch Type（AskUserQuestion，5 options）
 
-mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]] §5)：
+mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5)：
 
 | Option | Type | Label | When to choose |
 |---|---|---|---|
@@ -196,7 +196,7 @@ handoff **suggestive，不强制**——`mj-agent-git-branch` 的 issue-id 是�
 - **不要** 用 `--body` inline Issue 描述（违反 ADR-013 + mj-system mj-sys-git-issue 风格；非交互模式应用 `--body-file`）
 - **不要** 在没有 Intake Result 时直接创建 Issue（跳过 §3.1 必停 HITL trigger）
 - **不要** 在 Issue body 中塞详细实现计划（那是 Plan / SPEC 的职责）
-- **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]] §5.1）
+- **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5.1）
 
 ## Handoff to mj-agent-git-branch
 
