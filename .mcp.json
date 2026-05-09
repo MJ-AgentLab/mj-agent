@@ -1,0 +1,173 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "serena": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", "uv", "tool", "run",
+        "--from", "git+https://github.com/oraios/serena",
+        "serena", "start-mcp-server",
+        "--context", "claude-code",
+        "--enable-web-dashboard", "false",
+        "--project-from-cwd"
+      ]
+    },
+    "pg-mj-agent-memory-dev": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_MEMORY_DEV_URL:-postgresql://mj_agent_memory:local-dev-only-replace-in-prod@localhost:5433/mj_agent_memory}"
+      ],
+      "env": {}
+    },
+    "pg-mj-agent-memory-test-lan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_MEMORY_TEST_LAN_URL:-postgresql://mj_agent_memory:REPLACE_WITH_TEAM_TEST_PASSWORD@192.168.0.179:5433/mj_agent_memory}"
+      ],
+      "env": {}
+    },
+    "pg-mj-agent-memory-test-wan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_MEMORY_TEST_WAN_URL}"
+      ],
+      "env": {}
+    },
+    "pg-mj-agent-memory-prod-lan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_MEMORY_PROD_LAN_URL:-postgresql://mj_agent_memory:REPLACE_WITH_TEAM_PROD_PASSWORD@192.168.0.106:5433/mj_agent_memory}"
+      ],
+      "env": {}
+    },
+    "pg-mj-agent-memory-prod-wan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_MEMORY_PROD_WAN_URL}"
+      ],
+      "env": {}
+    },
+    "pg-mj-system-biz-dev": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_BIZ_DEV_URL:-postgresql://analyst:REPLACE_WITH_ANALYST_PASSWORD@localhost:5432/mj_system_db}"
+      ],
+      "env": {}
+    },
+    "pg-mj-system-biz-test-lan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_BIZ_TEST_LAN_URL:-postgresql://analyst:REPLACE_WITH_ANALYST_PASSWORD@192.168.0.179:5432/mj_system_db}"
+      ],
+      "env": {}
+    },
+    "pg-mj-system-biz-test-wan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_BIZ_TEST_WAN_URL}"
+      ],
+      "env": {}
+    },
+    "pg-mj-system-biz-prod-lan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_BIZ_PROD_LAN_URL:-postgresql://analyst:REPLACE_WITH_ANALYST_PASSWORD@192.168.0.106:5432/mj_system_db}"
+      ],
+      "env": {}
+    },
+    "pg-mj-system-biz-prod-wan": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c", ".claude\\scripts\\pg-server-start.cmd",
+        "${MJ_AGENT_PG_BIZ_PROD_WAN_URL}"
+      ],
+      "env": {}
+    },
+    "ssh-manager": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@iflow-mcp/mcp-ssh-manager"],
+      "env": {
+        "SSH_SERVER_CLOUD_HOST": "8.135.38.175",
+        "SSH_SERVER_CLOUD_USER": "root",
+        "SSH_SERVER_CLOUD_PASSWORD": "${MJ_AGENT_SSH_SERVER_CLOUD_PASSWORD}",
+        "SSH_SERVER_CLOUD_PORT": "22",
+        "SSH_SERVER_CLOUD_DESCRIPTION": "00-Cloud-Server",
+
+        "SSH_SERVER_RUNNER_LAN_HOST": "192.168.0.126",
+        "SSH_SERVER_RUNNER_LAN_USER": "mingjian",
+        "SSH_SERVER_RUNNER_LAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD}",
+        "SSH_SERVER_RUNNER_LAN_PORT": "22",
+        "SSH_SERVER_RUNNER_LAN_DESCRIPTION": "10-Runner-Server-LAN",
+
+        "SSH_SERVER_RUNNER_WAN_HOST": "8.135.38.175",
+        "SSH_SERVER_RUNNER_WAN_USER": "mingjian",
+        "SSH_SERVER_RUNNER_WAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD}",
+        "SSH_SERVER_RUNNER_WAN_PORT": "2201",
+        "SSH_SERVER_RUNNER_WAN_DESCRIPTION": "11-Runner-Server-WAN",
+
+        "SSH_SERVER_TEST_LAN_HOST": "192.168.0.179",
+        "SSH_SERVER_TEST_LAN_USER": "mingjian02",
+        "SSH_SERVER_TEST_LAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_TEST_PASSWORD}",
+        "SSH_SERVER_TEST_LAN_PORT": "22",
+        "SSH_SERVER_TEST_LAN_DESCRIPTION": "20-Test-Server-LAN",
+
+        "SSH_SERVER_TEST_WAN_HOST": "8.135.38.175",
+        "SSH_SERVER_TEST_WAN_USER": "mingjian02",
+        "SSH_SERVER_TEST_WAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_TEST_PASSWORD}",
+        "SSH_SERVER_TEST_WAN_PORT": "2202",
+        "SSH_SERVER_TEST_WAN_DESCRIPTION": "21-Test-Server-WAN",
+
+        "SSH_SERVER_PROD_LAN_HOST": "192.168.0.106",
+        "SSH_SERVER_PROD_LAN_USER": "mingjian03",
+        "SSH_SERVER_PROD_LAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_PROD_PASSWORD}",
+        "SSH_SERVER_PROD_LAN_PORT": "22",
+        "SSH_SERVER_PROD_LAN_DESCRIPTION": "30-Prod-Server-LAN",
+
+        "SSH_SERVER_PROD_WAN_HOST": "8.135.38.175",
+        "SSH_SERVER_PROD_WAN_USER": "mingjian03",
+        "SSH_SERVER_PROD_WAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_PROD_PASSWORD}",
+        "SSH_SERVER_PROD_WAN_PORT": "2203",
+        "SSH_SERVER_PROD_WAN_DESCRIPTION": "31-Prod-Server-WAN",
+
+        "SSH_SERVER_DGX_LAN_HOST": "192.168.0.189",
+        "SSH_SERVER_DGX_LAN_USER": "ranzuozhou",
+        "SSH_SERVER_DGX_LAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_DGX_PASSWORD}",
+        "SSH_SERVER_DGX_LAN_PORT": "22",
+        "SSH_SERVER_DGX_LAN_DESCRIPTION": "40-DGX-Spark-LAN",
+
+        "SSH_SERVER_DGX_WAN_HOST": "8.135.38.175",
+        "SSH_SERVER_DGX_WAN_USER": "ranzuozhou",
+        "SSH_SERVER_DGX_WAN_PASSWORD": "${MJ_AGENT_SSH_SERVER_DGX_PASSWORD}",
+        "SSH_SERVER_DGX_WAN_PORT": "2204",
+        "SSH_SERVER_DGX_WAN_DESCRIPTION": "41-DGX-Spark-WAN"
+      }
+    }
+  }
+}
