@@ -30,8 +30,8 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 WALK_DIRS = ("docs", "plans")
 WALK_FILES = ("CLAUDE.md", "CHANGELOG.md", "README.md")
