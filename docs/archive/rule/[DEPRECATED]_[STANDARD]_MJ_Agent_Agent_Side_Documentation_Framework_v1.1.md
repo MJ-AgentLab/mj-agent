@@ -1,46 +1,38 @@
 ---
 type: standard
 domain: SYS
-summary: Track B 智能体侧文档治理 v1.2 — §4 EVAL Authoring 完整规范（4 子类 + body 八段 + frontmatter schema；ADR-024 决议）；其他 §1-§9 沿用 v1.1
+summary: Track B 智能体侧文档治理（v1.0 → v1.1 minor bump）— §2 scope 加注 engineering-workflow `.claude/skills/SKILL.md` 不归本节治理；§7.5 frontmatter strip 契约 scope 明确为 in-source only；与 Meta v2.1 同 PR 落地
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-09
-state: active
-version: v1.2
+archived: 2026-05-09
+replaced-by: "../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md"
+state: deprecated
+version: v1.1
 track: agent
-derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1
+derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0
 supersedes:
-  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1"
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
 tags:
   - standard
   - documentation
   - track-b
   - agent-side
-  - eval-framework
 aliases:
-  - MJ-Agent Agent-Side Documentation Framework v1.2
-  - MJ-Agent Agent-Side Documentation Framework
-  - Track B 子框架 v1.2
+  - MJ-Agent Agent-Side Documentation Framework v1.1
+  - Track B 子框架 v1.1
 ---
 
-# MJ-Agent 智能体侧文档治理框架（Track B）
+# MJ-Agent 智能体侧文档治理框架 v1.1（Track B，archived）
 
-> **状态（Phase D-3 完成后）**：`state: active`，`version: v1.2`。v1.1 已 archive 至 `docs/archive/rule/[DEPRECATED]_..._v1.1.md` + `state: deprecated`。**Active canonical 路径稳定**（ADR-018 §4.4）：本文件名无 `_vX.Y` 后缀。
-> **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**（in-source canonical）+ EVAL 文档（`docs/evaluation/**`）。
+> [!warning]
+> **本副本为 Agent_Side v1.1 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side（stable path；当前 v1.2）]] 取代。归档原因：v1.2 substantive 演进 — §4 EVAL Authoring 从占位 "沿用 v1.0 §4 全部 TODO Phase 2 项" 升级为完整规范（4 子类 + body 八段 + frontmatter schema）；详见 [[../../adr/[ADR]_024_Eval_Framework_Spec|ADR-024]]。本副本作为 v1.1 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
+
+> **历史状态（Phase B PR-B3c-promote 完成后）**：`state: active`（已翻 deprecated）。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
+> **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
-> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|v1.1（archive）]]
-> **首要变更（v1.1 → v1.2）**：§4 EVAL Authoring 从占位 "沿用 v1.0 §4 全部 TODO Phase 2 项" 升级为完整规范（4 子类 + body 八段 + frontmatter schema + A8/A11 transitional waiver 明确延续 Phase E）。详见 [[../adr/[ADR]_024_Eval_Framework_Spec|ADR-024]]。
-
-> [!info]
-> **v1.1 → v1.2 变化速览**（issue #95 / Phase D-3）：
-> - §4 EVAL Authoring 从 4 行占位改 ~150 行完整规范
-> - 4 EVAL 子类显式定义（outcome / trajectory / component / integration）
-> - frontmatter schema 落实（eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges）
-> - body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）
-> - A8 PROMPT eval_references / A11 SKILL eval_references **transitional waiver 延续到 Phase E**（本 v1.2 不强制；roadmap 显式记录）
-> - §5/§6 / §7.1 / §7.5 sustained from v1.1
-> - 上一版（v1.1）归档于 [docs/archive/rule/[DEPRECATED]_..._v1.1.md](../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1.md)
+> **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|v1.0（archive）]]
+> **首要变更**：仅 minor bump —— §0 / §2 / §7.5 加 scope 明确条款，把 engineering-workflow `.claude/skills/SKILL.md` 排除出本框架治理（划归 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 / §7.7）。
 
 ---
 
@@ -141,115 +133,9 @@ aliases:
 
 ---
 
-## 4. EVAL Authoring（v1.2 完整规范；ADR-024 决议）
+## 4. EVAL Authoring（§3.3，Phase 2 填充）
 
-> **派生自** mj-system 上游 EVAL framework（如有）+ industry references（LangChain Hub / DSPy / Anthropic Skills 仓 model evals 模式 / OpenAI Evals）；**mj-agent 原生**（mj-system 暂无对位）。
-> **scope**：本节治理 `docs/evaluation/**` 下的 `[EVAL]_*.md` 文档（mj-agent runtime 行为评估单元）。
-
-### 4.1 EVAL 子类（4 类）
-
-| 子类 | 定义 | 范围 | 关注 |
-|---|---|---|---|
-| **outcome** | 端到端业务结果评估 | 完整 agent trajectory 输出（如 `find_biz_context → execute_sql` 完整链路） | 业务正确性 / 数据准确性 / 输出可读性 |
-| **trajectory** | agent 决策路径评估 | tool 调用顺序 / 数量 / argument 正确性 | 调用效率 / 边界判断 / 错误恢复 |
-| **component** | 单 skill / prompt 单元评估 | 1 skill 或 1 prompt 的孤立行为 | 触发准确性 / output schema 合规 / latency |
-| **integration** | 多 skill 协作评估 | 跨 skill 链路（如 biz-domain-context → safe-sql-analysis） | 上下文传递 / 决策一致性 / scope 守约 |
-
-### 4.2 EVAL frontmatter schema（A9 强制）
-
-```yaml
----
-type: eval
-domain: AGENT
-summary: <20-60 字 描述本 EVAL 的目标 + 范围 + 子类>
-owner: <负责人 / 团队>
-created: <YYYY-MM-DD>
-updated: <YYYY-MM-DD>
-state: draft | active | deprecated
-track: agent
-eval_kind: outcome | trajectory | component | integration   # 4 子类必选 1
-target_skill: <stable path / src/mj_agent/skills/<name>/SKILL.md>   # component/trajectory 子类必填；其他子类可选
-target_prompt: <src/mj_agent/prompts/<name>.md>             # component 子类（仅 prompt 评估时）必填
-dataset_path: <relative path or external URL>              # state: active 时强制（A9）
-baseline_metric: <metric name；如 accuracy / precision / latency_p95>
-baseline_value: <numeric or threshold>                     # state: active 时强制（A9）
-regression_threshold: <numeric or % >                      # 触发回归告警的相对阈值
-judges:
-  - <judge identifier；如 LLM-as-judge model id / human-rule / programmatic>
----
-```
-
-**A9 强制条件**（PR 校验门禁）：`state: active` 的 EVAL 必须含 `dataset_path` 路径存在 + `baseline_metric` + `baseline_value`。
-
-### 4.3 body 八段
-
-```markdown
-## 1. Purpose
-20-60 字 描述：评估目标 / 业务场景 / 关心的失败模式
-
-## 2. Eval Design
-评估设计：测试输入分布 / 输出收集方式 / metric 计算公式 / 抽样策略
-
-## 3. Dataset
-数据集说明：来源 / 大小 / 字段 schema / 标注方式 / 版本管理 / 隐私/合规边界
-
-## 4. Judges
-判分方式：LLM-as-judge（model id + prompt 链接）/ 人工 rule / programmatic（regex / JSON schema）；judge 可信度 / 偏差缓解
-
-## 5. Baseline
-基线建立：date / git commit / model id / config snapshot / 实测数值 + 误差区间
-
-## 6. Regression Criteria
-回归判定：相对 baseline 偏差超过 threshold 触发；告警 / 阻塞合并 / 记录但通过 三选一
-
-## 7. Run History
-历史运行记录：date / commit / metric / 与 baseline 偏差 / 备注（异常归因 / 改进 hypothesis）
-
-## 8. Open Questions
-未解决问题 / 计划改进 / 已知 limitation / 后续迭代候选
-```
-
-### 4.4 现有 EVAL 范例
-
-mj-agent 当前 `docs/evaluation/` 空（Phase D-3 未创建 sample EVAL）。Phase E 起首批：
-- `[EVAL]_biz_domain_context_outcome.md`（针对 `biz-domain-context` skill；outcome 子类）
-- `[EVAL]_safe_sql_trajectory.md`（针对 `safe-sql-analysis` skill；trajectory 子类）
-- `[EVAL]_qcm_analysis_integration.md`（biz-domain-context + qcm-analysis + safe-sql-analysis 三 skill 链路；integration 子类）
-
-具体 sample EVAL 落地由 Phase E PR 起首；本 v1.2 仅落 spec。
-
-### 4.5 与 §2 SKILL Authoring (A11) / §3 PROMPT Authoring (A8) 的耦合
-
-| 关联 | 含义 |
-|---|---|
-| §2.4 EVAL 耦合（A11） | SKILL `state: active` 时 frontmatter 必须含 `eval_references` 指向 1+ 本节 EVAL 文档 |
-| §3 PROMPT EVAL 引用（A8） | PROMPT `state: active` 时 frontmatter 必须含 `eval_references` 指向 1+ 本节 EVAL 文档 |
-| §7.1 A8/A11 enforcement | **transitional waiver 延续 Phase E**（v1.2 不强制；roadmap 见 §4.6） |
-
-### 4.6 A8/A11 transitional waiver roadmap（v1.2 决议）
-
-**当前状态（Phase D-3 完成后）**：
-
-- A8/A11 规则文本已落（§7.1）
-- `scripts/check_frontmatter.py` **不**强制 A8/A11（Phase E 关闭 transitional waiver 时再加）
-- mj-agent 6 in-source canonical（5 SKILLs + 1 PROMPT）frontmatter 不含 `eval_references` 字段（合法）
-
-**Phase E 关闭 transitional waiver 的前置条件**：
-
-1. `docs/evaluation/` 至少 3 个 active EVAL 落地（覆盖 5 个 SKILL + 1 PROMPT 的核心评估）
-2. EVAL runtime 框架（dataset / judges / metric collection / regression detection）有 MVP 实现
-3. 5 SKILLs + 1 PROMPT frontmatter 加 `eval_references` 字段（指向新落 EVAL 文档）
-4. `scripts/check_frontmatter.py` 加 SKILL/PROMPT type-conditional A8/A11 校验（state: active 强制）
-
-**Phase E 触发器**：mj-agent 进入 Phase 2 业务功能开发（per `mj-agent-roadmap-v1.6.md`）；EVAL runtime 是 Phase 2 必备项。
-
-### 4.7 Cross-ref
-
-- [[../adr/[ADR]_024_Eval_Framework_Spec|ADR-024]]（决策记录 + Alternatives + transitional waiver 延续 roadmap）
-- [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3 类型表（EVAL 默认 track: agent）
-- §2.4 SKILL EVAL 耦合 A11
-- §3.2 PROMPT EVAL 引用 A8
-- §7.1 PR 校验门禁 A8/A9/A11
+沿用 v1.0 §4 全部 TODO Phase 2 项。
 
 ---
 
