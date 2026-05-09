@@ -40,7 +40,11 @@ CLI     : src/mj_agent/server/cli.py                    (typer; `mj-agent
           serve` / `mj-agent check`)
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
           infra/docker/{Dockerfile, entrypoint.sh,           (Phase 1 sub
-          docker-compose.mj-agent.yml, README.md,            1.H; E2)
+          docker-compose.mj-agent.yml,                       1.H; E2;
+            docker-compose.override.yml,                     ADR-025
+            docker-compose.test.yml,                         multi-env
+            docker-compose.prod.yml,                         compose
+          README.md,                                         layering)
           postgres-init/01-bootstrap-mj-agent-memory.sh      (storage-stack
           }                                                   PR; auto-creates
                                                              memory DB on
@@ -109,11 +113,27 @@ docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 # Storage-stack — independent compose project (mj-agent + 自带 postgres + redis)
-# From mj-agent repo root, single -f, no env var, mj-system stack untouched:
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml down
+# 4-file profile layering per ADR-025 (mirror mj-system v3.2.2). All 3 profiles
+# use explicit `-f base -f overlay` chain (override.yml auto-load doesn't apply
+# because compose files live in infra/docker/ subdir and base loaded via -f).
 # Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
-# (depends_on automatically pulls in mj-agent-postgres + mj-agent-redis)
+#
+# DEV (本地)
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.override.yml up -d
+# TEST (192.168.0.179)
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.test.yml up -d
+# PROD (192.168.0.106)
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.prod.yml up -d
+#
+# DGX 算力消费侧：DGX 不部署 mj-agent (用户决策；ADR-025 §D.2)。任一 profile 下
+# 在 .env 设 LLM_PROVIDER=local-openai-compat + LLM_BASE_URL=http://192.168.0.189:8000/v1
+# 即可消费 DGX vLLM/SGLang/Ollama；endpoint 健康用 /mj-agent-infra-llm-endpoint-probe.
+#
+# Teardown (与 up 用同样 -f 链): /mj-agent-infra-env-teardown 提供 3-level safety
+# (down / down -v / down -v --rmi local; H3 hard-confirm Level 2/3).
 ```
 
 Studio dev walkthrough (env + verification matrix + LangSmith trace
@@ -134,11 +154,27 @@ needs live biz DB + Ark and runs locally only.
 
 ## LLM provider
 
-mj-agent talks to Volcengine Ark's OpenAI-compatible endpoint (DeepSeek V3
-as the default model). The `make_llm()` factory in `src/mj_agent/llm.py`
-builds a `ChatOpenAI` instance with `base_url=ARK_BASE_URL`, the key from
-`ARK_API_KEY`, and `extra_body.thinking` driven by `LLM_THINKING_ENABLED`.
-Missing `ARK_API_KEY` raises `LLMConfigError` at graph build time.
+mj-agent supports two providers via `LLM_PROVIDER` env (ADR-025 §D.2). Default
+`ark` keeps current behavior fully back-compat; `local-openai-compat` enables
+DGX-Spark local LLM consumption.
+
+| Provider | base_url | api_key | extra_body.thinking | 用途 |
+|---|---|---|---|---|
+| `ark` (default) | `effective_llm_base_url` fallback `ARK_BASE_URL` | `effective_llm_api_key` fallback `ARK_API_KEY` | passed (DeepSeek V3 reasoning toggle) | 公网 Ark + DeepSeek V3 |
+| `local-openai-compat` | `LLM_BASE_URL` (required; missing → `LLMConfigError`) | `LLM_API_KEY` 或 `"EMPTY"` sentinel | NOT passed (vLLM/SGLang/Ollama 不接受 Ark `thinking` 参数，传入会 422) | DGX-Spark 192.168.0.189 vLLM/SGLang/Ollama/TGI/llama.cpp |
+
+The `make_llm()` factory in `src/mj_agent/llm.py` branches on
+`settings.llm_provider`. Missing required creds raises `LLMConfigError` at
+graph build time (ark: `ARK_API_KEY`/`LLM_API_KEY`; local-openai-compat:
+`LLM_BASE_URL`). `mj-agent check` is provider-aware (outputs `llm provider =
+<name> (endpoint=<url>)`). Endpoint healthcheck for local-openai-compat:
+`/mj-agent-infra-llm-endpoint-probe` (3-step probe: reachable + model id match
++ 1-token chat smoke; Ollama `/api/tags` fallback).
+
+**`Profile` enum unchanged** (`Literal["dev","test","prod"]`) — DGX is NOT a
+deployment target for mj-agent (per user decision; ADR-025 §D.2 / Alternative
+B). DGX support is purely an LLM endpoint switch orthogonal to
+`MJ_CONFIG_PROFILE` (which decides biz pg host).
 
 ## Environment variables
 
@@ -152,7 +188,15 @@ PASSWORD` + `MJ_CONFIG_PROFILE`. Phase 1 sub 1.A added `MJ_AGENT_MEMORY_*`
 `CHAINLIT_HOST/PORT`. The storage-stack PR added
 `MJ_AGENT_MEMORY_HOST/PORT` (decoupled from biz pg) +
 `MJ_AGENT_REDIS_HOST/PORT/PASSWORD` (future use; container ready, no
-Python client wired). See `.env.example` for the full list.
+Python client wired). ADR-025 (PR-2) added LLM provider abstraction:
+`LLM_PROVIDER` (ark | local-openai-compat) + `LLM_BASE_URL` + `LLM_API_KEY`
+(legacy `ARK_BASE_URL` / `ARK_API_KEY` preserved as ark-provider fallback).
+ADR-025 (PR-3) added MCP server SSH passwords + pg URL placeholders for the
+13-server `.mcp.json`: `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`
+(5 unique secrets driving 9 ssh-manager entries) +
+`MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL`
+(10 optional URL overrides; WAN required for FRP-tunneled remote pg).
+See `.env.example` for the full list.
 
 The standard way to provision `.env` is `.\scripts\setup-env.ps1`, which
 decrypts `config/secrets.enc` (AES-256-CBC + PBKDF2) using a
@@ -276,6 +320,16 @@ integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver
 **延续 Phase E**（前置条件 4 项 roadmap）；check_frontmatter.py EVAL 类型
 条件；不 supersede；mj-agent 原生（mj-system 暂无对位 EVAL framework）；
 Phase D 收尾。
+ADR-025 (multi-env+DGX+MCP bundle) PR-1/2/3/4 跨多 domain 决策统一记录：
+(1) docker-compose 4-file 分层 (base + override + test + prod；mirror mj-system
+v3.2.2；dev 也用显式 `-f base -f override` 因本仓 compose 在 infra/docker/
+子目录 + `-f` 显式 base 时 auto-load 不生效)；(2) LLM provider 抽象（ark
+默认 + local-openai-compat for DGX-Spark vLLM/SGLang/Ollama；`Profile` enum
+不变 — DGX 不部署 mj-agent，per 用户决策）；(3) `.mcp.json` 13 servers +
+新建领域专属 STANDARD `docs/infrastructure/mcp/[STANDARD]_..._MCP_Server_Governance.md`
+(per ADR-022 §C.3.2；A14 PR gate 正式生效)；(4) 新增 2 infra skills
+(`mj-agent-infra-llm-endpoint-probe` + `mj-agent-infra-env-teardown`)；
+不 supersede；track: shared；ref ADR-008/006/009/013/016/018/022/024 + Meta v2.2。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
@@ -401,9 +455,12 @@ PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
   in `permissions.allow`; secret patterns required in `permissions.deny`;
   `enabledPlugins` changes require PR-body justification.
 - **A14**: `.mcp.json` server changes declare trust posture (first-party
-  / third-party / community) + credential mode (none / OAuth / API key)
-  in PR body; cross-referenced in `[STANDARD]_..._MCP_Server_Governance_v1.0`
-  (Phase C+).
+  / third-party / community) + credential mode (none / OAuth / API key /
+  wrapped script) in PR body per the §4 declaration template in
+  `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
+  (active per ADR-025 PR-3；领域专属 placement per ADR-022 §C.3.2). Quarterly
+  audit (per STANDARD §6) re-evaluates trust posture + syncs `.claude/scripts/
+  pg-server-*` against mj-system upstream.
 
 In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
 across 5 families: flow / git / doc / runtime / infra). Slash-command
@@ -446,6 +503,8 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | infra | `/mj-agent-infra-studio-probe` | 10 sub | **active**（PR-B3b） |
 | infra | `/mj-agent-infra-docker-compose` | 8 (C-flavor) | **active**（PR-C3） |
 | infra | `/mj-agent-infra-storage-stack` | 8 (C-flavor) | **active**（PR-C3） |
+| infra | `/mj-agent-infra-llm-endpoint-probe` | 10 sub | **active**（ADR-025 PR-2） |
+| infra | `/mj-agent-infra-env-teardown` | 17 sub / 8 (C-flavor) | **active**（ADR-025 PR-4） |
 
 **v2.1 promote** (Phase B PR-B3c-promote 完成 ✅) ：v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`；v2.1 trio + HITL_Prompt v1.0 + ADR-014/015/016 全部 `state: active`；A12-A14 PR 门禁正式启用（不再 "v2.1 promote 前预自检"）；scripts/check_frontmatter.py TRACK_VALUES 已扩 4 值。
 

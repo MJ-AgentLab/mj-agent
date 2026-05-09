@@ -93,5 +93,5 @@ ADR-008 § Decision 已经明确 "环境矩阵 DEV/TEST/PROD 时间表对齐 mj-
 
 - ✅ **PR-1** — `feature/98-multi-env-compose-layering`（issue [#98](https://github.com/MJ-AgentLab/mj-agent/issues/98)；PR [#99](https://github.com/MJ-AgentLab/mj-agent/pull/99)；merged 2026-05-09 commit `804310a`）
 - ✅ **PR-2** — `feature/100-llm-provider-abstraction`（issue [#100](https://github.com/MJ-AgentLab/mj-agent/issues/100)；PR [#101](https://github.com/MJ-AgentLab/mj-agent/pull/101)；merged 2026-05-09 commit `2f8f056`）
-- 🔄 **PR-3** — `feature/102-mcp-json-and-governance`（issue [#102](https://github.com/MJ-AgentLab/mj-agent/issues/102)；in-progress；待 commit + push + PR 创建 + merge）
-- ⏳ PR-4 — `documentation/env-teardown-and-doc-sync`（blocked by PR-3 merge）
+- ✅ **PR-3** — `feature/102-mcp-json-and-governance`（issue [#102](https://github.com/MJ-AgentLab/mj-agent/issues/102)；PR [#103](https://github.com/MJ-AgentLab/mj-agent/pull/103)；merged 2026-05-09 commit `34e0624`）
+- 🔄 **PR-4** — `documentation/104-env-teardown-and-doc-sync`（issue [#104](https://github.com/MJ-AgentLab/mj-agent/issues/104)；in-progress；待 commit + push + PR 创建 + merge；**bundle 收尾**；merge 后 mj-agent-flow-post-merge Step 9 自动标本 plan `state: completed`）
