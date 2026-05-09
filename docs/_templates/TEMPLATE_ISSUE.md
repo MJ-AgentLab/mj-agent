@@ -13,7 +13,7 @@ track: shared
 derives_from: ""
 owner: 项目负责人
 priority: P2
-risk_level: Low / Medium / High
+risk-level: Medium
 resolution: open
 discovered_during: "<during what work>"
 related_issue: "<#NNN 或 无>"

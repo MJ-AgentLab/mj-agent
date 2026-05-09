@@ -12,6 +12,7 @@ version: v0.1
 track: code
 derives_from: ""
 owner: 项目负责人
+last-verified: YYYY-MM-DD
 ---
 
 # <RUNBOOK 标题：动作型短句，如"手动重置 mj-agent-postgres 容器"或"切换 LLM provider 到备用"</RUNBOOK 标题>
