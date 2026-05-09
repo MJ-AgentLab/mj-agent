@@ -26,7 +26,7 @@ owner: 项目负责人
 > **最后更新**：2026-05-06
 > **派生自**：mj-agent 原生（参考 mj-system 同类 RUNBOOK 体例）
 > **关联文档**：[[../git/[GUIDE]_Git_Push_Workflow|Git 推送工作流]]、
-> [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit STANDARD]]、
+> [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit STANDARD]]、
 > [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]
 
 ---
@@ -45,7 +45,7 @@ owner: 项目负责人
 - **目标读者**：项目负责人 / 维护者；具备 mj-agent 仓库写权限 + 双 remote 凭据
 - **必备知识**：
   - [[../git/[GUIDE]_Git_Push_Workflow|Git 推送工作流]] 7 步前置检查
-  - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit STANDARD]]
+  - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit STANDARD]]
     §4 类型 allowlist（`infra(release):`）
   - SemVer 基本规则（major / minor / patch）
 - **建议了解**：
@@ -116,7 +116,7 @@ git commit -m "infra(release): bump to vX.Y.Z"
 ```
 
 > **注**：commit 类型选 `infra` 是基于
-> [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit STANDARD]]
+> [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit STANDARD]]
 > §4 当前 allowlist 中 `infra` 的范围。STANDARD 演进时本 RUNBOOK 同步更新。
 
 ### Step 4 — 创建 annotated tag
@@ -204,7 +204,7 @@ Phase 0.5 阶段 release 未涉及生产部署；rollback **仅限仓库层**（
 ## 关联文档
 
 - [[../git/[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — §2 CHANGELOG / §6 双推
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit STANDARD]] — §4 类型 allowlist
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit STANDARD]] — §4 类型 allowlist
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]] — §Defer 中的 release 流程承诺
 - [[../../guide/[GUIDE]_Developer_Onboarding|开发者上手指南]] — §6 提交与推送
 - `pyproject.toml` `[project] version` — version bump 目标字段

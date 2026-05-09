@@ -21,7 +21,7 @@ tags:
 
 ## Context
 
-[[[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 引入双轨治理 + 双 plugin 骨架（`mj-agent-agent-doc` / `mj-agent-code-doc`），并在 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-4 / §V-skel-5 + [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2 中默认假设 marketplace plugin SKILL.md 与 mj-agent 仓内 `src/mj_agent/skills/**/SKILL.md`（in-source SKILL.md）共用同一套 schema（13 字段 frontmatter + 五段式 body）。
+[[[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 引入双轨治理 + 双 plugin 骨架（`mj-agent-agent-doc` / `mj-agent-code-doc`），并在 [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-4 / §V-skel-5 + [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]] §2 中默认假设 marketplace plugin SKILL.md 与 mj-agent 仓内 `src/mj_agent/skills/**/SKILL.md`（in-source SKILL.md）共用同一套 schema（13 字段 frontmatter + 五段式 body）。
 
 但在 marketplace plugin 实施前的探查（2026-04-29）中发现以下事实：
 
@@ -147,7 +147,7 @@ frontmatter **只用 name + description 两字段**，不引入 mj-agent §2 的
 
 - 直接前置：[[[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]（双轨治理 + 双 plugin 骨架决策）
 - 同期联动修订：
-  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]] §2 + §9（scope note，同 PR 落地）
+  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]] §2 + §9（scope note，同 PR 落地）
   - [[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-4 + §V-skel-5（schema correction sub-banner，同 PR 落地）
 - 探查依据（2026-04-29）：
   - marketplace 现状：`mj-agentlab-marketplace/plugins/mj-sys-doc/skills/*/SKILL.md` 实测 frontmatter

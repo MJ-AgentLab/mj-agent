@@ -30,7 +30,7 @@ aliases:
 > **目标受众**：项目负责人、未来贡献者、再评估触发器命中时的 reviewer
 > **版本**：v1.0
 > **最后更新**：2026-04-25
-> **关联文档**：[[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]、[[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]]
+> **关联文档**：[[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]、[[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]]
 
 ---
 
@@ -173,7 +173,7 @@ frontmatter `dimensions` 列出的 4 个维度，每条规则按这 4 维打分�
 | 7 个 type (`feat/fix/perf/refactor/test/docs/infra` + `merge`) | 表达变更性质 | **KEEP** 一字不改 | 覆盖 mj-agent 全部场景 |
 | 服务 scope 表 (`aec/dqv/qvl/qcm/sac/fc`) | mj-system ETL 微服务 | **DROP** | mj-agent 无这些服务；保留就是垃圾 scope |
 | 基础设施 scope 表 (`db/docker/ci/deps/n8n`) | mj-system 跨 ETL 共享层 | **ADAPT** → mj-agent 版本（保留 `db/ci/deps/infra`，删 `docker/n8n`） | mj-agent 无 docker / n8n |
-| **新增** mj-agent 代码 scope (`agent/llm/prompt/skill/sql/config`) | — | **ADAPT**（[[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|新 STANDARD]] §4.1） | 来自 `src/mj_agent/` 真实模块 |
+| **新增** mj-agent 代码 scope (`agent/llm/prompt/skill/sql/config`) | — | **ADAPT**（[[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|新 STANDARD]] §4.1） | 来自 `src/mj_agent/` 真实模块 |
 | **新增** mj-agent 跨代码 scope (`tests/eval`) | — | **ADAPT**（同上 §4.2） | `tests/` 已存在；`eval/` Phase 2 |
 | `docs` 仅作 type 不作 scope | mj-system §4.3 | **KEEP** | 干净的语义；继承到新 STANDARD §4.3 |
 | 分支 × type 对齐矩阵 | mj-system §5.2 | **KEEP** 一字不改 | 与 GUIDE 的分支模型联动 |
@@ -187,7 +187,7 @@ frontmatter `dimensions` 列出的 4 个维度，每条规则按这 4 维打分�
 ### 6.1 本次随附 PR（已同时落地）
 
 - 本评估文档（[ASSESSMENT]）
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]]（state: draft）
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]]（state: draft）
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]（state: active）
 - `docs/INDEX.md` 同步（A5 硬门禁）
 - `CLAUDE.md` §Repo conventions 同步（A6 硬门禁）：扩写 commit 与分支两行、把新 STANDARD 路径写入、把 ADR 清单加入 010、加一行指向 ADR-010 + 本评估文档
@@ -234,7 +234,7 @@ A5 / A6 在本 PR 内已同步落地。剩余对齐项不阻塞门禁，但建�
 ### 8.1 项目内部
 
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 本评估的决策落地
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— 本评估的规范产出
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— 本评估的规范产出
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] —— 本评估自身遵循的治理框架（§3.2 ASSESSMENT 类型 / §4.4 ASSESSMENT 专属字段；本 PR 同时把 Framework 升至 v1.1，详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]；后续 v2.0 trio 演进见 [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]）
 - [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 继承 mj-system 治理的跨项目运维上下文
 - `plans/mj-agent-roadmap-v1.6.md` —— Phase 0 范围与退出条件

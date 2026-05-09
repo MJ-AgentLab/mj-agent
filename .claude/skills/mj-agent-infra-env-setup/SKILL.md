@@ -211,7 +211,7 @@ uv run pytest tests/eval
 - `CLAUDE.md` "Environment variables" 段
 - `pyproject.toml` / `uv.lock`（依赖）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（Studio 探针前置）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.7 Rule 15（C 风味 secret 同步硬约束）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.7 Rule 15（C 风味 secret 同步硬约束）
 
 ## Handoff
 

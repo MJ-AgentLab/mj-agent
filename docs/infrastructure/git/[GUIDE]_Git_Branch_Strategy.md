@@ -234,7 +234,7 @@ main              ← 可部署版本（受保护，只接受 PR 合并）
 
 ### 3.1 为什么要区分这两个概念
 
-项目中有两套分类体系：**分支类型**和 **Commit 类型**（详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]）。它们描述的层次不同：
+项目中有两套分类体系：**分支类型**和 **Commit 类型**（详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]）。它们描述的层次不同：
 
 - **分支类型**标识一段工作的整体性质（我在做什么类型的工作）
 - **Commit 类型**标识单次提交的变更性质（这次提交做了什么类型的改动）
@@ -579,7 +579,7 @@ mj-agent/
 | `deps` | `pyproject.toml`、`uv.lock` | `infra(deps): 升 langgraph 到 1.1.9` |
 | `infra` | 跨领域兜底 | `infra(infra): 新增 scripts/setup-env.ps1` |
 
-完整 scope 定义见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] §4。
+完整 scope 定义见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] §4。
 
 ---
 
@@ -588,7 +588,7 @@ mj-agent/
 - [[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — 推送前检查 + 推送流程
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 

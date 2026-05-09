@@ -46,7 +46,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 | 5 类临时分支（feature/bugfix/documentation/maintain/hotfix） | **KEEP** | 同上 |
 | 6 份 PR 模板（每分支类型一份） | **KEEP**（已安装、零边际成本） | 首次贡献者选错模板 |
 | 7 步 pre-push 检查清单 | **KEEP** 作为 guidance，**NOT** 强制为 hook | Phase 1：评估 hook 自动化 |
-| Conventional Commits `type(scope): summary` | **ADAPT** → [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|MJ-Agent Commit Message Convention v1.0]] | 见该规范 §9 promotion criteria |
+| Conventional Commits `type(scope): summary` | **ADAPT** → [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message Convention v1.0]] | 见该规范 §9 promotion criteria |
 | 服务 scope `aec/dqv/qvl/qcm/sac/fc` | **DROP**（与 mj-agent 无关） | N/A |
 | 7 个 type（`feat/fix/perf/refactor/test/docs/infra` + `merge`） | **KEEP**（一字不改） | 引入新业务领域时评估增加 |
 | 分支 × type 对齐矩阵 | **KEEP**（一字不改），仅 scope 列重建 | N/A |
@@ -57,7 +57,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 具体落地：
 
-1. 本 PR 同时落地 [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]]（`state: draft`）作为对前述 ADAPT 决策的执行
+1. 本 PR 同时落地 [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]]（`state: draft`）作为对前述 ADAPT 决策的执行
 2. 配套评估文档 [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|本决策的依据]] 记录证据来源
 3. **本 PR 故意不更新 `CLAUDE.md` §Repo conventions**——属于 Framework v1.0 §6.4 allowlist 触发的 A6 同步检查，但用户决策范围（评估 + 规范 + ADR 三件套）不含 CLAUDE.md 编辑。承诺紧接的下一个 PR 修复（见 §Consequences "中性"）
 
@@ -95,7 +95,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 ## References
 
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 本决策的证据
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— 本决策的执行
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— 本决策的执行
 - [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 跨项目边界（独立 compose project + consumer 关系）上下文
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] §6.4 / §7.1 A6 —— CLAUDE.md 同步约束（本 PR 故意不过的门禁；v1.1 已归档，等价语义见 v2.0 trio Meta + Code_Side §7.1 A6）
 - mj-system 源文档：

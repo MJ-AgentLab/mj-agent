@@ -16,7 +16,7 @@ Authors full mj-agent working Plan body — `plans/[PLAN]_*.md` content covering
 | `mj-agent-doc-plan`（PR-B4） | **WHAT documentation is needed** | Doc evaluation only — Action=Create/Update/None per type |
 | `mj-agent-flow-plan`（本 skill） | **HOW the work proceeds** (full Plan body) | Stage 4 — orchestrates 8 plan sections; sub-calls doc-plan for doc-decision sub-section |
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.5（Stage 4 Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.5（Stage 4 Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
 
 > mj-agent 当前**没有 TEMPLATE_PLAN.md**（Phase D 起首份；当前用现存 plans/ 范例作为 reference style）。
 
@@ -100,7 +100,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 
 **Delegate to mj-agent-doc-plan**：根据 scope 评估 10 类文档（Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / Local ISSUE / ASSESSMENT / CHANGELOG / INDEX）每类 Action（Create / Update / None） + Path + Reason。
 
-PR-B4 之前：手工填 §7.1 矩阵，参 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §4.4 / §4.5 + Stage 3 Repo Scan §7.1 同款表。
+PR-B4 之前：手工填 §7.1 矩阵，参 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.4 / §4.5 + Stage 3 Repo Scan §7.1 同款表。
 
 输出嵌入 Plan §3 任务拆解末尾或单独 §3.X 子段。**不**直接写 doc 内容（那是 Stage 6 / Stage 8 by mj-agent-doc-author / mj-agent-flow-implement）。
 
@@ -254,10 +254,10 @@ state: "active"
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.5（Stage 4 Rules + Output 字段）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.5（Stage 4 Rules + Output 字段）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` §7.1（Lite Phase A 占位）
 - 现存 `plans/[PLAN]_*.md` 范例（mj-agent 当前 Plan 风格 reference）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]（working vs canonical 边界）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（working vs canonical 边界）
 - `.claude/skills/mj-agent-doc-plan/SKILL.md`（PR-B4 落地，Step 3 子例程）
 - `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（Stage 3 前置）
 - `.claude/skills/mj-agent-doc-author/SKILL.md`（PR-B4 落地，Stage 6 接力）

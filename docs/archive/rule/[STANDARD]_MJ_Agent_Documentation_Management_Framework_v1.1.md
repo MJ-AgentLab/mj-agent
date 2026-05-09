@@ -245,7 +245,7 @@ Agent runtime 从 `src/mj_agent/skills/` 和 `src/mj_agent/prompts/` 加载 SKIL
 ## 4 命名与 Frontmatter
 
 > [!NOTE]
-> 本章定义 **字段语义**（必填字段、取值约束、专属字段）。YAML 语法（缩进、引号、多行、日期格式、GitHub 渲染行为）见 [[STANDARD]_GitHub_Markdown_v1.0|GitHub Markdown 规范 v1.0]] §13。
+> 本章定义 **字段语义**（必填字段、取值约束、专属字段）。YAML 语法（缩进、引号、多行、日期格式、GitHub 渲染行为）见 [[STANDARD]_GitHub_Markdown|GitHub Markdown 规范 v1.0]] §13。
 
 ### 4.1 文件命名
 

@@ -19,7 +19,7 @@ Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flo
 
 **Reference**:
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位；mj-agent 调版 Phase B+ 派生）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 Intake prompt）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 Intake prompt）
 
 ## Workflow
 
@@ -77,7 +77,7 @@ digraph intake {
 
 ## Step 1: 识别任务类型
 
-mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]] §5）：
+mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5）：
 
 | Type | Description | Base Branch | PR Target |
 |---|---|---|---|
@@ -148,11 +148,11 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 ### 文档需求
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §4.4 / §4.6 + Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.4 / §4.6 + Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
 
 ## Step 8: HITL 触发
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §3.1 13 项必停规则（通用 9 + mj-agent 专属 4）：
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.1 13 项必停规则（通用 9 + mj-agent 专属 4）：
 
 通用必停：
 1. 任务目标/范围/AC 不清楚
@@ -269,9 +269,9 @@ bugfix/hotfix 加 Reproduction / Expected vs Actual / Environment 段（参 mj-a
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §3.1 + §4.1（Stage 0 Intake prompt）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1 + §4.1（Stage 0 Intake prompt）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位上游）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention]]（type/scope）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]（type/scope）
 - [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）
 - mj-system `.claude/skills/mj-sys-flow-intake/SKILL.md`（直接派生源）
 

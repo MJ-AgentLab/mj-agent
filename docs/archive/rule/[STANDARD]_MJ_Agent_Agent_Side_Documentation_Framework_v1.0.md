@@ -8,7 +8,7 @@ updated: 2026-04-29
 state: deprecated
 version: v1.0
 track: agent
-derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
+derives_from: mj-agent@[STANDARD]_MJ_Agent_Documentation_Meta_Framework
 tags:
   - standard
   - documentation
@@ -22,12 +22,12 @@ aliases:
 
 # MJ-Agent 智能体侧文档治理框架 v1.0（Track B，archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §2/§7.5 scope 明确 in-source only（`.claude/skills/**` 排除出本框架治理，划归 Meta v2.1 §3.10）；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
+> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §2/§7.5 scope 明确 in-source only（`.claude/skills/**` 排除出本框架治理，划归 Meta v2.1 §3.10）；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
 >
-> **历史骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote。
+> **历史骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
-> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+> **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 
 ---
 
@@ -49,7 +49,7 @@ aliases:
 
 ## 1. 设计目标
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §1，针对智能体侧补充五条独有原则：
+承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §1，针对智能体侧补充五条独有原则：
 
 | 原则 | 说明 |
 |---|---|
@@ -148,7 +148,7 @@ eval_references:
 
 ### 3.1 版本演进
 
-沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §5.5（PROMPT 版本演进 + deprecate 移动）。
+沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §5.5（PROMPT 版本演进 + deprecate 移动）。
 
 ### 3.2 EVAL 引用（A8）
 
@@ -185,7 +185,7 @@ eval_references:
 
 ## 5. CONTRACT (agent-facing tool) Authoring（§3.4，~~Phase 0.5 紧迫~~ → phase 推迟，待项目负责人决议）
 
-仅治理 `contract_kind: tool` 与 agent-facing `contract_kind: mcp`；跨服务 CONTRACT 见 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side]]（或 `track: shared`）。
+仅治理 `contract_kind: tool` 与 agent-facing `contract_kind: mcp`；跨服务 CONTRACT 见 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side]]（或 `track: shared`）。
 
 > **TODO Phase 0.5**（紧迫，与 SQL guardrail 接口稳定同期）：
 > - tool 子类必填字段：input_schema / output_schema / 错误码 / 幂等性 / 副作用 / SLO
@@ -315,9 +315,9 @@ mj-agent 仓内 in-source SKILL.md（`src/mj_agent/skills/**/SKILL.md`）与 mar
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+- 派生自：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 - 决策记录：[[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]
-- 同期子框架：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]
+- 同期子框架：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
 - 实施计划：[[../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]]
 - 行业精度：
   - Anthropic Skills 仓（github.com/anthropics/skills）：SKILL.md + bundled resources 工业标准

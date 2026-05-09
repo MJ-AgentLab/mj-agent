@@ -16,7 +16,7 @@ description: This skill processes review comments and CI failures on **your own*
 | `/mj-agent-git-review-pr`（PR-B3） | **审别人 PR** | Architecture / design / merge-readiness review |
 | `/mj-agent-flow-review-respond`（本 skill） | **回应自己 PR comments** | Stage 15 of HITL flow — 处理收到的 feedback |
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.13（Stage 15 Rules + Output 6 字段）+ Meta v2.0 §4.7 双段约束（修复后须出双段证据）.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.13（Stage 15 Rules + Output 6 字段）+ Meta v2.0 §4.7 双段约束（修复后须出双段证据）.
 
 ## Workflow
 
@@ -81,7 +81,7 @@ gh pr checks <pr-id>                                         # CI status detail
 
 ## Step 2: Classify Each Comment
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt]] §4.13 Rules 2，每条 comment 归类（一条可多类）：
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.13 Rules 2，每条 comment 归类（一条可多类）：
 
 | 类别 | 触发特征 | 例 |
 |---|---|---|
@@ -263,8 +263,8 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.13（Stage 15 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §4.7（修复后须出双段证据）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.13（Stage 15 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（修复后须出双段证据）
 - [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（PR description / 回复规范）
 - `.claude/skills/mj-agent-git-review-pr/SKILL.md`（PR-B3 落地，方向相反对照）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 commit 前自检；与本 skill 时序衔接）

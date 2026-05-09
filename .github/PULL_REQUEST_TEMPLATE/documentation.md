@@ -9,10 +9,10 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 ## 变更原因
 <!-- 为什么需要这次文档更新 -->
 
-## 自检结果（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §7.1）
+## 自检结果（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）
 
 <details>
-<summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side §7.1]]</summary>
+<summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §7.1]]</summary>
 
 - [ ] **A1** 路径与文件名符合命名约定（`[TYPE][_Subject]_Description[_vX.Y].md` 或类型专属格式）
 - [ ] **A2** Canonical 文档 frontmatter schema 完整（`type` / `domain` / `summary` / `owner` / `created` / `updated` / `state`；`[STANDARD]`/`[SPEC]`/`[SKILL]`/`[PROMPT]`/`[EVAL]`/`[CONTRACT]` 还需 `version`）
@@ -25,7 +25,7 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 </details>
 
 <details>
-<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side §7.1]]</summary>
+<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
 
 - [ ] **A7** 若新增/修改 `[SKILL]`，`src/mj_agent/skills/<name>/` 目录存在且名称一致
 - [ ] **A8** 若新增/修改 `[PROMPT]` 且 `state: active`，`eval_references` 非空（Phase 2 起强制）

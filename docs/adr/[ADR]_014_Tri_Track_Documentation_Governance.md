@@ -21,7 +21,7 @@ tags:
 
 ## Context
 
-[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] +  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]] + [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]（"v2.0 trio"）2026-04-29 落地为 active 状态后，dual-track 治理体系（code / agent / shared）已运行 ~1 个月。但 v2.0 期间留下的两个未解决空白逐步显现：
+[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] +  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]] + [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]（"v2.0 trio"）2026-04-29 落地为 active 状态后，dual-track 治理体系（code / agent / shared）已运行 ~1 个月。但 v2.0 期间留下的两个未解决空白逐步显现：
 
 ### 空白 1：v2.0 §7.6 `.claude/` 边界长期 TODO
 
@@ -240,15 +240,15 @@ flow + git family in-tree（与项目流程紧耦合）；doc + runtime + infra 
 ## References
 
 - 直接前置：
-  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]（被 v2.1 升级）
-  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]（被 v1.1 minor bump）
-  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]（被 v1.1 minor bump）
+  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（被 v2.1 升级）
+  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]（被 v1.1 minor bump）
+  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]（被 v1.1 minor bump）
 - 同期落地（PR-A1）：
-  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1]]
-  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]]
-  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]
+  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]
+  - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
+  - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - 同期 Phase A 后续 PR：
-  - PR-A2：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] + [[[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
+  - PR-A2：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] + [[[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
   - PR-A3：3 模板（RUNBOOK / SPEC / HITL_STAGE）
 - Phase B 起首：[[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + git family 5 P0 skills
 - 关联现有 ADR：

@@ -263,7 +263,7 @@ docker exec mj-agent-postgres psql -U mj_agent_memory -d mj_agent_memory -c "\dt
 - [[../../../infra/docker/README.md|infra/docker/README.md]]（compose 详细说明，如有）
 - [[../../../docs/adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]（独立 compose project + mj-system-backend-network external 边界）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（dev mode 替代方案：uv run langgraph dev，不依赖 compose）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.7 Rule 13（compose 改动后必排练 up/down，记录 PR）+ §4.8 Level B / Level C 命令矩阵
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.7 Rule 13（compose 改动后必排练 up/down，记录 PR）+ §4.8 Level B / Level C 命令矩阵
 - mj-system upstream `mj-sys-ops-env-{setup,teardown}/SKILL.md`（间接派生源；mj-agent 简化为本 skill 的 lifecycle 段 + 独立 compose 项目；不实现 ETL 编排）
 
 ## Anti-patterns

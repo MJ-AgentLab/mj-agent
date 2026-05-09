@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to create a branch, na
 
 ## Overview
 
-Creates and manages Git branches for **mj-agent** following the project's bare-repo + worktree-per-branch convention. **5 temporary branch types** (per [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Convention v1.0]] §5)—`feature/*`、`bugfix/*`、`documentation/*`、`maintain/*`、`hotfix/*`—plus 2 protected permanent branches (`main`、`develop`)。
+Creates and manages Git branches for **mj-agent** following the project's bare-repo + worktree-per-branch convention. **5 temporary branch types** (per [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]] §5)—`feature/*`、`bugfix/*`、`documentation/*`、`maintain/*`、`hotfix/*`—plus 2 protected permanent branches (`main`、`develop`)。
 
 > mj-agent **不**用 `optimization/`（与 mj-system 差异；详见 ADR-010 / Commit Convention §5.2）。
 

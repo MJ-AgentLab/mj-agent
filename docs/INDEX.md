@@ -11,7 +11,7 @@ track: shared
 
 # mj-agent 文档索引
 
-> 本索引是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]] §6.2，
+> 本索引是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]] §6.2，
 > 进入 Phase 2 后将改为从各文档 frontmatter `summary` 字段扫描生成。
 
 ---
@@ -20,12 +20,12 @@ track: shared
 
 | 文档 | 摘要 |
 |------|------|
-| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|mj-agent 文档治理元框架 v2.1]] (active) | 元框架（v2.0 升级）—— 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；v2.0 已 archive |
-| [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|mj-agent 代码侧文档治理框架 v1.1（Track A）]] (active) | Track A minor bump（v1.0 → v1.1）— §0/§3.9/§7.3 加注 Track C engineering-workflow 共享 A1-A6 + cross-ref 工程流程 STANDARDs；与 Meta v2.1 同期 promote；v1.0 已 archive |
-| [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|mj-agent 智能体侧文档治理框架 v1.1（Track B）]] (active) | Track B minor bump（v1.0 → v1.1）— §2/§7.5 scope 明确为 in-source only；`.claude/skills/**` 排除出本框架治理（划归 Meta v2.1 §3.10）；v1.0 已 archive |
-| [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (active) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；派生自 mj-system v1.0；§4 含 mj-agent 专属 3 风味 Implementation + EVAL backlog ticket 自动开单；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+） |
-| [[STANDARD]_GitHub_Markdown_v1.0\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.1 §4 字段语义互补 |
-| [[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft；派生自 mj-system v2.0） |
+| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|mj-agent 文档治理元框架 v2.2]] (active；stable path) | 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018；mj-system v5.2 §4.1 派生；partial supersede ADR-011 §4.2 + §5.6.2）；v2.1 sustained §3.10 + §7.6 + §5.9；v2.1/v2.0 已 archive |
+| [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|mj-agent 代码侧文档治理框架 v1.1（Track A）]] (active) | Track A minor bump（v1.0 → v1.1）— §0/§3.9/§7.3 加注 Track C engineering-workflow 共享 A1-A6 + cross-ref 工程流程 STANDARDs；与 Meta v2.1 同期 promote；v1.0 已 archive |
+| [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|mj-agent 智能体侧文档治理框架 v1.1（Track B）]] (active) | Track B minor bump（v1.0 → v1.1）— §2/§7.5 scope 明确为 in-source only；`.claude/skills/**` 排除出本框架治理（划归 Meta v2.1 §3.10）；v1.0 已 archive |
+| [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (active) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；派生自 mj-system v1.0；§4 含 mj-agent 专属 3 风味 Implementation + EVAL backlog ticket 自动开单；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+） |
+| [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.1 §4 字段语义互补 |
+| [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft；派生自 mj-system v2.0） |
 
 ## 架构决策（docs/adr/）
 
@@ -46,6 +46,7 @@ track: shared
 | [[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015 HITL_Prompt v1.0 Derivation from mj-system]] | WORKFLOW | accepted | 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 verbatim + §4 mj-agent 适配（去 n8n / 加 3 风味 Implementation / 加 runtime+infra 类目）+ §5 mj-agent skill 矩阵；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+）；Stage 8 Implementation 三风味（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ Stage 17 Post-merge EVAL backlog ticket 自动开单为 mj-agent 专属 |
 | [[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | 决议 mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow 9 / git 9 / doc 6 / runtime 4 / infra 4 = 32）+ 与 marketplace mj-agent-code-doc 插件共存 + lifecycle (P0/P1/P2 + sunset 规则)；PR-B1 起首落地（git family 5 P0 skills + TEMPLATE_WORKFLOW_SKILL.md + 本 ADR） |
 | [[ADR]_017_Archive_Trigger_Quantification\|ADR-017 Archive Trigger Quantification]] | SYS | accepted | 引入 4 类必触发 + 1 类反例的归档量化判定（mj-system v5.2 §10.1 派生），落 Meta v2.1 §5.9；消除 ADR-011 §5.6.1 HITL 判断模糊；不 supersede ADR-011（仅细化触发条款可执行性）；3-PR 序列（C→A→B）第 1 步 |
+| [[ADR]_018_Active_Path_Stability\|ADR-018 Active Path Stability]] | SYS | accepted | 引入 active canonical 路径稳定原则（active 文件名默认无 `_vX.Y` 后缀；版本仅在 frontmatter；mj-system v5.2 §4.1 派生）；**partial supersede** ADR-011 §4.2 filename rule + §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期 rename（仅 Meta v2.1 触发 archive ceremony）；3-PR 序列（C→A→B）第 2 步 |
 
 ## 评估（docs/assessments/）
 
@@ -61,31 +62,32 @@ track: shared
 |---|---|---|
 | [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0\|Framework v1.0（archive）]] | [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）和 §4.2 filename `_vX.Y` 强制规则 |
 | [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：[[archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0（archive）]] | v2.0 引入 `track` frontmatter 字段与双轨子框架（Code_Side / Agent_Side），把 authoring 深度规则与 PR 校验门禁按轨拆分；详见 [[adr/[ADR]_012_Two_Track_Documentation_Governance\|ADR-012]] |
-| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0（archive）]] | v2.1 trio：[[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta_Framework v2.1]] + [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|Agent_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理 + §7.6 .claude/ 边界正式条款；详见 [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]] / [[adr/[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] / [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
+| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0（archive）]] + [[archive/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0（archive）]] | v2.1 trio：[[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.1]] + [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理 + §7.6 .claude/ 边界正式条款；详见 [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]] / [[adr/[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] / [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
+| [[archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta_Framework v2.1（archive）]] | [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.2（stable path）]]（其他 5 STANDARDs in-place rename，无 archive） | v2.2 引入 §4.4 active canonical 路径稳定原则（[[adr/[ADR]_018_Active_Path_Stability\|ADR-018]] 决议；mj-system v5.2 §4.1 派生）；**partial supersede** ADR-011 §4.2 filename rule + §5.6.2 file-move-step；filename rename 触发 [[adr/[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] §5.9 trigger #4；3-PR 序列（C→A→B）第 2 步 |
 
 ## 模板（docs/\_templates/）
 
 | 模板 | 用途 |
 |------|------|
 | `TEMPLATE_ADR.md` | 架构决策记录骨架 |
-| `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.1 |
+| `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.1 |
 | `TEMPLATE_SKILL.md` | in-source SKILL 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`；13 字段 + 五段式） |
 | `TEMPLATE_PROMPT.md` | in-source PROMPT 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
-| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.4 |
+| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.4 |
 | `TEMPLATE_SPEC.md` (Phase A PR-A3) | SPEC 骨架；body 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；mj-agent tune（去 SQL DDL / n8n 段，加 EVAL coverage 段） |
-| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0\|HITL_Prompt v1.0]] 配套 |
+| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] 配套 |
 | `TEMPLATE_WORKFLOW_SKILL.md` (Phase B PR-B1) | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
-| `TEMPLATE_POSTMORTEM.md` (Phase D PR-D1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.5（Phase 2 deferred）|
-| `TEMPLATE_ISSUE.md` (Phase D PR-D1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.7（Phase D 落地） |
-| `TEMPLATE_ASSESSMENT.md` (Phase D PR-D1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.8 |
-| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；mj-system 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
+| `TEMPLATE_POSTMORTEM.md` (Phase D PR-D1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.5（Phase 2 deferred）|
+| `TEMPLATE_ISSUE.md` (Phase D PR-D1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.7（Phase D 落地） |
+| `TEMPLATE_ASSESSMENT.md` (Phase D PR-D1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.8 |
+| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；mj-system 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
 ---
 
 ## 运行时 canonical（in-source）
 
-按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta_Framework v2.1]] §2.3 / §4.6（沿用 v2.0 不变），以下文件虽位于 `src/` 但属于 canonical 治理范围：
+按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.1]] §2.3 / §4.6（沿用 v2.0 不变），以下文件虽位于 `src/` 但属于 canonical 治理范围：
 
 | 文件 | 类型 | 运行时作用 |
 |------|------|-----------|
@@ -210,5 +212,5 @@ track: shared
 ## 快速链接
 
 - 派生来源：[[STANDARD]_Documentation_Management_Framework_v5.0\|mj-system 文档管理框架 v5.0]]
-- Claude Code 工作区配置：`.claude/`（v2.0 active 期间整体出 governance；v2.1 draft 起将项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta v2.1]] §7.6 + [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]]）
+- Claude Code 工作区配置：`.claude/`（v2.0 active 期间整体出 governance；v2.1 draft 起将项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta v2.1]] §7.6 + [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]]）
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）

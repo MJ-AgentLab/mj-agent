@@ -1,15 +1,16 @@
 ---
 type: standard
 domain: SYS
-summary: 元框架（v2.0 升级）—— 引入第三轨 engineering-workflow（治理 .claude/ 与工程流程 STANDARD），track 字段允许值扩到四值，A12-A14 PR 门禁加入；骨架交付 Phase A
+summary: 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018 决议；mj-system v5.2 §4.1 派生）；3-PR 序列第 2 步；其他 §1-§10 沿用 v2.1
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-09
 state: active
-version: v2.1
+version: v2.2
 track: shared
-derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0
+derives_from: mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1
 supersedes:
+  - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1"
   - "mj-agent@archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
 tags:
   - standard
@@ -18,21 +19,35 @@ tags:
   - meta
   - tri-track
   - engineering-workflow
+  - active-path-stability
 aliases:
-  - MJ-Agent Documentation Meta Framework v2.1
-  - mj-agent 文档治理元框架 v2.1
+  - MJ-Agent Documentation Meta Framework v2.2
+  - MJ-Agent Documentation Meta Framework
+  - mj-agent 文档治理元框架 v2.2
+  - mj-agent 文档治理元框架
 ---
 
-# MJ-Agent 文档治理元框架 v2.1
+# MJ-Agent 文档治理元框架
 
-> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`。本文档及同期 [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] / [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] / [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] 全部转 active；A12-A14 PR 门禁强制启用。节奏对齐 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] HITL A3 模式 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first。
-> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0（archive）]]
-> **首要变更**：引入第三轨 `engineering-workflow`（治理 `.claude/` + 工程流程 STANDARD + HITL_Prompt 类资产）+ A12-A14 PR 门禁 + §6.4.1 CLAUDE.md sync 三段化 + §7.6 `.claude/` 边界从 TODO 升级为正式条款
-> **决策记录**：[[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]
+> **状态（Phase C-1a 完成后）**：`state: active`，`version: v2.2`（frontmatter）。**Active canonical 路径稳定原则**首次落地：本文档文件名**无 `_vX.Y` 后缀**（stable path = `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`）；版本仅在 frontmatter `version` 字段。详见 §4.4 + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
+> **派生自**：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
+> **首要变更**（v2.1 → v2.2）：§4.4 active canonical 路径稳定原则（ADR-018；partial supersede ADR-011 §4.2 + §5.6.2）+ 6 STANDARDs 文件名去后缀
+> **决策记录**：[[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]
+
+> [!info]
+> **v2.1 → v2.2 主要变化**（issue [#78](https://github.com/MJ-AgentLab/mj-agent/issues/78)）：
+> - §4.4 新增 "Active canonical 路径稳定原则" — active 文件名默认无 `_vX.Y` 后缀；版本只在 frontmatter；legacy 反向必带后缀
+> - 6 active STANDARDs 同期 rename（5 个 in-place + Meta v2.1 archive ceremony）
+> - PR_TEMPLATE drift 同步修（Phase B 漏改）
+> - scripts/check_wikilinks.py NEEDLES 扩 6 模式（临时；C-3 通用化）
+> - **Partial supersede ADR-011** §4.2 filename rule + §5.6.2 file-move-step；ADR-011 §5.6.1（已被 ADR-017 §5.9 细化）/ §5.6.3 / §5.6.4 保留有效
+> - 上一版（v2.1）归档于 [docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md](../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1.md)
 
 ---
 
-## 0. v2.0 → v2.1 升级范围速览
+## 0. v2.0 → v2.1 升级范围速览（保留为历史记录）
+
+> v2.1 引入第三轨 engineering-workflow（含 §3.10 + §6.4.1 三段化 + §7.7 A12-A14）。v2.2 不改 v2.1 三轨设计；仅加 §4.4。
 
 | 维度 | v2.0 现状 | v2.1 目标态 |
 |---|---|---|
@@ -51,7 +66,7 @@ aliases:
 - 类型枚举不变（仍 12 类 canonical）
 - 字段集不变（仅 `track` 允许值多一个）
 - §7.5 frontmatter strip 契约范围不变（仅治 `src/mj_agent/{skills,prompts}/**`，不扩到 `.claude/skills/**`）
-- ADR-013 in-tree vs marketplace plugin schema 边界不变；本 v2.1 不让 §2（Agent_Side 13 字段 schema）扩到 `.claude/skills/`，详见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §2 scope note
+- ADR-013 in-tree vs marketplace plugin schema 边界不变；本 v2.1 不让 §2（Agent_Side 13 字段 schema）扩到 `.claude/skills/`，详见 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2 scope note
 
 ---
 
@@ -59,7 +74,7 @@ aliases:
 
 > 元框架的职责是治"跨轨共同规则"，**不**治某一轨的具体内容深度。
 
-承接 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §1 全部核心原则；新增三轨原则：
+承接 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] §1 全部核心原则；新增三轨原则：
 
 | 原则 | 说明 |
 |---|---|
@@ -73,8 +88,9 @@ aliases:
 | skeleton-first 演进（v2.0） | 见 v2.0 §1 |
 | **三轨分轨**（v2.1 新增） | 在双轨之外引入 Track C engineering-workflow；治理"开发者使用 Claude Code 执行任务时"的工作流资产（`.claude/skills/` + HITL_Prompt + `.mcp.json`）；失败模式为**流程漂移**（HITL 跳过 / 错 skill / settings 退化），与 Track A 响亮失败和 Track B 沉默失败均不同 |
 | **plugin loader 边界尊重**（v2.1 新增） | Track C 资产由 Claude Code 主进程 load，不经 mj-agent Python loader；§7.5 frontmatter strip 契约对其无效；Track C SKILL 仅用 ADR-013 native 2 字段 schema |
+| **Active canonical 路径稳定**（v2.2 新增） | Active 文件名默认无 `_vX.Y` 后缀（version 仅在 frontmatter）；legacy 反向必带后缀；drop-suffix rename 视为 rule application（非 §5.9 #4 改名 trigger）；详见 §4.4 + ADR-018 |
 
-详见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Context。
+详见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Context 与 [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]] §Context。
 
 ---
 
@@ -109,7 +125,7 @@ mj-agent/
 │   ├── infrastructure/
 │   ├── issues/
 │   ├── postmortem/
-│   ├── rule/                           # 含 v2.0 trio + v2.1 trio + HITL_Prompt + 工程流程 STANDARD
+│   ├── rule/                           # 含 v2.1 trio active + HITL_Prompt + 工程流程 STANDARD（v2.2: 全部 stable path 无后缀）
 │   ├── runbook/
 │   └── archive/
 ├── plans/                              # working 层
@@ -125,13 +141,13 @@ mj-agent/
 |------|------|------|-----|------|
 | **Canonical** | `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/{skills,prompts}/**` + **`.claude/skills/**`**（v2.1 加入）+ **`.claude/scripts/**`**（v2.1 加入）+ **`.claude/settings.json`**（v2.1 加入）+ **`.mcp.json`**（v2.1 加入） | 项目权威文档 / 工作流资产 | 是 | `[STANDARD]`、`[SKILL]`、`[ADR]`、`mj-agent-flow-intake/SKILL.md` |
 | **Working** | `plans/**` | 任务计划 | 否，轻治理 | `[PLAN]_*.md` |
-| **Legacy** | `docs/archive/legacy/**` | 历史材料 | 否，仅保留可读性 | 暂无 |
+| **Legacy** | `docs/archive/**` | 历史材料；v2.x 起 archive 子目录按原 subdir 镜像（rule/ 等） | 否，仅保留可读性 | `docs/archive/rule/[STANDARD]_..._v2.1.md` |
 
 > **关键边界**：`.claude/settings.local.json` + `~/.claude/**`（用户全局）+ marketplace plugin（`mj-agentlab-marketplace/**`）**不**纳入本框架治理。详见 §7.6。
 
 ### 2.3 in-source canonical 设计理由
 
-沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §2.3。仅治 `src/mj_agent/{skills,prompts}/**`；§7.5 frontmatter strip 契约只对此范围有意义。
+沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §2.3。仅治 `src/mj_agent/{skills,prompts}/**`；§7.5 frontmatter strip 契约只对此范围有意义。
 
 ### 2.4 分层规则（v2.1 加 Track C 行）
 
@@ -141,32 +157,32 @@ mj-agent/
 | 运行时 skill 进 in-source canonical | `src/mj_agent/skills/biz-domain-context/SKILL.md` | `docs/design/skills/[SKILL]_*.md` |
 | **工程流程 skill 进 in-tree `.claude/skills/`**（v2.1 新增） | `.claude/skills/mj-agent-flow-intake/SKILL.md` | `src/mj_agent/skills/mj-agent-flow-intake/`（混入运行时，loader 错装） |
 | 任务计划进 working | `plans/[PLAN]_*.md` | `docs/plans/...` |
-| 历史材料进 legacy | `docs/archive/legacy/<file>.md` | `docs/postmortem/<legacy-report>.md` |
-| 版本退役进 archive subdir | `docs/archive/rule/[STANDARD]_..._v1.1.md` | `docs/rule/old/...` |
+| 历史材料进 archive | `docs/archive/rule/[STANDARD]_..._v2.1.md` | `docs/postmortem/<legacy-report>.md` |
+| **Active canonical 文件名稳定**（v2.2 新增） | `docs/rule/[STANDARD]_..._Meta_Framework.md`（无后缀） | `docs/rule/[STANDARD]_..._Meta_Framework_v2.2.md`（除非多 active 主版本并存） |
 
-### 2.5 三轨子框架（v2.1 升级）
+### 2.5 三轨子框架（v2.2 stable path）
 
 ```
 docs/rule/
-├── [STANDARD]_..._Meta_Framework_v2.1.md            ← 元层（本文，v2.1）
-├── [STANDARD]_..._Code_Side_Framework_v1.1.md       ← Track A（v2.0 → v1.1，与本 v2.1 同 PR 落地）
-├── [STANDARD]_..._Agent_Side_Framework_v1.1.md      ← Track B（v2.0 → v1.1，与本 v2.1 同 PR 落地）
-├── [STANDARD]_..._AI_Engineering_Execution_HITL_Prompt_v1.0.md   ← Track C 主 STANDARD（PR-A2 落地）
-├── [STANDARD]_GitHub_Markdown_v1.0.md               ← 归 Code_Side（治渲染语法）
-└── [STANDARD]_..._Commit_Message_Convention_v1.0.md ← 归 Code_Side（治代码规约）
+├── [STANDARD]_..._Meta_Framework.md                      ← 元层（本文，v2.2；stable path）
+├── [STANDARD]_..._Code_Side_Documentation_Framework.md   ← Track A（v1.1；stable path）
+├── [STANDARD]_..._Agent_Side_Documentation_Framework.md  ← Track B（v1.1；stable path）
+├── [STANDARD]_..._AI_Engineering_Execution_HITL_Prompt.md ← Track C 主 STANDARD（v1.0；stable path）
+├── [STANDARD]_GitHub_Markdown.md                         ← 归 Code_Side（v1.0；stable path）
+└── [STANDARD]_..._Commit_Message_Convention.md           ← 归 Code_Side（v1.0；stable path）
 ```
 
-> **过渡期**：Phase A 期间 v2.0 trio（active）与 v2.1 trio（draft）共存；Phase B promote PR 后 v2.0 trio 转 archive。
+> **过渡**：v2.1 → v2.2 落地后，6 active STANDARDs 全部 stable path（无后缀）。Meta v2.1 归档至 `docs/archive/rule/`。其他 5 STANDARDs 不触发 archive ceremony（rule application 解读；ADR-018 §Decision）。
 
 ---
 
 ## 3. 类型与目录
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §3 全部规则。**类型枚举不变**（12 类 canonical）；track 默认值表加 engineering-workflow 行：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §3 全部规则。**类型枚举不变**（12 类 canonical）；track 默认值表加 engineering-workflow 行：
 
 | 类型 | 默认 track | 由哪个子框架治理深度规则 |
 |---|---|---|
-| GUIDE | code | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §3.1 |
+| GUIDE | code | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.1 |
 | ADR | shared（按主题决定） | Code_Side（code-ADR）/ Agent_Side（agent-ADR）/ **本框架（engineering-workflow-ADR，如 ADR-014/015/016）** |
 | SPEC | shared | 同 ADR |
 | RUNBOOK | code | Code_Side §3.4 |
@@ -203,7 +219,7 @@ docs/rule/
 
 ### 3.10 Engineering-workflow `[SKILL]` 治理（v2.1 新增）
 
-> **scope**：仅治 `.claude/skills/<name>/SKILL.md`（in-tree 工程流程技能）。**不**治 `src/mj_agent/skills/<name>/SKILL.md`（运行时；归 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §2）。**不**治 marketplace plugin SKILL.md（出 governance；详见 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]）。
+> **scope**：仅治 `.claude/skills/<name>/SKILL.md`（in-tree 工程流程技能）。**不**治 `src/mj_agent/skills/<name>/SKILL.md`（运行时；归 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2）。**不**治 marketplace plugin SKILL.md（出 governance；详见 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]）。
 
 #### 3.10.1 Frontmatter schema（ADR-013 native）
 
@@ -256,7 +272,7 @@ slash command 自然成形 `/mj-agent-<group>-<verb>`。
 
 ## 4. 命名与 Frontmatter
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §4 全部规则。**仅扩 §4.3.1 `track` 字段允许值**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §4 全部规则。**v2.1 扩 §4.3.1（track 字段）；v2.2 加 §4.4（active path stability）**。
 
 ### 4.3.1 track 字段（v2.1 扩值）
 
@@ -286,17 +302,44 @@ track: code | agent | engineering-workflow | shared
 > 7. 路径在 `docs/rule/` 治文档/代码/数据？→ **code** 或 **shared**
 > 8. 其他 → 默认 `shared` 并 PR body 论证
 
+### 4.4 Active canonical 路径稳定原则（v2.2 新增；ADR-018 决议）
+
+> **派生自** mj-system v5.2 §4.1 + changelog 2026-05-05。
+> **Partial supersede** [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §4.2 filename rule + §5.6.2 file-move-step。
+
+#### 4.4.1 主条款
+
+Active canonical 文件名**默认不带 `_vX.Y` 后缀**；文件名保持稳定路径。例如本框架的稳定路径是 `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`，而不是带版本后缀。文档语义版本写在 frontmatter `version` 字段和正文版本说明里，不写进文件名。
+
+#### 4.4.2 例外
+
+仅"多 active 主版本确需并存"（如 v1/v2 API 长期共存的 STANDARD）才允许文件名加 `_vX.Y` 区分；这是例外而非默认。
+
+#### 4.4.3 Legacy 反向规则
+
+归档文件**必须**保留 `_vX.Y` 或 `_pre_vX.Y` 后缀（cite-by-vintage；详见 ADR-011 §5.6 motivation Q1 + ADR-018 §Decision）。
+
+#### 4.4.4 rename 解读子规则
+
+drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 主条款），**非** §5.9 触发 #4 "改名"。仅当 STANDARD 同时发生 substantive content evolution 时才触发 archive ceremony。
+
+**先例**：mj-system v5.2 引入 stable-path 规则时同样：框架文件 archive（substantive 演进 + 改名双重）；其他 STANDARDs rename only（rule application）。本 PR Phase C-1a 沿此模式：Meta v2.1 archive ceremony；其他 5 STANDARDs in-place rename。
+
+#### 4.4.5 Cross-ref
+
+[[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（决策记录 + Alternatives 4 拒）；[[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6（partial supersede）；[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] §5.9（trigger #4 改名）。
+
 ---
 
 ## 5. 状态与生命周期
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
 
 ### 5.7 双轨语境下的 archive
 
 沿用 v2.0 §5.7。三轨语境同样适用：archive 时保留原 `track` 字段值（含新值 `engineering-workflow`）；living/frozen 引用判断不受 track 影响。
 
-### 5.8 v2.0 → v2.1 升级路径（v2.1 新增）
+### 5.8 v2.0 → v2.1 升级路径（v2.1 新增；保留为历史记录）
 
 本文档自身的"v2.0 → v2.1"升级遵循 ADR-011 §5.6.2 流程的**延迟 promote** 变体：
 
@@ -314,7 +357,7 @@ track: code | agent | engineering-workflow | shared
 | ✅ 是 | **框架大版本升级** | 如 Meta v2.x → v3.0；trio 整体演进 |
 | ✅ 是 | **STANDARD 结构性重构** | 如章节模板换代（12 章 → 5 章）；归档名加 `_pre_<新版本>` |
 | ✅ 是 | **70%+ 内容改写**（量化阈值） | 衡量原文 ≥ 70% 文本被替换 |
-| ✅ 是 | **拆分 / 合并 / 改名** | 1 doc → N doc；N doc → 1 doc；scope / 命名重定义 |
+| ✅ 是 | **拆分 / 合并 / 改名** | 1 doc → N doc；N doc → 1 doc；scope / 命名重定义；**注**：drop `_vX.Y` 后缀的 rename 视为 rule application（§4.4.4），**非**本触发；详见 [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]] §Decision |
 | ❌ 否 | 小修小补、patch 升级、字段补充、typo / 链接修 | → git 历史承担；不进归档目录 |
 
 **判定优先级**：4 类必触发条件按 (1)→(2)→(3)→(4) 顺序短路判定（满足任一即触发）。
@@ -323,13 +366,23 @@ track: code | agent | engineering-workflow | shared
 
 **HITL 入口**：本节判定结果直接喂给 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 HITL trigger；reviewer 在 PR review 阶段对照本节 5 类显式 cite。
 
-**Cross-ref**：[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（决策记录 + mj-system §10.1 派生论证 + Alternatives）；ADR-011 §5.6（Living/Frozen + filename rule，部分待 Phase C-1a ADR-018 反转）。
+**Cross-ref**：[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（决策记录 + mj-system §10.1 派生论证 + Alternatives）；ADR-011 §5.6（Living/Frozen + filename rule，§4.2 + §5.6.2 已被 ADR-018 partial supersede）；ADR-018 §Decision 子条款 §4.4.4（rename 解读）。
+
+### 5.10 v2.1 → v2.2 升级路径（v2.2 新增）
+
+本 STANDARD 自身的"v2.1 → v2.2"升级触发 §5.9 trigger #4（filename 改 + substantive 演进引入 §4.4）：
+
+1. **Phase C-1a**（PR-2 of 3-PR sequence；本 PR）：v2.1 → archive at `docs/archive/rule/[STANDARD]_..._Meta_Framework_v2.1.md`（`state: deprecated`）；v2.2 stable path（无后缀）at `docs/rule/[STANDARD]_..._Meta_Framework.md`（`state: active`；`version: v2.2`）
+2. 其他 5 STANDARDs（Code_Side / Agent_Side / HITL_Prompt / Commit_Message / GitHub_Markdown）同 PR rename only（§4.4.4 rule application 解读；ADR-018 §Decision 子条款）
+3. ADR-018 创建（partial supersede ADR-011 §4.2 + §5.6.2）；ADR-017 §5.9 trigger #4 sustained
+4. PR_TEMPLATE drift 同步修（Phase B 漏改）；scripts/check_wikilinks.py NEEDLES 扩 6 模式（C-3 通用化推迟）
+5. CLAUDE.md / docs/INDEX.md / CHANGELOG.md sync
 
 ---
 
 ## 6. 索引与引用规则
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §6 全部规则。**仅更新 §6.4.1**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §6 全部规则。**仅更新 §6.4.1**：
 
 ### 6.4 CLAUDE.md 同步策略
 
@@ -339,7 +392,7 @@ track: code | agent | engineering-workflow | shared
 
 CLAUDE.md 内部按 track 分段，元规则放最顶。落地结构（详见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]）：
 
-- 顶部 **元规则段**：Meta_Framework v2.x 自身 + `track: shared` 的 ADR（如 ADR-011 / ADR-012 / ADR-013 / ADR-014）
+- 顶部 **元规则段**：Meta_Framework v2.x 自身 + `track: shared` 的 ADR（如 ADR-011 / ADR-012 / ADR-013 / ADR-014 / ADR-017 / ADR-018）
 - `## Code-Side Documentation`：所属 allowlist 中 `track: code` 的项；Phase 1+ 由 `mj-agent-doc-sync`（in-tree workflow skill，PR-C1）维护
 - `## Agent-Side Documentation`：`track: agent` 项；维护方同上
 - **`## Engineering-Workflow Documentation`**（v2.1 新增）：`track: engineering-workflow` 项；A12-A14 门禁说明 + slash command 命名空间 + skill catalog 表 + HITL_Prompt 引用
@@ -350,15 +403,15 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 7. 自动校验与 PR 集成
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §7 全部规则。**校验门禁加 A12-A14**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §7 全部规则。**校验门禁加 A12-A14**：
 
 ### 7.1 PR 校验门禁（v2.1 三轨重新分配）
 
 | 编号 | 检查项 | 由哪个子框架治理 | 适用 track |
 |---|---|---|---|
-| A1-A6 | 路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1]] §7.1 | **全部 track**（hygiene 通用） |
+| A1-A6 | 路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §7.1 | **全部 track**（hygiene 通用） |
 | OB1-OB5 | 非阻塞观察项 | Code_Side §7.2 | 全部 track |
-| A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属（in-source） | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1\|Agent_Side v1.1]] §7.1 | **agent** |
+| A7-A10 | SKILL/PROMPT/EVAL/CONTRACT 专属（in-source） | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] §7.1 | **agent** |
 | A11 | SKILL `state: active` 时 `eval_references` 非空（in-source） | Agent_Side §7.1 | **agent** |
 | §7.5 frontmatter strip | loader 契约 | Agent_Side §7.5 | **agent**（仅 in-source） |
 | **A12**（v2.1 新增） | `.claude/skills/<name>/SKILL.md` ADR-013 native schema 合规 + description 质量（≥200 chars + 正向/反向触发） | 本框架 §7.7 + Phase C+ engineering-workflow 子规范 | **engineering-workflow** |
@@ -419,25 +472,28 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 8. 迁移与落地规则
 
-### 8.1 v2.0 → v2.1 升级路径（Phase A 起步 + Phase B promote）
+### 8.1 v2.0 → v2.1 → v2.2 升级路径
 
-> 详见本文 §5.8 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision。
+> 详见 §5.8 + §5.10 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
 
-1. **Phase A**（PR-A1，本 PR）：v2.1 trio（Meta v2.1 / Code_Side v1.1 / Agent_Side v1.1）+ ADR-014 + CLAUDE.md 三段化 以 `state: draft` 落地；v2.0 trio 保持 `state: active`
+1. **Phase A**（PR-A1）：v2.1 trio + ADR-014 + CLAUDE.md 三段化 以 `state: draft` 落地；v2.0 trio 保持 `state: active`
 2. **Phase A 续作**（PR-A2 / PR-A3）：HITL_Prompt v1.0 + ADR-015 + 模板补缺（RUNBOOK / SPEC / HITL_STAGE）
-3. **Phase B**（PR-B1...B4）：`.claude/skills/` 落地（git family + flow family + doc family）+ ADR-016；末次 PR（PR-B3）做 promote：v2.0 trio archive + v2.1 trio + HITL_Prompt → active
-4. **Phase C**：mj-agent 专属 skills（doc 完成 / runtime / infra）+ engineering-workflow 子规范（Claude_Code_Settings / MCP_Server_Governance）
-5. **Phase D**：Phase 2 alignment（EVAL framework / 模板补全 POSTMORTEM/ISSUE/ASSESSMENT/EVAL）
+3. **Phase B**（PR-B1...B4）：`.claude/skills/` 落地（git family + flow family + doc family）+ ADR-016；末次 PR 做 promote：v2.0 trio archive + v2.1 trio + HITL_Prompt → active
+4. **Phase C-2**（3-PR 序列第 1 步；PR #77 已合并 ff37b5f）：ADR-017 + Meta v2.1 §5.9 archive trigger quantification
+5. **Phase C-1a**（3-PR 序列第 2 步；本 PR）：ADR-018 + active path stability + Meta v2.1 archive ceremony + 5 STANDARDs rename + PR_TEMPLATE drift fix
+6. **Phase C-1b**（3-PR 序列第 3 步；待起）：ADR-019 + archive `[DEPRECATED]_` 前缀 + `archived` / `replaced-by` frontmatter
+7. **Phase C-2/3**：mj-agent 专属 skills（doc 完成 / runtime / infra）+ engineering-workflow 子规范（Claude_Code_Settings / MCP_Server_Governance）
+8. **Phase D**：Phase 2 alignment（EVAL framework / 模板补全 POSTMORTEM/ISSUE/ASSESSMENT/EVAL）
 
 ### 8.2 后续 phase 填充计划
 
-详见外部计划文件（项目负责人本地 `C:/Users/Admin/.claude/plans/d-workspace-10-software-project-projects-golden-shannon.md`，工作驱动文档）+ ADR-014 §References；如演化为正式工作记录，将由后续 PR 在 `plans/` 落地 `[PLAN]_G_Tri_Track_And_Engineering_Workflow.md`。
+详见外部计划文件（项目负责人本地 `C:/Users/Admin/.claude/plans/d-workspace-10-software-project-projects-glistening-shannon.md`，工作驱动文档）+ ADR-014 §References + ADR-017 §References + ADR-018 §References。
 
 ---
 
 ## 9. Domain 枚举
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §9 全部 15 项 + track 倾向。**新增 1 项**（v2.1）：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §9 全部 15 项 + track 倾向。**新增 1 项**（v2.1）：
 
 | 编号 | Domain | 默认 track | 说明 |
 |---|---|---|---|
@@ -450,7 +506,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ## 10. 快速操作清单
 
-> 沿用 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §10。**更新 §10.6**：
+> 沿用 [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §10。**更新 §10.6 + §10.7（v2.2 新增）**：
 
 ### 10.6 选择 track（v2.1 升级）
 
@@ -465,22 +521,36 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
    - 跨轨 / 模糊 → `shared`
 4. **边界规则**：见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4 边界 artifact 归属表
 
+### 10.7 选择文件名（v2.2 新增；§4.4 落地清单）
+
+新建 / 演进 active canonical 文档时，按 §4.4 决定文件名是否带 `_vX.Y`：
+
+1. **首版 STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT**：文件名**无后缀**（stable path）；frontmatter `version: v1.0`
+2. **演进** — 同时满足以下两条之一才触发 archive ceremony 并保留 active 文件名稳定（§4.4.4 + §5.9 trigger #4）：
+   - (a) substantive content evolution（§5.9 trigger #1/#2/#3 之一）
+   - (b) 多 active 主版本并存（§4.4.2 例外）
+3. **Drop-suffix rename**（如 `_v1.0.md` → 无后缀）：视为 rule application；不触发 archive
+4. **Legacy 归档**：必带 `_vX.Y` 或 `_pre_vX.Y` 后缀（§4.4.3）
+
 ---
 
 ## 参考
 
-- 派生自：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
-- 决策记录：[[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]
+- 派生自：[[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
+- 决策记录：
+  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.0 → v2.1 三轨）
+  - [[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（v2.1 §5.9 trigger 量化）
+  - [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（v2.2 §4.4 active path stability；partial supersede ADR-011 §4.2 + §5.6.2）
 - 同期子框架：
-  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]]
-  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]
-- Track C 主 STANDARD（PR-A2 落地）：`[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0]]`
+  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
+  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
+- Track C 主 STANDARD：`[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]`
 - Track C 后续子规范（Phase C+ 落地）：
   - `[[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0]]`（A13 阈值）
   - `[[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0]]`（A14 阈值）
-- 上游参考：mj-system v5.0+ `.claude/skills/` 35 in-tree skills + `[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md` v1.0
+- 上游参考：mj-system v5.2 `.claude/skills/` 35 in-tree skills + `[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md` v1.0 + `[STANDARD]_Documentation_Management_Framework.md` §4.1 / §10.1 / changelog 2026-05-05
 - 关联 ADR：
-  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] — 版本演进 + archive 工作流；本 v2.1 升级延迟 promote 即此模式变体
+  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] — 版本演进 + archive 工作流；§4.2 + §5.6.2 已被 ADR-018 partial supersede；§5.6.1 已被 ADR-017 §5.9 细化；§5.6.3 / §5.6.4 保留
   - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] — v1.1 → v2.0 双轨决策；本 v2.1 在其上加 Track C
   - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — in-tree vs marketplace SKILL schema 分离；本 v2.1 §3.10 / §7.7 A12 直接引用
-- 行业精度：Hugging Face / MLflow / LangChain Hub / Anthropic Skills 仓 / DSPy / Semantic Kernel / Twelve-Factor / NIST AI BoM（沿用 v2.0）；新增：mj-system `.claude/skills/` 35 skills + HITL_Prompt v1.0 17-stage 闭环（mj-agent 直接派生源）
+- 行业精度：Hugging Face / MLflow / LangChain Hub / Anthropic Skills 仓 / DSPy / Semantic Kernel / Twelve-Factor / NIST AI BoM（沿用 v2.0）；v2.1 新增：mj-system `.claude/skills/` 35 skills + HITL_Prompt v1.0 17-stage 闭环；v2.2 新增：mj-system v5.2 active path stability 实践

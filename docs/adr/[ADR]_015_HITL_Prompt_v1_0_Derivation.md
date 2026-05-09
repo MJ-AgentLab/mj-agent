@@ -41,7 +41,7 @@ mj-agent 项目负责人 2026-05-08 brainstorming 中明确选定 **"全量 17 s
 
 ### 差异 2：in-source canonical 的运行时角色
 
-mj-agent 的 `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/system.md` 是 **runtime LLM 上下文的字面输入**（[[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]] §2 + §7.5 frontmatter strip 契约）。任何 body 修改 = LLM 行为修改，是 §3.1 必停 HITL 项；mj-system 没有这种 in-source canonical 模式。
+mj-agent 的 `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/system.md` 是 **runtime LLM 上下文的字面输入**（[[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]] §2 + §7.5 frontmatter strip 契约）。任何 body 修改 = LLM 行为修改，是 §3.1 必停 HITL 项；mj-system 没有这种 in-source canonical 模式。
 
 ### 差异 3：业务数据语义镜像
 
@@ -110,7 +110,7 @@ mj-agent §4.7 引入 3 种实现风味（mj-system §4.7 没有显式区分，�
 
 - **职责**：propose diff、跑反向扫描、列出影响清单、给项目负责人审批材料
 - **禁止**：直接 `Edit` / `Write` 工具调用到 `src/mj_agent/{skills,prompts,agent.py,tools}/`
-- **强制机制**：每个 SKILL.md "Anti-patterns" 段必须明文写"Do NOT modify src/mj_agent/...";A12 描述质量门禁（[[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §7.7）校验该 anti-pattern 是否在 description 中提及
+- **强制机制**：每个 SKILL.md "Anti-patterns" 段必须明文写"Do NOT modify src/mj_agent/...";A12 描述质量门禁（[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.7）校验该 anti-pattern 是否在 description 中提及
 - **理由**：保持用户硬约束（"不能改变 mj-agent 项目本身的代码运行逻辑"）；Phase D 评估是否需要引入 hooks 兜底
 
 ### 决策点 5：EVAL backlog ticket 自动开单（A11 transitional waiver 衰减）
@@ -119,7 +119,7 @@ mj-agent §4.7 引入 3 种实现风味（mj-system §4.7 没有显式区分，�
 
 理由：
 
-- A11 EVAL 强制（[[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side]] §7.1）目前在 transitional waiver 期内（允许 SKILL `state: active` 但 `eval_references` 注释 TODO）
+- A11 EVAL 强制（[[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]] §7.1）目前在 transitional waiver 期内（允许 SKILL `state: active` 但 `eval_references` 注释 TODO）
 - 自动开 backlog ticket 让 transitional waiver 期内的所有改动有可追溯凭证；Phase D（Phase 2）启动时一次性补 EVAL 不会有遗漏
 - mj-system 没有此机制因为它的 SKILL.md 不是 runtime canonical，沉默失败模式不存在
 
@@ -218,10 +218,10 @@ mj-agent §4.7 引入 3 种实现风味（mj-system §4.7 没有显式区分，�
 ## References
 
 - 直接前置：
-  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]]（v2.1 tri-track 升级，PR-A1 落地）
+  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]]（v2.1 tri-track 升级，PR-A1 落地）
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（tri-track 决策，PR-A1 落地）
 - 同期落地（PR-A2，本 PR）：
-  - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]]
+  - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]
 - Phase B 起首：
   - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（mj-agent-* in-tree skills 命名空间 + lifecycle）
   - PR-B1...B4 落地 §5 矩阵 P0 13 个 skill

@@ -215,10 +215,10 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3 / §4 / §5 / §6（types / frontmatter / state / archive / index）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]] §3.1-§3.8（8 类继承类 authoring）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]] §2-§7（4 类自有类 authoring + frontmatter strip 契约）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.6（Stage 6 SPEC/ADR/RUNBOOK 触发）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3 / §4 / §5 / §6（types / frontmatter / state / archive / index）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §3.1-§3.8（8 类继承类 authoring）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2-§7（4 类自有类 authoring + frontmatter strip 契约）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.6（Stage 6 SPEC/ADR/RUNBOOK 触发）
 - [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow）
 - [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）+ §决策点 4（runtime 硬约束）

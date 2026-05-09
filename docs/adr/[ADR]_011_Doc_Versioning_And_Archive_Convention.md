@@ -47,7 +47,7 @@ Browse-without-git **未被** 列入动机——deprecated 版本不需要从工
 - Framework v1.0 移入 `docs/archive/rule/[STANDARD]_..._Framework_v1.0.md`，state 翻转为 deprecated，body 顶部加 banner 指向 v1.1 与本 ADR
 - Framework v1.1 创建于 `docs/rule/[STANDARD]_..._Framework_v1.1.md`，应用所有 amendments，frontmatter bump 至 v1.1
 - 14 文件 corpus audit 一次性完成（CLAUDE.md / 4 PR 模板 / INDEX / ASSESSMENT / GitHub_Markdown_v1.0 / Commit STANDARD / ADR-010 / PLAN_E / 2 src docstring / Framework v1.1 自引）—— 全部归类为 living references，升级至 `_v1.1`
-- Backfill rename：`[STANDARD]_GitHub_Markdown.md → [STANDARD]_GitHub_Markdown_v1.0.md`（首版无后缀的孤例；first-version 不触发 archive）
+- Backfill rename：`[STANDARD]_GitHub_Markdown.md → [STANDARD]_GitHub_Markdown.md`（首版无后缀的孤例；first-version 不触发 archive）
 
 新命名规则的适用范围明确：仅适用于 frontmatter `version` 必填的类型。ADR / TEMPLATE / INDEX / POSTMORTEM / ISSUE / GUIDE / RUNBOOK 不受影响。`plans/`（working 层）不受影响。
 
@@ -114,5 +114,5 @@ Browse-without-git **未被** 列入动机——deprecated 版本不需要从工
 - [[../archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0|Framework v1.0（archive）]] —— 被本决策归档的前版本
 - [[[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions]] —— Phase 0 governance KEEP/ADAPT/DEFER 模式先例
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ System Git Conventions Adoption Assessment v1.0]] —— 同期 governance 评估文档
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|MJ-Agent Commit Message Convention v1.0]] —— Phase 0 governance peer
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— Phase 0 governance peer
 - 用户互动证据（2026-04-25 brainstorming session）：Q1 motivations（filename-signal + cite-by-vintage，NOT browse-without-git）/ Q2 approach（B）/ Q3 granularity（B1 + HITL）/ Q4 HITL gate（A3 = git branch + PR review）；ExitPlanMode 批准

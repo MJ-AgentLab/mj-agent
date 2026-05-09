@@ -19,7 +19,7 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 8. develop 同步
 9. **plan 生命周期标记**（per Meta v2.0 §10.5；自动 active → completed）
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.0 §10.5 + Git Branch Strategy + PR Description Convention.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.0 §10.5 + Git Branch Strategy + PR Description Convention.
 
 ## Workflow
 
@@ -186,7 +186,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 9: Plan Lifecycle Mark
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §10.5「Working 文档生命周期」，PR merge 意味着关联 working plan 任务已落地，应自动从 `state: active` → `state: completed`。
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §10.5「Working 文档生命周期」，PR merge 意味着关联 working plan 任务已落地，应自动从 `state: active` → `state: completed`。
 
 ### 定位关联 plan
 
@@ -302,9 +302,9 @@ head -10 plans/[PLAN]_<id>_*.md
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog mj-agent 专属）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §10.5（Working 文档生命周期，Step 9 plan state 改 completed 依据）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta v2.0]] §4.5（Working 文档 frontmatter schema）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog mj-agent 专属）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §10.5（Working 文档生命周期，Step 9 plan state 改 completed 依据）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.5（Working 文档 frontmatter schema）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Branch lifecycle / cleanup）
 - [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（PR description fields；Step 4/5 解析依据）
 - `CHANGELOG.md`（Keep a Changelog format：Unreleased / Added / Changed / Fixed / Removed）

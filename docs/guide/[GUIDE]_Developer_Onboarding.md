@@ -26,9 +26,9 @@ owner: 项目负责人
 > **最后更新**：2026-05-06
 > **派生自**：mj-agent 原生
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
-> GUIDE）、[[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]、
-> [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]、
-> [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
+> GUIDE）、[[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]、
+> [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]、
+> [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
 
 ---
 
@@ -78,7 +78,7 @@ owner: 项目负责人
 | 仅要本地体验 agent | §3 → §7 |
 
 读完本份后下一站：根据角色 / 兴趣，进入 [[../infrastructure/git/INDEX|git GUIDEs]]
-深入或 [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side §3]]
+深入或 [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §3]]
 学认证类型的 authoring 细节。
 
 ## §1 仓库与远端
@@ -137,14 +137,14 @@ uv run pytest tests/smoke -m smoke   # 需 DB + LLM（无凭据时 skip）
 ## §5 三轨道文档约定
 
 mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级；
-[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10）：
+[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10）：
 - **Track A 代码侧**（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
   / STANDARD-code / ISSUE-code / ASSESSMENT-code）——
-  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1|Code_Side v1.1]]
+  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
 - **Track B 智能体侧**（in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT）——
-  [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1]]
+  [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - **Track C 工程编排侧**（`.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json`
-  / HITL_Prompt 等）—— [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1.0|HITL_Prompt v1.0]]
+  / HITL_Prompt 等）—— [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]
   + Meta v2.1 §3.10 / §7.7
 - **Meta 元层**（types / layers / lifecycle / archive / `track`）——
   Meta_Framework v2.1
@@ -175,7 +175,7 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 ## §6 提交与推送
 
 - Commit 格式：`<type>(<scope>): <summary>`，详见
-  [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Message 规范]]
+  [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message 规范]]
 - 推送前 7 步检查：[[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git Push Workflow]]
 - PR 描述模板：[[../infrastructure/git/[GUIDE]_PR_Description_Convention|PR Description Convention]]
 
@@ -213,10 +213,10 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 ## 关联文档
 
 - [[../infrastructure/git/INDEX|git GUIDEs]]（4 份）
-- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0|Code_Side v1.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0|Agent_Side v1.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Message v1.0]]
+- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
+- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
+- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message v1.0]]
 - [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]]
 - [[../INDEX|docs/INDEX]]
 
