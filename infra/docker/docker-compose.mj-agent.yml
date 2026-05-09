@@ -1,47 +1,57 @@
 # =============================================
-# mj-agent compose stack — INDEPENDENT project (decoupled from mj-system)
+# mj-agent compose stack — BASE (env-agnostic; see ADR-008 + ADR-025)
 #
-# Design (post storage-stack-standalone PR):
-#   - This file declares its own `name: mj-agent` so docker compose
-#     creates a dedicated project visible separately in Docker Desktop /
-#     Portainer. mj-system's project is unaffected.
-#   - mj-agent attaches to mj-system's existing `mj-system-backend-network`
-#     as `external: true` to reach the biz pg (read-only analyst role).
-#     mj-system stack must be running first; mj-agent does not own that
-#     network's lifecycle.
-#   - mj-agent owns its own storage stack (mj-agent-postgres + mj-agent-
-#     redis) on a private `mj-agent-storage` bridge network — neither
-#     visible to mj-system nor coupled to its lifecycle.
+# 4-file layering (mirrors mj-system v3.2.2 docker-compose.{yml,override.yml,test.yml,prod.yml}):
+#   docker-compose.mj-agent.yml           — this file (BASE; env-agnostic; total)
+#   docker-compose.override.yml           — DEV (`-f` 显式；build + dev profile env)
+#   docker-compose.test.yml               — TEST (`-f` 显式；Harbor pull + 8C/12G)
+#   docker-compose.prod.yml               — PROD (`-f` 显式；Harbor + 4C/12G + json-file logging)
+#
+# 注意：因 compose 文件在 infra/docker/ 子目录（非仓根），且全部用 `-f` 显式调用，
+#   override.yml **不**会自动加载（docker compose auto-load 仅在 cwd default 调用时触发）。
+#   所以 dev 也要显式 chain `-f docker-compose.mj-agent.yml -f docker-compose.override.yml`。
+#
+# Independent compose project (per ADR-008):
+#   - `name: mj-agent` declared below; docker compose creates a dedicated project visible
+#     separately in Docker Desktop / Portainer. mj-system's project unaffected.
+#   - mj-agent attaches to mj-system's `mj-system-backend-network` as `external: true` to
+#     reach biz pg (read-only analyst role). mj-system stack must run first; mj-agent
+#     does not own that network's lifecycle.
+#   - mj-agent owns its own storage stack (mj-agent-postgres + mj-agent-redis) on a
+#     private `mj-agent-storage` bridge — invisible to mj-system, decoupled lifecycle.
 #
 # Services:
 #   mj-agent             chainlit UI + agent runtime
 #   mj-agent-postgres    langgraph AsyncPostgresSaver backing store
 #   mj-agent-redis       reserved for future use (no Python client wired)
 #
-# Pre-requisite:
-#   - mj-system stack running locally (or at minimum: the mj-system-
-#     backend-network exists and mj-postgres is reachable on it). Verify:
+# Pre-requisite (TEST/PROD/dev co-location):
+#   - mj-system stack running on the SAME host (or at minimum: `mj-system-backend-network`
+#     exists and `mj-postgres` is reachable on it). Verify:
 #       docker network ls --filter name=mj-system-backend-network
 #       docker ps --filter name=mj-system-postgres
 #
-# Usage — standalone (recommended; from mj-agent repo root):
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml ps
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml down
+# Usage — 3 profile entry points (from mj-agent repo root；全部用显式 `-f` 链)：
+#   # DEV
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.override.yml up -d
+#
+#   # TEST (run on 192.168.0.179)
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.test.yml up -d
+#
+#   # PROD (run on 192.168.0.106)
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.prod.yml up -d
 #
 # Path resolution:
-#   With single `-f`, project_directory = the compose file's directory
-#   (infra/docker/). All relative paths in this file resolve from there:
+#   With `-f infra/docker/docker-compose.mj-agent.yml`, project_directory =
+#   `infra/docker/`. All relative paths in this file resolve from there:
 #     `../../`             = mj-agent repo root
 #     `../../.env`         = mj-agent/.env
 #     `./postgres-init`    = infra/docker/postgres-init/
 #
-#   Do NOT include this file via mj-system's `docker compose -f` chain
-#   anymore — that pattern (storage-stack PR / hotfix PR #43) merged
-#   project names and forced you to use ${MJ_AGENT_ROOT}. The standalone
-#   pattern is simpler and gives Docker Desktop a clean per-project view.
-#
-# Port map (host → container):
+# Port map (host → container; aligned with mj-system co-location, ADR-008):
 #   8001 → 8000   chainlit (avoid mj-app's 8000)
 #   5433 → 5432   memory pg (avoid mj-postgres's 5432)
 #   6379 → 6379   redis (no clash; mj-system has no redis)
@@ -51,27 +61,23 @@ name: mj-agent
 
 services:
   mj-agent:
-    build:
-      # Build context = mj-agent project root (resolved from project_directory
-      # = this compose file's dir when invoked with single -f).
-      context: ../../
-      dockerfile: infra/docker/Dockerfile
+    # Base image tag (env-agnostic). DEV override.yml adds `build:` to build from Dockerfile;
+    # TEST/PROD override files set `image:` to a Harbor-hosted tag.
     image: mj-agent:0.1
     container_name: mj-agent
     hostname: mj-agent
     env_file:
       - ../../.env
     environment:
-      # Override .env values for the in-cluster DNS layout.
-      # Biz queries → mj-system's pg (via external network).
-      POSTGRES_DEV_HOST: mj-postgres
-      POSTGRES_DEV_PORT: "5432"
-      # Memory checkpointer → mj-agent's own pg.
+      # Universal: mj-agent ALWAYS uses its own postgres + redis containers via
+      # mj-agent-storage internal network (regardless of profile). Per-profile
+      # `POSTGRES_<PROFILE>_HOST` injection lives in override files.
       MJ_AGENT_MEMORY_HOST: mj-agent-postgres
       MJ_AGENT_MEMORY_PORT: "5432"
-      # Redis (future) → mj-agent's own redis.
       MJ_AGENT_REDIS_HOST: mj-agent-redis
       MJ_AGENT_REDIS_PORT: "6379"
+      # Universal: bind 0.0.0.0 inside container (host port mapping below
+      # decides external exposure).
       CHAINLIT_HOST: 0.0.0.0
       CHAINLIT_PORT: "8000"
     ports:
@@ -92,7 +98,6 @@ services:
       - mj-system-network
       - mj-agent-storage
     labels:
-      com.mj-agent.environment: "development"
       com.mj-agent.service: "agent"
 
   # ========================================
@@ -142,7 +147,6 @@ services:
     networks:
       - mj-agent-storage
     labels:
-      com.mj-agent.environment: "development"
       com.mj-agent.service: "memory-postgres"
 
   # ========================================
@@ -187,7 +191,6 @@ services:
     networks:
       - mj-agent-storage
     labels:
-      com.mj-agent.environment: "development"
       com.mj-agent.service: "redis"
 
 # ============================================================

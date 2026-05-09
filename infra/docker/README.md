@@ -9,7 +9,10 @@
 | `Dockerfile` | 多阶段 production 镜像（Python 3.13-slim + uv；non-root；TZ=Asia/Shanghai） |
 | `entrypoint.sh` | 子命令路由 (`serve` / `check` / `shell` / passthrough) |
 | `.dockerignore` | 构建上下文过滤（.venv / .git / docs / artifacts / 密钥） |
-| `docker-compose.mj-agent.yml` | **独立** compose project (`name: mj-agent`)；自带存储栈（postgres + redis）；attach mj-system biz pg via external network |
+| `docker-compose.mj-agent.yml` | **BASE**（env-agnostic；总是加载）；**独立** compose project (`name: mj-agent`)；自带存储栈（postgres + redis）；attach mj-system biz pg via external network |
+| `docker-compose.override.yml` | **DEV** override（auto-loaded；build + 本地 Dockerfile + dev profile env 注入）|
+| `docker-compose.test.yml` | **TEST** override（`-f` 显式；Harbor pull + 8C/12G + `MJ_CONFIG_PROFILE=test`）|
+| `docker-compose.prod.yml` | **PROD** override（`-f` 显式；Harbor pull + 4C/12G + json-file logging + `MJ_CONFIG_PROFILE=prod`）|
 | `postgres-init/01-bootstrap-mj-agent-memory.sh` | mj-agent-postgres 容器首次初始化时自动建 mj_agent_memory DB + role + GRANT |
 
 ## 存储栈架构 (storage-stack PR)
@@ -40,6 +43,24 @@ mj-postgres (biz)  ◄────────────────  mj-agent
 理由：mj-agent 的状态生命周期（线程 / 检查点 / 未来缓存）与 mj-system 的业务数据生命周期完全脱钩；存储栈分离让 mj-system DBA 不需要为 mj-agent 的写流量审计；备份策略也分离。
 
 设计约束 mirror mj-system v3.2.2：相同 Python 基础镜像 / 时区 / non-root uid / healthcheck 节奏，方便分析师在同一台开发机/同一 Portainer Stack 共部署。
+
+## Compose 4-file profile 分层（PR-1 / ADR-025）
+
+mj-agent compose 拆分为 4 个文件，对标 mj-system v3.2.2 模式（base + override + test + prod）：
+
+| Profile | 加载方式（**全部用显式 `-f` 链**） | 关键差异 | 资源限制 |
+|---|---|---|---|
+| **dev** | `-f docker-compose.mj-agent.yml -f docker-compose.override.yml` | `build:` 本地 Dockerfile + `MJ_CONFIG_PROFILE=dev` + `POSTGRES_DEV_HOST: mj-postgres` | 无 |
+| **test** | `-f docker-compose.mj-agent.yml -f docker-compose.test.yml` | Harbor pull + `MJ_CONFIG_PROFILE=test` + `POSTGRES_TEST_HOST: mj-postgres` + `MJ_AGENT_LOG_LEVEL=debug` | mj-agent 8C/12G；mj-agent-postgres 4C/8G |
+| **prod** | `-f docker-compose.mj-agent.yml -f docker-compose.prod.yml` | Harbor + `MJ_CONFIG_PROFILE=prod` + `POSTGRES_PROD_HOST: mj-postgres` + `MJ_DEBUG=false` + json-file logging | mj-agent 4C/12G；mj-agent-postgres 4C/8G；mj-agent-redis 1C/1G |
+
+> **为什么 dev 也要显式 `-f override`？** docker compose 的 override.yml auto-load 仅在 cwd default 模式触发（默认查找 `docker-compose.yml` + `docker-compose.override.yml` 同目录）。本仓 compose 文件在 `infra/docker/` 子目录 + 用 `-f` 显式 base，auto-load 不生效。让 dev 与 test/prod 命令保持一致 `-f base -f overlay` 形态，反而更可读。
+
+> **DGX 算力消费侧支持** 不需要新 compose 文件：在任一 profile 的 `.env` 把 `LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL=http://192.168.0.189:8000/v1` 即可走 DGX 上的本地 vLLM/SGLang/Ollama endpoint（详见 PR-2 / ADR-025）。
+
+**Compose project 名称**：`name: mj-agent` 在 base 中声明，跨 4 profile 不变。Docker Desktop / Portainer 视图始终显示 1 个 mj-agent project，与 mj-system 隔离（per ADR-008）。
+
+**Pre-flight TEST/PROD 主机**：mj-system 栈必须先在同主机 up（`mj-system-backend-network` 由 mj-system 创建；mj-agent 仅 attach 为 external consumer）。
 
 ## Quick start
 
@@ -86,13 +107,26 @@ docker network ls --filter name=mj-system-backend-network    # 应见 mj-system-
 docker ps --filter name=mj-system-postgres                    # 应见 healthy
 ```
 
-**启动 mj-agent 栈**（**从 mj-agent 仓根目录**，单 `-f`，独立 project）：
+**启动 mj-agent 栈**（**从 mj-agent 仓根目录**，独立 project；profile 详见上文 §Compose 4-file profile 分层）：
 
 ```bash
-docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
-docker compose -f infra/docker/docker-compose.mj-agent.yml ps
-docker compose -f infra/docker/docker-compose.mj-agent.yml logs -f mj-agent
-docker compose -f infra/docker/docker-compose.mj-agent.yml down       # 拆栈，保留 volume
+# DEV (显式 -f base -f override; override.yml 不自动加载因 -f 显式)
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.override.yml up -d
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.override.yml ps
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.override.yml logs -f mj-agent
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.override.yml down       # 拆栈，保留 volume
+
+# TEST (192.168.0.179)
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.test.yml up -d
+
+# PROD (192.168.0.106)
+docker compose -f infra/docker/docker-compose.mj-agent.yml \
+               -f infra/docker/docker-compose.prod.yml up -d
 ```
 
 `up -d` 会拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 自动等 storage healthy）。Docker Desktop / Portainer 视图里现在看到 **2 个独立的 compose project**：

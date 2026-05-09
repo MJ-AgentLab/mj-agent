@@ -1,0 +1,39 @@
+# =============================================
+# mj-agent compose stack — DEV override (`-f` 显式)
+#
+# 重要：本仓 compose 文件在 infra/docker/ 子目录，**不**在仓根；且我们用 `-f` 显式
+# 指定 base，所以 docker compose **不会**自动加载本 override.yml（auto-load 仅在
+# default 调用 `docker compose up`/无 `-f` + 文件名匹配 `docker-compose.yml` +
+# 同目录 `docker-compose.override.yml` 时触发）。
+#
+# 因此 dev 也用显式 `-f` 链：
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.override.yml up -d
+#
+# Features: local Dockerfile build + dev profile env injection
+# =============================================
+
+services:
+  mj-agent:
+    # DEV: build from local Dockerfile (test/prod pull from Harbor instead).
+    build:
+      context: ../../
+      dockerfile: infra/docker/Dockerfile
+    environment:
+      # DEV biz queries → mj-system's pg via mj-system-backend-network.
+      # `POSTGRES_DEV_HOST: mj-postgres` 覆盖 .env 的 localhost 默认。
+      POSTGRES_DEV_HOST: mj-postgres
+      POSTGRES_DEV_PORT: "5432"
+      MJ_CONFIG_PROFILE: dev
+      MJ_AGENT_ENV: development
+      MJ_AGENT_LOG_LEVEL: debug
+    labels:
+      com.mj-agent.environment: "development"
+
+  mj-agent-postgres:
+    labels:
+      com.mj-agent.environment: "development"
+
+  mj-agent-redis:
+    labels:
+      com.mj-agent.environment: "development"

@@ -1,0 +1,70 @@
+# =============================================
+# mj-agent compose stack — PROD override (-f explicit; override.yml 不会自动加载)
+# Loaded by:
+#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#                  -f infra/docker/docker-compose.prod.yml up -d
+# Run on: PROD host (192.168.0.106) — co-located with mj-system prod stack
+# Features: Harbor pull + MJ_CONFIG_PROFILE=prod + 4C/12G + json-file logging + 警示级日志
+# =============================================
+
+services:
+  mj-agent:
+    # PROD: pull from Harbor (CI builds + tags + pushes).
+    image: 8.135.38.175/mj-agent/mj-agent:0.1
+    environment:
+      # PROD biz queries → mj-system prod postgres via mj-system-backend-network.
+      POSTGRES_PROD_HOST: mj-postgres
+      POSTGRES_PROD_PORT: "5432"
+      MJ_CONFIG_PROFILE: prod
+      MJ_AGENT_ENV: production
+      MJ_AGENT_DEBUG: "false"
+      MJ_AGENT_LOG_LEVEL: warning
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 12G
+        reservations:
+          cpus: "1.0"
+          memory: 4G
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "5"
+    labels:
+      com.mj-agent.environment: "production"
+
+  mj-agent-postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+        reservations:
+          cpus: "1.0"
+          memory: 2G
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+    labels:
+      com.mj-agent.environment: "production"
+
+  mj-agent-redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+    labels:
+      com.mj-agent.environment: "production"
