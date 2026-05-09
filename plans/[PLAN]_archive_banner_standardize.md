@@ -4,7 +4,7 @@ summary: Phase C-3-2 — 5 旧 archived 文件 banner 格式统一（[!warning] 
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: completed
 track: shared
 ---
 

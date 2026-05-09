@@ -4,7 +4,7 @@ summary: Phase C-1a — active 路径稳定化（去 _vX.Y）+ Meta v2.1→v2.2 
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: completed
 track: shared
 ---
 

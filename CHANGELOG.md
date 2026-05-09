@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Phase C-3-3 (ADR-021 + working doc 4 态机；3-PR Phase C-3 收尾)
+
+- **PR Phase-C-3-3 — Working doc 4 态机（`docs(rule)`，issue [#86](https://github.com/MJ-AgentLab/mj-agent/issues/86)）**：按 mj-system v5.2 §10.5 派生，引入 plans/ 工作文档 4 态机（draft → active → completed → archived）。落地：(1) 新建 ADR-021（不 supersede 任何 ADR；与 ADR-011/017/018/019/020 互补）；(2) Meta v2.2 §5.11（in-place 加段；§5.9 反例 #5 字段补充；不触发 archive ceremony）；(3) `mj-agent-flow-post-merge` SKILL Step 9 cross-ref 从 "Meta v2.0 §10.5"（forward-ref）改 "Meta v2.2 §5.11"（实落）；(4) retroactive 标 7 plans state: completed（5 PLAN_doc_governance_* + PLAN_F + PLAN_G）；(5) docs/INDEX.md ADR 表加 ADR-021；CLAUDE.md "Versioning rule" 段加 ADR-021 mention。`archived` 物理归档延 Phase D。**Phase C-3 P1 三联包收尾**（C-3-1 ADR-020 + C-3-2 banner + C-3-3 ADR-021 共完成 mj-system v5.2 §4.1/§7.1.1/§10.1/§10.2/§10.5 派生）。
+
 ### Changed — Phase C-3-2 (archive banner 标准化)
 
 - **PR Phase-C-3-2 — 5 旧 archive banner 格式统一（`docs(rule)`，issue [#84](https://github.com/MJ-AgentLab/mj-agent/issues/84)）**：把 5 个旧 archived 文件的 body 顶部 banner 统一为 mj-system §10.2 step 4 风格（`> [!warning]` callout + archived 日期 + stable path 链接 + ADR cross-refs + cite-by-vintage 语义）。涉：v1.0/v1.1 Documentation_Management_Framework + v2.0 Meta_Framework + v1.0 Code_Side / Agent_Side trio。banner 风格之前参差（v1.0 大写 `[!WARNING]` / v1.1 简短 `**DEPRECATED**` / v2.0 trio 普通 `> **归档状态...**` 块），不一致。本 PR 全部统一。注：v2.1 archive 在 Phase C-1a 已规范，不在本 PR 范围。Phase C-3 P1 三联包子包 2/3；不引入新 ADR（C.3.5 是规范化执行；ADR-019 §Decision 隐含规则）。

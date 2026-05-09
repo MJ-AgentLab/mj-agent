@@ -4,7 +4,7 @@ summary: 双轨分轨骨架交付与 plugin 构建计划 — Phase 0.5 起逐 ph
 owner: 项目负责人
 created: 2026-04-27
 updated: 2026-04-29
-state: draft
+state: completed
 track: shared
 ---
 

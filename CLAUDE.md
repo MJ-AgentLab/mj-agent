@@ -254,6 +254,10 @@ v5.2 §10.2 派生；partial supersede ADR-011 §5.6.2 第 2 段；ADR-011
 ADR-020 (Phase C-3-1) 把 `scripts/check_wikilinks.py` 改为 auto-discover
 NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob — 关闭 ADR-019
 transitional 硬编码债务；零维护；新增 archive 文件自动纳入校验。
+ADR-021 (Phase C-3-3) 引入 plans/ working 文档 4 态机
+（draft → active → completed → archived）— mj-system v5.2 §10.5 派生；落
+Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active →
+completed；retroactive 标 7 plans completed；archived 物理归档延后 Phase D。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
