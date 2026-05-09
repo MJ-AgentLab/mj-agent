@@ -27,8 +27,9 @@ replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 
 # MJ-Agent 文档治理元框架 v2.0（archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] 取代。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §7.6 `.claude/` 边界正式条款 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
->
+> [!warning]
+> **本副本为 v2.0 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta Framework（stable path；当前 v2.2）]] 取代（v2.0 → v2.1 三轨 → v2.2 active path stability 演进链）。归档原因：v2.1 引入第三轨 engineering-workflow + A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] / [[../../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] / [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] / [[../../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]]。本副本作为 v2.0 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
+
 > **历史骨架状态（Phase 0.5）**：本文档曾以 `state: draft` 进入 `docs/rule/`，与 v1.1（保持 `state: active`）共存。Phase 0.5 promote PR 完成后，v1.1 移入 `docs/archive/rule/` + state 改 deprecated；本文档转 `state: active`。详见 [[../../../plans/[PLAN]_F_Documentation_Track_Split_And_Plugin_Skeleton|PLAN F]] §V-skel-3。
 > **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]]
 > **首要变更**：引入 `track` frontmatter 字段 + 双轨子框架（Code_Side + Agent_Side）+ 跨轨治理协议

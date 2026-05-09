@@ -23,10 +23,8 @@ archived: 2026-05-09
 replaced-by: "../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md"
 ---
 
-> **DEPRECATED** — Superseded by the v2.0 trio (`Meta_Framework_v2.0`,
-> `Code_Side_Documentation_Framework_v1.0`, `Agent_Side_Documentation_Framework_v1.0`).
-> See `docs/INDEX.md` for current canonical references. Frozen refs in archive/,
-> plans/, and ASSESSMENT docs continue to point here intentionally.
+> [!warning]
+> **本副本为 v1.1 历史归档（state: deprecated；archived: 2026-05-09）**。已被 v2.0 trio split 取代（[[../../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] 决议；引入 `track` frontmatter + 双轨子框架）；后经 v2.1（三轨 engineering-workflow）+ v2.2（active path stability）演进，当前权威为 [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta Framework（stable path；v2.2）]] + [[../../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side（v1.1）]] + [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side（v1.1）]] + [[../../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt（v1.0）]]。归档原因：v2.0 引入双轨子框架；详见 [[../../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] / [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] / [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] / [[../../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]]。本副本作为 v1.1 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
 
 # MJ-Agent 文档管理体系框架
 

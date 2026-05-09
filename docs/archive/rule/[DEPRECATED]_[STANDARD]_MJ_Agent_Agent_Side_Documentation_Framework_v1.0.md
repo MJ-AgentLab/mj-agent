@@ -24,9 +24,10 @@ replaced-by: "../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.
 
 # MJ-Agent 智能体侧文档治理框架 v1.0（Track B，archived）
 
-> **归档状态（Phase B PR-B3c-promote 完成后）**：本文档已 `state: deprecated`，被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] 取代。归档原因：v1.1 minor bump 加 §2/§7.5 scope 明确 in-source only（`.claude/skills/**` 排除出本框架治理，划归 Meta v2.1 §3.10）；与 Meta v2.1 同期 promote。详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]。
->
-> **历史骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[../[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] 同期 promote。
+> [!warning]
+> **本副本为 Agent_Side v1.0 历史归档（state: deprecated；archived: 2026-05-09）**。已被 [[../../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side（stable path；当前 v1.1）]] 取代。归档原因：v1.1 minor bump 加 §2/§7.5 scope 明确 in-source only（`.claude/skills/**` 排除出本框架治理，划归 Meta v2.1 §3.10）；与 Meta v2.1 同期 promote；详见 [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] / [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] / [[../../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]]。本副本作为 v1.0 时期 cite-by-vintage 参考保留；当前权威以 stable path 为准。
+
+> **历史骨架状态（Phase 0.5，紧迫度高于 Code_Side）**：以 `state: draft` 落地，与 [[../[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|Meta_Framework v2.0]] 同期 promote。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
 > **派生自**：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
