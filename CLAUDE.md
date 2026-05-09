@@ -265,6 +265,11 @@ ISSUE priority+risk-level）+ STANDARD §3.7 placement 决策矩阵 + ISSUE
 NNN+DomainAbbr 命名 + supersedes list 文档化 + STANDARD §3.8 拆分阈值；落
 Meta v2.2 §3.7/§3.8/§4.5/§4.6 + Code_Side v1.1 §3.4-§3.8；check_frontmatter.py
 type-conditional 校验（state: active/completed 时强制；draft/deprecated 宽松）。
+ADR-023 (Phase D-2) scripts/infra 增强：mj-system v5.2 §7.1.1 派生
+`scripts/find_stale_docs.py` warning-mode CI（path-level rename detection；
+4 周观察期；`.github/workflows/check-stale-docs.yml`）+ ADR-021 follow-up
+`scripts/find_old_completed_plans.py` 候选检测 + Meta v2.2 §5.11.5
+archive 实施指引；不 supersede；与 ADR-020/021 互补。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary

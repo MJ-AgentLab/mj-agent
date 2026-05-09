@@ -478,6 +478,30 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 [[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（决策记录 + mj-system §10.5 派生论证 + Alternatives）；Stage 17 自动化：[[../../.claude/skills/mj-agent-flow-post-merge/SKILL]] Step 9。
 
+#### 5.11.5 archived 物理归档实施指引（v2.2 加；ADR-023 落实 ADR-021 follow-up）
+
+> 本节落实 ADR-021 §Consequences 标记的 Phase D follow-up：archived 物理归档实现。
+
+**触发条件**：
+
+- `state: completed` 持续 ≥ 6 个月（180 天；可调）
+- 全仓 grep ref count = 0
+- HITL 人工 review 确认（不自动跑 GC）
+
+**操作流程**：
+
+1. 跑 `scripts/find_old_completed_plans.py` 获候选清单
+2. 人工 grep 验证每个候选的引用计数（避免误删 active 引用）
+3. 创建 `plans/archive/` 子目录（首次 GC 时；不预先创建空目录）
+4. `git mv plans/<name>.md plans/archive/<name>.md`
+5. 改 frontmatter：`state: completed` → `state: archived`；加 `archived: <YYYY-MM-DD>` 字段
+6. archived 文件**不更新**内部 wikilinks（per mj-system §10.3 frozen 原则；与 ADR-019 archive 处理一致）
+7. 不更新 docs/INDEX.md（plans/ 不入 INDEX）；CHANGELOG 可入 GC 操作记录条目
+
+**当前状态**（2026-05-09）：mj-agent plans/ 中最早 completed 文件距今 < 1 月（PLAN_F / PLAN_G 等）；6 月阈值未到；本节仅指引；首次 GC 操作约在 2026-11+。
+
+**Cross-ref**：[[../adr/[ADR]_023_Stale_Doc_And_Plan_GC_Infra|ADR-023]]（infra 决策 + scripts 派生）；ADR-021 §Consequences 负面 #2；mj-system §10.3 frozen 原则。
+
 ---
 
 ## 6. 索引与引用规则

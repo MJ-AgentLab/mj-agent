@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Phase D-2 (ADR-023 + scripts/infra: find_stale_docs + plan GC + Meta §5.11.5)
+
+- **PR Phase-D-2 — scripts/infra 增强（`refactor(scripts)`，issue [#92](https://github.com/MJ-AgentLab/mj-agent/issues/92)）**：(1) 新建 ADR-023（不 supersede；与 ADR-020/021 互补；落实 ADR-020 §Alternatives B + ADR-021 §Consequences follow-up）；(2) 新建 \`scripts/find_stale_docs.py\`（mj-system v5.2 §7.1.1 派生；path-level rename detection；warning 模式；JSON output stderr）；(3) 新建 \`.github/workflows/check-stale-docs.yml\`（PR-time CI；4 周观察期；不阻塞合并）；(4) 新建 \`scripts/find_old_completed_plans.py\`（ADR-021 follow-up；扫 plans/ \`state: completed\` AND \`updated\` ≥ 180 天的 GC 候选；不实跑）；(5) Meta v2.2 §5.11.5 加 archived 物理归档实施指引段（操作流程 + 当前状态 2026-05-09 mj-agent 最早 completed < 1 月，6 月阈值未到）；(6) docs/INDEX.md / CLAUDE.md / 本 CHANGELOG sync。Phase D 子包 2/3；out-of-scope：实际首次 GC（2026-11+）+ symbol-level rename detection（Phase E+ 候选）+ warning → blocking 升级（4 周观察后评估）+ EVAL framework（Phase D-3）。
+
 ### Changed — Phase D-1 (3 templates 占位转 active + RUNBOOK last-verified)
 
 - **PR Phase-D-1 — POSTMORTEM/ISSUE/ASSESSMENT 模板补齐 + RUNBOOK last-verified（`docs(template)`，issue [#90](https://github.com/MJ-AgentLab/mj-agent/issues/90)）**：3 个模板（POSTMORTEM / ISSUE / ASSESSMENT）从占位 "(Phase D PR-D1)" 转 active；body 段落已存在（200-300 行 each）；本 PR 主要做 frontmatter 字段名对齐 ADR-022 C.3.1（POSTMORTEM `incident-date`/`resolved-at`；ISSUE `risk-level` — 下划线改短横线）+ 默认值填合理（severity: P2 / risk-level: Medium）。同期 TEMPLATE_RUNBOOK 加 `last-verified` 字段（ADR-022 C.3.1）。docs/INDEX.md Templates 表 4 entries 同步更新（移除 PR-D1 占位标记 + 注 ADR-022 C.3.1 frontmatter）。Phase D 子包 1/3；不引入新 ADR（实施 ADR-022 工作）；out-of-scope：Phase D-2 archived 物理归档 + find_stale_docs.py / Phase D-3 EVAL framework。
