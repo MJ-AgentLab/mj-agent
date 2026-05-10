@@ -135,10 +135,14 @@ uv sync
 ### Step 5 — 健康验证
 
 ```powershell
-# 1. 健康探针（DB + LLM creds）
+# 1. 健康探针（DB + LLM creds + .env.example drift）
 uv run mj-agent check
 # 期望：✅ DB connection OK + ✅ Ark LLM call OK
 # 失败 → 检查 .env / secret / 网络
+# 若额外出现 [DRIFT] / [MISSING] 段：.env.example 含但 .env 缺的 key 列表
+#   （warn-only，不影响 exit code；与 setup-env.ps1 的 [DRIFT] 算法一致）。
+#   处理：手动从 .env.example 补缺 key 到 .env；或不带 -Force 重跑
+#   `.\scripts\setup-env.ps1` 看完整 drift 报告 + 决定是否 -Force 重生。
 
 # 2. lint + 类型检查（应全过；项目级 CI 等价）
 uv run ruff check

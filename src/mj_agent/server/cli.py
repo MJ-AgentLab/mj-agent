@@ -107,6 +107,20 @@ def check() -> None:
         except Exception as exc:  # noqa: BLE001
             failures.append(f"memory DB unreachable: {exc}")
 
+    # `.env.example` -> `.env` template drift (warn-only; mirrors
+    # scripts/setup-env.ps1 detection so users who skip re-running the
+    # PowerShell setup still see the warning at every healthcheck).
+    from mj_agent.env_drift import find_env_drift
+
+    drift = find_env_drift(Path(".env"), Path(".env.example"))
+    if drift:
+        typer.echo(
+            f"[DRIFT] .env.example declares {len(drift)} key(s) missing from your .env:",
+            err=True,
+        )
+        for key in drift:
+            typer.echo(f"  [MISSING] {key}", err=True)
+
     if failures:
         typer.echo("CHECK FAILED:", err=True)
         for f in failures:

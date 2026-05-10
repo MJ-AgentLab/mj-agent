@@ -208,6 +208,14 @@ password. Rotation/onboarding flow lives in `config/README.md`.
 `langgraph_api` opens the file with the OS default encoding, which
 fails on Chinese Windows if the file is UTF-8 with non-ASCII content.
 
+`uv run mj-agent check` also runs **`.env.example` → `.env` template
+drift detection** (warn-only, does not affect exit code; mirrors the
+`[DRIFT]` block in `setup-env.ps1`). This catches the case where
+`.env.example` gains new keys after a rename / feature PR but the
+developer's existing `.env` was never refreshed — see
+`src/mj_agent/env_drift.py` for the algorithm and
+`tests/unit/test_env_drift.py` for the contract.
+
 Claude Code does **not** auto-load `.env`; `.mcp.json` `${VAR}`
 substitution reads claude.exe's process env at startup. To make these
 available without a wrapper, run `.\.claude\scripts\setup-mcp-env.ps1`
