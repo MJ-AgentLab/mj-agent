@@ -116,9 +116,17 @@ services:
       MJ_AGENT_MEMORY_DB: ${MJ_AGENT_MEMORY_DB:-mj_agent_memory}
       MJ_AGENT_MEMORY_USER: ${MJ_AGENT_MEMORY_USER:-mj_agent_app}
       MJ_AGENT_MEMORY_PASSWORD: ${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod}
+      # PG 18+ Docker images expect the volume to be mounted at the
+      # parent /var/lib/postgresql (not /var/lib/postgresql/data) so
+      # `pg_upgrade --link` can cross major versions in-place. We keep
+      # PGDATA pointing at the conventional /data subdirectory inside
+      # the mount so init scripts / dumps / restore docs stay portable
+      # against earlier PG majors. See
+      # https://github.com/docker-library/postgres/issues/37 + PR #1259.
+      PGDATA: /var/lib/postgresql/data
       TZ: Asia/Shanghai
     volumes:
-      - mj-agent-postgres-data:/var/lib/postgresql/data
+      - mj-agent-postgres-data:/var/lib/postgresql
       - ./postgres-init:/docker-entrypoint-initdb.d:ro
     ports:
       # Host:5433 → container:5432. 5432 is taken by mj-system's mj-postgres.
