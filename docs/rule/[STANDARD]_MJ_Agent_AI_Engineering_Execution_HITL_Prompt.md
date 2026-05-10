@@ -1,14 +1,13 @@
 ---
 type: standard
 domain: WORKFLOW
-summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件，是 Track C engineering-workflow 主 STANDARD；派生自 mj-system v1.0
+summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件，是 Track C engineering-workflow 主 STANDARD
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-09
 state: active
 version: v1.0
 track: engineering-workflow
-derives_from: mj-system/develop@[STANDARD]_AI_Engineering_Execution_HITL_Prompt
 tags:
   - standard
   - ai-engineering
@@ -27,20 +26,17 @@ aliases:
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
 > **适用范围**：mj-agent 仓中 AI Agent / Claude Code 从任务准入到合并收尾的全流程
 > **目标受众**：开发者 / 项目负责人 / Claude Code AI Agent
-> **派生自**：[mj-system v1.0](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md)（17-stage 闭环 + §1-§3 verbatim 引用 + §4 mj-agent 适配 + §5 mj-agent skill 矩阵）
-> **决策记录**：[[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
 
 > **目的**：规范 AI 从任务进入执行、验证、PR、合并与收尾的完整闭环，并明确何时必须引入 HITL（Human-in-the-loop）确认。
 >
 > **核心原则**：AI 自主推进低风险、可逆、符合既有模式的事项；凡影响数据、API、权限、安全、生产、发布、兼容性、in-source SKILL/PROMPT body、qcm_catalog 镜像或任务边界的事项，必须暂停并请求人工确认。
 
-> **mj-agent 与 mj-system 关键差异**（影响 §4 内容）：
-> - mj-agent 是 **Python 3.13 + uv + LangChain 1.x + LangGraph** 项目，**不**用 Maven / Java
-> - mj-agent **没有** n8n / ETL pipeline / Flyway migration（mj-system §4.1 / §4.4 / §4.7 / §4.8 涉 n8n / SQL DDL 的部分被 §3 / §4 中的 mj-agent 替代规则取代）
+> **mj-agent 关键设计约束**（影响 §4 内容）：
+> - mj-agent 是 **Python 3.13 + uv + LangChain 1.x + LangGraph** 项目（无 ETL pipeline / DB migration 工具链）
 > - mj-agent **运行时 SKILL.md / system.md body 直接进 LLM 上下文**（in-source canonical；ADR-013 + Agent_Side §2 / §7.5 frontmatter strip 契约）—— 任何 in-source SKILL/PROMPT body 修改是 §3.1 必停 HITL 项
-> - mj-agent **biz catalog**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）镜像 mj-system 上游 STANDARD §2-§4 ——任何镜像漂移检测见 §4.4
-> - mj-agent **数据边界严格只读**（ADR-006 + ADR-009 + analyst-RO PostgreSQL role）—— DB schema 修改无 mj-agent 侧动作；`statement_timeout` 60s 由 mj-system 侧 GRANT
-> - mj-agent **3 种 SKILL 实体共存**（in-source v.s. in-tree workflow v.s. marketplace plugin；详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 的边界表）
+> - mj-agent **biz catalog**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）镜像上游业务系统数据字典 STANDARD ——任何镜像漂移检测见 §4.4
+> - mj-agent **数据边界严格只读**（ADR-006 + ADR-009 + analyst-RO PostgreSQL role）—— DB schema 修改无 mj-agent 侧动作；`statement_timeout` 60s 由上游业务系统 GRANT 兜底
+> - mj-agent **3 种 SKILL 实体共存**（in-source v.s. in-tree workflow v.s. marketplace plugin；详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10 的边界表）
 
 ---
 
@@ -73,7 +69,7 @@ aliases:
 
 ## 2. Prompt 通用结构
 
-> **此节内容沿用 mj-system §2 verbatim**（仅替换 skill 命名空间 mj-sys-* → mj-agent-*）。每个阶段 Prompt 推荐使用以下结构：
+> **每个阶段 Prompt 推荐使用以下通用结构**：
 
 ```markdown
 ## Task
@@ -148,15 +144,13 @@ Fallback:
 
 ### 3.1 必须暂停确认
 
-> **此节大体沿用 mj-system §3.1，删 1 项（n8n production workflow），增 4 项 mj-agent 专属**：
+出现以下情况时，AI 必须暂停。规则分为通用项 + mj-agent 专属项两段：
 
-出现以下情况时，AI 必须暂停：
-
-通用项（沿用 mj-system §3.1）：
+通用项：
 
 - 任务目标、范围、验收标准不清楚
 - Issue / Plan / SPEC 与代码现状冲突
-- 涉及数据库 schema、migration、回滚脚本（mj-agent 是只读消费者，但仍可触发上游 mj-system 调整诉求）
+- 涉及数据库 schema、migration、回滚脚本（mj-agent 是只读消费者，仍可触发上游业务系统调整诉求）
 - 涉及真实字段、列名、数据流但尚未验证
 - 涉及权限、认证、安全、secret
 - 涉及生产配置、CI/CD 发布链路、部署流程
@@ -171,12 +165,10 @@ mj-agent 专属新增：
 
 - **涉及 in-source SKILL.md body 修改**（`src/mj_agent/skills/**/SKILL.md`）—— 字面修改即 LLM runtime 行为修改，必须 Domain Expert + Prompt Engineer 评审；A11 EVAL 门禁（transitional waiver 期内可暂时 `eval_references` 注释 TODO）
 - **涉及 system prompt 修改**（`src/mj_agent/prompts/system.md`）—— `version` bump 必触发 HITL；`eval_references` 同步审查
-- **涉及 qcm_catalog.yaml 镜像变更**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）—— 与 mj-system 上游 STANDARD §2-§4 同步；漂移可能导致 `find_biz_context` 返回错误业务语义
+- **涉及 qcm_catalog.yaml 镜像变更**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）—— 与上游业务系统数据字典 STANDARD 同步；漂移可能导致 `find_biz_context` 返回错误业务语义
 - **涉及 SQL guardrail / precheck 规则修改**（`src/mj_agent/tools/sql/{guardrail.py, precheck.py}`）—— 改动放宽即扩 mj-agent 数据边界（ADR-006 / ADR-009 红线）
 
 ### 3.2 可以默认处理
-
-> 沿用 mj-system §3.2 verbatim：
 
 以下情况 AI 可以自主处理，但需记录假设：
 
@@ -189,8 +181,6 @@ mj-agent 专属新增：
 - 根据既有规则选择模板或文档落点
 
 ### 3.3 HITL 提问格式
-
-> 沿用 mj-system §3.3 verbatim：
 
 ```text
 问题 N：
@@ -212,9 +202,7 @@ mj-agent 专属新增：
 
 ## 4. 分阶段 Prompt
 
-> **Skill Hint 占位说明**：本节 §4.1 / §4.4 等 Preferred Skill 暂以 mj-agent-flow-* 命名占位；Phase B PR-B1...B3 落地后激活；Phase B 落地前，Fallback 段提供完整手工执行规则，可独立运作。
->
-> **Lite Phase A 决策**（用户 2026-05-08 brainstorming）：§4.1 Intake / §4.4 Repo Scan 暂引用 mj-system 上游同名 STANDARD（`mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` / `_AI_Engineering_Repo_Scan.md`）作为占位；mj-agent 调版（`[STANDARD]_MJ_Agent_AI_Engineering_Intake_v1.0` / `_Repo_Scan_v1.0`）按实际差异 Phase B+ 派生（详见 ADR-015 §References）。
+> 各 stage 的 Preferred Skill 已在 `.claude/skills/mj-agent-*/` 下实装并 active；Fallback 段保留供 skill 临时不可用时手工执行参照。Stage 0 Intake 与 Stage 3 Repo Scan 的完整步骤由对应 in-tree SKILL（`mj-agent-flow-intake` / `mj-agent-flow-repo-scan`）承载，本规范只列 prompt 骨架与 Rules / Output 契约。
 
 ### 4.1 Intake Prompt
 
@@ -226,12 +214,12 @@ mj-agent 专属新增：
 ## Reference Docs
 
 ### Must Follow
-- `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md`（Lite Phase A 占位，Phase B+ 派生为 mj-agent 版）
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.0 active；v2.1 promote 后切到 v2.1）
+- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.2 active；§3.10 in-tree workflow SKILL 治理 + §4.3.1 track 字段）
+- 本规范 §3.1 必停规则（含 mj-agent 专属 4 项：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax）
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
-- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（mj-agent 独立 compose / consumer 边界）
+- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
 - `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS/DWD）
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 - `CLAUDE.md`（项目根 AI 高频上下文）
@@ -239,8 +227,8 @@ mj-agent 专属新增：
 ## Skill Hint
 
 Preferred Skill:
-- `/mj-agent-flow-intake`（首位编排器；PR-B2 落地后激活，覆盖 risk-level / scope / 文档需求 / HITL 决策点完整 Intake 流程；含 mj-agent 专属 risk 类目：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync）
-- `/mj-agent-git-issue`（下游：Intake 完成后落地 Issue Draft 时调用；PR-B1 落地）
+- `/mj-agent-flow-intake`（首位编排器；active；覆盖 risk-level / scope / 文档需求 / HITL 决策点完整 Intake 流程；含 mj-agent 专属 risk 类目：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync）
+- `/mj-agent-git-issue`（下游：Intake 完成后落地 Issue Draft 时调用；active）
 
 Use When:
 - 用户请求"评估任务" / "intake" / "Issue 创建前" / "需求收口"
@@ -253,11 +241,11 @@ Fallback:
 ## Rules
 
 请判断：
-1. 任务类型：feature / bug / bugfix / documentation / maintain / hotfix / release / optimization
+1. 任务类型：feature / bugfix / documentation / maintain / hotfix（mj-agent 5 类，**不**含 optimization；详见 [[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5）
 2. base branch：develop / main
 3. scope 与 out-of-scope 是否清楚
 4. acceptance criteria 是否可验证
-5. 是否涉及：mj-agent 服务、API、SQL guardrail、biz catalog、mj-agent-postgres / mj-agent-redis、mj-system biz pg consumer 边界、analyst RO 角色、`.env`、secrets.enc、Docker compose、CI/CD、文档
+5. 是否涉及：mj-agent 服务、API、SQL guardrail、biz catalog、mj-agent-postgres / mj-agent-redis、上游业务系统 biz pg consumer 边界、analyst RO 角色、`.env`、secrets.enc、Docker compose、CI/CD、文档
 6. 风险等级：Low / Medium / High
 7. 是否需要拆分 Issue
 8. 是否需要 Plan / SPEC / ADR / RUNBOOK / Local ISSUE / ASSESSMENT / CHANGELOG / INDEX
@@ -287,8 +275,8 @@ Fallback:
 ## Reference Docs
 
 ### Must Follow
-- `.github/ISSUE_TEMPLATE/`
-- `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md`（Lite Phase A 占位）
+- `.github/ISSUE_TEMPLATE/`（mj-agent 5 类临时分支对应 5 份模板；hotfix 走 main）
+- 本规范 §4.1 Intake Result Output（Issue Draft 必须基于已确认的 Intake Result 生成，不要在 Issue Prompt 阶段做 risk 重评估）
 
 ### Consult If Affected
 - `docs/_templates/TEMPLATE_ISSUE.md`（Phase D 落地）
@@ -394,10 +382,11 @@ Fallback:
 ## Reference Docs
 
 ### Must Follow
-- `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md`（Lite Phase A 占位）
+- 本规范 §4.4 Repo Scan Rules（8-dim 扫描 + §7.2.1 反向扫描 + §7.1 Documentation Decision 矩阵 + Plan Verdict）
+- `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（in-tree active SKILL；含 8-dim 扫描具体步骤、命令模板、HITL gate 触发条件）
 
 ### Use As Template
-- `docs/_templates/TEMPLATE_REPO_SCAN_RESULT.md`（Phase B+ 落地；当前未存在，按 mj-system 上游模板执行）
+- `docs/_templates/TEMPLATE_REPO_SCAN_RESULT.md`（Phase B+ 待落地；模板未存在前对话输出 Repo Scan Result，结构参考下方 Output 段）
 
 ### Consult If Affected
 - `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.0 active）
@@ -424,15 +413,15 @@ Fallback:
 
 请检查：
 1. 当前 branch / worktree / diff / 未跟踪文件
-2. 受影响 mj-agent 模块（agent.py / skills / prompts / tools / memory / integrations / biz_catalog / config / server / ui）+ 跨服务边界（mj-system biz pg consumer / mj-agent-postgres / mj-agent-redis）
+2. 受影响 mj-agent 模块（agent.py / skills / prompts / tools / memory / integrations / biz_catalog / config / server / ui）+ 跨服务边界（上游业务系统 biz pg consumer / mj-agent-postgres / mj-agent-redis）
 3. 真实数据来源、真实列名、真实数据流（biz_dws / biz_dwd allowlist；qcm_catalog 镜像）
-4. **biz catalog drift 检测**（`scripts/diff_biz_schema.py`）—— 与 mj-system 上游 STANDARD §2-§4 比对，若漂移触发 §3.1 必停 HITL
+4. **biz catalog drift 检测**（`scripts/diff_biz_schema.py`）—— 与上游业务系统数据字典 STANDARD 比对，若漂移触发 §3.1 必停 HITL
 5. 配置、secret、Docker、CI/CD、`.env.example` 与 `secrets.enc` 一致性
 6. **runtime SKILL.md / system.md drift 反向扫描**：基于本次 git diff 中 rename / move / delete 的函数 / 类 / 列 / SQL 对象，grep `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md` + `CLAUDE.md` + `docs/**/*.md` 中的 backtick 引用，列出所有命中点；命中后须在 Output 标记需要更新的 in-source canonical（HITL 必停）
 7. 测试文件和验证命令（unit / eval / integration / smoke / contract）
 8. docs、plans、INDEX、CLAUDE、CHANGELOG 影响
 9. Documentation Decision（10 类 × Create/Update/None 矩阵）
-10. 若 Documentation Decision 判断需要 Create / Update SPEC，识别 SPEC 任务类型并按 mj-system 上游 SPEC_Authoring_For_AI_Agents §4 列出对应任务类型的关键检查项（mj-agent 调版 Phase B+）
+10. 若 Documentation Decision 判断需要 Create / Update SPEC，识别 SPEC 任务类型并按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 列出关键检查项（输入 schema / 输出 schema / 行为不变量 / 幂等与重试 / 配置 / 错误处理 / 回滚 / 验证 / 可观测性 共 9 大子项）
 11. Plan 是否仍然成立
 
 涉及数据字段时，不得仅凭命名推断，必须读取真实来源（`src/mj_agent/biz_catalog/qcm_catalog.yaml` + `find_biz_context` 真实返回）。
@@ -466,7 +455,7 @@ Fallback:
 ## Reference Docs
 
 ### Must Follow
-- `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md`（Lite Phase A 占位）
+- 本规范 §4.4 Repo Scan Output（Plan body 必须基于已确认的 Repo Scan Result 编写）
 - `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`
 
 ### Use As Template
@@ -484,7 +473,7 @@ Use When:
 - ⚠ **方向区分**：`mj-agent-doc-plan` 仅评估"需要哪些文档"（§7.1 子集），是本 skill Step 3 的子例程；不要直接用 doc-plan 写完整 Plan
 
 Fallback:
-- 若 skill 不可用，按 mj-system 上游 TEMPLATE_PLAN.md（Phase A 占位）+ 本 prompt Rules 手工组织 Plan body。
+- 若 skill 不可用，按 plans/ 既有 PLAN 范例 + 本 prompt Rules 手工组织 Plan body。
 - 或回落到下位子 skill：当任务**仅**涉及文档需求评估时，用 `mj-agent-doc-plan`。
 
 ## Rules
@@ -563,8 +552,8 @@ Fallback:
 - 架构 / 跨服务边界 / DB schema 影响 / CI/CD / 部署策略：新建或更新 ADR
 - 运维操作 / 回滚 / 排障：新建或更新 RUNBOOK
 - Bug fix / 小改动：优先更新现有 SPEC
-- **代码优化 / 内部重构 / 性能改造（接口不变）**：先按 mj-system 上游 Repo_Scan §7.2.1 反向扫描既有 SPEC / GUIDE / RUNBOOK 的命中段；事后按 §4.15 Rule 9 决策建 ASSESSMENT
-- 编写或更新 SPEC 时，必须按 SPEC 编写指南（mj-system 上游 + Phase B+ mj-agent 调版）的任务类型裁剪模板，覆盖契约、配置、错误处理、幂等、回滚、验证、可观测性等关键项
+- **代码优化 / 内部重构 / 性能改造（接口不变）**：先按本规范 §4.4 Repo Scan §7.2.1 反向扫描既有 SPEC / GUIDE / RUNBOOK 的命中段；事后按 §4.15 Rule 9 决策建 ASSESSMENT
+- 编写或更新 SPEC 时，必须按 `docs/_templates/TEMPLATE_SPEC.md` 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）覆盖契约、配置、错误处理、幂等、回滚、验证、可观测性等关键项
 
 如涉及 mj-agent 数据边界（biz_dws/biz_dwd allowlist 修改）、SQL guardrail 放宽、in-source SKILL/PROMPT body 重写、biz catalog 镜像规则变更，必须 HITL。
 
@@ -724,7 +713,7 @@ Fallback:
 | `uv run pytest tests/contract -m contract` | contract tests | 需 DB creds |
 | `uv run mj-agent check` | DB + LLM creds 健康探针（Docker healthcheck 等价） | 需 `.env` 充实 |
 | `uv run langgraph dev` | LangGraph Studio 起服务 | 需 `.env` + Ark；交互式探针 H1/H2/H3/R1/R2 |
-| `docker compose -f infra/docker/docker-compose.mj-agent.yml up -d` | mj-agent compose 启动（含 mj-agent-postgres + mj-agent-redis） | 需 mj-system 栈先 up；本地 docker daemon |
+| `docker compose -f infra/docker/docker-compose.mj-agent.yml up -d` | mj-agent compose 启动（含 mj-agent-postgres + mj-agent-redis） | 需上游业务系统栈先 up（含 `mj-system-backend-network` bridge）；本地 docker daemon |
 | `docker compose -f infra/docker/docker-compose.mj-agent.yml down` | compose 清理 | 同上 |
 
 按影响范围检查：
@@ -783,14 +772,14 @@ Fallback:
 2. 是否超出 scope（含 in-source canonical / biz catalog 触及但 Plan 未声明）
 3. 是否改变 API、schema、权限、配置、依赖、用户可见行为
 4. 是否有 hardcode、secret、绝对路径、调试代码（特别检查 `.env` / `secrets.enc` / Ark API key）
-5. 文档同步检查（拆为四段；沿用 mj-system §4.9 Rule 5 拆 5a/5b/5c/5d）：
-   - **5a. 既有文档失真扫描**：基于本次 git diff 中 rename / move / delete 的函数 / 类 / 文件 / SQL 对象 / 列 列表，按 mj-system 上游 Repo_Scan §7.2.1 反向扫描动作（Lite Phase A 占位）grep `docs/**/*.md` + `CLAUDE.md` + **`src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md`**（mj-agent 扩展：runtime canonical 是反向扫描目标）中 backtick 包裹的引用，列出所有命中文档；命中后须在 PR description 说明已更新或决定不更新（含理由）。本次任务不涉及上述 5 类改动时，须显式记录"不涉及反向扫描"
+5. 文档同步检查（拆为四段 5a/5b/5c/5d）：
+   - **5a. 既有文档失真扫描**：基于本次 git diff 中 rename / move / delete 的函数 / 类 / 文件 / SQL 对象 / 列 列表，按本规范 §4.4 Repo Scan §7.2.1 反向扫描动作 grep `docs/**/*.md` + `CLAUDE.md` + **`src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md`**（runtime canonical 是反向扫描目标）中 backtick 包裹的引用，列出所有命中文档；命中后须在 PR description 说明已更新或决定不更新（含理由）。本次任务不涉及上述 5 类改动时，须显式记录"不涉及反向扫描"
    - **5b. 新文档创建确认**：比对 Repo Scan §7.1 Documentation Decision 表中 Action=Create 的所有行，确认对应 Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / 本地 ISSUE / ASSESSMENT 已创建并填入 frontmatter（schema 按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|文档管理框架]] §4.3 / §4.4）
    - **5c. INDEX / CLAUDE.md / CHANGELOG.md 同步**：按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|框架]] §6.4 的 allowlist 检查 `CLAUDE.md`；按 §7.1 A5 检查 `INDEX.md`；按 PR template `.github/PULL_REQUEST_TEMPLATE/<type>.md` 的 CHANGELOG 字段判断
-   - **5d. SPEC Delta Check**：若本任务创建或更新了 SPEC，对比最终 diff、验证结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约、配置、错误处理、幂等、回滚、验证或可观测性。无漏项时输出 `SPEC Delta: None`；有漏项时使用 SPEC 编写指南（mj-system 上游）§6 的 `SPEC-*` 短码记录。若本任务不涉及 SPEC，显式输出"不涉及 SPEC Delta"
+   - **5d. SPEC Delta Check**：若本任务创建或更新了 SPEC，对比最终 diff、验证结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约、配置、错误处理、幂等、回滚、验证或可观测性。无漏项时输出 `SPEC Delta: None`；有漏项时按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名（如 `Contract.Input` / `Configuration` / `Error handling` / `Rollback` / `Verification` / `Observability`）记录漏项。若本任务不涉及 SPEC，显式输出"不涉及 SPEC Delta"
 6. acceptance criteria 是否都有验证证据
 7. 是否有不应提交的文件（`.env` / `*.pyc` / `.venv/` / log files）
-8. **biz catalog drift**：若 `qcm_catalog.yaml` 改动，与 mj-system 上游 STANDARD §2-§4 是否一致（`scripts/diff_biz_schema.py`）
+8. **biz catalog drift**：若 `qcm_catalog.yaml` 改动，与上游业务系统数据字典 STANDARD 是否一致（`scripts/diff_biz_schema.py`）
 9. **runtime canonical 改动审查**：若 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` 改动，A11 / A8 EVAL 同步审查 + frontmatter `version` bump + Domain Expert 评审签字
 10. **system.md `version` bump 检查**：若 system.md `version` 字段改变，必须同步 `eval_references` 字段（transitional waiver 期内可注释 TODO）
 11. commit type 是否匹配 branch type（`documentation/*` 仅 `docs`；`feature/*` ∈ {feat, perf, refactor, test, docs}；详见 STANDARD §5.2）
@@ -1008,7 +997,7 @@ Fallback:
 逐条判断：
 
 1. reviewer 说了什么
-2. 是 bug、建议、风格、架构、需求、测试问题，还是 SPEC gap（参见 mj-system 上游 SPEC 编写指南 §6 的 `SPEC-*` 短码）
+2. 是 bug、建议、风格、架构、需求、测试问题，还是 SPEC gap（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名）
 3. 是否必须修改
 4. 是否影响 Plan / SPEC / ADR
 5. 建议如何回应
@@ -1127,7 +1116,7 @@ Fallback:
 7. 是否有 follow-up issue
 8. 是否需要复盘
 9. **任务类型为 optimization，或 feature 含重构 / 性能改造**：是否建 ASSESSMENT 对比改造效果。pre-change 阶段未识别 ASSESSMENT 需求时，post-merge 是最后一道闸——不建 ASSESSMENT 必须在 post-merge checklist 显式记录原因（如"优化未达预期 measurable improvement"）
-10. 若本任务在 self-review / Review / CI 阶段产生 `SPEC-*` 漏项（mj-system 上游 SPEC 编写指南 §6.1 的 10 个短码），按以下层级沉淀：
+10. 若本任务在 self-review / Review / CI 阶段产生 `SPEC-*` 漏项（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名），按以下层级沉淀：
     - **默认**：在 PR description「AI 自检」段累计 `SPEC Delta: <code> @ <section>`
     - **触发条件达标后**（≥3 真实漏项跨 ≥2 任务）：新建或追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`
     - **升级 POSTMORTEM 边界**：仅当漏项导致 merge 后事故、生产影响、数据错误、CI/CD 发布失败或 P1/P2 级返工时，才写入 `docs/postmortem/[POSTMORTEM]_*.md`
@@ -1201,7 +1190,7 @@ Fallback:
 |---|---|---|
 | 运行时 SKILL.md body 改进（**propose diff，不写 src/**） | `/mj-agent-runtime-skill-doc-improve` | P1；PR-C2 落地 |
 | system.md `version` bump walkthrough | `/mj-agent-runtime-prompt-version-bump` | P1；PR-C2 落地 |
-| qcm_catalog.yaml 镜像同步（与 mj-system 上游 STANDARD §2-§4 比对） | `/mj-agent-runtime-biz-catalog-sync` | P1；PR-C2 落地 |
+| qcm_catalog.yaml 镜像同步（与上游业务系统数据字典 STANDARD 比对） | `/mj-agent-runtime-biz-catalog-sync` | P1；PR-C2 落地 |
 | EVAL baseline 设定（A11 强制后） | `/mj-agent-runtime-eval-baseline` | P1；PR-D2-skill 落地（framework-independent；baseline 实测延 Phase 2 PR-D2-enforcement） |
 
 > **Runtime 类目硬约束**（v1.0 引入）：所有 `mj-agent-runtime-*` 是 **read-only inspect** 设计——它们 propose diff、跑反向扫描、列出影响清单，但**不**直接修改 `src/mj_agent/{skills,prompts,agent.py,tools}/`。SKILL.md "Anti-patterns" 段必须明文写"Do NOT modify src/mj_agent/...";A12 描述质量门禁校验此约束。
@@ -1218,8 +1207,6 @@ Fallback:
 ---
 
 ## 6. 最终推荐原则
-
-> 沿用 mj-system §6 verbatim（仅替换 mj-sys → mj-agent 上下文）：
 
 ```text
 Intake 解决能不能立项。
@@ -1253,21 +1240,17 @@ HITL 是风险与决策边界。
 
 ## 参考
 
-- 派生自：mj-system [[STANDARD]_AI_Engineering_Execution_HITL_Prompt v1.0](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md)
-- 决策记录：[[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
 - 上层框架：
-  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（active）
-  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]（draft skeleton）
-  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]（active）
-  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]（active）
+  - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]（active）
+  - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]（active）
+  - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]]（active）
 - 实施 ADR：
   - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track 升级）
-  - [[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]（本文派生记录）
-  - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，mj-agent-* in-tree skills 命名空间 + lifecycle）
+  - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（mj-agent-* in-tree skills 命名空间 + lifecycle）
 - 关联 ADR：
   - [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（数据边界 4 层 guardrail）
   - [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS/DWD）
-  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（archive 工作流，Lite Phase A 同模式）
+  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（archive 工作流）
   - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace SKILL schema 边界）
 - mj-agent 关联 STANDARD（cross-ref）：
   - [[STANDARD]_MJ_Agent_Commit_Message_Convention]]（§4.10 / §4.12 引用）
@@ -1277,14 +1260,17 @@ HITL 是风险与决策边界。
   - [[../infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（§4.12 / §4.15 引用）
 - mj-agent 关联 RUNBOOK（cross-ref）：
   - `docs/runbook/dev_studio_walkthrough.md`（§4.8 Level B 探针）
-- 上游引用（Lite Phase A 占位，Phase B+ 派生为 mj-agent 版）：
-  - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md`（§4.1 引用）
-  - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md`（§4.4 / §4.5 / §4.9 / §4.15 引用）
-  - `mj-system@docs/rule/[GUIDE]_SPEC_Authoring_For_AI_Agents.md`（§4.6 / §4.13 / §4.15 引用）
+- 关联 in-tree SKILL（承载本规范各 stage 完整步骤）：
+  - `.claude/skills/mj-agent-flow-intake/SKILL.md`（§4.1 完整步骤 + Output 结构）
+  - `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（§4.4 完整步骤 + 8-dim 扫描表 + §7.1 Documentation Decision 模板）
+  - `.claude/skills/mj-agent-flow-plan/SKILL.md`（§4.5 Plan body 编排）
+  - `.claude/skills/mj-agent-flow-implement/SKILL.md`（§4.7 3 风味实现编排）
+  - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（§4.9 11-item checklist + 5a/5b/5c/5d 反向扫描）
+  - `.claude/skills/mj-agent-flow-post-merge/SKILL.md`（§4.15 收尾 + EVAL backlog ticket 自动开单）
 - 行业精度：
   - HITL（Human-in-the-Loop）：MLOps Level 2 + AI Safety 标准做法
   - Anthropic Skills 仓 in-tree pattern：[anthropics/skills](https://github.com/anthropics/skills)
   - Claude Code plugin marketplace 与 in-tree 二元生态：[Claude Code docs](https://docs.claude.com/en/docs/claude-code/plugins)
 - 用户互动证据：
-  - 2026-05-08 brainstorming session：4 决策（建设侧 / skill 放置 / HITL 深度 / 框架重构）+ 2 follow-up（Lite Phase A / skeleton-first）
+  - 2026-05-08 brainstorming session：4 决策（建设侧 / skill 放置 / HITL 深度 / 框架重构）+ skeleton-first follow-up
   - 外部 plan 文件：`C:/Users/Admin/.claude/plans/d-workspace-10-software-project-projects-golden-shannon.md`
