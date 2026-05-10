@@ -23,13 +23,13 @@ def test_settings_has_phase1_fields() -> None:
 
 
 def test_settings_default_memory_db_name() -> None:
-    s = Settings()
+    s = Settings(_env_file=None)
     assert s.mj_agent_memory_db == "mj_agent_memory"
     assert s.mj_agent_memory_pool_max >= 1
 
 
 def test_settings_default_chainlit_bind() -> None:
-    s = Settings()
+    s = Settings(_env_file=None)
     assert s.chainlit_host == "127.0.0.1"
     assert s.chainlit_port == 8000
 
@@ -91,7 +91,14 @@ def test_cli_help_smoke() -> None:
 
 
 def test_cli_check_reports_missing_env(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """`mj-agent check` exits non-zero with explicit reasons when creds absent."""
+    """`mj-agent check` exits non-zero with explicit reasons when creds absent.
+
+    Uses ``Settings(_env_file=None)`` to opt out of `.env` discovery —
+    pydantic-settings would otherwise re-load `.env` from disk during the
+    fresh ``Settings()`` instantiation, leaking developer-local values
+    past the ``monkeypatch.delenv`` calls and masking the
+    ``"... not set"`` failure messages this test asserts on.
+    """
     for k in (
         "POSTGRES_ANALYST_USER",
         "ARK_API_KEY",
@@ -99,7 +106,7 @@ def test_cli_check_reports_missing_env(monkeypatch) -> None:  # type: ignore[no-
     ):
         monkeypatch.delenv(k, raising=False)
     import mj_agent.config as cfg
-    monkeypatch.setattr(cfg, "settings", Settings())
+    monkeypatch.setattr(cfg, "settings", Settings(_env_file=None))
 
     runner = CliRunner()
     result = runner.invoke(app, ["check"])
@@ -107,3 +114,30 @@ def test_cli_check_reports_missing_env(monkeypatch) -> None:  # type: ignore[no-
     assert "POSTGRES_ANALYST_USER not set" in result.output
     assert "ARK_API_KEY not set" in result.output
     assert "MJ_AGENT_MEMORY_USER not set" in result.output
+
+
+def test_settings_env_file_none_isolates_from_dotenv(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """Regression: ``Settings(_env_file=None)`` must ignore `.env` on disk.
+
+    Guards the contract that `test_cli_check_reports_missing_env` and
+    sibling default-asserting tests rely on. If pydantic-settings ever
+    changes the semantics of ``_env_file=None``, this test fires before
+    the cli check test silently goes back to leaking developer state.
+    """
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "MJ_AGENT_MEMORY_DB=leaked-from-dotenv\n"
+        "CHAINLIT_PORT=65432\n",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    for k in ("MJ_AGENT_MEMORY_DB", "CHAINLIT_PORT"):
+        monkeypatch.delenv(k, raising=False)
+
+    leaked = Settings()
+    assert leaked.mj_agent_memory_db == "leaked-from-dotenv"
+    assert leaked.chainlit_port == 65432
+
+    isolated = Settings(_env_file=None)
+    assert isolated.mj_agent_memory_db == "mj_agent_memory"
+    assert isolated.chainlit_port == 8000
