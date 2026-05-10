@@ -208,6 +208,15 @@ password. Rotation/onboarding flow lives in `config/README.md`.
 `langgraph_api` opens the file with the OS default encoding, which
 fails on Chinese Windows if the file is UTF-8 with non-ASCII content.
 
+Claude Code does **not** auto-load `.env`; `.mcp.json` `${VAR}`
+substitution reads claude.exe's process env at startup. To make these
+available without a wrapper, run `.\.claude\scripts\setup-mcp-env.ps1`
+once after each `setup-env.ps1` (i.e. after secrets rotation or first
+clone) — it mirrors `.mcp.json`-referenced vars from `.env` to
+**User-level OS env** (HKCU\Environment), so any shell / IDE launching
+claude inherits them. Restart terminal & claude after the sync. See
+`config/README.md` §6.4 for security tradeoffs and `-Reload` diagnostics.
+
 ## Documentation
 
 > **元规则段（cross-track meta）**: this section governs all three tracks.
