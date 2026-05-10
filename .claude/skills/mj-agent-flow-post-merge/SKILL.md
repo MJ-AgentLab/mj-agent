@@ -7,7 +7,7 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 
 ## Overview
 
-17-stage 闭环最终 stage。PR 合并后，本 skill 编排 9 项 post-merge 动作：
+17-stage 闭环最终 stage。PR 合并后，本 skill 编排 10 项 post-merge 动作：
 
 1. 状态校验
 2. Issue 关闭
@@ -18,6 +18,7 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 7. branch 清理
 8. develop 同步
 9. **plan 生命周期标记**（per Meta v2.2 §5.11；ADR-021；自动 active → completed）
+10. **follow-up branch handoff**（如本次有 follow-up 工作 → 退出 skill + 委派 `/mj-agent-git-branch` 开**新 worktree**；NOT in-place `git checkout -b` 在当前 worktree）
 
 **Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.0 §10.5 + Git Branch Strategy + PR Description Convention.
 
@@ -37,10 +38,11 @@ digraph post_merge {
   s7 [label="Step 7: Branch cleanup\n→ delegate to /mj-agent-git-delete (PR-B3)" shape=box];
   s8 [label="Step 8: Develop sync\n→ delegate to /mj-agent-git-sync (PR-B3)" shape=box];
   s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed\n• per Meta v2.0 §10.5" shape=box];
+  s10 [label="Step 10: Follow-up branch handoff\n• 有 follow-up 工作？\n  Yes → 退出 skill + /mj-agent-git-branch\n        (开新 worktree;\n         NOT in-place git checkout -b)\n  No  → 闭环结束" shape=diamond];
 
   out [label="Output: Post-merge Checklist\n+ next actions for user" shape=doublecircle];
 
-  start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> out;
+  start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> s10 -> out;
 }
 ```
 
@@ -224,6 +226,44 @@ head -10 plans/[PLAN]_<id>_*.md
 | plan 无 `state` 字段 | 输出警告，不自动加（让 user 处理） |
 | plan 当前 `state: draft` | **不**自动改 completed（draft 不应跳 active 直达 completed）；输出建议"先改 active 或人工处理" |
 
+## Step 10: Follow-up Branch Handoff
+
+post-merge cleanup 跑完 Step 1-9 之后，执行 AI 经常处于"任务完成"心态。如果本次 PR 还有 follow-up 工作要立即开始（典型场景：Step 4 follow-up issue 列表非空 / Step 5 EVAL backlog ticket 触发 / 用户在 checklist 后表达"下一步要做 X"），**必须**显式 handoff 到 Stage 2 开新 worktree，而不是在当前 worktree（典型是 `develop/`）内顺手 `git checkout -b <follow-up-branch>`。
+
+### 触发条件
+
+任一条满足即触发 Step 10 提醒：
+
+- Step 4 输出非空 follow-up issue（含已建 / 待建）
+- Step 5 EVAL backlog ticket 触发
+- 用户在 post-merge 输出后口述"接下来做 X" / "现在要做 Y" / "follow-up 是 Z"
+- merge commit 信息 / PR body 含明确"下一步"指示
+
+如以上信号都缺，且用户未提下一步意图，本 step 输出"无 follow-up 工作；闭环结束"。
+
+### 输出规约
+
+- 建议命令：调用 `/mj-agent-git-branch`（Stage 2 编排器），让其按 follow-up 工作的性质生成 worktree-add 命令。
+- 推荐 branch type：跟 follow-up 工作性质（`feature/` / `bugfix/` / `documentation/` / `maintain/` 五选一；hotfix 例外见下）。
+- **禁止** 输出 `git checkout -b` 命令（违反 worktree-per-PR 约定）。
+- **禁止** 在当前 worktree 内自行创建 follow-up 分支；要让 `/mj-agent-git-branch` 输出 `git worktree add ../<type>/<desc> -b <type>/<desc>` 命令。
+
+### 反例（为什么）
+
+mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-git-branch` SKILL §"Bare Repo Worktree 模型"）。在 `develop/` worktree 内 `git checkout -b maintain/post-merge-follow-up` 会：
+
+1. 把 `develop/` worktree 切到 follow-up 分支，`develop/` 不再代表 develop 分支 → 后续在此目录跑 `/mj-agent-git-sync` 等期望 develop 的工具会出错。
+2. 违反 HITL_Prompt §4.3 Rule 5「mj-agent 默认每 PR 一个 worktree」+ Rules「不使用 git checkout 切换分支」+ Fallback「禁止使用 `git checkout` 切分支」。
+3. 违反 `mj-agent-git-branch` SKILL §Anti-patterns 第 2 条「不要 跳过 worktree 直接 `git checkout -b <branch>`——破坏 worktree-per-branch 模型」。
+
+### 例外（不触发 Step 10）
+
+- 用户明确说"follow-up 等改天再说" / "现在不开新分支" → 跳过本 step + 输出"用户主动延后 follow-up；闭环结束"。
+- hotfix → develop 同步（已由 Step 8 的 `/mj-agent-git-sync` 处理，**不**算 follow-up branch）。
+- 仅是 CHANGELOG 编辑等用户在原 worktree 内单文件改动且不会 commit 的"零碎收尾"（这种场景不需要新分支）。
+
+> 若 user 选择走 `/mj-agent-git-branch`，新 worktree 创建后**结束**本次 post-merge skill 调用；后续 commit / push / PR 走标准 Stage 12-14 链条。本 skill 不跨 follow-up 工作主体。
+
 ## Output Format Example
 
 ```markdown
@@ -273,6 +313,14 @@ head -10 plans/[PLAN]_<id>_*.md
 （如有，则）
 - ✅ `plans/[PLAN]_<id>_<desc>.md`: state `active` → `completed`，updated 刷到 <YYYY-MM-DD>
 
+### Follow-up Branch Handoff（Step 10）
+- 检测：Step 4 follow-up issues / Step 5 EVAL backlog / 用户口述下一步？**NO**
+- 结论：⏸ 闭环结束 — 无 follow-up 工作
+
+（如触发，则）
+- 建议：退出本 skill，调 `/mj-agent-git-branch`（type=<feature|bugfix|documentation|maintain>，desc=<follow-up-kebab>）
+- ⚠️ **不要** 在当前 worktree 内 `git checkout -b <follow-up-branch>`（破坏 worktree-per-PR 约定；HITL §4.3 / git-branch anti-pattern）
+
 ### Next User Actions
 - [x] CHANGELOG：跳过（非用户感知）
 - [ ] Confirm follow-up issues
@@ -291,6 +339,7 @@ head -10 plans/[PLAN]_<id>_*.md
 - ❌ 不物理移动 working plan 文件（Step 9 仅改 frontmatter `state` / `updated`；物理归档到 `plans/archive/` 是 Phase 2 GC，由 follow-up issue 引入）
 - ❌ 不修改 plan 正文（仅 frontmatter）
 - ❌ 不自动把 `state: draft` 改 completed（draft 不应跳 active 直达 completed；Step 9 仅 active → completed）
+- ❌ 不为 follow-up 工作开新分支 / 创建 worktree（属 Stage 2，由 `/mj-agent-git-branch` 处理；本 skill 仅做 Step 10 handoff 提醒，不自行 `git worktree add`）
 
 ## Sub-skill Calls
 
@@ -299,6 +348,7 @@ head -10 plans/[PLAN]_<id>_*.md
 | `/mj-agent-git-delete`（PR-B3） | Step 7 branch cleanup |
 | `/mj-agent-git-sync`（PR-B3） | Step 8 develop sync |
 | `/mj-agent-git-issue` | Step 4/5 follow-up issue / EVAL backlog ticket 创建（user 确认后） |
+| `/mj-agent-git-branch` | Step 10 follow-up worktree 创建（如本次有 follow-up 工作；本 skill 仅 handoff，不自行执行） |
 
 ## Reference Files
 
@@ -320,6 +370,7 @@ head -10 plans/[PLAN]_<id>_*.md
 - **不要** 物理移动 plan 文件到 archive（仅改 frontmatter；GC 是 Phase 2 工作）
 - **不要** 自动改 plan `state: draft` → `completed`（违反生命周期；draft 不应跳过 active）
 - **不要** 删受保护分支 main / develop（硬性阻断）
+- **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；HITL_Prompt §4.3 Rule 5 + Rules + Fallback；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `/mj-agent-git-branch` 开新 worktree——见 Step 10。
 
 ## Handoff
 
@@ -330,5 +381,7 @@ User 确认后：
   → /mj-agent-git-sync 执行 develop sync
   → /mj-agent-git-issue 创建 follow-up + EVAL backlog issues
   → user 编辑 CHANGELOG（如适用）
+  → 如有 follow-up 工作 → /mj-agent-git-branch 开**新 worktree**
+                          (NOT in-place `git checkout -b` 在当前 worktree)
   → user 进入下一任务（新 Issue 或 PR）
 ```
