@@ -1,10 +1,10 @@
 ---
 type: plan
-summary: 4-PR bundle — mj-agent 多环境 docker-compose 分层 (dev/test/prod) + LLM provider 抽象 (Ark + DGX 本地 vLLM/SGLang/Ollama 消费侧) + .mcp.json 完整建设 (10 servers，对标 mj-system) + ADR-025
+summary: 4-PR bundle (✅ completed) — mj-agent 多环境 docker-compose 分层 (dev/test/prod) + LLM provider 抽象 (Ark + DGX 本地 vLLM/SGLang/Ollama 消费侧) + .mcp.json 完整建设 (实际 13 servers，对标 mj-system) + ADR-025
 owner: 项目负责人
 created: 2026-05-09
-updated: 2026-05-09
-state: active
+updated: 2026-05-10
+state: completed
 track: shared
 ---
 
@@ -94,4 +94,17 @@ ADR-008 § Decision 已经明确 "环境矩阵 DEV/TEST/PROD 时间表对齐 mj-
 - ✅ **PR-1** — `feature/98-multi-env-compose-layering`（issue [#98](https://github.com/MJ-AgentLab/mj-agent/issues/98)；PR [#99](https://github.com/MJ-AgentLab/mj-agent/pull/99)；merged 2026-05-09 commit `804310a`）
 - ✅ **PR-2** — `feature/100-llm-provider-abstraction`（issue [#100](https://github.com/MJ-AgentLab/mj-agent/issues/100)；PR [#101](https://github.com/MJ-AgentLab/mj-agent/pull/101)；merged 2026-05-09 commit `2f8f056`）
 - ✅ **PR-3** — `feature/102-mcp-json-and-governance`（issue [#102](https://github.com/MJ-AgentLab/mj-agent/issues/102)；PR [#103](https://github.com/MJ-AgentLab/mj-agent/pull/103)；merged 2026-05-09 commit `34e0624`）
-- 🔄 **PR-4** — `documentation/104-env-teardown-and-doc-sync`（issue [#104](https://github.com/MJ-AgentLab/mj-agent/issues/104)；in-progress；待 commit + push + PR 创建 + merge；**bundle 收尾**；merge 后 mj-agent-flow-post-merge Step 9 自动标本 plan `state: completed`）
+- ✅ **PR-4** — `documentation/104-env-teardown-and-doc-sync`（issue [#104](https://github.com/MJ-AgentLab/mj-agent/issues/104)；PR [#105](https://github.com/MJ-AgentLab/mj-agent/pull/105)；merged 2026-05-09 commit `21d6e7f`；**bundle 收尾**）
+- ✅ **post-merge cleanup** — `documentation/106-plan-completion-mark`（issue [#106](https://github.com/MJ-AgentLab/mj-agent/issues/106)；本 PR；plan frontmatter `state: active → completed` + 进度段 PR-4 行 + 累计 summary）
+
+## 累计成果（bundle 收尾）
+
+- **4 PRs** sequential merged：#99 (feat infra) → #101 (feat llm) → #103 (feat infra) → #105 (docs)
+- **1 ADR** 引入：[ADR-025](../docs/adr/[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md) `Multi_Environment_And_LLM_Provider_Abstraction`（track: shared；4 PR 决策 single source of truth）
+- **1 STANDARD** 引入：[`docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`](../docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md) v1.0（领域专属落点 per ADR-022 §C.3.2；A14 PR gate 正式生效）
+- **2 新 in-tree SKILLs**：`mj-agent-infra-llm-endpoint-probe`（PR-2；DGX vLLM healthcheck）+ `mj-agent-infra-env-teardown`（PR-4；3-level cleanup with H3 hard-confirm）；infra family 4 → 6
+- **4 compose 文件**：`infra/docker/docker-compose.{mj-agent,override,test,prod}.yml`（dev/test/prod 三 profile 分层 mirror mj-system v3.2.2）
+- **13 MCP server entries**：github / serena / pg-mj-agent-memory × 5 / pg-mj-system-biz × 5 / ssh-manager（9 SSH targets 含 DGX-Spark 192.168.0.189）
+- **CLAUDE.md 7 处 sync**：§Architecture / §Commands / §LLM provider / §Environment variables / §Documentation ADR summary / §A14 / §Active in-tree skills 表
+- **DGX 算力消费侧路径**完全打通：`LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL=http://192.168.0.189:8000/v1`
+- **严守用户决策**：`Profile` enum 不变（无 dgx）/ 不写 `docker-compose.dgx.yml` / 不加 `POSTGRES_DGX_*` / mj-agent 仅 LLM serving 消费侧 / `MJ_AGENT_*` secrets 命名空间独立 mj-system per ADR-008
