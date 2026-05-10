@@ -163,14 +163,45 @@ try {
             }
         }
 
-        if ($Changes.Count -eq 0) {
+        # Detect .env.example template drift: keys declared in .env.example
+        # but missing from .env and not provided by secrets.enc. Catches the
+        # case where .env.example added new sections (e.g. ADR-025 PR-3 §8/§9)
+        # after the user last generated their .env.
+        $TemplateDrift = @()
+        foreach ($line in Get-Content $EnvExample -Encoding UTF8) {
+            $trimmed = $line.Trim()
+            if ($trimmed -eq "" -or $trimmed.StartsWith("#")) { continue }
+            $eqIdx = $trimmed.IndexOf("=")
+            if ($eqIdx -gt 0) {
+                $key = $trimmed.Substring(0, $eqIdx).Trim()
+                if (-not $ExistingVars.ContainsKey($key) -and -not $Secrets.ContainsKey($key)) {
+                    $TemplateDrift += $key
+                }
+            }
+        }
+        if ($TemplateDrift.Count -gt 0) {
+            Write-Host ""
+            Write-Host "[DRIFT] .env.example declares $($TemplateDrift.Count) key(s) missing from your .env:" -ForegroundColor Yellow
+            foreach ($key in $TemplateDrift | Sort-Object) {
+                Write-Host "  [MISSING] $key" -ForegroundColor Yellow
+            }
+            Write-Host "Re-run with -Force to regenerate .env from current .env.example template." -ForegroundColor Yellow
+            Write-Host "(Caution: -Force resets non-secret keys to .env.example defaults; manual edits to .env are lost.)" -ForegroundColor DarkGray
+        }
+
+        if ($Changes.Count -eq 0 -and $TemplateDrift.Count -eq 0) {
             Write-Host ""
             Write-Host "[SKIP] .env is already up-to-date. No changes needed." -ForegroundColor DarkGray
             return
         }
 
+        if ($Changes.Count -eq 0) {
+            # Drift-only: user must opt in to regeneration via -Force.
+            return
+        }
+
         Write-Host ""
-        $confirm = Read-Host "Overwrite .env with $($Changes.Count) change(s)? [y/N]"
+        $confirm = Read-Host "Overwrite .env with $($Changes.Count) secret change(s)? [y/N]"
         if ($confirm -notin @("y", "Y", "yes", "Yes")) {
             Write-Host "[ABORT] No changes made." -ForegroundColor Yellow
             return
