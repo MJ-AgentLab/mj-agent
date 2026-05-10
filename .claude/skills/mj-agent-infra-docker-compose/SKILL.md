@@ -230,7 +230,7 @@ netstat -ano | findstr "8001 5433 6379"
 curl -fsS http://localhost:8001/health 2>&1 || echo "no /health endpoint (expected for current Phase 1)"
 
 # 4. mj-agent-postgres 可连
-docker exec mj-agent-postgres psql -U mj_agent_memory -d mj_agent_memory -c "\dt"
+docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 # 期望：langgraph AsyncPostgresSaver tables（如 checkpoints / writes）
 ```
 

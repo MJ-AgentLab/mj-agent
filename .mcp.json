@@ -24,7 +24,7 @@
       "command": "cmd",
       "args": [
         "/c", ".claude\\scripts\\pg-server-start.cmd",
-        "${MJ_AGENT_PG_MEMORY_DEV_URL:-postgresql://mj_agent_memory:local-dev-only-replace-in-prod@localhost:5433/mj_agent_memory}"
+        "${MJ_AGENT_PG_MEMORY_DEV_URL:-postgresql://mj_agent_app:local-dev-only-replace-in-prod@localhost:5433/mj_agent_memory}"
       ],
       "env": {}
     },
@@ -33,7 +33,7 @@
       "command": "cmd",
       "args": [
         "/c", ".claude\\scripts\\pg-server-start.cmd",
-        "${MJ_AGENT_PG_MEMORY_TEST_LAN_URL:-postgresql://mj_agent_memory:REPLACE_WITH_TEAM_TEST_PASSWORD@192.168.0.179:5433/mj_agent_memory}"
+        "${MJ_AGENT_PG_MEMORY_TEST_LAN_URL:-postgresql://mj_agent_app:REPLACE_WITH_TEAM_TEST_PASSWORD@192.168.0.179:5433/mj_agent_memory}"
       ],
       "env": {}
     },
@@ -51,7 +51,7 @@
       "command": "cmd",
       "args": [
         "/c", ".claude\\scripts\\pg-server-start.cmd",
-        "${MJ_AGENT_PG_MEMORY_PROD_LAN_URL:-postgresql://mj_agent_memory:REPLACE_WITH_TEAM_PROD_PASSWORD@192.168.0.106:5433/mj_agent_memory}"
+        "${MJ_AGENT_PG_MEMORY_PROD_LAN_URL:-postgresql://mj_agent_app:REPLACE_WITH_TEAM_PROD_PASSWORD@192.168.0.106:5433/mj_agent_memory}"
       ],
       "env": {}
     },
