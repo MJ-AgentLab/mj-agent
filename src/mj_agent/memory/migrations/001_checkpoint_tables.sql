@@ -25,9 +25,9 @@
 --   1. Create the database:
 --        CREATE DATABASE mj_agent_memory ENCODING 'UTF8' LC_COLLATE 'C' LC_CTYPE 'C';
 --   2. Create a read-write role distinct from the biz-domain ``analyst`` role:
---        CREATE ROLE mj_agent_memory LOGIN PASSWORD '<see secrets store>';
---        GRANT CONNECT ON DATABASE mj_agent_memory TO mj_agent_memory;
---        GRANT CREATE ON DATABASE mj_agent_memory TO mj_agent_memory;
+--        CREATE ROLE mj_agent_app LOGIN PASSWORD '<see secrets store>';
+--        GRANT CONNECT ON DATABASE mj_agent_memory TO mj_agent_app;
+--        GRANT CREATE ON DATABASE mj_agent_memory TO mj_agent_app;
 --   3. Connect as that role; on first ``open_checkpointer()`` the tables
 --      below will be created automatically.
 --

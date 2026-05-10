@@ -50,7 +50,7 @@ cp .env.example .env
 #   POSTGRES_ANALYST_USER  / POSTGRES_ANALYST_PASSWORD   ← 团队密钥
 #   ARK_API_KEY                                          ← 团队密钥
 #   LANGSMITH_API_KEY                                    ← 团队密钥
-#   MJ_AGENT_MEMORY_USER=mj_agent_memory                 ← .env.example 默认；首次 up 时被 mj-agent-postgres 容器 init 用来创 role
+#   MJ_AGENT_MEMORY_USER=mj_agent_app                    ← .env.example 默认；首次 up 时被 mj-agent-postgres 容器 init 用来创 role
 #   MJ_AGENT_MEMORY_PASSWORD=local-dev-only-replace-in-prod ← 同上；DEV 占位密码可保留
 #
 # Compose 文件已自动覆盖 POSTGRES_DEV_HOST / MJ_AGENT_MEMORY_HOST / MJ_AGENT_REDIS_HOST 为 service name；不需手动改。

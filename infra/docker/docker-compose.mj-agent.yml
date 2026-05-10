@@ -114,7 +114,7 @@ services:
       POSTGRES_PASSWORD: ${MJ_AGENT_PG_SUPERUSER_PASSWORD:-local-dev-only-replace}
       # The init script reads these and CREATEs role + database.
       MJ_AGENT_MEMORY_DB: ${MJ_AGENT_MEMORY_DB:-mj_agent_memory}
-      MJ_AGENT_MEMORY_USER: ${MJ_AGENT_MEMORY_USER:-mj_agent_memory}
+      MJ_AGENT_MEMORY_USER: ${MJ_AGENT_MEMORY_USER:-mj_agent_app}
       MJ_AGENT_MEMORY_PASSWORD: ${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod}
       TZ: Asia/Shanghai
     volumes:
@@ -130,7 +130,7 @@ services:
       # init script fails (or hasn't run yet because PGDATA was already
       # initialized but the role/DB wasn't created), pg_isready greenlights
       # the container, mj-agent's depends_on fires, and mj-agent then dies
-      # on `password authentication failed for user "mj_agent_memory"`.
+      # on `password authentication failed for user "mj_agent_app"`.
       # The psql probe forces server-up + DB-exists + super-user reachable,
       # so failures surface here instead of cascading to mj-agent.
       # Local socket connection uses `trust` per the alpine image's

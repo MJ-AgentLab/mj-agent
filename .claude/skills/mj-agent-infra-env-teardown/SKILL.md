@@ -120,7 +120,7 @@ docker images | grep "^mj-agent\s"
 | 症状 | 可能原因 | 修复 |
 |---|---|---|
 | `network mj-system-backend-network: removing` 警告 | 该 external network 由 mj-system 拥有；mj-agent down 不应 remove | 忽略警告（compose 会自动跳过 external network；ADR-008 边界） |
-| Level 2 后再 up 报 `password authentication failed for user mj_agent_memory` | postgres-init script 用 .env 当前的 `MJ_AGENT_MEMORY_PASSWORD` 重建 role；如 .env 中此密码与之前不一致，会出错 | 检查 `.env` 的 `MJ_AGENT_MEMORY_PASSWORD` 与 user 期望一致；或重跑 `/mj-agent-infra-env-setup` 重新注入 secrets |
+| Level 2 后再 up 报 `password authentication failed for user mj_agent_app` | postgres-init script 用 .env 当前的 `MJ_AGENT_MEMORY_PASSWORD` 重建 role；如 .env 中此密码与之前不一致，会出错 | 检查 `.env` 的 `MJ_AGENT_MEMORY_PASSWORD` 与 user 期望一致；或重跑 `/mj-agent-infra-env-setup` 重新注入 secrets |
 | Level 3 后 `up` 报 `pull access denied for 8.135.38.175/mj-agent/mj-agent` | test/prod profile 用 Harbor 镜像；本地未 docker login | `docker login 8.135.38.175` 后 retry |
 | `down` hang 在 mj-agent stop | mj-agent healthcheck 进程未优雅退出 | 60s 后强制 `docker kill mj-agent` 后再 `down` |
 
