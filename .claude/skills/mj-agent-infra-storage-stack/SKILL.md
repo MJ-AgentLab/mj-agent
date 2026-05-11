@@ -255,7 +255,7 @@ per CLAUDE.md "Storage" 段：
 - [[../../../infra/docker/docker-compose.mj-agent.yml|infra/docker/docker-compose.mj-agent.yml]]（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）
 - [[../../../infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh|01-bootstrap-mj-agent-memory.sh]]（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）
 - src/mj_agent/memory/checkpointer.py（langgraph AsyncPostgresSaver 接入；bugfix/async-checkpointer 引入）
-- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]（独立 compose project + 双隔离边界）
+- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + 双隔离边界）
 - [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）
 - [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail；mj-agent-postgres 与 biz pg 双隔离）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Storage" 段（mj-agent-postgres + mj-agent-redis 职责说明）

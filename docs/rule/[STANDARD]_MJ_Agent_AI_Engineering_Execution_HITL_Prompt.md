@@ -219,7 +219,7 @@ mj-agent 专属新增：
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
-- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
+- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
 - `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS/DWD）
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 - `CLAUDE.md`（项目根 AI 高频上下文）
@@ -593,7 +593,7 @@ Fallback:
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（SQL guardrail 涉及时）
-- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（compose / network 涉及时）
+- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（compose / network 涉及时）
 
 ## Skill Hint
 
