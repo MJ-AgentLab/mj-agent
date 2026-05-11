@@ -14,9 +14,11 @@
 #   MJ_AGENT_MEMORY_USER   - app role
 #   MJ_AGENT_MEMORY_PASSWORD - app role password
 #
-# Idempotent: each statement is wrapped in DO blocks that no-op if the
-# object already exists. Safe to re-run if the volume is preserved but
-# the bootstrap was previously interrupted.
+# Idempotent: creates role if missing, otherwise syncs LOGIN + PASSWORD
+# from env on each run. Safe to re-run if the bootstrap was previously
+# interrupted. Note: postgres image only invokes this script when the
+# data dir is empty (first boot); for password rotation on an existing
+# volume see `config/README.md "Memory pg password rotation"`.
 set -euo pipefail
 
 : "${POSTGRES_USER:?POSTGRES_USER missing — postgres image normally sets this}"
@@ -27,11 +29,16 @@ set -euo pipefail
 echo "[mj-agent-memory init] creating role + database..."
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
-    -- Create the application role if it doesn't exist.
+    -- Create the application role, or sync its LOGIN + password if it exists.
+    -- The ALTER branch makes the script idempotent for state (not just for
+    -- existence) — needed when `MJ_AGENT_MEMORY_PASSWORD` is rotated and
+    -- the volume gets wiped + re-initialized on a later boot.
     DO \$\$
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${MJ_AGENT_MEMORY_USER}') THEN
             CREATE ROLE "${MJ_AGENT_MEMORY_USER}" LOGIN PASSWORD '${MJ_AGENT_MEMORY_PASSWORD}';
+        ELSE
+            ALTER ROLE "${MJ_AGENT_MEMORY_USER}" WITH LOGIN PASSWORD '${MJ_AGENT_MEMORY_PASSWORD}';
         END IF;
     END
     \$\$;
