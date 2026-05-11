@@ -19,7 +19,7 @@ Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flo
 
 **Reference**:
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位；mj-agent 调版 Phase B+ 派生）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 Intake prompt）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 Intake prompt）
 
 ## Workflow
 
@@ -269,7 +269,7 @@ bugfix/hotfix 加 Reproduction / Expected vs Actual / Environment 段（参 mj-a
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1 + §4.1（Stage 0 Intake prompt）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 + §4.1（Stage 0 Intake prompt）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位上游）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]（type/scope）
 - [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）

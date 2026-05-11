@@ -23,7 +23,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 仓内所有 `docs/design/<module>/[SPEC]_*.md` 起草与更新（HITL Stage 6）
 > **目标受众**：SPEC 起草者（开发 / AI Agent / Reviewer）
 > **版本**：v0.1
-> **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.6
+> **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6
 
 ---
 
@@ -180,7 +180,7 @@ git diff --name-only HEAD
 
 ## §5 与 HITL_Prompt 的引用映射
 
-[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] 多处用 `Contract.Input` / `Configuration` / `Error handling` 等短码标记 SPEC 漏项（替代旧 `SPEC-*` 短码 prefix）；下表给出本 GUIDE / TEMPLATE_SPEC 章节 ↔ 短码映射：
+[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] 多处用 `Contract.Input` / `Configuration` / `Error handling` 等短码标记 SPEC 漏项（替代旧 `SPEC-*` 短码 prefix）；下表给出本 GUIDE / TEMPLATE_SPEC 章节 ↔ 短码映射：
 
 | HITL_Prompt 短码 | TEMPLATE_SPEC.md 章节 | 本 GUIDE 章节 |
 |---|---|---|
@@ -248,7 +248,7 @@ SPEC Delta:
 ## 关联文档
 
 - [[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC.md]]（本 GUIDE 指导填写的目标模板）
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.6（Stage 6 SPEC 起草 prompt；引用本 GUIDE）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC 起草 prompt；引用本 GUIDE）
 - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]（SPEC 是 code-track 文档；A1-A6 PR 门禁）
 - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]]（任务类型 #3 in-source canonical 治理）
 - [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（任务类型 #2 SQL guardrail 红线）

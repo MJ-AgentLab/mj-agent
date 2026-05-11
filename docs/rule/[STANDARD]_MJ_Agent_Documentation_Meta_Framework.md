@@ -660,7 +660,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 - 同期子框架：
   - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
   - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
-- Track C 主 STANDARD：`[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]`
+- Track C 主 STANDARD：`[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]`
 - Track C 后续子规范（Phase C+ 落地）：
   - `[[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0]]`（A13 阈值）
   - `[[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0]]`（A14 阈值）

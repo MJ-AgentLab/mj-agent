@@ -163,7 +163,7 @@ period: <daterange>               # 评估周期（如 "Phase 0" / "2026-04-01 �
 
 | 代码侧场景 | 引用 engineering-workflow STANDARD |
 |---|---|
-| 新增 CI hook（pre-commit / `.github/workflows/*.yml` 修改） | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] §4.10 Stage 10 Local Verification（PR-A2 落地后激活） |
+| 新增 CI hook（pre-commit / `.github/workflows/*.yml` 修改） | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.1]] §4.10 Stage 10 Local Verification（PR-A2 落地后激活） |
 | 引入 / 删除 MCP server | [[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0\|MCP_Server_Governance v1.0]]（Phase C+ 落地后激活） |
 | 改动 `.claude/settings.json` 共享配置 | [[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0\|Claude_Code_Settings v1.0]]（Phase C+ 落地后激活） |
 | 引入 / 修改 `.claude/hooks/**`（Phase C+ 启用后） | 待定 hooks 子规范（Phase C+） |

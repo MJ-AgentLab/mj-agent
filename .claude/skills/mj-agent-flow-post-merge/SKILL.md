@@ -20,7 +20,7 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 9. **plan 生命周期标记**（per Meta v2.2 §5.11；ADR-021；自动 active → completed）
 10. **follow-up branch handoff**（如本次有 follow-up 工作 → 退出 skill + 委派 `/mj-agent-git-branch` 开**新 worktree**；NOT in-place `git checkout -b` 在当前 worktree）
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.2 §5.11 + Git Branch Strategy + PR Description Convention.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.2 §5.11 + Git Branch Strategy + PR Description Convention.
 
 ## Workflow
 
@@ -188,7 +188,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 9: Plan Lifecycle Mark
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11「Working 文档生命周期」+ [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15 Rule 12，PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。
+按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11「Working 文档生命周期」+ [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15 Rule 12，PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。
 
 ### 定位关联 plan
 
@@ -356,7 +356,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.15（Rules 1-11，Rule 11 EVAL backlog mj-agent 专属）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15（Rules 1-11，Rule 11 EVAL backlog mj-agent 专属）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11（Working 文档生命周期，Step 9 plan state 改 completed 依据）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11（Working 文档 frontmatter schema 内嵌于 4 态机段）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Branch lifecycle / cleanup）

@@ -16,7 +16,7 @@ Authors full mj-agent working Plan body — `plans/[PLAN]_*.md` content covering
 | `mj-agent-doc-plan`（PR-B4） | **WHAT documentation is needed** | Doc evaluation only — Action=Create/Update/None per type |
 | `mj-agent-flow-plan`（本 skill） | **HOW the work proceeds** (full Plan body) | Stage 4 — orchestrates 8 plan sections; sub-calls doc-plan for doc-decision sub-section |
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.5（Stage 4 Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5（Stage 4 Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
 
 > mj-agent 当前**没有 TEMPLATE_PLAN.md**（Phase D 起首份；当前用现存 plans/ 范例作为 reference style）。
 
@@ -254,7 +254,7 @@ state: "active"
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.5（Stage 4 Rules + Output 字段）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5（Stage 4 Rules + Output 字段）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` §7.1（Lite Phase A 占位）
 - 现存 `plans/[PLAN]_*.md` 范例（mj-agent 当前 Plan 风格 reference）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（working vs canonical 边界）
