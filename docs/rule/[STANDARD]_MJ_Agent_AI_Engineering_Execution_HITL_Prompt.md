@@ -523,7 +523,8 @@ Plan 不写：
 - `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`（agent-track ADR/SPEC 时）
 
 ### Use As Template
-- `docs/_templates/TEMPLATE_SPEC.md`（Phase A PR-A3 落地）
+- `docs/_templates/TEMPLATE_SPEC.md`（含 §0 Task Type Identification；按任务类型裁剪）
+- `docs/guide/[GUIDE]_MJ_Agent_SPEC_Authoring.md`（**SPEC 起草前必读**；§3 决策树识别 8 类任务 + §4 各类必填 / 可选段裁剪规则）
 - `docs/_templates/TEMPLATE_ADR.md`
 - `docs/_templates/TEMPLATE_RUNBOOK.md`（Phase A PR-A3 落地）
 
@@ -553,7 +554,7 @@ Fallback:
 - 运维操作 / 回滚 / 排障：新建或更新 RUNBOOK
 - Bug fix / 小改动：优先更新现有 SPEC
 - **代码优化 / 内部重构 / 性能改造（接口不变）**：先按本规范 §4.4 Repo Scan §7.2.1 反向扫描既有 SPEC / GUIDE / RUNBOOK 的命中段；事后按 §4.15 Rule 9 决策建 ASSESSMENT
-- 编写或更新 SPEC 时，必须按 `docs/_templates/TEMPLATE_SPEC.md` 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）覆盖契约、配置、错误处理、幂等、回滚、验证、可观测性等关键项
+- 编写或更新 SPEC 时，必须按 `docs/_templates/TEMPLATE_SPEC.md` 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）覆盖契约、配置、错误处理、幂等、回滚、验证、可观测性等关键项；按 [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §3 决策树先识别任务类型（8 类），再按 §4.X 裁剪必填 / 可选段
 
 如涉及 mj-agent 数据边界（biz_dws/biz_dwd allowlist 修改）、SQL guardrail 放宽、in-source SKILL/PROMPT body 重写、biz catalog 镜像规则变更，必须 HITL。
 
@@ -776,7 +777,7 @@ Fallback:
    - **5a. 既有文档失真扫描**：基于本次 git diff 中 rename / move / delete 的函数 / 类 / 文件 / SQL 对象 / 列 列表，按本规范 §4.4 Repo Scan §7.2.1 反向扫描动作 grep `docs/**/*.md` + `CLAUDE.md` + **`src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md`**（runtime canonical 是反向扫描目标）中 backtick 包裹的引用，列出所有命中文档；命中后须在 PR description 说明已更新或决定不更新（含理由）。本次任务不涉及上述 5 类改动时，须显式记录"不涉及反向扫描"
    - **5b. 新文档创建确认**：比对 Repo Scan §7.1 Documentation Decision 表中 Action=Create 的所有行，确认对应 Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / 本地 ISSUE / ASSESSMENT 已创建并填入 frontmatter（schema 按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|文档管理框架]] §4.3 / §4.4）
    - **5c. INDEX / CLAUDE.md / CHANGELOG.md 同步**：按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|框架]] §6.4 的 allowlist 检查 `CLAUDE.md`；按 §7.1 A5 检查 `INDEX.md`；按 PR template `.github/PULL_REQUEST_TEMPLATE/<type>.md` 的 CHANGELOG 字段判断
-   - **5d. SPEC Delta Check**：若本任务创建或更新了 SPEC，对比最终 diff、验证结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约、配置、错误处理、幂等、回滚、验证或可观测性。无漏项时输出 `SPEC Delta: None`；有漏项时按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名（如 `Contract.Input` / `Configuration` / `Error handling` / `Rollback` / `Verification` / `Observability`）记录漏项。若本任务不涉及 SPEC，显式输出"不涉及 SPEC Delta"
+   - **5d. SPEC Delta Check**：若本任务创建或更新了 SPEC，对比最终 diff、验证结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约、配置、错误处理、幂等、回滚、验证或可观测性。无漏项时输出 `SPEC Delta: None`；有漏项时按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名（如 `Contract.Input` / `Configuration` / `Error handling` / `Rollback` / `Verification` / `Observability`）记录漏项；按 [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §5 短码映射表对照本任务类型的必填段 cross-check。若本任务不涉及 SPEC，显式输出"不涉及 SPEC Delta"
 6. acceptance criteria 是否都有验证证据
 7. 是否有不应提交的文件（`.env` / `*.pyc` / `.venv/` / log files）
 8. **biz catalog drift**：若 `qcm_catalog.yaml` 改动，与上游业务系统数据字典 STANDARD 是否一致（`scripts/diff_biz_schema.py`）
@@ -997,7 +998,7 @@ Fallback:
 逐条判断：
 
 1. reviewer 说了什么
-2. 是 bug、建议、风格、架构、需求、测试问题，还是 SPEC gap（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名）
+2. 是 bug、建议、风格、架构、需求、测试问题，还是 SPEC gap（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名 + [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §5 短码映射表）
 3. 是否必须修改
 4. 是否影响 Plan / SPEC / ADR
 5. 建议如何回应
@@ -1116,7 +1117,7 @@ Fallback:
 7. 是否有 follow-up issue
 8. 是否需要复盘
 9. **任务类型为 optimization，或 feature 含重构 / 性能改造**：是否建 ASSESSMENT 对比改造效果。pre-change 阶段未识别 ASSESSMENT 需求时，post-merge 是最后一道闸——不建 ASSESSMENT 必须在 post-merge checklist 显式记录原因（如"优化未达预期 measurable improvement"）
-10. 若本任务在 self-review / Review / CI 阶段产生 `SPEC-*` 漏项（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名），按以下层级沉淀：
+10. 若本任务在 self-review / Review / CI 阶段产生 `SPEC-*` 漏项（按 `docs/_templates/TEMPLATE_SPEC.md` §3 Contract 各子项命名 + [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §5 短码映射表），按以下层级沉淀：
     - **默认**：在 PR description「AI 自检」段累计 `SPEC Delta: <code> @ <section>`
     - **触发条件达标后**（≥3 真实漏项跨 ≥2 任务）：新建或追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`
     - **升级 POSTMORTEM 边界**：仅当漏项导致 merge 后事故、生产影响、数据错误、CI/CD 发布失败或 P1/P2 级返工时，才写入 `docs/postmortem/[POSTMORTEM]_*.md`
