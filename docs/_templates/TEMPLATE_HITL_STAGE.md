@@ -13,7 +13,6 @@ updated: 2026-05-08
 state: draft
 version: v0.1
 track: shared
-derives_from: mj-system/develop@[STANDARD]_AI_Engineering_Execution_HITL_Prompt
 owner: 项目负责人
 ---
 
@@ -21,17 +20,15 @@ owner: 项目负责人
 
 > **何时复制本模板**：
 >
-> 1. 在 `[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md` 的 §4 中**新增** stage（如 mj-agent 实际需要 stage 7.5 而 mj-system 没有）
-> 2. **派生** 子规范时（如 Phase B+ 派生 `[STANDARD]_MJ_Agent_AI_Engineering_Intake_v1.0.md` 时，每个 sub-step 用本模板）
-> 3. **PR-A2 落地后**复用本模板创建 `.claude/skills/mj-agent-flow-*/SKILL.md` 的 Workflow 段（不要照搬本模板进 SKILL.md frontmatter；SKILL.md frontmatter 走 ADR-013 native schema）
+> 1. 在 `[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md` 的 §4 中**新增** stage（如 mj-agent 实际需要 stage 7.5）
+> 2. **派生** 子规范时（如新建 `[STANDARD]_MJ_Agent_AI_Engineering_Intake_v1.0.md` 时，每个 sub-step 用本模板）
+> 3. 复用本模板创建 `.claude/skills/mj-agent-flow-*/SKILL.md` 的 Workflow 段（不要照搬本模板进 SKILL.md frontmatter；SKILL.md frontmatter 走 ADR-013 native schema）
 >
 > **不**用本模板：
 >
 > - 起草普通 SPEC（用 [[TEMPLATE_SPEC|TEMPLATE_SPEC]]）
 > - 起草 ADR（用 [[TEMPLATE_ADR|TEMPLATE_ADR]]）
-> - 起草 SKILL.md body 主体（参考 `[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10.2` 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
-
-> **派生自**：[mj-system v1.0 §2 Prompt 通用结构](https://github.com/MJ-AgentLab/mj-system/blob/develop/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md#2-prompt-通用结构)（mj-agent 上下文化）。
+> - 起草 SKILL.md body 主体（参考 `[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10.2` 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
 
 ---
 
@@ -134,7 +131,7 @@ mj-agent 专属规则（如有；可删此段）：
 - Stage 编号沿用 mj-agent HITL_Prompt v1.0 §1 的 17-stage 闭环（不要重新编号）
 - Stage 名称：动作 + 名词（如"Repo Scan"、"Plan"）；不要用动名词（不要"Scanning Repo"）
 - 跨 stage 的子流程：用 `§4.X.Y`（如 `§4.10.1 Level A 只读`）
-- mj-agent 专属新增 stage：编号从 `§4.16` 开始；mj-system 上游若有 §4.16+ 时优先复用其编号
+- 新增 stage：编号从 `§4.16` 开始
 
 ---
 
@@ -156,12 +153,11 @@ mj-agent 专属规则（如有；可删此段）：
 ## 关联文档
 
 - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]（本模板的目标使用场景）
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 的 schema 与 body 风格）
-- [[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]（HITL_Prompt v1.0 派生决策）
-- mj-system v1.0 §2 通用结构（上游派生源）
+- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10（in-tree workflow SKILL 的 schema 与 body 风格）
+- [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track + engineering-workflow track）
 
 ## 更新记录
 
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
-| 2026-05-08 | v0.1 | 初稿（与 HITL_Prompt v1.0 + ADR-015 同 PR 落地） |
+| 2026-05-08 | v0.1 | 初稿（与 HITL_Prompt v1.0 同 PR 落地） |

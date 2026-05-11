@@ -8,7 +8,6 @@ updated: 2026-05-09
 state: active
 version: v1.0
 track: code
-derives_from: mj-system/develop@[STANDARD]_Obsidian_Markdown.md
 tags:
   - standard
   - documentation

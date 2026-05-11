@@ -8,7 +8,6 @@ updated: 2026-05-09
 state: active
 version: v1.1
 track: code
-derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0
 supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0"
 tags:
