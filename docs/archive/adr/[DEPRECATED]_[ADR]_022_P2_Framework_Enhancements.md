@@ -5,7 +5,11 @@ summary: 5 项 P2 framework rule 增强 bundle 决策（mj-system v5.2 派生）
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by:
+  - docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md
+  - docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md
 decision: accepted
 track: shared
 tags:

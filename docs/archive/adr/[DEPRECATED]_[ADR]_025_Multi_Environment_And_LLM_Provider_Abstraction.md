@@ -5,7 +5,12 @@ summary: PR-1/2/3/4 multi-env+DGX+MCP bundle 跨多 domain 决策统一记录 �
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by:
+  - docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md
+  - docs/adr/[ADR]_027_LLM_Provider_Abstraction.md
+  - docs/adr/[ADR]_028_MCP_Server_Inventory_And_Governance.md
 decision: accepted
 track: shared
 tags:
