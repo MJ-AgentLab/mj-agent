@@ -4,7 +4,8 @@ summary: Dockerfile FROM 回退 python:3.13-slim (digest d49c1ff8...) + ENV UV_P
 owner: ranzuozhou
 created: 2026-05-11
 updated: 2026-05-11
-state: active
+completed: 2026-05-11
+state: completed
 track: code
 ---
 
