@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v1.0
 track: code
-derives_from: ""
 owner: 项目负责人
 severity: P2
 incident-date: YYYY-MM-DD
@@ -24,7 +23,6 @@ resolved-at: YYYY-MM-DDTHH:MM
 > **严重程度**：<P0/P1/P2>（<影响简述>）
 > **发生日期**：YYYY-MM-DD
 > **修复状态**：resolved-and-verified / resolving / pending-fix
-> **派生自**：（如非派生则写"mj-agent 原生"；mj-system 上游有对位事件时引用）
 
 ---
 

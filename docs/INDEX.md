@@ -25,7 +25,7 @@ track: shared
 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|mj-agent 智能体侧文档治理框架 v1.2（Track B）]] (active；stable path) | Track B v1.2 — §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema；ADR-024 决议）；A8/A11 transitional waiver 延续 Phase E；v1.1 已 archive；§5/§6/§7.x sustained from v1.1 |
 | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (active) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；§3.1 通用 + 4 项 mj-agent 专属必停规则（runtime-skill / prompt-version / biz-catalog / sql-guardrail）；§4 含 3 风味 Implementation（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ EVAL backlog ticket 自动开单 |
 | [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.1 §4 字段语义互补 |
-| [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft；派生自 mj-system v2.0） |
+| [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft） |
 
 ## 架构决策（docs/adr/）
 
@@ -113,7 +113,7 @@ track: shared
 
 | 子目录 | 摘要 |
 |---|---|
-| [[infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范，派生自 mj-system v5.0 同名目录 |
+| [[infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范 |
 | [[infrastructure/cicd/INDEX\|infrastructure/cicd/]] | CI/CD 与发布运维 RUNBOOK 入口；首份为 Release Process（Phase 0.5 Minimal 起步版） |
 
 ---
@@ -217,6 +217,5 @@ track: shared
 
 ## 快速链接
 
-- 派生来源：[[STANDARD]_Documentation_Management_Framework_v5.0\|mj-system 文档管理框架 v5.0]]
-- Claude Code 工作区配置：`.claude/`（v2.0 active 期间整体出 governance；v2.1 draft 起将项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta v2.1]] §7.6 + [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]]）
+- Claude Code 工作区配置：`.claude/`（项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta v2.2]] §7.6 + [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]]）
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）

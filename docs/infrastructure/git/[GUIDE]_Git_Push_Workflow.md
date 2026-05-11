@@ -15,7 +15,6 @@ updated: 2026-05-06
 state: draft
 version: v1.0
 track: code
-derives_from: mj-system/develop@[GUIDE]_Git_Push_Workflow.md
 owner: 项目负责人
 ---
 
