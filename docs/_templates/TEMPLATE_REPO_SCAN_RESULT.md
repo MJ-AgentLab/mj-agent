@@ -167,7 +167,7 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.4（Stage 3 prompt）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.4（Stage 3 prompt）
 - `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描完整步骤）
 - [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]]（如 SPEC = Create/Update 时使用）
 

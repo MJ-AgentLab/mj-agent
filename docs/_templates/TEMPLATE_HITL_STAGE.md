@@ -152,7 +152,7 @@ mj-agent 专属规则（如有；可删此段）：
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]（本模板的目标使用场景）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本模板的目标使用场景）
 - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10（in-tree workflow SKILL 的 schema 与 body 风格）
 - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track + engineering-workflow track）
 

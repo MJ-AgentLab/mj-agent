@@ -181,7 +181,7 @@ StatusContext (__typename: "StatusContext"):
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.14（Stage 16 Merge Gate Rules）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.14（Stage 16 Merge Gate Rules）
 - [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（描述字段依据）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
 - mj-system `.claude/skills/mj-sys-git-check-merge/SKILL.md`（直接派生源；mj-agent 改 5 branch type，去 optimization）

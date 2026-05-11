@@ -12,7 +12,7 @@ description: This skill should be used when the user asks to start LangGraph Stu
 **Reference**:
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]] §4 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
 - [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.8 Level B（Studio probe 是 HITL-confirm 后跑的）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8 Level B（Studio probe 是 HITL-confirm 后跑的）
 
 ## 前置条件
 

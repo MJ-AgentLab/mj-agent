@@ -236,7 +236,7 @@ $cfgPath = "$bareDir/worktrees/$wtName/config.worktree"
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.11 Push Rule 6（base branch 同步引用本 skill）+ §4.15 Rule 3（hotfix → develop 同步）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.11 Push Rule 6（base branch 同步引用本 skill）+ §4.15 Rule 3（hotfix → develop 同步）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]]（pushall 双推依据）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Bare Worktree Health Check H8 依据）
 - mj-system `.claude/skills/mj-sys-git-sync/SKILL.md`（直接派生源；mj-agent 改 5 branch type，去 optimization）

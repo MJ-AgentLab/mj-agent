@@ -186,7 +186,7 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 - [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）
 - [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（端到端 5 项验证；LLM 是 H1/H2/H3 happy path 前置条件）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.10 Stage 10 Local Verification
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.10 Stage 10 Local Verification
 - vLLM docs: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
 - Ollama OpenAI compat: https://github.com/ollama/ollama/blob/main/docs/openai.md
 - mj-system upstream `.claude/skills/mj-sys-ops-env-setup`（间接派生源；mj-agent 简化为单一 endpoint 探针，不含 mj-system 多 SSH 编排）
