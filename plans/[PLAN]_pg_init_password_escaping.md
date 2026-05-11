@@ -4,7 +4,8 @@ summary: 修 infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh heredoc 
 owner: ranzuozhou
 created: 2026-05-11
 updated: 2026-05-11
-state: active
+completed: 2026-05-11
+state: completed
 track: code
 ---
 
@@ -197,14 +198,14 @@ docker compose ... down -v
 
 ## 7. Completion Criteria
 
-- [ ] AC1: `01-bootstrap-mj-agent-memory.sh` 重写为 quoted heredoc + psql `\getenv` + `:'var'`/`:"var"` + `format('%I %L', ...)` for DDL
-- [ ] AC2: Fresh volume + `MJ_AGENT_MEMORY_PASSWORD` 含 `$`/`` ` ``/`(`/`'` metachar → `up -d` 后三 service 全 healthy，init log **无** "command not found"
-- [ ] AC3: `docker exec mj-agent mj-agent check` ✅ DB OK + ✅ LLM OK
-- [ ] AC4: PR #138 idempotent alter-role 路径不回归（existing volume + 改 password → 手动 ALTER ROLE 仍生效）
-- [ ] AC5: `config/README.md` 追加 "场景 D: password 字符集安全" 子段（含 #144 引用）
-- [ ] AC6: Level A 卫生 gates 全过（ruff / mypy / pytest unit / compileall / wikilinks / frontmatter / `bash -n` / compose config lint）
-- [ ] AC7: PR 通过 CI + review + merge
-- [ ] AC8: post-merge — 本 plan `state: completed` + `completed: <date>` + close #144
+- [x] AC1: `01-bootstrap-mj-agent-memory.sh` 重写为 quoted heredoc + psql `\getenv` + `:'var'`/`:"var"` + `format('%I %L', ...)` for DDL
+- [x] AC2: 验证手段 — ephemeral `docker run --rm postgres:18-alpine` with `MJ_AGENT_MEMORY_PASSWORD=p@ssw0rd$test(123` mounted with new init script → init log clean (无 "command not found")，role created，auth OK as `mj_agent_app` with metachar password
+- [x] AC3: `docker exec mj-agent mj-agent check` 输出 `CHECK OK profile=dev biz host=mj-postgres:5432 memory db=mj_agent_memory chainlit=0.0.0.0:8000 llm provider=ark (endpoint=https://ark.cn-beijing.volces.com/api/v3)` (after #150 workaround manual ALTER ROLE)
+- [x] AC4: existing volume + manual `ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '...'` → mj-agent re-auths → CHECK OK；PR #138 alter-role 路径直接 cover
+- [x] AC5: `config/README.md` "场景 D: password 字符集安全（#144 起 init script 已无字符集约束）" 子段已合入 develop
+- [x] AC6: Stage 10 Level A 6/6 PASS (bugfix worktree) + Stage 17 在 develop 再跑 ephemeral test + compose lifecycle 通过
+- [x] AC7: PR #147 merged 2026-05-11T13:26:07Z (squash commit `aa52edc8`)
+- [x] AC8: post-merge — plan state updated (本 commit) + completed=2026-05-11 + #144 closed
 
 ## 8. Linked Items
 
@@ -222,4 +223,6 @@ docker compose ... down -v
   - `src/mj_agent/prompts/system.md` (§3.1 trigger 11 不触发)
   - `src/mj_agent/biz_catalog/qcm_catalog.yaml` (§3.1 trigger 12 不触发)
   - `src/mj_agent/tools/sql/{guardrail,precheck}.py` (§3.1 trigger 13 不触发)
+- 后续 follow-up issues:
+  - **#150** `[Bugfix] compose env-file asymmetry: postgres gets default value while app gets .env value` (Stage 17 deferred-AC verification 暴露；同链 fix N → expose N+1 模式延续)
 - 后续独立 PR: 无
