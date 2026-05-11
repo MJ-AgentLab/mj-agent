@@ -187,6 +187,27 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml `
 与 `secrets.enc` 解密一致（避免再次漂移）。如有备份/还原计划，参 ADR-008
 storage stack 双隔离约束 + 各环境 backup 策略文档。
 
+### 场景 D: password 字符集安全（#144 起 init script 已无字符集约束）
+
+历史背景：早期（#144 之前）`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh`
+用 `<<-EOSQL` heredoc（**unquoted** delimiter），bash 对 SQL body 跑
+parameter / command / arithmetic substitution。如果 `MJ_AGENT_MEMORY_PASSWORD`
+含 `$word` / `` `cmd` `` / `$(cmd)` 等 shell metachar，bash 二次解析会**破坏**
+password 字面量（"command not found" → 空串/截断），导致 fresh-volume `up -d`
+后 pg role 持有的 password ≠ app 读到的 raw env value → 永久 auth fail。
+
+**Issue #144 起本脚本已改为 quoted heredoc `<<-'EOSQL'` + psql `\getenv` 直读
+进程 env + `:'var'` / `:"var"` 引用 + server-side `format('%I %L', ...)` 处理
+DDL**，完全 bypass shell expansion；任意字符的 password（含 `$` / backtick /
+括号 / 单引号 / 空格）均可正确 round-trip 到 pg role。
+
+因此 **现行版本不再有 password 字符集约束**，可在团队 `secrets.enc` 中
+使用任意强 password。
+
+诊断提示：若 `mj-agent-postgres` 启动 log 同时出现 `command not found` 与
+`password authentication failed`，先确认 init script 版本 ≥ #144 修复
+（在容器内或 host 上 `grep '\\getenv mem_user' infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 应命中）；命中仍报错请走场景 A 手动同步并 file follow-up。
+
 ## 与 mj-system 的口令独立
 
 mj-agent 的 `secrets.enc` 与 mj-system 的同名文件**故意采用不同口令**，
