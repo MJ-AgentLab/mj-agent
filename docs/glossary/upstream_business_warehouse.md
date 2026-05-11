@@ -47,6 +47,50 @@ mj-agent 仅作为 **read-only 消费者**（per [[../adr/[ADR]_006_Fail_Safe_Re
 - 备选 1：业务域上游 / biz domain upstream
 - 备选 2：only-read 业务库 / read-only biz pg
 
+## 如何引用上游业务系统（mj-system）
+
+> 本段定义 mj-agent active 文档**唯一允许**含 mj-system inline URL 的位置（per [[../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]] archive 例外 + 本段元文档例外）。其他 active 文档应通过 wikilink 引用本段，不要 inline URL。
+
+### 仓库定位
+
+| 项 | 值 |
+|---|---|
+| 仓库 | `https://github.com/MJ-AgentLab/mj-system` |
+| 团队边界 | MJ-AgentLab；与 mj-agent 同团队，team member 默认 read 权限，无访问障碍 |
+| 主分支 | `main`（稳定 / 已发布）+ `develop`（active 主线）|
+
+### Branch / Ref 选择规则
+
+mj-agent active 文档若需引用 mj-system 具体内容，按场景选择 ref：
+
+| 场景 | 推荐 ref | 示例用途 |
+|---|---|---|
+| 历史 attribution（frozen 状态快照）| **commit SHA**（immutable；首选）| ADR / POSTMORTEM 中"本设计 derived from upstream @ commit `abc1234` §X.Y" |
+| 当前最佳实践参照 / 持续追踪 | `develop`（active 主线）| "对照上游 develop 当前实现，未来引入" |
+| 已发布稳定版本对照 | `main` 或 release tag | "本规范对齐上游 v5.2 release" |
+| 仅概念 / 术语（不指 specific file 或行）| **不放 URL** | 用本术语 prose（"上游业务系统"）即可 |
+
+> **首选 SHA-pin**：mj-agent active 文档若一定要 inline URL，**推荐 SHA-pin** —— `develop` / `main` 都会随时间漂移，旧 ADR 中的 URL 会失效或语义偏离。
+
+### 跨仓引用的最小化原则
+
+mj-agent 大多数 active 文档**不需要** inline mj-system URL —— body 应自洽（决策推导独立可读）。如确需 attribution，wikilink 到本 glossary 段 + 一句话内联描述即可：
+
+```markdown
+本设计的 directory-scan 思路与上游业务系统脚本工具的常见模式一致
+（详见 [[../glossary/upstream_business_warehouse|glossary §如何引用上游业务系统]]）。
+```
+
+### 例外（允许 inline URL 的位置）
+
+- 本 glossary 段（唯一合法 active inline URL 持有者；元文档边界）
+- `docs/archive/adr/[DEPRECATED]_*.md`：per ADR-019 frozen snapshot，既有 URL 不动
+- 代码层 fenced code block 中的 literal（罕见；如展示外部脚本片段对照）
+
+### Forward guard
+
+`scripts/check_no_cross_repo_refs.py` 在 `SKIP_FILES` 已豁免本 glossary 文件路径（warning-mode 期间不会自我命中本段 URL；strict-mode 切换后行为不变）。
+
 ## 关联文档
 
 - [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]（4 层 guardrail；本术语在 L1-L4 层均有出现）
