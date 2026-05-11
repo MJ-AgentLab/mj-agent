@@ -4,7 +4,8 @@ summary: Dockerfile builder + runtime stage 各 RUN 块加 echo 'Acquire::Retrie
 owner: ranzuozhou
 created: 2026-05-11
 updated: 2026-05-11
-state: active
+completed: 2026-05-11
+state: completed
 track: code
 ---
 
