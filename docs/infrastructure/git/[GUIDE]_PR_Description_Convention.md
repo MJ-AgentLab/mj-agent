@@ -15,7 +15,6 @@ updated: 2026-04-30
 state: draft
 version: v1.0
 track: code
-derives_from: mj-system/develop@[GUIDE]_PR_Description_Convention.md
 owner: 项目负责人
 ---
 
