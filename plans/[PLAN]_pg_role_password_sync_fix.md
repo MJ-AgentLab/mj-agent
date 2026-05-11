@@ -4,7 +4,8 @@ summary: 修 infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh idempote
 owner: ranzuozhou
 created: 2026-05-11
 updated: 2026-05-11
-state: active
+completed: 2026-05-11
+state: completed
 track: code
 ---
 

@@ -123,7 +123,7 @@ docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 # Storage-stack — independent compose project (mj-agent + 自带 postgres + redis)
-# 4-file profile layering per ADR-025 (mirror mj-system v3.2.2). All 3 profiles
+# 4-file profile layering per ADR-026 (mirror mj-system v3.2.2). All 3 profiles
 # use explicit `-f base -f overlay` chain (override.yml auto-load doesn't apply
 # because compose files live in infra/docker/ subdir and base loaded via -f).
 # Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
