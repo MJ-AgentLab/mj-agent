@@ -23,7 +23,14 @@
 FROM python:3.14-slim@sha256:1697e8e8d39bf168e177ac6b5fdab6df86d81cfc24dae17dfb96cfc3ef76b4dd AS builder
 # tag: 3.13-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Default apt mirror = tuna; avoids Fastly anycast flakiness affecting
+# mainland builds (see plans/[PLAN]_dockerfile_apt_mirror_tuna.md). Override
+# at build time: --build-arg APT_MIRROR_URL=deb.debian.org
+ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
+
+RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
+        /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
         gcc libc6-dev libpq-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -46,8 +53,13 @@ RUN uv sync --frozen --no-dev
 FROM python:3.14-slim@sha256:1697e8e8d39bf168e177ac6b5fdab6df86d81cfc24dae17dfb96cfc3ef76b4dd
 # tag: 3.13-slim
 
+# ARG redeclare — Docker ARG scope is per FROM; builder default not inherited.
+ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
+
 # libpq5 = analyst psycopg client; tini = PID-1 signal handling.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
+        /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
         libpq5 tini \
     && rm -rf /var/lib/apt/lists/*
 
