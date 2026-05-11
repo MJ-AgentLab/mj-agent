@@ -34,4 +34,14 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 
 </details>
 
+<details>
+<summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1 §7.7]]</summary>
+
+- [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+- [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
+- [ ] **A14** `.mcp.json` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+- [ ] **documentation 风险面**：改 `.claude/skills/**/SKILL.md` body 时 frontmatter `name` + `description` 不漂（A12）；修订 Meta v2.1 / Code_Side / Agent_Side / HITL_Prompt 等 STANDARD 时 A12-A14 条文与本 template 同步检查
+
+</details>
+
 - [ ] Commit message 仅含 `docs` 类型
