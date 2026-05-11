@@ -36,6 +36,7 @@ ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
 
 RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
         /etc/apt/sources.list.d/debian.sources \
+    && echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries \
     && apt-get update && apt-get install -y --no-install-recommends \
         gcc libc6-dev libpq-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -65,6 +66,7 @@ ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
 # libpq5 = analyst psycopg client; tini = PID-1 signal handling.
 RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
         /etc/apt/sources.list.d/debian.sources \
+    && echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries \
     && apt-get update && apt-get install -y --no-install-recommends \
         libpq5 tini \
     && rm -rf /var/lib/apt/lists/*
