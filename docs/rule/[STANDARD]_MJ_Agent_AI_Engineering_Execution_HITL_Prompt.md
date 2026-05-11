@@ -4,7 +4,7 @@ domain: WORKFLOW
 summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件，是 Track C engineering-workflow 主 STANDARD
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-09
+updated: 2026-05-11
 state: active
 version: v1.0
 track: engineering-workflow
@@ -179,6 +179,21 @@ mj-agent 专属新增：
 - 修复 lint
 - 更新与代码变更直接对应的文档
 - 根据既有规则选择模板或文档落点
+
+#### Stage 4 豁免（PLAN 落盘）
+
+满足以下**全部**条件时，AI 可在 Intake 阶段直接判定 `Plan: 不需要`，跳过 Stage 4 PLAN 落盘 + Stage 5 HITL Gate 1：
+
+1. **任务性质**：单文件 bugfix / 拼写 / 链接修正 / dependency 版本 patch / 文案微调
+2. **风险等级**：Intake §6 risk-level = `Low`（task-type ∈ `{bugfix, documentation}`）
+3. **Affected areas 不触发 §3.1 mj-agent 专属 4 项必停**：
+   - `src/mj_agent/skills/**/SKILL.md` body（runtime-skill-content-change）
+   - `src/mj_agent/prompts/system.md` body（prompt-version-bump）
+   - `src/mj_agent/biz_catalog/qcm_catalog.yaml`（biz-catalog-sync）
+   - `src/mj_agent/tools/sql/{guardrail,precheck}.py`（sql-guardrail-relax）
+4. **不涉及** `.env` / `.env.example` / `infra/docker/` / CI workflow / `pyproject.toml` `[project.dependencies]` 主条目（version patch 除外）
+
+豁免必须在 **Intake Result 显式声明** `Plan: 不需要 / 豁免依据=§3.2`；否则 Stage 4 仍为必经阶段（`grep "Plan: skipped\|Plan: 不需要" intake-result.md` 用作审计依据）。豁免范围**不包含** §3.1 通用必停 12 项，亦不包含 in-source canonical / biz catalog / SQL guardrail / Docker compose / CI/CD 类变更。
 
 ### 3.3 HITL 提问格式
 
@@ -497,13 +512,22 @@ Plan 不写：
 - 长期架构决策（归 ADR）
 - 完整实现代码
 
+豁免（Stage 4 可跳过）：
+- 满足 §3.2 「Stage 4 豁免」**全部 4 项**条件时，Stage 4 + Stage 5 可跳
+- 豁免必须在 Intake Result 显式声明 `Plan: 不需要 / 豁免依据=§3.2`，否则 Stage 4 仍为必经阶段
+- 豁免范围**不包含** §3.1 mj-agent 专属 4 项 trigger 与通用必停 12 项
+
 ## Output
 
-输出：
+输出（普通情况）：
 - Plan 摘要
 - Plan 正文草案
 - 需要写入的路径
 - HITL Questions
+
+输出（豁免情况，per §3.2）：
+- `Plan: skipped (per §3.2 / 豁免触发原因=<bugfix|拼写|dependency-patch|文案>)`
+- 豁免凭证（写入 Intake Result + PR description「AI 自检」段；用作 §3.1 审计）
 ```
 
 ---
@@ -1122,6 +1146,11 @@ Fallback:
     - **触发条件达标后**（≥3 真实漏项跨 ≥2 任务）：新建或追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`
     - **升级 POSTMORTEM 边界**：仅当漏项导致 merge 后事故、生产影响、数据错误、CI/CD 发布失败或 P1/P2 级返工时，才写入 `docs/postmortem/[POSTMORTEM]_*.md`
 11. **EVAL backlog ticket 自动开单**（mj-agent 专属，v1.0 引入；transitional waiver 衰减机制）：若本 PR 触及 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 修改，无论本 PR 是否带 EVAL 引用，均开 follow-up Issue：`[EVAL backlog] <skill_name or prompt_name> @ <commit_sha>`，归 Phase D（Phase 2）EVAL framework 时一并完成；这是 A11 transitional waiver 期内的兜底机制
+12. **PR 关联 plan state 标记**（v1.0 引入；闭合 STANDARD ↔ skill 引用链）：若本 PR 关联 `plans/[PLAN]_*.md` 或 `plans/[INTAKE]_*.md` 且当前 `state: active`，post-merge 阶段必须把 frontmatter `state` 改为 `completed` + 填 `completed: <ISO date>` 字段。覆盖场景：
+    - **(a) 单 PR 单 plan**：PR merge 即直改 `completed`
+    - **(b) 多 PR 同一 plan**：仅当 plan 内显式标"本 PR 是最后阶段"才改 `completed`；否则保 `active` + 在 post-merge checklist 提示
+    - **(c) plan 当前 `state: draft`**：**不**自动跨态跳 `completed`（draft 不应跳过 active 直达终止态）；输出建议"先评估转 active 或人工处理"
+    - 引用 [[../../.claude/skills/mj-agent-flow-post-merge/SKILL|.claude/skills/mj-agent-flow-post-merge/SKILL.md]] Step 9 为执行子例程；引用 [[./[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11 4 态机定义（draft / active / completed / archived）
 
 ## Output
 
