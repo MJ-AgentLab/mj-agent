@@ -20,8 +20,14 @@
 # CI actions). Dependabot's `docker` ecosystem (.github/dependabot.yml)
 # bumps both the digest AND the `# 3.13-slim` tag comment when upstream
 # publishes new images.
-FROM python:3.14-slim@sha256:1697e8e8d39bf168e177ac6b5fdab6df86d81cfc24dae17dfb96cfc3ef76b4dd AS builder
+FROM python:3.13-slim@sha256:d49c1ff87eb98eac346fc250f52925f726eb913c43a92854246dd03c9692ad67 AS builder
 # tag: 3.13-slim
+
+# uv preference: use slim's bundled /usr/local/bin/python3 (3.13.13, satisfies
+# pyproject requires-python=>=3.13,<3.14). Avoids uv-managed Python in
+# /root/.local/share/uv/ which doesn't survive COPY --from=builder /app/.venv
+# to runtime stage (see #134 / PR #131 Stage 17 finding).
+ENV UV_PYTHON_PREFERENCE=only-system
 
 # Default apt mirror = tuna; avoids Fastly anycast flakiness affecting
 # mainland builds (see plans/[PLAN]_dockerfile_apt_mirror_tuna.md). Override
@@ -50,7 +56,7 @@ COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
 # ========== Runtime ==========
-FROM python:3.14-slim@sha256:1697e8e8d39bf168e177ac6b5fdab6df86d81cfc24dae17dfb96cfc3ef76b4dd
+FROM python:3.13-slim@sha256:d49c1ff87eb98eac346fc250f52925f726eb913c43a92854246dd03c9692ad67
 # tag: 3.13-slim
 
 # ARG redeclare — Docker ARG scope is per FROM; builder default not inherited.
