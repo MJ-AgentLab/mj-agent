@@ -14,7 +14,7 @@ track: shared
 
 ## Context
 
-mj-system 数据仓库有四层结构：ODS（原始层）、DWD（明细层）、DWS（汇总层）、ADS（应用层）。
+上游业务系统数据仓库有四层结构：ODS（原始层）、DWD（明细层）、DWS（汇总层）、ADS（应用层）（"上游业务系统"术语见 [[../glossary/upstream_business_warehouse|glossary]]）。
 mj-agent 需要选择一个数据边界作为主要访问层。各层的特点：
 
 | 层 | 粒度 | 语义稳定性 | 规模 | 可解释性 |
@@ -39,7 +39,7 @@ mj-agent 的数据访问边界：
 | 其余 `biz_dwd.*`、`biz_ods.*`、`biz_ads.*` | **不可读** |
 | `ops_*.*` | **不可读** |
 
-可读范围由 **mj-system 的 `analyst` PostgreSQL 角色** GRANT 精确限定（见 [[ADR]_006_Fail_Safe_Reads|ADR-006]] 的 L4）。
+可读范围由 **上游业务系统的 `analyst` PostgreSQL 角色** GRANT 精确限定（见 [[ADR]_006_Fail_Safe_Reads|ADR-006]] 的 L4）。
 mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保持同步；自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）。Phase 1 阶段，对齐通过 `tests/contract/*` 防守性 fail-then-manual-fix + manual review 维持。
 
 ## Consequences
@@ -48,10 +48,10 @@ mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保
 - 访问路径的复杂度收敛到 DWS：skill 作者与 LLM 面对的是人类可理解的业务指标表
 - 违反 ADR-000 的面被显著压缩——ODS/DWD 的内部字段永远不会出现在 LLM 上下文中
 - DWS 天然有 `prev_*` 与 `*_diff / *_rate` 列，同比环比无需 LLM 二次计算
-- biz_dws 的 schema 变更由 mj-system 治理，变更频率可控
+- biz_dws 的 schema 变更由上游业务系统治理，变更频率可控
 
 **负面**
-- 分析师偶尔需要的 DWD 明细下钻不可行，必须回到 mj-system 团队加字段到 DWS 或申请临时 ad-hoc 查询
+- 分析师偶尔需要的 DWD 明细下钻不可行，必须回到上游业务系统团队加字段到 DWS 或申请临时 ad-hoc 查询
 - 两张 biz_dwd 维度表是"例外开口"，数量上升时需要重新评估边界
 
 **中性**
@@ -71,4 +71,4 @@ mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保
 - [[ADR]_006_Fail_Safe_Reads|ADR-006]]（L4 角色权限实现本 ADR 的数据范围）
 - **Future work** — biz schema 自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4）；Phase 1 通过 `qcm_catalog.yaml` + `tests/contract/*` + manual review 维持
 - `src/mj_agent/skills/query-writing/SKILL.md`（当前 skill 的表清单对齐此 ADR）
-- mj-system `R__analyst_permissions.sql`（L4 GRANT 定义）
+- 上游业务系统 `R__analyst_permissions.sql`（L4 GRANT 定义）

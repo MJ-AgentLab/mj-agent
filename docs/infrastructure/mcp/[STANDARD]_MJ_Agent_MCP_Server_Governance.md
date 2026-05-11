@@ -36,7 +36,7 @@ tags:
 - `.claude/skills/` SKILL governance（治理在 [[../../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + [[../../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + Meta v2.2 §3.10）
 - `mj-agentlab-marketplace` plugins MCP（治理在 marketplace 仓）
 - `.claude/settings.json` permissions allowlist（治理在 §A13 + 未来 `[STANDARD]_..._Claude_Code_Settings`）
-- mj-system 仓的 `.mcp.json`（独立 secrets pipeline per ADR-008；mj-agent 不审 mj-system MCP）
+- 上游业务系统仓的 `.mcp.json`（独立 secrets pipeline per ADR-008；mj-agent 不审上游 MCP）
 
 ## §2 Trust posture 分级
 
@@ -100,14 +100,14 @@ tags:
 | 1 | `github` | first-party (`@modelcontextprotocol/server-github`) | API key (`${GITHUB_PERSONAL_ACCESS_TOKEN}`) | GitHub issue / PR 操作 |
 | 2 | `serena` | third-party (oraios) | none | 代码语义索引 |
 | 3-7 | `pg-mj-agent-memory-{dev,test-lan,test-wan,prod-lan,prod-wan}` (5) | third-party (`@modelcontextprotocol/server-postgres`) + wrapped (mj-agent `.claude/scripts/pg-server-*`) | wrapped script (URL 含 `${MJ_AGENT_PG_MEMORY_*_URL:-default}`) | langgraph checkpointer DB 查询（mj_agent_memory） |
-| 8-12 | `pg-mj-system-biz-{dev,test-lan,test-wan,prod-lan,prod-wan}` (5) | third-party (`@modelcontextprotocol/server-postgres`) + wrapped | wrapped script (URL 含 `${MJ_AGENT_PG_BIZ_*_URL:-default}` + analyst RO role) | mj-system biz pg 数据探查（biz_dws / biz_dwd allowlist；ADR-006/009 数据边界由 DB-side GRANT 兜底）|
+| 8-12 | `pg-mj-system-biz-{dev,test-lan,test-wan,prod-lan,prod-wan}` (5；保留原 server 命名 literal) | third-party (`@modelcontextprotocol/server-postgres`) + wrapped | wrapped script (URL 含 `${MJ_AGENT_PG_BIZ_*_URL:-default}` + analyst RO role) | 上游业务系统 biz pg 数据探查（biz_dws / biz_dwd allowlist；ADR-006/009 数据边界由 DB-side GRANT 兜底）|
 | 13 | `ssh-manager` | third-party (`@iflow-mcp/mcp-ssh-manager`) | API key (5 个 `${MJ_AGENT_SSH_SERVER_*_PASSWORD}`；9 SSH targets：cloud + 4 hosts × 2 lan/wan) | SSH 5 主机运维（cloud / runner / test / prod / **DGX-Spark**） |
 
-**省略**：n8n-docs（mj-system .mcp.json 含；mj-agent 无 n8n 集成，不需要）。
+**省略**：n8n-docs（mj-agent 无 n8n 集成，不需要）。
 
-**Wrapped script 复用**：`.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` verbatim 从 mj-system 同名文件复制。理由：第三方 `@modelcontextprotocol/server-postgres` 默认对 timestamp 列做 JS Date 转换，导致 SELECT 返 UTC "Z" 字符串而非数据库原始字符串；wrapper 通过 `pg.types.setTypeParser(1114/1184, val => val)` overrides 修复。两仓应保持 byte-for-byte 一致；如 mj-system 后续修改本 wrapper，mj-agent 季度 audit 同步（见 §6）。
+**Wrapped script 来源**：`.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 内容快照保存为 `docs/_baselines/pg_server_baseline.md`（Phase Γ 落地；当前为 placeholder）。理由：第三方 `@modelcontextprotocol/server-postgres` 默认对 timestamp 列做 JS Date 转换，导致 SELECT 返 UTC "Z" 字符串而非数据库原始字符串；wrapper 通过 `pg.types.setTypeParser(1114/1184, val => val)` overrides 修复。季度 audit 比对 baseline 检测漂移（见 §6）。
 
-**Independent secrets pipeline**：所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 `scripts/setup-env.ps1` + `config/secrets.enc` 注入，**与 mj-system 的 `MJ_SYS_*` 隔离**（per ADR-008）。
+**Independent secrets pipeline**：所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 `scripts/setup-env.ps1` + `config/secrets.enc` 注入，**与上游业务系统 `MJ_SYS_*` env var 命名空间隔离**（保留 `MJ_SYS_*` 作上游 env var literal；per ADR-008）。
 
 ## §6 Audit cadence
 
@@ -115,15 +115,15 @@ tags:
 |---|---|---|
 | `.mcp.json` 增 / 删 server | PR-time §4 declaration table 必填 | Tooling Reviewer + SWE |
 | `.mcp.json` 修改 server credential mode | PR-time §4 declaration table 必填 | Tooling Reviewer + SWE + Security （如 mode 变化降级）|
-| `.claude/scripts/pg-server-*` 修改 | PR-time 与 mj-system 同步声明（diff vs upstream） | SWE |
-| **季度 audit**（每年 4 次） | (1) 重新评估每个 server trust posture（第三方 maintainer 是否仍活跃 / 90 天 commit）；(2) 比对 `.claude/scripts/pg-server-*` 与 mj-system upstream 是否漂移；(3) verify 所有 ${VAR} 在 `.env.example` 声明；(4) verify 无明文凭证；(5) 必要时 bump version (v1.0 → v1.1) | Tooling Reviewer |
+| `.claude/scripts/pg-server-*` 修改 | PR-time 声明（diff vs `docs/_baselines/pg_server_baseline.md` 内部基线快照） | SWE |
+| **季度 audit**（每年 4 次） | (1) 重新评估每个 server trust posture（第三方 maintainer 是否仍活跃 / 90 天 commit）；(2) 比对 `.claude/scripts/pg-server-*` 与 `docs/_baselines/pg_server_baseline.md` 内部基线是否漂移；(3) verify 所有 ${VAR} 在 `.env.example` 声明；(4) verify 无明文凭证；(5) 必要时 bump version (v1.0 → v1.1) | Tooling Reviewer |
 | 上游 maintainer 失联 / security issue | 触发降级评估 → community tier；触发 PR review | Tooling Reviewer + Security |
 
 季度 audit 输出落 `docs/assessments/[ASSESSMENT]_MCP_Server_Audit_<YYYY-Q>.md`（首次 audit 在 2026-Q3）。
 
 ## §7 Cross-references
 
-- [[../../adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离 mj-system `MJ_SYS_*`
+- [[../../adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离上游 `MJ_SYS_*`（env var literal）
 - [[../../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — `.claude/skills/` SKILL governance（与本 STANDARD 互补；本 STANDARD 治理 `.mcp.json`，ADR-013 治理 `.claude/skills/`）
 - [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
 - [[../../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — `.claude/` 边界
@@ -131,11 +131,11 @@ tags:
 - [[../../adr/[ADR]_022_P2_Framework_Enhancements|ADR-022]] §C.3.2 — 领域专属 STANDARD placement 决策（本文件落 `docs/infrastructure/mcp/` 而非 `docs/rule/`）
 - ADR-025（PR-4 落地；Multi-environment + LLM provider abstraction） — 跨 4 PR 的整体决策记录
 - [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.7（STANDARD placement）+ §3.10（in-tree workflow SKILL governance；与本 STANDARD 平行）+ §7.7（A12-A14 PR gates）
-- mj-system `.mcp.json`（13 server pattern 直接借鉴源）+ mj-system `.claude/scripts/pg-server-*`（verbatim copy 源）
+- `docs/_baselines/pg_server_baseline.md`（Phase Γ 落地；wrapper script 内部快照；季度 audit 漂移基准）
 - CLAUDE.md §Engineering-Workflow Documentation §A14（本 STANDARD 是 A14 的实施细则）
 
 ## §8 演进
 
-- v1.0（2026-05-09，本文件）— Initial inventory（13 servers），mirrors mj-system pattern；A14 约束正式生效
+- v1.0（2026-05-09，本文件）— Initial inventory（13 servers）；A14 约束正式生效
 - 后续 minor bump 触发条件（per ADR-022 §C.3.6 拆分阈值）：trust posture 降级条件细化 / credential mode 新增类目 / inventory > 25 servers 且 trust 分级混杂
 - major bump（v2.0）触发条件：MCP protocol 重大演进（如远程 HTTP MCP 成主流，需 §3 重写） / Claude Code 治理框架重大调整

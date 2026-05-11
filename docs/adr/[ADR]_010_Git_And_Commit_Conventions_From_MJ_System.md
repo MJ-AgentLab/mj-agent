@@ -31,7 +31,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 1. **scope 列表不可直接用**：mj-system 的 scope 缩写（`aec/dqv/qcm` 等）是 mj-system 的 ETL 微服务名，对 mj-agent 无意义。继续直接套用会让首个 commit 起就漂移
 2. **重量级与 Phase 0 规模的张力**：[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套评估文档]] §4 的社区调查显示，8 个数据 Agent OSS 项目（LangChain / LangGraph / Vanna / DB-GPT / WrenAI / AutoGPT / Aider / Open Interpreter）**0/8** 使用 GitFlow `develop`+`main` 双干、**0/8** 使用 6 份 PR 模板、**0/8** 发明自定义 footer 关键字。mj-agent 当前是 1 人团队 + Phase 0，重量级流程缺乏直接收益证据
-3. **跨项目运维一致性**：但 mj-agent 与 mj-system 是相邻 consumer 关系（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已确定独立 compose project + 环境矩阵对齐），运维与开发者同时面对两个仓库；保持 git 操作肌肉记忆相同有运维收益
+3. **跨项目运维一致性**：但 mj-agent 与 mj-system 是相邻 consumer 关系（[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] 已确定独立 compose project + 环境矩阵对齐），运维与开发者同时面对两个仓库；保持 git 操作肌肉记忆相同有运维收益
 4. **首份 commit 不合规**已成事实——再不固化规则，后续提交将继续漂移
 
 ## Decision
@@ -96,7 +96,7 @@ mj-agent 在 bootstrap 阶段从 mj-system 继承了一整套 git 治理基础�
 
 - [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 本决策的证据
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— 本决策的执行
-- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 跨项目边界（独立 compose project + consumer 关系）上下文
+- [[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008 Co-Deployment with Upstream Business Warehouse]] —— 跨项目边界（独立 compose project + consumer 关系）上下文
 - [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] §6.4 / §7.1 A6 —— CLAUDE.md 同步约束（本 PR 故意不过的门禁；v1.1 已归档，等价语义见 v2.0 trio Meta + Code_Side §7.1 A6）
 - mj-system 源文档：
   - `mj-system/develop/docs/rule/[STANDARD]_Commit_Message_Convention.md`

@@ -142,7 +142,7 @@ docker images | grep "^mj-agent\s"
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
+- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
 - [[../../../docs/adr/[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
 - [[../../../infra/docker/docker-compose.mj-agent.yml|docker-compose.mj-agent.yml]] / `.override.yml` / `.test.yml` / `.prod.yml`
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1（破坏性操作必触 HITL）+ §4.15 Stage 17 post-merge cleanup

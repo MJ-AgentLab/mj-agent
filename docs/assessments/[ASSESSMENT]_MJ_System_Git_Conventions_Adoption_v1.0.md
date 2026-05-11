@@ -51,7 +51,7 @@ aliases:
 
 ## 1 背景
 
-mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] 决定的跨项目运维一致性出发（注：ADR-008 早期形态为"兄弟服务"，PR #42-#46 后演进为独立 compose project + consumer 关系；本评估以早期 framing 为背景），把 mj-system 已经成熟的一整套 git 治理文档**几乎原封不动地继承下来**。继承的可观察痕迹：
+mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008 Co-Deployment with Upstream Business Warehouse]] 决定的跨项目运维一致性出发（注：ADR-008 早期形态为"兄弟服务"，PR #42-#46 后演进为独立 compose project + consumer 关系；本评估以早期 framing 为背景），把 mj-system 已经成熟的一整套 git 治理文档**几乎原封不动地继承下来**。继承的可观察痕迹：
 
 - `.bare/` 与兄弟工作树（Bare-repo Worktree）— 与 mj-system [[GUIDE]_Git_Branch_Strategy|分支策略指南]] §6 描述的结构完全一致
 - 双远端：`origin` (GitHub `MJ-AgentLab/mj-agent`) + `gitee` (`gitee.com/ranzuozhou/mj-agent`)
@@ -59,7 +59,7 @@ mj-agent 在 bootstrap 阶段从 [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008
 - `CLAUDE.md` §Repo conventions 声明 "Commits follow Conventional Commits"，但**首个 commit `b932007` 不符合 `type(scope):` 格式**
 - 文档治理框架 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]] 自身也声明 `derives_from: mj-system/develop@[STANDARD]_Documentation_Management_Framework_v5.0`
 
-继承本身合理（[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] 已论证跨项目运维一致性路径），但 mj-system 的规则是为：
+继承本身合理（[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] 已论证跨项目运维一致性路径），但 mj-system 的规则是为：
 
 - 多服务平台（aec / dqv / qvl / qcm / sac / fc 共 6 个 ETL 服务）
 - 含 PM / DBA / SRE 角色的团队
@@ -236,7 +236,7 @@ A5 / A6 在本 PR 内已同步落地。剩余对齐项不阻塞门禁，但建�
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 本评估的决策落地
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— 本评估的规范产出
 - [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|MJ-Agent 文档管理框架 v1.1（archive）]] —— 本评估自身遵循的治理框架（§3.2 ASSESSMENT 类型 / §4.4 ASSESSMENT 专属字段；本 PR 同时把 Framework 升至 v1.1，详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]；后续 v2.0 trio 演进见 [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]）
-- [[ADR]_008_Co_Deployment_With_MJ_System|ADR-008 Cross-System Boundary with mj-system]] —— 继承 mj-system 治理的跨项目运维上下文
+- [[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008 Co-Deployment with Upstream Business Warehouse]] —— 继承 mj-system 治理的跨项目运维上下文
 - `plans/mj-agent-roadmap-v1.6.md` —— Phase 0 范围与退出条件
 
 ### 8.2 mj-system 源文档（被评估对象）

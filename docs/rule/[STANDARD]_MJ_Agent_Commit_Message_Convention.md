@@ -24,8 +24,7 @@ aliases:
 > **目标受众**：全部贡献者
 > **版本**：v1.0
 > **最后更新**：2026-04-25
-> **派生自**：[[STANDARD]_Commit_Message_Convention|mj-system Commit Message 规范 v2.0]]（结构沿用，scope 列表针对 mj-agent 模块重建）
-> **关联文档**：[[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]、[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]]
+> **关联文档**：[[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]（决策记录；保留原 ADR 编号 + 文件名以稳定 wikilink，标题中 "mj-system" 保留作历史决策语境）、[[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套适配评估 v1.0]]
 
 ---
 
@@ -53,13 +52,13 @@ aliases:
 - **可读性**：贡献者一眼即知变更性质（feat / fix / infra ...）
 - **可追溯性**：`git log --grep` 可按类型与子系统筛选
 - **自动化友好**：为后续 PR-title 校验与 CHANGELOG 生成（详见 [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]] §References 中的 `amannn/action-semantic-pull-request` 计划）提供结构化输入
-- **跨项目运维一致性**：与 mj-system 的 commit 习惯保持表层相同（同一开发者切换两仓时无需切换语法）；仅在 scope 列表上针对 mj-agent 模块重建。ADR-008 已确定两项目独立 compose project + 环境矩阵对齐
+- **跨项目运维一致性**：与上游业务系统的 commit 习惯保持表层相同（同一开发者跨仓切换无需切换语法）；scope 列表针对 mj-agent 模块重建。ADR-008 已确定两项目独立 compose project + 环境矩阵对齐
 
 > [!NOTE]
-> 与 mj-system 规范的差异点：
-> - **scope 列表完全重建**：mj-system 的 `aec/dqv/qvl/qcm/sac/fc` 是 ETL 服务名，对 mj-agent 无意义；本规范第 §4 章定义 mj-agent 自己的 12 个 scope
-> - **分支模型与 type 对齐矩阵保持一致**（§5）
-> - **types 数量一致**（7 个 + merge 自动）
+> mj-agent 自有规则要点（不依赖外部 commit 规范继承）：
+> - **scope 列表 mj-agent 原生**：12 项按 `src/mj_agent/` 模块结构定义（§4）；不沿用其它项目 ETL 服务名缩写
+> - **分支模型与 type 对齐矩阵**（§5）：5 类临时分支 × 7 类 commit type 闭合矩阵
+> - **types 数量**：7 个常用 + `merge` 自动
 
 ---
 
@@ -132,7 +131,7 @@ aliases:
 ## 4 范围（scope）
 
 > [!IMPORTANT]
-> mj-agent 的 scope 列表是 **该规范相对 mj-system 的最大差异**。mj-system 的服务缩写（`aec/dqv/qvl/qcm/sac/fc`）对 mj-agent 无效。下表按 `src/mj_agent/` 的实际模块结构定义。
+> mj-agent 的 scope 列表完全 mj-agent 原生：按 `src/mj_agent/` 实际模块结构定义。其它项目（含上游业务系统）使用的 ETL 服务名缩写（如 `aec/dqv/qvl/qcm/sac/fc`）对 mj-agent 无效。下表为 mj-agent 12 项闭合 scope。
 
 ### 4.1 代码范围
 
@@ -158,7 +157,7 @@ aliases:
 
 ### 4.3 Scope 约束
 
-继承自 mj-system §4.3：
+mj-agent 通用约束：
 
 - **`docs` 仅作 type 使用，不得作为 scope**。文档相关 scope 应使用具体子系统（如 `docs(skill): ...`、`docs(db): ...`）；若文档跨子系统，省略 scope：`docs: 更新 README`
 - 一次 commit 只能有一个 scope
@@ -187,7 +186,7 @@ scope 列表是封闭白名单。引入新 scope 必须通过修订本 STANDARD�
 
 ### 5.1 命名区分
 
-分支类型与 commit 类型采用 **不同的命名空间** 避免混淆（沿用 mj-system §5.1）：
+分支类型与 commit 类型采用 **不同的命名空间** 避免混淆：
 
 | 分支类型（全称/复合词） | Commit 类型（缩写/不同词） | 命名区分方式 |
 |------------------------|--------------------------|------------|
@@ -201,7 +200,7 @@ scope 列表是封闭白名单。引入新 scope 必须通过修订本 STANDARD�
 
 ### 5.2 分支内允许的 Commit 类型
 
-继承自 mj-system §5.2，无修改：
+mj-agent 5 分支 × 7 commit type 对齐矩阵：
 
 | 分支类型 | 允许的 Commit 类型 | 说明 |
 |---------|-------------------|------|
@@ -217,7 +216,7 @@ scope 列表是封闭白名单。引入新 scope 必须通过修订本 STANDARD�
 
 ## 6 提交拆分指南
 
-继承自 mj-system §6，针对 mj-agent 微调示例。
+mj-agent 通用拆分原则（含本仓常见示例）：
 
 ### 6.1 拆分原则
 
@@ -335,16 +334,11 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ### 10.1 项目内部
 
-- [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 决策记录
-- [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] —— 决策依据
-- [[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]] §6.4 —— CLAUDE.md 同步触发条件（v2.0 §6.4.1 在元框架基础上引入双轨分段）
+- [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] —— 历史决策记录（保留原 ADR 编号 + 文件名以稳定 wikilink；ADR-010 在 PR-Γ 候选 archive）
+- [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套适配评估 v1.0]] —— 决策依据
+- [[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.2]] §6.4 —— CLAUDE.md 同步触发条件（§6.4.1 在元框架基础上引入双轨分段）
 - [[[STANDARD]_GitHub_Markdown|GitHub-Flavored Markdown 编写规范 v1.0]] —— 本文 Markdown/YAML 语法依据
 - `CLAUDE.md §Repo conventions` —— 仓库级 commit 约定（待与本规范同步）
-
-### 10.2 派生来源
-
-- 派生自：[[STANDARD]_Commit_Message_Convention|mj-system Commit Message 规范 v2.0]]（`mj-system/develop@[STANDARD]_Commit_Message_Convention.md`）
-- 适配思路：保留格式规范（§2）、类型定义（§3）、分支/类型对齐矩阵（§5）、提交拆分原则（§6）；重写 scope 列表（§4）以匹配 mj-agent 模块结构；新增 footer 反模式说明（§8）以应用社区证据
 
 ### 10.3 行业规范
 

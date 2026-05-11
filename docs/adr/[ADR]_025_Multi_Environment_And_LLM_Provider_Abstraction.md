@@ -127,7 +127,7 @@ Phase 1 sub 1.H（PR #40）落地 mj-agent dev compose 后，mj-agent 一直处�
 ## References
 
 - [[[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]] — 数据边界（不动）
-- [[[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]] — 独立 compose project + 独立 secrets pipeline；4-file 分层不破坏 `name: mj-agent`
+- [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 compose project + 独立 secrets pipeline；4-file 分层不破坏 `name: mj-agent`
 - [[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — in-tree SKILL native schema（新增 env-teardown / llm-endpoint-probe SKILL 用此 schema）
 - [[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — in-tree skills `mj-agent-<group>-<verb>` 命名
 - [[[ADR]_018_Active_Path_Stability|ADR-018]] — STANDARD 文件名无 `_vX.Y` 后缀

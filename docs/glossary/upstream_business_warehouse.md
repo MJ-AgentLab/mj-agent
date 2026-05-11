@@ -51,5 +51,5 @@ mj-agent 仅作为 **read-only 消费者**（per [[../adr/[ADR]_006_Fail_Safe_Re
 
 - [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]（4 层 guardrail；本术语在 L1-L4 层均有出现）
 - [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009 Biz Domain as Primary Data Source]]（biz 域 only / 不访问 ODS/DWD）
-- [[../adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]（co-deployment 边界；PR-Β 计划 rename 为 `Co_Deployment_With_Upstream_Warehouse`）
+- [[../adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（co-deployment 边界）
 - `CLAUDE.md` "Data boundary" 段
