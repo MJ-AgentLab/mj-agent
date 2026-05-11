@@ -9,7 +9,7 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 ## 变更原因
 <!-- 为什么需要这次文档更新 -->
 
-## 自检结果（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）
+## 自检结果（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.1）
 
 <details>
 <summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §7.1]]</summary>
@@ -25,12 +25,13 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 </details>
 
 <details>
-<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
+<summary><b>Agent-Side checklist</b> (A7-A11) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
 
 - [ ] **A7** 若新增/修改 `[SKILL]`，`src/mj_agent/skills/<name>/` 目录存在且名称一致
 - [ ] **A8** 若新增/修改 `[PROMPT]` 且 `state: active`，`eval_references` 非空（Phase 2 起强制）
 - [ ] **A9** 若新增/修改 `[EVAL]` 且 `state: active`，`dataset_path` 指向存在文件，`baseline_metric`/`baseline_value` 填写
 - [ ] **A10** 若新增/修改 `[CONTRACT]` 且 `state: active`，`schema_ref` 指向存在 schema 文件
+- [ ] **A11** SKILL `state: active` 时 `eval_references` 非空（Phase D 起强制；transitional waiver 期内允许注释 TODO）
 
 </details>
 

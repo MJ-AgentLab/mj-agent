@@ -22,7 +22,7 @@ about: 常规 Bug 修复 (bugfix/*) 的 Pull Request
 - [ ] Commit message 符合规范（仅含 `fix` / `test` / `docs` 类型）
 - [ ] CHANGELOG.md `[Unreleased]` 区块已更新（如 CHANGELOG.md 存在）
 
-## 文档自检（按 track 选填，仅在触及文档时勾选；详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）
+## 文档自检（按 track 选填，仅在触及文档时勾选；详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.1）
 
 <details>
 <summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §7.1]]</summary>
@@ -33,10 +33,11 @@ about: 常规 Bug 修复 (bugfix/*) 的 Pull Request
 </details>
 
 <details>
-<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
+<summary><b>Agent-Side checklist</b> (A7-A11) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
 
 - [ ] 如修复涉及 `[SKILL]` / `[PROMPT]` 的行为变更，对应 SKILL.md / prompt.md 已同步更新（`updated` 字段、Change log）
 - [ ] `src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 的 frontmatter 仍然合法
+- [ ] **A11** SKILL `state: active` 时 `eval_references` 非空（Phase D 起强制；transitional waiver 期内允许注释 TODO）
 
 </details>
 

@@ -14,7 +14,7 @@ about: 版本发布 (develop → main) 的 Pull Request
 - [ ] 无残留调试代码
 - [ ] 无未关闭的阻塞性 Issue
 
-### 文档自检（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）
+### 文档自检（按 track 选填，详见 [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.1）
 
 <details>
 <summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §7.1]]</summary>
@@ -25,10 +25,11 @@ about: 版本发布 (develop → main) 的 Pull Request
 </details>
 
 <details>
-<summary><b>Agent-Side checklist</b> (A7-A10) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
+<summary><b>Agent-Side checklist</b> (A7-A11) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side §7.1]]</summary>
 
 - [ ] 本 release 周期内引入/修改的 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` 在 `docs/INDEX.md` 中已反映
 - [ ] 所有 `state: active` 的 `[PROMPT]` `eval_references` 非空（A8，Phase 2 起强制）
+- [ ] **A11** 本 release 周期内所有 `state: active` 的 `[SKILL]` `eval_references` 非空（Phase D 起强制）
 
 </details>
 
