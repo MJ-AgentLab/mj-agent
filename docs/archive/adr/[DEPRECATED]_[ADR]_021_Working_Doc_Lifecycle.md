@@ -5,7 +5,9 @@ summary: 引入 plans/ working 文档 4 态机（draft → active → completed 
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by: docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md
 decision: accepted
 track: shared
 tags:

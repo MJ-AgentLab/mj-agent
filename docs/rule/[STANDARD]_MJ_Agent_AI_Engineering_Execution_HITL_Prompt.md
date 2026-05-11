@@ -4,9 +4,9 @@ domain: WORKFLOW
 summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件，是 Track C engineering-workflow 主 STANDARD
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-09
+updated: 2026-05-11
 state: active
-version: v1.0
+version: v1.1
 track: engineering-workflow
 tags:
   - standard
@@ -18,10 +18,13 @@ tags:
 aliases:
   - MJ-Agent AI Engineering Execution HITL Prompt Standard
   - mj-agent AI 工程执行闭环与 HITL Prompt 规范
+  - HITL_Prompt v1.1
   - HITL_Prompt v1.0
+supersedes:
+  - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_0"
 ---
 
-# mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0
+# mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.1
 
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
 > **适用范围**：mj-agent 仓中 AI Agent / Claude Code 从任务准入到合并收尾的全流程
@@ -37,6 +40,24 @@ aliases:
 > - mj-agent **biz catalog**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）镜像上游业务系统数据字典 STANDARD ——任何镜像漂移检测见 §4.4
 > - mj-agent **数据边界严格只读**（ADR-006 + ADR-009 + analyst-RO PostgreSQL role）—— DB schema 修改无 mj-agent 侧动作；`statement_timeout` 60s 由上游业务系统 GRANT 兜底
 > - mj-agent **3 种 SKILL 实体共存**（in-source v.s. in-tree workflow v.s. marketplace plugin；详见 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10 的边界表）
+
+---
+
+## 0. v1.0 → v1.1 升级范围速览（保留为历史记录）
+
+本节记录 v1.0 → v1.1 的两项条款级演进；触发了 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.9「归档触发判定」中"新增条款 ≥ 1 类"的 archive ceremony（旧 v1.0 frozen snapshot 在 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_0|archived v1.0]]）。
+
+| 修订 | 段落 | 类型 | 落地 commit |
+|---|---|---|---|
+| 修订 1 — Stage 4 PLAN 落盘豁免边界 | §3.2 加 "Stage 4 豁免（PLAN 落盘）" 子段（4 项 AND 条件 + 留痕审计）+ §4.5 Rules 加 "豁免" 子段 + §4.5 Output 加豁免输出形式 | 新增条款（Stage 4 必经 → 4 项 AND 条件下可跳）| `16b40a8`（PR #125）|
+| 修订 2 — Post-merge plan state 标记 | §4.15 加 Rule 12 PR 关联 plan state 标记（3 子场景 a/b/c；引 SKILL Step 9 + Meta v2.2 §5.11 4 态机）| 新增 1 条 Rule（Rules 1-11 → 1-12）| `e6fdbdc`（PR #125）|
+
+注：与 v1.0 → v1.1 配套的 `mj-agent-flow-post-merge` SKILL Step 9 文案修正（修订 3 路径 A）落在 `.claude/skills/mj-agent-flow-post-merge/SKILL.md`（commit `22bf48b`）；不在本 STANDARD 文件 scope。
+
+档案变化追溯：
+- v1.0 frozen snapshot：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_0|archive/rule]]
+- v1.1 active path：本文件（per Meta v2.2 §4.4 active path 稳定，无 `_vX.Y` 后缀）
+- archive ceremony 决策依据：本文件 archive 时 user 复核请求（2026-05-11）追溯触发；commit 链路 `16b40a8` + `e6fdbdc` 已经在 PR #125 落地内容，本次仅做 frontmatter `version: v1.0 → v1.1` minor bump + 旧 frozen snapshot 归档 + 新增本 §0 升级范围速览
 
 ---
 
@@ -180,6 +201,21 @@ mj-agent 专属新增：
 - 更新与代码变更直接对应的文档
 - 根据既有规则选择模板或文档落点
 
+#### Stage 4 豁免（PLAN 落盘）
+
+满足以下**全部**条件时，AI 可在 Intake 阶段直接判定 `Plan: 不需要`，跳过 Stage 4 PLAN 落盘 + Stage 5 HITL Gate 1：
+
+1. **任务性质**：单文件 bugfix / 拼写 / 链接修正 / dependency 版本 patch / 文案微调
+2. **风险等级**：Intake §6 risk-level = `Low`（task-type ∈ `{bugfix, documentation}`）
+3. **Affected areas 不触发 §3.1 mj-agent 专属 4 项必停**：
+   - `src/mj_agent/skills/**/SKILL.md` body（runtime-skill-content-change）
+   - `src/mj_agent/prompts/system.md` body（prompt-version-bump）
+   - `src/mj_agent/biz_catalog/qcm_catalog.yaml`（biz-catalog-sync）
+   - `src/mj_agent/tools/sql/{guardrail,precheck}.py`（sql-guardrail-relax）
+4. **不涉及** `.env` / `.env.example` / `infra/docker/` / CI workflow / `pyproject.toml` `[project.dependencies]` 主条目（version patch 除外）
+
+豁免必须在 **Intake Result 显式声明** `Plan: 不需要 / 豁免依据=§3.2`；否则 Stage 4 仍为必经阶段（`grep "Plan: skipped\|Plan: 不需要" intake-result.md` 用作审计依据）。豁免范围**不包含** §3.1 通用必停 12 项，亦不包含 in-source canonical / biz catalog / SQL guardrail / Docker compose / CI/CD 类变更。
+
 ### 3.3 HITL 提问格式
 
 ```text
@@ -219,7 +255,7 @@ mj-agent 专属新增：
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
-- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
+- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
 - `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS/DWD）
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 - `CLAUDE.md`（项目根 AI 高频上下文）
@@ -497,13 +533,22 @@ Plan 不写：
 - 长期架构决策（归 ADR）
 - 完整实现代码
 
+豁免（Stage 4 可跳过）：
+- 满足 §3.2 「Stage 4 豁免」**全部 4 项**条件时，Stage 4 + Stage 5 可跳
+- 豁免必须在 Intake Result 显式声明 `Plan: 不需要 / 豁免依据=§3.2`，否则 Stage 4 仍为必经阶段
+- 豁免范围**不包含** §3.1 mj-agent 专属 4 项 trigger 与通用必停 12 项
+
 ## Output
 
-输出：
+输出（普通情况）：
 - Plan 摘要
 - Plan 正文草案
 - 需要写入的路径
 - HITL Questions
+
+输出（豁免情况，per §3.2）：
+- `Plan: skipped (per §3.2 / 豁免触发原因=<bugfix|拼写|dependency-patch|文案>)`
+- 豁免凭证（写入 Intake Result + PR description「AI 自检」段；用作 §3.1 审计）
 ```
 
 ---
@@ -593,7 +638,7 @@ Fallback:
 
 ### Consult If Affected
 - `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（SQL guardrail 涉及时）
-- `docs/adr/[ADR]_008_Co_Deployment_With_MJ_System.md`（compose / network 涉及时）
+- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（compose / network 涉及时）
 
 ## Skill Hint
 
@@ -1122,6 +1167,11 @@ Fallback:
     - **触发条件达标后**（≥3 真实漏项跨 ≥2 任务）：新建或追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`
     - **升级 POSTMORTEM 边界**：仅当漏项导致 merge 后事故、生产影响、数据错误、CI/CD 发布失败或 P1/P2 级返工时，才写入 `docs/postmortem/[POSTMORTEM]_*.md`
 11. **EVAL backlog ticket 自动开单**（mj-agent 专属，v1.0 引入；transitional waiver 衰减机制）：若本 PR 触及 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 修改，无论本 PR 是否带 EVAL 引用，均开 follow-up Issue：`[EVAL backlog] <skill_name or prompt_name> @ <commit_sha>`，归 Phase D（Phase 2）EVAL framework 时一并完成；这是 A11 transitional waiver 期内的兜底机制
+12. **PR 关联 plan state 标记**（v1.0 引入；闭合 STANDARD ↔ skill 引用链）：若本 PR 关联 `plans/[PLAN]_*.md` 或 `plans/[INTAKE]_*.md` 且当前 `state: active`，post-merge 阶段必须把 frontmatter `state` 改为 `completed` + 填 `completed: <ISO date>` 字段。覆盖场景：
+    - **(a) 单 PR 单 plan**：PR merge 即直改 `completed`
+    - **(b) 多 PR 同一 plan**：仅当 plan 内显式标"本 PR 是最后阶段"才改 `completed`；否则保 `active` + 在 post-merge checklist 提示
+    - **(c) plan 当前 `state: draft`**：**不**自动跨态跳 `completed`（draft 不应跳过 active 直达终止态）；输出建议"先评估转 active 或人工处理"
+    - 引用 [[../../.claude/skills/mj-agent-flow-post-merge/SKILL|.claude/skills/mj-agent-flow-post-merge/SKILL.md]] Step 9 为执行子例程；引用 [[./[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11 4 态机定义（draft / active / completed / archived）
 
 ## Output
 

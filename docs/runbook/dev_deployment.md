@@ -1,7 +1,7 @@
 ---
 type: runbook
 domain: RUNBOOK
-summary: mj-agent DEV 容器化部署 runbook —— 把 PR #40 的镜像跑进 mj-system docker-compose 栈，验证 Chainlit 内网可达 + healthcheck OK，作为 sub 1.I 试用闭环的部署起点
+summary: mj-agent DEV 容器化部署 runbook —— 把 PR #40 的镜像跑进 上游业务系统 docker-compose 栈，验证 Chainlit 内网可达 + healthcheck OK，作为 sub 1.I 试用闭环的部署起点
 owner: 项目负责人
 created: 2026-05-07
 updated: 2026-05-07
@@ -12,7 +12,7 @@ last-verified: 2026-05-07
 
 # DEV Deployment Runbook — mj-agent (Phase 1 1.I 试用前置)
 
-> **范围**: 把 mj-agent (PR #40 镜像) 部署进 mj-system DEV docker-compose 栈，让 3-5 名分析师能在内网通过 Chainlit 入口使用。Phase 1 退出标准 **E2** ("mj-agent 容器稳定运行在 DEV，Chainlit 内网可访问") 的实操路径。
+> **范围**: 把 mj-agent (PR #40 镜像) 部署进 上游业务系统 DEV docker-compose 栈，让 3-5 名分析师能在内网通过 Chainlit 入口使用。Phase 1 退出标准 **E2** ("mj-agent 容器稳定运行在 DEV，Chainlit 内网可访问") 的实操路径。
 >
 > **路线图位置**: 1.I 试用闭环 (plan §3.I) 的前置；本 runbook 完成后才能邀分析师上线。
 
@@ -22,10 +22,10 @@ last-verified: 2026-05-07
 |---|---|---|
 | Docker Engine ≥ 24 | `docker --version` | `winget install Docker.DockerDesktop` (Win) / 装 Docker CE (Linux) |
 | Docker Compose v2 | `docker compose version` | 通常随 Docker Desktop / Engine 自带 |
-| mj-system DEV 栈已起 | `docker ps --filter name=mj-system` 看到 `mj-app` + `mj-postgres` healthy | 先在 mj-system repo 跑 `docker compose up -d` |
+| 上游业务系统 DEV 栈已起 | `docker ps --filter name=上游业务系统` 看到 `mj-app` + `mj-postgres` healthy | 先在 上游业务系统 repo 跑 `docker compose up -d` |
 | `analyst` 角色凭据 | `.env` 中 `POSTGRES_ANALYST_USER/PASSWORD` 非空 | `scripts\setup-env.ps1` 解密 secrets.enc |
 | Volcengine Ark API key | `.env` 中 `ARK_API_KEY` 非空 | 同上 |
-| Memory DB 角色密码 | `.env` 中 `MJ_AGENT_MEMORY_USER/PASSWORD` 非空（首次 up 时被 init script 用来创 role；不需在 mj-system pg 上预建任何东西——storage-stack PR 后 mj-agent 自带 postgres 容器自动 bootstrap）| `.env.example` 已给 DEV 默认值，照抄即可 |
+| Memory DB 角色密码 | `.env` 中 `MJ_AGENT_MEMORY_USER/PASSWORD` 非空（首次 up 时被 init script 用来创 role；不需在 上游业务系统 pg 上预建任何东西——storage-stack PR 后 mj-agent 自带 postgres 容器自动 bootstrap）| `.env.example` 已给 DEV 默认值，照抄即可 |
 | 内网入口端口 (host:8001) 未被占用 | `netstat -ano \| findstr :8001` 空 | 改 docker-compose.mj-agent.yml ports 映射 |
 | host 5433 / 6379 未被占用 | `netstat -ano \| findstr ":5433 :6379"` 空 | mj-agent-postgres / mj-agent-redis 端口；改 ports 映射 |
 
@@ -58,16 +58,16 @@ cp .env.example .env
 
 ### 2.3 启动 mj-agent 栈（独立 compose project）
 
-mj-agent 是**独立 compose project**（`name: mj-agent`），与 mj-system 解耦。前提：mj-system 栈已在跑（`mj-system-backend-network` 网络存在 + `mj-postgres` healthy）。
+mj-agent 是**独立 compose project**（`name: mj-agent`），与 上游业务系统 解耦。前提：上游业务系统 栈已在跑（`上游业务系统-backend-network` 网络存在 + `mj-postgres` healthy）。
 
-**从 mj-agent 仓根目录跑**（单 `-f`，无需 cd 到 mj-system，无需 env var）：
+**从 mj-agent 仓根目录跑**（单 `-f`，无需 cd 到 上游业务系统，无需 env var）：
 
 ```bash
 docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
 docker compose -f infra/docker/docker-compose.mj-agent.yml ps
 ```
 
-`up -d` 会自动拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 等 storage healthy 后启动 mj-agent）。首次 up 时 mj-agent-postgres 跑 init script 建 mj_agent_memory DB + role + GRANT。Docker Desktop / Portainer 视图里 mj-system 与 mj-agent 是 **2 个独立 compose project group**。
+`up -d` 会自动拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 等 storage healthy 后启动 mj-agent）。首次 up 时 mj-agent-postgres 跑 init script 建 mj_agent_memory DB + role + GRANT。Docker Desktop / Portainer 视图里 上游业务系统 与 mj-agent 是 **2 个独立 compose project group**。
 
 期望输出：
 
@@ -116,7 +116,7 @@ docker exec mj-agent mj-agent check
 | 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose -f infra/docker/docker-compose.mj-agent.yml up -d --force-recreate mj-agent` |
 | Chainlit 502 / connection refused | `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
 | `mj-agent check` 报 `memory DB unreachable` | mj-agent-postgres 没起 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init script 是否跑通；如 .env 改过 MJ_AGENT_MEMORY_USER/PASSWORD 但 volume 持久了旧值 → `docker volume rm mj-agent-postgres-data` 重建（**会丢 checkpoint 历史**）|
-| `network mj-system-backend-network not found` | mj-system 栈没起；mj-agent 单独跑会报这个 | 先在 mj-system 仓 `docker compose up -d`；再回 mj-agent 跑 up |
+| `network 上游业务系统-backend-network not found` | 上游业务系统 栈没起；mj-agent 单独跑会报这个 | 先在 上游业务系统 仓 `docker compose up -d`；再回 mj-agent 跑 up |
 | 容器内连 mj-agent-postgres 走 5432 但 host 端口 5433 → 不一致引发误解 | 这是**正常**的：mj-agent → 容器名 mj-agent-postgres:5432（容器内端口）；DBA 从 host 走 5433 是 ports 映射 | 文档写清楚即可，不动配置 |
 | 跑 SQL 触发 `statement_timeout` | 单查询 > 60s，DB 侧 GRANT 强制超时 | 改用 aggregate / drill_down 工具拆分；或加 LIMIT |
 | LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose -f infra/docker/docker-compose.mj-agent.yml restart mj-agent` |
@@ -136,7 +136,7 @@ docker volume rm mj-agent-postgres-data mj-agent-redis-data    # ⚠️ 丢历�
 docker image rm mj-agent:0.1                                   # 可选；保留则下次 up 秒级
 ```
 
-> **回滚不影响 mj-system**：mj-agent + storage 栈走 drop-in compose 文件，只附 `mj-system-backend-network` 不持有它；mj-agent-storage network 是本栈专属的。`docker compose down` 不会带走 mj-postgres / mj-app / mj-n8n。
+> **回滚不影响 上游业务系统**：mj-agent + storage 栈走 drop-in compose 文件，只附 `上游业务系统-backend-network` 不持有它；mj-agent-storage network 是本栈专属的。`docker compose down` 不会带走 mj-postgres / mj-app / mj-n8n。
 
 ## 6. 与试用闭环的衔接
 
@@ -155,7 +155,7 @@ docker image rm mj-agent:0.1                                   # 可选；保留
 
 - **Production 部署** —— 本 runbook 仅 DEV；prod 走 Phase 2/3（HA / TLS / SSO / observability）
 - **多租户隔离** —— roadmap §F.4 永远不做
-- **Portainer 一键 stack** —— 需 mj-system 配套 PR 把 service 段抄进主 compose；本 runbook 走 drop-in 形态
+- **Portainer 一键 stack** —— 需 上游业务系统 配套 PR 把 service 段抄进主 compose；本 runbook 走 drop-in 形态
 - **GPU / 本地 LLM 推理** —— mj-agent 纯 Ark API；无 GPU 路径
 
 ## 关联文档
@@ -164,7 +164,7 @@ docker image rm mj-agent:0.1                                   # 可选；保留
 - [[GUIDE]_Analyst_Day_One|Analyst Day-One GUIDE]]: 1.I 试用阶段 day-1 流程
 - [[adr/[ADR]_006_Mj_System_Db_Boundary|ADR-006]]: 4 层数据边界
 - [[adr/[ADR]_009_Read_Only_Connection|ADR-009]]: 只读连接策略
-- mj-system docker-compose: `D:/workspace/10-software-project/projects/mj-system/develop/docker-compose.yml`
+- 上游业务系统 docker-compose: `D:/workspace/10-software-project/projects/上游业务系统/develop/docker-compose.yml`
 
 ## 更新记录
 

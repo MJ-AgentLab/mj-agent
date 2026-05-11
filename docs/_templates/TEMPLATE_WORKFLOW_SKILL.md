@@ -38,7 +38,7 @@ description: 1-2 sentences describing what this skill does, then "Triggers on" +
 3. 含**反向触发段** `Do not use for:` 列出邻近但不适用的场景（防 over-triggering）
 4. 用 "pushy" 措辞对抗 undertriggering（默认失败模式）—— `Make sure to use this skill whenever ...` / `Triggers on ... 创建issue / new issue / report bug ...` 这类表达
 
-**写法示例**（mj-system mj-sys-git-issue 实测有效，本模板保留供参考）：
+**写法示例**（上游业务系统 mj-sys-git-issue 实测有效，本模板保留供参考）：
 
 ```
 This skill should be used when the user asks to create a GitHub Issue,
@@ -69,9 +69,9 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 ---
 
-## §2 Body 结构（mj-system 风格）
+## §2 Body 结构（上游业务系统 风格）
 
-mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 决策点 2）。Track C in-tree skill 沿用相同风格——**不**强制 Agent_Side §2.1 五段式（那是 Track B 专属）。
+上游业务系统 marketplace 现存 mj-sys-* skill body 风格作为既定事实标准（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 决策点 2）。Track C in-tree skill 沿用相同风格——**不**强制 Agent_Side §2.1 五段式（那是 Track B 专属）。
 
 典型段落：
 
@@ -98,7 +98,7 @@ mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准�
 
 ## 快速开始（交互模式）
 
-<可选；mj-system mj-sys-git-* 的 v3.0 风格：信息充足性判断表 + 追问用语模板 + 直接生成命令的最短路径>
+<可选；上游业务系统 mj-sys-git-* 的 v3.0 风格：信息充足性判断表 + 追问用语模板 + 直接生成命令的最短路径>
 
 ### 信息充足性判断
 
@@ -155,7 +155,7 @@ mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准�
 
 ## §3 Bundled Resources（可选；progressive disclosure）
 
-如 SKILL.md 主体接近 500 行（参考 mj-system 实测 SKILL.md 平均 200-300 行；上限 500 行），把详细参考资料拆到子目录：
+如 SKILL.md 主体接近 500 行（参考 上游业务系统 实测 SKILL.md 平均 200-300 行；上限 500 行），把详细参考资料拆到子目录：
 
 ```
 .claude/skills/mj-agent-<group>-<verb>/
@@ -189,9 +189,9 @@ mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准�
 
 ---
 
-## §5 与 mj-system 的差异（mj-agent 适配 cheatsheet）
+## §5 与 上游业务系统 的差异（mj-agent 适配 cheatsheet）
 
-| 维度 | mj-system | mj-agent |
+| 维度 | 上游业务系统 | mj-agent |
 |---|---|---|
 | 语言/包管理 | Java + Maven | Python 3.13 + uv |
 | 测试 | Maven test | pytest（unit/eval/integration/smoke/contract 五类） |
@@ -201,7 +201,7 @@ mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准�
 | 服务架构 | 多服务（aec/dqv/qvl/qcm/sac/fc） | 单服务（LangGraph + Chainlit + CLI） |
 | 部署 | 多 compose project | 独立 compose project（ADR-008） |
 | 分支类型 | 6 类（feature/bugfix/documentation/maintain/optimization/hotfix） | **5 类**（去 optimization） |
-| commit type | 8 类 | **7 类**（同 mj-system 但不引入 optimization） |
+| commit type | 8 类 | **7 类**（同 上游业务系统 但不引入 optimization） |
 | commit scope allowlist | 6 类（aec/dqv/qvl/qcm/sac/fc + 跨代码） | **12 类**（agent/llm/prompt/skill/sql/db/config + tests/eval/ci/deps/infra） |
 | Push 远程 | gitee + origin（双推；CI Runner 拉 gitee） | gitee + origin（同样双推；详见 [[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]]） |
 
@@ -209,11 +209,11 @@ mj-system marketplace 现存 mj-sys-* skill body 风格作为既定事实标准�
 
 ## §6 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
 - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
 - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
 - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
-- mj-system v5.0+ `.claude/skills/mj-sys-*/SKILL.md`（直接派生源）
+- 上游业务系统 v5.0+ `.claude/skills/mj-sys-*/SKILL.md`（直接派生源）
 
 ## §7 更新记录
 

@@ -142,7 +142,7 @@ aliases:
 
 ## 4. EVAL Authoring（v1.2 完整规范；ADR-024 决议）
 
-> **派生自** mj-system 上游 EVAL framework（如有）+ industry references（LangChain Hub / DSPy / Anthropic Skills 仓 model evals 模式 / OpenAI Evals）；**mj-agent 原生**（mj-system 暂无对位）。
+> **派生自** 上游业务系统 上游 EVAL framework（如有）+ industry references（LangChain Hub / DSPy / Anthropic Skills 仓 model evals 模式 / OpenAI Evals）；**mj-agent 原生**（上游业务系统 暂无对位）。
 > **scope**：本节治理 `docs/evaluation/**` 下的 `[EVAL]_*.md` 文档（mj-agent runtime 行为评估单元）。
 
 ### 4.1 EVAL 子类（4 类）

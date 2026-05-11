@@ -248,7 +248,7 @@ flow + git family in-tree（与项目流程紧耦合）；doc + runtime + infra 
   - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
   - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - 同期 Phase A 后续 PR：
-  - PR-A2：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] + [[[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
+  - PR-A2：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] + [[[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
   - PR-A3：3 模板（RUNBOOK / SPEC / HITL_STAGE）
 - Phase B 起首：[[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + git family 5 P0 skills
 - 关联现有 ADR：

@@ -7,7 +7,7 @@
 - `LANGSMITH_API_KEY`（observability，可选）
 - `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（mj-agent 自家 memory pg 的 RW role；storage-stack PR 加入）
 
-**与 mj-system 的关系**：mj-agent 是独立 compose project（[[../docs/adr/[ADR]_008_Co_Deployment_With_MJ_System|ADR-008]]），
+**与 mj-system 的关系**：mj-agent 是独立 compose project（[[../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]），
 **不共享 mj-system 的 secrets.enc / 团队口令**。变量命名虽与 mj-system 对齐（操作一致性），
 但解密管道完全独立——本 secrets.enc 由 mj-agent 团队自管。
 
@@ -137,6 +137,55 @@ secrets.enc 内 `MJ_AGENT_MEMORY_USER=mj_agent_app` 一行覆盖所有 env 的 .
 ALTER ROLE mj_agent_memory RENAME TO mj_agent_app;
 -- pg ALTER ROLE 自动迁移所有 GRANTs；连接池会断 5-10s（applications 重连）
 ```
+
+## Memory pg password rotation（dev / TEST / PROD 操作流程）
+
+`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 只在 volume
+**首次创建**（data dir 空）由 postgres 镜像调用；后续 `.env` 中
+`MJ_AGENT_MEMORY_PASSWORD` 改变后 **不会自动同步**到已存在的 role —— 会出现
+`password authentication failed for user "mj_agent_app"` (PoolTimeout)。
+
+> 历史背景：本 §由 Issue #136 引入；触发场景 = PR #137 Stage 8 verify 暴露
+> 当前 dev volume 内 role 留旧 password。Init script 自 #136 起已加
+> `CREATE OR ALTER ROLE` 模式（脚本 DO 块带 ELSE 分支），volume **重建**
+> 时新 password 会被吸收；但 **已存在的** volume 仍需以下操作之一同步。
+
+按场景选：
+
+### 场景 A: dev — 保留 langgraph 数据（推荐）
+
+不丢 checkpointer 数据，无停机。
+
+```powershell
+# 从 .env 读 password，用 stdin pipe 注入避免 shell history 留痕
+$pwd = (Get-Content .env | Select-String '^MJ_AGENT_MEMORY_PASSWORD=' -Raw) `
+       -replace '^MJ_AGENT_MEMORY_PASSWORD=',''
+docker exec -i mj-agent-postgres `
+    psql -U postgres -c "ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '$pwd';"
+# 期望: ALTER ROLE
+
+# 验
+docker exec mj-agent mj-agent check
+# 期望: ✅ DB OK + ✅ Ark LLM OK
+```
+
+### 场景 B: dev / test — 可以全清（**Level C 破坏性**）
+
+丢 langgraph checkpoint 数据；用于 dev / test 环境快速重置。
+
+```powershell
+docker compose -f infra/docker/docker-compose.mj-agent.yml `
+               -f infra/docker/docker-compose.override.yml down -v
+docker compose -f infra/docker/docker-compose.mj-agent.yml `
+               -f infra/docker/docker-compose.override.yml up -d
+# 重启时 volume 重建，init script 跑新 password（含 #136 后的 CREATE OR ALTER 改造）
+```
+
+### 场景 C: prod — 不能丢数据 + 高可用约束
+
+不能跑 down -v；用场景 A 的 ALTER ROLE 命令。跑前先验证 `.env` password
+与 `secrets.enc` 解密一致（避免再次漂移）。如有备份/还原计划，参 ADR-008
+storage stack 双隔离约束 + 各环境 backup 策略文档。
 
 ## 与 mj-system 的口令独立
 

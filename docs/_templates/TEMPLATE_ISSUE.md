@@ -28,7 +28,6 @@ related_adr: "<[[ADR 文档]] 或 无>"
 > **优先级**：P0 / P1 / P2 / P3
 > **风险等级**：Low / Medium / High
 > **GitHub Issue**：<#NNN 或 无>
-> **派生自**：（如非派生则写"mj-agent 原生"）
 > **关联文档**：<相关 ADR / SPEC / GUIDE / RUNBOOK 的 wikilink>
 
 ---
@@ -79,7 +78,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 <根因分析，可引用代码路径>
 
 例：
-- root cause: `qcm_catalog.yaml` 上次同步是 mj-system STANDARD §2-§4 的 v2.3 版本；mj-system 已升至 v2.5（新增 dim_xxx）
+- root cause: `qcm_catalog.yaml` 上次同步是 上游业务系统 STANDARD §2-§4 的 v2.3 版本；上游业务系统 已升至 v2.5（新增 dim_xxx）
 - mj-agent 镜像漂移；`/mj-agent-runtime-biz-catalog-sync`（PR-C2 落地）下次跑应捕获
 
 ### §3.2 复现条件
@@ -161,7 +160,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 
 - [ ] <如有：会影响执行路径、数据、API、权限、安全、发布或回滚的问题>
 - [ ] <如有：跨 PR / 跨 milestone 的边界问题>
-- [ ] <如有：上游 mj-system 协调问题（biz_catalog drift / SQL guardrail / 数据边界）>
+- [ ] <如有：上游 上游业务系统 协调问题（biz_catalog drift / SQL guardrail / 数据边界）>
 
 ---
 
@@ -173,7 +172,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 - **ADR**：<[[ADR 文档]] 或 无>
 - **PR**：<#NNN 或 无；含 follow-up PR 链接>
 - **POSTMORTEM**：<[[POSTMORTEM 文档]] 或 无；如本 ISSUE 由事故 follow-up>
-- **mj-system 上游 issue / PR**：<如本 ISSUE 触发 mj-system 协调>
+- **上游业务系统 上游 issue / PR**：<如本 ISSUE 触发 上游业务系统 协调>
 
 ## 更新记录
 

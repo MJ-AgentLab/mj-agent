@@ -21,7 +21,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 # <Service/Module> <优化主题> 评估报告
 
-> **评估范围**：<what was optimized；mj-agent 模块 / 跨 mj-agent 与 mj-system biz pg 边界 / infra / docs / 工程编排技能体系>
+> **评估范围**：<what was optimized；mj-agent 模块 / 跨 mj-agent 与 上游业务系统 biz pg 边界 / infra / docs / 工程编排技能体系>
 > **优化周期**：YYYY-MM-DD ~ YYYY-MM-DD
 > **评估维度**：<选择的维度列表>
 > **版本**：v1.0
@@ -214,7 +214,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 | L1b sqlglot AST precheck（no_select_star / require_time_range / require_limit advisory）| <规则集> | <规则集> | <说明> |
 | L2 semantics（SKILL.md + qcm_catalog.yaml）| <现状> | <现状> | <说明> |
 | L3 connection（read-only / lock_timeout / idle_in_transaction_session_timeout）| <值> | <值> | <说明> |
-| L4 role（GRANT / statement_timeout 60s）| <配置> | <配置> | <说明（mj-system 侧改动需上游协调）> |
+| L4 role（GRANT / statement_timeout 60s）| <配置> | <配置> | <说明（上游业务系统 侧改动需上游协调）> |
 
 ### D7.2 ADR-009 biz 域边界
 
@@ -224,7 +224,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 ### D7.3 biz_catalog 镜像与上游一致性
 
-- 上游 mj-system [STANDARD]_Biz_DWS_Naming_Stability §2-§4 当前版本：<commit / 日期>
+- 上游 上游业务系统 [STANDARD]_Biz_DWS_Naming_Stability §2-§4 当前版本：<commit / 日期>
 - 本 optimization 同步前后差异：<scripts/diff_biz_schema.py 输出>
 - 同步状态：<在 sync / sync 前 / 待 sync>
 
@@ -285,9 +285,9 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 <≤ 5 项；含具体 PR / Plan / mj-agent-runtime-* 调用建议>
 
-### §4.4 mj-system 上游协调（如适用）
+### §4.4 上游业务系统 上游协调（如适用）
 
-<是否需要上游 mj-system 调整 STANDARD §2-§4 / SQL guardrail / GRANT；如有，开 issue 给 mj-system>
+<是否需要上游 上游业务系统 调整 STANDARD §2-§4 / SQL guardrail / GRANT；如有，开 issue 给 上游业务系统>
 
 ---
 
@@ -299,7 +299,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 - 相关 ISSUE：<list>
 - 相关 POSTMORTEM：<如本评估由事故 follow-up>
 - 相关 PR：<list>
-- mj-system 上游协调 issue：<如适用>
+- 上游业务系统 上游协调 issue：<如适用>
 
 ## 更新记录
 

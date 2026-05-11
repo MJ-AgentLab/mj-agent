@@ -3,8 +3,9 @@ type: plan
 summary: PLAN B — 撰写 docs/db_access.md（Phase 0 退出标准 #6 / PR2）
 owner: ranzuozhou
 created: 2026-04-24
-updated: 2026-04-27
-state: draft
+updated: 2026-05-11
+state: completed
+completed: 2026-05-11
 track: code
 related:
   - ../README.md
@@ -23,8 +24,10 @@ tags:
   - adr-006
 ---
 
-> **目的**：产出 `docs/db_access.md`——一份"mj-agent 怎么接触 mj-system biz 域数据"的权威说明书，作为 Phase 0 退出标准 #6 / roadmap PR2 的交付物。
-> **受众**：新加入 mj-agent 的开发者、做合规/审计的同事、mj-system DBA。
+> **状态说明（2026-05-11 retroactive maintenance）**：本 plan 设计的 `docs/db_access.md` 单一文档**未实际产出**；其内容（4 层数据可见性机制、analyst 凭据来源、运维手册）已分别落入 [[../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]、[[../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]、[[../docs/adr/[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]、[[../docs/glossary/upstream_business_warehouse|glossary §如何引用上游业务系统]] 等多份 canonical 文档（含 cross-repo decoupling cleanup PR #118-#124 的输出）。state 标 completed 反映"原计划目标已通过分布式 ADR + glossary 方式达成"，而非"docs/db_access.md 已写"。
+
+> **目的**：产出 `docs/db_access.md`——一份"mj-agent 怎么接触上游业务系统 biz 域数据"的权威说明书，作为 Phase 0 退出标准 #6 / roadmap PR2 的交付物。
+> **受众**：新加入 mj-agent 的开发者、做合规/审计的同事、上游业务系统 DBA。
 
 ## 1. 范围
 

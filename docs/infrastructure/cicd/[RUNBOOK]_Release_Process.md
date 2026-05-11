@@ -23,7 +23,6 @@ owner: 项目负责人
 > **目标受众**：项目负责人 / 发布执行人
 > **版本**：v0.1
 > **最后更新**：2026-05-06
-> **派生自**：mj-agent 原生（参考 mj-system 同类 RUNBOOK 体例）
 > **关联文档**：[[../git/[GUIDE]_Git_Push_Workflow|Git 推送工作流]]、
 > [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit STANDARD]]、
 > [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]
@@ -149,7 +148,7 @@ annotated tag 一起带上。
 > **当前留 stub**：Phase 0.5 阶段 release 仅限仓库层（tag + 包版本号），未涉及
 > 生产部署。Phase 1+ 由后续 RUNBOOK 章节或新 RUNBOOK 覆盖部署到 DEV/TEST/PROD
 > profile 的步骤（参考 ADR-008 mj-agent 独立 compose project + 通过
-> mj-system-backend-network external 作为 consumer 访问 mj-system biz pg 的部署模型）。
+> 上游业务系统-backend-network external 作为 consumer 访问 上游业务系统 biz pg 的部署模型）。
 
 ---
 
@@ -193,7 +192,7 @@ Phase 0.5 阶段 release 未涉及生产部署；rollback **仅限仓库层**（
 模板待 Phase 1 落地；当前以普通 markdown 临时记录于 `docs/postmortem/`）：
 
 - 发生 rollback（Step 1 或 Step 2 路径之一）
-- 影响外部下游（mj-system 栈下游服务、analyst 用户）
+- 影响外部下游（上游业务系统 栈下游服务、analyst 用户）
 - 误推 tag 在线保留 ≥ 1 小时（即使后续删除也算）
 
 记录内容至少含：时间线、根因、临时缓解、永久修复、预防措施。

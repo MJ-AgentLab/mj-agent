@@ -239,7 +239,7 @@ docker rm -f mj-agent-test
 
 - **Production 部署**：本镜像目标 = DEV 内网；prod 走 Phase 2/3 评审（HA、TLS、SSO、observability stack）
 - **多租户隔离**：roadmap §F.4 永远不做
-- **GPU 加速**：mj-agent 不本地推 LLM；纯 Ark API
+- **GPU / local LLM serving**：mj-agent 自身不运行 vLLM；任一 dev/test/prod profile 都可通过 `.env` 设 `LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL` 切换到 DGX 外部 OpenAI 兼容 endpoint（ADR-027；DGX 不是部署 profile）
 - **历史 secrets 自动迁移**：`config/secrets.enc` 走团队口令分发；容器不解密
 
 ---

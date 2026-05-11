@@ -5,7 +5,9 @@ summary: 引入 archive 文件名 [DEPRECATED]_ 前缀 + frontmatter (archived/r
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by: docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md
 decision: accepted
 track: shared
 tags:

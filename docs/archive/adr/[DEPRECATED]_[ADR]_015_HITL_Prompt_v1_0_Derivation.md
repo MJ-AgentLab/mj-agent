@@ -5,7 +5,9 @@ summary: 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 ver
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-08
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by: docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md
 decision: accepted
 track: engineering-workflow
 tags:

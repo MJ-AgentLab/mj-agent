@@ -360,7 +360,7 @@ GitHub 自 2024 年起原生支持 **5 种** Alert 类型，语法为 blockquote
 
 ### 8.3 从 Obsidian 迁移提示
 
-mj-system 的 Obsidian 标准使用 `> [!abstract]` 作文档摘要。在 mj-agent 中改写为：
+上游业务系统 的 Obsidian 标准使用 `> [!abstract]` 作文档摘要。在 mj-agent 中改写为：
 
 - 文档摘要 → 放在 frontmatter `summary:` 字段（机读优先）
 - 章节前的语境说明 → 用普通 blockquote（单 `>` 前缀）或 `> [!NOTE]`
@@ -590,5 +590,5 @@ description: >
 
 ### 14.3 派生来源
 
-- 派生自：`mj-system/develop/docs/rule/[STANDARD]_Obsidian_Markdown.md`
+- 历史背景：GFM + YAML 语法骨架借鉴自团队既有 Markdown 规范实践
 - 适配思路：砍去 Obsidian-only 语法（`[[wikilink]]` 仍保留但说明 GitHub 行为、`![[embed]]` 删除、`^block-id` 删除、12 种 Callout 收敛为 5 种 Alerts、inline `#tag` 删除）；新增 GFM 特有章节（数学公式、GitHub Alerts 的 5 类型约束、Mermaid 版本滞后说明）。

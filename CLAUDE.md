@@ -3,6 +3,15 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+> **项目起源说明（2026-05-11 update）**：mj-agent 文档治理框架在 bootstrap
+> 阶段曾参考某内部上游业务系统的实践沉淀（详见 `docs/archive/adr/[DEPRECATED]_*`
+> 9 个 archived ADR 与 `docs/archive/rule/[DEPRECATED]_*` 框架历史版本）；
+> 当前所有 active STANDARD 已独立维护，无跨仓依赖。runtime 层 mj-agent
+> 通过 `analyst` 只读 PostgreSQL 角色访问"上游业务系统"（术语见
+> `docs/glossary/upstream_business_warehouse.md`）；代码层 literal
+> （`mj-system-backend-network` Docker network 等）保留作真实部署对象的
+> 精确引用。
+
 ## Project
 
 `mj-agent` is the MJ-AgentLab data agent — a LangChain 1.x + LangGraph 1.1.8
@@ -72,16 +81,17 @@ default order by the LLM per the system prompt).
 
 ## Data boundary
 
-mj-agent accesses only the mj-system biz domain through the `analyst`
-PostgreSQL role. Visibility is enforced at four layers (see ADR-006):
+mj-agent accesses only the upstream business warehouse biz domain through
+the `analyst` PostgreSQL role (term defined in `docs/glossary/upstream_business_warehouse.md`).
+Visibility is enforced at four layers (see ADR-006):
 
 | Layer | Mechanism | Location |
 | --- | --- | --- |
 | L1 guardrail | regex: single-statement, SELECT-only, **schema + biz_dwd table allowlist** | `tools/sql/guardrail.py` |
 | L1b precheck | **sqlglot AST**: `no_select_star`, `require_time_range` on biz_dws fact tables, `require_limit` advisory; rule source shared with `[PROMPT]_component_judge.md` | `tools/sql/precheck.py` |
-| L2 semantics | SKILL.md lists the visible tables; `qcm_catalog.yaml` mirrors mj-system STANDARD §2-§4 | `skills/*/SKILL.md` + `biz_catalog/qcm_catalog.yaml` |
+| L2 semantics | SKILL.md lists the visible tables; `qcm_catalog.yaml` mirrors upstream business warehouse data dictionary STANDARD | `skills/*/SKILL.md` + `biz_catalog/qcm_catalog.yaml` |
 | L3 connection | `default_transaction_read_only=on` + `lock_timeout=5s` + `idle_in_transaction_session_timeout=10s` | `integrations/mj_system_db.py` |
-| L4 role | GRANT + `statement_timeout=60s` | mj-system `R__analyst_permissions.sql` |
+| L4 role | GRANT + `statement_timeout=60s` | upstream `R__analyst_permissions.sql` |
 
 Accessible schemas: `biz_dws` (all tables) + `biz_dwd` (only
 `dwd_dim_product_interface` / `dwd_dim_institution` — enforced both at
@@ -113,7 +123,7 @@ docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 # Storage-stack — independent compose project (mj-agent + 自带 postgres + redis)
-# 4-file profile layering per ADR-025 (mirror mj-system v3.2.2). All 3 profiles
+# 4-file profile layering per ADR-026 (mirror mj-system v3.2.2). All 3 profiles
 # use explicit `-f base -f overlay` chain (override.yml auto-load doesn't apply
 # because compose files live in infra/docker/ subdir and base loaded via -f).
 # Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
@@ -257,13 +267,12 @@ v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
   governed by Meta v2.1 §3.10 instead).
 - `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md`
   (Track C primary STANDARD; active) — 17-stage HITL execution loop
-  derived from mj-system v1.0; governs `.claude/skills/` workflow +
-  Stage prompts + HITL gates at stages 5/7/9/11/13. Phase A Lite
-  derivation: §4.1 / §4.4 reference mj-system upstream
-  `[STANDARD]_AI_Engineering_Intake.md` / `_Repo_Scan.md` as
-  placeholders pending Phase B+ derivation. Stage 8 Implementation
-  has three flavors (A pure code / B in-source canonical always-HITL /
-  C infra) — see ADR-015.
+  governing `.claude/skills/` workflow + Stage prompts + HITL gates at
+  stages 5/7/9/11/13. §4.1 (Intake) / §4.4 (Repo Scan) content is
+  inlined and mj-agent-native (PR #118 commit-3 supplements). Stage 8
+  Implementation has three flavors (A pure code / B in-source canonical
+  always-HITL / C infra). Original derivation provenance archived to
+  `docs/archive/adr/[DEPRECATED]_[ADR]_015_*`.
 
 Archived (`docs/archive/rule/`, `state: deprecated`):
 - `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` — replaced
@@ -297,56 +306,34 @@ references are audited (Living updates to `_v<new>`; Frozen pins to
 `_v<old>`). Daily edits stay in-place — the rename + archive ceremony
 fires only when the change qualifies as substantive evolution. ADR-011
 documents the rationale; ADR-014 §决策点 3 skeleton-first describes the
-延迟 promote 变体 used for v2.0 → v2.1. ADR-017 (Phase C-2) 细化 ADR-011
-§5.6.1 HITL trigger，落 Meta v2.1 §5.9 4 类必触发 + 1 类反例归档判定表
-（mj-system v5.2 §10.1 派生，不 supersede ADR-011，仅补充量化条款）。
-ADR-018 (Phase C-1a) 引入 active canonical 路径稳定原则（active 文件名
-默认无 `_vX.Y` 后缀；版本仅在 frontmatter；legacy 反向必带后缀）—
-mj-system v5.2 §4.1 派生；partial supersede ADR-011 §4.2 filename rule
-+ §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期
-rename（仅 Meta v2.1 触发 archive ceremony；其他 5 解读为 rule
-application）。
-ADR-019 (Phase C-1b) 引入 archive 命名规范化（archive 文件名加
-`[DEPRECATED]_` 前缀；frontmatter 必含 `archived: <date>` +
-`replaced-by: <stable-path>`，直接指向当前活跃稳定路径）— mj-system
-v5.2 §10.2 派生；partial supersede ADR-011 §5.6.2 第 2 段；ADR-011
-§5.6.1/3/4 sustained；6 archived 文件同期 rename + frontmatter 增强；
-3-PR 序列收尾（C → A → B）。
-ADR-020 (Phase C-3-1) 把 `scripts/check_wikilinks.py` 改为 auto-discover
-NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob — 关闭 ADR-019
-transitional 硬编码债务；零维护；新增 archive 文件自动纳入校验。
-ADR-021 (Phase C-3-3) 引入 plans/ working 文档 4 态机
-（draft → active → completed → archived）— mj-system v5.2 §10.5 派生；落
-Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active →
-completed；retroactive 标 7 plans completed；archived 物理归档延后 Phase D。
-ADR-022 (Phase C-4) bundle 5 项 P2 framework rule 增强（mj-system v5.2
-派生）：类型专属 frontmatter（RUNBOOK last-verified / POSTMORTEM
-severity+incident-date+resolved-at / ASSESSMENT dimensions+period /
-ISSUE priority+risk-level）+ STANDARD §3.7 placement 决策矩阵 + ISSUE
-NNN+DomainAbbr 命名 + supersedes list 文档化 + STANDARD §3.8 拆分阈值；落
-Meta v2.2 §3.7/§3.8/§4.5/§4.6 + Code_Side v1.1 §3.4-§3.8；check_frontmatter.py
-type-conditional 校验（state: active/completed 时强制；draft/deprecated 宽松）。
-ADR-023 (Phase D-2) scripts/infra 增强：mj-system v5.2 §7.1.1 派生
-`scripts/find_stale_docs.py` warning-mode CI（path-level rename detection；
-4 周观察期；`.github/workflows/check-stale-docs.yml`）+ ADR-021 follow-up
-`scripts/find_old_completed_plans.py` 候选检测 + Meta v2.2 §5.11.5
-archive 实施指引；不 supersede；与 ADR-020/021 互补。
+延迟 promote 变体 used for v2.0 → v2.1. ADR-020 (Phase C-3-1) 把 `scripts/check_wikilinks.py` 改为 auto-discover
+NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob — 零维护 archive
+引用校验；新增 archive 文件自动纳入校验。
 ADR-024 (Phase D-3) EVAL framework spec：Agent_Side v1.1 → v1.2 archive
 ceremony；§4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/
 integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver
 **延续 Phase E**（前置条件 4 项 roadmap）；check_frontmatter.py EVAL 类型
-条件；不 supersede；mj-agent 原生（mj-system 暂无对位 EVAL framework）；
-Phase D 收尾。
-ADR-025 (multi-env+DGX+MCP bundle) PR-1/2/3/4 跨多 domain 决策统一记录：
-(1) docker-compose 4-file 分层 (base + override + test + prod；mirror mj-system
-v3.2.2；dev 也用显式 `-f base -f override` 因本仓 compose 在 infra/docker/
-子目录 + `-f` 显式 base 时 auto-load 不生效)；(2) LLM provider 抽象（ark
-默认 + local-openai-compat for DGX-Spark vLLM/SGLang/Ollama；`Profile` enum
-不变 — DGX 不部署 mj-agent，per 用户决策）；(3) `.mcp.json` 13 servers +
-新建领域专属 STANDARD `docs/infrastructure/mcp/[STANDARD]_..._MCP_Server_Governance.md`
-(per ADR-022 §C.3.2；A14 PR gate 正式生效)；(4) 新增 2 infra skills
-(`mj-agent-infra-llm-endpoint-probe` + `mj-agent-infra-env-teardown`)；
-不 supersede；track: shared；ref ADR-008/006/009/013/016/018/022/024 + Meta v2.2。
+条件；不 supersede；mj-agent 原生；Phase D 收尾。
+
+ADR-026/027/028 (PR-Γ；ADR-025 拆分；2026-05-11)：
+- **ADR-026 Multi-Environment Compose Profile**：docker-compose 4-file 分层
+  (base + override + test + prod)；compose project name 跨 profile 不变；
+  dev 也用显式 `-f base -f override` 因本仓 compose 在 `infra/docker/`
+  子目录 + `-f` 显式 base 时 auto-load 不生效（quirk）。
+- **ADR-027 LLM Provider Abstraction**：`make_llm()` 抽象为 provider 分支
+  factory（`ark` 默认 + `local-openai-compat` for DGX-Spark vLLM/SGLang/
+  Ollama）；`Profile` enum 不扩 dgx — DGX 仅作算力节点，不部署 mj-agent；
+  endpoint 健康用 `/mj-agent-infra-llm-endpoint-probe`。
+- **ADR-028 MCP Server Inventory + Governance**：`.mcp.json` 13 servers
+  + 新建领域专属 STANDARD `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
+  (per ADR-022 §C.3.2；A14 PR gate 正式生效)；独立 secrets pipeline
+  (`MJ_AGENT_*` 命名空间 vs 上游 `MJ_SYS_*`；per ADR-008)；wrapper script 内部
+  baseline 在 `docs/_baselines/pg_server_baseline.md`。
+
+历史归档：ADR-010/015/017/018/019/021/022/023/025 共 9 个 ADR 已批量
+archive 至 `docs/archive/adr/`（PR-Γ；2026-05-11；cross-repo decoupling
+cleanup）— 决策内容已沉淀为对应 framework STANDARD 段；详见
+[[docs/archive/adr/INDEX|archive/adr/INDEX]]。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary
@@ -481,7 +468,7 @@ PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
 
 In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
 across 5 families: flow / git / doc / runtime / infra). Slash-command
-namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.0
+namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.1
 §5 Skill Hint Matrix. ADR-016 governs namespace + lifecycle.
 
 Active in-tree skills（按 family 分组；填充随 phase 推进）:
