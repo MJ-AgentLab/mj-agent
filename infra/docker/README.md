@@ -205,6 +205,7 @@ Chainlit 暴露在 host:**8001**；mj-agent-postgres host:**5433**；mj-agent-re
 |---|---|
 | `mj-agent check` 容器内退出码 1 | `docker logs mj-agent`；常见：`POSTGRES_ANALYST_USER` 未注入 / `ARK_API_KEY` 未注入 / mj-postgres 还没起 healthy / mj-agent-postgres 还没起 healthy |
 | Chainlit 访问 connection refused | 确认 host port 8001 → container 8000，且 `CHAINLIT_HOST=0.0.0.0`（默认在 Dockerfile 里设了）|
+| Host curl 502 但浏览器正常 | host shell `HTTP_PROXY` / `HTTPS_PROXY` 系统代理未排除 localhost（Clash / v2ray 常见）；用 `curl --noproxy '*' http://localhost:8001/` 单次绕过，或设 `NO_PROXY=localhost,127.0.0.1,::1` 持久化；详见 `docs/runbook/dev_deployment.md` §4 |
 | 容器内 `host.docker.internal` 解析不了（Linux） | 加 `--add-host=host.docker.internal:host-gateway`，或共部署到 mj-system 网络用 `mj-postgres` service name |
 | 镜像构建失败 in `uv sync --frozen` | 检查 `uv.lock` 是否提交；本仓不允许漂移 lock |
 | mj-agent-postgres 启动失败：`MJ_AGENT_MEMORY_USER missing` | `.env` 里没填这 2 个值；填上后 `docker compose up -d --force-recreate mj-agent-postgres` |
