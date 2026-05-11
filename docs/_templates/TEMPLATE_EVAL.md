@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v1.0
 track: agent
-derives_from: ""
 owner: 项目负责人
 eval_kind: outcome / trajectory / component / integration
 target_skill: <skill name 或 prompt name 或 "whole-agent">

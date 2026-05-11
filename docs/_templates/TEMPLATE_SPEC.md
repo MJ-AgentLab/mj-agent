@@ -10,7 +10,7 @@ updated: YYYY-MM-DD
 state: draft
 version: v0.1
 track: code
-derives_from: ""
+task_type: <1 / 2 / 3 / 4 / 5 / 6 / 7 / 8>  # 见 [GUIDE]_MJ_Agent_SPEC_Authoring §3 决策树；按主导类填；多类共触在 §1 Context 注明次要类
 owner: 项目负责人
 ---
 
@@ -20,8 +20,20 @@ owner: 项目负责人
 > **目标受众**：开发者（实现方）+ 集成方（调用方）+ Reviewer
 > **版本**：v0.1
 > **最后更新**：YYYY-MM-DD
-> **派生自**：（如非派生则写"mj-agent 原生"）
+> **任务类型**：本 SPEC 任务类型为 #X — 按 [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §4.X 裁剪本模板（必填段 / 可选段 / 不涉及段显式标注）
 > **关联文档**：相关 ADR / GUIDE / RUNBOOK / CONTRACT 的 wikilink
+
+---
+
+## §0 Task Type Identification
+
+按 [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]] §3 决策树识别本 SPEC 的任务类型：
+
+- **主导类**：#X <类型名>（如 #1 Python 应用代码）
+- **次要类**（如多类共触）：#Y <类型名>，理由：<...>
+- **触发的 §3.1 必停项**（按 GUIDE §6 表）：<list；空写 "无 §3.1 触发"；任何 §3.1 触发即升 Risk = High>
+
+**裁剪决策**：按 GUIDE §4.X 列出本类的 [必填段] / [可选段] / [不涉及段]；下方 §1-§9 中 "不涉及" 段保留标题 + 显式 `不涉及（理由：...）`。
 
 ---
 

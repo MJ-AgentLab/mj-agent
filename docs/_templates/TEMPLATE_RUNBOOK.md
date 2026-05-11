@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v0.1
 track: code
-derives_from: ""
 owner: 项目负责人
 last-verified: YYYY-MM-DD
 ---
@@ -21,7 +20,6 @@ last-verified: YYYY-MM-DD
 > **目标受众**：oncall 工程师 / 运维 / 项目负责人
 > **版本**：v0.1
 > **最后更新**：YYYY-MM-DD
-> **派生自**：（如非派生则写"mj-agent 原生"）
 > **关联文档**：相关 ADR / SPEC / GUIDE 的 wikilink
 
 ---
