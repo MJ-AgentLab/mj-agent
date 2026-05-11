@@ -121,7 +121,7 @@ track: shared / code / agent / engineering-workflow
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.5（Stage 4 Plan prompt）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5（Stage 4 Plan prompt）
 - `.claude/skills/mj-agent-flow-plan/SKILL.md`（Plan body 编排器）
 - [[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（plans/ 4 态机）
 - [[TEMPLATE_REPO_SCAN_RESULT|TEMPLATE_REPO_SCAN_RESULT]]（Plan 上游 Stage 3 输出）

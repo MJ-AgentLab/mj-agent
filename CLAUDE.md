@@ -468,7 +468,7 @@ PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
 
 In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
 across 5 families: flow / git / doc / runtime / infra). Slash-command
-namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.0
+namespace `/mj-agent-<group>-<verb>`. Stage mapping: see HITL_Prompt v1.1
 §5 Skill Hint Matrix. ADR-016 governs namespace + lifecycle.
 
 Active in-tree skills（按 family 分组；填充随 phase 推进）:

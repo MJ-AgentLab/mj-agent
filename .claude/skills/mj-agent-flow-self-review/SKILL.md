@@ -9,7 +9,7 @@ description: This skill performs mj-agent AI self-review (HITL Stage 11) before 
 
 Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `/mj-agent-flow-scope-drift` (Stage 9) with Meta v2.0 §4.7 dual-section discipline（本地验证 / AI 自检 严格不混用）+ mj-agent 12-item checklist + commit message draft via `/mj-agent-git-commit`。
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）.
 
 ## Workflow
 
@@ -274,7 +274,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §4.9（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]]（type/scope 矩阵）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）

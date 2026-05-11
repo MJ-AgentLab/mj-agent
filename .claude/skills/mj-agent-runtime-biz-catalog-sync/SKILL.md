@@ -270,7 +270,7 @@ per HITL_Prompt §3.3 7-段格式：
 ## Reference Files
 
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]] §3.1 必停 12 + §4.4 §6.6（biz_catalog drift detection in Repo Scan）+ §4.7 Rule 9
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 12 + §4.4 §6.6（biz_catalog drift detection in Repo Scan）+ §4.7 Rule 9
 - [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only；catalog 是其实现）
 - src/mj_agent/biz_catalog/qcm_catalog.yaml（target file）
 - src/mj_agent/biz_catalog/{loader,finder}.py（catalog 加载入口；本 skill 不动这些）

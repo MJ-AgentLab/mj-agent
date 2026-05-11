@@ -209,7 +209,7 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 ## §6 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.0]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
 - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
 - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
 - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
