@@ -8,7 +8,6 @@ updated: 2026-05-09
 state: active
 version: v1.2
 track: agent
-derives_from: mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1
 supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1"
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
