@@ -60,7 +60,7 @@ aliases:
 | 代码-文档双向追溯 | 沿用 v1.0 §1 |
 | 失败响亮 | 沿用 v1.0 §1 |
 | 审阅角色单一 | 沿用 v1.0 §1（SWE Reviewer 充分） |
-| 继承自 mj-system v5.0 | 沿用 v1.0 §1 |
+| 继承自 上游业务系统 v5.0 | 沿用 v1.0 §1 |
 | **与 Track C 协同**（v1.1 加注） | 代码侧 ADR / SPEC 引入 CI hook、build script、部署流程时，应交叉引用 engineering-workflow 子规范（HITL_Prompt v1.0 / Claude_Code_Settings / MCP_Server_Governance）作为 Stage 8 Implementation 的执行依据 |
 
 ---
@@ -68,7 +68,7 @@ aliases:
 ## 2. 派生关系
 
 - 大部分规则继承自 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]] §3-§6（命名 / Frontmatter / 状态生命周期 / 索引）
-- 部分规则间接继承自 mj-system v5.0；本框架自包含使用，不强求读 v5.0
+- 部分规则间接继承自 上游业务系统 v5.0；本框架自包含使用，不强求读 v5.0
 - 8 类继承类的 frontmatter / body 模板沿用 [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] 等（Phase A PR-A3 补 RUNBOOK / SPEC / HITL_STAGE 模板）
 
 ---

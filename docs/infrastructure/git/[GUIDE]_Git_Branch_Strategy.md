@@ -24,7 +24,7 @@ owner: 项目负责人
 > **目标受众**：开发者、维护者
 > **版本**：v1.0
 > **最后更新**：2026-04-30
-> **派生自**：mj-system v5.0 同名 GUIDE（5 分支模型与 worktree 用法逐字保留；命名示例与 commit scope 改为 mj-agent 12 scope）
+> **历史背景**：5 分支模型与 worktree 用法源自团队成熟实践；命名示例与 commit scope 已按 mj-agent 12 scope 调整。
 > **关联文档**：[[GUIDE]_Git_Push_Workflow|Git 推送工作流]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
 ---
@@ -588,7 +588,7 @@ mj-agent/
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
 - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
+- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] — 决策依据
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 
 ---
@@ -597,4 +597,4 @@ mj-agent/
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
-| 2026-04-30 | v1.0 | 派生自 mj-system v5.0 同名 GUIDE：5 分支模型 + worktree 用法逐字保留；§0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agent 12 scope；URL 改 `MJ-AgentLab/mj-agent` |
+| 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：5 分支模型 + worktree 用法逐字保留；§0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agent 12 scope；URL 改 `MJ-AgentLab/mj-agent` |

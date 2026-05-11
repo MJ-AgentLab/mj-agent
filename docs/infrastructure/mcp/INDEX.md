@@ -37,9 +37,9 @@ track: engineering-workflow
 
 ## 派生说明
 
-| 本目录 | mj-system 源 | 主要差异 |
+| 本目录 | 上游业务系统 源 | 主要差异 |
 |--------|------------|---------|
-| `[STANDARD]_MJ_Agent_MCP_Server_Governance.md` | （mj-system 无对位 STANDARD；mj-agent 原生）| mj-system v5.2 期 .mcp.json governance 隐含在 PR review 经验中，未形成 STANDARD；mj-agent 借落 PR-3 机会显式落地，反向 informant mj-system 后续 STANDARD 演进 |
+| `[STANDARD]_MJ_Agent_MCP_Server_Governance.md` | （上游业务系统 无对位 STANDARD；mj-agent 原生）| 上游业务系统 v5.2 期 .mcp.json governance 隐含在 PR review 经验中，未形成 STANDARD；mj-agent 借落 PR-3 机会显式落地，反向 informant 上游业务系统 后续 STANDARD 演进 |
 
 ---
 

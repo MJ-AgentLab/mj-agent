@@ -20,7 +20,7 @@ track: shared
 
 | 文档 | 摘要 |
 |------|------|
-| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|mj-agent 文档治理元框架 v2.2]] (active；stable path) | 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018；mj-system v5.2 §4.1 派生；partial supersede ADR-011 §4.2 + §5.6.2）；v2.1 sustained §3.10 + §7.6 + §5.9；v2.1/v2.0 已 archive |
+| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|mj-agent 文档治理元框架 v2.2]] (active；stable path) | 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018；上游业务系统 v5.2 §4.1 派生；partial supersede ADR-011 §4.2 + §5.6.2）；v2.1 sustained §3.10 + §7.6 + §5.9；v2.1/v2.0 已 archive |
 | [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|mj-agent 代码侧文档治理框架 v1.1（Track A）]] (active) | Track A minor bump（v1.0 → v1.1）— §0/§3.9/§7.3 加注 Track C engineering-workflow 共享 A1-A6 + cross-ref 工程流程 STANDARDs；与 Meta v2.1 同期 promote；v1.0 已 archive |
 | [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|mj-agent 智能体侧文档治理框架 v1.2（Track B）]] (active；stable path) | Track B v1.2 — §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema；ADR-024 决议）；A8/A11 transitional waiver 延续 Phase E；v1.1 已 archive；§5/§6/§7.x sustained from v1.1 |
 | [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (active) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；§3.1 通用 + 4 项 mj-agent 专属必停规则（runtime-skill / prompt-version / biz-catalog / sql-guardrail）；§4 含 3 风味 Implementation（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ EVAL backlog ticket 自动开单 |
@@ -38,7 +38,7 @@ track: shared
 | [[ADR]_002_Skills_As_First_Class_Citizens\|ADR-002 Skills as First-Class Citizens]] | SKILL | accepted | 所有专业能力以 `skills/{name}/SKILL.md` 格式封装，对齐 Claude Code skills 约定 |
 | [[ADR]_003_Progressive_Disclosure\|ADR-003 Progressive Disclosure]] | PROMPT | accepted | 全局 system prompt 只含身份与原则；具体能力按需加载 |
 | [[ADR]_006_Fail_Safe_Reads\|ADR-006 Fail-Safe Reads]] | GUARDRAIL | accepted | biz 库访问用只读账号 + SQL guardrail middleware 双层保护；4 层防御（L1-L4） |
-| [[ADR]_008_Co_Deployment_With_Upstream_Warehouse\|ADR-008 Co-Deployment with Upstream Business Warehouse]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 `mj-system-backend-network` (external) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游时间表对齐但 lifecycle 解耦 |
+| [[ADR]_008_Co_Deployment_With_Upstream_Warehouse\|ADR-008 Co-Deployment with Upstream Business Warehouse]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 `上游业务系统-backend-network` (external) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游时间表对齐但 lifecycle 解耦 |
 | [[ADR]_009_Biz_Domain_As_Primary_Data_Source\|ADR-009 Biz Domain as Primary Data Source]] | INTEGRATION | accepted | mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层 |
 | [[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011 Document Versioning and Archive Convention]] | SYS | accepted | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发，A3 模式 = git branch + PR review） |
 | [[ADR]_012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架 |
@@ -55,7 +55,7 @@ track: shared
 
 | 文档 | 周期 | 摘要 |
 |------|------|------|
-| [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0\|mj-system Git 规范在 mj-agent 的适配评估 v1.0]] | Phase 0 | 评估 mj-system git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据 |
+| [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0\|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]] | Phase 0 | 评估 上游业务系统 git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据 |
 
 ## 归档（docs/archive/）
 
@@ -104,7 +104,7 @@ track: shared
 | `TEMPLATE_POSTMORTEM.md` (Phase D-1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.5 |
 | `TEMPLATE_ISSUE.md` (Phase D-1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.7 |
 | `TEMPLATE_ASSESSMENT.md` (Phase D-1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.8 |
-| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；mj-system 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
+| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；上游业务系统 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
 ---
 
@@ -120,7 +120,7 @@ track: shared
 | `src/mj_agent/skills/safe-sql-analysis/SKILL.md` | `[SKILL]` v0.1 | SQL 撰写守则与执行 envelope（时间谓词必填 / `SELECT *` 禁用 / LIMIT 策略），失败 → 修正回路 |
 | `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` v0.2 (`state: deprecated`) | MVP PR3 拆分为上述 3 个 skill；保留作历史参考，`agent.py` 不加载 |
 | `src/mj_agent/skills/probe-fixture/SKILL.md` | `[SKILL]` (fixture) | 治理框架 v1.1 自检用 dummy skill；`state: draft`，**不被** `agent.py` 加载 |
-| `src/mj_agent/biz_catalog/qcm_catalog.yaml` | catalog data | 静态镜像 mj-system `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4：metric / period / dimension / 同环比列 / 信号表 / 维表 join key；由 `find_biz_context` 召回 |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` | catalog data | 静态镜像 上游业务系统 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4：metric / period / dimension / 同环比列 / 信号表 / 维表 join key；由 `find_biz_context` 召回 |
 
 *MVP 阶段 3 个 skill 静态全载（`agent.py:_ACTIVE_SKILLS`）。Phase 1+ 新增 skill 由 `docs/design/skills/INDEX.md` 补充详细目录；dynamic skill selector 推迟到 1.5。*
 
@@ -148,7 +148,7 @@ track: shared
 
 | 术语 | 摘要 |
 |---|---|
-| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
+| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `上游业务系统-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
 
 ---
 
