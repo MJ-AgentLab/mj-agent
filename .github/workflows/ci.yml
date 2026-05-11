@@ -70,6 +70,13 @@ jobs:
         # for the allow-list and rationale.
         run: uv run python scripts/check_no_cross_repo_refs.py
 
+      - name: Old completed plans (warning-mode GC候选)
+        # Plan §3.2 修订 5 / archived ADR-023. Surfaces plans/[PLAN]_*.md
+        # with state: completed AND updated >= 180 days ago — candidates for
+        # Phase D 物理归档 (plans/archive/ subdir; per Meta v2.2 §5.11.5).
+        # Always exits 0 (warning-mode); manual maintainer review.
+        run: uv run python scripts/find_old_completed_plans.py
+
       - name: Tests (unit + eval + integration; smoke + contract excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
