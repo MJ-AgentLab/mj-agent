@@ -52,6 +52,12 @@ REQUIRED_FIELDS: frozenset[str] = frozenset(
     {"type", "summary", "owner", "created", "updated", "state", "track"}
 )
 
+# Forbidden frontmatter fields. `derives_from` was removed in the cross-repo
+# decoupling cleanup — version-evolution lineage now lives only in `supersedes`
+# (intra-repo) and archive `replaced-by` (per ADR-019). Reintroducing
+# `derives_from` is rejected to prevent drift back.
+FORBIDDEN_FIELDS: frozenset[str] = frozenset({"derives_from"})
+
 # Allowed enum values.
 TRACK_VALUES: frozenset[str] = frozenset(
     {"code", "agent", "engineering-workflow", "shared"}
@@ -67,6 +73,14 @@ def is_skipped(rel_path: Path) -> bool:
     )
 
 
+def _is_archive(rel_path: Path) -> bool:
+    """Archived docs (frozen snapshots per ADR-019) are exempt from
+    forward-only guards like FORBIDDEN_FIELDS. Required-fields and enum
+    checks still apply because archived docs declare `state: deprecated`."""
+    parts = rel_path.parts
+    return len(parts) >= 2 and parts[0] == "docs" and parts[1] == "archive"
+
+
 def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
     """Return a list of violation messages for one doc. Empty = passes."""
     violations: list[str] = []
@@ -76,6 +90,17 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
     missing = REQUIRED_FIELDS - meta.keys()
     for field in sorted(missing):
         violations.append(f"missing required field `{field}`")
+
+    # 1b. Forbidden fields (cross-repo decoupling guard; see FORBIDDEN_FIELDS docs).
+    # Archived docs are frozen snapshots (per ADR-019) — skip the forbidden-field
+    # check there so historical frontmatter stays untouched.
+    if not _is_archive(rel_path):
+        forbidden_present = FORBIDDEN_FIELDS & meta.keys()
+        for field in sorted(forbidden_present):
+            violations.append(
+                f"forbidden field `{field}` present "
+                f"(removed in cross-repo decoupling; use `supersedes` for intra-repo lineage)"
+            )
 
     # 2. Enum value checks (only when the field is present; missing reported above).
     track = meta.get("track")

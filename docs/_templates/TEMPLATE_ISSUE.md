@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v1.0
 track: shared
-derives_from: ""
 owner: 项目负责人
 priority: P2
 risk-level: Medium

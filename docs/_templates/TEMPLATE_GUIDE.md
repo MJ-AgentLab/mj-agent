@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v0.1
 track: code
-derives_from: ""
 owner: 项目负责人
 ---
 
@@ -20,8 +19,6 @@ owner: 项目负责人
 > **目标受众**：读者画像（如：开发 + 维护者 / 项目负责人 / Phase 0 onboarding）
 > **版本**：v0.1
 > **最后更新**：YYYY-MM-DD
-> **派生自**：（如非派生则写"mj-agent 原生"；派生说明体例可参考
-> [[GUIDE]_GitHub_Setup_And_Versioning]] header）
 > **关联文档**：[[wikilink-1]]、[[wikilink-2]]、...
 
 ---

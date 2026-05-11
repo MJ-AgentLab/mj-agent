@@ -14,7 +14,6 @@ updated: 2026-05-06
 state: draft
 version: v0.1
 track: code
-derives_from: ""
 owner: 项目负责人
 ---
 
