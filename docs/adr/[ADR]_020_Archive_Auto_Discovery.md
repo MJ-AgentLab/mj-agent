@@ -14,7 +14,6 @@ tags:
   - script
   - archive
   - auto-discovery
-  - mj-system-derivation
 ---
 
 # ADR 020: Archive Auto-Discovery（check_wikilinks.py 通用化）
@@ -29,7 +28,7 @@ ADR-019 §References + §Consequences 已显式标记此为 **transitional 方�
 
 每次新加 archive（如未来 v2.2 → v3.0）都需手工同步 NEEDLES + ARCHIVE_PREFIXES（两次同步）；易遗漏。
 
-mj-system `scripts/find_stale_docs.py`（v5.2 §7.1.1）用类似目录扫描思路：扫 `docs/archive/` 派生 needles，零维护。本 ADR 在 mj-agent 既有 `check_wikilinks.py` 上应用同模式。
+本设计采用 directory-scan 派生 needles 的常见模式（零维护、deterministic）；与上游业务系统的 stale doc detection 工具实践一致（详见 [[../glossary/upstream_business_warehouse|glossary §如何引用上游业务系统]]）。本 ADR 在 mj-agent 既有 `check_wikilinks.py` 上应用此模式。
 
 ## Decision
 
@@ -60,7 +59,7 @@ ADR-019 §Decision 主条款（archive 文件名 `[DEPRECATED]_` 前缀 + frontm
 
 ### 不引入完整 find_stale_docs.py（Phase D 范畴）
 
-mj-system v5.2 §7.1.1 的 `find_stale_docs.py` 完整版含：path-level rename 检测 + warning-mode CI + GH workflow + 4 周观察期。本 ADR 仅借鉴 "目录扫描派生 needles" 思路；不引入完整版 — 那是 Phase D 工作。
+完整 stale doc detection 工具（含 path-level rename 检测 + warning-mode CI + GH workflow + 4 周观察期）超出本 PR 的最小可工作改动 scope；推迟至 Phase D 评估。引用规则 + 具体 URL/branch 选择见 [[../glossary/upstream_business_warehouse|glossary §如何引用上游业务系统]]。
 
 ## Consequences
 
@@ -69,12 +68,12 @@ mj-system v5.2 §7.1.1 的 `find_stale_docs.py` 完整版含：path-level rename
 1. **零维护** — 未来新加 archive 自动纳入校验；无需改 script
 2. **关闭 ADR-019 §Consequences 第 2 项 transitional 工作** — Phase C-3 计划内 follow-up 落地
 3. **deterministic** — `sorted()` 保证跨平台稳定输出
-4. **mj-system 双向兼容更近一步** — 同模式（dir scan）；未来引入完整 find_stale_docs.py 时基础已就绪
+4. **directory-scan 模式一致** —— 未来引入完整 stale doc detection 工具时基础已就绪
 
 ### 负面
 
 1. **依赖 `[DEPRECATED]_` 前缀约定** — 已由 ADR-019 §Decision 主条款强制；非新负担
-2. **不含 path-level rename 检测**（mj-system find_stale_docs.py 完整版功能） — Phase D 范畴
+2. **不含 path-level rename 检测**（完整 stale doc detection 工具的功能）— Phase D 范畴
 3. **glob bracket escape `[[]DEPRECATED[]]_`** — Python pathlib 特殊语法；代码注释已说明
 
 ### 中性
@@ -99,8 +98,8 @@ mj-system v5.2 §7.1.1 的 `find_stale_docs.py` 完整版含：path-level rename
 
 ## References
 
-- 派生源：[mj-system@scripts/find_stale_docs.py](https://github.com/MJ-AgentLab/mj-system/blob/develop/scripts/find_stale_docs.py)（仅借鉴目录扫描思路；不引入完整版）+ mj-system v5.2 §7.1.1
+- 派生源 attribution：directory-scan 思路与上游业务系统的 stale doc detection 工具一致；具体 URL / branch / commit SHA 选择规则见 [[../glossary/upstream_business_warehouse|glossary §如何引用上游业务系统]]
 - 落实：[[../adr/[ADR]_019_Archive_Naming_Convention|ADR-019]] §References transitional 跟进；§Consequences 负面第 2 项关闭
 - 落地：`scripts/check_wikilinks.py`（refactor）
 - 关联 GitHub Issue：[#82](https://github.com/MJ-AgentLab/mj-agent/issues/82)
-- 后续（Phase D）：完整 `find_stale_docs.py` warning-mode CI + 4 周观察期 + path-level rename detection
+- 后续（Phase D）：完整 stale doc detection 工具（warning-mode CI + 4 周观察期 + path-level rename detection）
