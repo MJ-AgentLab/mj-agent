@@ -5,7 +5,9 @@ summary: mj-agent 从 mj-system 继承 git 工作流与 commit 规范，附 Keep
 owner: 项目负责人
 created: 2026-04-25
 updated: 2026-04-25
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by: docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md
 decision: accepted
 track: code
 ---

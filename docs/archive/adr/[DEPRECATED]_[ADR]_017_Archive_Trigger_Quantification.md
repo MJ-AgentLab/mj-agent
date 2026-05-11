@@ -5,7 +5,9 @@ summary: 引入 4 类必触发 + 1 类反例的归档量化判定（mj-system v5
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by: docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md
 decision: accepted
 track: shared
 tags:

@@ -29,30 +29,27 @@ track: shared
 
 ## 架构决策（docs/adr/）
 
+> 2026-05-11 cross-repo decoupling cleanup（PR-Γ）后：9 个"记录从早期内部上游系统继承设计决策"的 ADR（010/015/017/018/019/021/022/023/025）已批量 archive 到 [[archive/adr/INDEX|docs/archive/adr/]]；其内容已沉淀为对应 framework STANDARD 段。ADR-025 拆分为 mj-agent 原生 ADR-026/027/028。
+
 | 文档 | domain | decision | 摘要 |
 |------|--------|----------|------|
 | [[ADR]_000_Data_LLM_Boundary_Principles\|ADR-000 Data-LLM Boundary Principles]] | DATA | accepted | 最小必要出网、通道隔离、工具中介——后续所有安全相关决策的理论基础 |
 | [[ADR]_001_Python_Only_Agent_Runtime\|ADR-001 Python-Only Agent Runtime]] | SYS | accepted | Agent 逻辑、tools、skills、memory 全部留在 Python；前端仅作通信与渲染 |
 | [[ADR]_002_Skills_As_First_Class_Citizens\|ADR-002 Skills as First-Class Citizens]] | SKILL | accepted | 所有专业能力以 `skills/{name}/SKILL.md` 格式封装，对齐 Claude Code skills 约定 |
 | [[ADR]_003_Progressive_Disclosure\|ADR-003 Progressive Disclosure]] | PROMPT | accepted | 全局 system prompt 只含身份与原则；具体能力按需加载 |
-| [[ADR]_006_Fail_Safe_Reads\|ADR-006 Fail-Safe Reads]] | GUARDRAIL | accepted | biz 库访问用只读账号 + SQL guardrail middleware 双层保护 |
+| [[ADR]_006_Fail_Safe_Reads\|ADR-006 Fail-Safe Reads]] | GUARDRAIL | accepted | biz 库访问用只读账号 + SQL guardrail middleware 双层保护；4 层防御（L1-L4） |
 | [[ADR]_008_Co_Deployment_With_Upstream_Warehouse\|ADR-008 Co-Deployment with Upstream Business Warehouse]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 `mj-system-backend-network` (external) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游时间表对齐但 lifecycle 解耦 |
 | [[ADR]_009_Biz_Domain_As_Primary_Data_Source\|ADR-009 Biz Domain as Primary Data Source]] | INTEGRATION | accepted | mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层 |
-| [[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010 Git and Commit Conventions Adopted from mj-system]] | SYS | accepted | mj-agent 从 mj-system 继承 git 工作流与 commit 规范，附 Keep/Adapt/Defer 矩阵与再评估触发器 |
-| [[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011 Document Versioning and Archive Convention]] | SYS | accepted | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发，A3 模式 = git branch + PR review）；本 PR 同时把 Framework v1.0 升至 v1.1 |
-| [[ADR]_012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架（mj-agent-agent-doc / mj-agent-code-doc） |
-| [[ADR]_013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 Agent_Side v1.0 §2 13 字段 schema 独立；两者通过 sync skill（Phase 1）做内容同步，不做 schema 同步 |
-| [[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD），与 v2.0 双轨并行；A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地（PR-B3c-promote 完成后 v2.1 trio + ADR-014/015/016 + HITL_Prompt v1.0 全部 active） |
-| [[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015 HITL_Prompt v1.0 Derivation from mj-system]] | WORKFLOW | accepted | 决议从 mj-system v1.0 派生 mj-agent HITL_Prompt v1.0；§1-§3 verbatim + §4 mj-agent 适配（去 n8n / 加 3 风味 Implementation / 加 runtime+infra 类目）+ §5 mj-agent skill 矩阵；Lite Phase A（Intake / Repo_Scan 子规范延后 Phase B+）；Stage 8 Implementation 三风味（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ Stage 17 Post-merge EVAL backlog ticket 自动开单为 mj-agent 专属 |
-| [[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | 决议 mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow 9 / git 9 / doc 6 / runtime 4 / infra 4 = 32）+ 与 marketplace mj-agent-code-doc 插件共存 + lifecycle (P0/P1/P2 + sunset 规则)；PR-B1 起首落地（git family 5 P0 skills + TEMPLATE_WORKFLOW_SKILL.md + 本 ADR） |
-| [[ADR]_017_Archive_Trigger_Quantification\|ADR-017 Archive Trigger Quantification]] | SYS | accepted | 引入 4 类必触发 + 1 类反例的归档量化判定（mj-system v5.2 §10.1 派生），落 Meta v2.1 §5.9；消除 ADR-011 §5.6.1 HITL 判断模糊；不 supersede ADR-011（仅细化触发条款可执行性）；3-PR 序列（C→A→B）第 1 步 |
-| [[ADR]_018_Active_Path_Stability\|ADR-018 Active Path Stability]] | SYS | accepted | 引入 active canonical 路径稳定原则（active 文件名默认无 `_vX.Y` 后缀；版本仅在 frontmatter；mj-system v5.2 §4.1 派生）；**partial supersede** ADR-011 §4.2 filename rule + §5.6.2 file-move-step；落 Meta v2.2 §4.4；6 active STANDARDs 同期 rename（仅 Meta v2.1 触发 archive ceremony）；3-PR 序列（C→A→B）第 2 步 |
-| [[ADR]_019_Archive_Naming_Convention\|ADR-019 Archive Naming Convention]] | SYS | accepted | 引入 archive 命名规范化（`[DEPRECATED]_` 前缀 + `archived` + `replaced-by` frontmatter；`replaced-by` 直接指 stable path；mj-system v5.2 §10.2 派生）；**partial supersede** ADR-011 §5.6.2 第 2 段；ADR-011 §5.6.1/3/4 sustained；6 archived 文件同期 rename + frontmatter 增强；3-PR 序列（C→A→B）收尾 |
-| [[ADR]_020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；删 ADR-019 transitional 硬编码债务；零维护；mj-system find_stale_docs.py 思路借鉴（仅目录扫描，不引入完整 warning CI；那是 Phase D 范畴）；不 supersede ADR-019（仅落实 follow-up）；Phase C-3 P1 三联包子包 1/3 |
-| [[ADR]_021_Working_Doc_Lifecycle\|ADR-021 Working Doc Lifecycle]] | SYS | accepted | 引入 plans/ working 文档 4 态机（draft → active → completed → archived）；mj-system v5.2 §10.5 派生；落 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 cross-ref 从 Meta v2.0 §10.5（forward-ref）更新为 Meta v2.2 §5.11（实落）；同期 retroactive 标 7 plans state: completed；archived 物理归档延后 Phase D；Phase C-3 P1 三联包子包 3/3（收尾） |
-| [[ADR]_022_P2_Framework_Enhancements\|ADR-022 P2 Framework Enhancements]] | SYS | accepted | 5 项 P2 framework rule bundle（mj-system v5.2 派生）：C.3.1 类型专属 frontmatter（RUNBOOK last-verified / POSTMORTEM severity+incident-date+resolved-at / ASSESSMENT dimensions+period / ISSUE priority+risk-level）+ C.3.2 STANDARD §3.7 placement 决策矩阵 + C.3.3 ISSUE NNN+DomainAbbr 命名 + C.3.4 supersedes list 文档化 + C.3.6 STANDARD §3.8 拆分阈值；落 Meta v2.2 §3.7/§3.8/§4.5/§4.6 + Code_Side v1.1 §3.4-§3.8；check_frontmatter.py type-conditional 校验；不 supersede 任何 ADR；Phase C-4 收尾 |
-| [[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023 Stale Doc + Plan GC Infrastructure]] | SYS | accepted | Phase D-2 scripts/infra：mj-system §7.1.1 派生 \`scripts/find_stale_docs.py\` warning-mode CI（path-level rename detection；4 周观察期；\`.github/workflows/check-stale-docs.yml\`）+ ADR-021 follow-up \`scripts/find_old_completed_plans.py\` 候选检测脚本 + Meta v2.2 §5.11.5 archive 实施指引；不 supersede；与 ADR-020/021 互补 |
-| [[ADR]_024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Phase D-3 — Agent_Side v1.1 → v1.2 archive ceremony；§4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver **延续 Phase E**（前置条件 4 项 roadmap）；check_frontmatter.py EVAL 类型条件；不 supersede；mj-agent 原生（mj-system 暂无对位 EVAL framework）；Phase D 收尾 |
+| [[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011 Document Versioning and Archive Convention]] | SYS | accepted | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发，A3 模式 = git branch + PR review） |
+| [[ADR]_012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架 |
+| [[ADR]_013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 13 字段 schema 独立 |
+| [[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地 |
+| [[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow 9 / git 9 / doc 6 / runtime 4 / infra 4 = 32）+ lifecycle (P0/P1/P2 + sunset 规则) |
+| [[ADR]_020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；零维护 archive 引用校验 |
+| [[ADR]_024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Agent_Side v1.2 §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；mj-agent 原生 |
+| [[ADR]_026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] (PR-Γ；ADR-025 拆分) | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
+| [[ADR]_027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] (PR-Γ；ADR-025 拆分) | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
+| [[ADR]_028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] (PR-Γ；ADR-025 拆分) | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
 
 ## 评估（docs/assessments/）
 
@@ -62,14 +59,32 @@ track: shared
 
 ## 归档（docs/archive/）
 
-> 由 Meta_Framework §5 / 历史 Framework v1.1 §5.6.2 流程触发的版本退役搬迁。详见 [[adr/[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011]]。
+> Archive 由 Meta_Framework §5 流程触发的版本退役搬迁。详见 [[adr/[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011]] + [[archive/adr/INDEX\|archive/adr/INDEX]]（9 个 cross-repo decoupling 归档 ADR forward gateway）。
+
+### 归档 STANDARDs
 
 | 归档文档 | 取代者 | 归档原因 |
 |---|---|---|
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0\|Framework v1.0（archive）]] | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）和 §4.2 filename `_vX.Y` 强制规则 |
-| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：[[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0（archive）]] + [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0（archive）]] + [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0（archive）]] | v2.0 引入 `track` frontmatter 字段与双轨子框架（Code_Side / Agent_Side），把 authoring 深度规则与 PR 校验门禁按轨拆分；详见 [[adr/[ADR]_012_Two_Track_Documentation_Governance\|ADR-012]] |
-| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|Meta_Framework v2.0（archive）]] + [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0\|Code_Side v1.0（archive）]] + [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0\|Agent_Side v1.0（archive）]] | v2.1 trio：[[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.1]] + [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] + [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理 + §7.6 .claude/ 边界正式条款；详见 [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]] / [[adr/[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] / [[adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
-| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1\|Meta_Framework v2.1（archive）]] | [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.2（stable path）]]（其他 5 STANDARDs in-place rename，无 archive） | v2.2 引入 §4.4 active canonical 路径稳定原则（[[adr/[ADR]_018_Active_Path_Stability\|ADR-018]] 决议；mj-system v5.2 §4.1 派生）；**partial supersede** ADR-011 §4.2 filename rule + §5.6.2 file-move-step；filename rename 触发 [[adr/[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] §5.9 trigger #4；3-PR 序列（C→A→B）第 2 步 |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.0 引入 `track` frontmatter 字段与双轨子框架；详见 [[adr/[ADR]_012_Two_Track_Documentation_Governance\|ADR-012]] |
+| Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.1 trio (现 v2.2 stable) + HITL_Prompt v1.0 | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理；详见 [[adr/[ADR]_014_Tri_Track_Documentation_Governance\|ADR-014]] |
+| Meta_Framework v2.1 (archive) | [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.2（stable path）]] | v2.2 引入 §4.4 active canonical 路径稳定原则（已归档 ADR-018 决议；filename rename 触发已归档 ADR-017 §5.9 trigger #4） |
+
+### 归档 ADRs（cross-repo decoupling cleanup，2026-05-11）
+
+详细 forward gateway 见 [[archive/adr/INDEX\|docs/archive/adr/INDEX.md]]。
+
+| 归档 ADR | 替代位置 | 归档原因 |
+|---|---|---|
+| [[archive/adr/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010]] | [[rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|Commit Message Convention v1.0]] | git/commit 规则已独立 STANDARD 化 |
+| [[archive/adr/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] | [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.0]] | 17-stage 闭环规则已独立 STANDARD 化（§4.1/§4.4 已 inline） |
+| [[archive/adr/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
+| [[archive/adr/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
+| [[archive/adr/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/adr/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |
+| [[archive/adr/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active → completed |
+| [[archive/adr/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements\|ADR-022]] | Code_Side v1.1 §3.4-§3.8 + Meta v2.2 §3.7/§3.8/§4.5/§4.6 | 5 项 framework 增强已并入对应 STANDARD 章节 |
+| [[archive/adr/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | `scripts/find_stale_docs.py` + `scripts/find_old_completed_plans.py` 注释 | 实际 scripts 已落地 |
+| [[archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction\|ADR-025]] | [[adr/[ADR]_026_Multi_Environment_Compose_Profile\|ADR-026]] + [[adr/[ADR]_027_LLM_Provider_Abstraction\|ADR-027]] + [[adr/[ADR]_028_MCP_Server_Inventory_And_Governance\|ADR-028]] | 多 domain bundle ADR 拆分为 3 个焦点 ADR |
 
 ## 模板（docs/\_templates/）
 

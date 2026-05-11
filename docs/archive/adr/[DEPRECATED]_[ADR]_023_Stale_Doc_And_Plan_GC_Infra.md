@@ -5,7 +5,11 @@ summary: Phase D-2 scripts/infra：mj-system v5.2 §7.1.1 派生 find_stale_docs
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
+archived: 2026-05-11
+replaced-by:
+  - scripts/find_stale_docs.py
+  - scripts/find_old_completed_plans.py
 decision: accepted
 track: shared
 tags:
