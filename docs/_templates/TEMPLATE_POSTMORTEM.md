@@ -64,7 +64,7 @@ resolved-at: YYYY-MM-DDTHH:MM
 | 数据损失 | <无 / 描述损失范围> |
 | 受影响功能 | <list；如 find_biz_context / execute_sql / Studio probe H1/H2/H3/R1/R2> |
 | **mj-agent 数据边界违反** | <无 / 触 ADR-006 L1-L4 哪一层 / 触 ADR-009 biz 域 only / biz_dwd allowlist 越界> |
-| 上游 mj-system biz pg 影响 | <无 / 描述（如 mj-agent 误发 write 请求触发 mj-system DBA 告警）> |
+| 上游 上游业务系统 biz pg 影响 | <无 / 描述（如 mj-agent 误发 write 请求触发 上游业务系统 DBA 告警）> |
 
 ---
 
@@ -155,11 +155,11 @@ resolved-at: YYYY-MM-DDTHH:MM
 | ADR-009 biz 域 only（biz_dws + biz_dwd allowlist）| <是 / 否> | <如是：访问 biz_ods / biz_ads / ops_*>|
 | ADR-008 双隔离（mj-agent-postgres ≠ biz pg）| <是 / 否> | <如是：mj-agent 误访 biz pg / 反方向> |
 
-### §8.2 上游 mj-system 影响
+### §8.2 上游 上游业务系统 影响
 
-- <是否对 mj-system biz pg 造成 incident（如 lock 超时、连接耗尽）>
-- <是否需要通知 mj-system DBA / 项目负责人>
-- <是否需要在 mj-system 仓开 issue 反馈>
+- <是否对 上游业务系统 biz pg 造成 incident（如 lock 超时、连接耗尽）>
+- <是否需要通知 上游业务系统 DBA / 项目负责人>
+- <是否需要在 上游业务系统 仓开 issue 反馈>
 
 ### §8.3 加固方案
 
@@ -174,7 +174,7 @@ resolved-at: YYYY-MM-DDTHH:MM
 - 相关 SPEC：<list>
 - 相关 RUNBOOK：<list；如新建 RUNBOOK 防止再发>
 - 相关 ISSUE：<list>
-- mj-system 上游通知 PR / Issue：<如适用>
+- 上游业务系统 上游通知 PR / Issue：<如适用>
 
 ## 更新记录
 

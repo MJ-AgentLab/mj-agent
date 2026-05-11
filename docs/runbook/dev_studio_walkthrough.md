@@ -24,7 +24,7 @@ last-verified: 2026-05-06
 |---|---|---|
 | Python 3.13 | `uv python list` | `uv python install 3.13` |
 | `uv` 包管理器 | `uv --version` | 见 https://docs.astral.sh/uv/ |
-| mj-system biz DB（dev profile） | `psql ... -c 'SELECT 1'` | 联系 DBA 或开 SSH tunnel |
+| 上游业务系统 biz DB（dev profile） | `psql ... -c 'SELECT 1'` | 联系 DBA 或开 SSH tunnel |
 | `analyst` 角色凭据 | `.env` 中 `POSTGRES_ANALYST_USER/PASSWORD` 非空 | `scripts\setup-env.ps1` 解密 |
 | Volcengine Ark API key | `.env` 中 `ARK_API_KEY` 非空 | 同上 |
 
@@ -106,7 +106,7 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 |---|---|---|
 | Studio 启动报 `LLMConfigError: ARK_API_KEY 缺失` | `.env` 没读到 | 检查 cwd；`Test-Path .env` |
 | `psycopg.OperationalError: ... no password supplied` | analyst 凭据空 | `scripts\setup-env.ps1` 重跑 |
-| agent 调 `list_biz_tables` 返回空 | 角色无权限 | 在 mj-system 跑 `\dp biz_dws.*` 复核 |
+| agent 调 `list_biz_tables` 返回空 | 角色无权限 | 在 上游业务系统 跑 `\dp biz_dws.*` 复核 |
 | precheck 报 `require_time_range` | SQL 漏写 `stat_date` 谓词 | 加 `WHERE stat_date >= '<日期>'` |
 | `database error: ... statement_timeout` | 60s 超时 | 加聚合 / 缩时间窗 / 减少 JOIN |
 | precheck 报 `no_select_star` | SQL 含 `SELECT *` | 显式列名 |
@@ -127,4 +127,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 - Plan A (Studio walkthrough evidence): `plans/[PLAN]_A_Studio_Walkthrough_Execution.md`
 - Eval design: `D:/Document/My-Local-Vault/temp-ai-chat/mj-agent/evals-design.md`
 - Component judge: `D:/Document/My-Local-Vault/temp-ai-chat/mj-agent/component_judge.md`
-- mj-system contract bundle (staged): `D:/Document/My-Local-Vault/temp-ai-chat/mj-system/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT/`
+- 上游业务系统 contract bundle (staged): `D:/Document/My-Local-Vault/temp-ai-chat/上游业务系统/Biz_Domain_External_Support_For_MJ_Agent_OUTPUT/`

@@ -29,7 +29,6 @@ judges:
 > **目标**：<skill name 或 prompt name 或 whole-agent>
 > **基线**：<baseline_metric> = <baseline_value>
 > **回归阈值**：变化 ≥ <regression_threshold>（绝对 / 相对）触发 regression alert
-> **派生自**：（如非派生则写"mj-agent 原生"）
 > **关联文档**：<相关 SKILL.md / system.md / SPEC / ASSESSMENT 的 wikilink>
 
 ---
@@ -141,7 +140,7 @@ uv run pytest tests/eval/<eval_filename>.py
 
 - **脱敏**：dataset 含真实业务问题时必脱敏（去除 tenant 名 / 真实 institution_id / 个人信息）
 - **PII**：mj-agent 不应处理 PII；dataset 不含
-- **mj-system biz pg 数据样本**（如 fixture 需要）：仅在 dev profile 跑；不在 prod 上跑（per ADR-006/008）
+- **上游业务系统 biz pg 数据样本**（如 fixture 需要）：仅在 dev profile 跑；不在 prod 上跑（per ADR-006/008）
 - **golden_seed.jsonl 关系**：tests/eval/golden_seed.jsonl 是 reference_sql 集合，可作 EVAL 输入子集；本 EVAL 可引用其特定行
 
 ---
@@ -249,10 +248,10 @@ Return JSON: {"correctness": N, "safety": N, "format": N, "reasoning": "..."}
 - [ ] dataset 是否需独立 archive workflow（如重大改动）？
 - [ ] PII / 敏感数据二次审计周期？
 
-### §8.2 与 mj-system upstream 协调
+### §8.2 与 上游业务系统 upstream 协调
 
-- [ ] mj-system biz pg schema 改动（mj-system §2-§4 STANDARD bump）是否触发 dataset 更新？
-- [ ] 是否需要在 mj-system 仓也建 EVAL pair？
+- [ ] 上游业务系统 biz pg schema 改动（上游业务系统 §2-§4 STANDARD bump）是否触发 dataset 更新？
+- [ ] 是否需要在 上游业务系统 仓也建 EVAL pair？
 
 ### §8.3 EVAL framework 选型（Phase D PR-D2）
 
@@ -270,7 +269,7 @@ Return JSON: {"correctness": N, "safety": N, "format": N, "reasoning": "..."}
 - **历史 baseline**：<旧 EVAL version 归档路径>
 - **关联 ASSESSMENT**：<如本 EVAL 是某 optimization 验证的一部分>
 - **关联 ISSUE**：<如本 EVAL 由 fix-forward bug 触发>
-- **mj-system upstream**：<如 dataset 含上游 schema 引用>
+- **上游业务系统 upstream**：<如 dataset 含上游 schema 引用>
 
 ## 更新记录
 

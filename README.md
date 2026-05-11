@@ -81,12 +81,12 @@ uv run pytest tests/smoke -m smoke
 
 ## Data boundary
 
-mj-agent 仅访问 mj-system 业务指标域：
+mj-agent 仅访问 上游业务系统 业务指标域：
 
 - `biz_dws` — analyst 可 SELECT 全部汇总表
 - `biz_dwd` — analyst 仅可 SELECT 2 张维度表（`dwd_dim_product_interface`、`dwd_dim_institution`）
 
-权威权限定义位于 mj-system 仓库
+权威权限定义位于 上游业务系统 仓库
 `sql/migrations/repeatable/R__analyst_permissions.sql`。
 
 ## 项目结构（Phase 0）
