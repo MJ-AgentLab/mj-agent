@@ -10,7 +10,6 @@ updated: YYYY-MM-DD
 state: draft
 version: v1.0
 track: shared
-derives_from: ""
 owner: 项目负责人
 dimensions:
   - architecture
@@ -26,7 +25,6 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 > **优化周期**：YYYY-MM-DD ~ YYYY-MM-DD
 > **评估维度**：<选择的维度列表>
 > **版本**：v1.0
-> **派生自**：（如非派生则写"mj-agent 原生"；如对位 mj-system upstream 评估则引用）
 
 ---
 
