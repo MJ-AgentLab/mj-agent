@@ -111,10 +111,15 @@ docker exec mj-agent mj-agent check
 
 ## 4. 故障排查
 
+> **Chainlit 502 类诊断分流**：先跑 `docker exec mj-agent python -c "import urllib.request as r; print(r.urlopen('http://127.0.0.1:8000/').status)"`
+> - 返 `200` → 容器内 OK，问题在 host → 见"Host curl 502 但浏览器 / 容器内 urllib 200"行（**代理类**）
+> - 抛异常 / 进不去 → 容器内进程未起或绑错 → 见"Chainlit 502 / connection refused（容器内也不通）"行（**绑定 / 进程类**）
+
 | 现象 | 根因排查 | 处置 |
 |------|---------|------|
 | 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose -f infra/docker/docker-compose.mj-agent.yml up -d --force-recreate mj-agent` |
-| Chainlit 502 / connection refused | `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
+| Chainlit 502 / connection refused（容器内也不通）| `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
+| Host curl 502 但浏览器 / 容器内 urllib 200 | host shell 有 `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY`（如 Clash / v2ray 系统代理）+ 未设 `NO_PROXY`；curl 走代理而代理对 localhost 返 502；浏览器有 implicit localhost bypass | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）或 `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 应用本身无问题 |
 | `mj-agent check` 报 `memory DB unreachable` | mj-agent-postgres 没起 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init script 是否跑通；如 .env 改过 MJ_AGENT_MEMORY_USER/PASSWORD 但 volume 持久了旧值 → `docker volume rm mj-agent-postgres-data` 重建（**会丢 checkpoint 历史**）|
 | `network 上游业务系统-backend-network not found` | 上游业务系统 栈没起；mj-agent 单独跑会报这个 | 先在 上游业务系统 仓 `docker compose up -d`；再回 mj-agent 跑 up |
 | 容器内连 mj-agent-postgres 走 5432 但 host 端口 5433 → 不一致引发误解 | 这是**正常**的：mj-agent → 容器名 mj-agent-postgres:5432（容器内端口）；DBA 从 host 走 5433 是 ports 映射 | 文档写清楚即可，不动配置 |

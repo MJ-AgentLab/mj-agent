@@ -226,8 +226,9 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml `
 netstat -ano | findstr "8001 5433 6379"
 # 期望 LISTENING
 
-# 3. mj-agent 服务 healthcheck endpoint（如有）
-curl -fsS http://localhost:8001/health 2>&1 || echo "no /health endpoint (expected for current Phase 1)"
+# 3. Chainlit 根路径可达（host 端到端；`--noproxy '*'` 绕过开发机系统代理 if any，避免 Clash/v2ray 等代理 502 localhost）
+curl --noproxy '*' -fsS -o $null -w "HTTP %{http_code}`n" http://localhost:8001/
+# 期望 HTTP 200；如 5xx 且容器内 `python urllib` 200 → 走 §Troubleshooting "host curl 502 但浏览器正常"行
 
 # 4. mj-agent-postgres 可连
 docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
@@ -248,6 +249,7 @@ docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 | `error: pull access denied for 8.135.38.175/mj-agent/mj-agent` | TEST/PROD profile 拉 Harbor 失败：镜像未推 / Harbor namespace 未创建 / docker login 缺 | (a) 先 `docker login 8.135.38.175`；(b) 确认 Harbor 上有 `mj-agent/mj-agent:0.1` tag；(c) 必要时改 image tag 到实际可用 tag |
 | dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml config` 看合并结果；确认 dev `-f` 链含 override.yml |
 | test/prod profile 起来后 mj-agent 报 `connection refused mj-postgres:5432` | mj-system 栈没在同主机 up；或 mj-system-backend-network 不存在 | TEST/PROD 主机必须先起 mj-system 栈（mj-postgres healthy + mj-system-backend-network 存在）；mj-agent 只是 consumer |
+| host curl 502 但浏览器正常 + 容器内 `python urllib` 200 | host shell `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` 未排除 localhost（Clash / v2ray 系统代理常见）；浏览器有 implicit localhost bypass、curl 无条件走代理 | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 容器健康，不需 restart；详见 `docs/runbook/dev_deployment.md` §4 |
 
 ## Output Format
 
