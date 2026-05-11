@@ -39,3 +39,13 @@ about: 常规 Bug 修复 (bugfix/*) 的 Pull Request
 - [ ] `src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 的 frontmatter 仍然合法
 
 </details>
+
+<details>
+<summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1 §7.7]]</summary>
+
+- [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+- [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
+- [ ] **A14** `.mcp.json` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+- [ ] **bugfix 风险面**：修 `.claude/skills/` 内 SKILL 行为时 description 文案变化不能破坏正向 trigger 命中率（A12）；description 修剪过头会让 user 输入触发不到 skill — fix 类语义修改要保留主 trigger 词
+
+</details>

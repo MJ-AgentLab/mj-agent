@@ -42,3 +42,13 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 - [ ] 若触及 `[SKILL]` / `[PROMPT]` / `[CONTRACT]` 的行为，frontmatter 的 `updated` 字段已同步修改
 
 </details>
+
+<details>
+<summary><b>Engineering-Workflow checklist</b> (A12-A14；hotfix 紧急通道但 A12 schema 不可跳) — cite [[../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1 §7.7]]</summary>
+
+- [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace（紧急修复也不跳 schema 校验）
+- [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`
+- [ ] **A14** `.mcp.json` server 增删声明 trust posture + credential mode
+- [ ] **hotfix 风险面**：紧急通道下 A12 schema 校验 + A13/A14 触发的 settings.json / mcp.json 调整若临时跳过，**事后必须补 documentation/* PR 说明 + 同步进 develop**（与 §27 主同步动作配套）
+
+</details>
