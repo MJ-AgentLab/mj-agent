@@ -1146,6 +1146,11 @@ Fallback:
     - **触发条件达标后**（≥3 真实漏项跨 ≥2 任务）：新建或追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`
     - **升级 POSTMORTEM 边界**：仅当漏项导致 merge 后事故、生产影响、数据错误、CI/CD 发布失败或 P1/P2 级返工时，才写入 `docs/postmortem/[POSTMORTEM]_*.md`
 11. **EVAL backlog ticket 自动开单**（mj-agent 专属，v1.0 引入；transitional waiver 衰减机制）：若本 PR 触及 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 修改，无论本 PR 是否带 EVAL 引用，均开 follow-up Issue：`[EVAL backlog] <skill_name or prompt_name> @ <commit_sha>`，归 Phase D（Phase 2）EVAL framework 时一并完成；这是 A11 transitional waiver 期内的兜底机制
+12. **PR 关联 plan state 标记**（v1.0 引入；闭合 STANDARD ↔ skill 引用链）：若本 PR 关联 `plans/[PLAN]_*.md` 或 `plans/[INTAKE]_*.md` 且当前 `state: active`，post-merge 阶段必须把 frontmatter `state` 改为 `completed` + 填 `completed: <ISO date>` 字段。覆盖场景：
+    - **(a) 单 PR 单 plan**：PR merge 即直改 `completed`
+    - **(b) 多 PR 同一 plan**：仅当 plan 内显式标"本 PR 是最后阶段"才改 `completed`；否则保 `active` + 在 post-merge checklist 提示
+    - **(c) plan 当前 `state: draft`**：**不**自动跨态跳 `completed`（draft 不应跳过 active 直达终止态）；输出建议"先评估转 active 或人工处理"
+    - 引用 [[../../.claude/skills/mj-agent-flow-post-merge/SKILL|.claude/skills/mj-agent-flow-post-merge/SKILL.md]] Step 9 为执行子例程；引用 [[./[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11 4 态机定义（draft / active / completed / archived）
 
 ## Output
 
