@@ -3,8 +3,9 @@ type: plan
 summary: PLAN C — 扩展 smoke 用例 & 回填缺失 ADR（Phase 0 退出标准 #2 / PR3）
 owner: ranzuozhou
 created: 2026-04-24
-updated: 2026-04-27
-state: draft
+updated: 2026-05-11
+state: completed
+completed: 2026-05-11
 track: shared
 related:
   - ../tests/smoke/test_agent_smoke.py
