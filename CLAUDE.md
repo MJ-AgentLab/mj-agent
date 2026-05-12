@@ -37,6 +37,11 @@ Tools   : src/mj_agent/tools/biz_context.py            (find_biz_context)
           src/mj_agent/tools/sql/execute.py             (envelope + DB)
 Catalog : src/mj_agent/biz_catalog/qcm_catalog.yaml     (mirror STANDARD §2-§4)
           src/mj_agent/biz_catalog/{loader,finder}.py
+Middleware: src/mj_agent/middleware/tool_errors.py      (LangChain 1.x
+          @wrap_tool_call; converts SQL tool ValueError/RuntimeError into
+          ToolMessage so the LLM self-corrects rather than the graph
+          crashing silently. Sync + async variants wired in make_graph
+          as `middleware=[handle_sql_tool_errors]`. See ADR-029.)
 Memory  : src/mj_agent/memory/checkpointer.py           (Phase 1 sub 1.A;
           AsyncPostgresSaver against mj_agent_memory DB on the dedicated
           mj-agent-postgres container — storage-stack PR; was originally
@@ -71,7 +76,10 @@ Config  : src/mj_agent/config.py — pydantic-settings over .env
 The agent is wired in `src/mj_agent/agent.py`: `_ACTIVE_SKILLS` lists
 the three MVP skills; `_build_system_prompt()` concatenates
 `prompts/system.md` with them in order, and `make_graph()` calls
-`create_agent(model, tools, system_prompt)`. `make_graph` is the
+`create_agent(model, tools, system_prompt, middleware=[...])` — the
+middleware list currently contains `handle_sql_tool_errors` which
+catches `ValueError` / `RuntimeError` from the SQL tool chain and
+returns a `ToolMessage` so the LLM can self-correct (ADR-029). `make_graph` is the
 symbol `langgraph.json` points at — Studio calls it lazily, so importing
 the module never forces `make_llm()` (matters for unit tests and
 type-checking with no `ARK_API_KEY`). The wired tool registry lives in
@@ -379,7 +387,7 @@ Repo conventions (code-side, all governed by Track A standards):
   (state: draft; promotion criteria in §9). Types:
   `feat / fix / perf / refactor / test / docs / infra`. Scopes derive
   from `src/mj_agent/` modules — see STANDARD §4 for the closed allowlist.
-- ADRs live in `docs/adr/`; Phase 0 ships 000/001/002/003/006/008/009/010/011/012/013 (012/013 `state: draft`, others `state: active`; all `decision: accepted`).
+- ADRs live in `docs/adr/`; Phase 0 ships 000/001/002/003/006/008/009/010/011/012/013 (012/013 `state: draft`, others `state: active`; all `decision: accepted`). ADR-029 (2026-05-12) adds the `handle_sql_tool_errors` middleware policy — SQL tool exceptions surface to the LLM as `ToolMessage` instead of crashing the graph; supersedes the implicit ToolNode raise-through behavior that produced the 2026-05-12 frontend hang.
   See ADR-010 + matching `docs/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0.md`
   for the git/commit adoption rationale and Keep/Adapt/Defer matrix.
   See ADR-011 for the doc versioning + archive convention installed in v1.1
