@@ -10,7 +10,7 @@ aliases:
   - mj-agent Release Process
   - mj-agent 发布流程手册
 created: 2026-05-06
-updated: 2026-05-06
+updated: 2026-05-12
 state: draft
 version: v0.1
 track: code
@@ -148,7 +148,7 @@ annotated tag 一起带上。
 > **当前留 stub**：Phase 0.5 阶段 release 仅限仓库层（tag + 包版本号），未涉及
 > 生产部署。Phase 1+ 由后续 RUNBOOK 章节或新 RUNBOOK 覆盖部署到 DEV/TEST/PROD
 > profile 的步骤（参考 ADR-008 mj-agent 独立 compose project + 通过
-> 上游业务系统-backend-network external 作为 consumer 访问 上游业务系统 biz pg 的部署模型）。
+> mj-system-backend-network external 作为 consumer 访问 上游业务系统 biz pg 的部署模型）。
 
 ---
 
