@@ -20,6 +20,7 @@ env/
 
 # ========== 加密配置（解密后的明文）==========
 config/secrets.conf
+config/secrets-mcp.conf
 
 # ========== IDE ==========
 .idea/

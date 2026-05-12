@@ -221,11 +221,21 @@ ADR-025 (PR-3) added MCP server SSH passwords + pg URL placeholders for the
 (10 optional URL overrides; WAN required for FRP-tunneled remote pg).
 See `.env.example` for the full list.
 
-The standard way to provision `.env` is `.\scripts\setup-env.ps1`, which
-decrypts `config/secrets.enc` (AES-256-CBC + PBKDF2) using a
-team-distributed password and merges 4 secrets (`POSTGRES_ANALYST_USER/
-PASSWORD`, `ARK_API_KEY`, `LANGSMITH_API_KEY`) into `.env`. Manual
-`cp .env.example .env` is a fallback for developers without the team
+Secrets injection follows **2-bundle trust-boundary split** (ADR-030;
+aligns mj-agent with mj-system v2.3 secrets-sys-ops.enc pattern):
+
+- **App bundle** `config/secrets.enc` (6-8 keys): `POSTGRES_ANALYST_USER/
+  PASSWORD`, `ARK_API_KEY`, `LLM_API_KEY` (optional), `LANGSMITH_API_KEY`,
+  `MJ_AGENT_MEMORY_USER/PASSWORD`. Decrypt via `.\scripts\setup-env.ps1`
+  → merged into `.env` (read by Python runtime, docker compose).
+- **MCP bundle** `config/secrets-mcp.enc` (15 keys): 5 SSH passwords + 10 PG
+  URL overrides. Decrypt via `.\.claude\scripts\setup-mcp-secrets.ps1` →
+  written **directly** to User-level OS env (`HKCU\Environment`), bypassing
+  `.env` entirely. Read by claude.exe at startup for `.mcp.json` `${VAR}`
+  substitution.
+
+Both bundles use the same team-distributed password (AES-256-CBC + PBKDF2).
+Manual `cp .env.example .env` is a fallback for developers without the team
 password. Rotation/onboarding flow lives in `config/README.md`.
 `.env.example` is intentionally ASCII-only — python-dotenv used inside
 `langgraph_api` opens the file with the OS default encoding, which
@@ -237,16 +247,16 @@ drift detection** (warn-only, does not affect exit code; mirrors the
 `.env.example` gains new keys after a rename / feature PR but the
 developer's existing `.env` was never refreshed — see
 `src/mj_agent/env_drift.py` for the algorithm and
-`tests/unit/test_env_drift.py` for the contract.
+`tests/unit/test_env_drift.py` for the contract. Drift scope is **app keys
+only** (post ADR-030; MCP keys are tracked separately via
+`setup-mcp-secrets.ps1 -Reload` against `config/secrets-mcp.example`).
 
 Claude Code does **not** auto-load `.env`; `.mcp.json` `${VAR}`
-substitution reads claude.exe's process env at startup. To make these
-available without a wrapper, run `.\.claude\scripts\setup-mcp-env.ps1`
-once after each `setup-env.ps1` (i.e. after secrets rotation or first
-clone) — it mirrors `.mcp.json`-referenced vars from `.env` to
-**User-level OS env** (HKCU\Environment), so any shell / IDE launching
-claude inherits them. Restart terminal & claude after the sync. See
-`config/README.md` §6.4 for security tradeoffs and `-Reload` diagnostics.
+substitution reads claude.exe's process env at startup. Per ADR-030, MCP
+secrets land in OS env **directly from secrets-mcp.enc** (never via .env
+mirroring). Run `.\.claude\scripts\setup-mcp-secrets.ps1` once after first
+clone or any secret rotation; restart terminal + claude code afterwards.
+See `config/README.md` §6.4 for security tradeoffs and `-Reload` diagnostics.
 
 ## Documentation
 

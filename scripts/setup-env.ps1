@@ -233,12 +233,14 @@ try {
     # ── Summary ───────────────────────────────────────────────────────
     Write-Host ""
     Write-Host ("=" * 60)
-    Write-Host "[Done] .env generated with $injectedCount secrets injected." -ForegroundColor Cyan
+    Write-Host "[Done] .env generated with $injectedCount app secrets injected." -ForegroundColor Cyan
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor White
     Write-Host "  1. Review .env and adjust POSTGRES_DEV_HOST / MJ_CONFIG_PROFILE if needed" -ForegroundColor White
-    Write-Host "  2. uv sync" -ForegroundColor White
-    Write-Host "  3. uv run langgraph dev" -ForegroundColor White
+    Write-Host "  2. MCP secrets bundle (ADR-030): .\.claude\scripts\setup-mcp-secrets.ps1" -ForegroundColor White
+    Write-Host "     (decrypts config\secrets-mcp.enc -> OS User-level env; needed for .mcp.json)" -ForegroundColor DarkGray
+    Write-Host "  3. uv sync" -ForegroundColor White
+    Write-Host "  4. uv run langgraph dev" -ForegroundColor White
     Write-Host ("=" * 60)
 
 } catch {

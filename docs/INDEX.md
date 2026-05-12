@@ -51,6 +51,7 @@ track: shared
 | [[ADR]_027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] (PR-Γ；ADR-025 拆分) | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
 | [[ADR]_028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] (PR-Γ；ADR-025 拆分) | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
 | [[ADR]_029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
+| [[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1` + `migrate-secrets-bundle-split.ps1`；删除旧 `setup-mcp-env.ps1` |
 
 ## 评估（docs/assessments/）
 

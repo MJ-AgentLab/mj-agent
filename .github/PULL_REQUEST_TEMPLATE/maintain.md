@@ -43,6 +43,6 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 - [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
 - [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
 - [ ] **A14** `.mcp.json` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
-- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-env.ps1` / `secrets.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核 `permissions.deny`
+- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核 `permissions.deny`
 
 </details>
