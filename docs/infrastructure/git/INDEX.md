@@ -1,7 +1,7 @@
 ---
 type: standard
 domain: SYS
-summary: docs/infrastructure/git/ 子目录索引 — 4 份 GUIDE（GitHub 设置 / 分支策略 / 推送工作流 / PR 描述规范），派生自 mj-system v5.0 同名目录
+summary: docs/infrastructure/git/ 子目录索引 — 4 份 GUIDE（GitHub 设置 / 分支策略 / 推送工作流 / PR 描述规范）
 owner: 项目负责人
 created: 2026-04-30
 updated: 2026-04-30
@@ -12,7 +12,7 @@ track: code
 # Git 基础设施索引
 
 > **所属目录**：`docs/infrastructure/git/`
-> **说明**：4 份 GUIDE 派生自 mj-system v5.0 同名目录，按 mj-agent 12 scope、Phase 0 状态与 v2.0 framework 改造。摘要取自每份文档 frontmatter `summary`。
+> **说明**：4 份 GUIDE 是 mj-agent git 治理基础设施，已按 mj-agent 12 scope、Phase 0 状态与 v2.0 framework 校对。摘要取自每份文档 frontmatter `summary`。
 
 ---
 
@@ -30,16 +30,16 @@ track: code
 ## 关联入口
 
 - [返回上级索引](../../INDEX.md)
-- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]]
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]
-- [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
+- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]]
+- [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]]
 
 ---
 
 ## 派生说明
 
-| 本文件 | mj-system 源 | 主要改造 |
+| 本文件 | 上游业务系统 源 | 主要改造 |
 |--------|------------|---------|
 | `[GUIDE]_GitHub_Setup_And_Versioning.md` | 同名 | 删除 §5 bump-version.ps1 整段；§4.1 文件清单缩减为 mj-agent Phase 0 实际（仅 pyproject.toml + README + CLAUDE.md）；§3 SemVer / §4.2 标注 Phase 1+ 启用 |
 | `[GUIDE]_Git_Branch_Strategy.md` | 同名 | §0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agent 12 scope；URL 改 `MJ-AgentLab/mj-agent`；其余结构性内容（5 分支模型 + worktree 用法）逐字保留 |

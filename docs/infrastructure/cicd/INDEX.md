@@ -30,7 +30,7 @@ track: code
 
 - [返回上级索引](../../INDEX.md)
 - [[../git/INDEX|infrastructure/git/]]（推送/分支/PR 操作 GUIDE）
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|Commit Message v1.0]]（release 走 `infra(release):` 类型）
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message v1.0]]（release 走 `infra(release):` 类型）
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]（git/commit 规范派生记录）
 
 ---

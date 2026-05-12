@@ -3,8 +3,9 @@ type: plan
 summary: 验证 Phase 0 文档治理 v1.0 交付物端到端可用——loader 剥离、运行时无泄露、A-rules 可执行
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-27
-state: draft
+updated: 2026-05-11
+state: completed
+completed: 2026-05-11
 track: shared
 ---
 
@@ -12,7 +13,7 @@ track: shared
 
 ## Context — 为什么现在做
 
-[[../docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|mj-agent 文档治理框架 v1.1（archive）]] 及配套交付（4 份模板、9 份 ADR、`docs/INDEX.md`、src 源码改造、PR 模板补丁）已经全部落地到 `phase0-next-plans/` 这个 worktree。但两类事实尚未被验证：
+[[../docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|mj-agent 文档治理框架 v1.1（archive）]] 及配套交付（4 份模板、9 份 ADR、`docs/INDEX.md`、src 源码改造、PR 模板补丁）已经全部落地到 `phase0-next-plans/` 这个 worktree。但两类事实尚未被验证：
 
 1. **运行时行为**：loader 剥离 frontmatter 是否真的生效？`langgraph dev` 起的 agent 是否仍然正常响应？
 2. **治理可执行性**：PR 模板里的 A1-A10 清单、SKILL/PROMPT/CONTRACT 模板，真正用起来是否顺手？有没有默认值歧义、路径错位、依赖缺失？
@@ -44,7 +45,7 @@ track: shared
 | V10 | `langgraph dev` 中 agent 响应正常 | 在 Studio 发送："mj-system 里 biz_dws 有哪些日粒度表？" | agent 调 `list_biz_tables`；响应不含 "type: skill"/"owner:" 等元数据字样 |
 | V11 | A7 可执行（dummy skill 实证） | 按 §3 步骤造一个 `demo-noop` skill，跑 PR 模板清单 | `feature.md` 清单所有 A 项均可勾选 |
 | V12 | Wikilink 目标存在（A4 手工扫描） | `grep -r '\[\[' docs/ src/mj_agent/skills src/mj_agent/prompts \| awk -F'\[\[' '{for(i=2;i<=NF;i++)print $i}' \| awk -F'\]\]' '{print $1}' \| sort -u` 然后人工扫读 | 所有引用的文档/段落都存在 |
-| V13 | CLAUDE.md 段落能被 Claude 读到并执行 | 在 Claude Code 里问："项目的文档治理入口在哪？" | Claude 引用 `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（PLAN E 撰写时的当时版本；Phase 0.5 后等价语义见 v2.0 trio）和 `docs/INDEX.md` |
+| V13 | CLAUDE.md 段落能被 Claude 读到并执行 | 在 Claude Code 里问："项目的文档治理入口在哪？" | Claude 引用 `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（PLAN E 撰写时的当时版本；Phase 0.5 后等价语义见 v2.0 trio）和 `docs/INDEX.md` |
 
 ## 执行步骤
 
@@ -143,7 +144,7 @@ grep -rh '\[\[' docs src/mj_agent/skills src/mj_agent/prompts | \
 
 > 这个仓库的文档治理入口在哪？
 
-Claude 应当引用 `docs/archive/rule/[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（PLAN E 撰写时为 active；Phase 0.5 promote 后已归档，等价语义现由 v2.0 trio 承载）和 `docs/INDEX.md`。如果它引用其他文件或说"没找到"，说明 CLAUDE.md 的 Documentation 段落要再精简或加粗。
+Claude 应当引用 `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（PLAN E 撰写时为 active；Phase 0.5 promote 后已归档，等价语义现由 v2.0 trio 承载）和 `docs/INDEX.md`。如果它引用其他文件或说"没找到"，说明 CLAUDE.md 的 Documentation 段落要再精简或加粗。
 
 ## Exit 判据
 

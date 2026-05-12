@@ -4,7 +4,7 @@ summary: 把 mj-system 4 份 git 基础设施 GUIDE + INDEX 镜像到 mj-agent d
 owner: 项目负责人
 created: 2026-04-30
 updated: 2026-04-30
-state: draft
+state: completed
 track: code
 tags:
   - plan
@@ -18,7 +18,7 @@ tags:
 
 ## Context
 
-`mj-system` 在 `docs/infrastructure/git/` 维护 4 份 GUIDE + 1 份 INDEX，把 commit / 分支 / 推送 / PR 规范操作化。mj-agent 已经有**基础层**（`[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0` + `ADR-010` + `[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0`），但**没有操作侧 GUIDE** —— 开发者目前只能靠 `CLAUDE.md` 摘要 + 直接读 STANDARD 来上手 git 流程。
+`mj-system` 在 `docs/infrastructure/git/` 维护 4 份 GUIDE + 1 份 INDEX，把 commit / 分支 / 推送 / PR 规范操作化。mj-agent 已经有**基础层**（`[STANDARD]_MJ_Agent_Commit_Message_Convention` + `ADR-010` + `[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0`），但**没有操作侧 GUIDE** —— 开发者目前只能靠 `CLAUDE.md` 摘要 + 直接读 STANDARD 来上手 git 流程。
 
 本次工作把 mj-system 的 4 份 GUIDE 一次性镜像到 mj-agent 并按实际情况改造：
 - 12 个 mj-agent 专属 scope（替换 mj-system 的 ETL 服务名 scope）
@@ -88,10 +88,10 @@ aliases:
 | --- | --- |
 | `MJ-AgentLab/mj-system` 仓库 URL（含克隆/PR/Issue 链接） | `MJ-AgentLab/mj-agent` |
 | `gitee.com/ranzuozhou/mj-system` | `gitee.com/ranzuozhou/mj-agent` |
-| commit scope 例（`aec/dqv/qcm/sac/fc/qvl`） | mj-agent 12 scope（`agent/llm/prompt/skill/sql/db/config/tests/eval/ci/deps/infra`）— 引自 `[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md` §4 |
-| `[[STANDARD]_Commit_Message_Convention\|...]]` 反链 | `[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0\|mj-agent Commit Message 规范 v1.0]]` |
-| `[[STANDARD]_Documentation_Management_Framework_v5.0]]` 反链 | `[[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0\|mj-agent 文档治理元框架 v2.0]]` |
-| `[[STANDARD]_Obsidian_Markdown]]` | `[[../../rule/[STANDARD]_GitHub_Markdown_v1.0\|GitHub-Flavored Markdown 编写规范 v1.0]]` |
+| commit scope 例（`aec/dqv/qcm/sac/fc/qvl`） | mj-agent 12 scope（`agent/llm/prompt/skill/sql/db/config/tests/eval/ci/deps/infra`）— 引自 `[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §4 |
+| `[[STANDARD]_Commit_Message_Convention\|...]]` 反链 | `[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|mj-agent Commit Message 规范 v1.0]]` |
+| `[[STANDARD]_Documentation_Management_Framework_v5.0]]` 反链 | `[[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|mj-agent 文档治理元框架 v2.0]]` |
+| `[[STANDARD]_Obsidian_Markdown]]` | `[[../../rule/[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]]` |
 | `[[RUNBOOK]_CICD_Release_Process]]` 反链（多处） | 改为纯文本 `CI/CD 发布流程手册（待 docs/runbook/ 在 Phase 0.5 启用，参见 [[ADR-010]] §Defer）` —— 避免 A4 wikilink 校验失败 |
 | `[[GUIDE]_Developer_Onboarding]]` 反链 | 同上，纯文本占位 |
 | `[[GUIDE]_Local_Development_Testing]]` 反链 | 同上，纯文本占位 |
@@ -173,8 +173,8 @@ aliases:
 ## 关联入口
 
 - [返回上级索引](../../INDEX.md)
-- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|mj-agent 文档治理元框架 v2.0]]
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]]
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]]
 - [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|mj-system Git 规范在 mj-agent 的适配评估 v1.0]]
 
@@ -203,7 +203,7 @@ aliases:
 
 ## 已存在可直接复用的工件
 
-- `[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md` §4 scope 列表 + §5 分支矩阵 → GUIDE 反链不重复
+- `[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §4 scope 列表 + §5 分支矩阵 → GUIDE 反链不重复
 - `.github/PULL_REQUEST_TEMPLATE/{bugfix,documentation,feature,hotfix,maintain,release}.md` → PR_Description GUIDE 直接引用
 - `.github/PULL_REQUEST_TEMPLATE.md` → 默认模板，留作兜底
 - bare-repo worktree 当前布局（`cwd = .../mj-agent/develop`，sibling `main`/`feature/*`/`hotfix/*` 子目录） → Branch_Strategy GUIDE §0 + §6 不需结构性修改
@@ -229,7 +229,7 @@ aliases:
 3. `git status --short` 仅含本次改动文件（无遗留）
 4. `docs/INDEX.md` 中 `docs/infrastructure/` 已从 reserved 表迁移到正式章节
 5. `CLAUDE.md` "Repo conventions" 子节包含新链
-6. 抽查反链解析（人工，A4 ad-hoc check）：在 IDE 中点击 `[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0]]`、`[[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System]]` 跳转正常
+6. 抽查反链解析（人工，A4 ad-hoc check）：在 IDE 中点击 `[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention]]`、`[[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System]]` 跳转正常
 7. 渲染对照：本地 GitHub markdown 预览（VS Code Markdown Preview Github Styling 扩展）与 mj-system 原文档对比，结构一致
 8. grep 残留：每份 GUIDE 跑 `grep -E 'mj-system|aec|dqv|qcm|sac|fc|qvl' <file>` 应 0 命中（mj-system 旧 scope 全部替换；mj-system 仓名仅在 derives_from 出现）
 
@@ -260,10 +260,10 @@ aliases:
 | Item | Path |
 | --- | --- |
 | mj-system git docs（拷贝源） | `D:\workspace\10-software-project\projects\mj-system\develop\docs\infrastructure\git\` |
-| Frontmatter 规范 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md` §4 |
-| Track A 门禁 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0.md` §7.1 |
-| Markdown 语法 | `docs/rule/[STANDARD]_GitHub_Markdown_v1.0.md` |
-| commit type/scope | `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0.md` §3 §4 |
+| Frontmatter 规范 | `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` §4 |
+| Track A 门禁 | `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md` §7.1 |
+| Markdown 语法 | `docs/rule/[STANDARD]_GitHub_Markdown.md` |
+| commit type/scope | `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §3 §4 |
 | 决策依据 | `docs/adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System.md` |
 | 适配评估证据 | `docs/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0.md` |
 | Wikilink 校验脚本（v1.1 archive 守卫） | `scripts/check_wikilinks.py` |

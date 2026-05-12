@@ -59,7 +59,17 @@ class Settings(BaseSettings):
         default_factory=lambda: ["dwd_dim_product_interface", "dwd_dim_institution"]
     )
 
-    # ── 2. LLM Provider (Volcengine Ark, OpenAI-compatible) ───────────
+    # ── 2. LLM Provider (multi-provider abstraction; ADR-025) ─────────
+    # Provider selection: "ark" (default; Volcengine Ark + DeepSeek V3) reads
+    # ark_base_url + ark_api_key; "local-openai-compat" (DGX-Spark vLLM /
+    # SGLang / Ollama / TGI / llama.cpp) reads llm_base_url + llm_api_key.
+    # See effective_llm_base_url / effective_llm_api_key cached_property
+    # for fallback semantics (ark provider falls back to ark_* fields, so
+    # legacy .env continues to work without LLM_PROVIDER set).
+    llm_provider: Literal["ark", "local-openai-compat"] = "ark"
+    llm_base_url: str = ""
+    llm_api_key: SecretStr = SecretStr("")
+
     llm_model_id: str = "deepseek-v3-2-251201"
     llm_thinking_enabled: bool = False
     llm_timeout_sec: int = 120
@@ -79,11 +89,12 @@ class Settings(BaseSettings):
     # ── 5. Memory storage (mj-agent-owned) ────────────────────────────
     # Phase 1 sub 1.A introduced the checkpointer; storage-stack PR moves
     # the actual host/port out of POSTGRES_{PROFILE}_* (biz domain) onto
-    # a dedicated mj-agent postgres container. Defaults fall back to
-    # localhost:5432 so non-Docker dev still works (point them at any
-    # local postgres you own).
+    # a dedicated mj-agent postgres container (host port 5433 -> container
+    # 5432, avoiding mj-system's mj-postgres on host 5432). Defaults target
+    # the storage-stack topology; override `mj_agent_memory_port` to 5432
+    # only if you run a bare-metal postgres directly on host 5432.
     mj_agent_memory_host: str = "localhost"
-    mj_agent_memory_port: int = 5432
+    mj_agent_memory_port: int = 5433
     mj_agent_memory_db: str = "mj_agent_memory"
     mj_agent_memory_user: str = ""
     mj_agent_memory_password: SecretStr = SecretStr("")
@@ -122,6 +133,36 @@ class Settings(BaseSettings):
         if s == "biz_dwd":
             return t in {x.lower() for x in self.biz_allowed_dwd_tables}
         return True
+
+    @cached_property
+    def effective_llm_base_url(self) -> str:
+        """Provider-aware LLM endpoint URL.
+
+        For ark provider: prefer the new generic ``llm_base_url`` if set,
+        else fall back to the legacy ``ark_base_url`` (preserves back-compat
+        for unchanged .env files). For local-openai-compat: ``llm_base_url``
+        only — empty raises in make_llm().
+        """
+        if self.llm_provider == "ark":
+            return self.llm_base_url or self.ark_base_url
+        return self.llm_base_url
+
+    @cached_property
+    def effective_llm_api_key(self) -> str:
+        """Provider-aware LLM API key.
+
+        For ark: prefer ``llm_api_key`` if set, else ``ark_api_key``. For
+        local-openai-compat: prefer ``llm_api_key``; many local servers
+        (vLLM unauthenticated, Ollama default) accept ``"EMPTY"`` as a
+        sentinel — return that when no key configured so ChatOpenAI does
+        not raise ``OpenAIError: api_key client option must be set``.
+        """
+        if self.llm_provider == "ark":
+            return (
+                self.llm_api_key.get_secret_value()
+                or self.ark_api_key.get_secret_value()
+            )
+        return self.llm_api_key.get_secret_value() or "EMPTY"
 
     @cached_property
     def biz_pg_host(self) -> str:

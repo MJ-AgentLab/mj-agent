@@ -4,9 +4,9 @@ domain: SKILL
 summary: SQL 撰写守则与执行 envelope：时间谓词必填、SELECT * 禁用、LIMIT 策略、失败修正回路
 owner: 项目负责人
 created: 2026-05-06
-updated: 2026-05-06
+updated: 2026-05-12
 state: active
-version: v0.1
+version: v0.2
 track: agent
 activation:
   when_to_use: 已有 SQL 草稿（来自 qcm-analysis 或用户直接给出），需要校验+执行+解读
@@ -40,11 +40,14 @@ SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 正则 guardrail �
 ## Planning workflow
 
 1. **撰写守则自检**（不调工具，agent 自己跑一遍清单）：
+   - [ ] **【最关键 — precheck 必查】时间列谓词必填**（按周期，**实际 DB 列名**：
+     `data_date`(daily) / `week` / `month` / `quarter` / `year`；STANDARD 草案
+     的 `stat_*` 在实际 DB 不存在）。**用户没说窗口** → 默认最近 30 天 (daily) /
+     3 月 (monthly) / 4 季 (quarterly) / 3 年 (yearly)，并在回复里说明所选窗口。
+     Top-N 明细查询同样需要时间谓词 — precheck 与 `LIMIT` 无关。详见
+     `prompts/system.md` Hard rule #9。
    - [ ] 全部 schema 限定：`biz_dws.<table>` 或 `biz_dwd.<table>`
    - [ ] 仅 `dwd_dim_product_interface` / `dwd_dim_institution` 两张维表
-   - [ ] 时间列谓词存在（按周期，**实际 DB 列名**：
-     `data_date`(daily) / `week` / `month` / `quarter` / `year`；STANDARD 草案
-     的 `stat_*` 在实际 DB 不存在）
    - [ ] 没有 `SELECT *`（含 `JOIN` 时也是）
    - [ ] 明细查询带 `LIMIT N`（N ≤ 1000）；聚合查询免 LIMIT
    - [ ] 单语句，不带分号链
@@ -97,6 +100,24 @@ FROM biz_dws.dws_qcm_qrynum_monthly_by_tenant a
 JOIN biz_dwd.dwd_dim_institution i ON i.tenant_id = a.tenant_id
 WHERE a.month = '2026-04-01'
 ORDER BY a.month_qrynum_sum DESC
+LIMIT 10
+```
+
+### 模式 D：Top-N 用户没说窗口（默认最近 30 天 + 回复里说明）
+
+用户问 "查 top 10 产品的成交量" 没给时间窗口时，**不要**生成无时间谓词的
+SELECT（会被 precheck 拒绝、白浪费一个 turn），按 system.md Hard rule #9
+默认最近 30 天 (daily fact) / 3 月 (monthly fact) 等，并在最终回复里
+说明所选窗口（"以最近 30 天为窗口"）。
+
+```sql
+-- 用户问：top 10 产品的成交量（没说时间窗口）
+-- → 默认最近 30 天 + 回复说明
+SELECT pcat_l1, SUM(day_qrynum) AS qrynum_30d
+FROM biz_dws.dws_qcm_qrynum_daily_by_product
+WHERE data_date >= CURRENT_DATE - INTERVAL '30 days'
+GROUP BY pcat_l1
+ORDER BY qrynum_30d DESC
 LIMIT 10
 ```
 

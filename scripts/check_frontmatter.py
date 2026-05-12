@@ -1,9 +1,10 @@
-"""Validate canonical doc frontmatter against the v2.0 trio schema.
+"""Validate canonical doc frontmatter against the v2.1 trio schema.
 
 Purpose: locks down the Phase 1 末 治理 collapse — every canonical doc
 under `docs/`, `plans/`, `src/mj_agent/skills/`, and
-`src/mj_agent/prompts/` must declare `track ∈ {code, agent, shared}`
-explicitly (per Meta_Framework v2.0 §4.3.1) plus the required base
+`src/mj_agent/prompts/` must declare `track ∈ {code, agent,
+engineering-workflow, shared}` explicitly (per Meta_Framework v2.1
+§4.3.1; v2.0 only allowed code/agent/shared) plus the required base
 fields (per Code_Side §7.1 A2 + Agent_Side §7.1).
 
 Usage::
@@ -51,8 +52,16 @@ REQUIRED_FIELDS: frozenset[str] = frozenset(
     {"type", "summary", "owner", "created", "updated", "state", "track"}
 )
 
+# Forbidden frontmatter fields. `derives_from` was removed in the cross-repo
+# decoupling cleanup — version-evolution lineage now lives only in `supersedes`
+# (intra-repo) and archive `replaced-by` (per ADR-019). Reintroducing
+# `derives_from` is rejected to prevent drift back.
+FORBIDDEN_FIELDS: frozenset[str] = frozenset({"derives_from"})
+
 # Allowed enum values.
-TRACK_VALUES: frozenset[str] = frozenset({"code", "agent", "shared"})
+TRACK_VALUES: frozenset[str] = frozenset(
+    {"code", "agent", "engineering-workflow", "shared"}
+)
 STATE_VALUES: frozenset[str] = frozenset({"draft", "active", "deprecated", "completed"})
 
 
@@ -62,6 +71,14 @@ def is_skipped(rel_path: Path) -> bool:
         len(parts) >= len(skip) and parts[: len(skip)] == skip
         for skip in SKIP_PATH_PARTS
     )
+
+
+def _is_archive(rel_path: Path) -> bool:
+    """Archived docs (frozen snapshots per ADR-019) are exempt from
+    forward-only guards like FORBIDDEN_FIELDS. Required-fields and enum
+    checks still apply because archived docs declare `state: deprecated`."""
+    parts = rel_path.parts
+    return len(parts) >= 2 and parts[0] == "docs" and parts[1] == "archive"
 
 
 def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
@@ -74,6 +91,17 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
     for field in sorted(missing):
         violations.append(f"missing required field `{field}`")
 
+    # 1b. Forbidden fields (cross-repo decoupling guard; see FORBIDDEN_FIELDS docs).
+    # Archived docs are frozen snapshots (per ADR-019) — skip the forbidden-field
+    # check there so historical frontmatter stays untouched.
+    if not _is_archive(rel_path):
+        forbidden_present = FORBIDDEN_FIELDS & meta.keys()
+        for field in sorted(forbidden_present):
+            violations.append(
+                f"forbidden field `{field}` present "
+                f"(removed in cross-repo decoupling; use `supersedes` for intra-repo lineage)"
+            )
+
     # 2. Enum value checks (only when the field is present; missing reported above).
     track = meta.get("track")
     if track is not None and track not in TRACK_VALUES:
@@ -85,6 +113,35 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
         violations.append(
             f"state={state!r} not in {sorted(STATE_VALUES)}"
         )
+
+    # 3. Type-specific required fields (ADR-022 C.3.1).
+    # Active or completed docs must declare type-specific frontmatter
+    # (e.g., RUNBOOK last-verified, POSTMORTEM severity etc.). Draft and
+    # deprecated states are lenient — fields can be absent during early
+    # authoring or after archival.
+    type_specific_required: dict[str, tuple[str, ...]] = {
+        "runbook": ("last-verified",),
+        "postmortem": ("severity", "incident-date", "resolved-at"),
+        "assessment": ("dimensions", "period"),
+        "issue": ("priority", "risk-level"),
+        # ADR-024 Phase D-3: EVAL frontmatter schema (Agent_Side v1.2 §4.2).
+        # state: active EVAL must declare these fields.
+        "eval": (
+            "eval_kind",
+            "dataset_path",
+            "baseline_metric",
+            "baseline_value",
+            "regression_threshold",
+        ),
+    }
+    type_value = meta.get("type")
+    if state in ("active", "completed") and isinstance(type_value, str):
+        for field in type_specific_required.get(type_value, ()):
+            if field not in meta:
+                violations.append(
+                    f"missing type-specific field `{field}` "
+                    f"(required for type={type_value!r} when state={state!r}; ADR-022)"
+                )
 
     return violations
 
@@ -141,8 +198,9 @@ def main() -> int:
         for v in violations:
             print(f"    - {v}", file=sys.stderr)
     print(
-        "\nFix per Meta_Framework v2.0 §4.3.1 (track field) + Code_Side §7.1 A2 "
-        "(required base fields) + Agent_Side §7.1.",
+        "\nFix per Meta_Framework v2.1 §4.3.1 (track field; "
+        "code/agent/engineering-workflow/shared) + Code_Side v1.1 §7.1 A2 "
+        "(required base fields) + Agent_Side v1.1 §7.1.",
         file=sys.stderr,
     )
     return 1

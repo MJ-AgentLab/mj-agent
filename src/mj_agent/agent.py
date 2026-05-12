@@ -16,6 +16,7 @@ from typing import Any
 from langchain.agents import create_agent
 
 from mj_agent.llm import make_llm
+from mj_agent.middleware import handle_sql_tool_errors
 from mj_agent.prompts import load_prompt
 from mj_agent.skills import load_skill
 from mj_agent.tools import ALL_TOOLS
@@ -78,6 +79,7 @@ def make_graph(checkpointer: Any | None = None) -> Any:
         "model": make_llm(),
         "tools": ALL_TOOLS,
         "system_prompt": _build_system_prompt(),
+        "middleware": [handle_sql_tool_errors],
     }
     if checkpointer is not None:
         kwargs["checkpointer"] = checkpointer

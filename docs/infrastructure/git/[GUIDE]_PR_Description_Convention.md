@@ -15,7 +15,6 @@ updated: 2026-04-30
 state: draft
 version: v1.0
 track: code
-derives_from: mj-system/develop@[GUIDE]_PR_Description_Convention.md
 owner: 项目负责人
 ---
 
@@ -25,8 +24,8 @@ owner: 项目负责人
 > **目标受众**：开发
 > **版本**：v1.0
 > **最后更新**：2026-04-30
-> **派生自**：mj-system v5.0 同名 GUIDE（6 模板分类 + gh CLI 用法逐字保留；§3 案例与 §4.3 自检对齐表换成 mj-agent 工具链 ruff/mypy/pytest）
-> **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+> **历史背景**：6 模板分类 + gh CLI 用法源自团队成熟实践；§3 案例与 §4.3 自检对齐表已换成 mj-agent 工具链 ruff/mypy/pytest。
+> **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 
 ---
 
@@ -42,7 +41,7 @@ owner: 项目负责人
 - **必备知识**：
   - Git 分支模型（[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]）
   - `gh` CLI 基础
-- **建议了解**：[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]
+- **建议了解**：[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 
 ---
 
@@ -147,7 +146,7 @@ gh pr create \
 **实际案例占位**：
 
 > [!NOTE]
-> 首份 mj-agent feature PR 案例待 mj-agent 完成首个完整 feature 流程后回填。字段填法可参考 mj-system 同名 GUIDE 历史案例（QCM DWS 迁移）。
+> 首份 mj-agent feature PR 案例待 mj-agent 完成首个完整 feature 流程后回填。字段填法可参考 上游业务系统 同名 GUIDE 历史案例（QCM DWS 迁移）。
 
 ---
 
@@ -339,7 +338,7 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 | — | CHANGELOG.md `[Unreleased]` 区块已更新（Phase 0.5+） | feature, bugfix |
 
 > [!NOTE]
-> mj-agent 与 mj-system 自检清单的差异
+> mj-agent 与 上游业务系统 自检清单的差异
 > - **删除**：「本地 Docker 环境自测通过」、「SQL 脚本：命名规范、schema 正确」、「无硬编码 IP / 密码 / 路径」（mj-agent Phase 0 暂不适用）
 > - **新增**：ruff / mypy / pytest 三件套；skill loader frontmatter strip 自检
 > - **延后**：「CHANGELOG.md `[Unreleased]` 区块已更新」 — Phase 0.5+ 引入 CHANGELOG 后启用
@@ -377,8 +376,8 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 - [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]] — 分支模型、命名规范、操作流程
 - [[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — 推送前检查 + 推送流程
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
+- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] — 决策依据
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 
 ---
@@ -387,4 +386,4 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
-| 2026-04-30 | v1.0 | 派生自 mj-system v5.0 同名 GUIDE：6 模板分类与 gh CLI 用法逐字保留；§3.1 实际案例改为 mj-agent 占位（首份案例待回填）；§4.3 自检对齐表删除 Docker / SQL / 硬编码三行，新增 ruff / mypy / pytest / skill loader frontmatter 四行；section 标题去掉 mj-system 服务专属字眼 |
+| 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：6 模板分类与 gh CLI 用法逐字保留；§3.1 实际案例改为 mj-agent 占位（首份案例待回填）；§4.3 自检对齐表删除 Docker / SQL / 硬编码三行，新增 ruff / mypy / pytest / skill loader frontmatter 四行；section 标题去掉 上游业务系统 服务专属字眼 |

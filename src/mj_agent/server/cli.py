@@ -78,8 +78,19 @@ def check() -> None:
 
     if not settings.postgres_analyst_user:
         failures.append("POSTGRES_ANALYST_USER not set")
-    if not settings.ark_api_key.get_secret_value():
+
+    # Provider-aware LLM creds check (ADR-025).
+    if settings.llm_provider == "ark" and not settings.effective_llm_api_key:
         failures.append("ARK_API_KEY not set")
+    elif (
+        settings.llm_provider == "local-openai-compat"
+        and not settings.effective_llm_base_url
+    ):
+        failures.append(
+            "LLM_BASE_URL not set (required when LLM_PROVIDER=local-openai-compat; "
+            "e.g. http://192.168.0.189:8000/v1 for DGX vLLM)"
+        )
+
     if not settings.mj_agent_memory_user:
         failures.append("MJ_AGENT_MEMORY_USER not set")
 
@@ -96,6 +107,20 @@ def check() -> None:
         except Exception as exc:  # noqa: BLE001
             failures.append(f"memory DB unreachable: {exc}")
 
+    # `.env.example` -> `.env` template drift (warn-only; mirrors
+    # scripts/setup-env.ps1 detection so users who skip re-running the
+    # PowerShell setup still see the warning at every healthcheck).
+    from mj_agent.env_drift import find_env_drift
+
+    drift = find_env_drift(Path(".env"), Path(".env.example"))
+    if drift:
+        typer.echo(
+            f"[DRIFT] .env.example declares {len(drift)} key(s) missing from your .env:",
+            err=True,
+        )
+        for key in drift:
+            typer.echo(f"  [MISSING] {key}", err=True)
+
     if failures:
         typer.echo("CHECK FAILED:", err=True)
         for f in failures:
@@ -108,6 +133,10 @@ def check() -> None:
     typer.echo(f"  memory db = {settings.mj_agent_memory_db}")
     typer.echo(f"  chainlit  = {settings.chainlit_host}:{settings.chainlit_port}")
     typer.echo(f"  langsmith = tracing={settings.langsmith_tracing}")
+    typer.echo(
+        f"  llm provider = {settings.llm_provider} "
+        f"(endpoint={settings.effective_llm_base_url})"
+    )
 
 
 def main() -> None:

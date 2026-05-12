@@ -15,7 +15,6 @@ updated: 2026-05-06
 state: draft
 version: v1.0
 track: code
-derives_from: mj-system/develop@[GUIDE]_Git_Push_Workflow.md
 owner: 项目负责人
 ---
 
@@ -25,7 +24,7 @@ owner: 项目负责人
 > **目标受众**：开发
 > **版本**：v1.0
 > **最后更新**：2026-04-30
-> **派生自**：mj-system v5.0 同名 GUIDE（推送流程逐字保留；§2 CHANGELOG / §10 Q6 按 mj-agent Phase 0 实际状态调整）
+> **历史背景**：推送流程源自团队成熟实践；§2 CHANGELOG / §10 Q6 已按 mj-agent Phase 0 实际状态调整。
 > **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
 ---
@@ -40,7 +39,7 @@ owner: 项目负责人
 
 - **必备知识**：Git 基础操作（add、commit、push、pull）
 - **必备知识**：项目分支模型（详见 [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]）
-- **必备知识**：Commit Message 格式（详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]]）
+- **必备知识**：Commit Message 格式（详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]）
 - **建议了解**：GitHub CLI（`gh`）
 
 ---
@@ -82,7 +81,7 @@ Issue → 创建分支 → 编码 → 自测 → 提交 → ★ 推送 → 创�
 |---------|---------|
 | 创建开发分支 | [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]] |
 | 本地开发与自测 | `uv run pytest tests/unit` / `uv run ruff check` / `uv run mypy src/mj_agent`；完整流程见 [[../../guide/[GUIDE]_Developer_Onboarding\|开发者上手指南]] |
-| 提交代码 | [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] |
+| 提交代码 | [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] |
 | 更新 CHANGELOG.md | 本指南 [[#2 CHANGELOG 更新确认]] |
 
 ---
@@ -108,7 +107,7 @@ git log --oneline develop..HEAD
 | 摘要不以句号结尾 | `新增 metrics-glossary skill` | `新增 metrics-glossary skill。` |
 | header 不超过 72 字符 | — | 过长的摘要 |
 
-> 完整格式规范详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] §2。
+> 完整格式规范详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] §2。
 
 ### 1.2 检查 Commit 类型与分支类型一致性
 
@@ -133,7 +132,7 @@ git log --oneline develop..HEAD
 - 一个 commit 混合了不相关的变更（如 skill 代码 + db 配置）
 - 修改同一模块的紧密关联文件被拆成了过多 commit
 
-> 拆分指南详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] §6。
+> 拆分指南详见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] §6。
 
 ### 1.4 修复不规范的 Commit
 
@@ -640,8 +639,8 @@ fi
 - [[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]] — 分支模型、命名规范、操作流程
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention_v1.0|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from mj-system]] — 决策依据
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
+- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] — 决策依据
 - [[../../guide/[GUIDE]_Developer_Onboarding|开发者上手指南]] —— mj-agent 新成员端到端上手路径
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 
@@ -651,6 +650,6 @@ fi
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
-| 2026-04-30 | v1.0 | 派生自 mj-system v5.0 同名 GUIDE：推送流程逐字保留；§2 CHANGELOG 章节加注 Phase 0.5+ 启用；§10 删除 Q6（Gitee shallow fetch），原 Q7 重编号为 Q6；§6.5 双推说明改 mj-agent 实际（Phase 0 CI 仅 compileall） |
+| 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：推送流程逐字保留；§2 CHANGELOG 章节加注 Phase 0.5+ 启用；§10 删除 Q6（Gitee shallow fetch），原 Q7 重编号为 Q6；§6.5 双推说明改 mj-agent 实际（Phase 0 CI 仅 compileall） |
 | 2026-05-06 | v1.0 (patch) | §0:84 / §6 冲突解决段 / §文末延伸阅读 — 三处 `Phase 0.5 待 docs/guide/[GUIDE]_Developer_Onboarding.md 启用` forward-reference 升级为 active wikilink（PLAN G PR2 落地）；非结构性补丁，version 不升 |
 | 2026-05-06 | v1.0 (patch) | §2 删除 Phase 0.5+ 目标态 IMPORTANT 段头与 5 处「Phase 0.5+ 启用后」限定语；§2 流程从前瞻 stub 翻转为 active（PLAN G PR4 落地）；非结构性补丁，version 不升 |

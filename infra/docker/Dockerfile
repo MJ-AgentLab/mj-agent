@@ -20,10 +20,24 @@
 # CI actions). Dependabot's `docker` ecosystem (.github/dependabot.yml)
 # bumps both the digest AND the `# 3.13-slim` tag comment when upstream
 # publishes new images.
-FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d AS builder
+FROM python:3.13-slim@sha256:d49c1ff87eb98eac346fc250f52925f726eb913c43a92854246dd03c9692ad67 AS builder
 # tag: 3.13-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# uv preference: use slim's bundled /usr/local/bin/python3 (3.13.13, satisfies
+# pyproject requires-python=>=3.13,<3.14). Avoids uv-managed Python in
+# /root/.local/share/uv/ which doesn't survive COPY --from=builder /app/.venv
+# to runtime stage (see #134 / PR #131 Stage 17 finding).
+ENV UV_PYTHON_PREFERENCE=only-system
+
+# Default apt mirror = tuna; avoids Fastly anycast flakiness affecting
+# mainland builds (see plans/[PLAN]_dockerfile_apt_mirror_tuna.md). Override
+# at build time: --build-arg APT_MIRROR_URL=deb.debian.org
+ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
+
+RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
+        /etc/apt/sources.list.d/debian.sources \
+    && echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries \
+    && apt-get update && apt-get install -y --no-install-recommends \
         gcc libc6-dev libpq-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
@@ -43,11 +57,17 @@ COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
 # ========== Runtime ==========
-FROM python:3.13-slim@sha256:a0779d7c12fc20be6ec6b4ddc901a4fd7657b8a6bc9def9d3fde89ed5efe0a3d
+FROM python:3.13-slim@sha256:d49c1ff87eb98eac346fc250f52925f726eb913c43a92854246dd03c9692ad67
 # tag: 3.13-slim
 
+# ARG redeclare — Docker ARG scope is per FROM; builder default not inherited.
+ARG APT_MIRROR_URL=mirrors.tuna.tsinghua.edu.cn
+
 # libpq5 = analyst psycopg client; tini = PID-1 signal handling.
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
+        /etc/apt/sources.list.d/debian.sources \
+    && echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries \
+    && apt-get update && apt-get install -y --no-install-recommends \
         libpq5 tini \
     && rm -rf /var/lib/apt/lists/*
 
