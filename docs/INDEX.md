@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-04-30
+updated: 2026-05-12
 state: draft
 track: shared
 ---
@@ -38,7 +38,7 @@ track: shared
 | [[ADR]_002_Skills_As_First_Class_Citizens\|ADR-002 Skills as First-Class Citizens]] | SKILL | accepted | 所有专业能力以 `skills/{name}/SKILL.md` 格式封装，对齐 Claude Code skills 约定 |
 | [[ADR]_003_Progressive_Disclosure\|ADR-003 Progressive Disclosure]] | PROMPT | accepted | 全局 system prompt 只含身份与原则；具体能力按需加载 |
 | [[ADR]_006_Fail_Safe_Reads\|ADR-006 Fail-Safe Reads]] | GUARDRAIL | accepted | biz 库访问用只读账号 + SQL guardrail middleware 双层保护；4 层防御（L1-L4） |
-| [[ADR]_008_Co_Deployment_With_Upstream_Warehouse\|ADR-008 Co-Deployment with Upstream Business Warehouse]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 `上游业务系统-backend-network` (external) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游时间表对齐但 lifecycle 解耦 |
+| [[ADR]_008_Co_Deployment_With_Upstream_Warehouse\|ADR-008 Co-Deployment with Upstream Business Warehouse]] | OPS | accepted | mj-agent 是独立 compose project（自带 postgres + redis），通过 `mj-system-backend-network` (external) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游时间表对齐但 lifecycle 解耦 |
 | [[ADR]_009_Biz_Domain_As_Primary_Data_Source\|ADR-009 Biz Domain as Primary Data Source]] | INTEGRATION | accepted | mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层 |
 | [[ADR]_011_Doc_Versioning_And_Archive_Convention\|ADR-011 Document Versioning and Archive Convention]] | SYS | accepted | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发，A3 模式 = git branch + PR review） |
 | [[ADR]_012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架 |
@@ -149,7 +149,7 @@ track: shared
 
 | 术语 | 摘要 |
 |---|---|
-| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `上游业务系统-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
+| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
 
 ---
 
