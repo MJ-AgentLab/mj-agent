@@ -51,15 +51,15 @@ Phase 1 sub 1.H（PR #40）落地 mj-agent dev compose 后，mj-agent 一直处�
 
 ```bash
 # DEV (本地 / Studio mode 替代见 mj-agent-infra-studio-probe SKILL)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.override.yml up -d
 
 # TEST (192.168.0.179)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.test.yml up -d
 
 # PROD (192.168.0.106)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.prod.yml up -d
 ```
 

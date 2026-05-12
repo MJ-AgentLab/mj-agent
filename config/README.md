@@ -128,7 +128,7 @@ secrets.enc 内 `MJ_AGENT_MEMORY_USER=mj_agent_app` 一行覆盖所有 env 的 .
 
 | 已部署的容器 | 动作 |
 |---|---|
-| 本地 mj-agent-postgres 容器（如已跑过） | `docker compose -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml down -v` 销毁卷；`up -d` 触发 init script 用新 role 重建。**checkpointer history 全丢**（dev 可接受）。 |
+| 本地 mj-agent-postgres 容器（如已跑过） | `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml down -v` 销毁卷；`up -d` 触发 init script 用新 role 重建。**checkpointer history 全丢**（dev 可接受）。 |
 | TEST / PROD 部署 | 不存在（mj-agent 未部署 TEST/PROD）；将来部署时 init script 直接用新 role 创建，无迁移负担。 |
 
 **已部署 prod 的备选**（将来若需要在已运行环境改名而不丢数据）：
@@ -174,9 +174,9 @@ docker exec mj-agent mj-agent check
 丢 langgraph checkpoint 数据；用于 dev / test 环境快速重置。
 
 ```powershell
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml down -v
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml up -d
 # 重启时 volume 重建，init script 跑新 password（含 #136 后的 CREATE OR ALTER 改造）
 ```

@@ -111,21 +111,21 @@ docker ps --filter name=mj-system-postgres                    # 应见 healthy
 
 ```bash
 # DEV (显式 -f base -f override; override.yml 不自动加载因 -f 显式)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.override.yml up -d
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.override.yml ps
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.override.yml logs -f mj-agent
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.override.yml down       # 拆栈，保留 volume
 
 # TEST (192.168.0.179)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.test.yml up -d
 
 # PROD (192.168.0.106)
-docker compose -f infra/docker/docker-compose.mj-agent.yml \
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
                -f infra/docker/docker-compose.prod.yml up -d
 ```
 

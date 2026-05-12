@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-docker-compose
-description: This skill walks through the mj-agent compose stack lifecycle (up/ps/logs/down) across 4 profiles (dev / test / prod) for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-025 4-file layering: base + override + test + prod). Profile selection via -f chain (dev override.yml auto-loaded; test/prod -f explicit; mirror mj-system v3.2.2 pattern). Pre-requirement validation (mj-system biz pg + mj-system-backend-network exist on the SAME host), port map (8001/5433/6379 host → 8000/5432/6379 container), troubleshooting common failures (port conflict / healthcheck timeout / network not found / volume permission / Harbor pull / profile mis-load). Make sure to use this skill whenever the user says "compose up", "compose down", "compose ps", "compose logs", "起 mj-agent compose", "停 mj-agent compose", "docker compose -f infra/docker/docker-compose.mj-agent.yml", "mj-agent stack 启动", "mj-agent 容器", "mj-agent 部署 local/test/prod", "compose lifecycle", "mj-agent infra docker", "compose troubleshoot", "test profile", "prod profile", or "compose 4-file 分层" in the mj-agent context. Do NOT use for: env setup + secrets decryption (use mj-agent-infra-env-setup); Studio probe + H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); storage stack internals (postgres init / redis schema — use mj-agent-infra-storage-stack); LLM endpoint probe for DGX vLLM (use mj-agent-infra-llm-endpoint-probe); modifying docker-compose.{mj-agent,override,test,prod}.yml structure (that's C flavor infra change; use /mj-agent-flow-implement); or modifying mj-system biz pg (out of mj-agent governance — biz pg lifecycle owned by mj-system).
+description: This skill walks through the mj-agent compose stack lifecycle (up/ps/logs/down) across 4 profiles (dev / test / prod) for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-025 4-file layering: base + override + test + prod). Profile selection via -f chain (dev override.yml auto-loaded; test/prod -f explicit; mirror mj-system v3.2.2 pattern). Pre-requirement validation (mj-system biz pg + mj-system-backend-network exist on the SAME host), port map (8001/5433/6379 host → 8000/5432/6379 container), troubleshooting common failures (port conflict / healthcheck timeout / network not found / volume permission / Harbor pull / profile mis-load). Make sure to use this skill whenever the user says "compose up", "compose down", "compose ps", "compose logs", "起 mj-agent compose", "停 mj-agent compose", "docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml", "mj-agent stack 启动", "mj-agent 容器", "mj-agent 部署 local/test/prod", "compose lifecycle", "mj-agent infra docker", "compose troubleshoot", "test profile", "prod profile", or "compose 4-file 分层" in the mj-agent context. Do NOT use for: env setup + secrets decryption (use mj-agent-infra-env-setup); Studio probe + H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); storage stack internals (postgres init / redis schema — use mj-agent-infra-storage-stack); LLM endpoint probe for DGX vLLM (use mj-agent-infra-llm-endpoint-probe); modifying docker-compose.{mj-agent,override,test,prod}.yml structure (that's C flavor infra change; use /mj-agent-flow-implement); or modifying mj-system biz pg (out of mj-agent governance — biz pg lifecycle owned by mj-system).
 ---
 
 # mj-agent Infra — Docker Compose
@@ -56,7 +56,7 @@ digraph compose {
 
   decide [label="Action?" shape=diamond];
 
-  up [label="up: docker compose -f infra/docker/docker-compose.mj-agent.yml up -d" shape=box];
+  up [label="up: docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml up -d" shape=box];
   ps [label="ps: ... ps" shape=box];
   logs [label="logs: ... logs --tail=N <service>" shape=box];
   down [label="down: ... down (volume 保留)\n或 down -v (Level C 删 volume; HITL)" shape=box];
@@ -138,15 +138,15 @@ mj-agent compose 拆 4 文件；profile 选择决定 `-f` 链：
 
 ```powershell
 # DEV
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml up -d
 
 # TEST (在 192.168.0.179 主机)
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.test.yml up -d
 
 # PROD (在 192.168.0.106 主机)
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.prod.yml up -d
 ```
 
@@ -159,7 +159,7 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml `
 
 ```powershell
 # dev（同 up 的 -f 链）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml ps
 
 # test/prod 同理替换 overlay 文件
@@ -178,11 +178,11 @@ mj-agent-redis        Up X           0.0.0.0:6379->6379/tcp
 
 ```powershell
 # 全部服务最近 50 行（dev 示例；test/prod 同理替换 overlay）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml logs --tail=50
 
 # 特定服务（如 mj-agent / mj-agent-postgres）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml logs --tail=100 -f mj-agent
 ```
 
@@ -190,7 +190,7 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml `
 
 ```powershell
 # dev（同 up 的 -f 链）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml down
 
 # test/prod 同理替换 overlay
@@ -203,7 +203,7 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml `
 
 ```powershell
 # 删 volume；mj-agent-postgres / mj-agent-redis 数据全清
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml down -v
 ```
 
@@ -218,7 +218,7 @@ Level C 破坏性操作 — `down -v` 会删 mj-agent-postgres + mj-agent-redis 
 
 ```powershell
 # 1. 容器 healthy（dev 示例 -f 链；test/prod 替换 overlay）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.override.yml ps
 # 期望全部 healthy
 
@@ -247,7 +247,7 @@ docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 | `mj-agent: ImportError mj_agent` | image 没含 src/ | `docker compose build mj-agent` 重建 |
 | `mj-system-backend-network: unable to attach` | mj-system network 没标 `external: true` 或 mj-system 没起 | 检查 docker-compose.mj-agent.yml 的 networks 段；先起 mj-system |
 | `error: pull access denied for 8.135.38.175/mj-agent/mj-agent` | TEST/PROD profile 拉 Harbor 失败：镜像未推 / Harbor namespace 未创建 / docker login 缺 | (a) 先 `docker login 8.135.38.175`；(b) 确认 Harbor 上有 `mj-agent/mj-agent:0.1` tag；(c) 必要时改 image tag 到实际可用 tag |
-| dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml config` 看合并结果；确认 dev `-f` 链含 override.yml |
+| dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml config` 看合并结果；确认 dev `-f` 链含 override.yml |
 | test/prod profile 起来后 mj-agent 报 `connection refused mj-postgres:5432` | mj-system 栈没在同主机 up；或 mj-system-backend-network 不存在 | TEST/PROD 主机必须先起 mj-system 栈（mj-postgres healthy + mj-system-backend-network 存在）；mj-agent 只是 consumer |
 | host curl 502 但浏览器正常 + 容器内 `python urllib` 200 | host shell `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` 未排除 localhost（Clash / v2ray 系统代理常见）；浏览器有 implicit localhost bypass、curl 无条件走代理 | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 容器健康，不需 restart；详见 `docs/runbook/dev_deployment.md` §4 |
 
