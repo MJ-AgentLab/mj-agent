@@ -89,11 +89,12 @@ class Settings(BaseSettings):
     # ── 5. Memory storage (mj-agent-owned) ────────────────────────────
     # Phase 1 sub 1.A introduced the checkpointer; storage-stack PR moves
     # the actual host/port out of POSTGRES_{PROFILE}_* (biz domain) onto
-    # a dedicated mj-agent postgres container. Defaults fall back to
-    # localhost:5432 so non-Docker dev still works (point them at any
-    # local postgres you own).
+    # a dedicated mj-agent postgres container (host port 5433 -> container
+    # 5432, avoiding mj-system's mj-postgres on host 5432). Defaults target
+    # the storage-stack topology; override `mj_agent_memory_port` to 5432
+    # only if you run a bare-metal postgres directly on host 5432.
     mj_agent_memory_host: str = "localhost"
-    mj_agent_memory_port: int = 5432
+    mj_agent_memory_port: int = 5433
     mj_agent_memory_db: str = "mj_agent_memory"
     mj_agent_memory_user: str = ""
     mj_agent_memory_password: SecretStr = SecretStr("")
