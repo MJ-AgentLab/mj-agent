@@ -60,7 +60,7 @@ PR-1 / ADR-025 4-file 分层意味着 teardown 命令必须**与 `up` 用同样�
 
 ```powershell
 # 状态（用 Step 0 选的 -f 链）
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.<profile>.yml ps `
                --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 
@@ -93,7 +93,7 @@ docker volume ls --filter name=mj-agent
 
 ```powershell
 # 所有 Level：确认无容器
-docker compose -f infra/docker/docker-compose.mj-agent.yml `
+docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
                -f infra/docker/docker-compose.<profile>.yml ps
 
 # Level 2/3：确认 volumes 已清

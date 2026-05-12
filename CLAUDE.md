@@ -134,16 +134,21 @@ docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 # 4-file profile layering per ADR-026 (mirror mj-system v3.2.2). All 3 profiles
 # use explicit `-f base -f overlay` chain (override.yml auto-load doesn't apply
 # because compose files live in infra/docker/ subdir and base loaded via -f).
+# `--env-file .env` is also required for the same reason: docker compose CLI
+# looks for .env in the project directory (= the directory of the first -f
+# file = infra/docker/), NOT the developer's cwd; without it the `${VAR}`
+# substitutions in compose YAML fall through to their `:-default` sentinels
+# and the postgres init script bakes a placeholder password into the volume.
 # Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
 #
 # DEV (本地)
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.override.yml up -d
 # TEST (192.168.0.179)
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.test.yml up -d
 # PROD (192.168.0.106)
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.prod.yml up -d
 #
 # DGX 算力消费侧：DGX 不部署 mj-agent (用户决策；ADR-025 §D.2)。任一 profile 下

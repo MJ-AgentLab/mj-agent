@@ -33,15 +33,15 @@
 #
 # Usage — 3 profile entry points (from mj-agent repo root；全部用显式 `-f` 链)：
 #   # DEV
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.override.yml up -d
 #
 #   # TEST (run on 192.168.0.179)
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.test.yml up -d
 #
 #   # PROD (run on 192.168.0.106)
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
+#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
 #                  -f infra/docker/docker-compose.prod.yml up -d
 #
 # Path resolution:
@@ -50,6 +50,17 @@
 #     `../../`             = mj-agent repo root
 #     `../../.env`         = mj-agent/.env
 #     `./postgres-init`    = infra/docker/postgres-init/
+#
+# Env file (CLI substitution layer):
+#   docker compose's `${VAR}` substitution in compose YAML reads `.env` from
+#   the project_directory (= `infra/docker/`), NOT the developer's cwd. Since
+#   the real .env lives at the repo root, every `docker compose` invocation
+#   above passes `--env-file .env` explicitly so the postgres init script
+#   sees the real MJ_AGENT_MEMORY_PASSWORD instead of the `:-default` sentinel.
+#   The `env_file: ../../.env` directive inside service definitions is a
+#   *different* mechanism — it injects vars into the running container, not
+#   into the CLI-level `${...}` substitution that runs before the container
+#   starts.
 #
 # Port map (host → container; aligned with mj-system co-location, ADR-008):
 #   8001 → 8000   chainlit (avoid mj-app's 8000)
