@@ -1,19 +1,26 @@
 ---
 name: mj-agent-infra-env-setup
-description: This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says "环境配置", "env setup", ".env 配置", "设置环境", "解密 secrets", "decrypt secrets.enc", "team password", "团队口令", "POSTGRES_ANALYST_USER", "ARK_API_KEY", "LANGSMITH_API_KEY", "uv sync", "first time setup", "新机器搭建", "本地环境", "scripts/setup-env.ps1" in the mj-agent context. Wraps existing scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt + multi-secret merge into .env; 22 secrets as of ADR-025 PR-3: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory/redis passwords + 5 SSH passwords for ssh-manager MCP + 10 pg URL placeholders for .mcp.json) + uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify scripts/setup-env.ps1, secrets.enc, or write .env directly (only invokes the script with proper params). Note: Step 2 decrypt requires interactive password (TTY); Claude's Bash tool cannot supply it — user must run setup-env.ps1 in their own PowerShell terminal. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).
+description: This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says "环境配置", "env setup", ".env 配置", "设置环境", "解密 secrets", "decrypt secrets.enc", "team password", "团队口令", "POSTGRES_ANALYST_USER", "ARK_API_KEY", "LANGSMITH_API_KEY", "uv sync", "first time setup", "新机器搭建", "本地环境", "scripts/setup-env.ps1", "setup-mcp-secrets" in the mj-agent context. Wraps two ADR-030 setup scripts: (1) scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt config/secrets.enc; ~6-8 app secrets: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory passwords; merged into .env), and (2) .claude/scripts/setup-mcp-secrets.ps1 (decrypt config/secrets-mcp.enc; 15 MCP secrets: 5 SSH passwords + 10 PG URL placeholders; written directly to OS User-level env, never to .env). Plus uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify the setup scripts, secrets bundles, or write .env directly (only invokes the scripts with proper params). Note: both decrypt steps require interactive password (TTY); Claude's Bash tool cannot supply it — user must run setup scripts in their own PowerShell terminal. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).
 ---
 
 # mj-agent Infra — Env Setup
 
 ## Overview
 
-包装 mj-agent 已有的 `scripts/setup-env.ps1`（AES-256-CBC + PBKDF2 解密 + 多 secret 注入 .env；**22 项**，详见 Step 2 表）+ `uv sync` 依赖安装 + 最小 .env validation。**Stage 8 (C-flavor) sub** of HITL_Prompt 17-stage 闭环。
+包装 mj-agent 已有的 2 个 secrets setup 脚本（ADR-030 起 2-bundle 拆分）：
+
+1. `scripts/setup-env.ps1` — 解密 `config/secrets.enc`，注入 ~6-8 app secrets 到 `.env`
+2. `.claude/scripts/setup-mcp-secrets.ps1` — 解密 `config/secrets-mcp.enc`，写入 15 MCP secrets 到 OS User-level env（不入 `.env`）
+
+加上 `uv sync` 依赖安装 + 最小 `.env` validation。**Stage 8 (C-flavor) sub** of HITL_Prompt 17-stage 闭环。
 
 新机器 / 新贡献者上手时第一个调用的 infra skill。
 
 **Reference**:
-- [[../../../scripts/setup-env.ps1|scripts/setup-env.ps1]]（解密脚本本体）
-- [[../../../config/README.md|config/README.md]]（rotation / onboarding flow）
+- [[../../../scripts/setup-env.ps1|scripts/setup-env.ps1]]（app bundle 解密脚本）
+- [[../../../.claude/scripts/setup-mcp-secrets.ps1|setup-mcp-secrets.ps1]]（MCP bundle 解密脚本；ADR-030 新增）
+- [[../../../config/README.md|config/README.md]]（rotation / onboarding flow + ADR-030 2-bundle 模型）
+- [[../../../docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]（bundle 拆分决策）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Environment variables" 段（secret 列表）
 
 ## 前置条件

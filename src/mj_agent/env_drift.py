@@ -8,6 +8,14 @@ when developers skip re-running setup-env.ps1 (e.g. they already have a
 Algorithm: parse keys from each file (skipping blank / `#` lines), return
 keys present in `.env.example` but missing from `.env`. Values are not
 read or compared.
+
+Scope (post ADR-030): app keys only. MCP infrastructure secrets (5 SSH +
+10 PG URL = 15 keys) live in ``config/secrets-mcp.enc`` and are decrypted
+directly to OS env via ``.claude/scripts/setup-mcp-secrets.ps1``. They are
+intentionally **not** declared in ``.env.example`` and **not** in ``.env``,
+so drift detection ignores them by construction. To check MCP keys
+separately, run ``setup-mcp-secrets.ps1 -Reload`` which compares OS
+User-level env (``HKCU/Environment``) against ``config/secrets-mcp.example``.
 """
 
 from __future__ import annotations

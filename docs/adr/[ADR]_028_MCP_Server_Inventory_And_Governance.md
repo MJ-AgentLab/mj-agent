@@ -58,9 +58,9 @@ STANDARD 提供：
 
 ### D.3 Independent secrets pipeline
 
-所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 `scripts/setup-env.ps1` + `config/secrets.enc` 注入；与上游业务系统 `MJ_SYS_*` env var 命名空间隔离（per [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]）。
+所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 secrets pipeline 注入；与上游业务系统 `MJ_SYS_*` env var 命名空间隔离（per [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]）。
 
-OS-env 同步通过 `.claude/scripts/setup-mcp-env.ps1`（mirror `secrets.enc → setup-env.ps1 → .env` 单一管道）把 `.mcp.json` `${VAR}` 引用 mirror 到 `HKCU\Environment`，让 Claude Code 启动时可见。
+**注入路径自 [[[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] 起升级为 2-bundle 拆分**：app secrets 走 `config/secrets.enc → scripts/setup-env.ps1 → .env`；MCP secrets 走 `config/secrets-mcp.enc → .claude/scripts/setup-mcp-secrets.ps1 → HKCU\Environment`（**不入 .env**）。原 `.claude/scripts/setup-mcp-env.ps1`（mirror .env → OS env）已废弃删除。
 
 ### D.4 Wrapper script + 内部 baseline
 
@@ -102,6 +102,7 @@ OS-env 同步通过 `.claude/scripts/setup-mcp-env.ps1`（mirror `secrets.enc �
 - [[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — 与 SKILL governance 互补：本 ADR 治 `.mcp.json`，ADR-013 治 `.claude/skills/`
 - [[[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
 - [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] / [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] — ADR-025 拆分姊妹
+- [[[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — 本 ADR §D.3 secrets pipeline 升级；2-bundle 拆分把 MCP secrets 从 `secrets.enc` 析出
 - [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance]] v1.0 — 本 ADR 落地的实施细则
 - [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `.mcp.json` — 13 servers 实文件

@@ -55,7 +55,7 @@ tags:
 | **none** | 无凭证 | 公开服务（如 HTTP MCP） | 文档/参考类 server |
 | **OAuth** | 浏览器 OAuth flow 注入 token | 用户控制；token 不入 .mcp.json / .env | Google / GitHub OAuth |
 | **API key (env var)** | `${VAR}` 模板从 env 注入 | 凭证不入 .mcp.json；user 必须 set env 或 `.env` | github (`${GITHUB_PERSONAL_ACCESS_TOKEN}`) / ssh-manager 密码 |
-| **wrapped script (env var via cmd)** | `cmd /c <wrapper.cmd> <URL>` + URL 含 `${VAR}` 默认值 | wrapper 可加 timestamp 修复 / 缓存修复等 client-side patch | pg-mj-agent-memory-* / pg-mj-system-biz-* |
+| **wrapped script (env var via cmd)** | `cmd /c <wrapper.cmd> <URL>` + URL 含 `${VAR}` 默认值；`${VAR}` 来自 `secrets-mcp.enc` (ADR-030) → HKCU\Environment | wrapper 可加 timestamp 修复 / 缓存修复等 client-side patch | pg-mj-agent-memory-* / pg-mj-system-biz-* |
 | **template var** | URL 含 `${VAR}` 形式直接传入 | 与 API key 等价 | （当前 .mcp.json 通过 wrapped script 包装；未直接使用此模式）|
 
 **禁止**：
@@ -107,7 +107,12 @@ tags:
 
 **Wrapped script 来源**：`.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 内容快照保存为 `docs/_baselines/pg_server_baseline.md`（Phase Γ 落地；当前为 placeholder）。理由：第三方 `@modelcontextprotocol/server-postgres` 默认对 timestamp 列做 JS Date 转换，导致 SELECT 返 UTC "Z" 字符串而非数据库原始字符串；wrapper 通过 `pg.types.setTypeParser(1114/1184, val => val)` overrides 修复。季度 audit 比对 baseline 检测漂移（见 §6）。
 
-**Independent secrets pipeline**：所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 `scripts/setup-env.ps1` + `config/secrets.enc` 注入，**与上游业务系统 `MJ_SYS_*` env var 命名空间隔离**（保留 `MJ_SYS_*` 作上游 env var literal；per ADR-008）。
+**Independent secrets pipeline**：所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 secrets pipeline 注入。**自 ADR-030 起采用 2-bundle 拆分模型**：
+
+- App secrets (~6-8 keys; analyst pg / memory pg / ARK / LangSmith) → `config/secrets.enc` → `scripts/setup-env.ps1` → `.env`
+- **MCP secrets** (15 keys; 5 SSH + 10 PG URL，本 STANDARD §5 inventory 项 13/3-12) → `config/secrets-mcp.enc` → `.claude/scripts/setup-mcp-secrets.ps1` → **HKCU\Environment（不入 .env）**
+
+两 bundle 共享团队口令但走独立解密路径。与上游业务系统 `MJ_SYS_*` env var 命名空间隔离（per ADR-008）。
 
 ## §6 Audit cadence
 
@@ -130,6 +135,7 @@ tags:
 - [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] — 本 STANDARD 文件名无 `_v1.0` 后缀依据
 - [[../../adr/[ADR]_022_P2_Framework_Enhancements|ADR-022]] §C.3.2 — 领域专属 STANDARD placement 决策（本文件落 `docs/infrastructure/mcp/` 而非 `docs/rule/`）
 - ADR-025（PR-4 落地；Multi-environment + LLM provider abstraction） — 跨 4 PR 的整体决策记录
+- [[../../adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — MCP secrets 注入路径升级为独立 `secrets-mcp.enc` → HKCU；§3 credential mode "wrapped script" 行为不变，但 env var 来源变化
 - [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.7（STANDARD placement）+ §3.10（in-tree workflow SKILL governance；与本 STANDARD 平行）+ §7.7（A12-A14 PR gates）
 - `docs/_baselines/pg_server_baseline.md`（Phase Γ 落地；wrapper script 内部快照；季度 audit 漂移基准）
 - CLAUDE.md §Engineering-Workflow Documentation §A14（本 STANDARD 是 A14 的实施细则）

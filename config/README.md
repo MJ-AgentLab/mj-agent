@@ -1,11 +1,25 @@
 # mj-agent secrets
 
-本目录承载 mj-agent 运行所需的 6 个敏感变量的加密分发与解密注入：
+本目录承载 mj-agent 运行所需的敏感变量的加密分发与解密注入。**自 ADR-030 起采用 2-bundle 拆分模型**（对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式）：
+
+### App bundle (config/secrets.enc) — 6-8 个应用层 secrets
 
 - `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD`（biz pg consumer access；mj-system 颁发的 analyst RO role）
 - `ARK_API_KEY`（Volcengine Ark LLM）
+- `LLM_API_KEY`（可选；`LLM_PROVIDER=local-openai-compat` 且 vLLM 启用 `--api-key` 时填）
 - `LANGSMITH_API_KEY`（observability，可选）
 - `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（mj-agent 自家 memory pg 的 RW role；storage-stack PR 加入）
+
+注入路径：`secrets.enc → scripts/setup-env.ps1 → .env`（Python runtime / docker compose 消费）。
+
+### MCP bundle (config/secrets-mcp.enc) — 15 个基础设施层 secrets
+
+- 5 个 `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`（ssh-manager MCP；9 entries：cloud + 4 hosts × 2 lan/wan）
+- 10 个 `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL`（`.mcp.json` pg-server wrapper URL overrides）
+
+注入路径：`secrets-mcp.enc → .claude/scripts/setup-mcp-secrets.ps1 → HKCU\Environment`（**不入 .env**；claude.exe 启动时读 OS env 解析 `.mcp.json` `${VAR}`）。
+
+**两份 bundle 共享同一团队口令**（不为口令隔离，仅为信任边界 + 注入路径隔离）。详细决策见 [[../docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]。
 
 **与 mj-system 的关系**：mj-agent 是独立 compose project（[[../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]），
 **不共享 mj-system 的 secrets.enc / 团队口令**。变量命名虽与 mj-system 对齐（操作一致性），
@@ -15,31 +29,54 @@
 
 | 文件 | 状态 | 用途 |
 | --- | --- | --- |
-| `secrets.example` | committed | 明文 schema，列出所有应注入的密钥名（值留空） |
-| `secrets.enc` | committed | AES-256-CBC + PBKDF2 加密的密钥包，由 `..\scripts\encrypt-secrets.ps1` 生成 |
-| `secrets.conf` | gitignored | 解密或编辑过程中的明文中间产物，**永不提交**（`.gitignore` 已排除） |
+| `secrets.example` | committed | App bundle 明文 schema（6-8 keys） |
+| `secrets.enc` | committed | App bundle AES-256-CBC + PBKDF2 加密包，由 `..\scripts\encrypt-secrets.ps1` 生成 |
+| `secrets.conf` | gitignored | App bundle 解密 / 编辑过程明文中间产物，**永不提交** |
+| `secrets-mcp.example` (ADR-030) | committed | MCP bundle 明文 schema（5 SSH + 10 PG URL = 15 keys） |
+| `secrets-mcp.enc` (ADR-030) | committed | MCP bundle 加密包，由 `..\scripts\encrypt-secrets-mcp.ps1` 生成 |
+| `secrets-mcp.conf` (ADR-030) | gitignored | MCP bundle 明文中间产物，**永不提交** |
 
 ## 获取口令
 
 口令通过团队内部安全渠道分发，不在本仓出现、不在群聊广播、不进 issue。
 新成员加入项目时向项目负责人申请。
 
-## 开发者：从加密包恢复 .env
+## 开发者：从加密包恢复 .env + OS env（ADR-030 2-bundle）
+
+新开发者首次配置 / 任何 secret 轮换后，按顺序跑 2 个脚本：
 
 ```powershell
+# Step 1: App bundle -> .env (Python runtime / docker compose 消费)
 .\scripts\setup-env.ps1
-# 提示输入口令，脚本自动解密、合并到 .env、清理临时 secrets.conf
+# 提示输入口令，脚本自动解密 secrets.enc、合并到 .env、清理临时 secrets.conf
+
+# Step 2: MCP bundle -> OS User-level env (Claude Code 主进程消费 .mcp.json ${VAR})
+.\.claude\scripts\setup-mcp-secrets.ps1
+# 提示输入口令（与 Step 1 相同），脚本解密 secrets-mcp.enc 直接写 HKCU\Environment
+# 不写 .env 文件！
 ```
 
-幂等：重跑会比对每个变量并以 `[SKIP]` / `[CHANGED]` / `[NEW]` 标注，
-仅在差异存在时才请求覆盖确认。强制覆盖加 `-Force`。
+**Step 2 后必须重启**：Windows User-level env 变量只对**新启动的进程**可见。重启
+PowerShell 终端 + Claude Code，才能看到新 OS env 值。
 
-如果脚本输出 `[DRIFT] .env.example declares N key(s) missing from your .env`，
-说明 `.env.example` 在你上次生成 `.env` 之后新增了 key（典型场景：`git pull`
-合并了一个引入 secret 段的 PR，如 ADR-025 PR-3 的 §8 SSH + §9 PG URL）。
-按提示加 `-Force` 重跑即可，但注意 `-Force` 会从 `.env.example` 模板整体
-重生 `.env`，你对非 secret key 的本地修改（如 `MJ_CONFIG_PROFILE` /
-`LLM_PROVIDER`）会被重置为模板默认值——重跑后再调一次。
+幂等：两个脚本都幂等。重跑 `setup-env.ps1` 会比对每个变量并以 `[SKIP]` /
+`[CHANGED]` / `[NEW]` 标注（强制覆盖加 `-Force`）；重跑 `setup-mcp-secrets.ps1`
+对 OS env 同样比对（强制覆盖加 `-Force`）。
+
+诊断模式：
+```powershell
+.\.claude\scripts\setup-mcp-secrets.ps1 -Reload
+# 无需口令；只报当前 HKCU\Environment 与 secrets-mcp.example 的对比（SET / MISSING）
+```
+
+如果 `setup-env.ps1` 输出 `[DRIFT] .env.example declares N key(s) missing from your .env`，
+说明 `.env.example` 在你上次生成 `.env` 之后新增了 key。按提示加 `-Force` 重跑即可，
+但注意 `-Force` 会从 `.env.example` 模板整体重生 `.env`，你对非 secret key 的本地
+修改（如 `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`）会被重置为模板默认值——重跑后再调一次。
+
+注：自 ADR-030 起 `setup-env.ps1` 的 drift 检测**仅覆盖 app keys**（`.env.example`
+所声明的范围）。MCP keys 的 drift 由 `setup-mcp-secrets.ps1 -Reload` 单独负责
+（对比 `secrets-mcp.example`）。
 
 ## 管理员：新增或轮换密钥
 
@@ -258,61 +295,62 @@ remote pg）必填 `MJ_AGENT_PG_*_WAN_URL` 否则 MCP server 启动失败。
 
 详见 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` §5。
 
-### 6.4 Claude Code MCP env sync（mj-ops 风格 OS-level 注入）
+### 6.4 Claude Code MCP secrets 注入（ADR-030 后；mj-ops 风格 OS-level 注入）
 
 Claude Code 的 `.mcp.json` 变量替换（`${MJ_AGENT_SSH_SERVER_*_PASSWORD}` /
-`${MJ_AGENT_PG_*_WAN_URL}` 等 9-16 个）在 claude.exe 启动时一次性 evaluate
-当时的 process env。Claude Code 本身**不会**自动加载 `.env` 文件，所以仅有
-`.env` 不够 —— 必须让 claude 进程能从 process env 读到这些 secrets，否则
-`/doctor` 会列出 `Missing environment variables` 告警 + ssh-manager 和 4 个
-WAN postgres MCP server 拉不起来。
+`${MJ_AGENT_PG_*_URL}` 等 16 个，含 1 个外部 `${GITHUB_PERSONAL_ACCESS_TOKEN}`）
+在 claude.exe 启动时一次性 evaluate process env。Claude Code 本身**不会**
+自动加载 `.env` 文件，所以仅有 `.env` 不够 —— 必须让 claude 进程能从 process
+env 读到这些 secrets，否则 `/doctor` 会列出 `Missing environment variables`
+告警 + ssh-manager 和 WAN postgres MCP server 拉不起来。
 
-本仓采用 **mj-system mj-ops 风格的 User-level OS env 注入** 方案（mirror
-`D:\...\mj-system\develop\.claude\scripts\setup-sys-ops-env.ps1` 的 §6.2
-Reload 模式架构 + Read-EnvFile / Format-MaskedValue helpers，但**不**
-新建平行加密管道 —— 复用现有 `secrets.enc → .env` 单一管道）。
+自 ADR-030 起，本仓采用 **完整对齐 mj-system v2.3 secrets-sys-ops.enc 模式**：
+独立加密包 + 独立 setup 脚本 + 直接写 OS env（永不入 `.env`）。
 
-#### 工作流
+#### 工作流（2-bundle 后）
 
 ```
-secrets.enc -[scripts/setup-env.ps1]-> .env
-           -[.claude/scripts/setup-mcp-env.ps1]-> User OS env
-           -[docker compose env_file]-> mj-agent container
-           -[pydantic-settings]-> Python runtime
+config/secrets.enc      -[scripts/setup-env.ps1]-> .env
+                                                  -[docker compose env_file]-> mj-agent container
+                                                  -[pydantic-settings]-> Python runtime
+
+config/secrets-mcp.enc  -[.claude/scripts/setup-mcp-secrets.ps1]-> HKCU\Environment
+                                                                  -[claude.exe @ startup]-> .mcp.json ${VAR}
 ```
 
-`.env` 仍是 canonical secrets file（docker stack + Python 服务必需）；新脚本
-只是把 `.mcp.json` 引用的子集额外 mirror 到 OS env 层供 claude code 消费。
+两条管道**完全独立**：app secrets 在 `.env`，MCP secrets 在 OS env。Python
+应用不读 OS env 里的 MCP secrets（业务零依赖）；Claude Code 不读 `.env` 里的
+任何东西（mcp 引用走 OS env）。
 
 #### 用法
 
 ```powershell
 # 首次（或每次 secrets 轮转 / 首次 clone 后）：
-.\scripts\setup-env.ps1                       # 解密 secrets.enc → .env
-.\.claude\scripts\setup-mcp-env.ps1           # .env → User OS env
+.\scripts\setup-env.ps1                            # 解密 secrets.enc → .env (~6-8 app secrets)
+.\.claude\scripts\setup-mcp-secrets.ps1            # 解密 secrets-mcp.enc → OS env (15 MCP secrets)
 # 重启 terminal / IDE / claude
 
 # 强制覆盖既有 User env vars 不交互问：
-.\.claude\scripts\setup-mcp-env.ps1 -Force
+.\.claude\scripts\setup-mcp-secrets.ps1 -Force
 
-# 诊断模式（不写入，只检查 .mcp.json 引用的 var 当前 OS env 状态）：
-.\.claude\scripts\setup-mcp-env.ps1 -Reload
+# 诊断模式（不写入，对比 OS env vs secrets-mcp.example）：
+.\.claude\scripts\setup-mcp-secrets.ps1 -Reload
 ```
 
-`-Reload` 在调试 "wrapper 跑了为什么 /doctor 仍报缺失" 时救命：
-- 显示 SET 但 /doctor 报 MISSING → 问题在 claude 启动入口（IDE 缓存了旧 env）
-- 显示 MISSING → 问题在 `.env` / `setup-env.ps1` / `secrets.conf`（某个 key 没生成进 .env）
+`-Reload` 在调试 "脚本跑了为什么 /doctor 仍报缺失" 时救命：
+- 显示 SET 但 /doctor 报 MISSING → 问题在 claude 启动入口（terminal stale）
+- 显示 MISSING → 口令错 / `.enc` 文件缺失 / 上一次 setup 漏跑
 
 #### 验证
 
 | 编号 | 命令 | 期望 |
 |---|---|---|
-| V1 | `.\.claude\scripts\setup-mcp-env.ps1 -Reload`（首次 sync 前）| `0 / N set, N missing`；N ≈ 16（`.mcp.json` 中 `${VAR}` 引用数）|
-| V2 | `.\.claude\scripts\setup-mcp-env.ps1`（默认）| `M wrote, 0 skipped, K absent in .env`；提示 `Restart terminal / IDE` |
-| V3 | 关闭终端 → 重开 → 同 V1 | `M / N set, K missing`；K=0 表示完整 |
-| V4 | 重启 claude code → `/doctor` | 0 个 `Missing environment variables` 告警 |
+| V1 | `.\.claude\scripts\setup-mcp-secrets.ps1 -Reload`（首次 sync 前）| `0 / 15 set, 15 missing` |
+| V2 | `.\.claude\scripts\setup-mcp-secrets.ps1`（默认）| `15 processed (15 written)`；提示 `Restart terminal / IDE` |
+| V3 | 关闭终端 → 重开 → 同 V1 | `15 / 15 set, 0 missing` |
+| V4 | 重启 claude code → `/doctor` | 0 个 mj-agent 相关 `Missing environment variables` 告警（注：`GITHUB_PERSONAL_ACCESS_TOKEN` 由外部提供，不在 mj-agent 治理范围）|
 
-> **Windows env 同步坑（terminal-stale）**：Windows User-level env vars **仅对新启动的进程**可见。同一 PS terminal 里跑 V2 后立即跑 `claude`，子 claude 继承父 PS 的 stale env，会出现「`-Reload` 显示 `M/N set` 但 `/doctor` 仍报 missing」。两条解：(a) **完全关闭** PS terminal 进程（不只 `/exit`；要红 X 关窗口或 `exit` 退 shell；用 Windows Terminal 时需杀掉整个 wt.exe，因为 WT app 本身也是 stale）→ 从 Start menu 开新 PS → cd worktree → `claude`；(b) 在当前 PS 跑 hot-reload one-liner 不重启：
+> **Windows env 同步坑（terminal-stale）**：Windows User-level env vars **仅对新启动的进程**可见。同一 PS terminal 里跑 V2 后立即跑 `claude`，子 claude 继承父 PS 的 stale env，会出现「`-Reload` 显示 `15/15 set` 但 `/doctor` 仍报 missing」。两条解：(a) **完全关闭** PS terminal 进程（不只 `/exit`；要红 X 关窗口或 `exit` 退 shell；用 Windows Terminal 时需杀掉整个 wt.exe，因为 WT app 本身也是 stale）→ 从 Start menu 开新 PS → cd worktree → `claude`；(b) 在当前 PS 跑 hot-reload one-liner 不重启：
 >
 > ```powershell
 > foreach ($k in (Get-Item HKCU:\Environment).Property) {
@@ -320,31 +358,50 @@ secrets.enc -[scripts/setup-env.ps1]-> .env
 > }
 > ```
 >
-> 然后同 PS 跑 `claude` 即可。注意：claude `/doctor` 的 `Missing environment variables` 检查仅判 var key 存在与否，不判 value 是否非空 —— 即使 `secrets.conf` §6 某 WAN URL 是空字符串，OS env 写入空 string 后 var 仍"存在"，/doctor 不报；但 MCP server 实际尝试连接时会因空 URL 失败（runtime issue，非 /doctor 级）。
+> 然后同 PS 跑 `claude` 即可。注意：claude `/doctor` 的 `Missing environment variables` 检查仅判 var key 存在与否，不判 value 是否非空 —— 即使 secrets-mcp.conf §2 某 WAN URL 是空字符串，OS env 写入空 string 后 var 仍"存在"，/doctor 不报；但 MCP server 实际尝试连接时会因空 URL 失败（runtime issue，非 /doctor 级）。
 
-#### 安全代价（已知 trade-off）
+#### 安全代价（已知 trade-off；vs ADR-030 前的对比）
 
 - **HKCU\Environment 明文持久化**：5 SSH passwords + 10 PG URLs（含密码）
-  以明文存于注册表 `HKEY_CURRENT_USER\Environment`
-- **跨进程可见**：本机任何进程可 `Get-EnvironmentVariable('User')` 读到
+  以明文存于注册表 `HKEY_CURRENT_USER\Environment`（**不变**）
+- **跨进程可见**：本机任何进程可 `Get-EnvironmentVariable('User')` 读到（**不变**）
 - **跨 worktree 共享**：所有 mj-agent worktrees 共享同一组 OS env vars；
-  最后一次 `setup-mcp-env.ps1` 决定全局值。实践中 `.env` 应在 worktrees
-  之间保持一致（同一组 secrets.enc）—— 如不同则 OS env 反映最后 sync 的版本
-- **编辑 `.env` 后必须重跑 sync 脚本**：不像 wrapper 自动跟随，OS-level
-  持久化的固有 trade-off
+  最后一次 `setup-mcp-secrets.ps1` 决定全局值（**不变**）
+- **`.env` 不再含 MCP secrets**（**改进**）：之前 `.env` 复制一份 15 个 MCP
+  secrets，磁盘上有 2 处明文（`.env` + HKCU）；ADR-030 后只剩 HKCU 一处
+- **secret 轮换时只需跑对应脚本**（**改进**）：之前 MCP secret 改了既要重跑
+  `setup-env.ps1` 又要重跑 `setup-mcp-env.ps1`；ADR-030 后只跑 `setup-mcp-secrets.ps1`
 
 接受这些代价的换取：**任何 shell（PS / cmd / Git Bash）/ IDE / VS Code 启动
 claude 都自动可见**，无 wrapper / 无 alias / 无 PowerShell profile entry。
 
-#### 与 mj-system mj-ops 的差异
+#### 与 mj-system 的对齐 / 差异
 
-| 维度 | mj-system `setup-sys-ops-env.ps1` | mj-agent `setup-mcp-env.ps1` |
+ADR-030 后基本完全对齐 mj-system v2.3 secrets-sys-ops.enc 范式：
+
+| 维度 | mj-system `setup-sys-ops-env.ps1` | mj-agent `setup-mcp-secrets.ps1`（ADR-030 后）|
 |---|---|---|
-| Secret 源 | 直接解密 `secrets-sys-ops.enc` | 读已解密的 `.env`（由 `setup-env.ps1` 生成）|
-| 是否写 `.env` | 否（避免与主 .env 冲突）| 是（docker / Python 必需，复用现有管道）|
-| Expected 列表来源 | `secrets-sys-ops.example` 静态列表 | `.mcp.json` `${VAR}` 引用 auto-derive（`Read-McpVarRefs` 函数）|
-| Reload 模式 | 同 | 同（直接 port）|
-| Helper 函数 | `Format-MaskedValue` / `Read-EnvFile` / `Read-ExampleKeys` | 前两个直接 port；后者改为 `Read-McpVarRefs` regex 抽 `.mcp.json`|
+| Secret 源 | 直接解密 `secrets-sys-ops.enc` | 直接解密 `secrets-mcp.enc` ✅ 同 |
+| 是否写 `.env` | 否（避免污染主 .env）| 否 ✅ 同 |
+| Expected 列表来源 | `secrets-sys-ops.example` 静态列表 | `secrets-mcp.example` 静态列表 ✅ 同 |
+| Reload 模式 | 同 | 同 ✅ |
+| Helper 函数 | `Format-MaskedValue` / `Read-EnvFile` / `Read-ExampleKeys` | 完全 port ✅ |
 
-详见 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` §5
-（governance）以及借用源 `D:\workspace\10-software-project\projects\mj-system\develop\.claude\scripts\setup-sys-ops-env.ps1`（L74-97 helpers + L119-149 -Reload mode）。
+剩余差异：
+- **命名空间**：mj-system 用 `MJ_SYS_SSH_*` / `MJ_SYS_POSTGRES_*_URL`；mj-agent
+  用 `MJ_AGENT_SSH_*` / `MJ_AGENT_PG_*_URL`。独立 per ADR-008。
+- **GitHub PAT**：mj-system 有独立 `secrets-sys-git.enc`；mj-agent 无（GitHub
+  PAT 借用现有 OS env，不在 mj-agent 治理范围）。
+
+#### 历史：从 ADR-030 前的旧路径迁移
+
+ADR-030 前的旧路径：`secrets.enc → setup-env.ps1 → .env → setup-mcp-env.ps1
+→ HKCU`。两阶段，MCP secrets 在 `.env` 磁盘留痕。
+
+已有 `.env` 的开发者需要的迁移：
+1. `git pull` 拿到合并后的 develop（含 secrets-mcp.enc + 新 setup-mcp-secrets.ps1）
+2. 跑 `.\.claude\scripts\setup-mcp-secrets.ps1`（口令同 secrets.enc）
+3. （可选）跑 `.\scripts\setup-env.ps1 -Force` 重生 `.env`，去掉残留的 15 个 MCP
+   keys（不重生也无害，业务不读那些 keys）
+
+详见 `.\scripts\migrate-secrets-bundle-split.ps1`（团队管理员一次性迁移工具）。
