@@ -50,6 +50,7 @@ track: shared
 | [[ADR]_026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] (PR-Γ；ADR-025 拆分) | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
 | [[ADR]_027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] (PR-Γ；ADR-025 拆分) | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
 | [[ADR]_028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] (PR-Γ；ADR-025 拆分) | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
+| [[ADR]_029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 
 ## 评估（docs/assessments/）
 
