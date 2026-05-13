@@ -11,6 +11,19 @@ description: This skill should be used when the user asks to create a Pull Reque
 
 **Workflow position**: Stage 14 of HITL_Prompt 17-stage flow.
 
+## HARD REQUIREMENT — G2: `gh pr create` 必须显式 `--base`
+
+| 分支类型 | `--base` 值 |
+|---|---|
+| feature / bugfix / documentation / maintain | `develop` |
+| hotfix | `main` |
+
+缺 `--base` 时 `gh` 会 fallback 到 GitHub repo default (`main`)，导致
+非-hotfix 分支误合到 main。PR #158 (2026-05-12) 是该漂移的历史教训。
+
+钩子 `.claude/scripts/guard-git-workflow.ps1` 在 PreToolUse 拦截缺
+`--base` 的 `gh pr create`（详见 `.claude/settings.json`）。
+
 ## Template Selection Matrix
 
 | Template | Branch | Target | Special |

@@ -17,6 +17,22 @@ Creates and manages Git branches for **mj-agent** following the project's bare-r
 [mj-agent-git-issue] -> [mj-agent-git-branch] -> ...编码... -> [mj-agent-git-commit] -> ...
 ```
 
+## HARD REQUIREMENT — G1: 新分支必须 `git worktree add`
+
+新分支用：
+
+```bash
+git worktree add ../<branch-name> -b <branch-name>
+```
+
+**禁止** 在已有 worktree（`develop/`、`documentation/...`、`feature/...` 等）
+中 `git checkout -b` / `git checkout -B` / `git switch -c` / `git switch -C`。
+bugfix 同样适用 —— PR #154 (2026-05-12) 是 G1 规则诞生前的 precipitating
+incident（详见 `plans/[PLAN]_g1_g2_workflow_enforcement.md` 根因 + 时间线）。
+
+钩子 `.claude/scripts/guard-git-workflow.ps1` 在 PreToolUse 拦截 `git
+checkout -b`（详见 `.claude/settings.json`）。
+
 ## Prerequisite Check
 
 ```bash

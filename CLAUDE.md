@@ -394,9 +394,20 @@ thresholds): 文档长度区间 / 时态一致性 / 内容边界 / 摘要质量 
 Repo conventions (code-side, all governed by Track A standards):
 
 - Branches follow MJ-AgentLab's worktree model: 5 types
-  (`feature/bugfix/documentation/maintain/hotfix`). See
-  `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5
-  for the branch ↔ commit-type alignment matrix.
+  (`feature/bugfix/documentation/maintain/hotfix`).
+  - **Rule G1 (worktree-required)**: every new branch (incl. bugfix)
+    MUST be created via `git worktree add ../<name> -b <name>` —
+    `git checkout -b` inside an existing worktree is **forbidden**.
+    Enforced by `.claude/scripts/guard-git-workflow.ps1` PreToolUse hook.
+  - **Rule G2 (base=develop-except-hotfix)**: PRs from
+    feature/bugfix/documentation/maintain MUST set `--base develop` on
+    `gh pr create`; only hotfix targets main. Enforced by the same hook.
+  - Historical precipitating incidents: PR #158 (缺 `--base` 误合到 main) +
+    PR #154 (`git checkout -b` 而非 worktree-add) on 2026-05-12; recovery
+    closed by PR #159 (sync develop ← main). Root cause + 3-layer defense
+    design: `plans/[PLAN]_g1_g2_workflow_enforcement.md`. See
+    `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5
+    for the branch ↔ commit-type alignment matrix.
 - Commits follow `<type>(<scope>): <summary>` per
   `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`
   (state: draft; promotion criteria in §9). Types:
