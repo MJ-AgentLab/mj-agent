@@ -402,9 +402,10 @@ Repo conventions (code-side, all governed by Track A standards):
   - **Rule G2 (base=develop-except-hotfix)**: PRs from
     feature/bugfix/documentation/maintain MUST set `--base develop` on
     `gh pr create`; only hotfix targets main. Enforced by the same hook.
-  - Historical drift: PR #158 (G2) + PR #154 (G1) on 2026-05-12; recovery
-    closed by PR #159 (sync develop ← main). Root cause + prevention:
-    `plans/pasted-text-1-21-valiant-deer.md`. See
+  - Historical precipitating incidents: PR #158 (缺 `--base` 误合到 main) +
+    PR #154 (`git checkout -b` 而非 worktree-add) on 2026-05-12; recovery
+    closed by PR #159 (sync develop ← main). Root cause + 3-layer defense
+    design: `plans/[PLAN]_g1_g2_workflow_enforcement.md`. See
     `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5
     for the branch ↔ commit-type alignment matrix.
 - Commits follow `<type>(<scope>): <summary>` per
