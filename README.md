@@ -28,12 +28,38 @@ git remote add origin https://github.com/MJ-AgentLab/mj-agent.git
 git remote add gitee  https://gitee.com/ranzuozhou/mj-agent.git
 ```
 
-使用 PowerShell 脚本克隆 bare 仓库（worktree 工作流）：
+使用 PowerShell 脚本克隆 bare 仓库（worktree 工作流；在 `mj-agent/` 仓库的**父目录**运行）：
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File ..\mj-agent-clone-bare.ps1 `
+powershell -ExecutionPolicy Bypass -File .\mj-agent-clone-bare.ps1 `
     -RepoUrl https://github.com/MJ-AgentLab/mj-agent
 ```
+
+脚本会在父目录下创建 `mj-agent/.bare`（bare repo 实体）+ `mj-agent/develop`（默认 worktree）；后续按 5 分支模型用 `git -C develop worktree add ../<branch> -b <branch> develop` 起其他分支。
+
+## 技术栈
+
+| 类别 | 选型 | 版本 | 关键文档 |
+|---|---|---|---|
+| 运行时 | Python | 3.13 | [pyproject.toml](./pyproject.toml) |
+| 依赖管理 | uv | latest | [astral-sh/uv](https://github.com/astral-sh/uv) |
+| Agent 框架 | LangChain + LangGraph | 1.x / 1.1.8 | [CLAUDE.md §Architecture](./CLAUDE.md) |
+| 前端 UI | Chainlit | latest | [src/mj_agent/ui.py](./src/mj_agent/ui.py) |
+| 状态存储 | PostgreSQL（AsyncPostgresSaver） | 15+ | [ADR-006](./docs/adr/[ADR]_006_Fail_Safe_Reads.md) |
+| 容器化 | Docker Compose（4-file profile） | latest | [ADR-026](./docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md) |
+| LLM provider | Volcengine Ark / local-openai-compat | DeepSeek V3 / vLLM / SGLang / Ollama | [ADR-027](./docs/adr/[ADR]_027_LLM_Provider_Abstraction.md) |
+
+## 前置条件
+
+| 工具 | 用途 | 验证命令 |
+|---|---|---|
+| Python 3.13 | 运行时 | `python --version` |
+| uv | 依赖管理 | `uv --version` |
+| Git | 版本控制 | `git --version` |
+| PowerShell 5.1+ | 解密 secrets / worktree 脚本 | `$PSVersionTable.PSVersion` |
+| Docker Desktop（可选） | 起本地 postgres + redis | `docker --version` |
+
+完整环境搭建步骤见 [docs/guide/[GUIDE]_Quick_Start_Setup.md](./docs/guide/[GUIDE]_Quick_Start_Setup.md)（5 分钟速查版）或 [docs/guide/[GUIDE]_Developer_Onboarding.md](./docs/guide/[GUIDE]_Developer_Onboarding.md)（15 分钟完整版）。
 
 ## Quick start
 
@@ -50,9 +76,23 @@ uv run langgraph dev
 #  浏览器打开 Studio 提示的本地 URL，选 "mj_agent" 图
 ```
 
+## 常用开发命令
+
+```bash
+uv sync                                # 装依赖、锁版本
+uv run langgraph dev                   # LangGraph Studio
+uv run mj-agent serve                  # Chainlit UI
+uv run mj-agent check                  # 探测 DB + LLM 凭据（Docker healthcheck）
+uv run pytest tests/unit               # 单元测试（快；无外部依赖）
+uv run ruff check                      # Lint
+uv run mypy src/mj_agent                # Type-check（strict）
+```
+
+完整命令矩阵（含 pytest 四档 + Docker compose 三 profile）见 [CLAUDE.md §Commands](./CLAUDE.md)。
+
 ## LLM provider
 
-mj-agent 通过 `LLM_PROVIDER` 支持两种 provider（ADR-027 LLM Provider Abstraction；DGX 不是部署 profile，仅作为 LLM 端点供应方）：
+mj-agent 通过 `LLM_PROVIDER` 支持两种 provider（[ADR-027](./docs/adr/[ADR]_027_LLM_Provider_Abstraction.md)；DGX 不是部署 profile，仅作为 LLM 端点供应方）：
 
 | Provider | 端点 | 用途 |
 |---|---|---|
@@ -100,6 +140,35 @@ uv run pytest tests/integration
 uv run pytest tests/smoke -m smoke
 ```
 
+## 架构概览
+
+```text
+LangGraph Studio / Chainlit / CLI
+        │
+        ▼
+   make_graph()  ──► langchain.agents.create_agent(model, tools, system_prompt, middleware)
+        │                              │
+        │                              ├─ handle_sql_tool_errors（ADR-029；ValueError/RuntimeError → ToolMessage）
+        │                              │
+        ▼                              ▼
+   Skills（in-source canonical）     Tools
+   ├─ biz-domain-context             ├─ find_biz_context
+   ├─ qcm-analysis                   ├─ list_biz_tables / describe_biz_table
+   └─ safe-sql-analysis              └─ execute_sql  ──► L1 regex → L1b sqlglot → L3 RO conn → biz_dws / biz_dwd
+```
+
+完整架构图（Memory / CLI / Storage stack）见 [CLAUDE.md §Architecture](./CLAUDE.md)。
+
+## 文档导航
+
+| 主题 | 入口 |
+|---|---|
+| 5 分钟环境速查 | [docs/guide/[GUIDE]_Quick_Start_Setup.md](./docs/guide/[GUIDE]_Quick_Start_Setup.md) |
+| 15 分钟新成员上手 | [docs/guide/[GUIDE]_Developer_Onboarding.md](./docs/guide/[GUIDE]_Developer_Onboarding.md) |
+| 分析师 Day-One | [docs/guide/[GUIDE]_Analyst_Day_One.md](./docs/guide/[GUIDE]_Analyst_Day_One.md) |
+| 项目入口 INDEX | [docs/INDEX.md](./docs/INDEX.md) |
+| AI 高频上下文 | [CLAUDE.md](./CLAUDE.md) |
+
 ## Data boundary
 
 mj-agent 仅访问 上游业务系统 业务指标域：
@@ -110,15 +179,61 @@ mj-agent 仅访问 上游业务系统 业务指标域：
 权威权限定义位于 上游业务系统 仓库
 `sql/migrations/repeatable/R__analyst_permissions.sql`。
 
+## 常见问题速查
+
+<details>
+<summary><strong>ARK_API_KEY 缺失 / LLMConfigError</strong></summary>
+
+跑 `.\scripts\setup-env.ps1` 解密团队 secrets；无团队口令则 `cp .env.example .env` 后手填本地 `ARK_API_KEY`。
+
+</details>
+
+<details>
+<summary><strong>LangGraph Studio 不弹浏览器 / 2024 端口占用</strong></summary>
+
+端口默认 `http://127.0.0.1:2024`；占用时用 `uv run langgraph dev --port 2025`，浏览器手工打开。详细诊断见 [docs/runbook/dev_studio_walkthrough.md](./docs/runbook/dev_studio_walkthrough.md)。
+
+</details>
+
+<details>
+<summary><strong>pytest smoke 全部 skip</strong></summary>
+
+预期行为——`conftest.py` 在凭据缺失时自动 skip 而非 fail；`pyproject.toml` `addopts = "-m 'not smoke'"` 默认排除。需真跑 `uv run pytest tests/smoke -m smoke` 且 `.env` 完整。
+
+</details>
+
+<details>
+<summary><strong>Docker compose 起不来 / mj-system-backend-network 不存在</strong></summary>
+
+mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [infra/docker/README.md](./infra/docker/README.md) + [ADR-008](./docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md)。
+
+</details>
+
+<details>
+<summary><strong>.env 中文字符报错（langgraph dev 启动失败）</strong></summary>
+
+`.env.example` 保持 ASCII；中文注释会让 `python-dotenv` 在中文 Windows 上以默认 GBK 解码失败。注释改英文或删除。
+
+</details>
+
+## 贡献指南
+
+- 提交 PR 前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)（分支策略 / commit 规范 / PR 流程 / Code Review 标准）
+- 文档贡献请按 [docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md](./docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) v2.2 三轨制治理（code / agent / engineering-workflow / shared）
+- 术语澄清查 [GLOSSARY.md](./GLOSSARY.md)
+
 ## 项目结构（Phase 0）
 
 ```text
 src/mj_agent/
-├── agent.py              # create_agent — LangGraph 编译入口
+├── agent.py              # make_graph — LangGraph 编译入口
+├── llm.py                # make_llm — provider 分支 factory（ADR-027）
 ├── config.py             # pydantic-settings
 ├── prompts/system.md     # 身份 + ADR-000 三原则
-├── skills/               # SKILL.md progressive disclosure
-├── tools/sql/            # guardrail / execute / introspect
+├── skills/               # SKILL.md progressive disclosure（3 active）
+├── tools/                # find_biz_context + sql/{guardrail,precheck,execute,introspect}
+├── middleware/           # tool_errors.py（ADR-029）
+├── memory/               # AsyncPostgresSaver checkpointer
 └── integrations/         # 只读 psycopg 连接池
 
 tests/

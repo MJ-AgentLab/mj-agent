@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-05-06
+updated: 2026-05-18
 state: draft
 version: v0.1
 track: code
@@ -22,12 +22,12 @@ owner: 项目负责人
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
 > **版本**：v0.1
-> **最后更新**：2026-05-06
-> **派生自**：mj-agent 原生
+> **最后更新**：2026-05-18
+> **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
-> GUIDE）、[[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]、
-> [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]、
-> [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
+> GUIDE）、[[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]、
+> [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]、
+> [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]
 
 ---
 
@@ -56,14 +56,18 @@ owner: 项目负责人
 ## 目录
 
 - §0 适用场景
+- §0.5 权限/账号申请清单（首次入职先跑这张表）
 - §1 仓库与远端
 - §2 工作目录与分支
 - §3 本地环境
+- §3.5 仓库结构鸟瞰
 - §4 测试运行
-- §5 双轨道文档约定
+- §5 三轨道文档约定
 - §6 提交与推送
+- §6.5 G1/G2 PreToolUse hook 防护
 - §7 LangGraph Studio 首跑
 - §8 速查表
+- §9 Day-1 打勾清单
 
 ---
 
@@ -79,6 +83,21 @@ owner: 项目负责人
 读完本份后下一站：根据角色 / 兴趣，进入 [[../infrastructure/git/INDEX|git GUIDEs]]
 深入或 [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §3]]
 学认证类型的 authoring 细节。
+
+## §0.5 权限/账号申请清单
+
+首次入职先跑这张表——把账号/凭据全拿齐能避免后续每节回头补卡。
+
+| 资源 | 用途 | 申请方式 |
+| --- | --- | --- |
+| GitHub `MJ-AgentLab` org 成员 | clone / PR | 项目负责人邀请（飞书工单如适用） |
+| Gitee `ranzuozhou/mj-agent` 协作者 | 镜像推送 | 项目负责人邀请（飞书工单如适用） |
+| Volcengine Ark API key | LLM 调用（默认 provider） | 团队 Ark 企业账号子 key（合规已确认 ZDR） |
+| analyst PG RO 账号 | biz_dws / biz_dwd 读 | 上游业务系统仓库 `R__analyst_permissions.sql` 已 GRANT；问运维要 `POSTGRES_ANALYST_USER/PASSWORD` |
+| LangSmith API key | trace 调试（可选） | 团队 LangSmith 工作区 invite |
+| 团队 secrets 口令 | `.\scripts\setup-env.ps1` 解密 | 项目负责人发放（口令轮换 2 月一次；详见 [[../../config/README|config/README.md]] §6） |
+
+补完后回到 §1 顺序往下读。
 
 ## §1 仓库与远端
 
@@ -120,6 +139,26 @@ uv run langgraph dev                   # 启 LangGraph Studio
 
 `.env` 字段说明在 `.env.example`；secrets 治理流程在 `config/README.md`。
 
+## §3.5 仓库结构鸟瞰
+
+```text
+src/mj_agent/
+├── agent.py             # make_graph() — LangGraph 编译入口（langgraph.json 指向）
+├── llm.py               # make_llm() — provider 分支 factory（ADR-027）
+├── config.py            # pydantic-settings over .env
+├── prompts/system.md    # 全局身份 + ADR-000 三原则
+├── skills/              # in-source Track B SKILL.md（业务能力；3 active）
+├── tools/               # find_biz_context + sql/{guardrail,precheck,execute,introspect}
+├── middleware/          # tool_errors.py @wrap_tool_call（ADR-029）
+├── memory/              # AsyncPostgresSaver checkpointer
+├── integrations/        # mj_system_db.py 只读 psycopg pool
+├── biz_catalog/         # qcm_catalog.yaml 镜像上游业务系统数据字典
+├── server/              # cli.py（typer: mj-agent serve / check）
+└── ui.py                # Chainlit 入口
+```
+
+读这张图先抓三个关键节点：(1) `agent.py` 是 LangGraph 编译入口（`langgraph.json` 指向）；(2) `tools/sql/` 是 4 层数据边界中 L1+L1b+L3 的实现；(3) `skills/` + `prompts/` 是 Track B in-source canonical，由 Python loader 剥 frontmatter 后喂给 LLM。
+
 ## §4 测试运行
 
 四档测试；命令矩阵见 [[../../CLAUDE.md#Commands|CLAUDE.md Commands]]：
@@ -136,7 +175,7 @@ uv run pytest tests/smoke -m smoke   # 需 DB + LLM（无凭据时 skip）
 ## §5 三轨道文档约定
 
 mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级；
-[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10）：
+[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10）：
 - **Track A 代码侧**（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
   / STANDARD-code / ISSUE-code / ASSESSMENT-code）——
   [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
@@ -144,9 +183,9 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
   [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - **Track C 工程编排侧**（`.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json`
   / HITL_Prompt 等）—— [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]
-  + Meta v2.1 §3.10 / §7.7
+  + Meta v2.2 §3.10 / §7.7
 - **Meta 元层**（types / layers / lifecycle / archive / `track`）——
-  Meta_Framework v2.1
+  Meta_Framework v2.2
 
 > **⚠️ 两类 "skill" 严格区分**（误判事故防护）：
 > - **Track B 业务 skill**：`src/mj_agent/skills/<name>/SKILL.md` —— 运行时 LLM 输入；
@@ -178,6 +217,22 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 - 推送前 7 步检查：[[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git Push Workflow]]
 - PR 描述模板：[[../infrastructure/git/[GUIDE]_PR_Description_Convention|PR Description Convention]]
 
+## §6.5 G1/G2 PreToolUse hook 防护
+
+`.claude/scripts/guard-git-workflow.ps1` 是 PreToolUse hook（在 `.claude/settings.json`
+`hooks.PreToolUse[matcher="Bash"]` 注册；通过 `pwsh -NoProfile -File` 调用），
+对每条 Bash 命令做正则检查，拦截两类高频误操作：
+
+- **G1 worktree-required**：拦 `git checkout -b/-B` 与 `git switch -c/-C`，引导用
+  `git -C develop worktree add ../<branch> -b <branch> develop`
+- **G2 base=develop-except-hotfix**：拦 `gh pr create` 不带 `--base` / `-B`，
+  引导 non-hotfix 用 `--base develop`（仅 hotfix 允许 `--base main`）
+
+Hook 命令 exit code 2 让 Claude Code 把 stderr 经 agent 视图喂回，AI 立即看到违例
+并自动修复。事故起源：PR #158（缺 `--base` 误合到 main）+ PR #154（`git checkout -b`
+而非 worktree-add）于 2026-05-12；恢复闭环 PR #159 + 3 层防御设计见
+[[../../plans/[PLAN]_g1_g2_workflow_enforcement|PLAN_g1_g2_workflow_enforcement]]。
+
 ## §7 LangGraph Studio 首跑
 
 启动后浏览器会打开 Studio URL（默认 `http://127.0.0.1:2024`）；选 graph
@@ -207,15 +262,57 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 | 路线图 | `plans/mj-agent-roadmap-v1.6.md` |
 | MVP plan | `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md` |
 
+## §9 Day-1 打勾清单
+
+逐项跑完即完成 Day-1 上手；按段顺序对应 §0.5/§1-§7。
+
+**账号准备**（先跑 §0.5）
+
+- [ ] GitHub `MJ-AgentLab` org 成员邀请收到并接受
+- [ ] Gitee `ranzuozhou/mj-agent` 协作者权限拿到
+- [ ] Ark API key + analyst PG RO + 团队 secrets 口令收到
+
+**环境就绪**（§3）
+
+- [ ] `git -C develop worktree add ../feature/<my-first> -b feature/<my-first> develop` 起首条 PR worktree
+- [ ] `uv sync` 成功（首次约 1-3 分钟）
+- [ ] `.\scripts\setup-env.ps1` 解密 `.env`（或 fallback `cp .env.example .env`）
+- [ ] `uv run mj-agent check` 输出 `db: ok` + `llm provider = ark (endpoint=...)`
+
+**跑通 hello**（§4 + §7）
+
+- [ ] `uv run pytest tests/unit` 全绿
+- [ ] `uv run langgraph dev` 启 Studio，浏览器自动打开 `http://127.0.0.1:2024`
+- [ ] Studio 选 `mj_agent` graph，首问"biz_dws 里有哪些日度总量表？"
+- [ ] 回复含 `dws_qcm_*_daily_total` 表名清单（说明 `find_biz_context + list_biz_tables` 调通）
+
+**文档第一眼**（§5）
+
+- [ ] 已读 [[../INDEX|docs/INDEX.md]]
+- [ ] 已读 [[../../CLAUDE|CLAUDE.md]] §Documentation 三轨段
+- [ ] 已记住三类 SKILL 区分（in-source / in-tree workflow / marketplace plugin）
+
+**提交链路**（§6 + §6.5）
+
+- [ ] 已配 `.claude/settings.json` PreToolUse hook（自动从仓库继承；首次 Claude Code 启动时加载）
+- [ ] 已读 [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message 规范]] §4 scope 派生规则
+
+**学习包**
+
+- [ ] 已读 [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] 数据边界 4 层
+- [ ] 已读 [[../adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]] LLM provider 二分
+
 ---
 
 ## 关联文档
 
 - [[../infrastructure/git/INDEX|git GUIDEs]]（4 份）
-- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]
-- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message v1.0]]
+- [[[GUIDE]_Quick_Start_Setup|Quick Start Setup（5 分钟赶时间版）]]
+- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
+- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
+- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]
+- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]
+- [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message Convention]]
 - [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]]
 - [[../INDEX|docs/INDEX]]
 
@@ -224,3 +321,4 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-05-06 | v0.1 | 初稿（PLAN G PR2 落地） |
+| 2026-05-18 | v0.1（in-place） | 4 处增强（§0.5 权限清单 / §3.5 仓库结构鸟瞰 / §6.5 G1/G2 hook 防护 / §9 Day-1 打勾清单）+ 关联文档 + §5 文档版本号刷新到 v2.2 / v1.1；借鉴 mj-system Developer_Onboarding 写法，内容按 mj-agent 自身资产派生 |
