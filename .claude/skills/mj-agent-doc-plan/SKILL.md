@@ -1,6 +1,6 @@
 ---
 name: mj-agent-doc-plan
-description: This skill evaluates what documentation is needed for an mj-agent topic, module, or change scope by analyzing diff/Issue/SPEC scope against Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1 requirements (12 canonical types + tri-track classification). Make sure to use this skill whenever the user says "评估文档需求", "文档规划", "需要哪些文档", "documentation gap analysis", "evaluate documentation for", "plan docs for", "what documentation does X need", "Documentation Decision", "§7.1 矩阵", "doc gap" in the mj-agent context. ⚠ Direction-distinct from mj-agent-flow-plan: this skill evaluates **what documentation is needed** (§7.1 Documentation Decision matrix sub-set only); flow-plan authors the **full working Plan body** (HITL Stage 4) and sub-calls this skill for the §7.1 sub-section. Outputs a 10-row Documentation Decision matrix + dependency-ordered task list. Do not use for: writing a single known document (use mj-agent-doc-author), full Plan body authoring (use mj-agent-flow-plan, this skill is its sub-routine), or validating a written document (use mj-agent-doc-validate).
+description: This skill evaluates what documentation is needed for an mj-agent topic, module, or change scope by analyzing diff/Issue/SPEC scope against Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 requirements (12 canonical types + tri-track classification + 项目根 markdown 5 件治理例外 per §2.6). Make sure to use this skill whenever the user says "评估文档需求", "文档规划", "需要哪些文档", "documentation gap analysis", "evaluate documentation for", "plan docs for", "what documentation does X need", "Documentation Decision", "§7.1 矩阵", "doc gap" in the mj-agent context. ⚠ Direction-distinct from mj-agent-flow-plan: this skill evaluates **what documentation is needed** (§7.1 Documentation Decision matrix sub-set only); flow-plan authors the **full working Plan body** (HITL Stage 4) and sub-calls this skill for the §7.1 sub-section. Outputs a 10-row Documentation Decision matrix + dependency-ordered task list. Identifies 3 new file types (CONTRIBUTING.md / GLOSSARY.md / Quick_Start_Setup.md) introduced by PR #171-#174. Do not use for: writing a single known document (use mj-agent-doc-author), full Plan body authoring (use mj-agent-flow-plan, this skill is its sub-routine), or validating a written document (use mj-agent-doc-validate).
 ---
 
 # mj-agent Doc Planner
@@ -12,7 +12,8 @@ description: This skill evaluates what documentation is needed for an mj-agent t
 **Reference**:
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5 Stage 4 Plan + §4.4 Stage 3 Repo Scan §7.1
 - mj-system `[STANDARD]_AI_Engineering_Repo_Scan` §7.1（Lite Phase A 占位上游 Documentation Decision 矩阵权威）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]]（12 canonical 类型 + tri-track 分类）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]]（12 canonical 类型 + tri-track 分类 + §2.6 项目根 markdown 5 件治理例外）
+- [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
 
 ## When to Use
 
@@ -88,10 +89,11 @@ ls docs/rule/*.md docs/adr/*.md docs/guide/*.md docs/runbook/*.md docs/infrastru
 
 ## Phase 2: Type Evaluation（10 类决策）
 
-### 类型决策树（Meta v2.1 §3 + ADR-014 §决策点 4 边界表）
+### 类型决策树（Meta v2.2 §3 + ADR-014 §决策点 4 边界表 + §2.6 项目根例外）
 
 | 内容性质 | 类型 | 默认 track | 目录 |
 |---|---|---|---|
+| **项目根 5 件**（项目入口/协作/版本日志/术语索引/AI 缓存） | **不入 canonical 治理表**（per Meta v2.2 §2.6 例外；不写 frontmatter；A1-A3 不适用；不入本 Documentation Decision matrix；语法约束见 GitHub_Markdown §14） | — | 项目根：README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md |
 | 短期任务执行计划（怎么推进） | `[PLAN]` | working layer 不需 track | `plans/` |
 | 接口契约 / 行为不变量 / 数据 schema | `[SPEC]` | shared / agent / code 按主题 | `docs/design/{module}/` |
 | 架构决策 / 长期约束 / 备选方案对比 | `[ADR]` | shared / engineering-workflow 按主题 | `docs/adr/` |
