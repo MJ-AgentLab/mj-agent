@@ -4,7 +4,7 @@ domain: SYS
 summary: 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018 决议）；3-PR 序列第 2 步；其他 §1-§10 沿用 v2.1
 owner: 项目负责人
 created: 2026-05-08
-updated: 2026-05-09
+updated: 2026-05-18
 state: active
 version: v2.2
 track: shared
@@ -493,6 +493,38 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 **当前状态**（2026-05-09）：mj-agent plans/ 中最早 completed 文件距今 < 1 月（PLAN_F / PLAN_G 等）；6 月阈值未到；本节仅指引；首次 GC 操作约在 2026-11+。
 
 **Cross-ref**：[[../adr/[ADR]_023_Stale_Doc_And_Plan_GC_Infra|ADR-023]]（infra 决策 + scripts 派生）；ADR-021 §Consequences 负面 #2；frozen snapshot 原则（与 ADR-019 一致）。
+
+#### 5.11.6 Retroactive 补落 working 文档（v2.2 in-place 加；2026-05-18）
+
+> 落实 working 文档生命周期治理的"漏落盘事后补救"路径，区别于 §5.11.2 Stage 17 自动化（`active → completed`）和 §5.11.5 archived 物理归档（`completed → archived`）。
+
+**触发场景**：任务实施期间漏按 §5.11.1 落盘 `plans/[PLAN]_*.md` 或 `plans/[INTAKE]_*.md`，事后审计发现且符合以下任一条件时，应 retroactive 补落：
+
+1. **多 PR 链** ≥ 3 PR 且不满足 [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.2 Stage 4 豁免（即不是单文件 Low Risk bugfix/documentation）
+2. **High 风险**（含 [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.1 mj-agent 专属 4 项 trigger 之一：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax）
+3. **跨 ≥ 5 个 canonical 文档** 或 **改动 Track C primary STANDARD**（HITL_Prompt）
+
+**Retroactive 补落规则**：
+
+- **state 直接 `completed`**：所有关联 PR 已 merged → `state: completed` + `completed: <最后 PR merged 日期 ISO>`（不走 `draft → active` 中间态）
+- **frontmatter 加 `retroactive: true` 字段**：机器可识别；与"真实 Stage 0/4 落盘"区分（`scripts/check_frontmatter.py` 对未知字段宽容，加此字段不破坏 schema）
+- **头部 `> [!warning]` 声明框**：醒目提示"事后回填，非真实 Stage 0/4 输出"；引导读者关注内容 trace 而非作为流程"标准模板"使用
+- **凭证 trace 段必加**：每段内容来源（PR description / commit / memory / CLAUDE.md update / vault 草稿）逐段引用，避免 time-shift bias
+- **本节追加 1 行 retroactive 记录**：按下方 § Retroactive 落地记录 格式
+
+**不补落判定**（事后审计发现但凭证已充分，可跳过补落）：满足以下任一即可不补：
+
+- `CLAUDE.md` 已有同等深度的 "YYYY-MM-DD update" 段记录
+- memory feedback/project 文件已完整覆盖决策点
+- commit message + PR body 已含 7 段 PLAN 同等信息（per [[[PLAN]_multi_env_dgx_mcp_bundle|[PLAN]_multi_env_dgx_mcp_bundle]] mj-agent native 7 段结构）
+
+#### 5.11.6.1 Retroactive 落地记录
+
+按时间序追加。
+
+- **2026-05-18** — 首次 retroactive：**cross-repo decoupling cleanup** 任务（PR [#118](https://github.com/MJ-AgentLab/mj-agent/pull/118) / [#121](https://github.com/MJ-AgentLab/mj-agent/pull/121) / [#122](https://github.com/MJ-AgentLab/mj-agent/pull/122) / [#123](https://github.com/MJ-AgentLab/mj-agent/pull/123) / [#124](https://github.com/MJ-AgentLab/mj-agent/pull/124)，2026-05-11 02:44-04:47Z，5 PR / 2h 03min / 85 文件 / +1755/-462 lines）实施期间未落盘 INTAKE/PLAN，事后补 [[[INTAKE]_cross_repo_decoupling_cleanup|[INTAKE]_cross_repo_decoupling_cleanup]] + [[[PLAN]_cross_repo_decoupling_cleanup|[PLAN]_cross_repo_decoupling_cleanup]]（均 `state: completed` + `retroactive: true`）。凭证密度评估：memory `project_cross_repo_decoupling_completion.md` + CLAUDE.md "项目起源说明（2026-05-11 update）" 段 + 5 PR description 完整 → 重建可信。流程债根因：实施跳过 Stage 0 Intake 落盘判定（[[../../.claude/skills/mj-agent-flow-intake/SKILL]] §2.1 6 项触发未识别）+ Stage 4 Plan body 落盘漏（HITL_Prompt §3.2 5 PR 链不豁免）；mj-agent 已通过 PR #163 PreToolUse hook 防 G1/G2 漏，工作流 SKILL 加硬性 gate（参考 hook-based defense pattern）留独立 follow-up 评估。
+
+**Cross-ref**：[[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（working doc 4 态机框架决策；archived per PR #122，wikilink 由 [[../adr/[ADR]_020_Archive_Auto_Discovery|ADR-020]] auto-discover 解析）；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.2 Stage 4 豁免 / §4.15 Rule 12 PR-state 联动；[[../../.claude/skills/mj-agent-flow-intake/SKILL]] §2.1 落盘判定。
 
 ---
 
