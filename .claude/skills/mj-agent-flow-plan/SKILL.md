@@ -257,7 +257,7 @@ state: "active"
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5（Stage 4 Rules + Output 字段）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` §7.1（Lite Phase A 占位）
 - 现存 `plans/[PLAN]_*.md` 范例（mj-agent 当前 Plan 风格 reference）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（working vs canonical 边界）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]（working vs canonical 边界）
 - `.claude/skills/mj-agent-doc-plan/SKILL.md`（PR-B4 落地，Step 3 子例程）
 - `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（Stage 3 前置）
 - `.claude/skills/mj-agent-doc-author/SKILL.md`（PR-B4 落地，Stage 6 接力）

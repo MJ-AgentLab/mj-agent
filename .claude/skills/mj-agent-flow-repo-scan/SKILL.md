@@ -304,7 +304,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` v1.0（Lite Phase A 占位）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.4
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]]（Documentation Decision frontmatter / state 规则）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]（Documentation Decision frontmatter / state 规则）
 - [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）
 - mj-system `.claude/skills/mj-sys-flow-repo-scan/SKILL.md`（直接派生源）
 
