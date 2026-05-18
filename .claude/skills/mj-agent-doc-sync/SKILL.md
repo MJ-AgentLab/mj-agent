@@ -7,7 +7,9 @@ description: This skill detects documentation impact from mj-agent code changes 
 
 ## Overview
 
-检测 mj-agent code 改动对 docs 的影响，执行更新，修复 cross-references，同步 INDEX.md + CLAUDE.md（tri-track 三段 allowlist）。**Stage 8 sub** of HITL_Prompt 17-stage 闭环。
+检测 mj-agent code 改动对 docs 的影响，执行更新，修复 cross-references，同步 INDEX.md + CLAUDE.md（tri-track 三段分组 + §6.4 **4 类 allowlist**）。**Stage 8 sub** of HITL_Prompt 17-stage 闭环。
+
+> **§6.4 4 类 allowlist**（PR #173 v2.2 显式展开）：类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 **mj-agent 特化 runtime 语义**（LLM provider matrix + Data boundary L1-L4 + HITL gates）。命中任一类才触发 A6 sync 检查；其余 doc 改动默认不进 CLAUDE.md。
 
 ## Entry Points
 
@@ -64,12 +66,12 @@ digraph sync {
 
 | Code 路径 | 影响的 docs |
 |---|---|
-| `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Architecture" 段 / `docs/runbook/dev_studio_walkthrough.md` |
-| `src/mj_agent/llm.py` | CLAUDE.md "LLM provider" 段 / Studio walkthrough |
+| `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Architecture" 段 / `README.md` "架构概览" 段（PR #171 起新加；ASCII 拓扑图，需保持简化版与 CLAUDE.md 同步）/ `docs/runbook/dev_studio_walkthrough.md` |
+| `src/mj_agent/llm.py` | CLAUDE.md "LLM provider" 段 / `README.md` "LLM provider" 段（PR #171 保留；provider 表 + .env 配置）/ Studio walkthrough / **§6.4 类 4 命中**（runtime 语义）|
 | `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1 必停 10/11；建议先 /mj-agent-runtime-prompt-version-bump（PR-C2）propose diff |
 | `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1 必停 10；建议先 /mj-agent-runtime-skill-doc-improve（PR-C2）propose diff |
-| `src/mj_agent/tools/sql/*.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Data boundary" 段 / ADR-006 |
-| `src/mj_agent/integrations/mj_system_db.py` | CLAUDE.md "Data boundary" / ADR-006 / ADR-009 |
+| `src/mj_agent/tools/sql/*.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Data boundary" 段 / `README.md` "Data boundary" 段（PR #171 保留）/ ADR-006 / **§6.4 类 4 命中** |
+| `src/mj_agent/integrations/mj_system_db.py` | CLAUDE.md "Data boundary" / `README.md` "Data boundary" 段 / ADR-006 / ADR-009 / **§6.4 类 4 命中** |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `docs/design/agent/[SPEC]_biz_catalog_*.md` / `scripts/diff_biz_schema.py` 输出 |
 | `src/mj_agent/config.py` | CLAUDE.md "Environment variables" / `.env.example` / `config/README.md` |
 | `tests/{unit,eval,integration,smoke,contract}/` | CLAUDE.md "Commands" pytest 段 |
@@ -113,11 +115,14 @@ per affected doc：
 **执行前 D-03 检查**：CLAUDE.md 需修改 > 10 行 → **D-03** 确认
 
 1. **INDEX.md**：手动更新对应 section 的 entry（mj-agent 当前未有 validator-owned managed-block 自动重建；Phase 2+ 落地）
-2. **CLAUDE.md（tri-track 三段，per Meta v2.1 §6.4.1）**：按改动 doc 的 `track` 值落入对应段：
-   - `track: code` → `## Code-Side Documentation` 段
-   - `track: agent` → `## Agent-Side Documentation` 段
-   - `track: engineering-workflow` → `## Engineering-Workflow Documentation` 段
-   - `track: shared` → 元规则段（顶部）
+2. **CLAUDE.md sync 两轴**：
+   - **触发轴**：§6.4 **4 类 allowlist**（Meta v2.2 §6.4，PR #173 显式展开）—— 类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 **mj-agent 特化 runtime 语义**；命中任一才触发 A6 sync
+   - **落位轴**：tri-track 三段分组（Meta v2.2 §6.4.1）—— 按改动 doc 的 `track` 值落入对应段：
+     - `track: code` → `## Code-Side Documentation` 段
+     - `track: agent` → `## Agent-Side Documentation` 段
+     - `track: engineering-workflow` → `## Engineering-Workflow Documentation` 段
+     - `track: shared` → 元规则段（顶部）
+   - **项目根 markdown 例外**：README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md 改动（per Meta v2.2 §2.6）不进入 tri-track 落位轴（无 `track` 字段）；但若触发 §6.4 任一类（如 README "LLM provider" 段触类 4），仍需 A6 sync 检查
 
 Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 sync。
 
@@ -170,10 +175,10 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 ## Reference Files
 
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9 Rule 5a（反向扫描含 in-source canonical）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §6.4.1（CLAUDE.md tri-track sync）
-- [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 硬约束）
-- [[../../../CLAUDE.md|CLAUDE.md]] "Architecture" / "Data boundary" / "Commands" 段（high-frequency sync 目标）
-- mj-system `.claude/skills/mj-sys-doc-sync/SKILL.md`（直接派生源；mj-agent 加 mapping 表 + Q-B1 + tri-track CLAUDE.md sync）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 治理例外）+ §6.4（4 类 allowlist；PR #173 显式展开）+ §6.4.1（CLAUDE.md tri-track 三段分组）
+- [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
+- [[../../../CLAUDE.md|CLAUDE.md]] "Architecture" / "Data boundary" / "Commands" / "LLM provider" 段（high-frequency sync 目标；§6.4 类 1-4 全覆盖）
+- mj-system `.claude/skills/mj-sys-doc-sync/SKILL.md`（直接派生源；mj-agent 加 mapping 表 + Q-B1 + tri-track CLAUDE.md sync + 项目根例外）
 
 ## Anti-patterns
 
@@ -181,6 +186,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 - **不要** auto-edit CLAUDE.md（D-03 manual；§6.4.1 三段分流不可自动）
 - **不要** 跳过 §7.2.1 反扫的 mj-agent 扩展（in-source canonical body 是反扫目标）
 - **不要** 在 D-02/D-03 触发时跳过用户确认
+- **不要** 主动维护项目根 markdown 5 件的 frontmatter（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md）—— per Meta v2.2 §2.6 例外，项目根 markdown 不写 frontmatter；A1-A3 不适用；本 skill 仅在「项目根 markdown 段内容反映了 §6.4 4 类某项」时同步内容，不补 frontmatter
 
 ## Handoff
 
