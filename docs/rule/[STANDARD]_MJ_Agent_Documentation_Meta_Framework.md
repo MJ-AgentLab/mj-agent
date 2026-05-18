@@ -173,6 +173,38 @@ docs/rule/
 
 > **过渡**：v2.1 → v2.2 落地后，6 active STANDARDs 全部 stable path（无后缀）。Meta v2.1 归档至 `docs/archive/rule/`。其他 5 STANDARDs 不触发 archive ceremony（rule application 解读；ADR-018 §Decision）。
 
+### 2.6 项目根目录具名特殊文件（v2.2 in-place 加；2026-05-18）
+
+> **起源**：借鉴 mj-system `[STANDARD]_Documentation_Management_Framework.md` §3.1（根目录特殊文件清单）的**结构与判定模式**；具体文件清单 + 职责描述按 mj-agent 自身资产派生（与 mj-agent 现实根目录文件状态一致）。详见 [[../glossary/upstream_business_warehouse|跨项目 attribution]]。
+
+以下文件保留在项目根目录，**不使用** `[TYPE]_` 前缀；被单独点名赋予固定职责：
+
+| 文件 | 职责 |
+|------|------|
+| `README.md` | 项目入口和快速启动 |
+| `CONTRIBUTING.md` | 协作与提交流程（摘要 + 跳转 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` + `docs/infrastructure/git/`） |
+| `CHANGELOG.md` | 版本变更日志 |
+| `GLOSSARY.md` | 项目术语索引（不与 `docs/glossary/<topic>.md` 专题词典重叠） |
+| `CLAUDE.md` | AI 高频上下文缓存（同步策略见 §6.4） |
+
+#### 2.6.1 治理例外条款
+
+项目根 5 文件**不进入 canonical 治理表**：
+
+- 不强制 frontmatter（[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1 A2 frontmatter schema 校验不适用）
+- 不强制 GUIDE / STANDARD 等 canonical 类型 body 骨架
+- 不计入 A1-A3 PR 门禁校验
+
+**但仍受**：
+
+- A4 wikilink 完整性（`[[...]]` 形式；普通 markdown 链接不强制）
+- A6 CLAUDE.md sync 检查（§6.4 4 类 allowlist 触发时同步）
+- [[STANDARD]_GitHub_Markdown|GitHub_Markdown]] §14 项目根 README 与 Markdown 特例（语法约束）
+
+#### 2.6.2 与 §4.3.1 path-to-track 决策树的衔接
+
+为避免 §2.6 例外与 §4.3.1 决策树之间出现解释空白：§4.3.1 决策树第 **0 条**显式覆盖项目根 markdown 归类（"不适用 track"），具体见 §4.3.1。
+
 ---
 
 ## 3. 类型与目录
@@ -319,7 +351,8 @@ track: code | agent | engineering-workflow | shared
 
 边界 artifact 归属规则见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4。
 
-> **path-to-track 决策树**（v2.1 引入，避免 PR 反复争议）：
+> **path-to-track 决策树**（v2.1 引入，避免 PR 反复争议；v2.2 加 0 条覆盖项目根 markdown）：
+> 0. 路径是项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
 > 1. 路径在 `src/mj_agent/{skills,prompts}/**`？→ **agent**
 > 2. 路径在 `src/mj_agent/{其他}/**`？→ **code**
 > 3. 路径在 `.claude/**` 或 `.mcp.json` 或 `docs/rule/[STANDARD]_*_HITL_Prompt*.md` / `_AI_Engineering_*.md` / `_Claude_Code_Settings_*.md` / `_MCP_Server_Governance_*.md`？→ **engineering-workflow**
@@ -532,9 +565,22 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 > 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §6 全部规则。**仅更新 §6.4.1**：
 
-### 6.4 CLAUDE.md 同步策略
+### 6.4 CLAUDE.md 同步策略（v2.2 显式展开 + 加 mj-agent 特化第 4 类）
 
-沿用 v2.0 §6.4。三类 allowlist 不变。
+> v2.2 起本节**显式展开** v2.0 隐式继承的 3 类 allowlist 内容，并加入 mj-agent 特化的第 4 类「runtime 语义」（CLAUDE.md 中占比 ~40% 的 mj-agent native 高频内容）。起源借鉴 mj-system `[STANDARD]_Documentation_Management_Framework.md` §6.4 三类 allowlist 写法；类目内容按 mj-agent 自身资产派生。详见 [[../glossary/upstream_business_warehouse|跨项目 attribution]]。
+
+以下 4 类文档变更触发 §7.1 A6 PR gate（同步检查 `CLAUDE.md`）：
+
+| 类别 | mj-agent 具体例 |
+|---|---|
+| **类 1 — 全局高频标准** | trio（Meta / Code_Side / Agent_Side）+ HITL_Prompt + Commit_Message + GitHub_Markdown + 跨轨元规则 ADR（如 011 / 012 / 013 / 014 / 017 / 018） |
+| **类 2 — 高频运行信息** | 入口命令矩阵（`uv run mj-agent serve` / `check` / `langgraph dev`）+ 端口规则（8000 Chainlit / 2024 LangGraph Studio）+ 关键环境变量（`ARK_API_KEY` / `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`） |
+| **类 3 — 项目目录入口** | `docs/INDEX.md` + 核心运行时模块位置（`src/mj_agent/{agent,llm,config}.py` + `tools/` / `skills/` / `prompts/`） |
+| **类 4（v2.2 mj-agent 特化加） — runtime 语义** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[../adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（regex guardrail / sqlglot precheck / SKILL semantics / read-only conn + GRANT；[[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]]） |
+
+其余文档默认通过按需读取获取；**不要求**把全部细节缓存进 `CLAUDE.md`。
+
+> **mj-agent 特化第 4 类理由**：CLAUDE.md 中 LLM provider + Data boundary + HITL gates 三块占比 ~40%，是 mj-agent native 而 mj-system 无的内容；显式列入避免 reviewer 在「这条规则改是否要 sync CLAUDE.md」上反复判断。
 
 #### 6.4.1 CLAUDE.md 三轨分段（v2.1 升级；v2.0 双轨分段）
 
@@ -679,6 +725,16 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
    - (b) 多 active 主版本并存（§4.4.2 例外）
 3. **Drop-suffix rename**（如 `_v1.0.md` → 无后缀）：视为 rule application；不触发 archive
 4. **Legacy 归档**：必带 `_vX.Y` 或 `_pre_vX.Y` 后缀（§4.4.3）
+
+---
+
+## 修订记录（v2.2 in-place sustained 序列）
+
+本节按时间序追加 v2.2 sustained 内 in-place 字段补充记录（区别于触发 archive ceremony 的 substantive evolution）。判定依据：§5.9 反例边界「单段加新内容属字段补充」+ 「§3 加新类目属字段补充」+ 「§5 加新生命周期阶段属字段补充」类比。
+
+| 日期 | sustained 变更 | 依据 |
+|---|---|---|
+| 2026-05-18 | §2.6 新加「项目根目录具名特殊文件」（5 文件 + 治理例外条款）+ §4.3.1 决策树补 0 条（覆盖项目根 markdown）+ §6.4 显式展开 3 类 allowlist 内容 + 加 mj-agent 特化第 4 类「runtime 语义」（LLM provider matrix + Data boundary L1-L4 + HITL gates） | 借鉴 mj-system `[STANDARD]_Documentation_Management_Framework.md` §3.1 + §6.4 + §7.1 A6 的结构与判定模式；§5.9 反例「单段加新内容 / §3 加新类目」类比；详细 attribution 见 [[../glossary/upstream_business_warehouse|跨项目 attribution]] |
 
 ---
 

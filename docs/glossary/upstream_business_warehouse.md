@@ -4,7 +4,7 @@ domain: SYS
 summary: 定义 mj-agent 文档中"上游业务系统 / Upstream Business Warehouse"中性术语；与代码层 literal `mj-system-backend-network` 等的边界
 owner: 项目负责人
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-05-18
 state: active
 track: shared
 ---
@@ -90,6 +90,28 @@ mj-agent 大多数 active 文档**不需要** inline mj-system URL —— body �
 ### Forward guard
 
 `scripts/check_no_cross_repo_refs.py` 在 `SKIP_FILES` 已豁免本 glossary 文件路径（warning-mode 期间不会自我命中本段 URL；strict-mode 切换后行为不变）。
+
+### 跨项目文档治理结构借鉴 attribution（2026-05-18）
+
+mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同名文档（仓库见上文 §仓库定位）。借鉴边界**严格限制为结构、章节切分、表格密度、判定模式**——所有内容（具名文件清单、术语条目、命令、栈细节、申请方式措辞）均按 mj-agent 自身资产派生（`pyproject.toml` / `CLAUDE.md` / `src/mj_agent/` 结构 / `plans/[PLAN]_g1_g2_workflow_enforcement.md` / `config/README.md` 等）。
+
+| mj-agent 落地物 | 借鉴 mj-system 文档 | 借鉴维度（仅结构与写法） |
+|---|---|---|
+| `README.md`（PR #171） | `README.md` 8 段结构 | 技术栈表 + 前置条件表 + 文档导航 + 常见问题速查 |
+| `docs/guide/[GUIDE]_Quick_Start_Setup.md`（PR #171 新建） | `docs/guide/[GUIDE]_Quick_Start_Setup.md` | 9 步编号 + 速查表 + Troubleshooting 表 |
+| `docs/guide/[GUIDE]_Developer_Onboarding.md`（PR #172 4 处增强） | `docs/guide/[GUIDE]_Developer_Onboarding.md` | 权限申请清单 + ASCII 代码仓库导航 + Quick Checklist |
+| `docs/rule/[STANDARD]_GitHub_Markdown.md` §14（本 PR 新加） | `[STANDARD]_Documentation_Management_Framework.md` §3.1 | 项目根特殊文件清单 + 例外条款写法 |
+| `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` §2.6（本 PR 新加） | 同上 §3.1 | 5 文件具名职责表 + 治理例外条款 |
+| `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` §6.4（本 PR 显式展开） | 同上 §6.4 + §7.1 A6 | 3 类 allowlist + A6 PR gate；mj-agent 加第 4 类「runtime 语义」（LLM provider + Data boundary + HITL gates）为 mj-agent 特化 |
+| `CONTRIBUTING.md`（PR-D 待新建） | `CONTRIBUTING.md` 8 段 + 「摘要+跳转」模式 | 段结构 + 顶部边界声明「环境已就绪 / 准备提交 PR」 |
+| `GLOSSARY.md`（PR-D 待新建） | `GLOSSARY.md` A-W 字母分段 + 二字段格式 | 字母分段 + 「定义 + 相关术语」二字段 + 边界声明「不作通用百科解释」 |
+
+**禁止的复制行为**（per [[../../CLAUDE|CLAUDE.md]] L269-278「跨项目借鉴边界」段）：
+
+- 不引入 mj-system 特有的栈细节（如 Java / Spring / Maven / Flyway）—— mj-agent 是 Python 3.13 + uv + LangChain
+- 不引入 mj-system 特有的 frontmatter 字段（如 `revision:`）—— mj-agent 用 `updated:` 字段
+- 不照搬段数（如 INTAKE 按 `.claude/skills/mj-agent-flow-intake/SKILL.md` §Output Format 7 段而非 mj-system 11 段）
+- 不引用 mj-system inline URL（per 本 glossary §如何引用上游业务系统 + §例外）
 
 ## 关联文档
 

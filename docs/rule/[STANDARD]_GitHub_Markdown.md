@@ -1,12 +1,12 @@
 ---
 type: standard
 domain: SYS
-summary: 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Framework v1.1 §4 字段语义互补
+summary: 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则 + §14 项目根 README 与 Markdown 特例（v1.1），与 Meta_Framework v2.2 §4 字段语义互补
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-05-09
+updated: 2026-05-18
 state: active
-version: v1.0
+version: v1.1
 track: code
 tags:
   - standard
@@ -20,11 +20,11 @@ aliases:
 
 # mj-agent GitHub-Flavored Markdown 编写规范
 
-> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CHANGELOG.md / CLAUDE.md`。
+> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md` 5 个具名 markdown（见 §14 项目根特例 + [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6）。
 > **目标受众**：开发 / 文档撰写者 / AI Agent
-> **版本**：v1.0
-> **最后更新**：2026-04-24
-> **与 Meta_Framework v2.0 的关系**：本标准管 **语法 / 排版**（怎么写合法的 Markdown 与 YAML）；[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §4 管 **字段语义**（哪些字段必填、取值约束）。两篇在各自对应章节互引。
+> **版本**：v1.1（minor bump：§14 新增项目根 README 与 Markdown 特例；原 §14 参考改 §15；in-place sustained stable path，per ADR-011 §5.9 反例边界「§3 加新类目属字段补充」类比，不触发 archive ceremony）
+> **最后更新**：2026-05-18
+> **与 Meta_Framework v2.2 的关系**：本标准管 **语法 / 排版**（怎么写合法的 Markdown 与 YAML）；[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]] §4 管 **字段语义**（哪些字段必填、取值约束）。两篇在各自对应章节互引。
 
 ---
 
@@ -43,7 +43,8 @@ aliases:
 11. [脚注](#11-脚注)
 12. [杂项](#12-杂项)
 13. [YAML Frontmatter 语法规范](#13-yaml-frontmatter-语法规范)
-14. [参考](#14-参考)
+14. [项目根 README 与 Markdown 特例](#14-项目根-readme-与-markdown-特例)
+15. [参考](#15-参考)
 
 ---
 
@@ -573,22 +574,73 @@ description: >
 
 ---
 
-## 14 参考
+## 14 项目根 README 与 Markdown 特例
 
-### 14.1 上游规范
+> 项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`）
+> 是访问者第一接触点；GitHub 自动渲染到仓库主页。本节补充 §1-§13 之外的特例规则。
+> Cross-ref：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（5 文件具名职责表 + 治理例外条款）。
+
+### 14.1 Badges
+
+- 允许在 H1 之后、首条 `>` blockquote / `## 适用范围` 之前贴 badges 行（CI / version / license / docs status）
+- 优先用 GitHub 原生 badge URL（如 `https://github.com/<org>/<repo>/actions/workflows/<wf>.yml/badge.svg`）；可用 shields.io 但**必须 HTTPS**
+- 不用裸 URL；`alt` 文案必填，便于无障碍阅读
+
+### 14.2 行内 HTML 例外
+
+§12.4 已允许 `<br>` + `<details><summary>`；项目根 markdown **额外允许**：
+
+- `<img src="..." width="..." />` — 控制截图 / 流程图尺寸（缩略图）
+- `<a name="anchor"></a>` — 兼容旧版 GitHub anchor（一般不需，§3.2 自动锚点足够）
+- `<sub>` / `<sup>` — 角标（如版本兼容矩阵、引用脚注）
+
+仍禁：`<div>` / `<span>` / 任何 inline `style=` 属性（破坏 Obsidian 兼容性与机读解析）。
+
+### 14.3 多语言 README
+
+mj-agent 当前**仅中文 README**。如未来引入英文版，沿用社区惯例：
+
+- `README.md`（默认中文）+ `README.en.md`（英文）
+- 首页顶部首行加语言切换 `**[中文](./README.md) | [English](./README.en.md)**`
+- 不使用 `<details>` 折叠多语言段落（GitHub 渲染下展开 / 折叠状态不利于第一眼浏览）
+
+### 14.4 ASCII 架构图
+
+CLAUDE.md 已大量使用 ` ```text ` 围栏的 ASCII 架构图；项目根 README 中同样允许，但：
+
+- 字符仅用 `├ │ └ ─` 4 类（不混 `+` `--` `|` 替代）
+- 每层缩进 **4 空格**（与 Python 缩进一致）
+- 末行不留尾空格
+- 单元格宽度尽量对齐，便于代码字体下视觉一致
+
+### 14.5 项目根 markdown 不进入 canonical 治理体系
+
+per [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6 例外条款：
+
+- 项目根 5 文件**不强制 frontmatter**（A2 frontmatter schema 校验不适用）
+- 不强制 GUIDE / STANDARD 等 canonical 类型 body 骨架（无 TL;DR / Prerequisites / 目录 等段名约束）
+- 不计入 A1-A3 PR 门禁校验
+- **仍受**：A4 wikilink 完整性（`[[...]]` 形式）+ A6 CLAUDE.md sync 检查
+- **仍受**：本节 §14.1-§14.4 GitHub 渲染特例语法约束
+
+---
+
+## 15 参考
+
+### 15.1 上游规范
 
 - [CommonMark 0.31.2](https://commonmark.org/) —— Markdown 基础语法的唯一规范来源
 - [GitHub Flavored Markdown Spec](https://github.github.com/gfm/) —— GFM 扩展（表格、任务列表、删除线、自动链接）
 - [GitHub Docs — Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax) —— GitHub 额外支持的 Alerts、Mermaid、数学公式
 - [YAML 1.2 Spec](https://yaml.org/spec/1.2.2/) —— Frontmatter 的语法基础
 
-### 14.2 项目内部关联
+### 15.2 项目内部关联
 
-- [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]] —— frontmatter 字段语义、文档治理规则（§4 / §6.3 / §7.5 委托 Agent_Side v1.0）
+- [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.2]] —— frontmatter 字段语义、文档治理规则（§2.6 项目根具名文件 + §4 字段 / §6.3 链接 / §7.5 委托 Agent_Side v1.1）
 - `docs/_templates/TEMPLATE_*.md` —— 各 canonical 类型的骨架（frontmatter 已符合本标准）
 - `CLAUDE.md §Documentation` —— 运行时 loader 对 frontmatter 的消费约束
 
-### 14.3 派生来源
+### 15.3 派生来源
 
 - 历史背景：GFM + YAML 语法骨架借鉴自团队既有 Markdown 规范实践
 - 适配思路：砍去 Obsidian-only 语法（`[[wikilink]]` 仍保留但说明 GitHub 行为、`![[embed]]` 删除、`^block-id` 删除、12 种 Callout 收敛为 5 种 Alerts、inline `#tag` 删除）；新增 GFM 特有章节（数学公式、GitHub Alerts 的 5 类型约束、Mermaid 版本滞后说明）。
