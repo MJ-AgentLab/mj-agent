@@ -1,4 +1,5 @@
 {
+  "skillListingBudgetFraction": 0.04,
   "permissions": {
     "allow": [
       "Bash",
@@ -19,10 +20,6 @@
       "Write(./.env)"
     ]
   },
-  "enabledPlugins": {
-    "mj-agent-code-doc@mj-agentlab-marketplace": true
-  },
-  "skillListingBudgetFraction": 0.04,
   "hooks": {
     "PreToolUse": [
       {
@@ -35,5 +32,6 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {}
 }
