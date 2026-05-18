@@ -266,6 +266,17 @@ See `config/README.md` §6.4 for security tradeoffs and `-Reload` diagnostics.
 > `Engineering-Workflow Documentation` sections so Claude reads
 > cross-track rules first before track-specific guidance.
 
+**跨项目借鉴边界**：mj-agent 文档治理框架曾参考某内部上游业务系统实践沉淀（详见
+开篇项目起源说明 + `docs/archive/`），当前所有 active 治理已独立维护。AI 在写
+mj-agent 文档/代码时**只借鉴**外部参考源的问题识别框架 + 评估思路；
+**具体方案**（文件结构、字段命名、段数、术语）必须按 mj-agent 自身规范设计 —
+例如 INTAKE 按 `.claude/skills/mj-agent-flow-intake/SKILL.md` §Output Format 7 段
+而非外部 11 段；`[PLAN]` mirror `plans/[PLAN]_multi_env_dgx_mcp_bundle.md` 等
+mj-agent native 范本而非外部模板；frontmatter 用 mj-agent 自身 pattern（如
+`updated:` 字段；不引入 `revision:` 等 mj-agent 无的字段）。跨项目 attribution
+集中到 `docs/glossary/upstream_business_warehouse.md` §如何引用上游业务系统
+元文档段。
+
 All canonical documentation follows the **v2.1 tri-track trio** + HITL_Prompt
 v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
 `docs/archive/rule/` + `state: deprecated`):
