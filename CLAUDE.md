@@ -321,6 +321,16 @@ Markdown + YAML syntax (GFM rendering target):
 `docs/INDEX.md`. New-member onboarding path:
 `docs/guide/[GUIDE]_Developer_Onboarding.md` (mj-agent end-to-end day-1 +
 refresher; covers repo / branches / env / tests / docs / commit / Studio).
+
+**项目根具名文件 5 件（Meta v2.2 §2.6；不入 canonical 治理表，A1-A3 不适用，A4+A6 仍适用）**：
+- `README.md` — 项目入口和快速启动（PR #171 借鉴 mj-system 8 段结构扩写）
+- `CONTRIBUTING.md` — 协作与提交流程（PR-D 新建；「摘要 + 跳转」模式 8 段；环境已就绪开发者入口；
+  与 Developer_Onboarding 互补不重复）
+- `CHANGELOG.md` — 版本变更日志
+- `GLOSSARY.md` — 项目术语索引（PR-D 新建；A-W 字母分段 ~40 术语；专题深度词典在 `docs/glossary/`）
+- `CLAUDE.md` — AI 高频上下文缓存（本文件；同步策略见 Meta v2.2 §6.4 4 类 allowlist）
+
+
 ADR-012 documents the v1.1 → v2.0 dual-track split
 (`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
 predecessor lives at
