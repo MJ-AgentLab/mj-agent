@@ -91,6 +91,26 @@ contracts 补全（Phase M1 已建框架）.
 step definitions 落地（tests/bdd/ 11 子目录）+ G28 contract-test-first blocking + Plan-vs-Diff
 G4 blocking.
 
+**M3 Task Breakdown — Follow-ups from Phase M2**（每条独立小 PR；不混入 M3 main work；便于
+review / revert）：
+
+- **M3-FU-V5-SUBFLAGS** — `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
+  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）；估时 ~1h；预计新增 ~60-80 行；
+  依赖 M3 startup；独立小 PR.
+- **M3-FU-CLAUDE-SKILL-ADR** — 起草独立 ADR 决定 `.claude/skills/` 34/34 SKILL 当前
+  "markdown-body-only convention" 与 ADR-013 2-field schema baseline deviation 的 resolution
+  path（option A：accept markdown-body-only 为 advisory；option B：Phase M5 backfill
+  frontmatter）（M2 V4 实施暴露的 deviation；Q-A3）；估时 ~2h；产出 1 ADR draft；依赖 M3
+  startup；独立小 PR.
+- **M3-FU-HITL-ENUM** — HITL scenario enum 清理（去除重叠；收敛到稳定 8-10 项；统一
+  `policies/ai-agent.md` HITL 列表 + `sdd/lifecycle.md` / `sdd/gates.md` HITL trigger 表述）
+  （C5；M2 期间约定但未落实）；估时 ~1h；预计 diff ~50 行；依赖 M3 startup；独立小 PR.
+- **M3-FU-S22-CROSSREF** — 蓝图 `spec-anchored-calm-lampson.md` §22 cross-ref 映射更新到 v2.3
+  （`python.md→§22.1` / `langchain-agent.md→§22.4` / `prompt.md→§22.5` /
+  `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
+  `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
+  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
+
 ### Phase M4（~2 周）
 
 **目标**：Evidence required gate blocking（G8）+ Runbook 完整化（每 capability ≥ 100 行）+
