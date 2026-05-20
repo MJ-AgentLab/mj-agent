@@ -1,0 +1,179 @@
+# capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml
+#
+# Covers REQ-001 (13-server inventory) + REQ-002 (pg wrapper consistency).
+
+contract_id: mcp-server
+covers_requirements:
+  - REQ-001
+  - REQ-002
+
+mcp_inventory_file:
+  path: .mcp.json
+  freeze_anchor: .mcp.json                        # entire file
+  expected_total_entries: 13
+
+# 13-server inventory (REQ-001)
+servers:
+
+  - name: github
+    type: stdio
+    invocation: 'npx @modelcontextprotocol/server-github'
+    trust_posture: first-party                    # Anthropic-published
+    credential_mode: api_key_via_env
+    env_secrets:
+      - GITHUB_PERSONAL_ACCESS_TOKEN
+    purpose: "Issues / PRs / repo browsing"
+
+  - name: serena
+    type: stdio
+    invocation: 'uv tool run --from "git+https://github.com/oraios/serena" serena-mcp-server'
+    trust_posture: third-party                    # oraios
+    credential_mode: none                         # local-only IDE-like LSP
+    args: ['--context claude-code', '--enable-web-dashboard false', '--project-from-cwd']
+    purpose: "LSP-like symbol-first search for Claude Code A5"
+
+  - name: pg-mj-agent-memory-dev
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper            # wrapper around community pg MCP
+    credential_mode: wrapped_script_url_override
+    default_url: "postgresql://mj_agent_app:local-dev-only-replace-in-prod@localhost:5433/mj_agent_memory"
+    env_override: MJ_AGENT_PG_MEMORY_DEV_URL
+    purpose: "DEV mj-agent-postgres memory checkpointer pg"
+
+  - name: pg-mj-agent-memory-test-lan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url_sentinel: "REPLACE_WITH_TEAM_TEST_PASSWORD"
+    env_override: MJ_AGENT_PG_MEMORY_TEST_LAN_URL
+    purpose: "LAN access to 192.168.0.179:5433"
+
+  - name: pg-mj-agent-memory-test-wan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url: null                             # NO default — fail loud
+    env_override: MJ_AGENT_PG_MEMORY_TEST_WAN_URL
+    purpose: "WAN/FRP tunnel; env REQUIRED"
+
+  - name: pg-mj-agent-memory-prod-lan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url_sentinel: "REPLACE_WITH_TEAM_PROD_PASSWORD"
+    env_override: MJ_AGENT_PG_MEMORY_PROD_LAN_URL
+    purpose: "LAN access to 192.168.0.106:5433"
+
+  - name: pg-mj-agent-memory-prod-wan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url: null
+    env_override: MJ_AGENT_PG_MEMORY_PROD_WAN_URL
+    purpose: "WAN/FRP"
+
+  - name: pg-mj-system-biz-dev
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url_sentinel: "REPLACE_WITH_ANALYST_PASSWORD"
+    env_override: MJ_AGENT_PG_BIZ_DEV_URL
+    default_url_after_substitute: "postgresql://analyst:<pwd>@localhost:5432/mj_system_db"
+    purpose: "biz pg via analyst RO role"
+
+  - name: pg-mj-system-biz-test-lan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url_sentinel: "REPLACE_WITH_ANALYST_PASSWORD"
+    env_override: MJ_AGENT_PG_BIZ_TEST_LAN_URL
+    purpose: "LAN 192.168.0.179:5432 biz pg"
+
+  - name: pg-mj-system-biz-test-wan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url: null
+    env_override: MJ_AGENT_PG_BIZ_TEST_WAN_URL
+    purpose: "WAN biz pg"
+
+  - name: pg-mj-system-biz-prod-lan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url_sentinel: "REPLACE_WITH_ANALYST_PASSWORD"
+    env_override: MJ_AGENT_PG_BIZ_PROD_LAN_URL
+    purpose: "LAN 192.168.0.106:5432 biz pg"
+
+  - name: pg-mj-system-biz-prod-wan
+    type: stdio
+    invocation: '.claude\scripts\pg-server-start.cmd'
+    trust_posture: first-party-wrapper
+    credential_mode: wrapped_script_url_override
+    default_url: null
+    env_override: MJ_AGENT_PG_BIZ_PROD_WAN_URL
+    purpose: "WAN biz pg"
+
+  - name: ssh-manager
+    type: stdio
+    invocation: 'npx @iflow-mcp/mcp-ssh-manager'
+    trust_posture: third-party                    # iflow-mcp community
+    credential_mode: api_key_via_env
+    env_secrets:                                  # 5 unique passwords (LAN+WAN share for each host)
+      - MJ_AGENT_SSH_SERVER_CLOUD_PASSWORD
+      - MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD
+      - MJ_AGENT_SSH_SERVER_TEST_PASSWORD
+      - MJ_AGENT_SSH_SERVER_PROD_PASSWORD
+      - MJ_AGENT_SSH_SERVER_DGX_PASSWORD
+    aggregated_hosts: 9                            # Cloud / Runner LAN/WAN / Test LAN/WAN / Prod LAN/WAN / DGX LAN/WAN
+    purpose: "9 SSH host configs aggregated into one MCP server"
+
+# REQ-002 — Wrapper consistency
+wrapper_script_consistency:
+  required_wrapper: ".claude\\scripts\\pg-server-start.cmd"
+  required_for: "all 10 pg-* entries"
+  baseline_sor: docs/_baselines/pg_server_baseline.md
+  quarterly_diff_target: "community pg MCP upstream"
+
+# A14 PR gate (REQ-001)
+a14_gate:
+  trigger: ".mcp.json file modification"
+  required_pr_body_block:
+    template_location: "docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4"
+    required_fields:
+      - server_name
+      - trust_posture (one of: first-party / third-party / first-party-wrapper / community)
+      - credential_mode (one of: none / OAuth / api_key_via_env / wrapped_script_url_override)
+      - rationale (for added / changed entries)
+  enforcement_phase:
+    M1: manual_reviewer_check                      # informational
+    M2: warning_via_check_a14_gate.py              # CI warning; non-blocking
+    M3: blocking                                   # CI blocks PR if block absent
+
+# Quarterly audit (§6 of MCP STANDARD; out of REQ scope but referenced)
+quarterly_audit:
+  cycle: 3_months
+  dri: ranzuozhou
+  tasks:
+    - re_evaluate_trust_posture
+    - diff_wrapper_script_against_community_pg_mcp
+    - check_unmaintained_community_servers (serena / ssh-manager)
+    - update_baseline_if_drift
+
+hitl_required:
+  - mcp_inventory_change                          # .mcp.json modification → A14 gate
+  - wrapper_script_change                         # .claude/scripts/pg-server-* → baseline diff
+
+# TBD Phase M3:
+#   - tests/contract/test_mcp_inventory.py (assert 13 entries; per-entry fields)
+#   - tests/contract/test_mcp_pg_wrapper_consistency.py (all 10 pg-* use same wrapper)
+#   - scripts/sdd/check_a14_gate.py (PR body parser; warning M2 / blocking M3)
