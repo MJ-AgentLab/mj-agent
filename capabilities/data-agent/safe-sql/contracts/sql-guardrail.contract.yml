@@ -1,0 +1,116 @@
+# capabilities/data-agent/safe-sql/contracts/sql-guardrail.contract.yml
+#
+# Covers REQ-001 (L1 regex) + REQ-002 (L1b sqlglot AST precheck).
+# Phase M1 reverse-engineered from frozen source; Phase M3 contract tests validate.
+#
+# 4 项必停 source files: guardrail.py + precheck.py (sql-guardrail-relax hard stop).
+
+contract_id: sql-guardrail
+covers_requirements:
+  - REQ-001                                       # L1 regex
+  - REQ-002                                       # L1b sqlglot AST precheck
+
+# REQ-001 — L1 regex guardrail
+l1_guardrail:
+  module: src.mj_agent.tools.sql.guardrail
+  freeze_anchor: src/mj_agent/tools/sql/guardrail.py:33-103
+  public_api:
+    - name: is_safe_select
+      signature: "def is_safe_select(sql: str, allowed_schemas: Iterable[str], allowed_tables_per_schema: Mapping[str, Iterable[str]] | None = None) -> tuple[bool, str]"
+      returns:
+        accept: "(True, '')"
+        reject: "(False, <human-readable reason>)"
+      raises: []                                  # never raises; caller wraps in ValueError
+  blocked_keywords:                               # _BLOCKED regex (guardrail.py:36-40)
+    - INSERT
+    - UPDATE
+    - DELETE
+    - DROP
+    - TRUNCATE
+    - ALTER
+    - GRANT
+    - REVOKE
+    - CREATE
+    - COPY
+    - VACUUM
+    - REINDEX
+    - CLUSTER
+    - ANALYZE
+    - LOCK
+    - CALL
+    - "SET SESSION"                               # literal phrase, not just SET
+  must_match_start:                               # _STMT_START regex (guardrail.py:33)
+    - "^\\s*SELECT\\b"
+    - "^\\s*WITH\\b.*?\\bSELECT\\b"
+  rejection_modes:
+    - empty_sql: "guardrail.py:76-77"
+    - multi_statement: "guardrail.py:71-74 (after trailing-; strip; internal ; rejected)"
+    - non_select_start: "guardrail.py:79-80"
+    - blocked_keyword: "guardrail.py:82-83"
+    - schema_not_allowed: "guardrail.py:91-94 (case-insensitive lowercase compare)"
+    - table_not_in_per_schema_allowlist: "guardrail.py:95-101 (when map present; absent → wildcard)"
+  doc_stated_non_goals:                           # guardrail.py:21-25 (frozen — out of scope)
+    - comment_scan: "does NOT scan inside SQL comments"
+    - string_literal_scan: "does NOT scan inside string literals"
+    - cte_alias_shadowing: "does NOT handle CTE alias shadowing"
+    - function_body_inspection: "does NOT inspect function bodies"
+
+# REQ-002 — L1b sqlglot AST precheck
+l1b_precheck:
+  module: src.mj_agent.tools.sql.precheck
+  freeze_anchor: src/mj_agent/tools/sql/precheck.py:83-159
+  public_api:
+    - name: precheck_sql
+      signature: "def precheck_sql(sql: str) -> PrecheckResult"
+      returns: "PrecheckResult(errors=[...], warnings=[...]); .ok property = not errors"
+    - name: PrecheckResult
+      signature: "@dataclass class PrecheckResult: errors: list[str]; warnings: list[str]"
+  rule_ids:                                       # stable contract strings; asserted in middleware test
+    - id: "no_select_star"
+      severity: error
+      anchor: precheck.py:110-117
+      detail: "exp.Star projection not child of exp.Count → reject"
+    - id: "require_time_range"
+      severity: error
+      anchor: precheck.py:120-127
+      detail: "biz_dws fact table referenced AND no column from _all_time_columns() (qcm_catalog.yaml periods.*.time_column) → reject"
+      depends_on:
+        cross_capability: data-agent.biz-catalog
+        surface: src/mj_agent/tools/sql/precheck.py:58-59 (_all_time_columns)
+    - id: "require_limit"
+      severity: warning                            # P1 advisory only
+      anchor: precheck.py:130-137
+      detail: "non-aggregate outer SELECT without LIMIT → warning to envelope.precheck_warnings"
+    - id: "limit_too_large"
+      severity: warning
+      anchor: precheck.py:144-159
+      detail: "LIMIT literal > 1000 → warning to envelope.precheck_warnings"
+    - id: "sqlglot_parse_failed"
+      severity: warning
+      anchor: precheck.py:101-107
+      detail: "parse failure → graceful degrade (ok=True; DB is ultimate validator)"
+  signal_tables:                                  # exempt from require_time_range (precheck.py:31-38)
+    - dws_qcm_preprocessed_data
+    - dws_qcm_etl_metrics
+    - dws_qcm_ready_signal
+  fact_table_predicate:
+    rule: "schema == 'biz_dws' AND name starts_with 'dws_qcm_' AND NOT in signal_tables"
+    anchor: precheck.py:62-70 (_is_biz_dws_fact_table)
+  aggregation_predicate:
+    rule: "select.group_by present OR any exp.AggFunc"
+    anchor: precheck.py:77-80 (_has_aggregation)
+
+# Caller wiring contract (REQ-001 + REQ-002 → execute_sql)
+caller_wiring:
+  module: src.mj_agent.tools.sql.execute
+  freeze_anchor: src/mj_agent/tools/sql/execute.py:89-99
+  l1_call: "is_safe_select(sql, settings.biz_allowed_schemas, allowed_tables_per_schema={'biz_dwd': settings.biz_allowed_dwd_tables})"
+  l1_failure: "raise ValueError(f'SQL rejected by guardrail: {reason}')"
+  l1b_call: "precheck_sql(sql)"
+  l1b_failure: "raise ValueError('SQL rejected by precheck: ' + '; '.join(errors))"
+
+hitl_required:
+  - sql-guardrail-relax                            # any change to guardrail.py / precheck.py per policies/data-boundary.md §3
+
+# TBD Phase M2: schema validation via scripts/sdd/check_python_contracts.py
+# TBD Phase M3: contract test verifying every blocked_keyword + rule_id behaves as documented

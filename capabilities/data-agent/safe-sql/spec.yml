@@ -1,0 +1,96 @@
+# capabilities/data-agent/safe-sql/spec.yml
+# Phase M1 baseline (ADR-031). lifecycle_state=drafting — Phase M3 contract tests
+# will promote to verifying → active.
+#
+# Reverse-engineered from existing src/mj_agent/ implementation; M1 establishes
+# the contract; 4 项必停 source files (guardrail.py / precheck.py / system.md
+# frontmatter / qcm_catalog.yaml as cross-cap dep) are read-only freeze anchors.
+
+id: data-agent.safe-sql
+name: Safe SQL 4-Layer Guardrails
+domain: data-agent
+lifecycle_state: drafting           # 9-state: idea / specified / contracted / planned / implementing / verifying / active / evolving / deprecated
+archive_state: active               # 5-state: active / deprecated / frozen / archived / purge-eligible
+adapter_coverage:
+  - python                          # 6 modules under src/mj_agent/tools/sql/ + integrations/ + middleware/
+  - langchain-agent                 # middleware wiring in make_graph (ADR-029)
+  - tdd-bdd                         # behavior.feature scenarios + tdd.test_list[]
+last_verified: 2026-05-20
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+summary: >
+  mj-agent core safety mainline — 4-layer SQL defense (L1 regex guardrail / L1b
+  sqlglot AST precheck / L3 read-only connection / L4 statement_timeout + GRANT
+  reference contract) plus execute_sql envelope schema (REQ-005) and the
+  handle_sql_tool_errors middleware (REQ-006; ADR-029). Existing unit tests cover
+  REQ-001 / REQ-002 / REQ-006; REQ-003 / REQ-004 / REQ-005 contract tests are
+  Phase M3 work (TBD-M3).
+
+requirements:
+  - id: REQ-001
+    statement: "L1 regex guardrail enforces SELECT-only + schema/table allowlist + blocks 14 dangerous keywords"
+    rationale: "Defense layer 1 of 4 — prevents SQL injection / write ops at the agent boundary (per ADR-006)"
+    priority: critical
+    bdd:
+      examples:
+        - "Given user request triggers SQL with DROP/INSERT/UPDATE/DELETE / When agent invokes execute_sql / Then ValueError 'SQL rejected by guardrail:' raised and DB never contacted"
+
+  - id: REQ-002
+    statement: "L1b sqlglot AST precheck enforces 5 rule IDs (no_select_star / require_time_range / require_limit / limit_too_large / sqlglot_parse_failed)"
+    rationale: "Defense layer 2 — catches semantic anti-patterns (full-table scans / missing time predicates on biz_dws fact tables) before DB execution; rule IDs are stable contract strings"
+    priority: critical
+    bdd:
+      examples:
+        - "Given SQL selects from biz_dws.dws_qcm_qrynum_daily_total without time predicate / When precheck_sql runs / Then PrecheckResult.errors contains 'require_time_range:' and execute_sql raises ValueError 'SQL rejected by precheck:'"
+
+  - id: REQ-003
+    statement: "L3 read-only psycopg connection pinned via DSN options (default_transaction_read_only=on / lock_timeout=5000ms / idle_in_transaction_session_timeout=10000ms)"
+    rationale: "Defense layer 3 — DB-side enforcement of read-only intent + bounded resource consumption; pool guarantees tx-rollback on cursor exit"
+    priority: critical
+    bdd:
+      examples:
+        - "Given analyst credentials configured / When readonly_cursor() opens session / Then DSN options string contains the 3 -c flags and the connection rolls back any open tx on context exit"
+
+  - id: REQ-004
+    statement: "L4 statement_timeout 60s cancellation catch + upstream GRANT (reference contract; SQL lives in mj-system R__analyst_permissions.sql)"
+    rationale: "Defense layer 4 — runaway query cancellation; GRANT-level read-only at DB role; GRANT SQL is OWNED UPSTREAM (cross-repo reference contract); mj-agent SUT side implements only timeout-catch + introspection sanity"
+    priority: critical
+    bdd:
+      examples:
+        - "Given upstream analyst role has statement_timeout=60s and query exceeds 60s / When psycopg.errors.QueryCanceled raised / Then execute_sql raises RuntimeError whose message contains 'statement_timeout=60s' and the Chinese self-correction hint"
+    reference_contract:
+      upstream_repo: mj-system
+      upstream_path: sql/migrations/repeatable/R__analyst_permissions.sql
+      upstream_artifact: "ALTER ROLE analyst SET statement_timeout='60s' + table-level SELECT GRANT to biz_dws.* + biz_dwd.{dwd_dim_product_interface, dwd_dim_institution}"
+      sut_side_verification: "introspect.list_biz_tables() filters by information_schema.table_privileges on CURRENT_USER (Phase M3 contract test)"
+
+  - id: REQ-005
+    statement: "execute_sql return envelope contains 8 required keys with documented types"
+    rationale: "Agent-facing data contract — every key consumed by system prompt + LLM; key drift or type mismatch breaks LLM behavior reliability"
+    priority: high
+    bdd:
+      examples:
+        - "Given execute_sql succeeds / When envelope returned / Then 8 keys present: executed_sql:str, columns:list[str], rows:list[dict], row_count:int, truncated:bool, statement_timeout_hit:bool, business_summary:str, precheck_warnings:list[str]"
+
+  - id: REQ-006
+    statement: "handle_sql_tool_errors middleware converts ValueError/RuntimeError from SQL tools to ToolMessage (sync + async; ADR-029)"
+    rationale: "Graph step succeeds even when tool raises; LLM sees error as tool output and self-corrects rather than the graph crashing silently"
+    priority: high
+    bdd:
+      examples:
+        - "Given L1 guardrail raises ValueError / When wrapped by handle_sql_tool_errors / Then middleware returns ToolMessage with content prefixed by '工具调用未通过校验' and preserved tool_call_id"
+
+related_decisions:
+  - docs/adr/[ADR]_006_Fail_Safe_Reads.md          # 4-layer defense origin (Phase M5 → decisions/ADR-006_*.md)
+  - docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md
+  - docs/adr/[ADR]_029_Tool_Error_Surfacing_To_LLM.md
+  - decisions/ADR-031_Spec_Anchored_Refactor.md    # M1 framework
+
+cross_capability_refs:                # see trace.yml for full chain
+  - target: data-agent.biz-catalog
+    reason: "REQ-002 require_time_range reads qcm_catalog.yaml periods.*.time_column via _all_time_columns()"
+    surface: src/mj_agent/tools/sql/precheck.py:58-59
+
+# TBD Phase M2: spec.yml.schema lock-down (check_capability_schema.py G1 blocking)
+# TBD Phase M3: lifecycle_state: drafting → contracted (after contracts/ + behavior.feature land + Phase M3 contract tests pass)

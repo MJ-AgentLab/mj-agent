@@ -1,0 +1,158 @@
+# capabilities/data-agent/safe-sql/contracts/execute-sql.contract.yml
+#
+# Covers REQ-003 (L3 read-only conn) + REQ-004 (L4 timeout + GRANT reference) +
+# REQ-005 (envelope schema).
+# Phase M1 reverse-engineered from frozen source; Phase M3 contract tests validate.
+
+contract_id: execute-sql
+covers_requirements:
+  - REQ-003                                       # L3 read-only connection
+  - REQ-004                                       # L4 statement_timeout + GRANT ref
+  - REQ-005                                       # 8-key return envelope
+
+# REQ-003 — L3 read-only connection (DSN options + pool + rollback)
+l3_connection:
+  module: src.mj_agent.integrations.mj_system_db
+  freeze_anchor: src/mj_agent/integrations/mj_system_db.py:27-86
+  public_api:
+    - name: get_pool
+      signature: "def get_pool() -> ConnectionPool"
+      detail: "lazy singleton; atexit-closed at module init"
+    - name: readonly_cursor
+      signature: "@contextmanager def readonly_cursor() -> Iterator[Cursor]"
+      detail: "context manager; always conn.rollback() in finally"
+  dsn_options_payload:                            # PGOPTIONS-style; mj_system_db.py:39-43
+    - flag: "default_transaction_read_only"
+      value: "on"
+      anchor: mj_system_db.py:40
+    - flag: "lock_timeout"
+      value: "5000"                               # ms (5 seconds)
+      anchor: mj_system_db.py:41
+    - flag: "idle_in_transaction_session_timeout"
+      value: "10000"                              # ms (10 seconds)
+      anchor: mj_system_db.py:42
+  pool_config:                                    # mj_system_db.py:57-67
+    min_size: 1
+    max_size: 4
+    autocommit: false
+    row_factory: dict_row
+    open_at_creation: true
+    atexit_close_registered: true
+  tx_hygiene:
+    rollback_on_exit: true
+    anchor: mj_system_db.py:83-86
+    rationale: "no dangling tx in pool — every cursor's exit unconditionally rolls back"
+  does_not_set:                                   # explicit non-actions; both have rationale
+    - param: search_path
+      reason: "schema qualification enforced at L1 (guardrail.py:91)"
+      anchor: mj_system_db.py:75-77
+    - param: statement_timeout
+      reason: "delegated to L4 role-level config; see REQ-004"
+      anchor: mj_system_db.py:33-34
+
+# REQ-004 — L4 statement_timeout catch + upstream GRANT (reference contract)
+l4_timeout_and_grant:
+  sut_side:                                       # in mj-agent repo (testable here)
+    module: src.mj_agent.tools.sql.execute
+    freeze_anchor: src/mj_agent/tools/sql/execute.py:106-110
+    catches: psycopg.errors.QueryCanceled
+    raises: RuntimeError
+    message_requirements:
+      - "must contain 'statement_timeout=60s'"
+      - "must contain Chinese self-correction hint (GROUP BY / narrower time range / fewer JOINs)"
+    introspect_sanity:
+      anchor: src/mj_agent/tools/sql/introspect.py:57-87 (list_biz_tables)
+      mechanism: "filters by information_schema.table_privileges on CURRENT_USER SELECT — reflects DB GRANT visibility"
+  reference_contract:                             # owned upstream; not in this repo
+    upstream_repo: mj-system
+    upstream_path: sql/migrations/repeatable/R__analyst_permissions.sql
+    artifacts:
+      - "ALTER ROLE analyst SET statement_timeout='60s'"
+      - "GRANT SELECT ON ALL TABLES IN SCHEMA biz_dws TO analyst"
+      - "GRANT SELECT ON biz_dwd.dwd_dim_product_interface TO analyst"
+      - "GRANT SELECT ON biz_dwd.dwd_dim_institution TO analyst"
+    verification:
+      method: "contract test on `tests/contract/` gated by live_db fixture"
+      assertion: "list_biz_tables() returns exactly {biz_dws.* + 2 biz_dwd dim tables}"
+      status: "TBD-M3 (Phase M3 will add tests/contract/test_safe_sql_grant_visibility.py)"
+
+# REQ-005 — execute_sql return envelope schema (8 keys; closed set)
+envelope_schema:
+  module: src.mj_agent.tools.sql.execute
+  freeze_anchor: src/mj_agent/tools/sql/execute.py:118-127
+  return_type: "dict[str, Any]"
+  required_keys:                                  # closed set; adding 9th requires evolve-capability.md
+    - key: executed_sql
+      type: str
+      semantics: "verbatim echo of input SQL"
+      anchor: execute.py:119
+    - key: columns
+      type: "list[str]"
+      semantics: "column names from cursor.description"
+      anchor: execute.py:104, 120
+    - key: rows
+      type: "list[dict[str, Any]]"
+      semantics: "dict_row mapping rows (≤ settings.sql_max_rows)"
+      anchor: execute.py:121
+    - key: row_count
+      type: int
+      semantics: "len(rows) after truncation slice"
+      anchor: execute.py:122
+    - key: truncated
+      type: bool
+      semantics: "True if pre-slice row count exceeded settings.sql_max_rows"
+      anchor: execute.py:114, 123
+    - key: statement_timeout_hit
+      type: bool
+      semantics: "always False on success path; reserved for callers that catch RuntimeError"
+      anchor: execute.py:124
+      open_question: "see design.md §5 Q1 — should be True before raising in timeout path?"
+    - key: business_summary
+      type: str
+      semantics: "heuristic Chinese summary (empty / truncated / timeout fallbacks)"
+      anchor: execute.py:38-53 (_heuristic_summary), 125
+    - key: precheck_warnings
+      type: "list[str]"
+      semantics: "copy of PrecheckResult.warnings (P1 advisory from REQ-002 require_limit / limit_too_large / sqlglot_parse_failed)"
+      anchor: execute.py:126
+
+# Pipeline contract (REQ-003 + REQ-004 + REQ-005 wiring)
+execute_sql_pipeline:
+  freeze_anchor: src/mj_agent/tools/sql/execute.py:56-127
+  steps:
+    - step: 1_l1_guardrail
+      call: "is_safe_select(sql, settings.biz_allowed_schemas, allowed_tables_per_schema={'biz_dwd': settings.biz_allowed_dwd_tables})"
+      anchor: execute.py:89-95
+    - step: 2_l1b_precheck
+      call: "precheck_sql(sql)"
+      anchor: execute.py:97-99
+    - step: 3_cursor_open
+      call: "with readonly_cursor() as cur:"
+      anchor: execute.py:102
+    - step: 4_execute
+      call: "cur.execute(sql)"
+      anchor: execute.py:104
+    - step: 5_fetch
+      call: "cur.fetchmany(settings.sql_max_rows + 1)"  # +1 to detect truncation
+      anchor: execute.py:105
+    - step: 6_timeout_catch
+      catches: psycopg.errors.QueryCanceled
+      raises: RuntimeError
+      anchor: execute.py:106-110
+    - step: 7_generic_error_catch
+      catches: Exception
+      raises: "RuntimeError(f'database error: {exc}')"
+      anchor: execute.py:111-112
+    - step: 8_truncate_slice
+      anchor: execute.py:114-116
+    - step: 9_envelope_construct
+      anchor: execute.py:118-127
+
+hitl_required:
+  - sql-guardrail-relax                            # touching execute.py pipeline
+
+# TBD Phase M2: schema validation via scripts/sdd/check_python_contracts.py
+# TBD Phase M3:
+#   - tests/contract/test_safe_sql_dsn_options.py (REQ-003 DSN string assertion)
+#   - tests/contract/test_safe_sql_envelope.py (REQ-005 8-key envelope; stub readonly_cursor)
+#   - tests/contract/test_safe_sql_grant_visibility.py (REQ-004 grant ref; live_db gated)
