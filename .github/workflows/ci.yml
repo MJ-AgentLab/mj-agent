@@ -77,6 +77,25 @@ jobs:
         # Always exits 0 (warning-mode); manual maintainer review.
         run: uv run python scripts/find_old_completed_plans.py
 
+      # ===== Spec-Anchored Refactor Phase M0 — warning-only gates (ADR-031) =====
+      # These steps run sdd/ gates G1/G2/G9 in warning-only mode. They never
+      # fail the build during Phase M0. Phase M2 promotes G1/G2 to blocking;
+      # Phase M3 promotes contract gates. See sdd/gates.md §5 for the matrix.
+
+      - name: 'G1 capability schema (warning-only; Phase M0 expects empty)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_capability_schema.py --dry-run
+
+      - name: 'G2 traceability (warning-only; Phase M0 expects empty)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_traceability.py --dry-run
+
+      - name: 'G9 generate INDEX (warning-only; Phase M0 expects empty)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/generate_index.py --dry-run
+
+      # ===== End of Phase M0 warning-only gates =====
+
       - name: Tests (unit + eval + integration; smoke + contract excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
