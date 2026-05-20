@@ -1,0 +1,111 @@
+# capabilities/data-agent/llm-provider/contracts/python.contract.yml
+#
+# Per-module Python public API contracts for llm-provider capability.
+
+contract_id: python
+adapter: python
+covers_requirements:
+  - REQ-001
+  - REQ-002
+  - REQ-003
+
+modules:
+
+  - path: src.mj_agent.llm
+    freeze_anchor: src/mj_agent/llm.py
+    adr: ADR-027
+    exports:
+      - name: LLMConfigError
+        kind: exception
+        parent: RuntimeError
+        public: true
+        semantics: "raised at make_llm() call time (NOT at Settings construction); lazy validation"
+
+      - name: make_llm
+        signature: "def make_llm() -> BaseChatModel"
+        public: true
+        return_type: "langchain_core.language_models.BaseChatModel (concretely ChatOpenAI)"
+        raises:
+          - "LLMConfigError: ark provider with empty effective_llm_api_key"
+          - "LLMConfigError: local-openai-compat provider with empty llm_base_url"
+        semantics: |
+          Reads settings.llm_provider; branches on enum value;
+          constructs ChatOpenAI with provider-specific kwargs.
+          Lazy — reads Settings at call time, not import time.
+
+    public_invariants:
+      - "import mj_agent.llm is safe in empty .env (no Settings access at import time)"
+      - "make_llm() never returns None; always returns ChatOpenAI or raises LLMConfigError"
+      - "extra_body.thinking present iff provider == 'ark'"
+
+  - path: src.mj_agent.config
+    freeze_anchor: src/mj_agent/config.py
+    exports:
+      - name: Settings
+        kind: class
+        parent: BaseSettings (pydantic_settings)
+        public: true
+        fields_llm:                                # per provider.contract.yml settings_llm_fields
+          - llm_provider
+          - llm_base_url
+          - llm_api_key
+          - llm_model_id
+          - llm_thinking_enabled
+          - llm_timeout_sec
+          - ark_base_url
+          - ark_api_key
+        properties:
+          - name: effective_llm_base_url
+            type: str
+            decorator: '@cached_property'
+            semantics: "provider-specific base_url fallback"
+          - name: effective_llm_api_key
+            type: str
+            decorator: '@cached_property'
+            semantics: "provider-specific api_key fallback (or 'EMPTY' sentinel for local provider)"
+
+    public_invariants:
+      - "Settings construction safe in empty .env (no provider validation until make_llm)"
+      - "Literal type guard on llm_provider enforced by pydantic ValidationError"
+
+  - path: src.mj_agent.server.cli
+    freeze_anchor: src/mj_agent/server/cli.py
+    exports:
+      - name: check
+        kind: typer-command
+        public: true
+        semantics: "mj-agent check command; provider-aware credential validation; no endpoint contact"
+    public_invariants:
+      - "check command NEVER imports make_llm directly (no ChatOpenAI construction)"
+      - "failure messages provider-specific (ark vs local)"
+
+# Module-level non-actions
+non_actions:
+  - module: llm
+    items:
+      - "does NOT call ChatOpenAI's introspection at import time"
+      - "does NOT cache the ChatOpenAI instance (each make_llm() returns fresh)"
+      - "does NOT validate endpoint reachability (delegated to /mj-agent-infra-llm-endpoint-probe)"
+  - module: config
+    items:
+      - "does NOT validate api_key at construction time (lazy at make_llm)"
+      - "does NOT mask SecretStr value when get_secret_value() called (preserves backward-compat)"
+  - module: server.cli
+    items:
+      - "check NEVER contacts LLM endpoint"
+      - "check NEVER contacts biz DB (separate code path in same command but indep failure aggregation)"
+
+hitl_required:
+  - none                                          # routine module changes;
+                                                  # but Settings schema changes affect docker-compose envs
+
+cross_capability_dependencies:
+  - target: infrastructure.docker-compose
+    surface: "compose env_file: ../../.env injects LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY"
+  - target: infrastructure.mcp-server-governance
+    surface: "ssh-manager DGX host entry shares physical host with local-openai-compat endpoint"
+
+# TBD Phase M3:
+#   - tests/unit/test_llm.py — all ark + local branch behaviors
+#   - tests/unit/test_config_llm_fields.py — provider enum + effective_* fallbacks
+#   - tests/unit/test_cli_check_provider_aware.py — provider-specific failure messages

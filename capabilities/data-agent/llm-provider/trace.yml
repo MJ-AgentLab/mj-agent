@@ -1,0 +1,91 @@
+# capabilities/data-agent/llm-provider/trace.yml
+# schema v1.2.
+
+capability: data-agent.llm-provider
+generated: 2026-05-20
+schema_version: "1.2"
+
+cross_capability_refs:
+  - target: infrastructure.docker-compose
+    direction: outbound
+    surface: "infra/docker/docker-compose.*.yml env_file + src/mj_agent/llm.py + src/mj_agent/config.py"
+    rationale: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars injected per compose profile"
+    impact: "compose profile changes affecting LLM env vars must sync with this capability's provider.contract.yml"
+
+  - target: infrastructure.mcp-server-governance
+    direction: outbound
+    surface: ".mcp.json ssh-manager DGX host entry + src/mj_agent/config.py llm_base_url"
+    rationale: "DGX-Spark host (192.168.0.189) shared between ssh-manager MCP server entry and local-openai-compat LLM endpoint"
+    impact: "DGX host trust posture changes require review of both capabilities"
+
+links:
+
+  - req: REQ-001                                  # ark provider
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty"
+      automation_status: unautomated
+    contracts:
+      - contracts/provider.contract.yml
+      - contracts/python.contract.yml
+    tests:
+      - "TBD-M3: tests/unit/test_llm.py::test_ark_missing_creds_raises_llm_config_error"
+      - "TBD-M3: tests/unit/test_llm.py::test_ark_constructs_chatopenai_with_thinking_param"
+      - "TBD-M3: tests/unit/test_llm.py::test_ark_prefers_llm_api_key_over_legacy"
+    tasks:
+      - tasks.md#T-002
+    prs:
+      - "PR-M1-1 (contract); PR-M3-X (tests)"
+    evidence:
+      - "TBD-M3"
+
+  - req: REQ-002                                  # local-openai-compat provider
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Local provider constructs ChatOpenAI without extra_body.thinking"
+      automation_status: unautomated
+    contracts:
+      - contracts/provider.contract.yml
+      - contracts/python.contract.yml
+    tests:
+      - "TBD-M3: tests/unit/test_llm.py::test_local_openai_compat_no_thinking_param"
+      - "TBD-M3: tests/unit/test_llm.py::test_local_missing_base_url_raises"
+      - "TBD-M3: tests/unit/test_llm.py::test_local_uses_empty_sentinel_for_empty_api_key"
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "PR-M1-1 (contract); PR-M3-X (tests)"
+    evidence:
+      - "TBD-M3"
+
+  - req: REQ-003                                  # provider switch + config schema + CLI awareness
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "effective_llm_api_key returns 'EMPTY' sentinel for local provider when LLM_API_KEY is empty"
+      automation_status: unautomated
+    contracts:
+      - contracts/provider.contract.yml
+      - contracts/python.contract.yml
+    tests:
+      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_effective_api_key_returns_empty_sentinel_for_local"
+      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_effective_base_url_ark_fallback"
+      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_settings_rejects_invalid_provider_value"
+      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_ark_missing_key_failure_message"
+      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_local_missing_url_failure_message"
+      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_success_output_includes_provider_and_endpoint"
+    tasks:
+      - tasks.md#T-004
+    prs:
+      - "PR-M1-1 (contract); PR-M3-X (tests)"
+    evidence:
+      - "TBD-M3"
+
+# Summary:
+# - 3 REQs (all @risk:high)
+# - 3 BDD scenarios
+# - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
+# - 2 cross-capability refs (docker-compose + mcp-governance; ≤ 5 ✓)
+# - **0 existing tests; 12 TBD-M3 placeholders** — biggest gap among 5 pilots
