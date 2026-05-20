@@ -1,0 +1,61 @@
+---
+type: policy
+artifact: security
+state: draft
+version: 0.1
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+track: shared
+ai_visibility: source-of-truth
+---
+
+# Policy: Security
+
+> Phase M0 skeleton — secret 暴露 gate + 漏洞 exception + 2-bundle secrets 信任边界 + 跨仓
+> attribution 禁止规则. 详细内容在 Phase M2 内容填充.
+
+## §1 Secret 暴露 Gate
+
+> TBD: Phase M2 — `scripts/sdd/check_secret_exposure.py`（G7 Phase M2 blocking）扫描
+> `config/secrets.enc` / `config/secrets-mcp.enc` 不入 image / 不入 git；扫 .env / 明文密码 /
+> token / API key pattern 不在 active 文件中.
+
+## §2 漏洞 Exception 处理流程
+
+> TBD: Phase M2 — CVE / dependency vulnerability 的 exception 申请流程；ADR + 时限.
+
+## §3 2-Bundle Secrets 信任边界（per ADR-030）
+
+| Bundle | 解密范围 | 用途 |
+|---|---|---|
+| `config/secrets.enc`（app bundle） | 6-8 keys：`POSTGRES_ANALYST_USER/PASSWORD` / `ARK_API_KEY` / `LLM_API_KEY` / `LANGSMITH_API_KEY` / `MJ_AGENT_MEMORY_USER/PASSWORD` | 写入 `.env`；Python runtime + docker compose 读取 |
+| `config/secrets-mcp.enc`（MCP bundle） | 15 keys：5 SSH passwords + 10 PG URL overrides | 写入 OS User-level env（HKCU\Environment）；bypasses `.env`；Claude Code MCP server 启动时读取 |
+
+**信任边界**：两 bundle 用同一 team password（AES-256-CBC + PBKDF2），但解密 destination
+不同 → MCP 路径污染不会影响 app runtime.
+
+## §4 跨仓 Attribution 禁止规则
+
+> TBD: Phase M2 — cross-repo decoupling cleanup 延续（per memory
+> `project_cross_repo_decoupling_completion`）：
+> - prose 用"上游业务系统" / "上游业务仓库"
+> - frontmatter 禁 `derives_from: mj-system`
+> - mj-system attribution 用 wikilink 到 `GLOSSARY.md` / `docs/glossary/
+>   upstream_business_warehouse.md` 元文档（main/develop/SHA 选择规则在 glossary 内）
+> - 代码层 literal（`mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*`）保留作真实部署对象的
+>   精确引用
+
+forward guard：`scripts/check_no_cross_repo_refs.py`（warning mode active；残留 ~90
+warnings 待 Phase E+ 清理）.
+
+## §5 与其他 policy 联动
+
+- `policies/data-boundary.md` §3 4 项专属必停 — secret 红线在 sql-guardrail / catalog 中的
+  落地
+- `policies/docker-runtime.md` §1 Image 红线 — secret 禁入 image
+- `policies/ci-gates.md` §Settings 边界 — `permissions.deny` 红线列表
+
+---
+
+> *Phase M0 skeleton — `state: draft`. Phase M2 内容填充.*
