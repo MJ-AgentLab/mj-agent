@@ -1,0 +1,168 @@
+# capabilities/infrastructure/docker-compose/contracts/compose.contract.yml
+#
+# Covers REQ-001 (4-file profile loading) + REQ-002 (healthcheck + startup order)
+# + REQ-003 (env injection layer).
+
+contract_id: compose
+covers_requirements:
+  - REQ-001
+  - REQ-002
+  - REQ-003
+
+# 4-file layering (ADR-026)
+file_layering:
+  base:
+    path: infra/docker/docker-compose.mj-agent.yml
+    freeze_anchor: infra/docker/docker-compose.mj-agent.yml (247 lines)
+    compose_project_name: mj-agent                # `name: mj-agent`; independent of mj-system project
+  overlays:
+    - profile: DEV
+      path: infra/docker/docker-compose.override.yml
+      freeze_anchor: infra/docker/docker-compose.override.yml (40 lines)
+      key_additions: "build: context: ../../ + dockerfile path; POSTGRES_DEV_HOST: mj-postgres; MJ_CONFIG_PROFILE: dev; debug log level"
+    - profile: TEST
+      path: infra/docker/docker-compose.test.yml
+      freeze_anchor: infra/docker/docker-compose.test.yml (54 lines)
+      key_additions: "image: 8.135.38.175/mj-agent/mj-agent:0.1 (Harbor); 8C/12G cap; debug log; test profile"
+    - profile: PROD
+      path: infra/docker/docker-compose.prod.yml
+      freeze_anchor: infra/docker/docker-compose.prod.yml (70 lines)
+      key_additions: "Same Harbor image; 4C/12G cap; warning log; json-file logging; prod profile"
+
+# REQ-001 — Invocation contract
+invocation_contract:
+  dev_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.override.yml up -d
+  test_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.test.yml up -d
+  prod_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.prod.yml up -d
+
+  why_explicit_overlay:
+    auto_load_disabled: "compose files in infra/docker/ subdir; docker compose auto-load of override.yml only fires when CLI in same dir as docker-compose.yml"
+    explicit_f_overrides: "passing -f explicitly switches off auto-load even where it would have fired"
+
+  why_env_file_explicit:
+    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = infra/docker/"
+    repo_root_env_location: ".env lives at repo root, NOT in infra/docker/"
+    consequence_without_env_file: "${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod} substitutes to sentinel; postgres init bakes sentinel into volume; agent connection fails with `password authentication failed`"
+
+  dual_injection_mechanism:
+    cli_substitution_layer:
+      mechanism: "--env-file .env"
+      purpose: "${VAR} substitution in compose YAML (before any container starts)"
+    container_env_layer:
+      mechanism: "env_file: ../../.env  (inside service definition)"
+      purpose: "inject env vars into running container"
+    both_required: "CLI for compose substitution; container for runtime env; one alone insufficient"
+
+# 3 services
+services:
+
+  mj-agent:
+    image: mj-agent:0.1                          # DEV adds build:; TEST/PROD override to Harbor
+    ports: ["8001:8000"]                          # avoid mj-app's 8000
+    env_file: ../../.env
+    environment:
+      MJ_AGENT_MEMORY_HOST: mj-agent-postgres
+      MJ_AGENT_MEMORY_PORT: "5432"
+      MJ_AGENT_REDIS_HOST: mj-agent-redis
+      MJ_AGENT_REDIS_PORT: "6379"
+      CHAINLIT_HOST: 0.0.0.0
+      CHAINLIT_PORT: "8000"
+    depends_on:                                   # REQ-002 startup order
+      mj-agent-postgres:
+        condition: service_healthy
+      mj-agent-redis:
+        condition: service_healthy
+    healthcheck:
+      cmd: "mj-agent check"                       # provider-aware (per llm-provider REQ-003)
+      interval: 30s
+      start_period: 30s
+      retries: 3
+    networks:
+      - mj-system-network                         # alias for mj-system-backend-network external; biz pg
+      - mj-agent-storage                          # internal; memory pg + redis
+
+  mj-agent-postgres:
+    image: postgres:18-alpine                     # digest-pinned via Dependabot
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${MJ_AGENT_PG_SUPERUSER_PASSWORD:-local-dev-only-replace}
+      MJ_AGENT_MEMORY_DB: ${MJ_AGENT_MEMORY_DB:-mj_agent_memory}
+      MJ_AGENT_MEMORY_USER: ${MJ_AGENT_MEMORY_USER}
+      MJ_AGENT_MEMORY_PASSWORD: ${MJ_AGENT_MEMORY_PASSWORD}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - "mj-agent-postgres-data:/var/lib/postgresql"   # PG18+ pg_upgrade-friendly
+      - "./postgres-init:/docker-entrypoint-initdb.d:ro"
+    ports: ["5433:5432"]                          # avoid mj-system's mj-postgres:5432
+    healthcheck:                                  # REQ-002 — psql NOT pg_isready
+      cmd: ["sh", "-c", "psql -U postgres -d $MJ_AGENT_MEMORY_DB -tc 'SELECT 1'"]
+      interval: 30s
+      start_period: 30s
+      retries: 3
+      timeout: 10s
+      reason: "pg_isready greenlights server BEFORE init script's CREATE DATABASE finishes → cascade failures; psql -tc actually queries target DB"
+    networks: [mj-agent-storage]                  # internal only
+
+  mj-agent-redis:
+    image: redis:8-alpine
+    branched_startup:                             # auth-conditional
+      with_auth: "--requirepass ${MJ_AGENT_REDIS_PASSWORD}"
+      without_auth: "(default open; internal-only network)"
+    healthcheck:
+      cmd_with_auth: "redis-cli -a \"$MJ_AGENT_REDIS_PASSWORD\" --no-auth-warning ping"
+      cmd_without_auth: "redis-cli ping"
+    ports: ["6379:6379"]
+    networks: [mj-agent-storage]
+
+# Networks
+networks:
+  mj-system-network:
+    external: true                                # owned by mj-system stack; mj-agent only attaches
+    alias_for: mj-system-backend-network
+    purpose: "biz pg analyst RO role access; ADR-008"
+  mj-agent-storage:
+    type: bridge
+    labels:
+      isolation: internal                          # security label
+
+# Volumes
+volumes:
+  mj-agent-postgres-data:
+    labels:
+      backup: daily
+  mj-agent-redis-data:
+    labels:
+      backup: daily
+
+# Postgres init script (REQ-003 shell-safe contract)
+postgres_init:
+  path: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh
+  freeze_anchor: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh (85 lines)
+  idempotency:
+    role_handling: "CREATE ROLE if missing; ALTER ROLE if exists (PR #138)"
+    database_handling: "CREATE DATABASE if missing"
+    grants: "GRANT CONNECT + CREATE to MJ_AGENT_MEMORY_USER"
+  shell_safety_pattern:
+    heredoc: "<<-'EOSQL'"                          # single-quoted; disables bash expansion entirely
+    env_read: "psql \\getenv reads env directly (no shell intermediary)"
+    sql_escape: "format('%I %L', name, password)  -- I = identifier; L = literal"
+    execution: "\\gexec executes the formatted DDL"
+    handles: "passwords with $ / backticks / quotes / parens / spaces (PR #144 / #150)"
+
+hitl_required:
+  - prod compose change                            # docker-compose.prod.yml any modification (per policies/docker-runtime.md §4)
+
+# TBD Phase M3:
+#   - tests/docker/test_compose_config_dev.py  (docker compose config --env-file .env -f base -f override → exit 0 + structural assertions)
+#   - tests/docker/test_compose_config_test.py
+#   - tests/docker/test_compose_config_prod.py
+#   - tests/docker/test_external_network_required.py (compose up fails clearly if mj-system-backend-network absent)

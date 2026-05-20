@@ -1,0 +1,98 @@
+# capabilities/infrastructure/docker-compose/contracts/docker.contract.yml
+#
+# Covers REQ-003 image-layer constraints (no secrets baked).
+# Phase M1 reverse-engineered from infra/docker/Dockerfile + entrypoint.sh.
+
+contract_id: docker
+covers_requirements:
+  - REQ-003
+
+dockerfile:
+  path: infra/docker/Dockerfile
+  freeze_anchor: infra/docker/Dockerfile (123 lines)
+
+base_image:
+  builder_stage:
+    image: python:3.14-slim                       # digest-pinned via Dependabot; sic — comment "# tag: 3.13-slim"
+    note: "actual Python = 3.13.13 inside that digest; upstream slim image bundle; comment is authoritative on intent (3.13-slim line)"
+    rationale: "Dependabot maintains digest pin; tag comment documents intent for human reviewers"
+  runtime_stage:
+    image: python:3.14-slim                       # same digest
+    note: "same digest as builder; runtime additions: libpq5 + tini"
+
+builder_stage_contract:
+  build_args:
+    APT_MIRROR_URL:
+      default: "https://mirrors.tuna.tsinghua.edu.cn/debian-security"   # informational; default; --build-arg override allowed
+      semantics: "apt mirror URL; mirror.tuna by default for CN bandwidth"
+    UV_VERSION:
+      semantics: "uv binary version; copied from ghcr.io/astral-sh/uv:<version>"
+  env:
+    UV_PYTHON_PREFERENCE: only-system             # avoid uv-managed Python that doesn't survive COPY --from=builder
+  caching_strategy:
+    layer_1: "COPY pyproject.toml + uv.lock + README.md → uv sync --frozen --no-dev --no-install-project"
+    layer_2: "COPY src/ → uv sync --frozen --no-dev"
+
+runtime_stage_contract:
+  user:
+    name: appuser
+    uid: 1000
+    gid: 1000
+    non_root: true                                # explicit USER directive; required by REQ-003
+  tz: Asia/Shanghai
+  init_process: tini                              # entrypoint via /usr/bin/tini -- /app/entrypoint.sh
+  exposed_port: 8000                              # Chainlit default; HOST_PORT_MAP via compose 8001:8000
+  copied_paths_allowlist:
+    - "/app/.venv (from builder)"
+    - "/app/src"
+    - "/app/pyproject.toml"
+    - "/app/README.md"
+    - "/app/config"                                # config/secrets.enc NOT decrypted — REQ-003
+    - "/app/entrypoint.sh"
+  forbidden_in_image:                              # REQ-003 — no secrets baked
+    - ".env"
+    - "config/secrets.enc"
+    - "config/secrets-mcp.enc"
+    - "private keys / ssh keys"
+    - "API keys (no ARG with sensitive values)"
+  env_defaults:                                   # non-sensitive defaults; safe in image
+    PYTHONUNBUFFERED: "1"
+    PYTHONIOENCODING: utf-8
+    PYTHONDONTWRITEBYTECODE: "1"
+    PATH: "/app/.venv/bin:$PATH"
+    CHAINLIT_HOST: "0.0.0.0"
+    CHAINLIT_PORT: "8000"
+  mkdir:
+    - "/var/lib/mj-agent/charts"                  # MJ_AGENT_CHART_TMPDIR
+  entrypoint: ["/usr/bin/tini", "--", "/app/entrypoint.sh"]
+  cmd: ["serve"]                                  # default subcommand
+
+healthcheck:
+  cmd: "mj-agent check"
+  interval: 30s
+  timeout: 10s
+  start_period: 20s
+  retries: 3
+  semantics: "provider-aware credential check (no LLM endpoint contact); see data-agent.llm-provider REQ-003"
+
+entrypoint_script:
+  path: infra/docker/entrypoint.sh
+  freeze_anchor: infra/docker/entrypoint.sh (35 lines)
+  shebang_options: "set -Eeuo pipefail"
+  subcommand_router:
+    - "serve  → exec mj-agent serve \"$@\""
+    - "check  → exec mj-agent check \"$@\""
+    - "shell  → exec /bin/bash"
+    - "*      → exec \"$@\""                       # passthrough (e.g. docker run mj-agent uv run pytest ...)
+  contract:
+    - "does NOT decrypt config/secrets.enc"        # REQ-003
+    - "orchestrator injects secrets via --env-file .env / Compose env / Portainer Stack vars / Docker secrets"
+
+hitl_required:
+  - none                                          # Dockerfile / entrypoint.sh changes are infra
+                                                  # but docker/compose.prod.yml mods → cross-cap HITL (per policies/docker-runtime.md)
+
+# TBD Phase M3:
+#   - tests/docker/test_dockerfile_lint.py (no .env / no secrets.enc in COPY paths)
+#   - tests/docker/test_dockerfile_user.py (USER appuser; non-root verification)
+#   - tests/docker/test_entrypoint_router.py (subcommand routing; passthrough)

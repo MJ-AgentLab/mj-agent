@@ -1,0 +1,96 @@
+# capabilities/infrastructure/docker-compose/trace.yml
+# schema v1.2.
+
+capability: infrastructure.docker-compose
+generated: 2026-05-20
+schema_version: "1.2"
+
+cross_capability_refs:
+  - target: data-agent.llm-provider
+    direction: inbound                            # llm-provider depends on us for env injection
+    surface: "compose env_file: ../../.env + service environment LLM_*"
+    rationale: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars flow from .env through compose CLI substitution + container env into mj-agent service"
+    impact: "compose env var declaration changes must sync with llm-provider provider.contract.yml"
+
+  - target: infrastructure.mcp-server-governance
+    direction: outbound
+    surface: ".mcp.json WAN pg URLs reference deployed pg endpoints"
+    rationale: "compose-deployed pg hosts (mj-agent-postgres at 5433, biz pg via mj-system-backend-network at 5432) are referenced by .mcp.json wrapped pg server entries"
+    impact: "pg port / host changes must sync with .mcp.json MJ_AGENT_PG_*_URL overrides"
+
+links:
+
+  - req: REQ-001                                  # 4-file profile loading
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "DEV profile loads with explicit -f chain + --env-file"
+      automation_status: unautomated
+    contracts:
+      - contracts/compose.contract.yml
+      - contracts/runtime.expected.yaml
+    tests:
+      - "TBD-M3: tests/docker/test_compose_config_dev.py::test_dev_profile_config_valid"
+      - "TBD-M3: tests/docker/test_compose_config_test.py::test_test_profile_config_valid"
+      - "TBD-M3: tests/docker/test_compose_config_prod.py::test_prod_profile_config_valid"
+      - "TBD-M3: tests/docker/test_external_network_required.py::test_compose_up_fails_without_mj_system_network"
+      - "TBD-M3: tests/docker/test_env_file_required.py::test_compose_without_env_file_substitutes_sentinel"
+    tasks:
+      - tasks.md#T-002
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "evidence/runtime/ (M4+ healthy state snapshots per profile)"
+
+  - req: REQ-002                                  # healthcheck + startup order
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Postgres healthcheck rejects half-initialized DB"
+      automation_status: unautomated
+    contracts:
+      - contracts/compose.contract.yml
+      - contracts/runtime.expected.yaml
+    tests:
+      - "TBD-M3: tests/docker/test_postgres_healthcheck_timing.py::test_psql_healthcheck_rejects_pre_database_state"
+      - "TBD-M3: tests/docker/test_postgres_healthcheck_timing.py::test_pg_isready_would_greenlight_too_early"
+      - "TBD-M3: tests/docker/test_depends_on_service_healthy.py::test_mj_agent_waits_for_postgres_database_created"
+      - "TBD-M3: tests/docker/test_redis_healthcheck_auth_branch.py::test_redis_healthcheck_with_password_set"
+      - "TBD-M3: tests/docker/test_redis_healthcheck_auth_branch.py::test_redis_healthcheck_without_password"
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "TBD-M3"
+
+  - req: REQ-003                                  # secrets not in image + shell-safe init
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Postgres init handles password with shell metacharacters unmangled"
+      automation_status: unautomated
+    contracts:
+      - contracts/docker.contract.yml
+      - contracts/compose.contract.yml
+    tests:
+      - "TBD-M3: tests/docker/test_dockerfile_lint.py::test_no_secret_paths_in_copy"
+      - "TBD-M3: tests/docker/test_dockerfile_lint.py::test_user_appuser_non_root"
+      - "TBD-M3: tests/docker/test_dockerfile_lint.py::test_no_arg_with_sensitive_default"
+      - "TBD-M3: tests/docker/test_password_special_chars.py::test_role_creation_with_dollar_in_password"
+      - "TBD-M3: tests/docker/test_password_special_chars.py::test_role_creation_with_backtick"
+      - "TBD-M3: tests/docker/test_password_special_chars.py::test_role_creation_with_double_quote"
+      - "TBD-M3: tests/docker/test_password_special_chars.py::test_role_creation_with_paren_and_space"
+    tasks:
+      - tasks.md#T-004
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "TBD-M3 + evidence/security/ M4+"
+
+# Summary:
+# - 3 REQs (all @risk:high)
+# - 3 BDD scenarios
+# - 3 contract files + behavior.feature = 4 contracts (≤ 5 ✓)
+# - 2 cross-capability refs (≤ 5 ✓)
+# - 17 TBD-M3 test placeholders + 0 existing tests
