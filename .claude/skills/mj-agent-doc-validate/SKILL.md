@@ -1,6 +1,6 @@
 ---
 name: mj-agent-doc-validate
-description: This skill validates mj-agent documentation against Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1 (A1-A6 schema/existence checks + A7-A11 agent-track + A12-A14 engineering-workflow + OB1-OB5 format checks) by wrapping `scripts/check_wikilinks.py` (A4 wikilinks) + `scripts/check_frontmatter.py` (A2/A3 schema + 4-value TRACK_VALUES enum). Returns PASS/FAIL/WARN/SKIP per check. Make sure to use this skill whenever the user says "验证文档", "检查文档格式", "文档合规审计", "文档质量检查", "check docs", "validate documentation", "audit docs compliance", "lint markdown", "wikilinks check", "frontmatter check", "Stage 11 self-review docs gate" in the mj-agent context. Direction-distinct from mj-agent-flow-verify (Stage 10 multi-domain command matrix; calls scripts directly). Do not use for: writing or modifying a document (use mj-agent-doc-author), Stage 10 verification command matrix (use mj-agent-flow-verify which sub-calls this skill's scripts), or full Plan body authoring (use mj-agent-flow-plan).
+description: This skill validates mj-agent documentation against Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 (A1-A6 schema/existence checks + A7-A11 agent-track + A12-A14 engineering-workflow + OB1-OB5 format checks) by wrapping `scripts/check_wikilinks.py` (A4 wikilinks) + `scripts/check_frontmatter.py` (A2/A3 schema + 4-value TRACK_VALUES enum). Returns PASS/FAIL/WARN/SKIP per check. Recognizes project-root markdown 5 件 (README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md) as exempt from A1-A3 per Meta v2.2 §2.6; emits SKIP for those checks. Make sure to use this skill whenever the user says "验证文档", "检查文档格式", "文档合规审计", "文档质量检查", "check docs", "validate documentation", "audit docs compliance", "lint markdown", "wikilinks check", "frontmatter check", "Stage 11 self-review docs gate" in the mj-agent context. Direction-distinct from mj-agent-flow-verify (Stage 10 multi-domain command matrix; calls scripts directly). Do not use for: writing or modifying a document (use mj-agent-doc-author), Stage 10 verification command matrix (use mj-agent-flow-verify which sub-calls this skill's scripts), or full Plan body authoring (use mj-agent-flow-plan).
 ---
 
 # mj-agent Doc Validator
@@ -99,11 +99,12 @@ mj-agent 当前 OB1-OB5 阈值未完全定稿（per Code_Side v1.1 §7.2 TODO Ph
 
 - **A1** Path + filename 合法（per [TYPE]_Description[_vX.Y].md 模式）
 - **A5** `docs/INDEX.md` 已同步（人工对照新增 canonical doc 是否在 INDEX 表中）
-- **A6** allowlist 文档变更 → CLAUDE.md sync（按 Meta v2.1 §6.4.1 三段分流）
+- **A6** allowlist 文档变更 → CLAUDE.md sync（**触发轴**：Meta v2.2 §6.4 **4 类 allowlist** —— 类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 mj-agent 特化 runtime 语义；**落位轴**：v2.2 §6.4.1 三段分流）：
   - `track: code` → CLAUDE.md `## Code-Side Documentation` 段
   - `track: agent` → `## Agent-Side Documentation` 段
   - `track: engineering-workflow` → `## Engineering-Workflow Documentation` 段
   - `track: shared` → 元规则段
+  - 项目根 markdown（无 track）触发 §6.4 任一类时 → 元规则段或对应主题段（per Meta v2.2 §2.6）
 
 ### Agent-Side（A7-A11；仅 track: agent 时触发）
 
@@ -120,6 +121,21 @@ mj-agent 当前 OB1-OB5 阈值未完全定稿（per Code_Side v1.1 §7.2 TODO Ph
 - **A14** `.mcp.json` server 增删声明 trust posture + credential mode
 
 > **注**：A12-A14 校验当前是 manual review；自动校验留给 Phase 2 CI 实现。
+
+## 项目根 markdown 例外（Meta v2.2 §2.6 + GitHub_Markdown §14.5）
+
+如校验目标是项目根 5 件之一（README / CONTRIBUTING / CHANGELOG / GLOSSARY / CLAUDE.md），自动 emit：
+
+```
+[A1]  SKIP — 项目根 markdown 不强制 [TYPE]_ 前缀（per Meta v2.2 §2.6）
+[A2]  SKIP — 项目根 markdown 不要求 frontmatter（per Meta v2.2 §2.6）
+[A3]  SKIP — 项目根 markdown 无 state/track 字段
+[A4]  CHECK — wikilink 完整性仍校验（项目根 markdown 仍受 A4 约束）
+[A5]  CHECK — docs/INDEX.md 同步仍校验（如适用）
+[A6]  CHECK — §6.4 4 类 allowlist 仍触发（CLAUDE.md sync 仍受约束）
+```
+
+GitHub_Markdown §14 项目根特例语法（badges / 行内 HTML / ASCII 架构图 / 多语言 README）适用 — 当前 manual review，未自动化。
 
 ## Output Format
 
@@ -182,18 +198,20 @@ uv run python scripts/check_frontmatter.py && uv run python scripts/check_wikili
 
 - [[../../../scripts/check_frontmatter.py|scripts/check_frontmatter.py]]（A2 + A3 + 4 值 TRACK_VALUES enum；v2.1 起首）
 - [[../../../scripts/check_wikilinks.py|scripts/check_wikilinks.py]]（A4 wikilink；含 living/frozen archive 判定）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4 / §6.4.1 / §7（A1-A6 + OB1-OB5 标准）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §4 / §6.4（4 类 allowlist）+ §6.4.1（三段分组）+ §7（A1-A6 + OB1-OB5 标准）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 + OB1-OB5 适用 全 track）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 仅 agent track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.7（A12-A14 engineering-workflow）
-- mj-system `.claude/skills/mj-sys-doc-validate/SKILL.md`（直接派生源；mj-agent 改用 2 scripts 包装而非 mj-system 单 validate_doc.py）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §7.7（A12-A14 engineering-workflow）
+- [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；语法约束 manual review）
+- mj-system `.claude/skills/mj-sys-doc-validate/SKILL.md`（直接派生源；mj-agent 改用 2 scripts 包装而非 mj-system 单 validate_doc.py；mj-agent 加项目根例外）
 
 ## Anti-patterns
 
 - **不要** 把 OB 阈值当 FAIL（Phase 1 之前是 WARN-only；硬阻断会误伤）
 - **不要** 跳过 A4 wikilinks（v2.1 promote 后历史路径可能 break；必跑）
 - **不要** 在 .claude/skills/ 子目录跑本 skill（不在 SCAN_ROOTS；ADR-013 native schema 由 mj-agent-git-review-pr D9 校验）
-- **不要** auto-fix CLAUDE.md sync（A6 是 manual review；自动 sync 会破坏 Meta v2.1 §6.4.1 三段分流意图）
+- **不要** auto-fix CLAUDE.md sync（A6 是 manual review；自动 sync 会破坏 Meta v2.2 §6.4 4 类 allowlist + §6.4.1 三段分流意图）
+- **不要** 对项目根 markdown 5 件强制 A1-A3 检查（per Meta v2.2 §2.6 例外；emit SKIP）
 
 ## Handoff
 

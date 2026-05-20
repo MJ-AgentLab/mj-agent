@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-05-12
+updated: 2026-05-18
 state: draft
 track: shared
 ---
@@ -153,16 +153,17 @@ track: shared
 
 | 子目录 | 摘要 |
 |---|---|
-| [[guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；含 `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径）+ `[GUIDE]_Analyst_Day_One.md`（分析师 Day-1 试用闭环） |
+| [[guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；含 `[GUIDE]_Quick_Start_Setup.md`（5 分钟赶时间版）+ `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径）+ `[GUIDE]_Analyst_Day_One.md`（分析师 Day-1 试用闭环） |
 | [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|MJ-Agent SPEC Authoring Guide v0.1]] (PR-118 commit-3) | mj-agent SPEC 撰写指南；§3 任务类型识别决策树 + §4 8 类任务详解（Python 应用 / SQL guardrail / In-source canonical / Docker compose / CI/CD scripts / Config secrets / Engineering-workflow infra / 文档治理）+ §5 与 HITL_Prompt 短码映射 + §6 与 §3.1 必停规则关系；HITL Stage 6 SPEC 起草必读 |
 
 ---
 
-## 术语表（docs/glossary/）
+## 术语表
 
-| 术语 | 摘要 |
+| 术语来源 | 摘要 |
 |---|---|
-| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
+| [项目根 GLOSSARY](../GLOSSARY.md) | mj-agent 全项目术语索引；A-W 字母分段；约 40 术语 + 「定义 + 相关术语」二字段；专题深度词典在 `docs/glossary/` |
+| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | docs/glossary/ 专题词典之一；mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
 
 ---
 

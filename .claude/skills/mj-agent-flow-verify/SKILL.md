@@ -7,7 +7,7 @@ description: This skill orchestrates mj-agent local verification (HITL Stage 10)
 
 ## Overview
 
-Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `/mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（Meta v2.0 §4.7 双段约束）without manual command typing。
+Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `/mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） 双段约束）without manual command typing。
 
 **Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8（Level A / Level B 命令矩阵）+ [CLAUDE.md "Commands"](../../../CLAUDE.md) 段（uv-based 命令）。
 
@@ -224,7 +224,7 @@ docker compose -f infra/docker/docker-compose.mj-agent.yml down -v   # 删 volum
 - ☐ User 跳过 Level B → 仅 Level A 7/7 PASS，可继续 self-review
 
 ### Next Action
-verify 报告应填入 mj-agent-flow-self-review 的「本地验证」段（Meta v2.0 §4.7 双段；Stage 11）。
+verify 报告应填入 mj-agent-flow-self-review 的「本地验证」段（Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） 双段；Stage 11）。
 ```
 
 ## What This Skill DOES NOT DO
@@ -258,7 +258,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8（Level A/B 命令矩阵）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Commands" 段（uv-based 命令）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（Studio H1/H2/H3/R1/R2 探针）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（本地验证 vs AI 自检 双段）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §4.7（本地验证 vs AI 自检 双段；沿用 v2.0 §4 全部规则；实操 prompt 见 HITL_Prompt §4.8 + §4.9）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 下游消费者）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 上游）
 - `tests/{unit,eval,integration,smoke,contract}/`（5 类测试 entry）

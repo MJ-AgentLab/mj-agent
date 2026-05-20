@@ -1,15 +1,17 @@
 ---
 name: mj-agent-doc-author
-description: This skill creates a single Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1-compliant mj-agent document (GUIDE, RUNBOOK, ADR, SPEC, POSTMORTEM, STANDARD, ISSUE, ASSESSMENT, or in-source SKILL/PROMPT/CONTRACT) from scope analysis through validation. Make sure to use this skill whenever the user says "写文档", "编写指南", "创建RUNBOOK", "生成ADR", "写规范文档", "写ISSUE", "写评估文档", "write a GUIDE for", "create a RUNBOOK for", "draft an ADR for", "create an ISSUE doc", "write an ASSESSMENT", "Stage 6 SPEC/ADR/RUNBOOK", "doc author" in the mj-agent context, after document type and scope are decided. **Track-aware dispatch** based on Meta v2.1 §4.3.1 path-to-track decision tree (code/agent/engineering-workflow/shared); coexists with marketplace mj-agent-code-doc-author per ADR-016 §决策点 2. Do not use for: documentation gap analysis (use mj-agent-doc-plan first), validating already-written document (use mj-agent-doc-validate), or full Plan body authoring (use mj-agent-flow-plan).
+description: This skill creates a single Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1-compliant mj-agent document (GUIDE, RUNBOOK, ADR, SPEC, POSTMORTEM, STANDARD, ISSUE, ASSESSMENT, or in-source SKILL/PROMPT/CONTRACT) from scope analysis through validation. Make sure to use this skill whenever the user says "写文档", "编写指南", "创建RUNBOOK", "生成ADR", "写规范文档", "写ISSUE", "写评估文档", "write a GUIDE for", "create a RUNBOOK for", "draft an ADR for", "create an ISSUE doc", "write an ASSESSMENT", "Stage 6 SPEC/ADR/RUNBOOK", "doc author" in the mj-agent context, after document type and scope are decided. **Track-aware dispatch** based on Meta v2.2 §4.3.1 path-to-track decision tree (含 v2.2 加 0 条覆盖项目根 markdown → 不适用 track；其他 8 条分 code/agent/engineering-workflow/shared); coexists with marketplace mj-agent-code-doc-author per ADR-016 §决策点 2. Do not use for: documentation gap analysis (use mj-agent-doc-plan first), validating already-written document (use mj-agent-doc-validate), full Plan body authoring (use mj-agent-flow-plan), or **authoring project-root markdown 5 件** (README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md per Meta v2.2 §2.6 例外；不入本 skill scope).
 ---
 
 # mj-agent Doc Author
 
 ## Overview
 
-按已知文档类型 + scope 起草单份 Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1 兼容文档。Code 是 source of truth — 始终 verify against 真实文件，不轻信旧文档。**Track-aware dispatch**：按 Meta v2.1 §4.3.1 路径决策树自动选 track，按 ADR-014 §决策点 4 边界表确定归属。
+按已知文档类型 + scope 起草单份 Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 兼容文档。Code 是 source of truth — 始终 verify against 真实文件，不轻信旧文档。**Track-aware dispatch**：按 Meta v2.2 §4.3.1 路径决策树自动选 track（含 v2.2 加 0 条：项目根 markdown → 不适用 track），按 ADR-014 §决策点 4 边界表确定归属。**Active path stability**（Meta v2.2 §4.4）：active canonical 文件名默认无 `_vX.Y` 后缀，version 仅在 frontmatter；例外仅"多 active 主版本并存"。
 
 **Stage 6 sub** of HITL_Prompt 17-stage 闭环；典型 by `/mj-agent-flow-plan` Step 3 task list 触发，或 user 直接调用。
+
+> **项目根 markdown 例外**（Meta v2.2 §2.6 + GitHub_Markdown §14.5）：README / CONTRIBUTING / CHANGELOG / GLOSSARY / CLAUDE.md 5 件**不入本 skill scope**——不写 frontmatter；A1-A3 不适用；起草直接走 user-编辑或 git 操作，不调本 skill。
 
 **Direction-critical**（与 marketplace plugin 共存；per ADR-016 §决策点 2）：
 
@@ -23,8 +25,8 @@ description: This skill creates a single Meta v2.1 + Code_Side v1.1 + Agent_Side
 ## Prerequisite
 
 - 文档类型 + scope 明确。如不明 → 先用 `/mj-agent-doc-plan`（PR-B4 落地）评估
-- mj-agent 仓已 promote 到 v2.1（Phase B PR-B3c-promote 完成）
-- 已知 track 归属（or 由 path-to-track 决策树自动判定）
+- mj-agent 仓已 promote 到 v2.2（PR #173 sustained §2.6 / §4.3.1 0 条 / §6.4 4 类 / §修订记录）
+- 已知 track 归属（or 由 path-to-track 决策树自动判定；项目根 markdown 走 §2.6 例外，不入本 skill）
 
 ## Workflow
 
@@ -38,15 +40,15 @@ digraph author {
   q03 [label="Q-03: 需要 ADR?\n(边界案例)" shape=diamond];
   q04 [label="Q-04: 新建 SPEC 还是\n更新现有 SPEC?" shape=diamond];
 
-  track [label="Track decision\n(Meta v2.1 §4.3.1 path-to-track 决策树)" shape=box];
+  track [label="Track decision\n(Meta v2.2 §4.3.1 path-to-track 决策树\n0 条: 项目根 markdown → 不适用)" shape=box];
 
-  dir [label="Directory placement\n(Meta v2.1 §3.5)" shape=box];
+  dir [label="Directory placement\n(Meta v2.2 §3.5)" shape=box];
 
   q01 [label="Q-01: 目录歧义?\n(≥2 valid dirs)" shape=diamond];
 
   template [label="Template selection\n(9 templates + in-source flavor)" shape=box];
 
-  filename [label="Filename construction\n(Meta v2.1 §4 naming + glob 检查)" shape=box];
+  filename [label="Filename construction\n(Meta v2.2 §4 naming + §4.4 active path 默认无 _vX.Y\n+ glob 检查)" shape=box];
 
   d01q02 [label="D-01/Q-02: 文件已存在?\n(glob 确认后询问)" shape=diamond];
 
@@ -89,17 +91,17 @@ digraph author {
 | `[GUIDE]` | code | `docs/guide/` 或 `docs/infrastructure/{domain}/` | `TEMPLATE_GUIDE.md` | `[GUIDE]_Description.md` |
 | `[RUNBOOK]` | code | `docs/runbook/` 或 `docs/infrastructure/{domain}/` | `TEMPLATE_RUNBOOK.md`（PR-A3） | `[RUNBOOK]_Subject.md` |
 | `[ADR]` | shared/eng-workflow（按主题） | `docs/adr/` | `TEMPLATE_ADR.md` | `[ADR]_NNN_Decision_Title.md` |
-| `[SPEC]` | shared/agent/code（按主题） | `docs/design/{module}/` | `TEMPLATE_SPEC.md`（PR-A3） | `[SPEC]_Description.md`（无 vX.Y）或 `_v1.0.md`（type-specific 含 version） |
+| `[SPEC]` | shared/agent/code（按主题） | `docs/design/{module}/` | `TEMPLATE_SPEC.md`（PR-A3） | `[SPEC]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4 active path stability） |
 | `[POSTMORTEM]` | shared | `docs/postmortem/` | `TEMPLATE_POSTMORTEM.md`（PR-D1，未落地，参 mj-system 上游） | `[POSTMORTEM]_Subject.md` |
-| `[STANDARD]` | code/eng-workflow/shared（按主题） | `docs/rule/[STANDARD]_*_v1.0.md` 或 `docs/infrastructure/{domain}/` | （type-specific；mj-agent 模板未独立） | `[STANDARD]_Description_v1.0.md` |
-| `[ISSUE]` | shared | `docs/issues/` | `TEMPLATE_ISSUE.md`（PR-D1，未落地） | `[ISSUE]_NNN_Description.md` |
-| `[ASSESSMENT]` | shared | `docs/assessments/` | `TEMPLATE_ASSESSMENT.md`（PR-D1，未落地） | `[ASSESSMENT]_Subject_v1.0.md` |
+| `[STANDARD]` | code/eng-workflow/shared（按主题） | `docs/rule/[STANDARD]_*.md` 或 `docs/infrastructure/{domain}/` | （type-specific；mj-agent 模板未独立） | `[STANDARD]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
+| `[ISSUE]` | shared | `docs/issues/` | `TEMPLATE_ISSUE.md`（PR-D1，未落地） | `[ISSUE]_NNN_DomainAbbr_Description.md`（per Meta v2.2 §4.5）|
+| `[ASSESSMENT]` | shared | `docs/assessments/` | `TEMPLATE_ASSESSMENT.md`（PR-D1，未落地） | `[ASSESSMENT]_Subject.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
 | `[SKILL]`（in-source；Track B） | agent | `src/mj_agent/skills/<name>/` | `TEMPLATE_SKILL.md`（13 字段 + 五段式） | `<name>/SKILL.md` |
 | `[PROMPT]`（in-source；Track B） | agent | `src/mj_agent/prompts/` | `TEMPLATE_PROMPT.md` | `<name>.md` |
 | `[SKILL]`（in-tree；Track C） | engineering-workflow | `.claude/skills/mj-agent-<group>-<verb>/` | `TEMPLATE_WORKFLOW_SKILL.md`（PR-B1） | `<name>/SKILL.md` |
 | `[CONTRACT]` | shared/agent | `docs/contracts/` | `TEMPLATE_CONTRACT.md` | `[CONTRACT]_Tool_Description.md` |
 
-> **注**：含 `version` 字段的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）filename 必须含 `_vX.Y`（per ADR-011）。
+> **注**：含 `version` 字段的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）filename **默认无 `_vX.Y` 后缀**（per Meta v2.2 §4.4 active path stability；ADR-018 partial supersede ADR-011 §4.2）。版本仅在 frontmatter `version` 字段。例外：多 active 主版本并存时才加（如 v1/v2 API 长期共存的 STANDARD）。Legacy 归档反向必带后缀（per §4.4.3）。
 
 ## Key Principles
 
@@ -108,11 +110,13 @@ digraph author {
 3. **Start as `state: draft`** — All new docs enter review before authoritative.
 4. **Template adaptation allowed** — Sections rename/reorder OK，but **MUST** preserve: frontmatter / blockquote header / 关联文档段。
 5. **B 风味 永远 HITL** — `src/mj_agent/skills/**/SKILL.md` 或 `prompts/*.md` body 起草 / 修改前必须用 `/mj-agent-runtime-*`（PR-C2 落地）propose diff，user 接受后再写盘。这是 §3.1 必停 10/11 + ADR-015 §决策点 4 硬约束。
-6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.1 §4.3.1 路径决策树）。
+6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.2 §4.3.1 路径决策树）。项目根 markdown 5 件不写 frontmatter 不适用 track（per §2.6 例外 + §4.3.1 第 0 条）。
 
-## Track Decision（Meta v2.1 §4.3.1 path-to-track 决策树）
+## Track Decision（Meta v2.2 §4.3.1 path-to-track 决策树）
 
 ```
+0. 路径是项目根 markdown（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md）？
+   → 不适用 track（per Meta v2.2 §2.6 例外；不写 frontmatter；A1-A3 不适用；本 skill 不处理）
 1. 路径在 src/mj_agent/{skills,prompts}/** → agent
 2. 路径在 src/mj_agent/{其他}/** → code
 3. 路径在 .claude/** 或 .mcp.json 或 docs/rule/[STANDARD]_*_HITL_Prompt*.md / _AI_Engineering_*.md / _Claude_Code_Settings_*.md / _MCP_Server_Governance_*.md → engineering-workflow
@@ -123,9 +127,11 @@ digraph author {
 8. 其他 → 默认 shared 并 PR body 论证
 ```
 
-## Directory Placement Rules（Meta v2.1 §3.5，加 0 号）
+## Directory Placement Rules（Meta v2.2 §3.5，加 0 号 + 项目根例外）
 
 ```
+项目根例外（v2.2 §2.6；本 skill 不处理）→ README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md
+
 0. Engineering-workflow 专属（v2.1 引入） → .claude/skills/<name>/, .claude/scripts/, .mcp.json
 1. Agent 专属 → src/mj_agent/skills/**/SKILL.md, prompts/*, docs/evaluation/, docs/contracts/（agent-facing）
 2. 子系统专属 → docs/design/{agent|gateway|memory|prompts|skills|ui}/
@@ -135,7 +141,7 @@ digraph author {
 6. 跨领域操作指南 → docs/guide/
 ```
 
-## STANDARD 归属判定（v2.1 §3.5 + Meta v2.1 §3.6）
+## STANDARD 归属判定（v2.2 §3.5 + Meta v2.2 §3.7）
 
 | 范畴 | 目录 | 判定 |
 |---|---|---|
@@ -215,23 +221,25 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3 / §4 / §5 / §6（types / frontmatter / state / archive / index）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §3 / §4 / §5 / §6（types / frontmatter / state / archive / index）+ §4.3.1（path-to-track 决策树含 0 条）+ §4.4（active path stability）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §3.1-§3.8（8 类继承类 authoring）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2-§7（4 类自有类 authoring + frontmatter strip 契约）
+- [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC/ADR/RUNBOOK 触发）
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow）
+- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
 - [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）+ §决策点 4（runtime 硬约束）
 - 9 个 templates 全部在 `docs/_templates/`
-- mj-system `.claude/skills/mj-sys-doc-author/SKILL.md`（直接派生源；mj-agent 加 track-aware + 风味识别 + Q-B1）
+- mj-system `.claude/skills/mj-sys-doc-author/SKILL.md`（直接派生源；mj-agent 加 track-aware + 风味识别 + Q-B1 + 项目根例外）
 
 ## Anti-patterns
 
 - **不要** B 风味改动跳过 Q-B1（违反 §3.1 必停 10/11；ADR-015 §决策点 4 runtime 硬约束）
-- **不要** 缺 frontmatter `track` 字段（v2.1 §4.3.1 必填；validate 阶段 A2 阻断）
+- **不要** 缺 frontmatter `track` 字段（v2.2 §4.3.1 必填；validate 阶段 A2 阻断；项目根 markdown 例外不在此约束）
 - **不要** 在 docs/rule/ 下塞领域专属 STANDARD（违反 §3.5 就近原则；应进 docs/infrastructure/{domain}/）
 - **不要** 跳过 ADR/SPEC §12 前置检查（边界案例可能漏建必要 ADR）
-- **不要** version 必填类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）filename 缺 `_vX.Y`（违反 ADR-011）
+- **不要** 在 active canonical filename 加 `_vX.Y` 后缀（违反 Meta v2.2 §4.4 active path stability；ADR-018 partial supersede ADR-011 §4.2；除非"多 active 主版本并存"例外）
+- **不要** 用本 skill 起草项目根 markdown 5 件（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md；per Meta v2.2 §2.6 例外，不入本 skill scope）
 
 ## Handoff
 

@@ -132,7 +132,7 @@ gh pr create \
 
 ## Self-Check Checklist（按 track 选填）
 
-mj-agent v2.0 trio active + v2.1 trio draft 共存阶段，自检 checklist 按 track 选填（详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.0]] §7.1）：
+mj-agent 三轨道治理现状（**v2.2 trio active 终态**：Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 + HITL_Prompt v1.1 Track C 主 STANDARD；v2.0/v2.1 trio 已 archive 至 `docs/archive/rule/`）；自检 checklist 按 track 选填（详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]] §7.1）：
 
 ### Code-Side（A1-A6 + OB1-OB5）
 

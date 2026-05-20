@@ -1,13 +1,13 @@
 ---
 name: mj-agent-doc-review
-description: This skill reviews a pull request for documentation completeness in mj-agent, checking all Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1 quality gate items at PR scope — INDEX.md sync (A5), CLAUDE.md tri-track sync (A6 §6.4.1), §12 pre-check compliance (ADR/SPEC trigger), cross-reference integrity (A4 wikilinks), engineering-workflow A12-A14, and Meta v2.1 §4.7 双段 PR description constraint. Make sure to use this skill whenever the user says "审查PR文档", "PR文档检查", "提交前文档验证", "文档质量门禁", "review PR docs", "check PR documentation", "documentation checklist for PR", "pre-PR doc check", "Stage 15 sub PR review", "tri-track A1-A14 self-check", "§4.7 双段 check" in the mj-agent context. Direction-distinct from mj-agent-git-review-pr (architecture/design review of others' PRs) and mj-agent-flow-review-respond (respond to comments on own PR). Do not use for: per-file validation only (use mj-agent-doc-validate which is sub-called here), authoring (use mj-agent-doc-author), or full Plan body authoring (use mj-agent-flow-plan).
+description: This skill reviews a pull request for documentation completeness in mj-agent, checking all Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 quality gate items at PR scope — INDEX.md sync (A5), CLAUDE.md sync (A6 with §6.4 4 类 allowlist + §6.4.1 三段分组), §12 pre-check compliance (ADR/SPEC trigger), cross-reference integrity (A4 wikilinks), engineering-workflow A12-A14, Meta v2.2 §4.7 双段 PR description constraint (沿用 v2.0 §4；HITL_Prompt §4.8 + §4.9 实操), and project-root markdown 例外 per §2.6. Make sure to use this skill whenever the user says "审查PR文档", "PR文档检查", "提交前文档验证", "文档质量门禁", "review PR docs", "check PR documentation", "documentation checklist for PR", "pre-PR doc check", "Stage 15 sub PR review", "tri-track A1-A14 self-check", "§4.7 双段 check" in the mj-agent context. Direction-distinct from mj-agent-git-review-pr (architecture/design review of others' PRs) and mj-agent-flow-review-respond (respond to comments on own PR). Do not use for: per-file validation only (use mj-agent-doc-validate which is sub-called here), authoring (use mj-agent-doc-author), or full Plan body authoring (use mj-agent-flow-plan).
 ---
 
 # mj-agent Doc Review
 
 ## Overview
 
-PR-scope quality gate — 验 PR 是否满足 Meta v2.1 + Code_Side v1.1 + Agent_Side v1.1 文档要求。区别 `/mj-agent-doc-validate`（per-file）；本 skill 检查 PR holistically。**Stage 15 sub** of HITL_Prompt 17-stage 闭环。
+PR-scope quality gate — 验 PR 是否满足 Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 文档要求。区别 `/mj-agent-doc-validate`（per-file）；本 skill 检查 PR holistically。**Stage 15 sub** of HITL_Prompt 17-stage 闭环。
 
 **Direction-distinct（三角关系）**：
 
@@ -85,11 +85,12 @@ per documentation change：
 1. 跑 `/mj-agent-doc-validate` per file
 2. 新建 docs 已加 INDEX.md entry?
 3. 修改 docs `updated` field current?（per Meta v2.1 §5.4 substantive change rule）
-4. CLAUDE.md tri-track synced（§6.4.1）?
+4. CLAUDE.md sync — **触发轴**：Meta v2.2 §6.4 **4 类 allowlist**（类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 mj-agent 特化 runtime 语义；命中任一才触发 A6 sync）；**落位轴**：§6.4.1 三段分流：
    - `track: code` 改动 → CLAUDE.md `## Code-Side Documentation` 段
    - `track: agent` → `## Agent-Side Documentation`
    - `track: engineering-workflow` → `## Engineering-Workflow Documentation`
    - `track: shared` → 元规则段
+   - **项目根 markdown**（无 track；per Meta v2.2 §2.6 例外）触发 §6.4 任一类时落 元规则段或主题段
 
 ## Phase 5: Cross-Reference Integrity（mj-agent 扩展）
 
@@ -97,7 +98,7 @@ per documentation change：
 2. 改动 doc 内 broken internal links？scripts/check_wikilinks.py 跑
 3. **mj-agent 扩展（per HITL_Prompt §4.9 Rule 5a）**：grep `src/mj_agent/skills/**/SKILL.md` + `prompts/*.md` 中是否引用 renamed 文件 / 列名 / 函数
 
-## Phase 6: §4.7 PR Description 双段（Meta v2.1 §4.7 + HITL_Prompt §4.9 §3）
+## Phase 6: §4.7 PR Description 双段（Meta v2.2 §4.7 — 沿用 v2.0 §4 全部规则；实操 prompt 见 HITL_Prompt v1.1 §4.8 + §4.9）
 
 PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
@@ -129,11 +130,11 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 ### Code-Side §7.1 (A1-A6 + OB1-OB5；全 track)
 - [x] **A1** Path + filename 合法 — N/N docs pass
-- [x] **A2** Frontmatter schema 完整 — N/N docs pass（含 track 字段 v2.1 4 值）
+- [x] **A2** Frontmatter schema 完整 — N/N docs pass（含 track 字段 v2.2 4 值；项目根 markdown 例外 emit SKIP per §2.6）
 - [x] **A3** state + enum 合法
 - [ ] **A4** Wikilinks resolve — {N broken：xxx.md:line}
 - [x] **A5** INDEX.md 同步
-- [x] **A6** CLAUDE.md tri-track sync（§6.4.1）正确分段
+- [x] **A6** CLAUDE.md sync — §6.4 4 类 allowlist 触发判定 + §6.4.1 三段分组落位正确
 - [ ] **OB1-OB5** 非阻塞观察项 — {WARN: doc 612 行超 GUIDE 推荐 100-500}
 
 ### Agent-Side §7.1 (A7-A11；仅 track: agent)
@@ -198,12 +199,13 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4.7（双段约束）+ §6.4.1（tri-track CLAUDE sync）+ §7.7（A12-A14）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §4.7（双段约束；沿用 v2.0 §4 全部规则）+ §6.4（4 类 allowlist；PR #173 显式展开）+ §6.4.1（三段分组）+ §7.7（A12-A14）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 全 track）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 agent track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（§12 前置检查）+ §4.9 Rule 5a-5d
+- [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加；语法 manual review）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（§12 前置检查）+ §4.8（Local Verification）+ §4.9 Rule 5a-5d
 - `.github/PULL_REQUEST_TEMPLATE/`（5 PR templates）
-- mj-system `.claude/skills/mj-sys-doc-review/SKILL.md`（直接派生源；mj-agent 加 tri-track A12-A14 + mj-agent 扩展 §7.2.1 反扫）
+- mj-system `.claude/skills/mj-sys-doc-review/SKILL.md`（直接派生源；mj-agent 加 tri-track A12-A14 + mj-agent 扩展 §7.2.1 反扫 + 项目根 markdown 例外）
 
 ## Anti-patterns
 

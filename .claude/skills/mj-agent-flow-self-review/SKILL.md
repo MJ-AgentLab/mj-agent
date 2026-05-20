@@ -1,15 +1,15 @@
 ---
 name: mj-agent-flow-self-review
-description: This skill performs mj-agent AI self-review (HITL Stage 11) before commit — verifies the staged diff matches the linked Plan / SPEC, runs scope-drift sub-call, and produces the Meta v2.0 §4.7 dual-section report (本地验证 / AI 自检) plus a 12-item mj-agent-tuned checklist (mj-system 11-item + item 12 = system.md version bump check) plus a commit message draft via mj-agent-git-commit. Make sure to use this skill whenever the user says "AI 自检", "self review", "commit 前检查", "diff 自审", "本地验证后", "提交前自查", "pre-commit review", "Stage 11", "11-item checklist", "12-item checklist", or after running tests / lint / typecheck and before `git commit` in the mj-agent context. Includes mj-agent-specific 5a/5b/5c/5d reverse scan extending to src/mj_agent/{skills,prompts}/ + qcm_catalog.yaml. Outputs go/no-go recommendation with HITL questions for medium/high risk; does NOT auto-commit. Do not use for: Stage 9 scope drift detection only (use mj-agent-flow-scope-drift, sub-called here), Stage 10 command matrix execution (use mj-agent-flow-verify), Stage 13 review response on others' comments (use mj-agent-flow-review-respond), or commit message format only (use mj-agent-git-commit, sub-called here).
+description: This skill performs mj-agent AI self-review (HITL Stage 11) before commit — verifies the staged diff matches the linked Plan / SPEC, runs scope-drift sub-call, and produces the Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） dual-section report (本地验证 / AI 自检) plus a 12-item mj-agent-tuned checklist (mj-system 11-item + item 12 = system.md version bump check) plus a commit message draft via mj-agent-git-commit. Make sure to use this skill whenever the user says "AI 自检", "self review", "commit 前检查", "diff 自审", "本地验证后", "提交前自查", "pre-commit review", "Stage 11", "11-item checklist", "12-item checklist", or after running tests / lint / typecheck and before `git commit` in the mj-agent context. Includes mj-agent-specific 5a/5b/5c/5d reverse scan extending to src/mj_agent/{skills,prompts}/ + qcm_catalog.yaml. Outputs go/no-go recommendation with HITL questions for medium/high risk; does NOT auto-commit. Do not use for: Stage 9 scope drift detection only (use mj-agent-flow-scope-drift, sub-called here), Stage 10 command matrix execution (use mj-agent-flow-verify), Stage 13 review response on others' comments (use mj-agent-flow-review-respond), or commit message format only (use mj-agent-git-commit, sub-called here).
 ---
 
 # mj-agent Flow — AI Self-review (HITL Stage 11)
 
 ## Overview
 
-Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `/mj-agent-flow-scope-drift` (Stage 9) with Meta v2.0 §4.7 dual-section discipline（本地验证 / AI 自检 严格不混用）+ mj-agent 12-item checklist + commit message draft via `/mj-agent-git-commit`。
+Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `/mj-agent-flow-scope-drift` (Stage 9) with Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） dual-section discipline（本地验证 / AI 自检 严格不混用）+ mj-agent 12-item checklist + commit message draft via `/mj-agent-git-commit`。
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）.
+**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9（含 Rule 5a/5b/5c/5d + Rule 11 mj-agent 扩展 + Rule 12 system.md version bump check） + [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §4.7（沿用 v2.0 §4 全部规则；双段约束；实操 prompt 见 HITL_Prompt §4.8 + §4.9）.
 
 ## Workflow
 
@@ -71,9 +71,9 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 - drift Severity = High → self-review Risk = High（必 HITL）
 - drift Severity = Medium → self-review Risk ≥ Medium
 
-## Step 3: §4.7 Dual-Section Verify（Meta v2.0）
+## Step 3: §4.7 Dual-Section Verify（Meta v2.2；沿用 v2.0 §4 全部规则）
 
-按 Meta v2.0 §4.7，自检结果**严格分两段**：
+按 Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9），自检结果**严格分两段**：
 
 ### 「本地验证」段（人类客观可重复检查）
 
@@ -99,7 +99,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 硬编码扫描 | ✅ | grep IP / 密码 / 绝对路径 / `.env` / `secrets.enc` |
 | 文档与实现一致 | ✅ | SPEC §FR1 ↔ src 实现 |
 | 引用路径有效 | ✅ | wikilink target 在 docs/ 下存在 |
-| 与既有规范一致 | ✅ | commit type / branch type 矩阵 / Meta v2.0 frontmatter |
+| 与既有规范一致 | ✅ | commit type / branch type 矩阵 / Meta v2.2 frontmatter |
 | **mj-agent 专属**：runtime SKILL/system.md body 反向扫描结果 | ✅ | 5a 反扫命中数 + 处理决策 |
 | **mj-agent 专属**：biz_catalog 镜像状态 | ✅ | scripts/diff_biz_schema.py 是否漂移 |
 | **「测试通过」** | ❌（属本地验证） | — |
@@ -114,7 +114,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 1 | 改动符合 mj-agent 模块边界（agent/llm/prompt/skill/sql/db/config + tests/eval/ci/deps/infra） | mj-agent Architecture |
 | 2 | 已读真实数据来源 / 列名 / 数据流（biz_catalog + find_biz_context），未加未要求的预处理 | mj-agent CLAUDE.md "Data boundary" |
 | 3 | 无硬编码敏感信息 / IP / 密码 / 绝对路径 / 残留调试代码 / `.env` / `secrets.enc` | 通用 |
-| 4 | 文档同步：canonical / working / INDEX / CLAUDE.md allowlist | Meta v2.0 §6.4 |
+| 4 | 文档同步：canonical / working / INDEX / CLAUDE.md allowlist | Meta v2.2 §6.4（4 类 allowlist + tri-track §6.4.1 三段分组） |
 | 5 | Commit message 符合 `<type>(<scope>): <summary>` v1.0 规范 + 12 scope 闭合 allowlist | Commit Convention v1.0 |
 | 6 | Branch × commit type 矩阵正确（5 branch × 7 type；mj-agent 不含 optimization） | Commit Convention §5.2 |
 | 7 | scope-drift Severity = None / Low（如 ≥ Medium，必先 HITL） | mj-agent-flow-scope-drift 输出 |
@@ -156,12 +156,12 @@ python scripts/diff_biz_schema.py
 
 ### 5b: 新文档创建确认
 
-比对 Repo Scan §7.1 Documentation Decision 表 Action=Create 行，确认对应 Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT 已创建并填 frontmatter（schema 按 Meta v2.0 §4.3 / §4.4）。
+比对 Repo Scan §7.1 Documentation Decision 表 Action=Create 行，确认对应 Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT 已创建并填 frontmatter（schema 按 Meta v2.2 §4.3 / §4.4；项目根 markdown 5 件按 §2.6 例外不要求 frontmatter）。
 
 ### 5c: INDEX / CLAUDE.md / CHANGELOG 同步
 
 - `docs/INDEX.md` 同步：A5 校验
-- `CLAUDE.md` allowlist 检查：Meta v2.0 §6.4
+- `CLAUDE.md` allowlist 检查：Meta v2.2 §6.4（4 类 allowlist：全局高频标准 / 高频运行信息 / 项目目录入口 / mj-agent 特化 runtime 语义）
 - `CHANGELOG.md` `[Unreleased]`：feat/fix/perf 必更
 
 ### 5d: SPEC Delta Check
@@ -275,7 +275,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ## Reference Files
 
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.0]] §4.7（双段约束）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §4.7（沿用 v2.0 §4 全部规则；双段约束；实操 prompt 见 HITL_Prompt §4.8 + §4.9）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]]（type/scope 矩阵）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）

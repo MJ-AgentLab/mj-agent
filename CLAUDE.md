@@ -294,7 +294,12 @@ v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
   archive / `track` frontmatter field with 4 values: code | agent |
   engineering-workflow | shared / CLAUDE.md tri-track sync §6.4.1 /
   §3.10 in-tree workflow SKILL governance / §7.7 .claude/ boundary +
-  A12-A14 PR gates).
+  A12-A14 PR gates). **v2.2 sustained 2026-05-18** (借鉴 mj-system §3.1
+  + §6.4 结构): §2.6 项目根 5 文件具名职责表（README / CONTRIBUTING /
+  CHANGELOG / GLOSSARY / CLAUDE.md）+ 例外条款 (A1-A3 不适用 / A4+A6 仍
+  适用) + §4.3.1 path-to-track 决策树补 0 条覆盖项目根 markdown +
+  §6.4 显式展开 3 类 allowlist + 加 mj-agent 特化第 4 类「runtime 语义」
+  (LLM provider matrix + Data boundary L1-L4 + HITL gates).
 - `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
   (active) — Track A authoring depth + PR gates A1-A6 + OB1-OB5 for
   code-side canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK /
@@ -325,10 +330,23 @@ Archived (`docs/archive/rule/`, `state: deprecated`):
   replaced by v1.1 (in-source only scope)
 
 Markdown + YAML syntax (GFM rendering target):
-`docs/rule/[STANDARD]_GitHub_Markdown.md`. Entry point:
+`docs/rule/[STANDARD]_GitHub_Markdown.md` (**v1.1 minor bump 2026-05-18**:
+§14 项目根 README 与 Markdown 特例新加 — Badges / 行内 HTML 例外 /
+多语言 README / ASCII 架构图 / 项目根 markdown 不进入 canonical 治理；
+原 §14 参考改 §15；in-place stable path 不触发 archive). Entry point:
 `docs/INDEX.md`. New-member onboarding path:
 `docs/guide/[GUIDE]_Developer_Onboarding.md` (mj-agent end-to-end day-1 +
 refresher; covers repo / branches / env / tests / docs / commit / Studio).
+
+**项目根具名文件 5 件（Meta v2.2 §2.6；不入 canonical 治理表，A1-A3 不适用，A4+A6 仍适用）**：
+- `README.md` — 项目入口和快速启动（PR #171 借鉴 mj-system 8 段结构扩写）
+- `CONTRIBUTING.md` — 协作与提交流程（PR-D 新建；「摘要 + 跳转」模式 8 段；环境已就绪开发者入口；
+  与 Developer_Onboarding 互补不重复）
+- `CHANGELOG.md` — 版本变更日志
+- `GLOSSARY.md` — 项目术语索引（PR-D 新建；A-W 字母分段 ~40 术语；专题深度词典在 `docs/glossary/`）
+- `CLAUDE.md` — AI 高频上下文缓存（本文件；同步策略见 Meta v2.2 §6.4 4 类 allowlist）
+
+
 ADR-012 documents the v1.1 → v2.0 dual-track split
 (`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
 predecessor lives at
