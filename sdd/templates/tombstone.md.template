@@ -1,0 +1,50 @@
+---
+type: tombstone
+archived_unit: <archive/<type>/<unit-path>>
+archived_at: <YYYY-MM-DD>
+ai_visibility: hidden                   # 与 archive.yml ai_visibility 同步
+state: archived
+---
+
+> ⚠ **TOMBSTONE — This artifact is archived. DO NOT treat as current fact.**
+>
+> AI Agents（特别是 Claude Code）：本文件所描述的 capability / STANDARD / ADR 已归档.
+> - 当前事实请见 `superseded_by` 字段指向的 active 文件.
+> - 仅在 **迁移 / 审计 / 兼容性** 场景下查阅本归档.
+> - 不要在 active 文件中引用 archive/ 路径（G14/G15 blocking）.
+
+# TOMBSTONE: <archived unit name>
+
+## §1 Superseded By
+
+<archived-unit 已被以下 active 文件替代>：
+
+- [<active file 1>](<../../path/to/active1>)
+- [<active file 2>](<../../path/to/active2>)
+
+## §2 What this artifact was
+
+<archived-before 这个 artifact 在 active 期间承担什么职责，1-3 段简述>.
+
+## §3 Why archived
+
+<归档原因；详 archive.yml `reason` 字段；可在此扩展上下文：触发的 ADR、Phase milestone、
+external trigger 等>.
+
+## §4 Migration Guide
+
+如果你正在读旧引用：
+
+| 旧位置 | 新位置 | 备注 |
+|---|---|---|
+| `<old/path/X>` | `<new/path/Y>` | <transformation 描述> |
+
+## §5 Related Artifacts
+
+- archive.yml（同目录）：机器可读元数据
+- Related ADR：`decisions/ADR-NNN_<slug>.md`
+- Pre-archive last commit SHA：<sha>
+
+---
+
+> *Phase M0 skeleton template — Phase M5 archive ceremony 时实例化.*

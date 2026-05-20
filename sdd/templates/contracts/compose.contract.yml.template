@@ -1,0 +1,27 @@
+# sdd/templates/contracts/compose.contract.yml.template
+# Copy to capabilities/infrastructure/docker-compose/contracts/compose.contract.yml.
+# Validated by scripts/sdd/check_docker_contracts.py (compose 子集；Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — Docker Compose 4-file 配置 contract.
+
+compose_files:                            # 4-file layering (per ADR-026)
+  - docker/compose.yaml                   # base
+  - docker/compose.override.yml           # dev overlay
+  - docker/compose.test.yml               # test overlay
+  - docker/compose.prod.yml               # prod overlay
+networks_explicit: true                   # networks 显式声明
+healthcheck_required:                     # 每容器必须有 healthcheck
+  - mj-agent
+  - mj-agent-postgres
+env_file_explicit: true                   # --env-file .env 必须显式传递
+                                          # docker compose CLI 不在 infra/docker/ 子目录自动加载 .env
+                                          # 必须 `docker compose --env-file .env -f ...`
+secret_substitution_only_for:             # 仅允许这些字段引用 secret env var
+  - postgres_password
+  - mj_agent_memory_password
+external_networks:                        # 依赖的外部 network (per ADR-008)
+  - mj-system-backend-network             # depends on mj-system stack (analyst RO biz pg access)
+project_name_stable: true                 # docker compose 跨 profile 共用同一 project name
+                                          # (Phase 1 sub 1.H + ADR-026)
+# TBD Phase M2: 添加 restart_policy 字段 (dev / test / prod 策略不同)
+# TBD Phase M2: 添加 volumes 字段 (per profile 显式声明 + 命名约定)

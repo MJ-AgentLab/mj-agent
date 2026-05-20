@@ -1,0 +1,75 @@
+---
+type: capability-runbook
+capability: <domain>.<capability-slug>
+state: draft
+version: 0.1
+owner: <github-username>
+created: <YYYY-MM-DD>
+updated: <YYYY-MM-DD>
+last_verified: <YYYY-MM-DD>             # capability lifecycle_state: active 时强制
+---
+
+# Runbook: <Capability Name>
+
+> Phase M0 skeleton template — body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification /
+> Rollback / Post-mortem trigger）.
+
+## §1 TL;DR
+
+<一句话：本 runbook 解决什么场景的什么操作>.
+
+## §2 Trigger
+
+何时使用本 runbook：
+
+- 场景 1
+- 场景 2
+
+## §3 Pre-checks
+
+操作前必备的检查清单：
+
+- [ ] check 1
+- [ ] check 2
+
+## §4 Steps
+
+```bash
+# Step 1: ...
+<command>
+
+# Step 2: ...
+<command>
+```
+
+## §5 Verification
+
+如何确认操作成功：
+
+```bash
+<verification command>
+```
+
+期望输出：<expected output>.
+
+## §6 Rollback
+
+操作失败 / 需回退时：
+
+```bash
+<rollback command>
+```
+
+## §7 Post-mortem Trigger
+
+何时本 runbook 出错需启动 postmortem：
+
+- 触发条件 1（如：连续 ≥ 3 次失败）
+- 触发条件 2（如：生产环境）
+
+→ 跳转 `sdd/workflows/bugfix-drift.md` 或 `sdd/workflows/hotfix.md`，evidence 写
+`evidence/postmortems/`.
+
+---
+
+> *Phase M0 skeleton — Phase M2 起按 5 pilot capability 实例细化.*

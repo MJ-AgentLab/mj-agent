@@ -1,0 +1,25 @@
+# sdd/templates/contracts/claude-skill.contract.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/claude-skill.contract.yml.
+# Validated by scripts/sdd/check_claude_skill_contracts.py (Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — .claude/skills/ in-tree workflow SKILL contract.
+
+skill_path: .claude/skills/mj-agent-<group>-<verb>/SKILL.md
+namespace_pattern: "mj-agent-<group>-<verb>"
+schema: ADR-013-native                    # name + description only (2 fields); NOT 13-field
+description_requirements:
+  min_chars: 200
+  must_contain_reverse_trigger: "Do not use for:"
+sections_required:                        # body required sections
+  - "## Overview"
+  - "## Workflow"
+# 其他段（## Anti-patterns / ## Handoff / etc.）灵活，不强制
+family:                                   # 5 family 之一 (per ADR-016)
+  - flow                                  # SDD 编排
+  - git                                   # 工程执行
+  - doc                                   # 文档编排
+  - runtime                               # 领域执行 (read-only by design)
+  - infra                                 # 技术栈校验
+read_only_by_design: false                # runtime family must be true
+# TBD Phase M2: 添加 stage_mapping 字段 (与 HITL_Prompt 17 stage 对齐)
+# TBD Phase M2: 添加 hitl_triggers 字段 (skill 内部 HITL 触发条件清单)

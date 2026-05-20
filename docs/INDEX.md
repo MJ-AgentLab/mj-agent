@@ -11,7 +11,19 @@ track: shared
 
 # mj-agent 文档索引
 
-> 本索引是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]] §6.2，
+> **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Claude Code 不
+> 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `CLAUDE.md`.
+>
+> **互引（per spec-anchored-refactor）**：
+> - 治理元规则：[../sdd/constitution.md](../sdd/constitution.md) +
+>   [../sdd/lifecycle.md](../sdd/lifecycle.md) + [../sdd/gates.md](../sdd/gates.md)
+> - Capability：[../capabilities/INDEX.md](../capabilities/INDEX.md)（Phase M1 起 5 pilot）
+> - Business Policy：[../policies/](../policies/)（9 native 文件）
+> - ADR 新址：[../decisions/INDEX.md](../decisions/INDEX.md)（Phase M5 平移；当前 ADR-031 draft）
+> - Codex 边界：[../AGENTS.md](../AGENTS.md)
+> - 术语表：[../GLOSSARY.md](../GLOSSARY.md)
+
+> 本索引（旧版区段）是 **手写初版**。按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]] §6.2，
 > 进入 Phase 2 后将改为从各文档 frontmatter `summary` 字段扫描生成。
 
 ---

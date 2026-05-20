@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MJ-AgentLab/mj-agent/sdd/archive.schema.json",
+  "title": "SDD Archive Manifest (archive.yml)",
+  "description": "Phase M0 skeleton — archive.yml schema per blueprint §7 archive/. Phase M5 archive ceremony 启用. 完整 retention_class + ai_visibility + superseded_by 规则在 Phase M2 / M5 内容填充.",
+  "type": "object",
+  "required": ["archived_at", "reason", "original_path", "ai_visibility", "retention_class"],
+  "properties": {
+    "archived_at": {
+      "type": "string",
+      "format": "date",
+      "description": "归档日期 (ISO 8601)"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 10,
+      "description": "归档原因 (≥10 字符)"
+    },
+    "superseded_by": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "替代位置 (paths to active source)",
+      "examples": [["sdd/constitution.md", "policies/data-boundary.md"]]
+    },
+    "original_path": {
+      "type": "string",
+      "description": "归档前的原始路径"
+    },
+    "original_state": {
+      "type": "string",
+      "enum": ["draft", "active", "deprecated", "frozen"],
+      "description": "归档前的 state 字段"
+    },
+    "last_active_version": {
+      "type": "string",
+      "description": "归档前最后一个 active 版本号 (e.g. v2.2)"
+    },
+    "ai_visibility": {
+      "type": "string",
+      "enum": ["hidden", "reference"],
+      "description": "hidden = AI 不应读取 (默认；适用 superseded STANDARD); reference = AI 可查阅历史背景 (适用 deprecated ADR)"
+    },
+    "retention_class": {
+      "type": "string",
+      "enum": ["permanent", "5-year", "1-year"],
+      "description": "保留期 (permanent: 不可删；5-year: 5 年后 purge-eligible；1-year: 1 年后 purge-eligible)"
+    },
+    "related_decisions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "驱动本次归档的 ADR 列表"
+    }
+  },
+  "_TBD_M5_": [
+    "archive.yml 字段与 archive/<type>/ 目录结构的硬绑定 (rule/ vs decisions/superseded/ vs capabilities/<dom>/<cap>/<date>/)",
+    "TOMBSTONE.md 与 archive.yml 字段映射 (TOMBSTONE 顶部红 NOTE)",
+    "G14/G15 archived reference 扫描的 allowlist 字段 (如 active CHANGELOG 引用 archived ADR 是合法的)"
+  ]
+}

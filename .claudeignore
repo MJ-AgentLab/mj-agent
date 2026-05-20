@@ -1,0 +1,61 @@
+# .claudeignore — A4 (Anthropic 大型代码库最佳实践) Phase M0 skeleton.
+#
+# Excludes noise from Claude Code's repo scan + speeds up grep / Glob.
+# Claude Code CAN still explicitly read these paths via Read tool (this file only
+# affects implicit scan / auto-attach behavior).
+#
+# Quarterly review per policies/documentation.md + policies/ci-gates.md §Review Cadence.
+#
+# CRITICAL: The following 4 paths are explicitly NOT excluded (R-G22 mitigation):
+#   - src/mj_agent/biz_catalog/   (biz-catalog-sync 4 项专属必停)
+#   - src/mj_agent/tools/sql/     (sql-guardrail-relax 4 项专属必停)
+#   - src/mj_agent/prompts/       (prompt-version-bump 4 项专属必停)
+#   - src/mj_agent/skills/        (runtime-skill-content-change 4 项专属必停)
+
+# Python environments / caches
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Dependency lock files (lockfiles are noise; pyproject.toml is enough for context)
+uv.lock
+
+# Git internals
+.git/
+
+# Node (if ever added)
+node_modules/
+
+# Archive — default hidden (per policies/archive.md §3 ai_visibility);
+# Claude Code MUST explicitly check archive.yml ai_visibility before reading
+# any path under archive/.
+archive/
+
+# Large baselines (mcp wrapper script baseline files etc.)
+docs/_baselines/
+
+# Docker runtime logs
+infra/docker/**/*.log
+docker/**/*.log
+
+# OS / IDE noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# === DO NOT add the following to this file (R-G22 mitigation) ===
+# src/mj_agent/biz_catalog/
+# src/mj_agent/tools/sql/
+# src/mj_agent/prompts/
+# src/mj_agent/skills/

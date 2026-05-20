@@ -1,0 +1,21 @@
+# sdd/templates/contracts/python.contract.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/python.contract.yml.
+# Validated by scripts/sdd/check_python_contracts.py (Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — Python module 公开接口 contract.
+
+module: src.mj_agent.<package>.<module>   # 例：src.mj_agent.tools.sql.guardrail
+exports:
+  - name: <function_or_class_name>
+    signature: "def <name>(arg: type) -> ReturnType"   # PEP 484 风格
+    raises:
+      - ValueError: "<when this exception is raised>"
+      - RuntimeError: "<another exception condition>"
+  - name: <constant_or_frozen_set_name>
+    type: "frozenset[str]"
+    value_constraint: "<invariant the value must satisfy>"
+public_invariants:
+  - "All assertions raise ValueError; no other exception types"
+  - "<other invariant 2>"
+# TBD Phase M2: 添加 deprecated_exports 字段 (用于 backward-compat 软迁移)
+# TBD Phase M2: 添加 stability 字段 (stable / experimental / internal)

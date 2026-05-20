@@ -1,0 +1,43 @@
+# sdd/templates/contracts/bdd-tdd.contract.yml.template
+# Cross-cutting contract; not bound to a single capability.
+# Validated by scripts/sdd/check_bdd_*.py + check_tdd_*.py (Phase M3+ blocking).
+#
+# Phase M0 skeleton template — BDD/TDD cross-cutting 准则 contract.
+# 详 sdd/adapters/bdd-tdd.md.
+
+bdd:
+  gherkin_tag_convention:                 # 强制标签
+    required:                             # 每 scenario 必填
+      - "@REQ-NNN"                        # 绑定 capability/requirements.md REQ
+      - "@CTR-<contract-slug>"            # 绑定 capability/contracts/<slug>.contract.yml
+    feature_level:                        # Feature 级标签
+      - "@risk:critical|high|medium|low"
+      - "@adapter:<adapter-name>"
+    optional:
+      - "@hitl"                           # 标注本 scenario 涉及 HITL 必停
+  step_definitions_location: "tests/bdd/<capability>/steps/"
+  shared_steps_location: "tests/bdd/shared/"
+  automation_thresholds:                  # 自动化覆盖率门槛
+    critical: 100                         # %  (Phase M4 blocking)
+    high: 70                              # %  (Phase M3 warning / M4 blocking)
+    medium: optional
+    low: optional
+
+tdd:
+  test_list_required_for:                 # 强制场景
+    - high-risk-tasks                     # priority: critical / high (Phase M4 warning / M6 blocking)
+    - bugfix                              # bugfix PR 必有 regression test (G24 blocking from M4)
+  red_green_refactor:
+    red_phase_strict: false               # R-G19: AI-generated code 接受 "test alongside code"
+    green_phase_strict: true
+    refactor_phase_check: behavior-unchanged
+  contract_test_first:
+    enforce: true                         # G28 blocking from Phase M3
+    rule: "contract 变更必须先有 failing test (commit 时间晚于 contract change → 违规)"
+
+evidence:
+  bdd_path_pattern: "evidence/bdd/<YYYY-MM-DD>_<scenario_or_feature>_pass.md"
+  tdd_path_pattern: "evidence/tdd/<YYYY-MM-DD>_<task_or_module>_red_green.md"
+
+# TBD Phase M2: 添加 pytest_bdd_config 字段 (推荐 fixture / conftest 结构)
+# TBD Phase M2: 添加 step_reuse_rules 字段 (跨 capability 重用 step definition 的判定)

@@ -3,6 +3,14 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Codex Status
+
+**Codex is NOT part of the development workflow.** If Codex is used, it is **only for
+read-only external review** (advisory; not authoritative). All implementation — file edits,
+test runs, migrations, docs, verification — is done by Claude Code. Claude Code MUST NOT
+delegate execution to Codex. See [AGENTS.md](./AGENTS.md) + `policies/ai-agent.md` §1 for
+the full boundary; each task output must declare `Codex invocation: NONE`.
+
 > **项目起源说明（2026-05-11 update）**：mj-agent 文档治理框架在 bootstrap
 > 阶段曾参考某内部上游业务系统的实践沉淀（详见 `docs/archive/adr/[DEPRECATED]_*`
 > 9 个 archived ADR 与 `docs/archive/rule/[DEPRECATED]_*` 框架历史版本）；

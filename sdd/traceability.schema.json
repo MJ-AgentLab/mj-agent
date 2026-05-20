@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MJ-AgentLab/mj-agent/sdd/traceability.schema.json",
+  "title": "SDD Traceability (trace.yml)",
+  "description": "Phase M0 skeleton — schema v1.2 含 BDD 层升级 (REQ -> BDD -> CONTRACT -> TEST -> TASK -> PR -> EVIDENCE). 完整 enum + required 字段 + cross-capability ref 在 Phase M2 内容填充.",
+  "type": "object",
+  "required": ["capability", "schema_version", "links"],
+  "properties": {
+    "capability": {
+      "type": "string",
+      "description": "capability id (domain.slug)",
+      "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9-]*$",
+      "examples": ["data-agent.safe-sql"]
+    },
+    "generated": {
+      "type": "string",
+      "format": "date",
+      "description": "auto-generated timestamp by scripts/sdd/generate_index.py"
+    },
+    "schema_version": {
+      "type": "string",
+      "enum": ["1.2"],
+      "description": "v1.2 introduces BDD layer; older versions deprecated"
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["req"],
+        "properties": {
+          "req": {
+            "type": "string",
+            "pattern": "^REQ-[0-9]{3}$",
+            "examples": ["REQ-001"]
+          },
+          "bdd": {
+            "type": "object",
+            "description": "高风险 REQ (critical/high) 必填",
+            "required": ["feature", "scenarios", "automation_status"],
+            "properties": {
+              "feature": { "type": "string", "examples": ["contracts/behavior.feature"] },
+              "scenarios": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+              "automation_status": {
+                "type": "string",
+                "enum": ["automated", "manual", "unautomated"]
+              }
+            }
+          },
+          "contracts": { "type": "array", "items": { "type": "string" } },
+          "tests": { "type": "array", "items": { "type": "string" } },
+          "tasks": { "type": "array", "items": { "type": "string" } },
+          "prs": { "type": "array", "items": { "type": "string" } },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "_TBD_M2_": [
+    "cross-capability ref schema (e.g. data-agent.safe-sql -> data-agent.biz-catalog)",
+    "bdd automation_status 字段的 G19-G22 gate 联动 enum 扩展",
+    "evidence 子类 enum (verification / reports / security / runtime / bdd / tdd / postmortem / assessments)"
+  ]
+}

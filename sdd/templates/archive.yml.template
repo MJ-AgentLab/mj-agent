@@ -1,0 +1,25 @@
+# sdd/templates/archive.yml.template
+# Copy to archive/<type>/<archived-unit>/archive.yml (or capabilities/<cap>/archive.yml
+# at deprecated state before move).
+# Validated by scripts/sdd/check_archive_manifest.py against sdd/archive.schema.json.
+#
+# Phase M0 skeleton template — Phase M5 archive ceremony 主用.
+
+archived_at: <YYYY-MM-DD>               # 归档日期 (ISO 8601)
+reason: <≥10 字符的归档原因 — 不接受 "deprecated" 单词；必须说明 superseded by what>
+superseded_by:                          # 替代位置；至少 1 个
+  - sdd/constitution.md                 # 示例：旧 STANDARD 整体归档时指向新 SDD Kernel
+  - policies/data-boundary.md
+original_path: <archived-before 的原始路径 — 例 docs/rule/[STANDARD]_X.md>
+original_state: active                  # 归档前的 state：draft / active / deprecated / frozen
+last_active_version: <vX.Y>             # 归档前最后 active 版本号
+ai_visibility: hidden                   # hidden (默认；AI 不应读)
+                                        # reference (适用 deprecated ADR；可查阅历史背景)
+retention_class: permanent              # permanent / 5-year / 1-year
+                                        # permanent: 不可物理删
+                                        # 5-year: 5 年后 purge-eligible
+                                        # 1-year: 1 年后 purge-eligible
+related_decisions:                      # 驱动本次归档的 ADR
+  - decisions/ADR-031_Spec_Anchored_Refactor.md
+# TBD Phase M5: 添加 retention_review_date 字段 (用于 purge-eligible 检测)
+# TBD Phase M5: 添加 archived_by 字段 (审计 — 谁触发的归档 PR)

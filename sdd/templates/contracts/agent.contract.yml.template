@@ -1,0 +1,26 @@
+# sdd/templates/contracts/agent.contract.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/agent.contract.yml.
+# Validated by scripts/sdd/check_agent_contracts.py (Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — LangChain Agent (graph + tools + middleware) contract.
+
+graph_symbol: make_graph                  # from src/mj_agent/agent.py
+tools:                                    # ALL_TOOLS 注册顺序 (system prompt 给的 hint)
+  - find_biz_context
+  - list_biz_tables
+  - describe_biz_table
+  - execute_sql
+tool_call_order_hint: |
+  find_biz_context → list/describe → execute_sql (per system prompt)
+middleware:                               # 已挂载 middleware 列表 (ADR-029)
+  - handle_sql_tool_errors                # sync + async variants
+hitl_required:                            # 触发本 capability 的 4 项专属必停 ID
+  - sql_guardrail_relax
+  - prompt_version_bump
+  - biz_catalog_sync
+  - runtime_skill_content_change
+checkpointer:                             # memory checkpointer 配置
+  type: AsyncPostgresSaver
+  schema: mj_agent_memory                 # 不同 capability 可独立 schema
+# TBD Phase M2: 添加 tool_schema 反向引用 (langchain Pydantic schema 与 contract 的双向校验)
+# TBD Phase M2: 添加 ratelimit / timeout / retry 字段 (agent 行为边界)

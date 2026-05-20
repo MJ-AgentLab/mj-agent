@@ -1,0 +1,43 @@
+# sdd/templates/behavior.feature.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/behavior.feature.
+# Gherkin Given-When-Then; @REQ / @CTR / @risk / @adapter / @hitl 标签强制约定.
+#
+# Phase M0 skeleton template — 高风险（critical / high）REQ 必填.
+# 详 sdd/adapters/bdd-tdd.md §Standards.
+
+@adapter:<adapter-name>  @risk:<critical|high|medium|low>
+Feature: <Capability behavior summary>
+  As <persona>
+  I want <observable outcome>
+  So that <business value / safety / compliance reason>
+
+  Background:                                   # optional - 公共 setup
+    Given <baseline precondition 1>
+    And <baseline precondition 2>
+
+  @REQ-001 @CTR-<contract-slug>                 # 必填 @REQ-NNN + @CTR-<slug> 标签
+  Scenario: <Scenario name 1 — 描述具体行为>
+    Given <preconditions specific to this scenario>
+    When <user / agent action>
+    Then <observable result>
+    And <secondary assertions>
+
+  @REQ-001 @CTR-<contract-slug>
+  Scenario: <Scenario name 2 — 替代场景 / negative case>
+    Given <alternative context>
+    When <variation>
+    Then <expected behavior>
+
+  @REQ-002 @CTR-<contract-slug> @hitl           # @hitl 标签 — 标注本 scenario 涉及 HITL 必停
+  Scenario: <HITL-triggered behavior>
+    Given <conditions triggering hard stop>
+    When <user / agent action>
+    Then the agent halts and requests HITL approval
+    And no destructive action is performed
+
+# Gherkin 标签约定 (per sdd/adapters/bdd-tdd.md §Standards):
+#   @REQ-NNN              — 绑定 capability/requirements.md 的 REQ id (必填)
+#   @CTR-<contract-slug>  — 绑定 contracts/<slug>.contract.yml (必填)
+#   @risk:<level>         — critical / high / medium / low (Feature 级标签，影响 G19-G22 blocking)
+#   @adapter:<name>       — 绑定 sdd/adapters/ 之一 (Feature 级；决定 step 走哪个 fixture)
+#   @hitl                 — 标注本 scenario 涉及 HITL 必停 (4 项专属或 §11.5 之一)
