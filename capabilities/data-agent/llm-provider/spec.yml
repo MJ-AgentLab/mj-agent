@@ -1,0 +1,64 @@
+# capabilities/data-agent/llm-provider/spec.yml
+# Phase M1 baseline (ADR-031). Survey: §B m1-other-pilots-survey.md.
+
+id: data-agent.llm-provider
+name: LLM Provider Abstraction (ark + local-openai-compat)
+domain: data-agent
+lifecycle_state: drafting
+archive_state: active
+adapter_coverage:
+  - python                          # llm.py + config.py + cli.py modules
+  - tdd-bdd
+last_verified: 2026-05-20
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+summary: >
+  make_llm() factory in src/mj_agent/llm.py branches on settings.llm_provider:
+  ark (default; Volcengine + DeepSeek V3 with extra_body.thinking knob) vs
+  local-openai-compat (DGX-Spark vLLM/SGLang/Ollama; NO extra_body.thinking).
+  Per ADR-027. LLMConfigError raised at make_llm() call time (lazy validation —
+  Settings construction stays safe in empty .env). mj-agent check is
+  provider-aware. **ZERO existing unit tests** (gap) — all BDD scenarios drive
+  new test code in Phase M3.
+
+requirements:
+  - id: REQ-001
+    statement: "When LLM_PROVIDER=ark (default), make_llm() constructs ChatOpenAI with extra_body.thinking.type set from LLM_THINKING_ENABLED; prefers llm_api_key over legacy ark_api_key; raises LLMConfigError if neither is set"
+    rationale: "Default provider; back-compat with legacy ARK_BASE_URL / ARK_API_KEY envs; the thinking knob is DeepSeek V3 private (Ark-specific)"
+    priority: high
+    bdd:
+      examples:
+        - "Given LLM_PROVIDER=ark and both ARK_API_KEY and LLM_API_KEY are unset/empty / When make_llm() is invoked / Then LLMConfigError raised; message names ARK_API_KEY + suggests setup-env.ps1 + mentions LLM_API_KEY fallback"
+
+  - id: REQ-002
+    statement: "When LLM_PROVIDER=local-openai-compat, make_llm() constructs ChatOpenAI WITHOUT extra_body.thinking; substitutes literal 'EMPTY' for missing llm_api_key; raises LLMConfigError if llm_base_url is not set"
+    rationale: "DGX-Spark vLLM/SGLang/Ollama compatibility — those don't accept Ark's thinking param (would 422); empty api_key sentinel matches vLLM/Ollama defaults"
+    priority: high
+    bdd:
+      examples:
+        - "Given LLM_PROVIDER=local-openai-compat and LLM_BASE_URL=http://192.168.0.189:8000/v1 / When make_llm() is invoked / Then returned ChatOpenAI instance has no 'thinking' key under extra_body (vLLM/SGLang/Ollama compatibility)"
+
+  - id: REQ-003
+    statement: "Settings accept only LLM_PROVIDER ∈ {ark, local-openai-compat}; effective_llm_base_url + effective_llm_api_key implement provider-specific fallback chains; mj-agent check emits 'llm provider = <name> (endpoint=<url>)' on success and provider-specific failure message on missing creds"
+    rationale: "Provider switch + config schema enforcement at pydantic level; CLI healthcheck must be provider-aware to give actionable error messages"
+    priority: high
+    bdd:
+      examples:
+        - "Given LLM_PROVIDER=local-openai-compat and LLM_API_KEY empty / When settings.effective_llm_api_key is read / Then it returns literal string 'EMPTY' (NOT empty string) so downstream ChatOpenAI does not raise its own api_key error"
+
+related_decisions:
+  - docs/adr/[ADR]_027_LLM_Provider_Abstraction.md
+  - decisions/ADR-031_Spec_Anchored_Refactor.md
+
+cross_capability_refs:
+  - target: infrastructure.docker-compose
+    direction: outbound
+    surface: src/mj_agent/llm.py + infra/docker/docker-compose.*.yml (LLM env vars per profile)
+    reason: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars set per compose profile; secrets injection is docker-compose capability's concern"
+  - target: infrastructure.mcp-server-governance
+    direction: outbound
+    surface: src/mj_agent/server/cli.py (mj-agent check) + .mcp.json (SSH-manager DGX server entry references same DGX endpoint as local-openai-compat)
+    reason: "ssh-manager entry for DGX-Spark host overlaps with local-openai-compat endpoint; trust posture must be consistent"
+
+# TBD Phase M2 + M3: every BDD scenario drives NEW test code (REQ-001/002/003 all TBD-M3)

@@ -1,0 +1,58 @@
+# capabilities/infrastructure/mcp-server-governance/spec.yml
+# Phase M1 baseline (ADR-031). Survey §D m1-other-pilots-survey.md.
+
+id: infrastructure.mcp-server-governance
+name: MCP Server Inventory + Governance (ADR-028)
+domain: infrastructure
+lifecycle_state: drafting
+archive_state: active
+adapter_coverage:
+  - claude-code-skill                # .mcp.json + .claude/scripts/ wrappers
+  - tdd-bdd
+last_verified: 2026-05-20
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+summary: >
+  .mcp.json declares 13 server entries spanning 1 GitHub (first-party MCP),
+  1 Serena (third-party LSP), 10 pg connection pool entries (wrapped via
+  .claude/scripts/pg-server-start.cmd + pg-server-wrapper.mjs — 5 mj-agent
+  memory + 5 mj-system biz across DEV/TEST-LAN/TEST-WAN/PROD-LAN/PROD-WAN),
+  and 1 ssh-manager (third-party; aggregates 9 SSH host configs via 5 unique
+  passwords). Per ADR-028. Quarterly audit per §6 of MCP STANDARD. A14 PR
+  gate fires on any .mcp.json modification.
+
+requirements:
+  - id: REQ-001
+    statement: ".mcp.json SHALL declare 13 server entries with trust posture + credential mode per entry; any modification triggers A14 PR gate declaration block in PR body per §4 template in docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md"
+    rationale: "13-server inventory is the trust-boundary surface for Claude Code; trust posture (first-party / third-party / community) + credential mode (none / OAuth / API key / wrapped script) must be reviewed at each change; quarterly audit re-evaluates"
+    priority: medium
+    bdd:
+      examples:
+        - "Given the PR body declares .mcp.json changed / When CI reviewer parses the PR / Then the body contains per-server posture declaration block matching the §4 template; PR lacking the block fails A14 gate review"
+
+  - id: REQ-002
+    statement: "All 10 pg-* entries SHALL route through the same wrapper script (.claude/scripts/pg-server-start.cmd); deviation from this wrapper triggers A14 credential-mode-changed sub-check"
+    rationale: "Wrapper script centralizes pg MCP connection handling (timeout / error format / credential read); per-entry deviation breaks centralized governance; baseline tracked at docs/_baselines/pg_server_baseline.md"
+    priority: medium
+    bdd:
+      examples:
+        - "Given .mcp.json is loaded / When wrapper-script reference is inspected for each pg-* server / Then all 10 entries reference .claude/scripts/pg-server-start.cmd; any entry referencing a different wrapper triggers A14 'credential mode changed' sub-check"
+
+related_decisions:
+  - docs/adr/[ADR]_028_MCP_Server_Inventory_And_Governance.md
+  - docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation.md     # MCP bundle vs app bundle split
+  - decisions/ADR-031_Spec_Anchored_Refactor.md
+
+cross_capability_refs:
+  - target: infrastructure.docker-compose
+    direction: inbound                            # docker-compose deploys pg endpoints we connect to
+    surface: ".mcp.json wrapped pg entries + infra/docker/docker-compose.*.yml pg services"
+    reason: "pg-mj-agent-memory-* entries connect to mj-agent-postgres deployed by docker-compose; pg-mj-system-biz-* entries connect to mj-system biz pg also reachable via mj-system-backend-network"
+  - target: data-agent.llm-provider
+    direction: outbound
+    surface: ".mcp.json ssh-manager DGX host entry + src/mj_agent/config.py llm_base_url"
+    reason: "ssh-manager has DGX-Spark host entry (192.168.0.189) which is the same host serving local-openai-compat LLM endpoint"
+
+# Reference contract — mj-system's R__analyst_permissions.sql also referenced by safe-sql REQ-004;
+# governance ownership lives here only insofar as analyst RO role is used by pg-mj-system-biz-* entries

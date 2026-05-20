@@ -1,0 +1,69 @@
+# capabilities/data-agent/biz-catalog/spec.yml
+# Phase M1 baseline (ADR-031).
+#
+# 4 项必停 source: src/mj_agent/biz_catalog/qcm_catalog.yaml (biz-catalog-sync hard stop).
+# Survey: _refactor-scan/m1-other-pilots-survey.md §A.
+
+id: data-agent.biz-catalog
+name: QCM Catalog Mirror
+domain: data-agent
+lifecycle_state: drafting
+archive_state: active
+adapter_coverage:
+  - python                          # loader.py + finder.py modules
+  - runtime-skill                   # 3 SKILL.md (biz-domain-context / qcm-analysis / safe-sql-analysis) reference catalog symbols
+  - tdd-bdd
+last_verified: 2026-05-20
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+summary: >
+  qcm_catalog.yaml mirror of the upstream business warehouse data dictionary;
+  loaded once per process by load_catalog(); consumed by find_biz_context tool +
+  3 active in-source SKILL.md files. Currently encodes drift between staged
+  STANDARD (stat_date / qrynum / tenant_code) and actual DEV DB (data_date /
+  day_qrynum / tenant_id) — mirrors the live DB so generated SQL runs;
+  re-sync triggered only when upstream mj-system PR1/PR2 lands. 10 top-level
+  YAML keys are contract-locked.
+
+requirements:
+  - id: REQ-001
+    statement: "qcm_catalog.yaml declares 10 top-level keys; find_biz_context fails loudly if any required key is missing"
+    rationale: "Schema completeness — 10 keys (version / catalog_kind / source / metrics / periods / metric_column_shapes / dimensions / period_over_period_columns / signal_tables / dimension_tables + 2 more: fact_table_pattern / forbidden_access / runtime_constraints; total 13 in current YAML, but 10 are contract-required to make finder work) are hard-coded in finder.py; missing keys cause KeyError"
+    priority: high
+    bdd:
+      examples:
+        - "Given qcm_catalog.yaml is freshly loaded / When load_catalog() returns / Then the dict contains all 10 required top-level keys; if any key is absent, find_biz_context() raises KeyError naming the missing key"
+
+  - id: REQ-002
+    statement: "Catalog ↔ DB alignment: every signal_tables[].name / dimension_tables[].name resolves to a live analyst-visible biz_dws/biz_dwd table; per-period time_column exists on at least one matching _total fact table"
+    rationale: "Catalog drift detector — if upstream renames a column or drops a table, contract tests fail loudly so the agent doesn't generate dead SQL; existing contract tests in tests/contract/test_qcm_catalog_alignment.py + test_biz_schema_alignment.py encode this"
+    priority: high
+    bdd:
+      examples:
+        - "Given a freshly loaded catalog with 3 signal_tables entries / When analyst lists biz_dws tables from live DB / Then each entry's name exists in the returned set; mismatch surfaces a catalog-vs-DB drift error naming the missing table"
+
+  - id: REQ-003
+    statement: "Active SKILLs (biz-domain-context / qcm-analysis / safe-sql-analysis) reference only metric/period/dimension keys that exist in qcm_catalog.yaml; biz table names referenced in SKILL.md body resolve in live DB"
+    rationale: "SKILL ↔ catalog coherence — SKILL bodies are LLM-facing prompt content; references to non-existent catalog keys produce hallucinated SQL; existing tests/contract/test_biz_schema_alignment.py regex-extracts table refs from SKILL bodies and asserts DB resolution"
+    priority: high
+    bdd:
+      examples:
+        - "Given catalog has metric families {qrynum, tntcnt} and periods {daily, monthly} / When SKILL.md body references metric family / Then every referenced family exists in catalog metrics top-level mapping; every referenced biz_dws.* table resolves in live DB via analyst role"
+
+related_decisions:
+  - docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md      # biz domain access policy
+  - decisions/ADR-031_Spec_Anchored_Refactor.md
+
+cross_capability_refs:
+  - target: data-agent.safe-sql
+    reason: "REQ-001 schema completeness — periods.*.time_column field is consumed by safe-sql REQ-002 require_time_range rule via _all_time_columns() in precheck.py"
+    surface: src/mj_agent/biz_catalog/qcm_catalog.yaml + src/mj_agent/tools/sql/precheck.py:58-59
+    direction: inbound                # safe-sql depends on us
+  - target: data-agent.tool-chain
+    reason: "find_biz_context tool wired in agent.py:ALL_TOOLS; LangChain tool schema contract owned by tool-chain capability (Phase 2+)"
+    surface: src/mj_agent/agent.py + src/mj_agent/biz_catalog/finder.py
+    direction: outbound
+
+# TBD Phase M2: spec.yml.schema lock-down via check_capability_schema.py
+# TBD Phase M3: lifecycle_state drafting → contracted after contract test landing

@@ -1,0 +1,106 @@
+# capabilities/infrastructure/docker-compose/contracts/runtime.expected.yaml
+#
+# Expected runtime state after `up -d` of any profile.
+# Phase M3 contract test (check_runtime_expected.py) will assert against this.
+
+contract_id: runtime-expected
+covers_requirements:
+  - REQ-001                                       # 4-file profile loading produces this state
+  - REQ-002                                       # healthcheck + startup order produces this state
+
+# Expected services (all 3 must reach Up (healthy))
+containers:
+  - name: mj-agent
+    port_internal: 8000
+    port_host: 8001
+    healthcheck:
+      type: cmd
+      cmd: "mj-agent check"
+      expected_exit: 0
+      max_to_healthy_sec: 60                       # start_period 20s + 2 attempts × 30s interval
+
+  - name: mj-agent-postgres
+    port_internal: 5432
+    port_host: 5433
+    healthcheck:
+      type: cmd
+      cmd: "psql -U postgres -d $MJ_AGENT_MEMORY_DB -tc 'SELECT 1'"
+      expected_exit: 0
+      max_to_healthy_sec: 90                       # init script + 1 attempt × 30s
+
+  - name: mj-agent-redis
+    port_internal: 6379
+    port_host: 6379
+    healthcheck:
+      type: cmd
+      cmd: "redis-cli ping"                        # or auth variant
+      expected_exit: 0
+      max_to_healthy_sec: 30
+
+# Expected networks
+networks:
+  - name: mj-system-network                       # alias mj-system-backend-network external
+    external: true
+    purpose: "biz pg access via analyst RO"
+  - name: mj-agent-storage
+    type: bridge
+    isolation: internal
+
+# Expected volumes
+volumes:
+  - name: mj-agent-postgres-data
+    labels:
+      backup: daily
+    purpose: "memory checkpointer pg data; PG18+ mount-point pg_upgrade-friendly"
+  - name: mj-agent-redis-data
+    labels:
+      backup: daily
+    purpose: "reserved; no Python client wired; ADR-008 placeholder"
+
+# Per-profile expected divergence
+profile_overrides:
+  dev:
+    image_source: local_build (from override.yml `build:`)
+    log_level: debug
+    mj_config_profile: dev
+    biz_pg_host_env: POSTGRES_DEV_HOST=mj-postgres
+  test:
+    image_source: 8.135.38.175/mj-agent/mj-agent:0.1 (Harbor)
+    log_level: debug
+    mj_config_profile: test
+    biz_pg_host_env: POSTGRES_TEST_HOST=mj-postgres
+    resource_limits:
+      mj-agent: { cpu_limit: 8, mem_limit: 12G }
+      mj-agent-postgres: { cpu_limit: 4, mem_limit: 8G }
+      mj-agent-redis: { cpu_limit: 1, mem_limit: 1G }
+  prod:
+    image_source: same Harbor image (same digest as TEST after Phase 0.5+)
+    log_level: warning
+    mj_config_profile: prod
+    biz_pg_host_env: POSTGRES_PROD_HOST=mj-postgres
+    resource_limits:
+      mj-agent: { cpu_limit: 4, mem_limit: 12G }
+    logging_driver: json-file
+    logging_max_size:
+      mj-agent: 50m
+      mj-agent-postgres: 100m
+      mj-agent-redis: 20m
+
+# Expected mj-agent → external network reachability (after up -d)
+network_reachability:
+  - source: mj-agent
+    target: mj-agent-postgres
+    network: mj-agent-storage
+    via: hostname `mj-agent-postgres:5432` (internal)
+  - source: mj-agent
+    target: mj-agent-redis
+    network: mj-agent-storage
+    via: hostname `mj-agent-redis:6379`
+  - source: mj-agent
+    target: mj-postgres (mj-system biz pg)
+    network: mj-system-backend-network
+    via: hostname `mj-postgres:5432` (analyst RO role)
+
+# TBD Phase M3:
+#   - scripts/sdd/check_runtime_expected.py asserts this YAML against `docker compose config` output + actual `docker ps`
+#   - tests/docker/test_runtime_state_dev.py (live docker daemon required; smoke gate)

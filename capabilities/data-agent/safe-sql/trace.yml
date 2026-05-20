@@ -1,0 +1,169 @@
+# capabilities/data-agent/safe-sql/trace.yml
+#
+# REQ → BDD → CONTRACT → TEST → TASK → PR → EVIDENCE traceability (schema v1.2).
+# Validated by scripts/sdd/check_traceability.py (Phase M2 warning / M3 blocking).
+
+capability: data-agent.safe-sql
+generated: 2026-05-20                           # manual at M1; Phase M2+ via generate_index.py
+schema_version: "1.2"
+
+# Cross-capability references (R-G7: total ≤ 5 ✓)
+cross_capability_refs:
+  - target: data-agent.biz-catalog
+    direction: outbound                          # safe-sql depends on biz-catalog
+    surface: src/mj_agent/tools/sql/precheck.py:58-59 (_all_time_columns)
+    rationale: "REQ-002 require_time_range rule reads qcm_catalog.yaml periods.*.time_column"
+    impact: "catalog drift → REQ-002 BDD scenario starts rejecting queries with old column names (intended drift detector)"
+
+links:
+
+  - req: REQ-001                                 # L1 regex guardrail
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "L1 regex guardrail rejects blocked-keyword statement before DB contact"
+      automation_status: unautomated             # Phase M1: scenario text only; M3 step defs land
+    contracts:
+      - contracts/sql-guardrail.contract.yml      # §l1_guardrail
+      - contracts/python.contract.yml             # src.mj_agent.tools.sql.guardrail module
+    tests:
+      - tests/unit/test_guardrail.py::TestAccepted::test_simple_select
+      - tests/unit/test_guardrail.py::TestAccepted::test_with_clause
+      - tests/unit/test_guardrail.py::TestAccepted::test_join_across_allowed_schemas
+      - tests/unit/test_guardrail.py::TestAccepted::test_trailing_semicolon_allowed
+      - tests/unit/test_guardrail.py::TestRejected::test_blocked_keywords        # parametrized × 9
+      - tests/unit/test_guardrail.py::TestRejected::test_multi_statement
+      - tests/unit/test_guardrail.py::TestRejected::test_non_select
+      - tests/unit/test_guardrail.py::TestRejected::test_disallowed_schema
+      - tests/unit/test_guardrail.py::TestRejected::test_empty_sql
+      - tests/unit/test_guardrail.py::TestTableLevelAllowlist                    # 6 cases
+      - "TBD-M3: tests/bdd/data_agent/safe_sql/safe_sql.feature::<scenario name>"
+    tasks:
+      - tasks.md#T-002
+    prs:
+      - "PR-M1-1 (this PR; safe-sql baseline)"
+    evidence:
+      - "TBD-M3: evidence/bdd/2026-XX-XX_l1_scenarios_pass.md"
+
+  - req: REQ-002                                 # L1b sqlglot AST precheck
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "L1b precheck rejects biz_dws fact-table query missing time-column predicate"
+      automation_status: unautomated
+    contracts:
+      - contracts/sql-guardrail.contract.yml      # §l1b_precheck
+      - contracts/python.contract.yml             # src.mj_agent.tools.sql.precheck module
+    tests:
+      - tests/unit/test_precheck.py::TestNoSelectStar                            # 3 cases
+      - tests/unit/test_precheck.py::TestRequireTimeRange                        # 5 cases
+      - tests/unit/test_precheck.py::TestRequireLimit                            # 4 cases
+      - tests/unit/test_precheck.py::TestParseFailureGracefulFallback            # 1 case
+      - "TBD-M3: tests/bdd/data_agent/safe_sql/safe_sql.feature::<scenario name>"
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "TBD-M3: evidence/bdd/2026-XX-XX_l1b_scenarios_pass.md"
+
+  - req: REQ-003                                 # L3 read-only connection
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "L3 connection enforces read-only transaction + bounded timeouts via DSN options"
+      automation_status: unautomated
+    contracts:
+      - contracts/execute-sql.contract.yml         # §l3_connection
+      - contracts/python.contract.yml              # src.mj_agent.integrations.mj_system_db module
+    tests:
+      - "TBD-M3: tests/unit/test_dsn_options.py::test_dsn_contains_default_transaction_read_only"
+      - "TBD-M3: tests/unit/test_dsn_options.py::test_dsn_contains_lock_timeout"
+      - "TBD-M3: tests/unit/test_dsn_options.py::test_dsn_contains_idle_in_transaction_session_timeout"
+      - "TBD-M3: tests/unit/test_readonly_cursor.py::test_rollback_on_exit"
+    tasks:
+      - tasks.md#T-004
+    prs:
+      - "PR-M1-1 (contract only); PR-M3-X (test)"
+    evidence:
+      - "TBD-M3"
+
+  - req: REQ-004                                 # L4 statement_timeout + GRANT reference
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "L4 statement_timeout cancellation translates to Chinese self-correction hint"
+      automation_status: unautomated
+    contracts:
+      - contracts/execute-sql.contract.yml         # §l4_timeout_and_grant
+    reference_contracts:                          # NEW field in v1.2: cross-repo references
+      - upstream_repo: mj-system
+        upstream_path: sql/migrations/repeatable/R__analyst_permissions.sql
+        artifacts:
+          - "ALTER ROLE analyst SET statement_timeout='60s'"
+          - "GRANT SELECT ON ALL TABLES IN SCHEMA biz_dws TO analyst"
+          - "GRANT SELECT ON biz_dwd.{dwd_dim_product_interface, dwd_dim_institution} TO analyst"
+        verification:
+          method: "introspect.list_biz_tables() + information_schema.table_privileges on CURRENT_USER"
+          contract_test: "TBD-M4 tests/contract/test_safe_sql_grant_visibility.py (live_db gated)"
+    tests:
+      - "TBD-M3: tests/unit/test_execute_sql_timeout.py::test_query_canceled_becomes_runtime_error"
+      - "TBD-M4: tests/contract/test_safe_sql_grant_visibility.py::test_list_biz_tables_matches_documented_schemas"
+    tasks:
+      - tasks.md#T-005
+    prs:
+      - "PR-M1-1 (sut-side contract); PR-M3-X (unit test); PR-M4-X (live_db contract test)"
+    evidence:
+      - "TBD-M3 (unit); TBD-M4 (live_db)"
+
+  - req: REQ-005                                 # execute_sql envelope schema
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "execute_sql return envelope contains 8 required keys with documented types"
+      automation_status: unautomated
+    contracts:
+      - contracts/execute-sql.contract.yml         # §envelope_schema
+    tests:
+      - "TBD-M3: tests/unit/test_execute_sql_envelope.py::test_envelope_has_8_required_keys"
+      - "TBD-M3: tests/unit/test_execute_sql_envelope.py::test_envelope_types"
+      - "TBD-M3: tests/unit/test_execute_sql_envelope.py::test_envelope_truncated_when_rows_exceed_max"
+    tasks:
+      - tasks.md#T-006
+    prs:
+      - "PR-M1-1 (contract); PR-M3-X (envelope tests)"
+    evidence:
+      - "TBD-M3"
+
+  - req: REQ-006                                 # handle_sql_tool_errors middleware (ADR-029)
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "handle_sql_tool_errors middleware converts tool ValueError into ToolMessage"
+      automation_status: unautomated
+    contracts:
+      - contracts/python.contract.yml              # src.mj_agent.middleware.tool_errors module
+    tests:
+      - tests/unit/test_tool_error_middleware.py::TestValueErrorConversion::test_precheck_rejection_becomes_tool_message
+      - tests/unit/test_tool_error_middleware.py::TestValueErrorConversion::test_guardrail_rejection_preserves_message
+      - tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_timeout_message_passed_through
+      - tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_generic_db_error
+      - tests/unit/test_tool_error_middleware.py::TestUnexpectedExceptionFallback::test_other_exceptions_become_messages
+      - "TBD-M3: tests/unit/test_middleware_wrap_integration.py::test_handle_sync_wrap_tool_call"
+      - "TBD-M3: tests/unit/test_middleware_wrap_integration.py::test_ahandle_async_wrap_tool_call"
+      - "TBD-M3: tests/smoke/test_chainlit_astream_middleware.py::test_async_middleware_used_in_astream_path"
+    tasks:
+      - tasks.md#T-007
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "evidence/bdd/.gitkeep (M3+ populated)"
+      - "evidence/tdd/.gitkeep (M3+ populated)"
+
+# Summary stats (manual at M1; Phase M2+ auto by generate_index.py):
+# - 6 REQs (4 critical + 2 high)
+# - 6 BDD scenarios (4 @risk:critical + 2 @risk:high; R-G17 critical ≤ 5 ✓)
+# - 4 contract files (sql-guardrail.yml + execute-sql.yml + python.yml + behavior.feature; R-G3 ≤ 5 ✓)
+# - 1 cross-capability ref (→ data-agent.biz-catalog; R-G7 ≤ 5 ✓)
+# - 1 reference contract (→ mj-system R__analyst_permissions.sql)
+# - 26+ existing tests + 11 TBD-M3/M4 placeholders

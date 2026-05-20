@@ -1,0 +1,152 @@
+# capabilities/data-agent/safe-sql/contracts/python.contract.yml
+#
+# Per-module Python public API contracts.
+# Covers REQ-001..006 module-level public surface + REQ-006 middleware sub-contract.
+
+contract_id: python
+adapter: python                                   # per sdd/adapters/python.md
+covers_requirements:
+  - REQ-001                                       # via guardrail module
+  - REQ-002                                       # via precheck module
+  - REQ-003                                       # via mj_system_db module
+  - REQ-004                                       # via execute + introspect modules
+  - REQ-005                                       # via execute module
+  - REQ-006                                       # via tool_errors module (middleware)
+
+modules:
+
+  - path: src.mj_agent.tools.sql.guardrail
+    freeze_anchor: src/mj_agent/tools/sql/guardrail.py
+    exports:
+      - name: is_safe_select
+        signature: "def is_safe_select(sql: str, allowed_schemas: Iterable[str], allowed_tables_per_schema: Mapping[str, Iterable[str]] | None = None) -> tuple[bool, str]"
+        public: true
+    public_invariants:
+      - "never raises; all rejection paths return (False, reason)"
+      - "case-insensitive schema matching"
+      - "absent allowed_tables_per_schema entry → wildcard for that schema"
+
+  - path: src.mj_agent.tools.sql.precheck
+    freeze_anchor: src/mj_agent/tools/sql/precheck.py
+    exports:
+      - name: precheck_sql
+        signature: "def precheck_sql(sql: str) -> PrecheckResult"
+        public: true
+      - name: PrecheckResult
+        kind: dataclass
+        fields:
+          - "errors: list[str]"
+          - "warnings: list[str]"
+        properties:
+          - "ok: bool                              # not self.errors"
+        public: true
+    public_invariants:
+      - "rule IDs are stable contract strings (no_select_star: / require_time_range: / require_limit: / limit_too_large: / sqlglot_parse_failed:)"
+      - "parse failures degrade to warning + ok=True"
+
+  - path: src.mj_agent.tools.sql.execute
+    freeze_anchor: src/mj_agent/tools/sql/execute.py
+    exports:
+      - name: execute_sql
+        signature: "def execute_sql(sql: str) -> dict[str, Any]"
+        public: true
+        raises:
+          - "ValueError: SQL rejected by guardrail / precheck (L1 / L1b path)"
+          - "RuntimeError: statement_timeout / generic database error (L4 catch path)"
+    public_invariants:
+      - "returns 8-key envelope on success (see execute-sql.contract.yml REQ-005)"
+      - "never returns None / partial envelope"
+
+  - path: src.mj_agent.tools.sql.introspect
+    freeze_anchor: src/mj_agent/tools/sql/introspect.py
+    exports:
+      - name: list_biz_tables
+        signature: "def list_biz_tables() -> list[dict[str, Any]]"
+        public: true
+      - name: describe_biz_table
+        signature: "def describe_biz_table(name: str) -> dict[str, Any]"
+        public: true
+        raises:
+          - "ValueError: name out-of-allowlist OR no visible columns"
+    public_invariants:
+      - "list_biz_tables honors both DB-side GRANT (information_schema.table_privileges) AND application allowlist"
+      - "describe_biz_table rejects out-of-allowlist names BEFORE touching DB"
+
+  - path: src.mj_agent.integrations.mj_system_db
+    freeze_anchor: src/mj_agent/integrations/mj_system_db.py
+    exports:
+      - name: get_pool
+        signature: "def get_pool() -> ConnectionPool"
+        public: true
+      - name: readonly_cursor
+        signature: "@contextmanager def readonly_cursor() -> Iterator[Cursor]"
+        public: true
+    public_invariants:
+      - "DSN options payload contains 3 -c flags (default_transaction_read_only / lock_timeout / idle_in_transaction_session_timeout)"
+      - "pool: min_size=1, max_size=4, autocommit=False, row_factory=dict_row, atexit-closed"
+      - "readonly_cursor always rolls back on context exit"
+
+  # REQ-006 — middleware sub-contract
+  - path: src.mj_agent.middleware.tool_errors
+    freeze_anchor: src/mj_agent/middleware/tool_errors.py
+    adr: ADR-029
+    exports:
+      - name: handle_sql_tool_errors
+        signature: "@wrap_tool_call def handle_sql_tool_errors(request, handler) -> Any"
+        public: true
+        async: false
+        anchor: tool_errors.py:58-67
+      - name: ahandle_sql_tool_errors
+        signature: "@wrap_tool_call def ahandle_sql_tool_errors(request, handler) -> Any"
+        public: true
+        async: true
+        anchor: tool_errors.py:70-86
+        note: "type: ignore[call-overload] on the wrap_tool_call decorator due to upstream typing limitation"
+    constants:
+      - name: _VALIDATION_PREFIX
+        value: "工具调用未通过校验"
+        contract: "stable string; asserted by test_tool_error_middleware.py"
+        anchor: tool_errors.py:32
+      - name: _EXECUTION_PREFIX
+        value: "工具执行失败"
+        contract: stable
+        anchor: tool_errors.py:33
+      - name: _RETRY_HINT
+        value: "请根据错误信息调整 SQL 或工具参数后重试。"
+        contract: stable
+        anchor: tool_errors.py:34
+    behavior:
+      - catches: "(ValueError, RuntimeError)"
+        action: "return ToolMessage(content=<formatted>, tool_call_id=request.tool_call['id'])"
+        anchor: tool_errors.py:66, 85
+      - catches: "Exception (other)"
+        action: "return ToolMessage with '工具执行失败（意外异常 <Type>）：<msg>' content"
+        anchor: tool_errors.py:52-54
+      - direct_callers: "unit / smoke tests still see raw exception — middleware only intercepts agent's tool-call path"
+        anchor: tool_errors.py:17-19 (doc comment)
+    wiring:
+      module: src.mj_agent.agent
+      function: make_graph
+      kwarg: "middleware=[handle_sql_tool_errors]"
+      note: "sync variant wired; ahandle_sql_tool_errors integration with astream path — TBD M3 verification"
+
+# Public symbol non-actions (explicit; reverse-engineered from doc comments)
+non_actions:
+  - module: guardrail
+    items:
+      - "does NOT scan SQL comments"
+      - "does NOT scan string literals"
+      - "does NOT handle CTE alias shadowing"
+      - "does NOT inspect function bodies"
+  - module: mj_system_db
+    items:
+      - "does NOT set search_path (schema qualification at L1)"
+      - "does NOT set statement_timeout (delegated to L4 role-level config)"
+
+hitl_required:
+  - sql-guardrail-relax                            # for guardrail / precheck modules
+  - prompt-version-bump                            # if execute_sql signature changes affect system.md
+  - runtime-skill-content-change                   # if execute_sql signature changes affect SKILL.md body
+
+# TBD Phase M2: scripts/sdd/check_python_contracts.py validates exports / signatures against actual code
+# TBD Phase M3: contract test imports each module + asserts public API surface (signature inspection)

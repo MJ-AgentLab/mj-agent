@@ -1,0 +1,152 @@
+# capabilities/data-agent/llm-provider/contracts/provider.contract.yml
+#
+# Covers REQ-001 (ark provider) + REQ-002 (local-openai-compat) + REQ-003 (provider switch).
+# Phase M1 reverse-engineered from llm.py + config.py + cli.py.
+
+contract_id: provider
+covers_requirements:
+  - REQ-001                                       # ark provider
+  - REQ-002                                       # local-openai-compat provider
+  - REQ-003                                       # provider switch + config schema
+
+# Provider enum (config.py:Settings)
+provider_enum:
+  field: llm_provider
+  type: 'Literal["ark", "local-openai-compat"]'
+  default: ark
+  freeze_anchor: src/mj_agent/config.py
+  validation: "pydantic ValidationError at Settings construction if value not in enum"
+
+# ark branch behavior
+ark_branch:
+  freeze_anchor: src/mj_agent/llm.py:40-60      # approximate; verify in Phase M2
+  preconditions:
+    - "settings.llm_provider == 'ark'"
+    - "effective_llm_api_key (llm_api_key OR ark_api_key) is non-empty"
+  effective_api_key_fallback_chain:
+    - try: settings.llm_api_key.get_secret_value()
+      condition: non-empty
+    - try: settings.ark_api_key.get_secret_value()
+      condition: non-empty
+    - else: raise LLMConfigError
+  effective_base_url_fallback_chain:
+    - try: settings.llm_base_url
+      condition: non-empty
+    - else: settings.ark_base_url
+      default_value: "https://ark.cn-beijing.volces.com/api/v3"
+  chatopenai_constructor_args:
+    model: settings.llm_model_id
+    api_key: "<SecretStr from effective_llm_api_key>"
+    base_url: "<effective_llm_base_url>"
+    timeout: settings.llm_timeout_sec
+    max_retries: 2
+    temperature: 0.7
+    extra_body:
+      thinking:
+        type: '"enabled" if settings.llm_thinking_enabled else "disabled"'
+  llm_config_error:
+    triggered_when: "effective_llm_api_key empty"
+    message_requirements:
+      - "must mention ARK_API_KEY"
+      - "must suggest setup-env.ps1"
+      - "must mention LLM_API_KEY (new generic) as fallback option"
+
+# local-openai-compat branch behavior
+local_openai_compat_branch:
+  freeze_anchor: src/mj_agent/llm.py:62-90      # approximate
+  preconditions:
+    - "settings.llm_provider == 'local-openai-compat'"
+    - "settings.llm_base_url is non-empty (NO ark fallback)"
+  effective_api_key_fallback_chain:
+    - try: settings.llm_api_key.get_secret_value()
+      condition: non-empty
+    - else: literal "EMPTY" sentinel
+  effective_base_url_fallback_chain:
+    - try: settings.llm_base_url
+      condition: non-empty
+    - else: raise LLMConfigError (NO ark fallback)
+  chatopenai_constructor_args:
+    model: settings.llm_model_id
+    api_key: '<SecretStr from llm_api_key OR "EMPTY">'
+    base_url: settings.llm_base_url
+    timeout: settings.llm_timeout_sec
+    max_retries: 2
+    temperature: 0.7
+    extra_body: ABSENT                            # deliberately omitted (vLLM/SGLang/Ollama compat)
+  llm_config_error:
+    triggered_when: "llm_base_url empty"
+    message_requirements:
+      - "must mention LLM_BASE_URL"
+      - "must include example endpoints (vLLM port 8000, Ollama port 11434)"
+
+# Settings fields (config.py)
+settings_llm_fields:
+  freeze_anchor: src/mj_agent/config.py:Settings
+  fields:
+    llm_provider:
+      type: 'Literal["ark", "local-openai-compat"]'
+      default: ark
+    llm_base_url:
+      type: str
+      default: ""
+    llm_api_key:
+      type: SecretStr
+      default: 'SecretStr("")'
+    llm_model_id:
+      type: str
+      default: "deepseek-v3-2-251201"
+    llm_thinking_enabled:
+      type: bool
+      default: false
+    llm_timeout_sec:
+      type: int
+      default: 120
+    ark_base_url:
+      type: str
+      default: "https://ark.cn-beijing.volces.com/api/v3"
+      semantics: "legacy back-compat for ark provider only"
+    ark_api_key:
+      type: SecretStr
+      default: 'SecretStr("")'
+      semantics: "legacy back-compat for ark provider only"
+
+# Cached property helpers (config.py)
+effective_helpers:
+  effective_llm_base_url:
+    type: str
+    decorator: '@cached_property'
+    logic:
+      ark: "self.llm_base_url or self.ark_base_url"
+      local: "self.llm_base_url  # empty stays empty; make_llm raises"
+  effective_llm_api_key:
+    type: str
+    decorator: '@cached_property'
+    logic:
+      ark: "self.llm_api_key.get_secret_value() or self.ark_api_key.get_secret_value()"
+      local: 'self.llm_api_key.get_secret_value() or "EMPTY"'
+    return_type_note: |
+      Both branches return plain str (not SecretStr).
+      make_llm re-derives the SecretStr object for the ChatOpenAI constructor arg.
+
+# CLI healthcheck (cli.py)
+cli_check:
+  command: "mj-agent check"
+  freeze_anchor: src/mj_agent/server/cli.py:check (around L64-139)
+  contract:
+    - "NEVER calls make_llm() (no endpoint contact)"
+    - "validates credential presence based on settings.llm_provider"
+    - "ark missing key → failures.append('ARK_API_KEY not set' ...)"
+    - "local missing base url → failures.append('LLM_BASE_URL not set (required when llm_provider=local-openai-compat; e.g. http://192.168.0.189:8000/v1 for DGX vLLM)')"
+    - "success output line: 'llm provider = <name> (endpoint=<url>)'"
+  endpoint_probe_delegation:
+    out_of_scope: true
+    delegated_to: ".claude/skills/mj-agent-infra-llm-endpoint-probe/"
+    reason: "endpoint reachability requires network call; healthcheck stays offline"
+
+hitl_required:
+  - none                                          # llm.py / config.py changes do NOT trigger 4 项必停;
+                                                  # but Settings.llm_* schema changes are cross-capability
+                                                  # (affects mcp-server-governance + docker-compose)
+
+# TBD Phase M3: every BDD scenario drives NEW test code:
+#   tests/unit/test_llm.py + tests/unit/test_config_llm_fields.py

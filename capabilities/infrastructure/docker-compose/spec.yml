@@ -1,0 +1,68 @@
+# capabilities/infrastructure/docker-compose/spec.yml
+# Phase M1 baseline (ADR-031). Survey §C m1-other-pilots-survey.md.
+
+id: infrastructure.docker-compose
+name: Docker Compose 4-File Profile (ADR-026)
+domain: infrastructure
+lifecycle_state: drafting
+archive_state: active
+adapter_coverage:
+  - docker-container                # Dockerfile + 4 compose YAMLs + runtime expected
+  - tdd-bdd
+last_verified: 2026-05-20
+owner: ranzuozhou
+created: 2026-05-20
+updated: 2026-05-20
+summary: >
+  4-file compose layering per ADR-026 (base + override-dev + test + prod);
+  --env-file .env explicit required at every invocation (CLI substitution layer);
+  mj-agent-postgres + mj-agent-redis owned by mj-agent compose project; biz pg
+  consumed from external mj-system-backend-network via analyst RO role.
+  Dockerfile pins python digest (commented tag: 3.13-slim; actual 3.13.13).
+  Postgres healthcheck uses `psql -tc 'SELECT 1' -d $MJ_AGENT_MEMORY_DB` NOT
+  pg_isready (comment block explains: pg_isready greenlights server before
+  init script's CREATE DATABASE finishes → cascade failures).
+
+requirements:
+  - id: REQ-001
+    statement: "Each profile invoked via explicit `-f base -f overlay` chain (NO override.yml auto-load); `--env-file .env` SHALL be supplied so compose YAML `${VAR}` substitution reads real values; DEV layers override.yml, TEST layers test.yml, PROD layers prod.yml"
+    rationale: "Compose files live in infra/docker/ subdir (not repo root) → auto-load of override.yml does NOT fire even in DEV; --env-file .env required because compose's project_directory = first -f file's dir, NOT developer cwd; forgetting --env-file → postgres init script bakes 'local-dev-only-replace' sentinel password into volume"
+    priority: high
+    bdd:
+      examples:
+        - "Given clean docker daemon + mj-system stack up + .env populated / When `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml up -d` is invoked / Then all 3 services reach Up (healthy) within 60s; mj-agent connects to mj-agent-postgres:5432 internal AND mj-postgres:5432 on mj-system-backend-network"
+
+  - id: REQ-002
+    statement: "mj-agent SHALL depends_on: service_healthy for both mj-agent-postgres and mj-agent-redis; postgres healthcheck SHALL use psql -U postgres -d $MJ_AGENT_MEMORY_DB -tc 'SELECT 1' (NOT pg_isready) so init script's CREATE DATABASE completes before downstream services start"
+    rationale: "pg_isready greenlights server before init script's CREATE DATABASE finishes → mj-agent service starts → connect to non-existent DB → cascade failure. psql -tc actually queries the target database, which only works after init completes."
+    priority: high
+    bdd:
+      examples:
+        - "Given mj-agent-postgres is starting + init script has CREATEd role but not yet CREATEd database / When healthcheck probe runs psql -tc 'SELECT 1' -d mj_agent_memory / Then probe exits non-zero (DB doesn't exist); mj-agent depends_on service_healthy does not fire until DB exists"
+
+  - id: REQ-003
+    statement: "Container images SHALL NOT bake secrets; orchestrator injects via --env-file .env (CLI substitution) + env_file: ../../.env (container env); config/secrets.enc SHALL NOT be decrypted inside image; postgres-init script SHALL safely handle passwords containing shell metacharacters via \\getenv + format() + \\gexec"
+    rationale: "Secrets-in-image is 4 项必停 sql-guardrail-relax adjacent risk; init script must handle passwords with $/backticks/quotes/parens/spaces unmangled (PR #144 precipitating); ADR-030 secrets bundle split enforces split injection (app .env + MCP OS env)"
+    priority: high
+    bdd:
+      examples:
+        - "Given MJ_AGENT_MEMORY_PASSWORD='p@$$`w\"\"ord' (contains $, backticks, double quotes) / When init script runs / Then CREATE ROLE dispatched with literal password unmangled; subsequent psql login from agent succeeds"
+
+related_decisions:
+  - docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md     # external network mj-system-backend-network
+  - docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md         # 4-file layering
+  - docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation.md    # secrets injection model
+  - decisions/ADR-031_Spec_Anchored_Refactor.md
+
+cross_capability_refs:
+  - target: data-agent.llm-provider
+    direction: inbound                            # llm-provider depends on us
+    surface: "compose env_file: ../../.env injects LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY per profile"
+    reason: "LLM env vars travel from .env through compose CLI substitution + container env into mj-agent service"
+
+  - target: infrastructure.mcp-server-governance
+    direction: outbound                            # we depend on mcp for trust posture
+    surface: ".mcp.json wrapper scripts for pg connections share host/port matrix with compose profiles"
+    reason: "WAN URLs in .mcp.json (test-wan / prod-wan) must align with compose-deployed pg endpoints"
+
+# TBD Phase M5: infra/docker/ → docker/ (path migration; ADR-026 Phase 6 plan)

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/MJ-AgentLab/mj-agent/sdd/traceability.schema.json",
   "title": "SDD Traceability (trace.yml)",
-  "description": "Phase M0 skeleton — schema v1.2 含 BDD 层升级 (REQ -> BDD -> CONTRACT -> TEST -> TASK -> PR -> EVIDENCE). 完整 enum + required 字段 + cross-capability ref 在 Phase M2 内容填充.",
+  "description": "Schema v1.2 — REQ -> BDD -> CONTRACT -> TEST -> TASK -> PR -> EVIDENCE traceability + cross_capability_refs (M1 Q-G4) + reference_contracts (cross-repo dependencies, M1 Q-G4). Full enum lockdown + check_traceability.py blocking at Phase M2-M3.",
   "type": "object",
   "required": ["capability", "schema_version", "links"],
   "properties": {
@@ -20,7 +20,40 @@
     "schema_version": {
       "type": "string",
       "enum": ["1.2"],
-      "description": "v1.2 introduces BDD layer; older versions deprecated"
+      "description": "v1.2 introduces BDD layer + cross_capability_refs + reference_contracts; older versions deprecated"
+    },
+    "cross_capability_refs": {
+      "type": "array",
+      "description": "Cross-capability dependencies (R-G7 cap: total <= 5 per capability). M1 Q-G4 added.",
+      "items": {
+        "type": "object",
+        "required": ["target", "direction", "surface", "rationale"],
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "target capability id (domain.slug)",
+            "pattern": "^[a-z][a-z0-9-]*\\.[a-z][a-z0-9-]*$"
+          },
+          "direction": {
+            "type": "string",
+            "enum": ["outbound", "inbound", "bidirectional"],
+            "description": "outbound = THIS capability depends on target; inbound = target depends on THIS; bidirectional = mutual"
+          },
+          "surface": {
+            "type": "string",
+            "description": "source location surfacing the dependency (path + optional line range)",
+            "examples": ["src/mj_agent/tools/sql/precheck.py:58-59"]
+          },
+          "rationale": {
+            "type": "string",
+            "description": "why this dependency exists"
+          },
+          "impact": {
+            "type": "string",
+            "description": "what breaks if the dependency drifts (impact on scenarios / contract tests)"
+          }
+        }
+      }
     },
     "links": {
       "type": "array",
@@ -35,7 +68,7 @@
           },
           "bdd": {
             "type": "object",
-            "description": "高风险 REQ (critical/high) 必填",
+            "description": "high-risk REQ (critical/high) MUST populate this object",
             "required": ["feature", "scenarios", "automation_status"],
             "properties": {
               "feature": { "type": "string", "examples": ["contracts/behavior.feature"] },
@@ -47,6 +80,38 @@
             }
           },
           "contracts": { "type": "array", "items": { "type": "string" } },
+          "reference_contracts": {
+            "type": "array",
+            "description": "Cross-repo references (e.g. mj-system R__analyst_permissions.sql owns the actual GRANT/timeout SQL). M1 Q-G4 added.",
+            "items": {
+              "type": "object",
+              "required": ["upstream_repo", "upstream_path", "artifacts"],
+              "properties": {
+                "upstream_repo": {
+                  "type": "string",
+                  "description": "upstream repo name (e.g. 'mj-system')"
+                },
+                "upstream_path": {
+                  "type": "string",
+                  "description": "path within upstream repo to the artifact"
+                },
+                "artifacts": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "minItems": 1,
+                  "description": "list of specific artifacts (SQL statements, config keys, etc.) covered by this reference"
+                },
+                "verification": {
+                  "type": "object",
+                  "description": "how mj-agent SUT side verifies this reference contract",
+                  "properties": {
+                    "method": { "type": "string" },
+                    "contract_test": { "type": "string", "description": "path to contract test (may be TBD-Mx)" }
+                  }
+                }
+              }
+            }
+          },
           "tests": { "type": "array", "items": { "type": "string" } },
           "tasks": { "type": "array", "items": { "type": "string" } },
           "prs": { "type": "array", "items": { "type": "string" } },
@@ -56,8 +121,8 @@
     }
   },
   "_TBD_M2_": [
-    "cross-capability ref schema (e.g. data-agent.safe-sql -> data-agent.biz-catalog)",
-    "bdd automation_status 字段的 G19-G22 gate 联动 enum 扩展",
-    "evidence 子类 enum (verification / reports / security / runtime / bdd / tdd / postmortem / assessments)"
+    "bdd automation_status field G19-G22 gate enum extension",
+    "evidence subtype enum (verification / reports / security / runtime / bdd / tdd / postmortem / assessments)",
+    "tests[] format pattern (path::function vs path::ClassName::method)"
   ]
 }

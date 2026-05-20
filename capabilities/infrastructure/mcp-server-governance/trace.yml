@@ -1,0 +1,69 @@
+# capabilities/infrastructure/mcp-server-governance/trace.yml
+# schema v1.2.
+
+capability: infrastructure.mcp-server-governance
+generated: 2026-05-20
+schema_version: "1.2"
+
+cross_capability_refs:
+  - target: infrastructure.docker-compose
+    direction: inbound                            # docker-compose deploys pg endpoints we connect to
+    surface: ".mcp.json pg-* entries + infra/docker/docker-compose.*.yml services"
+    rationale: "5 pg-mj-agent-memory-* entries connect to docker-compose-deployed mj-agent-postgres (port 5433); 5 pg-mj-system-biz-* entries connect to mj-system biz pg via mj-system-backend-network"
+    impact: "compose pg port / host changes must sync with .mcp.json URL env overrides"
+
+  - target: data-agent.llm-provider
+    direction: outbound
+    surface: ".mcp.json ssh-manager DGX host entry (192.168.0.189) + llm-provider local-openai-compat endpoint"
+    rationale: "DGX-Spark host serves both ssh-manager MCP entry AND local-openai-compat LLM endpoint"
+    impact: "DGX host trust posture changes affect both capabilities"
+
+links:
+
+  - req: REQ-001                                  # 13-server inventory + A14 gate
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Adding a 14th MCP server triggers A14 PR gate body declaration"
+      automation_status: unautomated
+    contracts:
+      - contracts/mcp-server.contract.yml
+      - contracts/governance.contract.yml
+    tests:
+      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_thirteen_server_entries"
+      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_per_entry_trust_posture_declared"
+      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_credential_mode_per_entry"
+      - "TBD-M3: scripts/sdd/check_a14_gate.py (warning at M2 / blocking at M3)"
+      - "TBD-M3: tests/contract/test_a14_gate.py::test_pr_body_contains_mcp_block_when_mcp_json_changed"
+    tasks:
+      - tasks.md#T-002
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "evidence/runtime/<YYYY-Q>_mcp_trust_audit.md (M4+ quarterly)"
+
+  - req: REQ-002                                  # wrapper consistency
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "All 10 pg-* entries reference the same wrapper script"
+      automation_status: unautomated
+    contracts:
+      - contracts/mcp-server.contract.yml
+    tests:
+      - "TBD-M3: tests/contract/test_mcp_pg_wrapper_consistency.py::test_all_pg_entries_use_same_wrapper"
+      - "TBD-M3: tests/contract/test_mcp_pg_wrapper_consistency.py::test_pg_wrapper_baseline_aligned"
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "evidence/runtime/<YYYY-Q>_pg_wrapper_baseline_diff.md (M4+ quarterly)"
+
+# Summary:
+# - 2 REQs (both @risk:medium)
+# - 2 BDD scenarios
+# - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
+# - 2 cross-capability refs (≤ 5 ✓)
+# - 7 TBD-M3 test placeholders + 0 existing tests
+# - Quarterly audit cycle: M4+ automated
