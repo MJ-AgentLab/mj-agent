@@ -1,0 +1,134 @@
+# capabilities/data-agent/biz-catalog/contracts/catalog.contract.yml
+#
+# Covers REQ-001 (catalog schema completeness).
+# Phase M1 reverse-engineered from frozen qcm_catalog.yaml.
+# 4 项必停: biz-catalog-sync (any change to qcm_catalog.yaml → HITL).
+
+contract_id: catalog
+covers_requirements:
+  - REQ-001                                       # schema completeness
+
+# YAML file under governance
+catalog_file:
+  path: src/mj_agent/biz_catalog/qcm_catalog.yaml
+  freeze_anchor: src/mj_agent/biz_catalog/qcm_catalog.yaml  # entire file
+  size_hint: "~260 lines (Phase M1 baseline)"
+
+# 10 contract-required top-level keys (finder.py hard-codes these)
+required_top_level_keys:
+  - key: version
+    type: str
+    semantics: catalog YAML semver
+    example: "0.2.0"
+
+  - key: catalog_kind
+    type: str
+    semantics: discriminator field for future catalog types
+    example: "qcm"
+
+  - key: metrics
+    type: "mapping<str, mapping>"
+    semantics: per-family metadata (description / column_root)
+    current_families: [qrynum, tntcnt]
+    accessed_by: src/mj_agent/biz_catalog/finder.py (_METRIC_KEYWORDS)
+
+  - key: periods
+    type: "mapping<str, mapping>"
+    semantics: per-period metadata (suffix / time_column / time_column_type / abbreviation)
+    current_periods: [daily, weekly, monthly, quarterly, yearly]
+    accessed_by:
+      - src/mj_agent/biz_catalog/finder.py (_PERIOD_KEYWORDS)
+      - src/mj_agent/tools/sql/precheck.py:58-59 (_all_time_columns; cross-cap → safe-sql REQ-002)
+
+  - key: metric_column_shapes
+    type: "mapping<str, mapping>"
+    semantics: per-period primary/examples + (weekly+) quantile_family list
+    quantile_pattern: "daily_<metric>_{avg,max,min,std,q25,median,q75}"
+
+  - key: dimensions
+    type: "list<mapping>"
+    semantics: 8 dimension entries with suffix/description/has_dim_column/dim_column[s]/[join_table/join_key/metric_families]
+    current_count: 8
+    accessed_by: src/mj_agent/biz_catalog/finder.py (_DIMENSION_KEYWORDS)
+
+  - key: signal_tables
+    type: "list<mapping>"
+    semantics: 3 entries with name/purpose/role (role=signal); excluded from biz_dws fact table predicate
+    current_names: [dws_qcm_preprocessed_data, dws_qcm_etl_metrics, dws_qcm_ready_signal]
+    accessed_by: src/mj_agent/tools/sql/precheck.py:31-38 (signal_tables exempt from require_time_range)
+
+  - key: dimension_tables
+    type: "list<mapping>"
+    semantics: 2 entries with name/primary_key/join_key/description/stable/[drift_note]
+    current_names: [dwd_dim_product_interface, dwd_dim_institution]
+
+  - key: fact_table_pattern
+    type: mapping
+    semantics: template/example/total_count for biz_dws.dws_qcm_<metric>_<period>_<dim>
+    current_total_count: 65
+
+  - key: forbidden_access
+    type: mapping
+    semantics: schemas list (5 schemas) + notes (biz_dwd.* exceptions)
+    current_schemas_count: 5
+
+# Informational top-level keys (present in current YAML; not strictly required)
+informational_top_level_keys:
+  - key: source
+    type: mapping
+    semantics: provenance — guide / standard / adr / bundle_path / status / drift_notes
+    drift_status: drift_detected
+    drift_note: "staged STANDARD specifies stat_date / qrynum / tenant_code; actual DEV DB uses data_date / day_qrynum / tenant_id; re-sync deferred to mj-system PR1/PR2 landing"
+
+  - key: period_over_period_columns
+    type: "mapping<str, mapping>"
+    semantics: pattern definitions (previous_value / diff / rate / cross_year_yoy)
+
+  - key: runtime_constraints
+    type: mapping
+    semantics: statement_timeout_sec (60) + recommended_client (default_transaction_read_only / lock_timeout_ms / idle_in_transaction_session_timeout_ms)
+    informational_only: true
+    note: "authoritative runtime params owned by safe-sql capability (REQ-003 L3) + upstream R__analyst_permissions.sql (REQ-004 L4 reference contract); this field is documentation only"
+
+# Loader contract (loader.py)
+loader_module:
+  path: src.mj_agent.biz_catalog.loader
+  freeze_anchor: src/mj_agent/biz_catalog/loader.py
+  public_api:
+    - name: catalog_path
+      signature: "def catalog_path() -> Path"
+      semantics: "absolute path of bundled YAML"
+
+    - name: load_catalog
+      signature: "@cache def load_catalog() -> dict[str, Any]"
+      raises:
+        - "ValueError: top-level is not a mapping (e.g. YAML root is list)"
+        - "FileNotFoundError: YAML missing (packaging bug)"
+        - "yaml.YAMLError: malformed YAML"
+      semantics: |
+        Loads + parses bundled YAML; @cache-decorated → single load per process.
+        Test fixtures clear cache via load_catalog.cache_clear().
+
+# Finder contract (finder.py) — declarative summary; full schema in python.contract.yml (TBD-M2 add)
+finder_module:
+  path: src.mj_agent.biz_catalog.finder
+  freeze_anchor: src/mj_agent/biz_catalog/finder.py
+  public_api:
+    - name: find_biz_context
+      signature: "def find_biz_context(question: str) -> dict[str, Any]"
+      semantics: |
+        Pure deterministic function (no DB / LLM calls).
+        Returns 14-field dict: metrics / periods / dimensions / comparisons /
+        candidate_table_names / signal_tables / dimension_tables /
+        fact_table_pattern / forbidden_access / runtime_constraints / notes / ...
+      fallback_behavior:
+        - "no metric keyword → all catalog metrics"
+        - "no period keyword → (daily, monthly)"
+        - "no dimension keyword → (_total,)"
+        - "fallback reasons recorded in returned 'notes' field"
+
+hitl_required:
+  - biz-catalog-sync                              # any change to qcm_catalog.yaml
+
+# TBD Phase M2: schema validation script (check_catalog_schema.py)
+# TBD Phase M3: contract test asserting every required top-level key + finder fallback behavior

@@ -1,0 +1,90 @@
+# capabilities/data-agent/biz-catalog/trace.yml
+# REQ → BDD → CONTRACT → TEST → TASK → PR → EVIDENCE traceability (schema v1.2).
+
+capability: data-agent.biz-catalog
+generated: 2026-05-20
+schema_version: "1.2"
+
+# Cross-capability refs (R-G7 cap ≤ 5; here: 2)
+cross_capability_refs:
+  - target: data-agent.safe-sql
+    direction: inbound                            # safe-sql depends on us
+    surface: "src/mj_agent/biz_catalog/qcm_catalog.yaml (periods.*.time_column) + src/mj_agent/tools/sql/precheck.py:58-59"
+    rationale: "safe-sql REQ-002 require_time_range rule reads our catalog's periods.*.time_column to determine what time predicate columns are valid for biz_dws fact tables"
+    impact: "if our catalog drops a period or renames a time_column, safe-sql REQ-002 BDD scenario starts rejecting valid queries"
+
+  - target: data-agent.tool-chain
+    direction: outbound                            # we depend on tool-chain (Phase 2+)
+    surface: "src/mj_agent/agent.py:ALL_TOOLS + src/mj_agent/biz_catalog/finder.py (find_biz_context registered as tool)"
+    rationale: "find_biz_context is a LangChain tool; tool schema contract owned by Phase 2+ tool-chain capability"
+    impact: "future tool-chain capability spec changes may require finder.py signature adjustments"
+
+links:
+
+  - req: REQ-001                                  # Schema completeness
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "load_catalog rejects YAML whose root parses to a list (not a mapping)"
+      automation_status: unautomated              # Phase M3 BDD step defs
+    contracts:
+      - contracts/catalog.contract.yml
+    tests:
+      - tests/unit/test_biz_catalog.py::test_catalog_top_level_keys
+      - tests/unit/test_biz_catalog.py::test_catalog_metric_families
+      - tests/unit/test_biz_catalog.py::test_catalog_periods
+      - "TBD-M3: tests/unit/test_loader_yaml_validation.py::test_load_catalog_rejects_non_mapping_root"
+    tasks:
+      - tasks.md#T-002
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "TBD-M3: evidence/bdd/2026-XX-XX_schema_completeness_scenarios_pass.md"
+
+  - req: REQ-002                                  # Catalog ↔ DB alignment
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Catalog signal_tables must resolve in live biz_dws"
+      automation_status: unautomated
+    contracts:
+      - contracts/catalog-db-alignment.contract.yml
+    tests:
+      - tests/contract/test_qcm_catalog_alignment.py::TestSignalTables
+      - tests/contract/test_qcm_catalog_alignment.py::TestDimensionTables
+      - tests/contract/test_qcm_catalog_alignment.py::TestPeriodTimeColumns
+      - tests/contract/test_qcm_catalog_alignment.py::TestForbiddenSchemas
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "PR-M1-1"
+    evidence:
+      - "evidence/runtime/ (M4+ auto-collected catalog freshness reports)"
+
+  - req: REQ-003                                  # SKILL ↔ catalog coherence
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Active SKILL bodies reference only resolvable catalog symbols and DB tables"
+      automation_status: unautomated
+    contracts:
+      - contracts/catalog-db-alignment.contract.yml
+    tests:
+      - tests/contract/test_biz_schema_alignment.py::TestSkillTableRefs           # references stale `mj-ddd-semantics`
+      - tests/contract/test_biz_schema_alignment.py::TestMetricColumnPatterns
+      - "TBD-M3: tests/contract/test_biz_schema_alignment.py rewrite for 3 current _ACTIVE_SKILLS (T-005)"
+    tasks:
+      - tasks.md#T-004
+      - tasks.md#T-005                              # cleanup
+    prs:
+      - "PR-M1-1 (contract); PR-M3-X (test cleanup)"
+    evidence:
+      - "TBD-M3"
+
+# Summary stats:
+# - 3 REQs (all @risk:high; 0 critical)
+# - 3 BDD scenarios @risk:high
+# - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
+# - 2 cross-capability refs (safe-sql inbound + tool-chain outbound; ≤ 5 ✓)
+# - 0 reference_contracts (no cross-repo deps; STANDARD lives in mj-agent)
+# - 8 existing tests + 2 TBD-M3 placeholders
