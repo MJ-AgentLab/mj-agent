@@ -1,0 +1,35 @@
+# sdd/templates/contracts/runtime.expected.yaml.template
+# Copy to capabilities/infrastructure/docker-compose/contracts/runtime.expected.yaml.
+# Validated by scripts/sdd/check_runtime_expected.py (Phase M3).
+#
+# Note: 本文件后缀是 .yaml.template (不是 .yml.template) — 与目标文件 runtime.expected.yaml
+# 对齐 (per blueprint §3.2 + §19.2).
+#
+# Phase M0 skeleton template — 运行时状态 expected contract.
+
+containers:
+  - name: mj-agent
+    port: 8000                            # 容器内端口
+    host_port_map: 8001                   # 宿主端口映射
+    healthcheck:
+      type: http
+      path: /health
+      expect_status: 200
+  - name: mj-agent-postgres
+    port: 5432
+    healthcheck:
+      type: cmd
+      cmd: pg_isready
+  - name: mj-agent-redis
+    port: 6379
+    healthcheck:
+      type: cmd
+      cmd: redis-cli PING
+networks:
+  internal: mj-agent-internal             # mj-agent 自建 network
+  external: mj-system-backend-network     # 消费 mj-system biz pg (read-only)
+volumes:
+  - mj-agent-pg-data                      # memory checkpointer 持久化
+  - mj-agent-redis-data                   # 备用 (未来 cache / queue)
+# TBD Phase M2: 添加 expected_log_lines 字段 (启动 1 分钟内必现的关键日志)
+# TBD Phase M2: 添加 metric_endpoints 字段 (Prometheus / OTel 输出)

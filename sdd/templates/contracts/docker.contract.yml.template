@@ -1,0 +1,26 @@
+# sdd/templates/contracts/docker.contract.yml.template
+# Copy to capabilities/infrastructure/docker-compose/contracts/docker.contract.yml.
+# Validated by scripts/sdd/check_docker_contracts.py (Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — Dockerfile lint + image security contract.
+
+dockerfile: docker/Dockerfile             # Phase M5 平移自 infra/docker/Dockerfile
+base_image_allowlist:
+  - python:3.13-slim
+  - python:3.13-bookworm
+user_required: non-root                   # USER directive mandatory
+build_args_no_secrets: true
+copied_paths_allowlist:
+  - src/
+  - pyproject.toml
+  - uv.lock
+forbidden_in_image:
+  - .env
+  - config/secrets.enc
+  - config/secrets-mcp.enc
+  - .git/
+healthcheck_required: true                # HEALTHCHECK directive 必填
+exposed_ports:
+  - 8000                                  # mj-agent main port
+# TBD Phase M2: 添加 sbom_required 字段 (supply-chain hardening)
+# TBD Phase M2: 添加 base_image_pinning 字段 (digest pinning policy)

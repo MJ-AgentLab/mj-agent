@@ -1,0 +1,22 @@
+# sdd/templates/contracts/runtime-skill.contract.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/runtime-skill.contract.yml.
+# Validated by scripts/sdd/check_runtime_skill_contracts.py (Phase M2 起 + A11 PR gate 联动).
+#
+# Phase M0 skeleton template — In-source canonical SKILL.md contract.
+
+skill_path: src/mj_agent/skills/<skill-name>/SKILL.md
+sections_required:                        # SKILL.md body 必含 5 段 (Agent_Side §2.1)
+  - "## Purpose"
+  - "## When to use"
+  - "## Planning workflow"
+  - "## Common patterns"
+  - "## Anti-patterns"
+frontmatter_strip_contract: true          # loader MUST strip via python-frontmatter
+loader: load_skill                        # src.mj_agent.skills package
+allowed_state_transitions:
+  - draft → active                        # requires eval_references non-empty
+  - active → deprecated                   # requires superseded_by
+hitl_required:
+  - runtime_skill_content_change          # 任何 body 修改触发
+# TBD Phase M2: 添加 cross_skill_refs 字段 (skill 间互引；如 safe-sql 引 biz-domain-context)
+# TBD Phase M2: 添加 character_budget 字段 (LLM context budget 上限)

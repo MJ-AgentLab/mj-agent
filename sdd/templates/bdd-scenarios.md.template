@@ -1,0 +1,32 @@
+# sdd/templates/bdd-scenarios.md.template
+# 用于在 capability/requirements.md 内嵌的 BDD examples 段；高风险 REQ 必填.
+# Phase M0 skeleton template — 每 REQ ≥ 1 个 acceptance example.
+
+## REQ-NNN <REQ statement>
+
+**Priority**: critical / high / medium / low
+
+**BDD Examples**:
+
+> 用 Given-When-Then 描述 acceptance criteria；每个 example 应可直接 → behavior.feature scenario.
+
+- **Example 1（happy path）**：
+  - Given <baseline precondition>
+  - When <user / agent action>
+  - Then <observable outcome>
+
+- **Example 2（alternative path / boundary）**：
+  - Given <alternative context>
+  - When <variation>
+  - Then <expected behavior>
+
+- **Example 3（negative case / HITL trigger）**：
+  - Given <conditions triggering rejection>
+  - When <user / agent action>
+  - Then <rejection / HITL behavior>
+
+---
+
+> 引用：每 example 映射到 `contracts/behavior.feature` 一个 scenario；scenario name 与 example
+> 描述一致（避免双重维护）.
+> @hitl 标签：若 example 描述 HITL 触发，behavior.feature scenario 必加 @hitl 标签.

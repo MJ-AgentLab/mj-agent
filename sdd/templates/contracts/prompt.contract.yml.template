@@ -1,0 +1,23 @@
+# sdd/templates/contracts/prompt.contract.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/contracts/prompt.contract.yml.
+# Validated by scripts/sdd/check_prompt_contracts.py (Phase M2 warning / M3 blocking).
+#
+# Phase M0 skeleton template — Prompt (system.md) contract.
+# Note: SKILL.md (in-source canonical) use runtime-skill.contract.yml instead.
+
+prompt_path: src/mj_agent/prompts/system.md
+version: 1.3                              # 与 prompts/system.md frontmatter version 一致
+variables: []                             # static body; concatenates with SKILL.md
+frontmatter_required:
+  - version
+  - state
+  - eval_references                       # Phase 2+ mandatory (per Agent_Side A8)
+eval_references:                          # Phase M2 起强制；指向 tests/eval/
+  - tests/eval/component/test_skill_routing.py
+allowed_state_transitions:
+  - draft → active                        # requires eval_references non-empty
+  - active → deprecated                   # requires superseded_by
+hitl_required:
+  - prompt_version_bump                   # 任何 body 修改或 version bump 触发
+# TBD Phase M2: 添加 forbidden_phrases 字段 (avoid prompt drift to relax 4 stops)
+# TBD Phase M2: 添加 regression_eval 字段 (与 ADR-024 EVAL framework 联动)

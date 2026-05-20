@@ -1,0 +1,54 @@
+---
+type: capability-tasks
+capability: <domain>.<capability-slug>
+state: draft
+version: 0.1
+owner: <github-username>
+created: <YYYY-MM-DD>
+updated: <YYYY-MM-DD>
+---
+
+# Tasks: <Capability Name>
+
+> Phase M0 skeleton template — 任务清单；含 `bdd.feature` / `bdd.scenarios[]` /
+> `tdd.test_list[]` 字段示例段（高风险 task 必填）.
+
+## Backlog
+
+### T-001 <task title>
+
+- **Phase**：M1 / M2 / ...
+- **Priority**：critical / high / medium / low
+- **Linked REQ**：REQ-001
+- **HITL trigger**：4-stops / cross-cap / prod-compose / N
+- **BDD**:
+  - `feature`: `contracts/behavior.feature`
+  - `scenarios`:
+    - "<Scenario name 1 matching @REQ-001 tag>"
+- **TDD**:
+  - `test_list`:
+    - **red**: failing test path + commit SHA placeholder
+    - **green**: passing test path + commit SHA placeholder
+    - **refactor**: behavior unchanged check + commit SHA placeholder
+  - `contract-test-first`: required / not-required（contract 变更时 required；G28 blocking from
+    Phase M3）
+
+### T-002 ...
+
+（continue task 编号）
+
+## In-Progress
+
+（当前在做的 task；PR 关联）
+
+## Done
+
+（已完成的 task；PR merge 后从 In-Progress 迁入）
+
+## Anti-Backlog（决定不做的）
+
+- <why we decided not to do X>
+
+---
+
+> TBD: Phase M2 — task 与 trace.yml `tasks:` 字段的双向自动同步.

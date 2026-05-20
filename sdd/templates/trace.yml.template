@@ -1,0 +1,31 @@
+# sdd/templates/trace.yml.template
+# Copy to capabilities/<domain>/<capability-slug>/trace.yml.
+# Validated by scripts/sdd/check_traceability.py against sdd/traceability.schema.json
+#
+# Phase M0 skeleton template — schema v1.2 含 BDD 层
+# (REQ -> BDD -> CONTRACT -> TEST -> TASK -> PR -> EVIDENCE).
+
+capability: <domain>.<capability-slug>   # 与 spec.yml id 一致
+generated: <YYYY-MM-DD>                  # 自动生成时间戳；由 scripts/sdd/generate_index.py 维护
+schema_version: "1.2"                    # v1.2 引入 bdd 层
+links:
+  - req: REQ-001
+    bdd:                                 # 高风险 REQ (critical / high) 必填
+      feature: contracts/behavior.feature
+      scenarios:
+        - "<Scenario name matching @REQ-001>"
+      automation_status: automated       # automated / manual / unautomated
+    contracts:
+      - contracts/<contract-slug>.contract.yml
+    tests:
+      - tests/contracts/<dom>/<cap>/test_<slug>.py::test_<name>
+      - tests/bdd/<dom>/<cap>/<feature>.feature::"<Scenario name>"
+    tasks:
+      - tasks.md#T-001
+    prs:
+      - "#<pr-number>"
+    evidence:
+      - evidence/verification/<YYYY-MM-DD>_<topic>.md
+      - evidence/bdd/<YYYY-MM-DD>_<scenario>_pass.md
+      - evidence/tdd/<YYYY-MM-DD>_<task>_red_green.md
+  # - req: REQ-002 ...

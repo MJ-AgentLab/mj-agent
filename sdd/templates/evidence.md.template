@@ -1,0 +1,46 @@
+---
+type: evidence
+subtype: verification                 # verification / report / assessment / security / runtime /
+                                      # postmortem / bdd / tdd
+capability: <domain>.<capability-slug>
+covered_reqs:                         # 至少 1 个；引用 requirements.md REQ-NNN
+  - REQ-001
+covered_scenarios:                    # BDD subtype 必填
+  - "<Scenario name>"
+tdd_phase:                            # TDD subtype 必填
+  - red                               # red / green / refactor / contract-test-first
+created: <YYYY-MM-DD>
+owner: <github-username>
+---
+
+# Evidence: <one-line summary>
+
+> Phase M0 skeleton template — Context / Method / Result / Related Artifacts 四段
+> （G9 evidence required gate 检查 ≥ 1 段非空 — Phase M4 起 blocking）.
+
+## §1 Context
+
+<什么场景生成此证据 / 何时 / 关联 PR / commit SHA>.
+
+## §2 Method
+
+<如何验证 / 跑了哪些命令 / 哪个 fixture / 哪个 dataset>.
+
+## §3 Result
+
+<pass / fail + 数据>.
+
+- BDD subtype: scenario 数 + 自动化通过率 + 失败 scenario 列表
+- TDD subtype: red 截图 link + green 截图 link + refactor 后 behavior 不变证据
+
+## §4 Related Artifacts
+
+- contracts: <link to contracts/*.contract.yml>
+- tests: <link to tests/*.py>
+- prs: #NNN
+- bdd-feature: capabilities/<cap>/contracts/behavior.feature   # BDD subtype 必填
+- tdd-test-list: capabilities/<cap>/tasks.md#T-NNN              # TDD subtype 必填
+
+---
+
+> *Phase M0 skeleton — 每 capability evidence/ 目录下逐文件 instantiate.*

@@ -1,0 +1,48 @@
+---
+type: capability-design
+capability: <domain>.<capability-slug>
+state: draft
+version: 0.1
+owner: <github-username>
+created: <YYYY-MM-DD>
+updated: <YYYY-MM-DD>
+---
+
+# Design: <Capability Name>
+
+> Phase M0 skeleton template — 4 段：Context / Decision / Architecture / Tradeoffs.
+
+## §1 Context
+
+<本 capability 解决的问题 / 涉及的上下游 / 边界声明 / 与其他 capability 关系>.
+
+## §2 Decision
+
+<选定的方案 + 关键决策点>.
+
+详细决策记录见 [decisions/ADR-NNN](../../../decisions/ADR-NNN_<slug>.md).
+
+## §3 Architecture
+
+```
+<架构图 / 数据流 / 模块边界>
+```
+
+关键模块：
+- `<path/to/module>`：<职责>
+- ...
+
+## §4 Tradeoffs
+
+| Choice | Pros | Cons | Rationale |
+|---|---|---|---|
+| A | ... | ... | （为何选 A） |
+| B（rejected） | ... | ... | （为何不选 B） |
+
+## §5 Open Questions
+
+> TBD: Phase M2 — Open Questions 与 HITL 触发条件的映射规则.
+
+---
+
+> *Phase M0 skeleton — Phase M1 起按 5 pilot capability 实例细化.*

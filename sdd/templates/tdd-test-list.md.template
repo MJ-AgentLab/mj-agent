@@ -1,0 +1,30 @@
+# sdd/templates/tdd-test-list.md.template
+# 用于在 capability/tasks.md 内嵌的 TDD test_list 字段；高风险 task 必填.
+# Phase M0 skeleton template — per-task；含 red / green / refactor 三阶段证据指针.
+
+## T-NNN <task title>
+
+- **Phase**：M1 / M2 / ...
+- **Priority**：critical / high / medium / low
+- **Linked REQ**：REQ-NNN
+- **Contract changed?**：yes / no（yes → G28 contract-test-first 强制；先有 failing test）
+- **HITL trigger**：4-stops / cross-cap / prod-compose / N
+
+### TDD Test List
+
+| Phase | Test path | Expected outcome | Evidence path | Commit SHA |
+|---|---|---|---|---|
+| **red** | `tests/contracts/<dom>/<cap>/test_<slug>.py::test_<name>` | failing | `evidence/tdd/<YYYY-MM-DD>_<task>_red.md` | `<sha>` |
+| **green** | same path | passing | `evidence/tdd/<YYYY-MM-DD>_<task>_green.md` | `<sha>` |
+| **refactor** | same path | still passing + behavior unchanged | `evidence/tdd/<YYYY-MM-DD>_<task>_refactor.md` | `<sha>` |
+
+### Contract-Test-First （contract 变更时必填）
+
+- **Failing test commit**: `<sha>`
+- **Contract change commit**: `<sha>` (必须晚于 failing test commit)
+- **Green commit**: `<sha>`
+
+---
+
+> R-G19 mitigation（per spec-anchored-calm-lampson §10）：AI-generated code 场景下 G26 red 阶段
+> 接受 "test alongside code" 模式；G28 contract-test-first 仍严格执行.

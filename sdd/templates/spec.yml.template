@@ -1,0 +1,35 @@
+# sdd/templates/spec.yml.template
+# Copy to capabilities/<domain>/<slug>/spec.yml and fill in. Validated by
+# scripts/sdd/check_capability_schema.py against sdd/traceability.schema.json
+# (capability-spec schema; defined in sdd/templates/spec.yml.template comments
+# until Phase M2 dedicated schema file).
+#
+# Phase M0 skeleton template — adapter_coverage 含 tdd-bdd 示例.
+# 完整 schema 文件在 Phase M2 内容填充 (与 mj-agent-refactored-structure.md §19.1 对齐).
+
+id: <domain>.<capability-slug>          # 例：data-agent.safe-sql；lowercase + 连字符
+name: <Human Readable Capability Name>   # 例：Safe SQL Guardrails
+domain: <domain>                         # 例：data-agent / infrastructure
+lifecycle_state: idea                    # idea / specified / contracted / planned /
+                                         # implementing / verifying / active / evolving / deprecated
+archive_state: active                    # active / deprecated / frozen / archived / purge-eligible
+adapter_coverage:                        # 必填；来自 sdd/adapters/ 已启用列表
+  - python                               # 示例：data-agent.safe-sql 用 python + langchain-agent + tdd-bdd
+  - langchain-agent
+  - tdd-bdd                              # 第 7 启用 adapter；横切准则
+last_verified: <YYYY-MM-DD>              # 最近一次 verifying 通过日期
+owner: <github-username>                 # capability 主负责人 (mj-agent: ranzuozhou)
+created: <YYYY-MM-DD>
+updated: <YYYY-MM-DD>
+requirements:                            # 至少 1 个 REQ
+  - id: REQ-001                          # 序号从 001 单调递增
+    statement: "<one-line REQ statement>"
+    rationale: "<why this REQ matters>"
+    priority: critical                   # critical / high / medium / low
+    bdd:                                 # 高风险 (critical / high) 必填
+      examples:                          # 每 REQ ≥ 1 个 acceptance example (Given/When/Then)
+        - "<Given X / When Y / Then Z 单句>"
+related_decisions:                       # 引用支撑本 capability 的 ADR
+  - decisions/ADR-NNN_<slug>.md
+# TBD Phase M2: 添加 cross_capability_refs 字段 (跨 capability 共享 contract 引用)
+# TBD Phase M2: 添加 deprecation 字段 (lifecycle_state: deprecated 时必填)

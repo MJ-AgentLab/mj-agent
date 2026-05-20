@@ -1,0 +1,36 @@
+---
+type: capability-requirements
+capability: <domain>.<capability-slug>
+state: draft
+version: 0.1
+owner: <github-username>
+created: <YYYY-MM-DD>
+updated: <YYYY-MM-DD>
+---
+
+# Requirements: <Capability Name>
+
+> Phase M0 skeleton template — 每 REQ 必填 statement + rationale + priority；
+> 高风险（critical / high）REQ 必填 `bdd.examples[]`（每 REQ ≥ 1 个 acceptance example）.
+
+## REQ-001 <one-line REQ statement>
+
+**Rationale**：<why this REQ matters>.
+
+**Priority**：critical / high / medium / low
+
+**BDD Examples**（高风险必填；详 `sdd/templates/bdd-scenarios.md.template`）：
+
+- Given <preconditions> When <action> Then <observable result>
+- Given <alternative context> When <variation> Then <expected behavior>
+
+**Related ADR**：[ADR-NNN](../../../decisions/ADR-NNN_<slug>.md)
+
+## REQ-002 ...
+
+（continue REQ 编号；序号 001 单调递增）
+
+---
+
+> TBD: Phase M2 — 每 REQ 的 measurable acceptance criteria + non-functional 字段
+> （performance / security / observability）.
