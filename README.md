@@ -5,6 +5,14 @@ LangGraph 1.1.8 构建。Python 3.13、使用 [`uv`](https://github.com/astral-s
 
 当前阶段：**Phase 0 Foundation**（路线图：[plans/mj-agent-roadmap-v1.6.md](./plans/mj-agent-roadmap-v1.6.md)；canonical 文档入口：[docs/INDEX.md](./docs/INDEX.md)）。
 
+> **Spec-Anchored Refactor in progress（per ADR-031 / plans/[PLAN]_spec_anchored_refactor.md）**:
+> - **[sdd/](./sdd/)** — SDD Kernel（治理元规则；constitution / lifecycle / gates / workflows / adapters / templates）.
+> - **[capabilities/](./capabilities/)** — Capability Package（Phase M1 起填充 5 pilot；当前仅 INDEX 占位）.
+> - **[policies/](./policies/)** — Business Policy（9 native 文件）.
+> - **[decisions/](./decisions/)** — ADR 新址（Phase M5 整体平移自 `docs/adr/`；当前仅 ADR-031 draft + INDEX 占位）.
+> - **[AGENTS.md](./AGENTS.md)** — Codex 边界声明（Codex NOT in dev workflow / read-only review only）.
+> - **[GLOSSARY.md](./GLOSSARY.md)** — 全仓领域术语表.
+
 ## Clone
 
 GitHub（默认 `origin`）：

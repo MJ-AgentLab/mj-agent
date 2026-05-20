@@ -1,0 +1,10 @@
+{
+  "_phase_m0_note": "Phase M0 skeleton. Activates pyright-lsp (A5) + claude-md-management (A2) + superpowers + feature-dev. learn-kit kept available but not in enabledPlugins by default. Reviewed quarterly per policies/ci-gates.md Review Cadence.",
+  "enabledPlugins": [
+    "pyright-lsp",
+    "claude-md-management",
+    "superpowers",
+    "feature-dev"
+  ],
+  "rationale": "A5 (LSP integration) — symbol-first search via pyright-lsp avoids string-grep false positives in Python (per policies/ai-agent.md §3). A2 (Stop hook self-improvement) — claude-md-management drives the .claude/hooks/stop-claude-md-improver/ scaffold that proposes CLAUDE.md update diffs after each session. Meta plugins (superpowers, feature-dev) supply brainstorming / TDD / code-explorer / code-architect / code-reviewer subagents."
+}
