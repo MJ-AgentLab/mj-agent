@@ -77,28 +77,24 @@ jobs:
         # Always exits 0 (warning-mode); manual maintainer review.
         run: uv run python scripts/find_old_completed_plans.py
 
-      # ===== Spec-Anchored Refactor Phase M0 — warning-only gates (ADR-031) =====
-      # These steps run sdd/ gates G1/G2/G9 in warning-only mode. They never
-      # fail the build during Phase M0. G1/G2/G9 stay warning past M2 per
-      # M3-FU-G1G2G9-IMPL (M0 skeleton not real validators); M4 toggles
-      # blocking after real validation logic lands. See sdd/gates.md §5.
+      # ===== Spec-Anchored Refactor G1/G2/G9 — Phase M3 real impl (ADR-031) =====
+      # Replaces M0 skeletons under M3-FU-G1G2G9-IMPL (Phase M3 Stage A).
+      # G1/G2/G9 stay warning at M3; M4 toggles blocking per sdd/gates.md §5
+      # blueprint schedule.
 
-      - name: 'G1 capability schema (warning-only; Phase M0 expects empty)'
+      - name: 'G1 capability schema (warning; REAL IMPL Phase M3 per M3-FU-G1G2G9-IMPL)'
         continue-on-error: true
-        run: uv run python scripts/sdd/check_capability_schema.py --dry-run
+        run: uv run python scripts/sdd/check_capability_schema.py --all
 
-      - name: 'G2 traceability (warning-only; Phase M0 expects empty)'
+      - name: 'G2 traceability (warning; REAL IMPL Phase M3 per M3-FU-G1G2G9-IMPL)'
         continue-on-error: true
-        run: uv run python scripts/sdd/check_traceability.py --dry-run
+        run: uv run python scripts/sdd/check_traceability.py --all
 
-      - name: 'G9 generate INDEX (warning-only; Phase M0 expects empty)'
+      - name: 'G9 INDEX idempotency (warning; --check vs committed capabilities/INDEX.auto.md)'
         continue-on-error: true
-        run: uv run python scripts/sdd/generate_index.py --dry-run
+        run: uv run python scripts/sdd/generate_index.py --check
 
-      # ===== End of Phase M0 warning-only gates =====
-      # G1/G2/G9 stay warning past M2 — M0 skeletons; real impl tracked in
-      # plans/[PLAN]_m3_fu_g1g2g9_impl.md (M3 startup priority); M4 toggles
-      # blocking after real validation logic lands.
+      # ===== End of G1/G2/G9 M3 real impl gates =====
 
       # ===== Spec-Anchored Refactor Phase M2 — 6 adapter contract validators (E3β) =====
       # Stage A 6 adapter validators in warning-only mode (per Phase M2 §3.4 partial
