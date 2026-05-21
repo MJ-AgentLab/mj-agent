@@ -118,9 +118,9 @@ jobs:
         continue-on-error: true
         run: uv run python scripts/sdd/check_claude_skill_contracts.py --all
 
-      - name: 'V5 docker contracts (warning; REAL IMPL 5.1; 5.2 sub-flags deferred per M3-FU-V5-SUBFLAGS)'
+      - name: 'V5 docker contracts (warning; REAL IMPL 5.1 + 5.2 sub-flags per M3-FU-V5-SUBFLAGS)'
         continue-on-error: true
-        run: uv run python scripts/sdd/check_docker_contracts.py --all
+        run: uv run python scripts/sdd/check_docker_contracts.py --all --bdd --tdd --compose-config
 
       - name: 'V6 runtime expected (warning; SKELETON BY DESIGN; Phase M4 full probe implementation)'
         continue-on-error: true

@@ -105,9 +105,12 @@ G4 blocking.
 **M3 Task Breakdown — Follow-ups from Phase M2**（每条独立小 PR；不混入 M3 main work；便于
 review / revert）：
 
-- **M3-FU-V5-SUBFLAGS** — `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
-  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）；估时 ~1h；预计新增 ~60-80 行；
-  依赖 M3 startup；独立小 PR.
+- **M3-FU-V5-SUBFLAGS** — ✅ **COMPLETED 2026-05-21 (Phase M3 Stage A)**.
+  `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
+  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）。Actual ~95 行
+  (5 helper functions + argparse + wire-up). Output 2P/4W/0F with all sub-flags.
+  CI V5 step updated to exercise all 3. Evidence:
+  [[capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing]].
 - **M3-FU-CLAUDE-SKILL-ADR** — **scope reframed 2026-05-21** per Stage C batch 2 pre-outline
   reverify（commit `03f1bc7`）：empirical full deep scan 证实 34/34 SKILL 实际**完美**
   ADR-013 2-field schema 合规（无 deviation）；原 Q-A3 premise "34/34 markdown-body-only
