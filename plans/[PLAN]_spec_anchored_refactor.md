@@ -134,6 +134,18 @@ HITL gates 完整化 + ADR-024 EVAL framework baseline 跑（与 mj-agent-runtim
 
 **HITL 重点**：大规模目录迁移（≥10 文件）触发 HITL；分 5 sub-PR 拆解.
 
+**M5 Task Breakdown — Follow-ups from Phase M2**（独立小 PR；与 archive ceremony 主线分离；
+便于 review / revert）：
+
+- **M5-FU-TEMPLATE-ALIGN** — 整理 `sdd/templates/contracts/` 与 M2 adapter doc 演进形态对齐
+  （M2 期 `sdd/templates/` 受 §3.5 保护不修改；M5 整理时回写）；已知 drift item:
+  - `runtime-skill.contract.yml.template` 单 `skill_path` 形式 → 多 `skills[]` 集合形式
+    （per `sdd/adapters/runtime-skill.md` §Standards M2 evolution）
+  - **Open scope** — Phase M2 batch 3 / 4 + Stage C 余下进度发现的 template drift 项在此
+    task description append（一项任务覆盖所有 template alignment；不另开 M5-FU entries）
+  估时 ~1-2h（视 drift 项规模）；scope 限 `sdd/templates/contracts/`；不修改 adapter docs
+  自身；依赖 M5 startup；独立小 PR.
+
 ### Phase M6（~3-4 周）
 
 **目标**：
