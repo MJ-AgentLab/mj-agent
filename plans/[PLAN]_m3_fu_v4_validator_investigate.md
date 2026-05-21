@@ -50,6 +50,34 @@ Q-A3 prior claim 是**categorically false** — 不是部分错；是 100% 反�
 
 不排除多个 root cause 共栖.
 
+**Empirical evidence appendage (Stage E pre-outline reverify; 2026-05-21)**：
+
+跑 `check_claude_skill_contracts.py --capability capabilities/infrastructure/mcp-server-governance/`
+against actual `.claude/skills/` 34 SKILLs：output 显示 34/34 spurious WARN：
+
+```
+[WARN] .claude\skills\mj-agent-doc-author\SKILL.md: no frontmatter block
+       (ADR-013 requires `name` + `description`)
+[WARN] .claude\skills\mj-agent-doc-migrate\SKILL.md: no frontmatter block ...
+[WARN] .claude\skills\mj-agent-doc-plan\SKILL.md: no frontmatter block ...
+... (34 lines total)
+```
+
+但 reverify (commit `03f1bc7`) 已证实 34/34 SKILLs **DO have ADR-013 native 2-field frontmatter
+**（`head -1` returns `---` across all 34；Python deep scan 100% compliant）.
+
+**H2 hypothesis (parser bug) probability raised to HIGH** based on this reproducible evidence：
+
+- V4 实际 scanning the correct files (.claude/skills/mj-agent-*/) ✓（排除 H1 wrong dir）
+- V4 实际 检测 frontmatter 但 FAILS to detect existing frontmatter ✓（H2 parser bug confirmed
+  reproducible）
+- Q-A3 brief misinterpretation 不成立 (H3 ruled out)：V4 output 明确说 "no frontmatter block"，
+  非 "no additional schema fields"；Q-A3 brief 准确转述 V4 output 但 V4 output 本身错
+
+**Investigation priority**: V4 修复是 M3-FU-VALIDATOR-CONTRACT-ALIGN 的协调依赖（V4 fix
+incorporates canonical prefix `sha256:<hex>` format）；建议 V4 修复优先于其他 M3-FU validator
+fix.
+
 ## §3 Scope
 
 **Included**:
