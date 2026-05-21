@@ -107,6 +107,99 @@ of truth），LSP 仅作交互式辅助.
 > TBD: Phase M2 — 详 12 字段输出模板（详 `mj-agent-refactored-structure.md` §17 CLAUDE.md 模板
 > §Output Requirements + spec-anchored-calm-lampson §11.6）.
 
+## §7 Pre-flight Verification Discipline
+
+> Parent rule for `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` (dep-change sub-rule
+> append target; D-3f Stage D).
+
+### Standing rule
+
+Any claim of the form "spec X is [blocking | active | PASS | done | locked | ready]"
+— applied to validator output, CI gate state, contract activation, anchor presence,
+deliverable count, or `§4` canonical 10-enum trigger state — MUST be empirically
+verified against the running system before any toggle, commit, anchor flip, or
+downstream outline authoring that depends on the claim. **Spec brief / plan body /
+commit message body is NOT ground truth; only running-system observation is.**
+
+适用范围: 所有 AI agent 行动 (Claude Code / 任何 sub-agent / Codex 只读评审若用),
+覆盖 M-FU plan 决策 / Stage 边界 transition / `ci.yml continue-on-error` flip /
+freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contract amend.
+
+### Trigger conditions (满足任一 → pre-flight verify MANDATORY)
+
+- Toggling a CI gate `continue-on-error: true → false` — `ci-blocking-gate-toggle`
+- Committing a declared contract `state` flip (`draft → active` / `active → deprecated`)
+  — `declared-contract-change`
+- Releasing / refreshing freeze anchor `content_hash` or `frozen_at` on any of the
+  10 必停 surfaces (4 `src/mj_agent/` in-source + 6 `.claude/skills/mj-agent-infra-*`)
+  — `runtime-skill-content-change` / `prompt-version-or-body-change` /
+  `mcp-server-trust-posture-change`
+- Closing a M-FU plan as `state: completed`
+- Authoring a Stage entry / closure brief that cites prior-Stage deliverables
+  (validator outputs / contract field semantics / anchor identities / canonical
+  enum names / freeze surface counts)
+- Marking a Stage / Phase complete (closure brief 出据)
+- Any other surface modification matching `§4` Canonical 10-Enum
+
+### Insufficient verification modes (banned shortcuts)
+
+- "Spec brief / plan summary / commit message body says X" — 文本断言 ≠ running-system fact
+- "Validator `--dry-run` exited 0" — dry-run 仅校验 invocation surface, 不跑 validation logic
+- "Sample N of total claimed PASS" with N < 3 AND N < 10% of population — 部分 sample
+  不足排除 cluster failure
+- "Latest CI overall PASS" without per-gate outcome inspection — `continue-on-error: true`
+  下 gate fail 不显, 与真 PASS 不可区分
+- 从 git commit message 推断 working tree 状态 (commit body 说 "X registered" → working
+  tree 仍可能缺失)
+- 凭 ≥ 1 Stage 前 memory 推断 validator 行为 — Stage 间 SUT 变化频繁, 旧 memory 不可信
+
+### Sufficient verification modes (required depth)
+
+- **Read validator source** 确认实际 check claimed property (不是 stub / skeleton /
+  placeholder return-0)
+- **Run validator against real data** (not synthetic fixture; not empty input) —
+  capture stdout/stderr verbatim
+- **Inspect output reflects actual validation** (count matches expected; errors
+  surface as expected; PASS messages explicit)
+- For "deliverable present" claims: **glob-list files** + verify count + names +
+  `body_sha256` if anchor-locked
+- For "spec says X" claims: **read spec section text verbatim**, not summary
+- For cross-Stage claims: **diff against prior-Stage baseline** (git log +
+  content_hash snapshot), not in-flight working tree
+- For canonical enum / surface anchor claims: **read `§4` verbatim post-latest-commit**,
+  不凭 memory
+
+### Failure-mode cluster (实证锚定)
+
+以下案例 — 均为 Phase M2 closeout / M3 pre-flight transition 期 spec brief vs reality
+不一致的 intercept 实例 — 是本 discipline 的实证基础:
+
+1. **V4 false-claim intercept** — spec brief 称 V4 已 "34/34 markdown-body-only PASS";
+   实读 validator 源 (`scripts/sdd/check_claude_skill_contracts.py`) 跑 against real
+   `.claude/skills/` 发现 V4 含 spurious-WARN parser bug, 实际 PASS=28/WARN=6/FAIL=0.
+   若不 pre-flight verify, 会基于 false spec 推 M3 Stage C blocking flip 致 CI 误 fail.
+   见 `M3-FU-V4-VALIDATOR-INVESTIGATE` (commit `a5614c4`).
+
+2. **G1G2G9 skeleton intercept** — spec brief 称 G1/G2/G9 已 actionable; 实测发现
+   `check_capability_schema.py` / `check_traceability.py` / `generate_index.py` 仍是
+   M0 skeleton placeholder, 跑 dry-run 输出为空 PASS 而非真校验. 若不 pre-flight verify,
+   会 flip 假 gate 致 false-clean CI signal. 见 `M3-FU-G1G2G9-IMPL` (commit `5cd68a6`).
+
+3. **V3 canonical-format intercept** — Stage A 写的 V3 expected bare hex; Stage B canonical
+   实为 `sha256:<hex>` prefix; field `body_section_names` vs `body_section_heads` 命名 drift.
+   若不 pre-flight reread Stage B canonical 当前形式, 写出的 V3 amend 会 Stage A↔B 不一致,
+   freeze contract drift. 见 `M3-FU-VALIDATOR-CONTRACT-ALIGN` (commit `e6ac9e1`).
+
+4. *(待补)* — 4th intercept canonical 描述 deferred; 待 M3 kickoff outline 内容再 retrieve
+   时填入. 当前留 placeholder 保 cluster 结构.
+
+### Cross-references
+
+- `§4` Canonical 10-Enum — trigger surface anchors (本节 trigger conditions 引用)
+- `sdd/gates.md §4` — in-source 4 项专属必停 (canonical 10-enum subset; 前 4 行)
+- `sdd/lifecycle.md §3` — state-machine HITL transition (cross-ref to §4 canonical enum)
+- `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` — dep-change sub-rule (Stage D D-3f append target)
+
 ---
 
 > *Phase M0 — 4 段 native；其余 TBD Phase M2.*
