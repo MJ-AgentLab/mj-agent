@@ -1,0 +1,58 @@
+# capabilities/data-agent/safe-sql/contracts/runtime-skill.contract.yml
+#
+# Runtime SKILL contract — freezes in-source canonical SKILL.md body for the
+# safe-sql-analysis skill (LLM behavioral guidance complementing L1/L2/L3/L4
+# 4-layer defense).
+#
+# Per sdd/adapters/runtime-skill.md §Standards (M2 evolution: skills[] collection
+# form; not the M0 template single skill_path form — M5-FU-TEMPLATE-ALIGN tracks
+# the template-vs-adapter-doc divergence).
+#
+# content_hash canonical algorithm (must match check_runtime_skill_contracts.py
+# when M3-FU-RUNTIME-SKILL-VALIDATOR lands):
+#   1. Read SKILL.md as UTF-8.
+#   2. Strip YAML frontmatter via regex (?ms)^---\r?\n.*?\r?\n---\r?\n (count=1).
+#   3. Normalize line endings to LF (\r\n / \r → \n).
+#   4. SHA-256 over the resulting UTF-8 body bytes; hex lowercase.
+
+contract_id: runtime-skill
+adapter: runtime-skill                              # per sdd/adapters/runtime-skill.md
+covers_requirements:
+  - REQ-001                                         # SKILL teaches schema/table restriction + no SELECT *
+  - REQ-002                                         # SKILL teaches time-predicate + LIMIT precheck rules
+  - REQ-005                                         # SKILL teaches envelope reading + business_summary rewrite
+
+frontmatter_strip_contract: true                    # loader MUST strip frontmatter (Agent_Side §7.5)
+loader: load_skill                                  # src.mj_agent.skills package
+
+skills:
+
+  - file: src/mj_agent/skills/safe-sql-analysis/SKILL.md
+    version: v0.2                                   # frontmatter version field (frozen)
+    state: active                                   # frontmatter state field (frozen)
+    body_section_heads:                             # in body order after frontmatter strip
+      - "## Purpose"
+      - "## When to use"
+      - "## Planning workflow"
+      - "## Common patterns"
+      - "## Anti-patterns"
+      - "## Related"
+    content_hash: sha256:749ed640fbcce91b0ccc553aa0e5135aec1b02fa3b53f9e8fe3979c3ce77136e
+    frozen_at: 2026-05-21T00:00:00Z
+    variables: []                                   # static body; no template variables
+    triggers_visible: []                            # SKILL frontmatter has no `triggers_visible` field
+                                                    # (activation block is non-canonical mirror; not covered here)
+    used_by_agent: true                             # listed in _ACTIVE_SKILLS (agent.py)
+    eval_references: []                             # M2 advisory; M4-FU baseline per ADR-024
+    cross_skill_refs:                               # mirrors frontmatter related_skills
+      - biz-domain-context
+      - qcm-analysis
+
+allowed_state_transitions:
+  - draft → active                                  # requires eval_references non-empty (Phase 2+)
+  - active → deprecated                             # requires superseded_by
+
+hitl_required:
+  - runtime-skill-content-change                    # any SKILL body / frontmatter change triggers
+                                                    # canonical trigger description in sdd/gates.md §4
+                                                    # (hyphen canonical per C5)

@@ -1,0 +1,63 @@
+# capabilities/data-agent/llm-provider/contracts/prompt.contract.yml
+#
+# Prompt contract — freezes src/mj_agent/prompts/system.md schema invariants
+# + body content_hash + freeze_anchor 复合对象 (per sdd/adapters/prompt.md §Standards).
+#
+# system.md is provider-agnostic — both ark provider (REQ-001) and
+# local-openai-compat provider (REQ-002) consume the same system prompt;
+# provider switch (REQ-003) requires invariant prompt for behavior consistency.
+#
+# content_hash canonical algorithm: see safe-sql/runtime-skill.contract.yml header
+# (identical across all runtime-skill / prompt contracts; per M3-FU-RUNTIME-SKILL-VALIDATOR
+# canonical spec).
+
+contract_id: prompt
+adapter: prompt                                     # per sdd/adapters/prompt.md
+covers_requirements:
+  - REQ-001                                         # ark provider depends on stable system.md
+  - REQ-002                                         # local-openai-compat provider depends on stable system.md
+  - REQ-003                                         # provider switch behavior consistency requires prompt invariance
+
+prompt_path: src/mj_agent/prompts/system.md
+frontmatter_strip_contract: true                    # loader MUST strip frontmatter (Agent_Side §7.5)
+
+freeze_anchor:                                      # 复合对象 per prompt.md §Standards
+  file: src/mj_agent/prompts/system.md
+  version: v1.8                                     # frontmatter version field; string-exact comparison
+                                                    # (per M3-FU-RUNTIME-SKILL-VALIDATOR amended AC;
+                                                    # any v-prefix strip / case change → FAIL)
+  body_section_heads:                               # H1-level sections (system.md uses `#` not `##`)
+                                                    # — 4 sections empirical; estimate was 10-15;
+                                                    # actual structure is high-level "principles" sections
+    - "# Identity"
+    - "# Data boundary principles (ADR-000)"
+    - "# Tools at your disposal"
+    - "# Hard rules"
+  content_hash: sha256:994d4a2d7fd3677f10ef836d0fa28a2777000a570ece6ad4e1b8058fe540f678
+  frozen_at: 2026-05-21T00:00:00Z
+
+frontmatter_required:                               # freeze-relevant subset per Q-A adjustment 2
+                                                    # (prose-like fields: type/domain/summary/owner/created/
+                                                    # updated/track/eval_references/supersedes excluded;
+                                                    # body content_hash captures prose drift indirectly)
+  - version                                         # already frozen in freeze_anchor.version (must match)
+  - state
+  - model_binding
+  - token_budget_estimate
+
+frontmatter_freeze:                                 # explicit frozen values for non-version freeze-relevant
+                                                    # subset; string-exact comparison per #1 amended pattern
+  state: active
+  model_binding: deepseek-v3
+  token_budget_estimate: 820
+
+variables: []                                       # static body; no template variables
+
+allowed_state_transitions:
+  - draft → active                                  # requires eval_references non-empty (Phase 2+; Agent_Side A8)
+  - active → deprecated                             # requires superseded_by
+
+hitl_required:
+  - prompt-version-bump                             # any system.md body / frontmatter version change triggers
+                                                    # canonical trigger description in sdd/gates.md §4
+                                                    # (hyphen canonical per C5)
