@@ -1,0 +1,71 @@
+# capabilities/data-agent/biz-catalog/contracts/runtime-skill.contract.yml
+#
+# Runtime SKILL contract — freezes in-source canonical SKILL.md bodies for the
+# biz-domain-context + qcm-analysis skills (biz domain catalog 语义召回 + QCM
+# 高频分析模板；LLM behavioral guidance complementing biz_catalog/qcm_catalog.yaml).
+#
+# Per sdd/adapters/runtime-skill.md §Standards (M2 evolution skills[] collection
+# form; M5-FU-TEMPLATE-ALIGN tracks template-vs-adapter-doc divergence).
+#
+# content_hash canonical algorithm: see safe-sql/runtime-skill.contract.yml header
+# comment (identical across both runtime-skill contracts).
+
+contract_id: runtime-skill
+adapter: runtime-skill                              # per sdd/adapters/runtime-skill.md
+covers_requirements:
+  - REQ-002                                         # SKILL guides agent to use actual DB columns (catalog ↔ DB alignment)
+  - REQ-003                                         # SKILL ↔ catalog coherence (LLM-side semantic recall)
+
+frontmatter_strip_contract: true                    # loader MUST strip frontmatter (Agent_Side §7.5)
+loader: load_skill                                  # src.mj_agent.skills package
+
+skills:
+
+  - file: src/mj_agent/skills/biz-domain-context/SKILL.md
+    version: v0.1                                   # frontmatter version field (frozen)
+    state: active                                   # frontmatter state field (frozen)
+    body_section_heads:                             # in body order after frontmatter strip
+      - "## Purpose"
+      - "## When to use"
+      - "## Planning workflow"
+      - "## Common patterns"
+      - "## Anti-patterns"
+      - "## Related"
+    content_hash: sha256:0c70f7f311bc611b38ef003f917f6f06cbc55b6ada51d1d35e0ed02956ae8660
+    frozen_at: 2026-05-21T00:00:00Z
+    variables: []
+    triggers_visible: []                            # SKILL frontmatter has no `triggers_visible` field
+    used_by_agent: true                             # listed in _ACTIVE_SKILLS (agent.py)
+    eval_references: []                             # M2 advisory; M4-FU baseline per ADR-024
+    cross_skill_refs: []                            # SKILL frontmatter has no `related_skills` field
+                                                    # (body ## Related mentions downstream skills informationally;
+                                                    # content_hash 双锁 captures body cross-refs separately)
+
+  - file: src/mj_agent/skills/qcm-analysis/SKILL.md
+    version: v0.1                                   # frontmatter version field (frozen)
+    state: active                                   # frontmatter state field (frozen)
+    body_section_heads:
+      - "## Purpose"
+      - "## When to use"
+      - "## Planning workflow"
+      - "## Common patterns"
+      - "## Anti-patterns"
+      - "## Related"
+    content_hash: sha256:047a6141181334381415cd7776629472f6d31c2d3807d54a37f75bd60b04dd77
+    frozen_at: 2026-05-21T00:00:00Z
+    variables: []
+    triggers_visible: []
+    used_by_agent: true
+    eval_references: []
+    cross_skill_refs:                               # mirrors frontmatter related_skills
+      - biz-domain-context
+      - safe-sql-analysis
+
+allowed_state_transitions:
+  - draft → active                                  # requires eval_references non-empty (Phase 2+)
+  - active → deprecated                             # requires superseded_by
+
+hitl_required:
+  - runtime-skill-content-change                    # any SKILL body / frontmatter change triggers
+                                                    # canonical trigger description in sdd/gates.md §4
+                                                    # (hyphen canonical per C5; shared across both SKILLs)
