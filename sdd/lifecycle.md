@@ -70,6 +70,10 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 | active → deprecated | ADR + HITL | A12-A14 PR gate（per Meta v2.x §7.7） |
 | deprecated → archived | archive ceremony + archive.yml | G11/G12 check_archive_manifest |
 
+> 表中 "HITL Gate-1" / "HITL + ADR" trigger 完整 enum 见
+> `policies/ai-agent.md §4 HITL Required Scenarios — Canonical 10-Enum`；本表仅列 state-
+> machine transition 触发条件，不重复 enum 完整定义.
+
 ## §4 与 sdd/workflows/ 联动
 
 每个状态转移对应一个或多个 workflow：

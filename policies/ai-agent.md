@@ -31,8 +31,9 @@ ai_visibility: source-of-truth
 
 1. **Single point of accountability** — Claude Code session continuity 保稳定上下文.
 2. **Tool execution surface 受控** — 一个 agent 的 permission model 易审计.
-3. **4 项专属必停**（sql-guardrail-relax / prompt-version-bump / biz-catalog-sync /
-   runtime-skill-content-change）只能由单一 decision-maker enforce.
+3. **4 项 in-source 专属必停**（`sql-guardrail-relax` / `prompt-version-or-body-change` /
+   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）只能由
+   单一 decision-maker enforce.
 4. **CLAUDE.md HITL 规则** 是按 Claude Code 读写契约校准的；其他 agent 解释可能漂移.
 
 每次任务输出末尾必须显式声明 `Codex invocation: NONE`，即使本次显然无 Codex 触发也声明.
@@ -73,23 +74,27 @@ non-Python 文件）时 grep 仍是首选.
 type inference 在 some edge case 有差异（per R-G23）. 出现差异时以 mypy 为准（CI 阻塞 source
 of truth），LSP 仅作交互式辅助.
 
-## §4 HITL Required Scenarios（与 `sdd/gates.md` §"mj-agent specific hard stops" 同步）
+## §4 HITL Required Scenarios — Canonical 10-Enum（M3-FU-HITL-ENUM 收敛）
 
-以下场景无论文件路径必须 HITL：
+任何 PR 触及以下 enum 之一必须 HITL 人审（CI blocking gate 不覆盖此层；`sdd/gates.md §4`
+是本 enum 的 in-source 子集，前 4 行）：
 
-1. 4 项 mj-agent 专属必停（sql-guardrail-relax / runtime-skill-content-change /
-   prompt-version-bump / biz-catalog-sync）
-2. cross-capability contract 变更
-3. 数据库 migration（mj_agent_memory schema）
-4. secrets / 权限 / GRANT 变更
-5. CI blocking gate 启用 / 关闭
-6. 删除 / 迁移 / 归档历史内容
-7. Agent tool 列表 + schema 变更
-8. Prompt 行为边界变更（不仅 version bump，body 任何修改）
-9. 生产运行方式变更（Docker prod compose）
-10. 大规模目录迁移（≥10 文件）
-11. 数据-LLM 边界三原则（ADR-000）相关任何变更
-12. ADR 状态变化（draft → active / active → deprecated / supersede）
+| Enum | Surface anchor | Notes |
+|---|---|---|
+| `sql-guardrail-relax` | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | 4 层 SQL 防御核心；`sdd/workflows/cross-capability-change.md` |
+| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；read-only diff via `mj-agent-runtime-skill-doc-improve` |
+| `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
+| `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
+| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
+| `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
+| `database-migration` | `mj_agent_memory` schema / Alembic / `infra/docker/postgres-init/*` | mj-agent memory pg state 变更 |
+| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `infra/docker/docker-compose.prod.yml` / 数据-LLM 边界 ADR-000 | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger |
+| `ci-blocking-gate-toggle` | `.github/workflows/ci.yml` `continue-on-error` flip 或新增 blocking gate | per Stage C C-a 流程；M-FU plan 必先 register |
+| `bulk-content-purge-or-migration` | ≥10 file delete/move 或 archive ceremony | 含义吸收原 "删除 / 迁移 / 归档历史内容" + "大规模目录迁移（≥10 文件）" |
+
+补充 procedural HITL（不绑单一 surface anchor；走 PR review 流程，不入上表 canonical enum）：
+- ADR `state` 变化（`draft → active` / `active → deprecated` / `supersede`）
+- Phase 边界（Stage entry / closure；per Phase M2/M3 kickoff outline）
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 

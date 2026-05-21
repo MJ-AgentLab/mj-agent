@@ -66,20 +66,24 @@ ai_visibility: source-of-truth
 | G27 | `scripts/sdd/check_tdd_refactor_contract.py` | refactor PR 行为测试不变 | M6 |
 | G28 | 同 G27（contract-test-first）| contract 变更必须有 failing test 证据 | M3 blocking（严格执行；per R-G19）|
 
-## §4 mj-agent specific hard stops（4 项专属必停）
+## §4 mj-agent specific hard stops（4 项 in-source 专属必停；canonical enum subset）
 
-以下文件任何变更**永久 manual blocking**（不可绕过；不在 CI gate 自动化覆盖范围 — 由
+以下 in-source 文件任何变更**永久 manual blocking**（不可绕过；不在 CI gate 自动化覆盖范围 — 由
 `.claude/scripts/guard-git-workflow.ps1` PreToolUse hook + 各 runtime SKILL anti-patterns 段
-+ A12 description gate + HITL 强制人审）：
++ A12 description gate + HITL 强制人审）. 这 4 项是 `policies/ai-agent.md §4 HITL Required
+Scenarios — Canonical 10-Enum` 的 in-source 子集（前 4 行）：
 
-| Hard Stop | 路径 | 工作流 |
+| Hard Stop Enum | 路径 | 工作流 |
 |---|---|---|
-| sql-guardrail-relax | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | `sdd/workflows/cross-capability-change.md`（safe-sql 跨 4 层影响）|
-| runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | `mj-agent-runtime-skill-doc-improve` skill（read-only 提议 diff）|
-| prompt-version-bump | `src/mj_agent/prompts/system.md` version + body | `mj-agent-runtime-prompt-version-bump` skill |
-| biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `mj-agent-runtime-biz-catalog-sync` skill |
+| `sql-guardrail-relax` | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | `sdd/workflows/cross-capability-change.md`（safe-sql 跨 4 层影响）|
+| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | `mj-agent-runtime-skill-doc-improve` skill（read-only 提议 diff）|
+| `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md` version 或 body | `mj-agent-runtime-prompt-version-bump` skill（含义吸收原 `prompt-version-bump` + body 行为边界变更）|
+| `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `mj-agent-runtime-biz-catalog-sync` skill |
 
 > 4 项必停的细化触发条件 + HITL 模板见 `policies/data-boundary.md` §"4 项专属必停" 段.
+> 其余 6 项 HITL canonical enum（`mcp-server-trust-posture-change` / `declared-contract-change`
+> / `database-migration` / `secrets-grants-or-prod-config` / `ci-blocking-gate-toggle` /
+> `bulk-content-purge-or-migration`）见 `policies/ai-agent.md §4`.
 
 ## §5 Gate 启用策略
 
