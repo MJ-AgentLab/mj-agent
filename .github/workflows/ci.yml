@@ -138,11 +138,22 @@ jobs:
 
       # ===== End of Phase M3 warning gates =====
 
-      - name: Tests (unit + eval + integration; smoke + contract excluded by default)
+      - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
         # skips cleanly when POSTGRES_ANALYST_USER is unset (CI's case).
-        run: uv run pytest
+        # BDD scenarios are run by the dedicated step below (warning mode).
+        run: uv run pytest --ignore=tests/bdd
+
+      - name: 'BDD scenarios (warning mode at M3; M4 strict per blueprint)'
+        # Phase M3 Stage B (M3-FU-BDD-TDD-RESTORE landing). tests/bdd/ contains
+        # 5 capability subdirs × N scenarios bound via pytest-bdd against each
+        # capabilities/*/contracts/behavior.feature. Live-DB / docker / slow
+        # scenarios are skip-clean via live_db / docker_available fixtures.
+        # M3 = continue-on-error (warning); M4 will flip to strict per
+        # sdd/gates.md schedule.
+        continue-on-error: true
+        run: uv run pytest tests/bdd -q
 
       - name: Contract tests (skip on missing analyst creds)
         # tests/contract/* is gated by the `contract` pytest marker AND the
