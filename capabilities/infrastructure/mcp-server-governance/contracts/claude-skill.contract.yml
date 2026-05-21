@@ -1,0 +1,149 @@
+# capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+#
+# Claude Code SKILL contract — freezes 6 .claude/skills/mj-agent-infra-*/SKILL.md
+# in-tree workflow SKILLs (infra family) per sdd/adapters/claude-code-skill.md §Standards.
+#
+# Empirical reality (Stage C batch 2 pre-outline reverify; commit 03f1bc7):
+# 34/34 .claude/skills/ SKILLs ARE ADR-013 native 2-field schema compliant (zero deviation);
+# Stage A V4 false claim "34/34 markdown-body-only" under investigation per
+# M3-FU-V4-VALIDATOR-INVESTIGATE.
+#
+# Schema design (Option B per HITL Gate-1 batch 2):
+# - description: stored as description_hash (sha256 of UTF-8 description string) for drift
+#   detection without prose in contract YAML (same pattern as body content_hash precedent)
+# - body_section_heads: enumerated for structural drift detection
+# - content_hash canonical algorithm: strip frontmatter via regex + LF normalize + SHA-256 UTF-8;
+#   see safe-sql/runtime-skill.contract.yml header for full canonical spec.
+
+contract_id: claude-skill
+adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
+covers_requirements:
+  - REQ-001                                         # 13-server inventory + trust posture (operators following SKILL guidance)
+  - REQ-002                                         # wrapper consistency (env-setup SKILL handles MCP secrets bundle directly)
+
+# namespace_pattern: M2 declarative-only; M3 V4 runtime enforce per M3-FU-V4-VALIDATOR-INVESTIGATE
+namespace_pattern: "^mj-agent-infra-[a-z-]+$"
+
+family: infra                                       # 5-family classification per ADR-016
+schema_compliance: ADR-013-native                   # 2-field (name + description); per claude-code-skill.md §Standards
+
+skills:                                             # 6 SKILLs alphabetical (no _ACTIVE_SKILLS analog for workflow SKILLs)
+
+  - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
+    name: mj-agent-infra-docker-compose
+    description_hash: sha256:8cc0bf77985c828c50df5dc620907a0cb43c058beef6ef79d47c8cc26147d12d
+    body_content_hash: sha256:cd912d6334aedfc781f8541a8995b0d3bf1e1754766a5a09f385e9a79f2b492e
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Workflow"
+      - "## Step 0: cwd Check"
+      - "## Step 1: Pre-check（compose up 前）"
+      - "## §Profile Matrix（PR-1 / ADR-025 4-file 分层）"
+      - "## Step 2: Action"
+      - "## Step 3: Verify（up 后）"
+      - "## §Troubleshooting"
+      - "## Output Format"
+      - "## Compose Lifecycle Report"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
+    name: mj-agent-infra-env-setup
+    description_hash: sha256:21bf582db6aca2c9f7a6d18a7e1e98efdd2b2935a6f233fcd7525006a7196b1f
+    body_content_hash: sha256:400ed7f615947e9a0750f6ee22538ae59e7406d473a49e74e191cd26054494d7
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## 前置条件"
+      - "## 快速开始（交互模式）"
+      - "## Claude vs User Execution Boundary"
+      - "## Workflow"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Anti-patterns"
+      - "## Output Format"
+      - "## Env Setup Result"
+      - "## Reference Files"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-env-teardown/SKILL.md
+    name: mj-agent-infra-env-teardown
+    description_hash: sha256:517cb109812c71cf9d6cd566f4c83879632fac4142bd7919c15f8ce36588f13a
+    body_content_hash: sha256:a530f378b755b2f4a5ff658da07ac5964770cf153fd329c6311aefdfa197d82f
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Workflow"
+      - "## §HITL 介入场景"
+      - "## §Troubleshooting"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
+    name: mj-agent-infra-llm-endpoint-probe
+    description_hash: sha256:a0fee2691592f42c90cf7a551a20d63228963c85ffbb0442abeffe177ccc1a00
+    body_content_hash: sha256:13bae1340830caa6befa7cd83cb3d069d820f5f2c68749c6b80292b0b9f48ffa
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Workflow"
+      - "## LLM Endpoint Probe Report"
+      - "## §Troubleshooting"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-storage-stack/SKILL.md
+    name: mj-agent-infra-storage-stack
+    description_hash: sha256:021b90c439af0c65fa5712f5dc9fe1dda27873d9f01289778bedf2047a297453
+    body_content_hash: sha256:edb5e1237b971884a88d2c023cbe3cd26834a129a0f1c94a8cfc9fd693788ac9
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Architecture（per ADR-008 + storage-stack PR）"
+      - "## Workflow"
+      - "## Postgres Init Inspection"
+      - "## Schema Inspection（langgraph AsyncPostgresSaver tables）"
+      - "## Backup / Restore（dev 调试 / PR 验证）"
+      - "## Redis Status / Wiring Guidance"
+      - "## Storage-specific Troubleshooting"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-studio-probe/SKILL.md
+    name: mj-agent-infra-studio-probe
+    description_hash: sha256:f9c95010bd4bcd0a5da79d59d825e7139301fb98374407b65fa64940b6069572
+    body_content_hash: sha256:32dc9a4c1a23ea184dafd1f5b0421a60dbafbd147733660084b8596a1ab88a9b
+    frozen_at: 2026-05-21T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## 前置条件"
+      - "## 快速开始（交互模式）"
+      - "## Workflow"
+      - "## Studio Probe Report"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+hitl_required:
+  - mcp-server-trust-posture-change                 # M3+ placeholder per Forward clarification #3
+                                                    # gate name finalization deferred to M3-FU-HITL-ENUM
+                                                    # (canonical naming consolidation in policies/ai-agent.md)
