@@ -91,6 +91,30 @@ contracts 补全（Phase M1 已建框架）.
 step definitions 落地（tests/bdd/ 11 子目录）+ G28 contract-test-first blocking + Plan-vs-Diff
 G4 blocking.
 
+**M3 Task Breakdown — Follow-ups from Phase M2**（每条独立小 PR；不混入 M3 main work；便于
+review / revert）：
+
+- **M3-FU-V5-SUBFLAGS** — `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
+  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）；估时 ~1h；预计新增 ~60-80 行；
+  依赖 M3 startup；独立小 PR.
+- **M3-FU-CLAUDE-SKILL-ADR** — 起草独立 ADR 决定 `.claude/skills/` 34/34 SKILL 当前
+  "markdown-body-only convention" 与 ADR-013 2-field schema baseline deviation 的 resolution
+  path（option A：accept markdown-body-only 为 advisory；option B：Phase M5 backfill
+  frontmatter）（M2 V4 实施暴露的 deviation；Q-A3）；估时 ~2h；产出 1 ADR draft；依赖 M3
+  startup；独立小 PR.
+- **M3-FU-HITL-ENUM** — HITL scenario enum 清理（去除重叠；收敛到稳定 8-10 项；统一
+  `policies/ai-agent.md` HITL 列表 + `sdd/lifecycle.md` / `sdd/gates.md` HITL trigger 表述）
+  （C5；M2 期间约定但未落实）；估时 ~1h；预计 diff ~50 行；依赖 M3 startup；独立小 PR.
+- **M3-FU-S22-CROSSREF** — 蓝图 `spec-anchored-calm-lampson.md` §22 cross-ref 映射更新到 v2.3
+  （`python.md→§22.1` / `langchain-agent.md→§22.4` / `prompt.md→§22.5` /
+  `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
+  `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
+  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
+- **M3-FU-BDD-TDD-RESTORE** — `sdd/adapters/bdd-tdd.md` §Contract-Test-First Rule 补回简版
+  "G28（PR-level test-first gate）与 6 adapter contract validator（schema 反向校验）协同
+  关系"提及；M2 batch 4 trim 至 280 cap 时该段完整删除（spot-check 3 GAP）；M3+ 处理时需 ≤ 5
+  行紧凑补回，不超 cap；估时 ~0.5h；依赖 M3 startup；独立小 PR.
+
 ### Phase M4（~2 周）
 
 **目标**：Evidence required gate blocking（G8）+ Runbook 完整化（每 capability ≥ 100 行）+
@@ -113,6 +137,18 @@ HITL gates 完整化 + ADR-024 EVAL framework baseline 跑（与 mj-agent-runtim
 - `docs/INDEX.md` → redirect map（保留作 backward-compat grace period）
 
 **HITL 重点**：大规模目录迁移（≥10 文件）触发 HITL；分 5 sub-PR 拆解.
+
+**M5 Task Breakdown — Follow-ups from Phase M2**（独立小 PR；与 archive ceremony 主线分离；
+便于 review / revert）：
+
+- **M5-FU-TEMPLATE-ALIGN** — 整理 `sdd/templates/contracts/` 与 M2 adapter doc 演进形态对齐
+  （M2 期 `sdd/templates/` 受 §3.5 保护不修改；M5 整理时回写）；已知 drift item:
+  - `runtime-skill.contract.yml.template` 单 `skill_path` 形式 → 多 `skills[]` 集合形式
+    （per `sdd/adapters/runtime-skill.md` §Standards M2 evolution）
+  - **Open scope** — Phase M2 batch 3 / 4 + Stage C 余下进度发现的 template drift 项在此
+    task description append（一项任务覆盖所有 template alignment；不另开 M5-FU entries）
+  估时 ~1-2h（视 drift 项规模）；scope 限 `sdd/templates/contracts/`；不修改 adapter docs
+  自身；依赖 M5 startup；独立小 PR.
 
 ### Phase M6（~3-4 周）
 
