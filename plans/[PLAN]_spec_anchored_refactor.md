@@ -151,6 +151,16 @@ HITL gates 完整化 + ADR-024 EVAL framework baseline 跑（与 mj-agent-runtim
     （per `sdd/adapters/runtime-skill.md` §Standards M2 evolution）
   - **Open scope** — Phase M2 batch 3 / 4 + Stage C 余下进度发现的 template drift 项在此
     task description append（一项任务覆盖所有 template alignment；不另开 M5-FU entries）
+  - Stage C batch 2 appendage（2026-05-21）：
+    - `frontmatter_freeze` 字段 new in `#3 llm-provider/prompt.contract.yml` (commit `5b54f51`)；
+      `sdd/templates/contracts/prompt.contract.yml.template` 需扩 schema 同步
+    - `schema_compliance: ADR-013-native` 字段 new in `#4 mcp-server-governance/
+      claude-skill.contract.yml` (commit `b3458fa`)；`claude-skill.contract.yml.template`
+      需扩 schema 同步
+    - `namespace_pattern` 字段 + inline declarative-only comment style (M2 / M3 timing) 新
+      pattern；template 需 capture
+    - `description_hash` 字段 (Option B vs option C/A) 新 pattern；template 需 capture canonical
+      design choice
   估时 ~1-2h（视 drift 项规模）；scope 限 `sdd/templates/contracts/`；不修改 adapter docs
   自身；依赖 M5 startup；独立小 PR.
 

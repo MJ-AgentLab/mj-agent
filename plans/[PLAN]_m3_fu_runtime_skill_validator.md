@@ -51,6 +51,24 @@ M2 Stage C batch 1 启动前 spot-check（Path β confirmed）发现：
   `content_hash` drift detection + `frontmatter_strip_contract` 违反 case + missing
   `skills[]` entry
 
+**Accumulated AC from Stage C closure** (2026-05-21；per #1/#2/#3/#4 Gate-2 observations):
+
+- `hitl_required[]` must be hyphen canonical only (per C5；e.g., `runtime-skill-content-change`
+  NOT `runtime_skill_content_change`)
+- `version` field string-exact comparison (no v-prefix strip / no normalize；详上 §Included)
+- **9-field prose-like exclude list**：M3 validator MUST NOT require frozen values for these
+  prose-like / canonical-by-purpose frontmatter fields: `type` / `domain` / `summary` /
+  `owner` / `created` / `updated` / `track` / `eval_references` / `supersedes`；validator
+  scope 限定 freeze-relevant schema invariant fields only；prose fields 由 body content_hash
+  间接覆盖（per #3 broadcast）
+- `frontmatter_freeze` 字段 (new schema field from #3 prompt contract)：validator 支持
+  explicit frozen values for non-version freeze-relevant subset；string-exact comparison
+- 中文 / non-ASCII section heads UTF-8 透明：YAML literal scalar handles transparently；
+  validator AC 隐含支持，不需 special handling
+- `description_hash` (claude-skill family Option B)：validator 计算 SHA-256 over description
+  string UTF-8 + 比对 contract YAML `skills[].description_hash`；与 body `content_hash` 算法
+  并存但不混用 (input source 不同)
+
 **Excluded**:
 
 - 不修改 7 adapter doc
