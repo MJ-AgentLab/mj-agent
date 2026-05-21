@@ -110,6 +110,10 @@ review / revert）：
   `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
   `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
   估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
+- **M3-FU-BDD-TDD-RESTORE** — `sdd/adapters/bdd-tdd.md` §Contract-Test-First Rule 补回简版
+  "G28（PR-level test-first gate）与 6 adapter contract validator（schema 反向校验）协同
+  关系"提及；M2 batch 4 trim 至 280 cap 时该段完整删除（spot-check 3 GAP）；M3+ 处理时需 ≤ 5
+  行紧凑补回，不超 cap；估时 ~0.5h；依赖 M3 startup；独立小 PR.
 
 ### Phase M4（~2 周）
 
