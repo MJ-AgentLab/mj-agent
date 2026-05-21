@@ -79,8 +79,9 @@ jobs:
 
       # ===== Spec-Anchored Refactor Phase M0 — warning-only gates (ADR-031) =====
       # These steps run sdd/ gates G1/G2/G9 in warning-only mode. They never
-      # fail the build during Phase M0. Phase M2 promotes G1/G2 to blocking;
-      # Phase M3 promotes contract gates. See sdd/gates.md §5 for the matrix.
+      # fail the build during Phase M0. G1/G2/G9 stay warning past M2 per
+      # M3-FU-G1G2G9-IMPL (M0 skeleton not real validators); M4 toggles
+      # blocking after real validation logic lands. See sdd/gates.md §5.
 
       - name: 'G1 capability schema (warning-only; Phase M0 expects empty)'
         continue-on-error: true
@@ -95,6 +96,41 @@ jobs:
         run: uv run python scripts/sdd/generate_index.py --dry-run
 
       # ===== End of Phase M0 warning-only gates =====
+      # G1/G2/G9 stay warning past M2 — M0 skeletons; real impl tracked in
+      # plans/[PLAN]_m3_fu_g1g2g9_impl.md (M3 startup priority); M4 toggles
+      # blocking after real validation logic lands.
+
+      # ===== Spec-Anchored Refactor Phase M2 — 6 adapter contract validators (E3β) =====
+      # Stage A 6 adapter validators in warning-only mode (per Phase M2 §3.4 partial
+      # completion path E3β + Stage E pre-outline reverify status table).
+      # Known baseline noise documented inline per validator (3 REAL / 1 SMOKE-ONLY /
+      # 1 BROKEN / 1 SKELETON-BY-DESIGN; tracked via M3-FU plans).
+
+      - name: 'V1 python contracts (warning; REAL IMPL per Stage E reverify)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_python_contracts.py --all
+
+      - name: 'V2 agent contracts (warning; SMOKE-ONLY at M1 end; ready for future)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_agent_contracts.py --all
+
+      - name: 'V3 prompt contracts (warning; REAL IMPL; expected 1 FAIL noise on Stage C #3 per M3-FU-VALIDATOR-CONTRACT-ALIGN)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_prompt_contracts.py --all
+
+      - name: 'V4 claude-skill contracts (warning; BROKEN; expected ~34 spurious WARN per H2 parser bug under M3-FU-V4-VALIDATOR-INVESTIGATE)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_claude_skill_contracts.py --all
+
+      - name: 'V5 docker contracts (warning; REAL IMPL 5.1; 5.2 sub-flags deferred per M3-FU-V5-SUBFLAGS)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_docker_contracts.py --all
+
+      - name: 'V6 runtime expected (warning; SKELETON BY DESIGN; Phase M4 full probe implementation)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_runtime_expected.py --all
+
+      # ===== End of Phase M2 E3β warning gates =====
 
       - name: Tests (unit + eval + integration; smoke + contract excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so

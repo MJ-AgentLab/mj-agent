@@ -15,9 +15,9 @@ supersedes: []
 related_adrs:
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 phase_progress:
-  M0: in-progress              # 本次 PR 落地中
-  M1: pending
-  M2: pending
+  M0: completed                # PR #177 (Phase M0+M1 merged 2026-05-19/20)
+  M1: completed                # PR #177
+  M2: completed                # tag phase-m2-complete (2026-05-21)
   M3: pending
   M4: pending
   M5: pending
@@ -77,13 +77,24 @@ contracts / tasks / runbook / trace / evidence skeleton）+ capabilities/INDEX.m
 
 **不修改**：src/、tests/、infra/docker/ 现有内容（contract 反向描述现有代码，不改实现）.
 
-### Phase M2（~2 周）
+### Phase M2（~2 周）— ✅ COMPLETE @ tag `phase-m2-complete` (2026-05-21)
 
 **目标**：sdd/adapters/ 6 文档内容填充（含 §BDD Rules + §TDD Rules）+ 6 新 contract 校验脚本
 （warning mode）+ 现有 SKILL.md / system.md / 4 tools / Dockerfile / Compose 反向生成
 contracts 补全（Phase M1 已建框架）.
 
 **ADR-031 promote**：`state: draft → active` + `decision: proposed → accepted`（per RD7=B）.
+
+**Achievements**（Stage A/B/C + partial E3β；Stage D 推 M3）：
+- Stage A: 6 adapter validators + `_common` helpers landed (commit `b98badb` post-rebase)
+- Stage B: 7 adapter docs M2 content fill 200-280 lines each (commit `1587ddc`)
+- Stage C: 4 必停 surface freeze contracts (`13f0b05` + `edf8007` + `5b54f51` + `b3458fa`)
+- Stage E (partial E3β): ci.yml 6 adapter gate warning enabled (commit `8ed34b7`);
+  G1/G2/G9 toggle deferred per M3-FU-G1G2G9-IMPL (M0 skeleton)
+- 9 必停 file freeze under freeze_anchor + HITL gate active
+- 4 spec assumption drifts intercepted via pre-flight verification (V4 false claim /
+  G1G2G9 skeleton / Stage A vs Stage B canonical drift / Stage A scripts uncommitted)
+- 11 M3-FU plans registered for downstream resolution
 
 ### Phase M3（~2 周）
 
