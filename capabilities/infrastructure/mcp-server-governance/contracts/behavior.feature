@@ -32,8 +32,7 @@ Feature: MCP Server Inventory + Governance (A14 PR Gate + Wrapper Consistency)
     Given .mcp.json is loaded
     When the wrapper-script reference is inspected for each pg-* server entry
     Then all 10 pg-* entries reference `.claude\scripts\pg-server-start.cmd`
-    And any entry referencing a different wrapper (e.g. directly invoking npx for a different pg MCP)
-    triggers the A14 "credential mode changed" sub-check (PR body MUST justify why per-entry deviation is needed)
+    And any entry referencing a different wrapper (e.g. directly invoking npx for a different pg MCP) triggers the A14 "credential mode changed" sub-check (PR body MUST justify why per-entry deviation is needed)
 
 # Gherkin tag convention:
 #   @REQ-NNN @CTR-mcp-server @risk:medium @adapter:claude-code-skill @meta-gate:A14
