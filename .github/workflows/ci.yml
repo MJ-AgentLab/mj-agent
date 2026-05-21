@@ -42,7 +42,12 @@ jobs:
         run: uv sync --frozen || uv sync
 
       - name: Syntax check (compileall)
-        run: uv run python -m compileall -q .
+        # Scope to project code dirs. `compileall -q .` would recurse into
+        # .venv/ and try to compile third-party Py2-only files (e.g.
+        # gherkin-official ships count_symbols_py2.py with `ur'...'` Py2 syntax
+        # that fails Py3 SyntaxError; runtime version-gated so not actually
+        # loaded, but compileall doesn't know that). Match ruff/mypy scope.
+        run: uv run python -m compileall -q src tests scripts
 
       - name: Lint (ruff)
         run: uv run ruff check
