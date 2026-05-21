@@ -40,9 +40,12 @@ M2 Stage C batch 1 启动前 spot-check（Path β confirmed）发现：
   代码体量）
 - Schema validation：`contract_id` / `adapter` / `skills[]` / `frontmatter_strip_contract` /
   `loader` / `hitl_required[]` / `allowed_state_transitions[]` 字段必填检查
-- Per-SKILL validation：`file` 存在 / `version` 与 SKILL.md frontmatter 一致 / `content_hash`
-  与 body sha256（按 canonical 算法：strip frontmatter via regex + LF 归一化）一致 /
-  `body_section_heads[]` 与实际 SKILL.md headers 一致 / `triggers_visible[]` 镜像 frontmatter
+- Per-SKILL validation：`file` 存在 / `version` 与 SKILL.md frontmatter 一致（**string-exact
+  比较**：不 strip "v" 前缀，不 normalize；如 SKILL frontmatter `version: v0.2` 与 contract
+  `version: v0.2` 必须字符级一致；任何 v 前缀增删 / 大小写变化 → FAIL，视为 explicit
+  version semantic 修改而非 cosmetic normalization）/ `content_hash` 与 body sha256（按
+  canonical 算法：strip frontmatter via regex + LF 归一化）一致 / `body_section_heads[]` 与
+  实际 SKILL.md headers 一致 / `triggers_visible[]` 镜像 frontmatter
 - 与 `_common.frontmatter` + `_common.yaml_io` 集成；不重复实装解析逻辑
 - 单元测试 in `tests/unit/scripts/sdd/test_check_runtime_skill_contracts.py`：happy path +
   `content_hash` drift detection + `frontmatter_strip_contract` 违反 case + missing
@@ -79,7 +82,8 @@ uv run pytest tests/unit/scripts/sdd/test_check_runtime_skill_contracts.py -v
 - [ ] 与 `_common.frontmatter` API 一致；不重复实装 strip_frontmatter / load_frontmatter
 - [ ] `content_hash` drift detection PASS（修改 SKILL.md body → validator 应 FAIL；含 LF
       归一化 deterministic）
-- [ ] 单元测试覆盖 ≥ 4 case（happy path + drift + strip 违反 + missing skill）
+- [ ] 单元测试覆盖 ≥ 5 case（happy path + content_hash drift + frontmatter strip 违反 +
+      missing skill + version string-exact drift 如 `v0.2 → 0.2` should FAIL）
 - [ ] CI workflow 接入：M3 warning / M4 blocking（per gates.md 节奏；与其他 validator 一致）
 - [ ] 独立小 PR；commit type `feat(sdd)` 或 `infra(sdd)`
 
