@@ -77,66 +77,57 @@ jobs:
         # Always exits 0 (warning-mode); manual maintainer review.
         run: uv run python scripts/find_old_completed_plans.py
 
-      # ===== Spec-Anchored Refactor G1/G2/G9 — Phase M3 real impl (ADR-031) =====
-      # Replaces M0 skeletons under M3-FU-G1G2G9-IMPL (Phase M3 Stage A).
-      # G1/G2/G9 stay warning at M3; M4 toggles blocking per sdd/gates.md §5
-      # blueprint schedule.
+      # ===== Spec-Anchored Refactor G1/G2/G9 — Phase M3 real impl + Stage C flip =====
+      # M3 real impl landed via M3-FU-G1G2G9-IMPL; Stage C C-a flipped to BLOCKING
+      # (all 3 gates empirically clean: 5P/0W/0F + 5P/0W/0F + 1P/0W/0F).
 
-      - name: 'G1 capability schema (warning; REAL IMPL Phase M3 per M3-FU-G1G2G9-IMPL)'
-        continue-on-error: true
+      - name: 'G1 capability schema (BLOCKING per Stage C C-a; 5P/0W/0F clean)'
         run: uv run python scripts/sdd/check_capability_schema.py --all
 
-      - name: 'G2 traceability (warning; REAL IMPL Phase M3 per M3-FU-G1G2G9-IMPL)'
-        continue-on-error: true
+      - name: 'G2 traceability (BLOCKING per Stage C C-a; 5P/0W/0F clean)'
         run: uv run python scripts/sdd/check_traceability.py --all
 
-      - name: 'G9 INDEX idempotency (warning; --check vs committed capabilities/INDEX.auto.md)'
-        continue-on-error: true
+      - name: 'G9 INDEX idempotency (BLOCKING per Stage C C-a; --check matches committed)'
         run: uv run python scripts/sdd/generate_index.py --check
 
-      # ===== End of G1/G2/G9 M3 real impl gates =====
+      # ===== End of G1/G2/G9 Stage C block =====
 
-      # ===== Spec-Anchored Refactor Phase M2 — 6 adapter contract validators (E3β) =====
-      # Stage A 6 adapter validators in warning-only mode (per Phase M2 §3.4 partial
-      # completion path E3β + Stage E pre-outline reverify status table).
-      # Known baseline noise documented inline per validator (3 REAL / 1 SMOKE-ONLY /
-      # 1 BROKEN / 1 SKELETON-BY-DESIGN; tracked via M3-FU plans).
+      # ===== Spec-Anchored Refactor Phase M3 Stage C — adapter validators (post C-a flip) =====
+      # Per Phase M3 Stage C C-a flip strategy (kickoff Gate-1 approved):
+      # V1 / V3 / V5 flipped to BLOCKING (empirical clean state — see commit body for
+      # reverify outputs). V2 / V4 / V6 kept warning (deferred per plan rationale).
 
-      - name: 'V1 python contracts (warning; REAL IMPL per Stage E reverify)'
-        continue-on-error: true
+      - name: 'V1 python contracts (BLOCKING per Stage C C-a; 9P/11W/0F clean)'
         run: uv run python scripts/sdd/check_python_contracts.py --all
 
-      - name: 'V2 agent contracts (warning; SMOKE-ONLY at M1 end; ready for future)'
+      - name: 'V2 agent contracts (warning; SKIP-CLEAN no contracts; Phase 2+ when agent.contract.yml lands)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_agent_contracts.py --all
 
-      - name: 'V3 prompt contracts (warning; REAL IMPL; expected 1 FAIL noise on Stage C #3 per M3-FU-VALIDATOR-CONTRACT-ALIGN)'
-        continue-on-error: true
+      - name: 'V3 prompt contracts (BLOCKING per Stage C C-a; 1P/1W/0F clean post M3-FU-VALIDATOR-CONTRACT-ALIGN)'
         run: uv run python scripts/sdd/check_prompt_contracts.py --all
 
-      - name: 'V4 claude-skill contracts (warning; BROKEN; expected ~34 spurious WARN per H2 parser bug under M3-FU-V4-VALIDATOR-INVESTIGATE)'
+      - name: 'V4 claude-skill contracts (warning; 6 real WARN deferred per M3-FU-V4-SKILLS-COMPLETE)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_claude_skill_contracts.py --all
 
-      - name: 'V5 docker contracts (warning; REAL IMPL 5.1 + 5.2 sub-flags per M3-FU-V5-SUBFLAGS)'
-        continue-on-error: true
+      - name: 'V5 docker contracts (BLOCKING per Stage C C-a; 2P/4W/0F clean post M3-FU-V5-SUBFLAGS)'
         run: uv run python scripts/sdd/check_docker_contracts.py --all --bdd --tdd --compose-config
 
       - name: 'V6 runtime expected (warning; SKELETON BY DESIGN; Phase M4 full probe implementation)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_runtime_expected.py --all
 
-      # ===== End of Phase M2 E3β warning gates =====
+      # ===== End of Phase M3 Stage C adapter gate block =====
 
       # ===== Spec-Anchored Refactor Phase M3 — runtime-skill validator (M3-FU-RUNTIME-SKILL-VALIDATOR) =====
       # V7 separates runtime-skill.contract.yml (SKILL.md body freeze) from V6
-      # runtime.expected.yaml (docker container probe). Phase M3 warning mode;
-      # Phase M4 strict per gate matrix.
-      - name: 'V7 runtime-skill contracts (warning; REAL IMPL; Phase M3 landing)'
-        continue-on-error: true
+      # runtime.expected.yaml (docker container probe). Flipped to BLOCKING per
+      # Stage C C-a (3P/0W/0F clean).
+      - name: 'V7 runtime-skill contracts (BLOCKING per Stage C C-a; 3P/0W/0F clean)'
         run: uv run python scripts/sdd/check_runtime_skill_contracts.py --all
 
-      # ===== End of Phase M3 warning gates =====
+      # ===== End of Phase M3 Stage C V7 block =====
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
@@ -145,14 +136,12 @@ jobs:
         # BDD scenarios are run by the dedicated step below (warning mode).
         run: uv run pytest --ignore=tests/bdd
 
-      - name: 'BDD scenarios (warning mode at M3; M4 strict per blueprint)'
-        # Phase M3 Stage B (M3-FU-BDD-TDD-RESTORE landing). tests/bdd/ contains
-        # 5 capability subdirs × N scenarios bound via pytest-bdd against each
-        # capabilities/*/contracts/behavior.feature. Live-DB / docker / slow
-        # scenarios are skip-clean via live_db / docker_available fixtures.
-        # M3 = continue-on-error (warning); M4 will flip to strict per
-        # sdd/gates.md schedule.
-        continue-on-error: true
+      - name: 'BDD scenarios (BLOCKING per Stage C C-a; 9P/7SKIP/0F clean)'
+        # Phase M3 Stage B (M3-FU-BDD-TDD-RESTORE landing) + Stage C flip.
+        # tests/bdd/ contains 5 capability subdirs × N scenarios bound via
+        # pytest-bdd against each capabilities/*/contracts/behavior.feature.
+        # Live-DB / docker / slow scenarios are skip-clean via live_db /
+        # docker_available fixtures (SKIP does not count as FAIL).
         run: uv run pytest tests/bdd -q
 
       - name: Contract tests (skip on missing analyst creds)
