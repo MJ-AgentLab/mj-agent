@@ -43,6 +43,7 @@ dev = [
     "pre-commit>=4.0",
     "langgraph-cli[inmem]>=0.2",
     "types-PyYAML>=6.0",
+    "pytest-bdd>=8.1.0",
 ]
 
 [build-system]
@@ -60,6 +61,14 @@ markers = [
     "contract: catalog ⇄ live DB alignment tests (skip when no analyst creds; not run by default)",
 ]
 addopts = "-ra --strict-markers -m 'not smoke and not contract'"
+# Gherkin scenario tags (@REQ-NNN / @CTR-X / @risk:Y / @adapter:Z) are not
+# registered as pytest markers — they are informational traceability tags.
+# Default pytest behaviour warns on unregistered markers (~20 warnings per BDD
+# run); filter that warning class here. --strict-markers still applies to
+# non-BDD code via explicit pytest.mark usage.
+filterwarnings = [
+    "ignore::pytest.PytestUnknownMarkWarning",
+]
 
 [tool.ruff]
 line-length = 100
