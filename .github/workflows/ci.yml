@@ -132,6 +132,16 @@ jobs:
 
       # ===== End of Phase M2 E3β warning gates =====
 
+      # ===== Spec-Anchored Refactor Phase M3 — runtime-skill validator (M3-FU-RUNTIME-SKILL-VALIDATOR) =====
+      # V7 separates runtime-skill.contract.yml (SKILL.md body freeze) from V6
+      # runtime.expected.yaml (docker container probe). Phase M3 warning mode;
+      # Phase M4 strict per gate matrix.
+      - name: 'V7 runtime-skill contracts (warning; REAL IMPL; Phase M3 landing)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_runtime_skill_contracts.py --all
+
+      # ===== End of Phase M3 warning gates =====
+
       - name: Tests (unit + eval + integration; smoke + contract excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
