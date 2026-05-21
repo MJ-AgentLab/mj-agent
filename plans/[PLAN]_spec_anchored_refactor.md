@@ -132,6 +132,15 @@ review / revert）：
   "G28（PR-level test-first gate）与 6 adapter contract validator（schema 反向校验）协同
   关系"提及；M2 batch 4 trim 至 280 cap 时该段完整删除（spot-check 3 GAP）；M3+ 处理时需 ≤ 5
   行紧凑补回，不超 cap；估时 ~0.5h；依赖 M3 startup；独立小 PR.
+- **M3-FU-A2-HOOK-IMPROVER-BODY** — **state: active**; disposition: deferred to M4
+  (depends on EVAL framework Phase 2 maturity); blocked_by: D-1b skeleton landing
+  (Stage D 2026-05-21) + EVAL framework readiness; scope: 替换 D-1b stubbed body
+  (`Write-Host` + `exit 0`) 为 draft-producer 真逻辑 — 含 session signal analysis +
+  proposed CLAUDE.md update draft 生成 + 写出到 `evidence/ai-context-audit/<YYYY-MM-DD>_session_<id>_proposed_claude_md_update.md`
+  (per existing design commit `550e46b` + R-G21 mitigation per `spec-anchored-calm-lampson.md §10`).
+  调用 D-1b 已定义的 `Test-PathAllowed` function 强制 allowlist + denylist 边界. Hook
+  永不直接 write root CLAUDE.md; user manual review draft + 手动 apply. registered_at:
+  2026-05-21. rationale: D-1b 落 skeleton + defense functions; 真逻辑推 M4 配 EVAL framework.
 
 ### Phase M4（~2 周）
 

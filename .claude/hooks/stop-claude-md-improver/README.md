@@ -21,7 +21,7 @@ Phase M2 will wire this hook via `.claude/settings.json` `hooks.Stop` field:
   "hooks": {
     "Stop": [
       {
-        "command": "powershell -ExecutionPolicy Bypass -File ${CLAUDE_PLUGIN_ROOT}/hooks/stop-claude-md-improver/on-stop.ps1"
+        "command": "pwsh -NoProfile -File ${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-claude-md-improver/on-stop.ps1"
       }
     ]
   }
