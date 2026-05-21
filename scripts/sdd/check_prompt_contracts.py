@@ -42,6 +42,7 @@ from scripts.sdd._common import (  # noqa: E402
     Summary,
     body_sha256,
     build_argparser,
+    content_hash_matches,
     discover_contracts,
     extract_headings,
     load_contract,
@@ -94,19 +95,36 @@ def _validate_contract(contract_path: Path, repo_root: Path) -> Summary:
     expected_hash = freeze_anchor.get("content_hash") if isinstance(freeze_anchor, dict) else None
     if expected_hash:
         actual_hash = body_sha256(prompt_text)
-        if actual_hash != expected_hash:
+        if not content_hash_matches(expected_hash, actual_hash):
             summary.add(
                 Severity.FAIL,
-                f"{prompt_path_str}: BODY CONTENT HASH DRIFT — contract anchored '{expected_hash[:16]}...' but actual is '{actual_hash[:16]}...' (prompt-version-bump 必停 surface drifted; STOP + HITL; investigate)"
+                f"{prompt_path_str}: BODY CONTENT HASH DRIFT — contract anchored '{expected_hash[:24]}...' but actual is '{actual_hash[:16]}...' (prompt-version-bump 必停 surface drifted; STOP + HITL; investigate)"
             )
 
     body_headings = extract_headings(body, level=1, skip_fenced=True)
     if not body_headings:
         summary.add(Severity.WARN, f"{prompt_path_str}: no level-1 headings found in body (system.md uses '# ' style; verify or check fenced blocks)")
-    contract_sections = freeze_anchor.get("body_section_names", []) if isinstance(freeze_anchor, dict) else []
+    if isinstance(freeze_anchor, dict):
+        # Stage B canonical name is body_section_heads; body_section_names accepted for
+        # backward compatibility with Stage A initial impl (dual-name 兼容期 ~2 phase
+        # per M3-FU-VALIDATOR-CONTRACT-ALIGN; M5 normalize to single name).
+        contract_sections = (
+            freeze_anchor.get("body_section_heads")
+            or freeze_anchor.get("body_section_names")
+            or []
+        )
+    else:
+        contract_sections = []
     if contract_sections:
+        # Stage B canonical stores headings with the level marker (e.g. "# Identity"
+        # for level-1, "## Overview" for level-2); extract_headings returns the
+        # marker-stripped text. Tolerate either form by normalising both sides.
+        heading_marker = "# "
         for required_section in contract_sections:
-            if required_section not in body_headings:
+            normalised = required_section
+            if normalised.startswith(heading_marker):
+                normalised = normalised[len(heading_marker):]
+            if normalised not in body_headings:
                 summary.add(Severity.WARN, f"{prompt_path_str}: contract-required body section {required_section!r} not found in current body headings")
 
     if contract.get("allowed_state_transitions"):

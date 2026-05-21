@@ -12,6 +12,7 @@ by taking the literal rest-of-line as the value.
 from __future__ import annotations
 
 from scripts.sdd._common.frontmatter import (
+    content_hash_matches,
     parse_frontmatter,
     parse_native_frontmatter,
 )
@@ -118,3 +119,52 @@ def test_strict_parse_frontmatter_returns_none_on_embedded_colon() -> None:
     )
     fm, _ = parse_frontmatter(text)
     assert fm is None
+
+
+# -------- content_hash_matches (M3-FU-VALIDATOR-CONTRACT-ALIGN) --------
+
+
+def test_hash_matches_both_prefixed() -> None:
+    """Canonical Stage B form: both sides use sha256: prefix."""
+    h = "994d4a2d7fd3677f0123456789abcdef" * 2  # 64-char hex
+    assert content_hash_matches(f"sha256:{h}", f"sha256:{h}") is True
+
+
+def test_hash_matches_both_bare() -> None:
+    """Legacy Stage A initial form: both sides bare hex."""
+    h = "994d4a2d7fd3677f0123456789abcdef" * 2
+    assert content_hash_matches(h, h) is True
+
+
+def test_hash_matches_mixed_prefix_and_bare() -> None:
+    """The actual bug case: contract has sha256: prefix, validator produces bare hex."""
+    h = "994d4a2d7fd3677f0123456789abcdef" * 2
+    assert content_hash_matches(f"sha256:{h}", h) is True
+    assert content_hash_matches(h, f"sha256:{h}") is True
+
+
+def test_hash_matches_case_insensitive_prefix() -> None:
+    """`SHA256:` and `sha256:` are equivalent."""
+    h = "abcdef0123456789" * 4
+    assert content_hash_matches(f"SHA256:{h}", f"sha256:{h}") is True
+
+
+def test_hash_matches_different_hashes() -> None:
+    """Different hex values must not match (this is the FAIL path)."""
+    h1 = "994d4a2d7fd3677f0123456789abcdef" * 2
+    h2 = "000000000000000f0123456789abcdef" * 2
+    assert content_hash_matches(f"sha256:{h1}", f"sha256:{h2}") is False
+
+
+def test_hash_matches_none_returns_false() -> None:
+    """Either side None — comparison is False (FAIL path for missing contract field)."""
+    h = "abcdef0123456789" * 4
+    assert content_hash_matches(None, h) is False
+    assert content_hash_matches(h, None) is False
+    assert content_hash_matches(None, None) is False
+
+
+def test_hash_matches_empty_strings_equal() -> None:
+    """Edge case: two empty strings match (both effectively no-content)."""
+    assert content_hash_matches("", "") is True
+    assert content_hash_matches("sha256:", "") is True

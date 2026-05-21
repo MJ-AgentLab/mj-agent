@@ -11,7 +11,8 @@ Module layout:
 - `ast_helpers` — module_path_to_file / parse_module_safe / extract_top_level_names
                   / check_constant_literal
 - `frontmatter` — parse_frontmatter / parse_native_frontmatter /
-                  strip_frontmatter / body_sha256 / extract_headings (with doctest)
+                  strip_frontmatter / body_sha256 / content_hash_matches /
+                  extract_headings (with doctest)
 - `enums`       — HITL_CANONICAL / validate_hitl_enum
 """
 
@@ -28,6 +29,7 @@ from scripts.sdd._common.discovery import discover_contracts, resolve_display_pa
 from scripts.sdd._common.enums import HITL_CANONICAL, validate_hitl_enum
 from scripts.sdd._common.frontmatter import (
     body_sha256,
+    content_hash_matches,
     extract_headings,
     parse_frontmatter,
     parse_native_frontmatter,
@@ -51,11 +53,12 @@ __all__ = [
     "parse_module_safe",
     "extract_top_level_names",
     "check_constant_literal",
-    # frontmatter (5)
+    # frontmatter (6)
     "parse_frontmatter",
     "parse_native_frontmatter",
     "strip_frontmatter",
     "body_sha256",
+    "content_hash_matches",
     "extract_headings",
     # enums (2)
     "HITL_CANONICAL",

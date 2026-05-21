@@ -2,8 +2,8 @@
 type: plan
 slug: m3-fu-validator-contract-align
 summary: M3 follow-up plan — fix Stage A 6 adapter validator vs Stage B adapter doc canonical schema drift surfaced in M2 Stage E pre-outline reverify; V3 expects bare hex content_hash but Stage C contracts use sha256:<hex> prefix per Stage B canonical; cross-validator consistency fix
-state: active
-version: 0.1
+state: completed
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-21
 updated: 2026-05-21
@@ -115,7 +115,31 @@ uv run pytest tests/unit/scripts/sdd/test_cross_validator_consistency.py
 - 不预 toggle 任何 gate 到 blocking (M4 blocking schedule per blueprint)
 - 不触达 4 项专属必停 surface
 
+## §7 Resolution（M3 Stage A 闭环）
+
+V3 实装时 Stage B canonical 尚未冻结，导致 3 处 schema 形态 drift（content_hash
+prefix / `body_section_*` 字段名 / heading marker 前缀）。
+
+修复：
+1. 新增 `_common/frontmatter.py::content_hash_matches(expected, actual)` — case-
+   insensitive `sha256:` 前缀双向容忍；canonical 为 prefix form。
+2. `check_prompt_contracts.py`：
+   - content_hash 比较改用 helper
+   - 接受 `body_section_heads`（canonical）或 `body_section_names`（legacy） — 双名
+     兼容期 ~2 phase；M5 normalize 到单名
+   - heading 比较前先 strip `# ` 前缀（Stage B canonical 含 marker；
+     `extract_headings()` 返回 marker-stripped 文本）
+3. 7 新单元测试覆盖 helper（≥5 per AC §4）。
+
+V3 输出：**0 PASS / 1 WARN / 1 FAIL → 1 PASS / 1 WARN / 0 FAIL**（剩 1 WARN
+是 `allowed_state_transitions` 信息性 per ADR-024 transitional waiver）。
+
+V4 Mode B（contract-driven hash enforcement）保持 future-scope —— 当前 V4 仅做
+Mode A ADR-013 schema linting，不读 contract hashes。
+
+详细 evidence: [[capabilities/data-agent/llm-provider/evidence/reports/v3-validator-contract-align-report]].
+
 ---
 
-> *M3 follow-up plan — `state: active`；Stage E pre-outline reverify 触发；M3 startup；
-> 独立小 PR.*
+> *M3 follow-up plan — `state: completed`；M3 Stage A 闭环；独立 commit `fix(sdd):
+> resolve V3 Stage A↔B canonical drift (M3-FU-VALIDATOR-CONTRACT-ALIGN)`.*

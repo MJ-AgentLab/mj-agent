@@ -96,6 +96,24 @@ def body_sha256(text: str) -> str:
     return hashlib.sha256(body.encode("utf-8")).hexdigest()
 
 
+_HASH_PREFIX_RE = re.compile(r"^sha256:", re.IGNORECASE)
+
+
+def content_hash_matches(expected: str | None, actual: str | None) -> bool:
+    """Compare two content-hash strings with `sha256:` prefix tolerance.
+
+    Stage B adapter doc canonical form is `sha256:<hex>`; Stage A validator
+    initial implementation produced bare `<hex>`. Both formats are accepted —
+    the prefix is stripped (case-insensitive) before exact hex comparison.
+
+    Either argument may be `None` (e.g., contract missing the field); in that
+    case the comparison returns `False`.
+    """
+    if expected is None or actual is None:
+        return False
+    return _HASH_PREFIX_RE.sub("", expected).lower() == _HASH_PREFIX_RE.sub("", actual).lower()
+
+
 def extract_headings(text: str, level: int = 1, skip_fenced: bool = True) -> list[str]:
     """Extract markdown headings of given level, optionally skipping fenced code blocks.
 
@@ -131,5 +149,6 @@ __all__ = [
     "parse_native_frontmatter",
     "strip_frontmatter",
     "body_sha256",
+    "content_hash_matches",
     "extract_headings",
 ]
