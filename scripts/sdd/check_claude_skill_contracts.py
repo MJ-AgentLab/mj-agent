@@ -44,7 +44,7 @@ from scripts.sdd._common import (  # noqa: E402
     Severity,
     Summary,
     build_argparser,
-    parse_frontmatter,
+    parse_native_frontmatter,
     resolve_display_path,
 )
 
@@ -60,7 +60,7 @@ def _validate_skill_md(skill_path: Path, repo_root: Path) -> Summary:
     display = resolve_display_path(skill_path, repo_root)
 
     text = skill_path.read_text(encoding="utf-8")
-    fm, _body = parse_frontmatter(text)
+    fm, _body = parse_native_frontmatter(text)
     if fm is None:
         summary.add(Severity.WARN, f"{display}: no frontmatter block (ADR-013 requires `name` + `description`)")
         return summary
