@@ -97,11 +97,15 @@ review / revert）：
 - **M3-FU-V5-SUBFLAGS** — `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
   `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）；估时 ~1h；预计新增 ~60-80 行；
   依赖 M3 startup；独立小 PR.
-- **M3-FU-CLAUDE-SKILL-ADR** — 起草独立 ADR 决定 `.claude/skills/` 34/34 SKILL 当前
-  "markdown-body-only convention" 与 ADR-013 2-field schema baseline deviation 的 resolution
-  path（option A：accept markdown-body-only 为 advisory；option B：Phase M5 backfill
-  frontmatter）（M2 V4 实施暴露的 deviation；Q-A3）；估时 ~2h；产出 1 ADR draft；依赖 M3
-  startup；独立小 PR.
+- **M3-FU-CLAUDE-SKILL-ADR** — **scope reframed 2026-05-21** per Stage C batch 2 pre-outline
+  reverify（commit `03f1bc7`）：empirical full deep scan 证实 34/34 SKILL 实际**完美**
+  ADR-013 2-field schema 合规（无 deviation）；原 Q-A3 premise "34/34 markdown-body-only
+  convention" categorically false（详 M3-FU-V4-VALIDATOR-INVESTIGATE）；原 A/B/C resolution
+  options 全部 moot。Reframed scope：起草独立 ADR 确立 `.claude/skills/` ongoing schema
+  compliance monitoring 制度 —— validator gate（M3 warning / M4 blocking）+ PR template A12
+  prompt + 季度 audit（A6 sub）三层防御，防 future SKILL drift；不是 "fix existing deviation"
+  而是 "prevent future deviation"；估时 ~1.5h（缩减自原 ~2h；不再起草 normalize migration
+  plan）；产出 1 ADR draft + 监控制度落地点 cross-ref；依赖 M3 startup；独立小 PR.
 - **M3-FU-HITL-ENUM** — HITL scenario enum 清理（去除重叠；收敛到稳定 8-10 项；统一
   `policies/ai-agent.md` HITL 列表 + `sdd/lifecycle.md` / `sdd/gates.md` HITL trigger 表述）
   （C5；M2 期间约定但未落实）；估时 ~1h；预计 diff ~50 行；依赖 M3 startup；独立小 PR.
