@@ -129,10 +129,16 @@ review / revert）：
   `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
   `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
   估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
-- **M3-FU-BDD-TDD-RESTORE** — `sdd/adapters/bdd-tdd.md` §Contract-Test-First Rule 补回简版
-  "G28（PR-level test-first gate）与 6 adapter contract validator（schema 反向校验）协同
-  关系"提及；M2 batch 4 trim 至 280 cap 时该段完整删除（spot-check 3 GAP）；M3+ 处理时需 ≤ 5
-  行紧凑补回，不超 cap；估时 ~0.5h；依赖 M3 startup；独立小 PR.
+- **M3-FU-BDD-TDD-RESTORE** — ✅ **COMPLETED 2026-05-22 (Stage D D-3b)**. `sdd/adapters/bdd-tdd.md`
+  §Contract-Test-First Rule restored 4-line compact mention of "G28（PR-level test-first gate）
+  与 6 adapter contract validator（schema 反向校验）协同关系" at line 229 (post Schema-layer
+  二分; pre 手册 §25.6 gate list). File 280 → 284 lines (within plan body cap "不超 cap").
+  resolved_at: 2026-05-22.
+  **provenance**: Δ-1 path; canonical source = this M-FU plan body self-citation (lines 132-135
+  pre-update; user-authored at `3755c94` plan registration), NOT git verbatim — trim was
+  internal to `24b7ea3` (M2 content-fill) authoring Pass 1+2, pre-commit; trimmed verbatim never
+  entered git as committed state. §7 Pre-flight Discipline 5th runtime application:
+  source-provenance ambiguity intercept resolved by using user-authored canonical source.
 - **M3-FU-A2-HOOK-IMPROVER-BODY** — **state: active**; disposition: deferred to M4
   (depends on EVAL framework Phase 2 maturity); blocked_by: D-1b skeleton landing
   (Stage D 2026-05-21) + EVAL framework readiness; scope: 替换 D-1b stubbed body
