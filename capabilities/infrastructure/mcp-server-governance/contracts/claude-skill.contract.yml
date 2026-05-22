@@ -31,9 +31,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose
-    description_hash: sha256:8cc0bf77985c828c50df5dc620907a0cb43c058beef6ef79d47c8cc26147d12d
+    description_hash: sha256:4b29c1b0351b853f81168fef1468c9627f7b5febba873c3965724c0a7a9d7271
     body_content_hash: sha256:cd912d6334aedfc781f8541a8995b0d3bf1e1754766a5a09f385e9a79f2b492e
-    frozen_at: 2026-05-21T00:00:00Z
+    frozen_at: 2026-05-22T09:25:41Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -107,9 +107,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-storage-stack/SKILL.md
     name: mj-agent-infra-storage-stack
-    description_hash: sha256:021b90c439af0c65fa5712f5dc9fe1dda27873d9f01289778bedf2047a297453
+    description_hash: sha256:720aee94177182bd87622d78531ed32e70ca3171e314dd45eb3050568a5f391b
     body_content_hash: sha256:edb5e1237b971884a88d2c023cbe3cd26834a129a0f1c94a8cfc9fd693788ac9
-    frozen_at: 2026-05-21T00:00:00Z
+    frozen_at: 2026-05-22T09:25:41Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"

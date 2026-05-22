@@ -112,8 +112,7 @@ jobs:
       - name: 'V3 prompt contracts (BLOCKING per Stage C C-a; 1P/1W/0F clean post M3-FU-VALIDATOR-CONTRACT-ALIGN)'
         run: uv run python scripts/sdd/check_prompt_contracts.py --all
 
-      - name: 'V4 claude-skill contracts (warning; 6 real WARN deferred per M3-FU-V4-SKILLS-COMPLETE)'
-        continue-on-error: true
+      - name: 'V4 claude-skill contracts (BLOCKING per M3-FU-V4-SKILLS-COMPLETE; 34P/0W/0F clean)'
         run: uv run python scripts/sdd/check_claude_skill_contracts.py --all
 
       - name: 'V5 docker contracts (BLOCKING per Stage C C-a; 2P/4W/0F clean post M3-FU-V5-SUBFLAGS)'
