@@ -2,11 +2,13 @@
 type: plan
 slug: m3-fu-preflight-ci-pipeline-parity
 summary: M3 follow-up plan — extend Pre-flight Verification Discipline so new dev dep additions (pyproject.toml [dependency-groups] dev / [tool.uv] / [project] dependencies) trigger a full local CI-pipeline re-run, not only gate-affected checks; B-1 pytest-bdd → gherkin-official latent Py2-file SyntaxError surfaced only at Stage C push because Stage A/B pre-flight covered ruff/mypy/pytest but not the compileall step
-state: active
+state: completed
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-21
-updated: 2026-05-21
+updated: 2026-05-22
+resolved_at: 2026-05-22
+resolved_by: Stage D D-3f — policies/ai-agent.md §7 Sub-rule "dev-dep introduction triggers full CI pipeline pre-flight" appended
 track: shared
 refines:
   - plans/[PLAN]_spec_anchored_refactor.md
@@ -135,6 +137,7 @@ unrelated to dep-affected gates."
 
 ---
 
-> *M3 follow-up plan — `state: active`；deferred from Stage C F-1 fix
-> discipline gap (2026-05-21)；blocked-by Pre-flight Verification Discipline
-> parent write-in；M3+ adoption.*
+> *M3 follow-up plan — `state: completed` 2026-05-22；Stage D D-3f 落地 §7 Sub-rule
+> "dev-dep introduction triggers full CI pipeline pre-flight" 于 `policies/ai-agent.md`
+> §7 (resolved discipline gap from Stage C F-1 compileall scope escape; gherkin-official
+> Py2-file SyntaxError empirical anchor).*

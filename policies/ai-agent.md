@@ -172,7 +172,13 @@ freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contrac
 ### Failure-mode cluster (实证锚定)
 
 以下案例 — 均为 Phase M2 closeout / M3 pre-flight transition 期 spec brief vs reality
-不一致的 intercept 实例 — 是本 discipline 的实证基础:
+不一致的 intercept 实例 — 是本 discipline 的实证基础. Stage D 自 `4a59dc5` (D-1a §7
+land) 起约 1 天内 §7 standing rule 累积 6 次 runtime application, 覆盖 5 类不同 spec
+drift axes (file pre-existence / path placement / namespace collision / source provenance
+/ outline-vs-actual scope); empirical validation of rule generality 超出 original Phase
+M2 4-incident anchor.
+
+#### Subsection A: Historical Phase M2 closeout intercepts (3 documented + 1 historical placeholder)
 
 1. **V4 false-claim intercept** — spec brief 称 V4 已 "34/34 markdown-body-only PASS";
    实读 validator 源 (`scripts/sdd/check_claude_skill_contracts.py`) 跑 against real
@@ -190,15 +196,72 @@ freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contrac
    若不 pre-flight reread Stage B canonical 当前形式, 写出的 V3 amend 会 Stage A↔B 不一致,
    freeze contract drift. 见 `M3-FU-VALIDATOR-CONTRACT-ALIGN` (commit `e6ac9e1`).
 
-4. *(待补)* — 4th intercept canonical 描述 deferred; 待 M3 kickoff outline 内容再 retrieve
-   时填入. 当前留 placeholder 保 cluster 结构.
+4. *(Historical placeholder — 4th historical incident referenced in M3 kickoff outline but
+   lacking traceable canonical source; remains a placeholder slot for future retrieval if
+   M-FU plan archeology turns up the canonical detail.)*
+
+#### Subsection B: Stage D runtime application evidence (2026-05-21+, post-§7 land at `4a59dc5`)
+
+5. **D-1b A2 hook artifact pre-existence intercept** (2026-05-21, commit `0d086c2`).
+   Outline 假设 `.claude/hooks/stop-claude-md-improver/` 为 new (create) scope;
+   pre-flight 实测发现 `on-stop.ps1` + README 已 exist 于 commit `550e46b` (Phase M0
+   "A1-A6+B1 best-practices skeleton") 内. Reframe path D (spec adjust + augment) 保留
+   existing draft-producer 设计 (含 R-G21 mitigation cite) 同时叠加 D-1b bypass +
+   denylist defense functions.
+
+6. **D-2a path-level placement intercept** (2026-05-21, commit `3c4e416`). Outline 写
+   `src/CLAUDE.md` top-level placement; reality 是 `src/mj_agent/CLAUDE.md` package-level
+   (per Anthropic guidance "CLAUDE.md at directories where AI works"). Spec self-correction:
+   top-level not created.
+
+7. **D-2b/c/d batch bulk-pre-existence intercept** (2026-05-21, commit `3c4e416`, 同 D-2a
+   commit). 4 subdir CLAUDE.md (`capabilities/` + `tests/` + `infra/docker/` + 上述
+   `src/mj_agent/`) 全在 commit `550e46b` 已落. Augment only path 应用 (cross-refs +
+   §Gates slim + 各自 stale-marker refresh); 无任何 overwrite.
+
+8. **D-3a ADR NNN namespace collision intercept** (2026-05-22, commit `633225b`). Naive
+   next NNN = 031 (max `docs/adr/` active +1); pre-flight scan `decisions/` INDEX 发现
+   `decisions/ADR-031_Spec_Anchored_Refactor.md` 已占用. `docs/adr/` + `docs/archive/adr/`
+   + `decisions/` 共享单一 NNN namespace per `decisions/INDEX.md` L23. NNN bumped to 032.
+
+9. **D-3b source provenance ambiguity intercept** (2026-05-22, commit `23a8504`). Plan body
+   标 "restore" 但 verbatim 不在 git committed bytes (trim 发生于 `24b7ea3` (M2
+   content-fill) authoring Pass 1+2, pre-commit; trimmed verbatim never entered git as
+   committed state). Δ-1 path: 承认 plan body lines 132-135 作 user-authored canonical
+   source 等价于 git verbatim, restore 基于 plan body 短形态扩写不超 5 行 plan cap.
+
+10. **D-3c outline-vs-standalone-plan scope drift intercept** (2026-05-22, commit `9ff0770`).
+    Outline 假设 M-FU plan body inline 在 master plan, 实际是 standalone
+    `plans/[PLAN]_m3_fu_rd10c_harmonize.md` (102 lines). Standalone plan §2 scope = 4 file
+    (`langchain-agent` + `docker-container` + `claude-code-skill` + `runtime-skill`), 排除
+    `python.md` (canonical 不可改) 与 `prompt.md` (acceptable as-is). 若按 outline 错误指令
+    走会破坏 RD10C 双锚点 invariant. ε-1 path 救场.
+
+### Sub-rule: dev-dep introduction triggers full CI pipeline pre-flight
+
+> `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` (registered 2026-05-21 at commit `5dcb1e3`;
+> resolved 2026-05-22 at this D-3f commit).
+
+新增 dev dependency (touch `pyproject.toml [dependency-groups]` / `[tool.uv]` /
+`uv.lock` / `requirements-dev.txt` 等) 时, local pre-flight 必须跑完整 CI pipeline
+steps (含 `compileall` / `ruff` / `mypy` / `pytest --collect-only` / 所有 V*/G*
+validator scripts `--dry-run`), 不仅跑 outline 假设被 affected 的 gate.
+
+Rationale: Stage C C-a flip commit (`02b1cc8`) 之后 CI `compileall` step 因
+`gherkin-official` 包内 `count_symbols_py2.py` (Py2-only syntax) fail; pre-flight 未跑
+compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub-rule 锁定该易错类别.
+
+**Compliance**: 任一 CI step 失败 → 立停, 不 commit 该 dep 添加, 走 reframe
+(e.g. compatible dep version / skip-pattern adjustment / 排除 `.venv`). 完整 pre-flight
+命令清单见 `plans/[PLAN]_m3_fu_preflight_ci_pipeline_parity.md` §3.
 
 ### Cross-references
 
 - `§4` Canonical 10-Enum — trigger surface anchors (本节 trigger conditions 引用)
 - `sdd/gates.md §4` — in-source 4 项专属必停 (canonical 10-enum subset; 前 4 行)
 - `sdd/lifecycle.md §3` — state-machine HITL transition (cross-ref to §4 canonical enum)
-- `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` — dep-change sub-rule (Stage D D-3f append target)
+- `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` — dep-change sub-rule (resolved at Stage D D-3f;
+  see §7 Sub-rule above)
 
 ---
 
