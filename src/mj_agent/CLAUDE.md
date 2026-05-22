@@ -10,7 +10,7 @@
 |---|---|---|
 | sql-guardrail-relax | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | **HITL required**；不直接 Edit；走 cross-capability workflow |
 | runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | **HITL required**；用 `mj-agent-runtime-skill-doc-improve` skill（read-only diff） |
-| prompt-version-bump | `src/mj_agent/prompts/system.md` body + version | **HITL required**；用 `mj-agent-runtime-prompt-version-bump` skill |
+| prompt-version-or-body-change | `src/mj_agent/prompts/system.md` body 或 version | **HITL required**；用 `mj-agent-runtime-prompt-version-bump` skill（含义吸收原 `prompt-version-bump`；per D-3d canonical 10-enum）|
 | biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | **HITL required**；用 `mj-agent-runtime-biz-catalog-sync` skill |
 
 ## 工具加载顺序（per `prompts/system.md`）
@@ -44,6 +44,21 @@ uv run ruff check src/mj_agent        # lint (CI gate)
 
 不要在本子目录工作时跑全套测试 — 走对应 `tests/` 子目录的命令（详 `tests/CLAUDE.md`）.
 
+## CI Gates 触及（本 subdir 路径）
+
+- **V1 python contracts** — BLOCKING (Stage C C-a; commit `02b1cc8`); covers `src/mj_agent/**/*.py` schema
+- **V3 prompt contracts** — BLOCKING; freeze anchor `src/mj_agent/prompts/system.md`
+- **V7 runtime-skill contracts** — BLOCKING; freeze anchor `src/mj_agent/skills/*/SKILL.md`
+- **V2 agent contracts** — warning (Phase 2+ activation when `agent.contract.yml` lands)
+- Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
+
+## Freeze surface 警示
+
+本 subdir 含 4 项 §M2 freeze surface（3 in-source SKILL + `prompts/system.md`）。任何 body
+变更触发 `content_hash` drift → HITL gate（per `policies/ai-agent.md §4` canonical 10-enum
++ `claude-skill.contract.yml` / `runtime-skill.contract.yml` / `prompt.contract.yml`
+`frozen_at`）。修改前先看 `policies/ai-agent.md §7` Pre-flight Verification Discipline.
+
 ## Anti-patterns
 
 - ❌ 直接 Edit `tools/sql/guardrail.py` 或 `precheck.py`（触发 sql-guardrail-relax；必先 HITL）
@@ -54,8 +69,13 @@ uv run ruff check src/mj_agent        # lint (CI gate)
 
 ## See Also
 
-- 根级：`CLAUDE.md`（repo-wide map） + `AGENTS.md`（Codex 边界） + `policies/ai-agent.md`（HITL
-  edges）
+- 根级：`CLAUDE.md`（repo-wide map） + `AGENTS.md`（Codex 边界）
+- HITL canonical: `policies/ai-agent.md §4` (Canonical 10-Enum) + `§7` (Pre-flight
+  Verification Discipline)
+- A2 hook: `.claude/hooks/stop-claude-md-improver/` (Stop event; allowlist denies 本 subdir
+  freeze surface — per commit `0d086c2`)
+- Adapter: `sdd/adapters/python.md` (V1) + `sdd/adapters/runtime-skill.md` (V7) +
+  `sdd/adapters/prompt.md` (V3)
 - 同目录：`src/mj_agent/agent.py`（wired tool registry + middleware list + skill loader）
 
 ---

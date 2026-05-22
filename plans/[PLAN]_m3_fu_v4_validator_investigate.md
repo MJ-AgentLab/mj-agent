@@ -2,8 +2,8 @@
 type: plan
 slug: m3-fu-v4-validator-investigate
 summary: M3 follow-up plan — investigate Stage A V4 validator (scripts/sdd/check_claude_skill_contracts.py) root cause for false "34/34 markdown-body-only" report; M2 Stage C batch 2 pre-outline reverify 证实 34/34 SKILL 实际有 ADR-013 native 2-field frontmatter（0 deviation）
-state: active
-version: 0.1
+state: completed
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-21
 updated: 2026-05-21
@@ -131,7 +131,26 @@ grep -nE "markdown.*body|no.*frontmatter|body.*only" scripts/sdd/check_claude_sk
 - 不删除 / 不重写 V4 validator（仅 fix or clarify）
 - 不创建新 ADR（V4 fix 不构成 architectural decision）
 
+## §8 Resolution（M3 Stage A 闭环）
+
+Root cause = **H2 (parser bug confirmed)**：`yaml.safe_load()` rejects descriptions
+containing literal `Do not use for: ` (anti-trigger phrase) — colon+space treated
+as nested-mapping start. 34/34 SKILL.md 全部命中此模式。H1 (wrong dir) + H3
+(Q-A3 misread) ruled out — V4 reads correct paths and faithfully reports
+yaml-failure → "no frontmatter block".
+
+修复：新增 `scripts/sdd/_common/frontmatter.py::parse_native_frontmatter()`，按
+rest-of-line literal 语义解析 ADR-013 native 2-field schema；与 Claude Code
+SKILL.md loader 行为一致。`parse_frontmatter()` 保持 strict（其他 validator 用）。
+`check_claude_skill_contracts.py` 切换 import。
+
+V4 输出：**0 PASS / 34 spurious WARN / 0 FAIL → 28 PASS / 6 real WARN / 0 FAIL**。
+6 real WARN 全部是 ADR-013 `Do not use for:` reverse-trigger gap（不在本 plan
+scope；后续 backlog tracking）。
+
+详细 evidence: [[capabilities/infrastructure/mcp-server-governance/evidence/reports/v4-validator-fix-report]].
+
 ---
 
-> *M3 follow-up plan — `state: active`；M2 Stage C batch 2 pre-outline reverify 后置；M3 startup
-> 后处理；独立小 PR.*
+> *M3 follow-up plan — `state: completed`；M3 Stage A 闭环；独立 commit `fix(sdd):
+> resolve V4 spurious-WARN parser bug (M3-FU-V4-VALIDATOR-INVESTIGATE)`.*

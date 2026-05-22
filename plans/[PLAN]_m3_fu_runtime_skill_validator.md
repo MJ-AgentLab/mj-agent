@@ -2,8 +2,8 @@
 type: plan
 slug: m3-fu-runtime-skill-validator
 summary: M3 follow-up plan — implement scripts/sdd/check_runtime_skill_contracts.py validator for runtime-skill.contract.yml; M2 Stage C batch 1 启动前 spot-check 发现现有 check_runtime_expected.py 是 docker-only validator，runtime-skill 暂无专属 validator
-state: active
-version: 0.1
+state: completed
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-21
 updated: 2026-05-21
@@ -117,6 +117,33 @@ uv run pytest tests/unit/scripts/sdd/test_check_runtime_skill_contracts.py -v
 - 不创建新 ADR（validator 实装不构成 architectural decision；schema 已在 adapter doc canonical）
 - 不集成 EVAL framework（推到 M4-FU）
 
+## §7 Resolution（M3 Stage A 闭环）
+
+新增 `scripts/sdd/check_runtime_skill_contracts.py`（~210 lines；含真实 validation
+logic）。Stage C 落地的 2 个 runtime-skill.contract.yml（safe-sql + biz-catalog；
+覆盖 3 个 in-source SKILLs）全部 PASS。
+
+实装亮点：
+- 复用 `_common.frontmatter`（parse_frontmatter / body_sha256 / extract_headings）
+  + P0-2 新加的 `content_hash_matches`（`sha256:` 前缀兼容；V7 是首个 V3 之外的
+  consumer，证实 helper 跨 validator 可复用）。
+- `_validate_skill_entry` 改用 shared summary 参数（per `Summary.merge()` 是
+  counts-only 设计；nested summary 会丢失 per-skill messages）。
+- 10 单元测试覆盖：happy / content_hash drift / frontmatter_strip_contract 违反 /
+  空 skills[] / version v-prefix string-exact drift (v0.1 vs 0.1) / state mismatch /
+  missing required field / missing file / section heads warn-only / wrong contract_id
+  （≥ 5 per AC §4，超额）。
+- CI workflow V7 step 在 V6 之后；warning mode (`continue-on-error: true`)；M4 strict
+  per gate matrix。
+
+V7 输出：**3 PASS / 0 WARN / 0 FAIL** against 2 contracts × 3 SKILLs。
+
+V4 Mode B（claude-skill contract-driven hash enforcement）保持 future-scope；
+V6 runtime probe（M4 docker subprocess probe）保持 future-scope；本 plan 不扩展。
+
+详细 evidence: [[capabilities/data-agent/safe-sql/evidence/reports/v7-runtime-skill-validator-landing]].
+
 ---
 
-> *M3 follow-up plan — `state: active`；M2 Stage C 后置；M3 startup 后处理；独立小 PR.*
+> *M3 follow-up plan — `state: completed`；M3 Stage A 闭环；独立 commit `feat(sdd):
+> land V7 runtime-skill validator (M3-FU-RUNTIME-SKILL-VALIDATOR)`.*

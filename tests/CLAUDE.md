@@ -10,7 +10,7 @@
 |---|---|---|
 | `tests/unit/` | 纯 Python 单元测试 | default selected |
 | `tests/contracts/` ★ Phase M3 改名 | capability contract 测试（由 `tests/contract/` 改名）| `-m contract`；默认 deselect |
-| `tests/bdd/` ★ Phase M3 新增 | BDD scenario 自动化（pytest-bdd） | default selected |
+| `tests/bdd/` | BDD scenario 自动化（pytest-bdd; active per Stage B B-1..B-6 + B-7 CI gate `c60aaa3`） | default selected |
 | `tests/integration/` | 跨组件 + 真实依赖 | default selected；缺 .env 时 session-skip |
 | `tests/smoke/` | 端到端 + LLM | `-m smoke`；默认 deselect |
 | `tests/eval/` | EVAL framework（ADR-024 联动）| default selected；4 子类 outcome / trajectory / component / integration |
@@ -43,6 +43,14 @@ uv run pytest tests/eval/component
 `pyproject.toml` pins `addopts = "-m 'not smoke and not contract'"` — plain `pytest` excludes
 smoke + contract by default.
 
+## CI Gates 触及（本 subdir 路径）
+
+- **BDD scenarios** — BLOCKING (Stage C C-a; commit `02b1cc8`); runs `tests/bdd/` via dedicated CI step
+- **Main Tests step** — strict (no `continue-on-error`); runs `tests/unit + tests/eval + tests/integration` with `--ignore=tests/bdd`
+- **Contract tests step** — gated (`tests/contract -m contract`; skip-clean without DB creds)
+- Smoke (`-m smoke`) — never in CI; manual only
+- Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
+
 ## Anti-patterns
 
 - ❌ smoke 测试无 `@pytest.mark.smoke` marker（会进 default selected → CI 误跑）
@@ -53,9 +61,13 @@ smoke + contract by default.
 
 ## See Also
 
+- 根级：`CLAUDE.md` + `capabilities/CLAUDE.md`（contract authoring → contracts/ files
+  consumed by `tests/contracts/` + `tests/bdd/`）
 - `sdd/adapters/bdd-tdd.md`（BDD/TDD 横切准则）
 - `sdd/adapters/python.md`（Python contract testing）
 - `pyproject.toml`（pytest config: addopts / markers）
+- HITL canonical: `policies/ai-agent.md §4` + `§7` (Pre-flight Verification Discipline)
+- A2 hook: `.claude/hooks/stop-claude-md-improver/`
 
 ---
 

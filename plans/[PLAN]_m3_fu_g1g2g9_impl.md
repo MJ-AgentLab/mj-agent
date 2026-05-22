@@ -2,8 +2,8 @@
 type: plan
 slug: m3-fu-g1g2g9-impl
 summary: M3 follow-up plan — implement real G1 (capability-schema) / G2 (traceability) / G9 (generate INDEX) validators replacing M0 skeleton placeholders; M2 Stage E pre-flight reverify 证实 3/3 是 skeleton 而非 real impl；blueprint §6 Phase M2 §3.4 "G1/G2/G9 warning → blocking" 假设其有 real validation logic，但 M0 落地的是 skeleton；M2 promotion impossible until real impl
-state: active
-version: 0.1
+state: completed
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-21
 updated: 2026-05-21
@@ -102,7 +102,33 @@ uv run pytest tests/unit/scripts/sdd/test_generate_index.py
 - 不修改 4 项专属必停 surface
 - 不创建新 ADR
 
+## §7 Resolution（M3 Stage A 闭环）
+
+3 个 M0 skeleton validator 全部替换为 real impl：
+
+| Gate | Script | LoC | Mode |
+|---|---|---|---|
+| G1 | `check_capability_schema.py` | ~150 | spec.yml 12-field schema + id pattern + lifecycle/archive enum + adapter coverage allowlist + requirements REQ-NNN pattern |
+| G2 | `check_traceability.py` | ~170 | trace.yml schema v1.2: top-level required + capability pattern + REQ-NNN per link + bdd automation_status enum + cross_capability_refs structure |
+| G9 | `generate_index.py` | ~200 | walk spec.yml + trace.yml → write `capabilities/INDEX.auto.md` (separate from manual `INDEX.md`); `--check` mode byte-compares for idempotency |
+
+跑通 5 pilot capabilities：5 PASS / 0 WARN / 0 FAIL (G1 + G2)；G9 `--check`
+matches committed `INDEX.auto.md`。
+
+16 unit tests in `tests/unit/test_sdd_g1g2g9_validators.py` (5 G1 + 6 G2 + 5 G9)
+覆盖 happy / missing-field / invalid-enum / invalid-pattern / drift / idempotency.
+
+**Schema vocabulary note**：`drafting` 接受为 transitional state（safe-sql/spec.yml:96
+documented `drafting → contracted` planned at M3 contract-test landing；9-state enum
+in spec.yml header comments 漏掉此 state）。M4 should formalise the vocabulary。
+
+CI workflow updates: G1/G2/G9 steps switched from `--dry-run` (M0 skeleton) to
+real invocations (`--all` / `--all` / `--check`)；继续 warning mode per plan §6
+严格守约 (M4 toggle blocking per blueprint schedule)。
+
+详细 evidence: [[capabilities/data-agent/safe-sql/evidence/reports/g1g2g9-real-impl-landing]].
+
 ---
 
-> *M3 follow-up plan — `state: active`；Stage E pre-flight intercept 触发；M3 startup
-> priority；独立小 PR.*
+> *M3 follow-up plan — `state: completed`；M3 Stage A 闭环；独立 commit `feat(sdd):
+> land G1/G2/G9 real impl (M3-FU-G1G2G9-IMPL)`.*

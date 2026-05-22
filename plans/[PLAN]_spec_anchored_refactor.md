@@ -105,18 +105,22 @@ G4 blocking.
 **M3 Task Breakdown — Follow-ups from Phase M2**（每条独立小 PR；不混入 M3 main work；便于
 review / revert）：
 
-- **M3-FU-V5-SUBFLAGS** — `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
-  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）；估时 ~1h；预计新增 ~60-80 行；
-  依赖 M3 startup；独立小 PR.
-- **M3-FU-CLAUDE-SKILL-ADR** — **scope reframed 2026-05-21** per Stage C batch 2 pre-outline
-  reverify（commit `03f1bc7`）：empirical full deep scan 证实 34/34 SKILL 实际**完美**
-  ADR-013 2-field schema 合规（无 deviation）；原 Q-A3 premise "34/34 markdown-body-only
-  convention" categorically false（详 M3-FU-V4-VALIDATOR-INVESTIGATE）；原 A/B/C resolution
-  options 全部 moot。Reframed scope：起草独立 ADR 确立 `.claude/skills/` ongoing schema
-  compliance monitoring 制度 —— validator gate（M3 warning / M4 blocking）+ PR template A12
-  prompt + 季度 audit（A6 sub）三层防御，防 future SKILL drift；不是 "fix existing deviation"
-  而是 "prevent future deviation"；估时 ~1.5h（缩减自原 ~2h；不再起草 normalize migration
-  plan）；产出 1 ADR draft + 监控制度落地点 cross-ref；依赖 M3 startup；独立小 PR.
+- **M3-FU-V5-SUBFLAGS** — ✅ **COMPLETED 2026-05-21 (Phase M3 Stage A)**.
+  `scripts/sdd/check_docker_contracts.py` 加 `--bdd` / `--tdd` /
+  `--compose-config` 3 个 sub-flags（M2 V5 实施缓延决定；Q-A2）。Actual ~95 行
+  (5 helper functions + argparse + wire-up). Output 2P/4W/0F with all sub-flags.
+  CI V5 step updated to exercise all 3. Evidence:
+  [[capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing]].
+- **M3-FU-CLAUDE-SKILL-ADR** — ✅ **COMPLETED 2026-05-22 (Stage D D-3a)**. ADR draft landed
+  at `docs/adr/[ADR]_032_Claude_Skill_Schema_Monitoring.md` (`state: draft / decision:
+  proposed`; promote → accepted at next HITL Gate-3 after Layer 1 V4 promotion to blocking).
+  Defines 3-layer drift-prevention regime: V4 validator gate (Layer 1) + PR template A12
+  prompt (Layer 2; existing per Meta v2.1 §7.7) + A6 quarterly audit (Layer 3; per
+  `evidence/ai-context-audit/SCHEMA.md`). Reframed scope landed verbatim — "prevent future
+  deviation" replaces failed Q-A3 "fix existing deviation" premise. Cleanup: removed stale
+  "gate name finalization deferred to M3-FU-HITL-ENUM" comment from
+  `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`
+  `hitl_required[]` (D-3d closing memo). resolved_by: D-3a commit; resolved_at: 2026-05-22.
 - **M3-FU-HITL-ENUM** — HITL scenario enum 清理（去除重叠；收敛到稳定 8-10 项；统一
   `policies/ai-agent.md` HITL 列表 + `sdd/lifecycle.md` / `sdd/gates.md` HITL trigger 表述）
   （C5；M2 期间约定但未落实）；估时 ~1h；预计 diff ~50 行；依赖 M3 startup；独立小 PR.
@@ -124,11 +128,39 @@ review / revert）：
   （`python.md→§22.1` / `langchain-agent.md→§22.4` / `prompt.md→§22.5` /
   `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
   `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
-  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
-- **M3-FU-BDD-TDD-RESTORE** — `sdd/adapters/bdd-tdd.md` §Contract-Test-First Rule 补回简版
-  "G28（PR-level test-first gate）与 6 adapter contract validator（schema 反向校验）协同
-  关系"提及；M2 batch 4 trim 至 280 cap 时该段完整删除（spot-check 3 GAP）；M3+ 处理时需 ≤ 5
-  行紧凑补回，不超 cap；估时 ~0.5h；依赖 M3 startup；独立小 PR.
+  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup. **state: active**; disposition:
+  out-of-repo deferred (新增 disposition 枚举 D-3e; vault-only manual edit by user; not Stage D
+  PR scope; user 将在 vault 中独立完成 §22 cross-ref v2.3 更新). deferred_at: 2026-05-21.
+- **M3-FU-BDD-TDD-RESTORE** — ✅ **COMPLETED 2026-05-22 (Stage D D-3b)**. `sdd/adapters/bdd-tdd.md`
+  §Contract-Test-First Rule restored 4-line compact mention of "G28（PR-level test-first gate）
+  与 6 adapter contract validator（schema 反向校验）协同关系" at line 229 (post Schema-layer
+  二分; pre 手册 §25.6 gate list). File 280 → 284 lines (within plan body cap "不超 cap").
+  resolved_at: 2026-05-22.
+  **provenance**: Δ-1 path; canonical source = this M-FU plan body self-citation (lines 132-135
+  pre-update; user-authored at `3755c94` plan registration), NOT git verbatim — trim was
+  internal to `24b7ea3` (M2 content-fill) authoring Pass 1+2, pre-commit; trimmed verbatim never
+  entered git as committed state. §7 Pre-flight Discipline 5th runtime application:
+  source-provenance ambiguity intercept resolved by using user-authored canonical source.
+- **M3-FU-A2-HOOK-IMPROVER-BODY** — **state: active**; disposition: deferred to M4
+  (depends on EVAL framework Phase 2 maturity); blocked_by: D-1b skeleton landing
+  (Stage D 2026-05-21) + EVAL framework readiness; scope: 替换 D-1b stubbed body
+  (`Write-Host` + `exit 0`) 为 draft-producer 真逻辑 — 含 session signal analysis +
+  proposed CLAUDE.md update draft 生成 + 写出到 `evidence/ai-context-audit/<YYYY-MM-DD>_session_<id>_proposed_claude_md_update.md`
+  (per existing design commit `550e46b` + R-G21 mitigation per `spec-anchored-calm-lampson.md §10`).
+  调用 D-1b 已定义的 `Test-PathAllowed` function 强制 allowlist + denylist 边界. Hook
+  永不直接 write root CLAUDE.md; user manual review draft + 手动 apply. registered_at:
+  2026-05-21. rationale: D-1b 落 skeleton + defense functions; 真逻辑推 M4 配 EVAL framework.
+- **M3-FU-BODY-SHA256-STRICT-YAML-FALLBACK** — **state: active**; disposition: deferred to M4
+  (independent validator investigation; 新增 disposition 枚举 D-3e); blocked_by: 调查
+  `body_sha256()` 在 `scripts/sdd/_common/` 共享 utility 实际被几个 validator 调用（V3/V4/V7?）
+  + 现 fallback 行为是否在这些 validator 上被实际触发; scope: 6 infra SKILLs 的 `Do not use
+  for:` colon-space 让 strict-YAML 解析失败，`body_sha256` fallback 返回 full-file hash 而非
+  body-only hash；正确算法 = canonical regex-strip（per `claude-skill.contract.yml` spec）；
+  调查范围：列 `body_sha256` 被哪些 validator 调用 + 各 validator 是否依赖 body-only 语义，
+  若是则修 `body_sha256` 改用 regex-strip primary path + strict-YAML fallback. registered_at:
+  2026-05-21 (Stage D D-1c discovery). discovery_evidence: `871f889` commit body +
+  `evidence/ai-context-audit/2026-Q2.md` §4b note. rationale: D-1c audit 已用正确算法所以
+  baseline 数据正确；bug 在 utility function 本身，影响范围未知，需独立调查不挤压 Stage D scope.
 
 ### Phase M4（~2 周）
 

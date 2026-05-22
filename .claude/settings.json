@@ -31,6 +31,16 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File ${CLAUDE_PROJECT_DIR}/.claude/hooks/stop-claude-md-improver/on-stop.ps1"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {}

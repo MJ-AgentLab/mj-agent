@@ -178,6 +178,8 @@ _extract_list_items(value_ast: ast.AST) -> list[str]
 **G28 联动** — `agent.contract.yml` `tools[]` / `middleware_chain[]` / `hitl_required[]` 任一
 增删 → 必须有 failing→green 转变 in `tests/contracts/<capability>/test_agent_contract.py`.
 
+（RD10=C 软模式同 `python.md` §TDD Rules）
+
 ## §CI Gate
 
 **Script gate**: `scripts/sdd/check_agent_contracts.py`

@@ -226,6 +226,10 @@ pair；refactor 无软模式）.
   行为；走 `@adapter:<name>` BDD scenario + EVAL regression；M4+ EVAL framework baseline 后
   强化（per ADR-024）
 
+**G28 与 6 adapter validator 协同关系**：G28（PR-level test-first gate）强制 contract YAML
+diff 配套 failing→green test 转变；6 adapter contract validator（schema 反向校验）做 CI-time
+持续反向校验. 两者协同关系：PR-time 单点门 + CI-time 持续守卫；schema-layer drift 任一通道 block.
+
 **手册 §25.6 完整 CI Gate 列表**（mj-agent 对应映射）：
 
 - **BDD gates**：`bdd-feature-syntax` / `bdd-scenario-trace`（mj-agent G19）/

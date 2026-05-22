@@ -199,7 +199,8 @@ Scenario: prod compose up fails fast when external network is missing
   cross-check；对应 §TDD Rules schema-layer test-first
 
 **Red-Green-Refactor 软模式 RD10=C** — AI-generated Dockerfile / compose 变更允许 "test
-alongside change"；人工编写仍严格 red-green.
+alongside change"（同一 PR 内含 test + 实装；不强制先 commit failing test）；人工编写仍严格
+red-green.
 
 **`_common.yaml_io` 接口共享** — Stage A 实装；本 adapter 与 prompt / runtime-skill /
 claude-code-skill adapter 共用 YAML 解析：

@@ -144,6 +144,5 @@ skills:                                             # 6 SKILLs alphabetical (no 
       - "## Handoff"
 
 hitl_required:
-  - mcp-server-trust-posture-change                 # M3+ placeholder per Forward clarification #3
-                                                    # gate name finalization deferred to M3-FU-HITL-ENUM
-                                                    # (canonical naming consolidation in policies/ai-agent.md)
+  - mcp-server-trust-posture-change                 # canonical enum per `policies/ai-agent.md §4`
+                                                    # (D-3d landing 0d9caf2; D-3a cleanup 2026-05-22)

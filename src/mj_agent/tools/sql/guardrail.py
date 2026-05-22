@@ -77,10 +77,18 @@ def is_safe_select(
         return False, "empty SQL"
 
     if not _STMT_START.match(stripped):
+        # When a DDL/DML keyword caused the non-SELECT start, surface it in
+        # the reason so error messages help analyst self-correction
+        # (capabilities/data-agent/safe-sql/contracts/behavior.feature REQ-001).
+        blocked = _BLOCKED.search(stripped)
+        if blocked:
+            return False, f"blocked keyword {blocked.group(0).upper()} detected"
         return False, "only SELECT or WITH ... SELECT is allowed"
 
     if _BLOCKED.search(stripped):
-        return False, "blocked keyword detected (DDL/DML/DCL/maintenance)"
+        blocked = _BLOCKED.search(stripped)
+        keyword = blocked.group(0).upper() if blocked else "DDL/DML/DCL/maintenance"
+        return False, f"blocked keyword {keyword} detected"
 
     allowed = {s.lower() for s in allowed_schemas}
     table_whitelist: dict[str, set[str]] = {}
