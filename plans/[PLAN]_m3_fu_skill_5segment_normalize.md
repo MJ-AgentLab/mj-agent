@@ -6,8 +6,10 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-21
-updated: 2026-05-21
+updated: 2026-05-22
 track: shared
+disposition: M4-FU deferred (新增 disposition 枚举 D-3e; per Stage D Gate-1 2026-05-21; 必停 surface impact + bundle with V4-SKILLS-COMPLETE)
+deferred_at: 2026-05-21
 refines:
   - plans/[PLAN]_spec_anchored_refactor.md
 supersedes: []

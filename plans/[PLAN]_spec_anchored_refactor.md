@@ -128,7 +128,9 @@ review / revert）：
   （`python.md→§22.1` / `langchain-agent.md→§22.4` / `prompt.md→§22.5` /
   `runtime-skill.md→§22.6` / `claude-code-skill.md→§22.7` / `docker-container.md→§23` /
   `bdd-tdd.md→§25`）（C1；M2 期间约定但未落实；blueprint 不入仓，plans/ 仅记 task pointer）；
-  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup.
+  估时 ~0.5h；vault 文件 in-place 更新；依赖 M3 startup. **state: active**; disposition:
+  out-of-repo deferred (新增 disposition 枚举 D-3e; vault-only manual edit by user; not Stage D
+  PR scope; user 将在 vault 中独立完成 §22 cross-ref v2.3 更新). deferred_at: 2026-05-21.
 - **M3-FU-BDD-TDD-RESTORE** — ✅ **COMPLETED 2026-05-22 (Stage D D-3b)**. `sdd/adapters/bdd-tdd.md`
   §Contract-Test-First Rule restored 4-line compact mention of "G28（PR-level test-first gate）
   与 6 adapter contract validator（schema 反向校验）协同关系" at line 229 (post Schema-layer
@@ -148,6 +150,17 @@ review / revert）：
   调用 D-1b 已定义的 `Test-PathAllowed` function 强制 allowlist + denylist 边界. Hook
   永不直接 write root CLAUDE.md; user manual review draft + 手动 apply. registered_at:
   2026-05-21. rationale: D-1b 落 skeleton + defense functions; 真逻辑推 M4 配 EVAL framework.
+- **M3-FU-BODY-SHA256-STRICT-YAML-FALLBACK** — **state: active**; disposition: deferred to M4
+  (independent validator investigation; 新增 disposition 枚举 D-3e); blocked_by: 调查
+  `body_sha256()` 在 `scripts/sdd/_common/` 共享 utility 实际被几个 validator 调用（V3/V4/V7?）
+  + 现 fallback 行为是否在这些 validator 上被实际触发; scope: 6 infra SKILLs 的 `Do not use
+  for:` colon-space 让 strict-YAML 解析失败，`body_sha256` fallback 返回 full-file hash 而非
+  body-only hash；正确算法 = canonical regex-strip（per `claude-skill.contract.yml` spec）；
+  调查范围：列 `body_sha256` 被哪些 validator 调用 + 各 validator 是否依赖 body-only 语义，
+  若是则修 `body_sha256` 改用 regex-strip primary path + strict-YAML fallback. registered_at:
+  2026-05-21 (Stage D D-1c discovery). discovery_evidence: `871f889` commit body +
+  `evidence/ai-context-audit/2026-Q2.md` §4b note. rationale: D-1c audit 已用正确算法所以
+  baseline 数据正确；bug 在 utility function 本身，影响范围未知，需独立调查不挤压 Stage D scope.
 
 ### Phase M4（~2 周）
 
