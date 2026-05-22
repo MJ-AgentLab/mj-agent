@@ -48,7 +48,7 @@ H3 hard-confirm 在 Level 2/3 — skill 必须先询问 user 确认 destination 
 
 | Hard Stop | 路径 | 触发原因 |
 |---|---|---|
-| Prod compose | `infra/docker/docker-compose.prod.yml` 任何字段修改 | 生产 runtime 红线（详 `policies/docker-runtime.md` §4） |
+| Prod compose | `infra/docker/docker-compose.prod.yml` 任何字段修改 | 生产 runtime 红线（详 `policies/docker-runtime.md` §4；canonical enum `secrets-grants-or-prod-config` per `policies/ai-agent.md §4`） |
 | External network | `mj-system-backend-network` external 配置变更 | 跨仓边界（per ADR-008） |
 | Healthcheck | mj-agent / mj-agent-postgres / mj-agent-redis healthcheck 字段变更 | 生产可观测性 |
 | Image base | Dockerfile FROM 行 / `base_image_allowlist` 变更 | supply-chain |
@@ -66,6 +66,15 @@ docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f in
 docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml ps
 ```
 
+## CI Gates 触及（本 subdir 路径）
+
+- **V5 docker contracts** — BLOCKING (Stage C C-a; commit `02b1cc8`); validates
+  `capabilities/infrastructure/docker-compose/contracts/{docker,compose}.contract.yml`
+  against `infra/docker/Dockerfile` + 4 compose YAML; sub-flags `--bdd --tdd --compose-config`
+  exercised
+- **V6 runtime expected** — warning (SKELETON BY DESIGN; Phase M4 full probe impl)
+- Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
+
 ## Anti-patterns
 
 - ❌ 省略 `--env-file .env`（导致 postgres init 烘焙 placeholder 密码进 volume）
@@ -75,10 +84,14 @@ docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml ps
 
 ## See Also
 
+- 根级：`CLAUDE.md`（repo-wide map）
 - `policies/docker-runtime.md`（Docker 运行时红线）
 - `sdd/adapters/docker-container.md`（Docker adapter contract）
 - ADR-026（Multi-Environment Compose Profile）
 - ADR-008（Co-Deployment with Upstream Business Warehouse）
+- HITL canonical: `policies/ai-agent.md §4` (Canonical 10-Enum; `secrets-grants-or-prod-config`
+  enum 覆盖 prod compose) + `§7` (Pre-flight Verification Discipline)
+- A2 hook: `.claude/hooks/stop-claude-md-improver/`
 
 ---
 

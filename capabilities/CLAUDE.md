@@ -70,7 +70,17 @@ uv run python scripts/sdd/check_contracts.py <path-to-capability>
 uv run python scripts/sdd/generate_index.py
 ```
 
-> Phase M0 — 上述脚本为 skeleton；Phase M1 起逐步实现.
+> Phase M3 Stage C update：G1/G2/G9 real impl landed per `5cd68a6` (M3-FU-G1G2G9-IMPL);
+> flipped to BLOCKING per `02b1cc8` (Stage C C-a). G3 `check_contracts.py` 仍 M0 skeleton
+> per Stage D 启动状态；Phase M4 real impl tracked separately.
+
+## CI Gates 触及（本 subdir 路径）
+
+- **G1 check_capability_schema** — BLOCKING (Stage C C-a); validates `capabilities/*/*/spec.yml`
+- **G2 check_traceability** — BLOCKING; validates `capabilities/*/*/trace.yml` (schema v1.2)
+- **G9 generate_index** — BLOCKING (`--check` idempotency); regenerates `capabilities/INDEX.auto.md`
+- **G3 check_contracts** — warning (M0 skeleton; Phase M4 real impl)
+- Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
 
 ## Workflow Routing
 
@@ -91,9 +101,13 @@ uv run python scripts/sdd/generate_index.py
 
 ## See Also
 
+- 根级：`CLAUDE.md`（repo-wide map）
 - `sdd/constitution.md`（三柱原则） + `sdd/lifecycle.md`（9 + 5 状态机） + `sdd/gates.md`
   （CI gate）
 - `sdd/templates/`（所有 artifact 的 .template 文件）
+- HITL canonical: `policies/ai-agent.md §4` (Canonical 10-Enum — `declared-contract-change`
+  enum 覆盖本 subdir contracts/) + `§7` (Pre-flight Verification Discipline)
+- A2 hook: `.claude/hooks/stop-claude-md-improver/`
 
 ---
 
