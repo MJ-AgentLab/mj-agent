@@ -111,15 +111,16 @@ review / revert）：
   (5 helper functions + argparse + wire-up). Output 2P/4W/0F with all sub-flags.
   CI V5 step updated to exercise all 3. Evidence:
   [[capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing]].
-- **M3-FU-CLAUDE-SKILL-ADR** — **scope reframed 2026-05-21** per Stage C batch 2 pre-outline
-  reverify（commit `03f1bc7`）：empirical full deep scan 证实 34/34 SKILL 实际**完美**
-  ADR-013 2-field schema 合规（无 deviation）；原 Q-A3 premise "34/34 markdown-body-only
-  convention" categorically false（详 M3-FU-V4-VALIDATOR-INVESTIGATE）；原 A/B/C resolution
-  options 全部 moot。Reframed scope：起草独立 ADR 确立 `.claude/skills/` ongoing schema
-  compliance monitoring 制度 —— validator gate（M3 warning / M4 blocking）+ PR template A12
-  prompt + 季度 audit（A6 sub）三层防御，防 future SKILL drift；不是 "fix existing deviation"
-  而是 "prevent future deviation"；估时 ~1.5h（缩减自原 ~2h；不再起草 normalize migration
-  plan）；产出 1 ADR draft + 监控制度落地点 cross-ref；依赖 M3 startup；独立小 PR.
+- **M3-FU-CLAUDE-SKILL-ADR** — ✅ **COMPLETED 2026-05-22 (Stage D D-3a)**. ADR draft landed
+  at `docs/adr/[ADR]_032_Claude_Skill_Schema_Monitoring.md` (`state: draft / decision:
+  proposed`; promote → accepted at next HITL Gate-3 after Layer 1 V4 promotion to blocking).
+  Defines 3-layer drift-prevention regime: V4 validator gate (Layer 1) + PR template A12
+  prompt (Layer 2; existing per Meta v2.1 §7.7) + A6 quarterly audit (Layer 3; per
+  `evidence/ai-context-audit/SCHEMA.md`). Reframed scope landed verbatim — "prevent future
+  deviation" replaces failed Q-A3 "fix existing deviation" premise. Cleanup: removed stale
+  "gate name finalization deferred to M3-FU-HITL-ENUM" comment from
+  `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`
+  `hitl_required[]` (D-3d closing memo). resolved_by: D-3a commit; resolved_at: 2026-05-22.
 - **M3-FU-HITL-ENUM** — HITL scenario enum 清理（去除重叠；收敛到稳定 8-10 项；统一
   `policies/ai-agent.md` HITL 列表 + `sdd/lifecycle.md` / `sdd/gates.md` HITL trigger 表述）
   （C5；M2 期间约定但未落实）；估时 ~1h；预计 diff ~50 行；依赖 M3 startup；独立小 PR.
