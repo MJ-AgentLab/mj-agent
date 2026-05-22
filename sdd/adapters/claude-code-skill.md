@@ -188,7 +188,8 @@ Scenario: mj-agent-git-push refuses to run on protected branches
   Claude Code SKILL 反之
 
 **Red-Green-Refactor 软模式 RD10=C** — 同其他 adapter；AI-generated SKILL 允许 "test
-alongside SKILL.md"；人工编写仍走严格 red-green.
+alongside SKILL.md"（同一 PR 内含 test + 实装；不强制先 commit failing test）；人工编写仍走
+严格 red-green.
 
 **G28 联动** — `claude-skill.contract.yml` `skills[]` 增删 / `frozen_at` 重签 → 必须配套
 `tests/contracts/<capability>/test_claude_skill_contract.py` 内 failing→green 转变.

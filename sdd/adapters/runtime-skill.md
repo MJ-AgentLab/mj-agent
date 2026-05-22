@@ -172,7 +172,7 @@ strip_frontmatter(content: str) -> str
     # 去 frontmatter 返回 body string；body sha256 计算的输入
 ```
 
-**Red-Green-Refactor 软模式 + EVAL 联动**：
+**Red-Green-Refactor 软模式 (RD10=C) + EVAL 联动**：
 
 - M2-M3：schema-layer test（`check_runtime_expected.py` M2 skeleton；schema 部分由 Stage A 的
   ast-based check 已覆盖；M4 完整实装行为层）
