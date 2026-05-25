@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-05-23
 last_verified: 2026-05-20
 ---
 
@@ -24,6 +24,8 @@ Verify .mcp.json loads correctly:
 uv run python -c "import json; print('servers:', len(json.load(open('.mcp.json'))['mcpServers']))"
 # Expected: servers: 13
 ```
+
+Per spec.yml summary: 13 servers = 1 first-party GitHub + 1 third-party Serena LSP + 10 wrapped pg + 1 third-party ssh-manager.
 
 Populate MCP secrets to OS env (one-time per machine per ADR-030):
 
@@ -121,6 +123,7 @@ done
 - Add the §4 block to PR body per template in `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
 - Block includes: server_name + change_type + trust_posture + credential_mode + rationale
 - Reviewer must approve the block before merge
+- A14 gate enforcement: Phase M3+ blocking; warning at M1 (per `contracts/behavior.feature` REQ-001)
 
 ### Symptom: Wrapper baseline drift detected
 
@@ -144,6 +147,8 @@ done
 - `docs/_baselines/pg_server_baseline.md` — wrapper baseline SOR
 - `.claude/scripts/pg-server-start.cmd` + `.claude/scripts/pg-server-wrapper.mjs`
 - `.claude/scripts/setup-mcp-secrets.ps1` — env var population (Phase 2+ → secrets-pipeline)
+- Cross-cap: `infrastructure.docker-compose` (inbound per spec.yml `cross_capability_refs`; pg-* entries connect to mj-agent-postgres deployed by docker-compose + mj-system biz pg via mj-system-backend-network)
+- Cross-cap: `data-agent.llm-provider` (outbound per spec.yml `cross_capability_refs`; ssh-manager DGX-Spark host 192.168.0.189 = local-openai-compat LLM endpoint host)
 
 ## §5 Post-mortem Trigger
 

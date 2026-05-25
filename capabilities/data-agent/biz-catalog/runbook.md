@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-05-23
 last_verified: 2026-05-20
 ---
 
@@ -104,6 +104,8 @@ Expected:
 4. Update header `source.status: synced`
 5. Re-run alignment tests; should pass
 
+**Cadence reference**: 主动检查 cadence per §6.1 Catalog Freshness Check Cadence SOP; reactive symptom (this block) 是 when 检查命中 drift; proactive cadence (§6.1) 是 when to run the check。
+
 ## §4 Related Artifacts
 
 - `contracts/catalog.contract.yml` — REQ-001 schema completeness
@@ -112,6 +114,9 @@ Expected:
 - `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and live DB
 - `policies/data-boundary.md` §3 — biz-catalog-sync 4 项必停 governance
 - `docs/runbook/dev_studio_walkthrough.md` — broader Studio walkthrough (Phase M5 dissolves)
+- `§6.1 Catalog Freshness Check Cadence SOP` — cross-ref `qcm_catalog.yaml source.status` + `scripts/diff_biz_schema.py` reference
+- `§6.2 Catalog-Sync Skill Walkthrough SOP` — wraps `/mj-agent-runtime-biz-catalog-sync` skill (black-box workflow reference; `biz-catalog-sync` canonical 10-enum HITL per `policies/ai-agent.md §4`)
+- `§6.3 Upstream PR Linkage SOP` — cross-repo coordination with mj-system PR1/PR2 tracking (generic wording; specific PRs evolve)
 
 ## §5 Post-mortem Trigger
 
@@ -122,6 +127,65 @@ Escalate to `evidence/postmortems/` when:
 - REQ-003 SKILL incoherence causes LLM to generate sustained hallucinations (multiple sessions affected)
 
 Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archive.md` retention class permanent.
+
+## §6 Standard Operating Procedures (SOPs)
+
+> Procedural how-to for the 3 most common biz-catalog maintenance scenarios.
+> Each SOP follows Trigger / Pre-conditions / Steps / Verify / Rollback structure
+> per B-1 §6 SOPs precedent (safe-sql runbook §6; PR #M4-BC scope).
+
+### §6.1 Catalog Freshness Check Cadence SOP
+
+**Trigger**: Periodic catalog ↔ DB alignment check (cadence: weekly during active development phase OR after any mj-system upstream merge announcement); OR `source.status: drift_detected` field investigation per §3 catalog drift symptom block.
+
+**Pre-conditions**: Analyst credentials (`POSTGRES_ANALYST_USER`) configured for live DB access; `scripts/diff_biz_schema.py` available (per `qcm_catalog.yaml` header reference).
+
+**Steps**:
+
+1. Run `scripts/diff_biz_schema.py` against current biz_dws/biz_dwd schema → capture diff output
+2. Cross-reference output with `qcm_catalog.yaml source.status` field state (current expected: `drift_detected` per header)
+3. If diff matches expected drift (staged STANDARD `stat_date/qrynum` vs DEV `data_date/day_qrynum`) → log expected; no action
+4. If new unexpected drift surfaced → trigger §6.2 Catalog-Sync Skill Walkthrough SOP
+
+**Verify**: `uv run pytest tests/contract/test_qcm_catalog_alignment.py -m contract -q` → expected PASS (current drift accepted by tests)
+
+**Rollback**: N/A (read-only check; no state change)
+
+### §6.2 Catalog-Sync Skill Walkthrough SOP
+
+**Trigger**: §6.1 surface unexpected drift OR scheduled re-sync after upstream mj-system PR1/PR2 lands per §6.3.
+
+**Pre-conditions**: Catalog modification triggers canonical 10-enum **`biz-catalog-sync`** HITL Gate-2 (per `policies/ai-agent.md §4`); Steps below MUST NOT modify `qcm_catalog.yaml` before HITL Gate-2 ack obtained.
+
+**Steps** (skill wraps; see `/mj-agent-runtime-biz-catalog-sync` for black-box workflow):
+
+1. Invoke `/mj-agent-runtime-biz-catalog-sync` skill — skill performs read-only diff between catalog and live DB, surfaces drift items as proposed changes
+2. **HITL Gate-2 question** — Open `biz-catalog-sync` canonical enum question; obtain user ack on proposed `qcm_catalog.yaml` modifications
+3. User applies proposed diff to `qcm_catalog.yaml` via Edit (skill outputs diff; does not auto-write)
+4. Update `qcm_catalog.yaml source.status: synced` field
+5. Regression: `uv run pytest tests/contract/test_qcm_catalog_alignment.py tests/contract/test_biz_schema_alignment.py -m contract -q`
+
+**Verify**: tests/contract alignment tests PASS; `source.status: synced` field reflects new state
+
+**Rollback**: Revert `qcm_catalog.yaml` changes; tests/contract should return to prior PASS state with drift accepted
+
+### §6.3 Upstream PR Linkage SOP
+
+**Trigger**: mj-system upstream PR (typically PR1 / PR2 per `qcm_catalog.yaml` header reference) announces or merges biz_dws schema changes (column renames / table additions / etc.).
+
+**Pre-conditions**: Cross-repo coordination with mj-system team; mj-agent SUT side does not directly modify upstream biz_dws schema.
+
+**Steps**:
+
+1. File `[AGENT]` issue tracking upstream PR (use generic title format: "Track mj-system PR <ID> — <change summary>")
+2. Monitor upstream PR status (open / merged / reverted)
+3. After upstream PR merged + deployed to DEV biz DB → trigger §6.1 Catalog Freshness Check Cadence SOP
+4. If §6.1 surfaces drift matching upstream PR scope → trigger §6.2 Catalog-Sync Skill Walkthrough SOP
+5. Update `[AGENT]` issue with completion status + reference §6.2 sync result
+
+**Verify**: tests/contract alignment tests PASS post-sync; `qcm_catalog.yaml source.status: synced`; `[AGENT]` issue closed
+
+**Rollback**: If upstream PR reverted → revert §6.2 sync changes; re-verify tests with drift state restored
 
 ---
 

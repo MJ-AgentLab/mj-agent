@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-05-23
 last_verified: 2026-05-20
 ---
 
@@ -150,6 +150,8 @@ docker network ls | grep mj-system-backend-network
 - `/mj-agent-infra-env-teardown` skill — 3-level safety teardown
 - ADR-026 / ADR-008 / ADR-030 — design records
 - `docs/runbook/dev_studio_walkthrough.md` — broader Studio context (Phase M5 dissolves)
+- `§6.1 Volume Backup/Restore SOP` — cross-ref `/mj-agent-infra-env-teardown` Level 2 (destructive; REQ-006 checkpointer data lost warning)
+- `§6.2 Postgres Init Failure Recovery SOP` — cross-ref `infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (REQ-003 `\getenv` + `format` + `\gexec` chain)
 
 ## §5 Post-mortem Trigger
 
@@ -161,6 +163,45 @@ Escalate to `evidence/postmortems/` when:
 - Network: `mj-system-backend-network` accidentally removed → all mj-agent biz queries fail
 
 Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archive.md` retention class permanent.
+
+## §6 Standard Operating Procedures (SOPs)
+
+> Procedural SOPs for 2 docker-compose operational scenarios beyond §3 reactive troubleshooting.
+> Each SOP per B-1 §6 precedent (Trigger / Pre-conditions / Steps / Verify / Rollback);
+> Path δ reduced scope (2 sub-sections vs B-1/B-2 3) per outline +15-25 budget.
+
+### §6.1 Volume Backup/Restore SOP
+
+**Trigger**: Routine backup before Level 3 teardown OR restore after data corruption / §6.2 init failure recovery.
+
+**Pre-conditions**: **⚠️ Volume restore REMOVES existing checkpointer data permanently** (REQ-006 LangGraph state lost); HITL approval required; backup snapshot pre-exist required.
+
+**Steps**:
+1. Backup (pre-teardown): `docker compose <chain> exec mj-agent-postgres pg_dumpall -U postgres > /backups/mj-agent-postgres-$(date +%Y-%m-%d).dump`
+2. **[DESTRUCTIVE]** Teardown (Level 2 per `/mj-agent-infra-env-teardown` SKILL): `docker compose --env-file .env <chain> down -v`
+3. Restart with fresh volume (init script auto-runs): `docker compose --env-file .env <chain> up -d`
+4. Restore snapshot (if recovering): `cat /backups/mj-agent-postgres-<date>.dump | docker compose <chain> exec -T mj-agent-postgres psql -U postgres`
+
+**Verify**: `docker compose <chain> exec mj-agent-postgres psql -U postgres -d mj_agent_memory -c "\dt"` shows expected LangGraph checkpoint tables.
+
+**Rollback**: Re-restore from earlier dump file; if none → checkpointer state lost (LangGraph restart from scratch acceptable per REQ-006 design tolerance).
+
+### §6.2 Postgres Init Failure Recovery SOP
+
+**Trigger**: Init script `01-bootstrap-mj-agent-memory.sh` failed (symptoms in §3: password auth failed / mj-agent stuck Created / healthcheck failing); cannot recover via Symptom block resolutions alone.
+
+**Pre-conditions**: **⚠️ Recovery requires `down -v` (Level 2 teardown) — REMOVES checkpointer data**; HITL approval required; root-cause first via §3 symptoms.
+
+**Steps** (per init script `\getenv` + `format('%I %L', user, password)` + `\gexec` design):
+1. Identify failure: `docker logs mj-agent-postgres | grep -E "(error|CREATE ROLE|CREATE DATABASE)"`
+2. Verify `--env-file .env` per REQ-001 + env integrity: `docker compose <chain> config | grep MJ_AGENT_MEMORY`
+3. **[DESTRUCTIVE]** Teardown with volume removal (only path to re-trigger init): `docker compose --env-file .env <chain> down -v`
+4. Restart — init auto-runs; REQ-003 `\getenv` chain handles shell metacharacters unmangled: `docker compose --env-file .env <chain> up -d`
+5. Wait healthy — REQ-002 `psql -U postgres -d mj_agent_memory -tc 'SELECT 1'` must pass before mj-agent starts.
+
+**Verify**: `docker inspect --format='{{.State.Health.Status}}' mj-agent-postgres` returns `healthy`; mj-agent transitions Created → Up (healthy).
+
+**Rollback**: If init still fails post-cleanup → escalate to §5 Post-mortem Trigger (REQ-003 contract violation); file `[BUG]` with init script SHA + env diff evidence.
 
 ---
 
