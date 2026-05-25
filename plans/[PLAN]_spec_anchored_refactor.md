@@ -18,8 +18,15 @@ phase_progress:
   M0: completed                # PR #177 (Phase M0+M1 merged 2026-05-19/20)
   M1: completed                # PR #177
   M2: completed                # tag phase-m2-complete (2026-05-21)
-  M3: pending
-  M4: pending
+  M3: completed                # PR #182 (Phase M3 close)
+  M4:
+    A: completed                # PR #183 merged 2026-05-22 (Stage A; +353 lines / 3 commits)
+    B: completed                # PR #185 merged 2026-05-25T08:24:21Z (Stage B+C bundled; +920 lines / 12 commits; SHA 09adcd5)
+    C: completed                # same PR #185
+    D: pending                  # G8 + G19-G22 BDD blocking gates flip
+    E: pending                  # TDD warning + G23-G25
+    F: pending                  # G26-G28 conditional + EVAL placeholders + F-7/F-8 closure (F-6 dropped per A-3 R-2 verdict)
+  overall: 50% complete         # A+B+C of A-F (3/6 stages)
   M5: pending
   M6: pending
 ---
@@ -167,6 +174,162 @@ review / revert）：
 **目标**：Evidence required gate blocking（G8）+ Runbook 完整化（每 capability ≥ 100 行）+
 HITL gates 完整化 + ADR-024 EVAL framework baseline 跑（与 mj-agent-runtime-eval-baseline skill
 联动）+ G19-G22 BDD 自动化阈值.
+
+#### Stage A (PR #183; merged 2026-05-22)
+
+**Volume**: 3 commits / +353 insertions; V4 validator promote; ci.yml 8→9 BLOCKING gates; ADR-032 unblock.
+
+**Key landings**:
+
+- **A-1 V4-SKILLS-COMPLETE** — 34/34 SKILLs pass; `scripts/sdd/check_claude_skill_contracts.py` flipped
+  warning → BLOCKING in ci.yml.
+- **A-2 BODY-SHA256 + V4 Mode B joint investigation** — read-only joint investigation report at
+  `evidence/ai-context-audit/2026-05-22_a2-investigation.md` (245 lines); 4 M4-FU candidates surfaced
+  (Bundle B-α + M5+ defer set).
+- **A-3 A2-HOOK readiness eval** — read-only readiness report at
+  `evidence/ai-context-audit/2026-05-22_a3-readiness-eval.md` (97 lines); M5+ defer per R-2 verdict.
+
+**F-6 dropped per A-3 R-2** (Phase M4 outline §1 Stage F 8 → 7 units; A2-HOOK improver body M5+ defer).
+
+**§7 episodes**: 19 cumulative (carried to F-7 cluster amend).
+
+#### Stage B+C (PR #185; merged 2026-05-25T08:24:21Z; SHA `09adcd5`)
+
+**Volume**: 12 commits / +920 lines net (B 5 commits +181 runbook gap-fill / C 7 commits +739 evidence).
+Base develop @ `6662529` (post PR #183 M4-A; 1-commit Dependabot #184 divergence merged-back during PR
+#185 resolution).
+
+**Stage B** (5 runbook gap-fill units; §6 SOPs capability-discretionary 5-data-point validated):
+
+| Unit | Commit | File | Lines |
+|---|---|---|---|
+| B-1 | `c961dfc` | safe-sql/runbook.md (§3 extend + §6 3 SOPs; Path γ via Option β reframe) | +73 |
+| B-2 | `c9a5e91` | biz-catalog/runbook.md (§3 extend + §6 3 SOPs; Path γ) | +63 |
+| B-3 | `25c6c99` | llm-provider/runbook.md (frontmatter-only; Path β / Option b) | -1 (CRLF) |
+| B-4 | `c8f37d6` | docker-compose/runbook.md (§6 2 SOPs volume + init; Path δ mid-scale) | +40 |
+| B-5 | `46b0147` | mcp-server-governance/runbook.md (§1+§3+§4 micro 微调; Path β +5) | +5 |
+
+**Stage C** (7 evidence units; 4 subdirs verification/+security/+runtime/×4; 7 distinct §3 schemas):
+
+| Unit | Commit | Subdir | Lines | §3 Schema | §4 Finding |
+|---|---|---|---|---|---|
+| C-1a | `82ff0ab` | verification/ | 80 | Per-keyword pass rate | SUT-spec UNDOCUMENTED drift |
+| C-1b | `92ebb9f` | verification/ | 95 | Per-rule-ID pass rate | SUT-runbook UNDOCUMENTED (10× magnitude) |
+| C-1c | `26a7876` | security/ | 116 | Attack-vector × layer matrix | SUT-internal-docstring UNDOCUMENTED (1st sub-type; execute.py) |
+| C-2 | `cf674a9` | runtime/ | 96 | Per-source freshness status | DOCUMENTED-drift positive null (biz-catalog governance maturity) |
+| C-3 | `e7e6646` | runtime/ | 98 | Per-REQ probe status | SUT-internal-docstring UNDOCUMENTED (2nd; 3-file scope) |
+| C-4 | `977203b` | runtime/ | 108 | Per-service smoke matrix | SUT-internal-docstring UNDOCUMENTED (3rd; +★ #C4-1 critical path correction) |
+| C-5 | `d2cd5da` | runtime/ | 146 | Per-audit-task matrix | SUT-internal-docstring UNDOCUMENTED (4th; ★★★ 11-file cumulative scope) |
+
+**Convention validation 5-data-point**: NO YAML frontmatter / H1 + 4-bullets / 6 sections / §3 adapts per
+content nature / §6 cluster forward link.
+
+**Cumulative metrics**:
+
+- §0 substantive surfacing rate: **7/7 = 100%** (Stage C); Stage B→C cumulative **11/11 = 100%**.
+- UNDOCUMENTED drift rate: 5/7 = 71% (Stage C); 1 documented-positive-null + 1 critical path correction.
+- SUT-internal-docstring sub-type repeat rate: **4/7 = 57%** (leading; F-7 docstring drift detector
+  candidate).
+- Cumulative 11-file SUT-internal-docstring scope (4 src/ + .env.example + docker-compose.mj-agent.yml +
+  6 SKILL.md).
+- §7 episodes Stage B+C: 62 (Stage A 19 + Stage B 24 + Stage C 38 = 81 cumulative).
+
+#### M4-FU Registry (9 entries: 6 existing + 3 NEW from Stage C trajectory + F-8 in-flight discovery)
+
+- **M4-FU-BODY-SHA256-DOCSTRING-CLARIFY** — **state: active**; disposition: Bundle B-α small docs scope;
+  blocked_by: M4-A close; scope: 澄清 `scripts/sdd/_common/frontmatter.py::body_sha256()` docstring 关于
+  Mode A (canonical regex-strip via `parse_native_frontmatter`) vs Mode B (per-validator `_strip_frontmatter`
+  helpers; deferred) 的语义；~3-5 line docstring edit. surfaced_at: A-2 investigation 2026-05-22.
+
+- **M4-FU-V4-MODE-B-CLEANUP** — **state: active**; disposition: Bundle B-α small docs scope; blocked_by:
+  M4-A close; scope: 清理 `scripts/sdd/check_claude_skill_contracts.py` 中 V4 Mode B 残留 comments /
+  dead-code 引用 (V4 已实施 Mode A only; Mode B 提案被 reject 后未清理); ~10-15 line edit. surfaced_at:
+  A-2 investigation 2026-05-22.
+
+- **M4-FU-BODY-SHA256-CANONICAL-REFACTOR** — **state: active**; disposition: M5+ defer (larger refactor
+  scope); blocked_by: M5 archive ceremony freezes touch on `_common/frontmatter.py`; scope: refactor
+  `body_sha256()` to use canonical regex-strip primary path + strict-YAML fallback (per 6 infra SKILLs
+  `Do not use for:` colon-space surfaced in A-2); affects V3 + V7 calls (NOT V4 per Mode B reject).
+  surfaced_at: A-2 episode #6.
+
+- **M4-FU-V4-MODE-B-IMPL** — **state: active**; disposition: M5+ defer; blocked_by: M5 ADR-032 promote →
+  accepted at Layer 1 V4 blocking promotion; scope: 评估 V4 Mode B implementation (per-skill
+  `_strip_frontmatter` helper) 是否 still needed post Mode A 稳定运行; likely WITHDRAW per Mode A canonical
+  adequacy; M5 final decision. surfaced_at: A-2 episode #3.
+
+- **M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER** — **state: active**; disposition: M5+ defer per A-3 R-2 verdict;
+  blocked_by: D-1b skeleton + EVAL framework Phase 2 maturity + R-G21 mitigation validation; scope: 替换
+  D-1b stubbed `Write-Host` + `exit 0` body 为 draft-producer 真逻辑 (session signal analysis + proposed
+  CLAUDE.md update draft 生成 →
+  `evidence/ai-context-audit/<YYYY-MM-DD>_session_<id>_proposed_claude_md_update.md`); 调用
+  `Test-PathAllowed` allowlist + denylist 边界. Hook 永不直接 write root CLAUDE.md. surfaced_at: A-3
+  readiness eval 2026-05-22.
+
+- **M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME** — **state: active**; disposition: F-7/F-8 cluster amend;
+  blocked_by: F-7 closure; scope: 修正 Phase M4 outline §1 Stage B 描述 wording (per B-1 §0 #B1-1 critical
+  reframe finding; outline "补 §L2/§L3/§L4" 段落 assumed §-numbered sections; reality runbook §1-§5 + L1/
+  L1b/L4 as INSIDE §3 tags); ~5-10 line outline edit. originated_at: B-1 §0 2026-05-23 (Phase M4 Stage B
+  kickoff).
+
+- **M4-FU-DOCSTRING-DRIFT-DETECTOR** ★ **NEW (Stage C trajectory)** — **state: active**; disposition: F-7
+  governance cluster amend; blocked_by: F-7 closure; trigger: C-1c+C-3+C-4+C-5 §4.1 SUT-internal-docstring
+  sub-type 4/7 = 57% repeat rate (cumulative 11-file scope reveals systematic ADR archive ceremony lag
+  across `.claude/skills/mj-agent-infra-*/` SKILL family + src/ + canonical infra YAML + env template);
+  scope: implement docstring drift detector (类 C-2 4-mechanism governance maturity template OR
+  `scripts/diff_biz_schema.py` pattern; scope = source module docstrings + SKILL.md frontmatter/description
+  + canonical YAML/env templates references vs ADR active/archived state at PR review time);
+  estimated_effort: ~150-300 lines Python detector + ci.yml integration + tests. surfaced_at: C-5 §4.1
+  Grep finding 2026-05-25.
+
+- **M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR** ★ **NEW (Stage C trajectory)** — **state: active**;
+  disposition: independent post-Action 2 OR bundled into F-7 cluster amend; blocked_by: NONE (ready);
+  trigger: C-5 §4.1 #C5-4 11-file cumulative SUT-internal-docstring scope discovered via Grep; scope:
+  ~11-line edit across 11 files; per-file authoritative ADR target per
+  `evidence/security/2026-05-23_sql_injection_audit.md` §4.1 +
+  `evidence/runtime/2026-05-23_quarterly_audit_q2.md` §4.1 per-file tables (llm.py L3 → ADR-027; config.py
+  L62 → ADR-027; execute.py L4-15 → 4-layer L1/L1b/L3/L4 per ADR-029; 6 SKILL.md per-file ADR targets;
+  .env.example L54 → ADR-027; docker-compose.mj-agent.yml L2 → ADR-026); estimated_effort: ~30 min review
+  + 11-line edit + commit + push + PR. surfaced_at: C-5 §4.1 2026-05-25.
+
+- **M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX** ★ **NEW (F-8 in-flight discovery)** — **state: active**;
+  disposition: small docs/skill PR OR bundled into F-7 cluster amend; blocked_by: NONE (ready); trigger:
+  F-8 Step 8 skill recipe bug — bare-repo `update-ref` updates HEAD pointer but NOT worktree files (13
+  stale files surfaced in PR #185 F-8 run; workaround `git reset --hard HEAD` applied); scope:
+  `.claude/skills/mj-agent-flow-post-merge/SKILL.md` Step 8 recipe edit — replace bare-repo `update-ref`
+  with worktree `cd develop && git pull --ff-only` pattern OR add explicit `git reset --hard` post
+  update-ref. estimated_effort: ~3-5 line skill recipe edit. surfaced_at: F-8 PR #185 execution
+  2026-05-25.
+
+**2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
+`M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
+
+- C-1a §4.1 SUT-spec drift (spec.yml REQ-001 "14 dangerous keywords" vs guardrail.py 16+SET SESSION = 17;
+  reconcile via spec doc update OR special-case SET SESSION)
+- C-1b §4.1 SUT-runbook drift (B-1 `c961dfc` runbook §3 L99 "10000" vs precheck.py L155 "1000" per
+  authoritative; 10× magnitude wording correction)
+
+#### F-7 Cluster Amend Trajectory Note
+
+**Cumulative §7 episodes for F-7 cluster amend**: **81 total** (Stage A 19 + Stage B 24 + Stage C 38;
+final tally post-PR #185).
+
+**Disposition pattern** (per cumulative §4.1 precedent established Stage C):
+
+- §0 pre-flight intercepts (per-unit brief synthesis stage) accumulated to F-7
+- §4.1 in-evidence drift documentation → F-7 observation per C-1a/b/c+C-3/C-4/C-5 cumulative
+- NOT M4-FU registry inflation (orthogonal: M-FU captures concrete deliverables; §7 captures epistemic
+  observations + intercept patterns)
+- F-7 single batch amend at Phase F closure aggregates all 81 episodes + governance insights
+
+**F-7 governance insight key candidates**:
+
+- **Docstring drift detector** (per `M4-FU-DOCSTRING-DRIFT-DETECTOR` ★; 11-file evidence systematic across
+  Stage C SUT-internal-docstring sub-type 57% repeat rate)
+- Spec-anchored discipline locks spec/behavior/runbook (PR review + freeze contracts) but in-source
+  docstrings + SKILL descriptions + env templates lag behind ADR archive ceremonies (PR-Γ 2026-05-11
+  ADR-025 split was last touch; subsequent updates didn't propagate to in-source references)
+
+**F-8 closure**: master plan `phase_progress.M4: completed` after Stages D+E+F land.
 
 ### Phase M5（~2 周）
 
