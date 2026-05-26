@@ -60,10 +60,7 @@ def _has_evidence(capability_dir: Path) -> bool:
     evidence_dir = capability_dir / "evidence"
     if not evidence_dir.exists():
         return False
-    for path in evidence_dir.rglob("*"):
-        if path.is_file() and path.name != _GITKEEP:
-            return True
-    return False
+    return any(path.is_file() and path.name != _GITKEEP for path in evidence_dir.rglob("*"))
 
 
 def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:

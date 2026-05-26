@@ -17,7 +17,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
-
 from scripts.sdd.check_capability_evidence_required import (
     _has_evidence,
     _validate_capability,
