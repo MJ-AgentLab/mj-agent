@@ -33,4 +33,26 @@ def resolve_display_path(path: Path, repo_root: Path) -> str:
         return str(path)
 
 
-__all__ = ["discover_contracts", "resolve_display_path"]
+def discover_capabilities(
+    repo_root: Path,
+    capability_arg: Path | None = None,
+) -> list[Path]:
+    """Discover capability directories via ``spec.yml`` glob.
+
+    Returns capability DIRS (not spec.yml file paths) so callers can access
+    both ``<cap>/spec.yml`` and ``<cap>/evidence/`` from the same Path.
+
+    If ``capability_arg`` is provided, look for the single
+    ``<capability_arg>/spec.yml``. Otherwise glob
+    ``capabilities/*/*/spec.yml`` parents.
+    """
+    if capability_arg is not None:
+        candidate_spec = (capability_arg / "spec.yml").resolve()
+        return [capability_arg] if candidate_spec.exists() else []
+    capabilities_dir = repo_root / "capabilities"
+    if not capabilities_dir.exists():
+        return []
+    return sorted(p.parent for p in capabilities_dir.glob("*/*/spec.yml"))
+
+
+__all__ = ["discover_contracts", "discover_capabilities", "resolve_display_path"]

@@ -133,6 +133,18 @@ jobs:
 
       # ===== End of Phase M3 Stage C V7 block =====
 
+      # ===== Spec-Anchored Refactor Phase M4 Stage D D-1 — G8 evidence-required =====
+      # G8 trigger semantic (per most-specific-SoT sdd/lifecycle.md L69):
+      # "verifying → active | evidence 写入 + trace.yml 链路完整 | G8 evidence required (Phase M4 起 blocking)".
+      # Validator fires only when capability `lifecycle_state == "active"`; otherwise SKIPs.
+      # All 5 pilots currently `lifecycle_state: drafting` → 5SKIP baseline at landing;
+      # enforcement activates as capabilities mature per state machine (tracked by
+      # M4-FU-CAPABILITY-STATE-EVOLVE-PILOTS).
+      - name: 'G8 capability evidence required (BLOCKING per Stage D D-1; 0P/0W/0F/5SKIP per current pilot state)'
+        run: uv run python scripts/sdd/check_capability_evidence_required.py --all
+
+      # ===== End of Phase M4 Stage D D-1 G8 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
