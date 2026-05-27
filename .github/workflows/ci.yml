@@ -145,6 +145,20 @@ jobs:
 
       # ===== End of Phase M4 Stage D D-1 G8 block =====
 
+      # ===== Spec-Anchored Refactor Phase M4 Stage D D-2 — G19 BDD scenario trace =====
+      # Per gates.md L58 (most-specific row authoritative; L96 omits G19 row):
+      # "G19 | check_bdd_scenario_trace.py | 关键 scenario 绑定 REQ/CTR | M3 warning / M4 blocking"
+      # Per gates.md L51: same script via --scope docker for L51 docker-bdd-scenario-check subset.
+      # R-N v8 R-1 Decision Matrix (supersedes R-N v7 R-1; D-2 Step 5 escalation lock-in):
+      # TAG layer (validator concern) = FAIL on @REQ/@CTR missing;
+      # TRACE layer (maintenance concern) = WARN on trace.yml bdd 层 mapping gap;
+      # healthy = PASS. Dry-run baseline: 16P/1W/0F (1 WARN = llm-provider/REQ-003
+      # trace gap; M4-FU-LLM-PROVIDER-TRACE-YML-BDD-COMPLETE).
+      - name: 'G19 BDD scenario trace (BLOCKING per Stage D D-2; 16P/1W/0F per R-N v8 R-1)'
+        run: uv run python scripts/sdd/check_bdd_scenario_trace.py --all --scope full
+
+      # ===== End of Phase M4 Stage D D-2 G19 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
