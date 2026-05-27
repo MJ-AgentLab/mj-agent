@@ -159,6 +159,24 @@ jobs:
 
       # ===== End of Phase M4 Stage D D-2 G19 block =====
 
+      # ===== Spec-Anchored Refactor Phase M4 Stage D D-3 — G21 BDD acceptance =====
+      # Per gates.md L60 + L96 ("G21/G22 启用" mode-unqualified → WARNING per outline
+      # §3 v2 + Phase M3 L95 G19/G20 warning precedent). Authoritative scope spec
+      # per sdd/adapters/bdd-tdd.md L161: "@risk:high / @risk:critical scenario 必含
+      # pass_rate: 1.0 或 justification".
+      # R-N v9 R-9-1 filter: @risk:critical OR @risk:high (15 scenarios across 4 pilots;
+      # mcp-server-governance medium-only excluded).
+      # R-N v9 R-9-2 4-layer policy: (a) risk filter precondition + (b) TAG layer FAIL
+      # per R-N v8 R-1 inherit + (c) TRACE layer WARN per R-N v8 R-1 inherit +
+      # (d) EVIDENCE pass_rate DEFERRED to M-FU#4 Stage E α'.
+      # Dry-run baseline: 14P/1W/0F (1W = llm-provider/REQ-003 cross-gate inheritance
+      # from D-2 G19 M-FU#1 trace curation gap).
+      - name: 'G21 BDD acceptance (warning per Stage D D-3; @risk:critical|high subset; 14P/1W/0F per R-N v9 R-9-2)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_bdd_acceptance.py --all
+
+      # ===== End of Phase M4 Stage D D-3 G21 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
