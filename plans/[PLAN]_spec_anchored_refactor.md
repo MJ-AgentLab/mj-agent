@@ -23,10 +23,10 @@ phase_progress:
     A: completed                # PR #183 merged 2026-05-22 (Stage A; +353 lines / 3 commits)
     B: completed                # PR #185 merged 2026-05-25T08:24:21Z (Stage B+C bundled; +920 lines / 12 commits; SHA 09adcd5)
     C: completed                # same PR #185
-    D: pending                  # G8 + G19-G22 BDD blocking gates flip
-    E: pending                  # TDD warning + G23-G25
+    D: completed                # PR #187/#188/#189/#190/#191 merged 2026-05-26..28 (5 units D-1..D-5; +2,492 insertions cumulative; SHA 0886f8a)
+    E: active                   # Stage E α' planning kickoff (Action-N-1 this PR); sub-stages E-0..E-4; Scoping decision Option (b) capability-owner curation (R-13-3)
     F: pending                  # G26-G28 conditional + EVAL placeholders + F-7/F-8 closure (F-6 dropped per A-3 R-2 verdict)
-  overall: 50% complete         # A+B+C of A-F (3/6 stages)
+  overall: 66% complete         # A+B+C+D of A-F (4/6 stages); D landed 5/5 units; E α' planning underway
   M5: pending
   M6: pending
 ---
@@ -234,7 +234,58 @@ content nature / §6 cluster forward link.
   6 SKILL.md).
 - §7 episodes Stage B+C: 62 (Stage A 19 + Stage B 24 + Stage C 38 = 81 cumulative).
 
-#### M4-FU Registry (9 entries: 6 existing + 3 NEW from Stage C trajectory + F-8 in-flight discovery)
+#### Stage D (5 PRs #187/#188/#189/#190/#191; merged 2026-05-26..28; develop SHA `0886f8a`)
+
+**Volume**: 12 commits / +2,492 insertions cumulative across 5 units. Per Path β degraded
+dual-stage reframe (D=implement validators / E α'=flip warning→blocking;original Path α
+"flip pre-existing" found 5/5 validators absent at §0 — reframe locked at Stage D kickoff).
+
+**Stage D 5 units** (BDD/TDD gate implementation;Section 5 stability validated cumulative
+— 0 _common extension across D-3+D-4+D-5;3 reuse units via import-only):
+
+| Unit | Commit | Gate | Mode | Files | Lines | Validator | Calibration |
+|---|---|---|---|---|---|---|---|
+| D-1 | `02e1502`+`6d44da7` | G8 capability evidence | BLOCKING | 3 | 155 | `check_capability_evidence_required.py` | Simple Solo -38% (n=1) |
+| D-2 | `1500e4b` | G19 BDD scenario trace | BLOCKING | 4 | 693 | `check_bdd_scenario_trace.py` + `_common.bdd_helpers` (8th module deploy) | Compound +41% (n=1) |
+| D-3 | `c820664` | G21 BDD acceptance | WARNING (phased) | 3 | 372 | `check_bdd_acceptance.py` (bdd_helpers FULL 5-func reuse) | Complex Solo +18% (n=1) |
+| D-4 | `f938221` | G22 BDD unautomated justification | WARNING (R-10-8 phased) | 3 | 413 | `check_bdd_unautomated.py` (bdd_helpers 4-of-5 SUBSET) | Complex Solo +32% (n=2) |
+| D-5 | `a254461` | G23 + G24 TDD pair | WARN+BLOCKING (R-12-3 immediate;dormant SKIP) | 3 | 425 | `check_tdd_test_list.py` single+subflag (V5 precedent;extract_headings reuse) | TDD Solo +1% (n=1) ★ best-aligned |
+
+**G20 omission**: Phase M4 outline §1 Option A locked at Stage D kickoff (gates.md L96
+"G21/G22 启用;G23/G24 warning" + L62 G23 "M4 warning / M6 blocking") — G20 step coverage
+deferred to Phase M5+ (NOT in Stage D scope).
+
+**Cumulative metrics**:
+
+- ci.yml steps: 25 → **31** (+6;G8 + G19 + G21 + G22 + G23 + G24)
+- `continue-on-error: true` count: 2 → **5** (G21 + G22 + G23 WARNING;G24 BLOCKING)
+- 5 validators alive on develop (G19 full 16P/1W/0F + docker 3P/0W/0F + G21 14P/1W/0F +
+  G22 0P/14W/0F + G23 15P/5W/0F + G24 0P/0W/0F SKIP)
+- WARN baselines surfacing real curation gaps (honest signal):
+  * G19+G21 cross-gate: `llm-provider/REQ-003` trace gap (M-FU#1 priority reinforced)
+  * G22: 14W runbook 4-field justification absence (5 pilots × ~3 critical/high;M-FU#7)
+  * G23: 5W tasks.md TDD test_list absence (5 critical/high tasks;M-FU#9 ACTIVATED)
+- M-FU#3 sub-taxonomy calibration **4 patterns** locked-progress (Simple Solo n=1 / Complex
+  Solo n=2 mean +25% / Compound n=1 / TDD Solo n=1)
+- §7 episodes Stage D: ~79 (Stage A 19 + B+C 62 + D 79 = **160 cumulative** F-7 baseline)
+
+**Key R-N progression locked Stage D全程** (v2→v12 cumulative):
+
+- R-N v6 (D-1): lifecycle_state per sdd/lifecycle.md L69 SoT (most-specific wins)
+- R-N v7 (D-2): trace.yml graceful (R-1) + quintuple→quadruple verify (R-2) + Step 1.5
+  shared infra mini-review (R-3)
+- R-N v8 (D-2): G19 FAIL/WARN/PASS Decision Matrix policy separation (helper FACTS /
+  validator POLICY)
+- R-N v9 (D-3): G21 4-layer policy (filter + tag + trace + evidence-DEFERRED) + Option B
+  MVP pattern transplant
+- R-N v10 (D-4): G22 2-layer + R-10-8 phased-rollout framing (L121 "M4 blocking" =
+  end-state via Stage E α' flip per outline §4 R-1''; NOT spec deviation)
+- R-N v11 (D-4): conditional cap raise (R-11-2b 400→460 pre-authorized) + Complex Solo
+  variance flag
+- R-N v12 (D-5): single+subflag dispatch + G24 BLOCKING immediate (NOT R-10-8 transplant)
+  + branch-conditional SKIP + R-12-9 fire-path test 强制
+
+#### M4-FU Registry (18 entries: 9 carry + 9 NEW Stage D trajectory; Action-N-1 reconcile)
 
 - **M4-FU-BODY-SHA256-DOCSTRING-CLARIFY** — **state: active**; disposition: Bundle B-α small docs scope;
   blocked_by: M4-A close; scope: 澄清 `scripts/sdd/_common/frontmatter.py::body_sha256()` docstring 关于
@@ -300,6 +351,101 @@ content nature / §6 cluster forward link.
   update-ref. estimated_effort: ~3-5 line skill recipe edit. surfaced_at: F-8 PR #185 execution
   2026-05-25.
 
+**9 NEW Stage D trajectory M-FU** (M-FU#1..#9; Action-N-1 propagated to registry per R-13-7
+reconcile; category triage per R-13-* assessment):
+
+- **M-FU#1 `M4-FU-LLM-PROVIDER-TRACE-YML-BDD-COMPLETE`** — **state: active**; **category: Stage E α'
+  Prerequisite (G21 + G22 cross-gate)**; blocked_by: E-0 curation gate; scope:
+  `capabilities/data-agent/llm-provider/contracts/trace.yml` add scenario name
+  `effective_llm_api_key returns "EMPTY" sentinel for local provider when LLM_API_KEY is empty`
+  to bdd 层 REQ-003 link (1-line additive); cross-gate signal G19 (D-2) + G21 (D-3) + G22 (D-4
+  filter excludes) all surface this scenario — curation drives 3-gate resolution in tandem.
+  surfaced_at: D-2 §0 #3 trace.yml audit 2026-05-26.
+
+- **M-FU#2 `M4-FU-D-1-BRIEF-STEP-5-RUFF-MYPY-PARITY`** — **state: active**; **category:
+  Informational (process discipline)**; blocked_by: NONE; scope: Step 5(a) brief template wording
+  strengthen to `uv run ruff check --fix` (auto-fix flag mandatory; lesson registered after D-1
+  I001 import sort recurrence + D-2..D-5 4× cumulative reapplication). surfaced_at: D-2 5(a) ruff
+  fix recurrence 2026-05-26.
+
+- **M-FU#3 `M4-FU-FLOOR-ESTIMATE-CALIBRATION`** — **state: active**; **category: Informational
+  (calibration accumulator)**; blocked_by: NONE; scope: §9 Mid estimate calibration multi-AMEND
+  across D-2/D-3/D-4/D-5; sub-taxonomy 4 patterns locked-progress: **Simple Solo** D-1 -38% (n=1;
+  Mid -20% baseline) + **Complex Solo** D-3 +18% / D-4 +32% (n=2 mean +25%; Mid ×1.5 cap heuristic)
+  + **Compound** D-2 +41% (n=1; Mid ×1.4) + **TDD Solo NEW** D-5 +1% (n=1; Mid ×1.0 best-aligned;
+  single+subflag economy). E-stage data may surface NEW patterns (Curation / Flip Solo).
+  surfaced_at: D-2 §9 + D-3 sub-taxonomy R-11-3 refinement 2026-05-27.
+
+- **M-FU#4 `M4-FU-G21-EVIDENCE-PASS-RATE-STRICT`** — **state: active**; **category: Stage E α'
+  Prerequisite (G21 flip)**; blocked_by: E-0 curation gate; scope: G21 strict mode tightening
+  before BLOCKING flip — add `load_bdd_evidence` helper to `_common.bdd_helpers` (Section 5
+  additive expansion + R-N v?? + Step 1.5 reinstate) + `evidence/bdd/*.md` frontmatter
+  `pass_rate: 1.0` field check + justification fallback semantic (location TBD per bdd-tdd.md
+  L161 wording "或 justification"); validator extend layer (d) from DEFERRED to actual check.
+  surfaced_at: D-3 §0 Trigger #2 materialized + Option B selection 2026-05-27.
+
+- **M-FU#5 `M4-FU-G21-RISK-CRITICAL-HIGH-FILTER-SCOPE-CLARIFY`** — **state: active**; **category:
+  Stage E α' Prerequisite (G21 flip)**; blocked_by: E-0 curation gate; scope: spec wording
+  ambiguity reconcile — gates.md L60 "关键 (key)" vs bdd-tdd.md L161 "@risk:critical|high"
+  explicit clarification before BLOCKING flip; specific question: "关键" = critical|high or
+  critical-only? mcp-server-governance medium-only G21 excluded? D-3 default critical|high per
+  L161 authoritative most-specific-SoT. surfaced_at: D-3 §0 #3 5-pilot inventory 2026-05-27.
+
+- **M-FU#6 `M4-FU-G22-MODE-WARN-TO-BLOCKING-FLIP`** — **state: active**; **category: Stage E α'
+  Prerequisite (G22 flip)**; blocked_by: E-0 curation gate (M-FU#7 runbook); scope: G22 ci.yml
+  flip `continue-on-error: true` → `false` + Severity.WARN → Severity.FAIL reclassification on
+  curation gap (per L121 end-state via Stage E α' flip per outline §4 R-1''; R-10-8 phased-
+  rollout framing); requires M-FU#7 runbook 0W validation pre-flip. surfaced_at: D-4 §0 L96
+  vs L121 reframe + Option B + R-10-8 phased-rollout lock 2026-05-28.
+
+- **M-FU#7 `M4-FU-RUNBOOK-JUSTIFICATION-CURATE-ALL-PILOTS`** — **state: active**; **category: Stage
+  E α' Prerequisite (G22 flip) ★ LARGEST**; blocked_by: capability-owner curation per Option (b)
+  (R-13-3); scope: 14 critical|high × unautomated scenarios × 5 pilots add `runbook.md`
+  justification 4-field per scenario (原因 / 替代验证手段 / 升级触发条件 / 预计时间); SDD scaffold
+  may provide template skeleton from observable facts (scenario tag + automation_status + ADR
+  archive ceremony deferral) but owner authors domain specifics; per R-13-10 SDD/product
+  boundary discipline. surfaced_at: D-4 §0 #4 5-pilot runbook gap 0/5 justification 2026-05-28.
+
+- **M-FU#8 `M4-FU-G24-BUGFIX-BRANCH-WORKFLOW-READINESS`** (expanded per D-5 N-3) — **state:
+  active**; **category: Stage E α' Prerequisite (G24 readiness)**; blocked_by: NONE (decoupled
+  per R-13-9); scope: pre-first-bugfix-PR validate G24 predicate + bugfix workflow docs +
+  **predicate precision review** (false-positive: config-only fix on bugfix may误阻 legit PR;
+  false-negative: unrelated tests/ change may误 PASS) + bugfix-exempt edge cases (config-only /
+  doc-only fix on bugfix branch) + possible escape hatch (PR label / commit trailer override) +
+  first live-exercise simulation; E-3 decoupled track (parallel E-0 curation). surfaced_at: D-5
+  §0 G24 BLOCKING immediate + branch-conditional SKIP safety analysis + R-12-9 fire-path test
+  2026-05-28.
+
+- **M-FU#9 `M4-FU-G23-TASKS-CURATION-SURFACE`** — **state: active**; **category: M6 Horizon (G23
+  flips @ M6 per L62 designed phased)**; blocked_by: NONE (informational at Stage E α'); scope:
+  5 critical/high priority tasks across 5 pilots missing `**TDD test_list**:` section in tasks.md;
+  capability content maintenance scope per Option (b); SDD scaffold may provide test_list
+  template from existing test files but owner audits/extends; **NOT Stage E α' blocking** (G23
+  WARNING at M4 per L62 designed M4→M6 phased). surfaced_at: D-5 Step 5(d) dry-run 15P/5W/0F
+  ACTIVATED 2026-05-28.
+
+**M-FU Registry Drift Lesson** (R-13-7 + R-13-10): running F-8 lighter snapshots cumulative
+mis-counted M-FU carry as "14" (likely conflation with §7 episode count OR pre-Stage-D total
+estimation drift); plans/[PLAN] L237 authoritative SoT was always **9 entries** pre-Stage-D
+(per Stage A 6 + Stage C 3 NEW); post-Stage-D total = 9 + 9 = **18** (correction landed in
+this Action-N-1 PR). **Discipline forward**: M-FU count cite plans/[PLAN] §M4-FU Registry as
+SoT; F-8 lighter snapshots quote registry directly (NOT self-accumulate). Implicit themes
+(PHASE-MAP-RECONCILE referenced in D-3/D-4/D-5 commit bodies as cumulative AMEND target) NOT
+counted as standalone M-FU entries — they are tracking aids,not deliverables。
+
+**M-FU Category Triage** (Stage E α' readiness;per R-13-* assessment):
+
+- **Cat 1 Stage E α' Prerequisite (6 entries)**: M-FU#1 / #4 / #5 (G21 flip) + #6 / #7 (G22
+  flip) + #8 (G24 readiness) — must resolve BEFORE corresponding flip lands。
+- **Cat 2 M6 Horizon (4 entries)**: M-FU#9 (G23 flips @ M6) + M4-FU-BODY-SHA256-CANONICAL-
+  REFACTOR + M4-FU-V4-MODE-B-IMPL + M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER (3 carry M5+ defers)。
+- **Cat 3 Informational / Process (2 entries)**: M-FU#2 (--fix flag discipline) + M-FU#3
+  (calibration accumulator)。
+- **Cat 4 F-7/F-8 Cluster Amend (6 entries)**: M4-FU-BODY-SHA256-DOCSTRING-CLARIFY +
+  M4-FU-V4-MODE-B-CLEANUP + M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME + M4-FU-DOCSTRING-DRIFT-
+  DETECTOR + M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR + M4-FU-F8-SKILL-STEP-8-WORKTREE-
+  SYNC-FIX。
+
 **2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
 `M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
 
@@ -310,8 +456,8 @@ content nature / §6 cluster forward link.
 
 #### F-7 Cluster Amend Trajectory Note
 
-**Cumulative §7 episodes for F-7 cluster amend**: **81 total** (Stage A 19 + Stage B 24 + Stage C 38;
-final tally post-PR #185).
+**Cumulative §7 episodes for F-7 cluster amend**: **160 total** (Stage A 19 + Stage B 24 + Stage C 38
++ Stage D ~79;updated post-Action-N-1 reconcile @ this PR).
 
 **Disposition pattern** (per cumulative §4.1 precedent established Stage C):
 
@@ -328,8 +474,77 @@ final tally post-PR #185).
 - Spec-anchored discipline locks spec/behavior/runbook (PR review + freeze contracts) but in-source
   docstrings + SKILL descriptions + env templates lag behind ADR archive ceremonies (PR-Γ 2026-05-11
   ADR-025 split was last touch; subsequent updates didn't propagate to in-source references)
+- **PHASE-MAP-RECONCILE pattern** (Stage D cumulative): gates.md L96 generic phase mode wording
+  ("启用" / "warning") repeatedly conflicts with bdd-tdd.md specific row schedule overrides
+  (L121 G22 "M4 blocking" / L62 G23 "M4 warning/M6 blocking" / L63 G24 "M4 blocking") —
+  D-2 R-N v6 most-specific-SoT-wins discipline established; D-3 R-9-1 spec scope expansion;
+  D-4 R-10-8 phased-rollout reframe (outline grounded) vs D-5 R-12-3 phased NOT applicable
+  (no outline grounding for G24). Pattern lesson: gates.md L96 generic mode column should
+  reference specific-row overrides explicitly OR phase-map outline §4 R-1'' coverage expand.
+- **G24 dormant-BLOCKING pattern** (D-5 R-12-9): branch-conditional BLOCKING gate landed without
+  live-fire on landing PR (non-bugfix branch SKIP); R-12-9 unit-test fire-path 强制 covers 3
+  cases (PASS+FAIL+SKIP) to validate before first live-exercise via real bugfix/* PR. Discipline
+  forward: dormant BLOCKING gates require explicit fire-path test + M-FU pre-first-fire readiness.
+- **M-FU Registry SoT discipline drift** (R-13-7+R-13-10): running F-8 lighter snapshots cumulative
+  mis-counted carry "14" vs plans/[PLAN] L237 SoT "9" pre-Stage-D; Action-N-1 reconciled to 18
+  total post-Stage-D + drift lesson registered. Discipline forward: cite plans/ SoT directly;
+  snapshots quote not accumulate.
 
 **F-8 closure**: master plan `phase_progress.M4: completed` after Stages D+E+F land.
+
+#### Stage E α' Outline (planning kickoff @ this PR Action-N-1; sub-stages E-0..E-4 per R-13-1)
+
+**Goal**: G21+G22 BLOCKING flip (curation prereqs done) + G24 bugfix workflow readiness
+(decoupled per R-13-9) + EVAL framework baseline (per outline §4 R-1'') + soak window
++ Action-N-2 M-FU batch resolutions + plans/ Stage E close。
+
+**★ Scoping decision (R-13-3 lock-in)**: **Option (b) — capability-owner curation;SDD
+scaffold-only;infra/product boundary**。 G21/G22 WARN signals come from capability artifact
+content gaps (runbook justification / trace.yml bdd binding);SDD refactor team **does NOT**
+author product-domain content (domain expert authors;avoids anti-fabrication risk of fake
+justification defeating gate purpose);applies even when owner = same person (different hats:
+capability-owner authors specifics / SDD-team scaffolds + flips gates)。Scaffolding bridge:
+Claude Code may generate template skeletons from observable facts (scenario tags / automation_
+status / known ADR deferrals) but owner fills domain specifics。SDD/product boundary
+discipline (R-13-10) prevents:
+1. SDD writing capability product content (out-of-bound;HITL violation)
+2. SDD fabricating plausible-but-wrong justifications (defeats G22 semantic)
+
+**Decouple tracks (R-13-9 lock-in)**:
+
+- **Curation-dependent track**: E-1 + E-2 flips gated on E-0 curation completion
+- **Curation-independent track**: E-3 (G24 readiness) + E-4-prep (EVAL framework harness) =
+  pure SDD infra,not waiting on capability content → 并行推进;avoids Stage E α' stalling
+  if curation cadence slow
+
+**Sub-stage decomposition**:
+
+| Sub-Stage | Scope | Dependencies | Write-Scope | Est. Volume |
+|---|---|---|---|---|
+| **E-0** | Curation prerequisite **gate** (NOT SDD-execution sub-stage):#1 trace add (1 line) + #4 evidence framework + #5 spec clarify (sdd/ amend) + #7 runbook 14W (★ LARGEST: 5 pilots × ~3 critical/high × 4-field;~500-800 lines artifact writes);SDD-team provides templates (R-13-3 scaffold) + verify WARN→0 → unlocks flips | Stage D close ✅ | ★ owner-authored `capabilities/*/{trace.yml, runbook.md}` + sdd/* spec amend | Largest (~500-800 lines;mostly owner content) |
+| **E-1** | G21 BLOCKING flip (ci.yml `continue-on-error: true` → `false` + WARN→FAIL Severity reclassification per R-N v8 R-1 + verify 0W) + EVAL baseline integration | E-0 G21 prereqs done (#1/#4/#5) | ci.yml + `check_bdd_acceptance.py` + tests | Small (~80-150 lines;类 D-3 retrofit) |
+| **E-2** | G22 BLOCKING flip (#6 ci.yml reclass + verify runbook 0W) + EVAL baseline integration | E-0 G22 prereqs done (#6/#7) | ci.yml + `check_bdd_unautomated.py` + tests | Small (~80-120 lines) |
+| **E-3** ⟂ | G24 bugfix workflow readiness — #8 predicate precision review + bugfix-exempt edge cases + escape hatch + first live-exercise simulation | M-FU#8 ready (NO E-0 dep;**parallel** per R-13-9) | `check_tdd_test_list.py` validator extension + tests + docs | Medium (~150-250 lines) |
+| **E-4** | Soak window (1-2 wk per R-13-6) + EVAL baseline harness completion (`tests/eval/` extensions per outline §4 R-1'' + ADR-024) + Action-N-2 M-FU resolutions batch + plans/[PLAN] Stage E close + `phase-m4-stage-e-alpha-prime-complete` tag eligible | E-1..E-3 done + soak observed clean | plans/ + tests/eval/ | Medium (~200-400 lines) |
+
+**EVAL baseline state** (per pre-flight findings):
+
+- Existing harness: `tests/eval/` (golden_seed.jsonl + test_component_against_seed.py + test_golden_seed_schema.py)
+- Pending baseline: M4-FU EVAL framework NOT yet baselined for Phase M4 strict mode (per
+  bdd-tdd.md L226 + L265 + ADR-024)
+- G21 tiered baselines defined (bdd-tdd.md L109): 70% baseline / 100% target / 50% advisory
+  (RD9=B 试行;M3 末批观察 1 月再定)
+- E-4 work scope: baseline measure framework establish + soak observation
+
+**Soak window definition** (R-13-6;to refine in E-4 brief):
+
+- Duration: 1-2 weeks of CI runs without regression (default;refine per real cadence)
+- Pass standard: 0 FAIL across G21+G22+G24 over soak window
+- Monitoring: CI run history daily check;M-FU triggered on FAIL surge
+- Exit criteria: `phase-m4-stage-e-alpha-prime-complete` tag eligible
+
+**Action-N-2 trigger**: E-4 soak window pass + tag eligible → propagate Stage E α' close +
+M-FU resolutions batch (M-FU#1..#9 resolved + carry M-FU updated) + plans/ Stage F open。
 
 ### Phase M5（~2 周）
 
