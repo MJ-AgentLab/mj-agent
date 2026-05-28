@@ -198,6 +198,27 @@ jobs:
 
       # ===== End of Phase M4 Stage D D-4 G22 block =====
 
+      # ===== Spec-Anchored Refactor Phase M4 Stage D D-5 — G23 + G24 TDD pair (FINAL unit) =====
+      # Per gates.md L62-L63 + L96 + sdd/adapters/bdd-tdd.md L197-199:
+      # L62 G23 | check_tdd_test_list.py | 高风险 task 有 tdd.test_list | M4 warning / M6 blocking
+      # L63 G24 | 同 G23（bugfix-regression）| bugfix PR 必有 regression test | M4 blocking
+      # R-N v12 R-12-1 single script + subflag dispatch (V5 precedent).
+      # R-12-2 G23 WARNING (per L62 M4 warning/M6 blocking phased designed).
+      # R-12-3 G24 BLOCKING immediate (per L63+L198 most-specific-SoT;NOT R-10-8 transplant
+      # — outline §4 R-1'' covers G21/G22 only, NOT G23/G24).
+      # R-12-4 G24 branch-conditional: bugfix/* fires; else SKIP (per L198).
+      # R-12-9 G24 fire-path 强制 unit-test coverage (bugfix PASS/missing FAIL/non-bugfix SKIP).
+      # Dry-run baseline: G23 15P/5W/0F (5W = M-FU#9 ACTIVATED tasks curation surface) +
+      # G24 0P/0W/0F SKIP (non-bugfix branch).
+      - name: 'G23 TDD test_list (warning per Stage D D-5; tasks.md critical|high check; 15P/5W/0F per R-N v12 R-12-2)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_tdd_test_list.py --check g23 --all
+      - name: 'G24 bugfix regression (BLOCKING per Stage D D-5; branch-conditional SKIP on non-bugfix; R-N v12 R-12-3)'
+        run: uv run python scripts/sdd/check_tdd_test_list.py --check g24 --all
+
+      # ===== End of Phase M4 Stage D D-5 G23+G24 block =====
+      # ===== Stage D FINAL unit closure: D-1 G8 + D-2 G19 + D-3 G21 + D-4 G22 + D-5 G23/G24 all landed =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
