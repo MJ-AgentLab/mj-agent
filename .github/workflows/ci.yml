@@ -177,6 +177,27 @@ jobs:
 
       # ===== End of Phase M4 Stage D D-3 G21 block =====
 
+      # ===== Spec-Anchored Refactor Phase M4 Stage D D-4 — G22 BDD unautomated justification =====
+      # Per gates.md L61 + L96 + sdd/adapters/bdd-tdd.md L120-122 (G22 strict spec:
+      # @risk:critical|high 未自动化 scenario → runbook.md 必含 justification 段落
+      # with 4 fields: 原因 / 替代验证手段 / 升级触发条件 / 预计时间).
+      # R-N v10 R-10-1 mode: WARNING during Stage D — phased rollout per outline §4
+      # R-1'' (L121 "M4 blocking" = BLOCKING by M4 END via Stage E α' flip per M-FU#6;
+      # Stage D WARNING is designed phased step; R-10-8 documented NOT spec deviation).
+      # R-N v10 R-10-2 predicate: automation_status:unautomated filter + runbook.md
+      # 4-field MVP keyword presence check; WARN-only on missing.
+      # R-N v10 R-10-6 policy: STRUCTURAL FAIL (defensive; expected NOT triggered per
+      # §0 #3 — 5/5 pilots have automation_status field) + CURATION WARN (missing
+      # justification) + 4-field full PASS.
+      # Dry-run baseline: 0P/14W/0F (15 critical|high × unautomated, 1 "absorbed" by
+      # M-FU#1 trace gap; G19+G21+G22 cross-gate inheritance reinforces M-FU#1+M-FU#7
+      # priority; exit 0 per WARNING mode).
+      - name: 'G22 BDD unautomated justification (warning per Stage D D-4; @risk:critical|high × unautomated runbook.md check; 0P/14W/0F per R-N v10 R-10-2)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_bdd_unautomated.py --all
+
+      # ===== End of Phase M4 Stage D D-4 G22 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. The integration suite session-
