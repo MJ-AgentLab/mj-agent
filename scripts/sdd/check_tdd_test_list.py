@@ -54,6 +54,7 @@ from __future__ import annotations
 
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -74,6 +75,9 @@ _PRIORITY_PATTERN = re.compile(r"\*\*Priority\*\*[:：]\s*(\w+)", re.IGNORECASE)
 _TEST_LIST_PATTERN = re.compile(r"\*\*TDD test_list\*\*", re.IGNORECASE)
 _BUGFIX_BRANCH_PATTERN = re.compile(r"^bugfix/")
 _TESTS_PATH_PATTERN = re.compile(r"(^|/)tests/")
+# R-16-3 Option (d) commit trailer escape hatch: presence + non-empty reason hard
+# check. Reviewer culture handles reason quality. HEAD commit only per R-16-9.
+_G24_EXEMPT_TRAILER_PATTERN = re.compile(r"^G24-Exempt:\s+(\S.*)$", re.MULTILINE)
 
 
 def _split_into_task_sections(tasks_md_text: str) -> list[str]:
@@ -156,45 +160,138 @@ def _check_g23_capability(capability_dir: Path, repo_root: Path) -> Summary:
     return summary
 
 
+def _has_exempt_trailer(commit_message: str | None) -> bool:
+    """Detect ``G24-Exempt: <reason>`` trailer in commit message (R-16-3).
+
+    Per Option (d) commit trailer escape hatch + R-16-9 HEAD commit only:
+    presence + non-empty reason hard check; empty reason ("G24-Exempt:" alone)
+    treated as absent (forces explicit reasoning per anti-gate-defeat principle
+    R-16-6). Reviewer culture handles reason quality.
+    """
+    if not commit_message:
+        return False
+    match = _G24_EXEMPT_TRAILER_PATTERN.search(commit_message)
+    return bool(match and match.group(1).strip())
+
+
+def _get_head_commit_message() -> str | None:
+    """Fetch HEAD commit message via ``git log -1 --pretty=%B`` (R-16-9).
+
+    Returns None if subprocess fails (local dry-run outside git context;CI
+    missing GITHUB_SHA). Validator falls back to no-trailer (predicate enforced
+    via tests/ check).
+    """
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--pretty=%B"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=10,
+            check=False,
+        )
+        if result.returncode != 0:
+            return None
+        return result.stdout
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
+def _get_changed_files_via_git_diff() -> list[str] | None:
+    """Fetch CI PR diff via ``git diff --name-only $BASE..$HEAD`` (R-16-4).
+
+    Reads ``GITHUB_BASE_REF`` + ``GITHUB_HEAD_REF`` env vars; returns None on
+    local dry-run (no PR context). Validator SKIPs gracefully when None.
+    Aligns with R-16-3 git-native theme: 0 external API; local + CI uniform.
+    """
+    base = os.environ.get("GITHUB_BASE_REF")
+    head = os.environ.get("GITHUB_HEAD_REF")
+    if not base or not head:
+        return None
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--name-only", f"origin/{base}...origin/{head}"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=15,
+            check=False,
+        )
+        if result.returncode != 0:
+            return None
+        return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
 def _check_g24(
-    branch: str | None = None, changed_files: list[str] | None = None
+    branch: str | None = None,
+    changed_files: list[str] | None = None,
+    commit_message: str | None = None,
 ) -> Summary:
-    """G24: bugfix/* branch must have regression test in PR diff (R-12-3 BLOCKING).
+    """G24: bugfix/* branch must have regression test (R-12-3 BLOCKING).
 
-    R-12-4 branch-conditional: non-bugfix branch OR no context → SKIP.
-    R-12-9 fire-path: bugfix + tests/ file in diff → PASS;else FAIL.
+    Decision flow per R-12-4 + R-16-2 + R-16-3 + R-16-4 + R-16-9:
 
-    N-1 DI: branch + changed_files accept injected values for testing; in CI mode,
-    fallback to GITHUB_HEAD_REF env + git diff (NOT implemented here — placeholder
-    for M-FU#8 readiness work; current dry-run on non-bugfix branch SKIPs cleanly).
+    1. R-12-4 branch-conditional: non-bugfix → SKIP exit 0 (boundary matrix
+       per R-16-2: only ``^bugfix/`` fires; hotfix/fix/feature/maintain/
+       documentation/malformed all SKIP).
+    2. R-16-3 escape hatch (Option d): bugfix/* + ``G24-Exempt: <reason>``
+       trailer in HEAD commit message (R-16-9) + non-empty reason → PASS
+       with exempt-note (anti-gate-defeat per R-16-6: explicit + reviewable).
+    3. R-12-9 primary predicate: bugfix/* + tests/ file in changed_files →
+       PASS; else FAIL (BLOCKING per L63+L198).
+    4. Local dry-run / no PR context: changed_files None → SKIP exit 0
+       (CI fills via ``_get_changed_files_via_git_diff``).
 
-    N-2 MVP-lenient: predicate = "any tests/ file modified on bugfix branch".
-    Precision refinement (config-only fix / doc-only fix exemption / PR label
-    override) → M-FU#8 expanded scope.
+    DI per N-1 (D-5): branch + changed_files + commit_message accept injected
+    values for unit testing (no real git invocation); production reads via
+    ``GITHUB_HEAD_REF`` env + ``_get_head_commit_message`` (git log -1) +
+    ``_get_changed_files_via_git_diff`` (git diff base..head).
     """
     summary = Summary()
     if branch is None:
         branch = os.environ.get("GITHUB_HEAD_REF") or ""
 
+    # Step 1: R-12-4 + R-16-2 branch precision (only ^bugfix/ fires)
     if not _BUGFIX_BRANCH_PATTERN.match(branch):
         return summary  # SKIP: non-bugfix branch OR no PR context
 
+    # Step 2: R-16-3 escape hatch trailer check (HEAD commit only per R-16-9)
+    if commit_message is None:
+        commit_message = _get_head_commit_message()
+    if _has_exempt_trailer(commit_message):
+        # Extract trailer reason for informative note
+        match = _G24_EXEMPT_TRAILER_PATTERN.search(commit_message or "")
+        reason = match.group(1).strip() if match else "(no reason captured)"
+        summary.add(
+            Severity.PASS,
+            f"G24: bugfix branch '{branch}' G24-Exempt trailer present "
+            f"(reason: {reason!r}; R-16-3 Option (d) anti-gate-defeat "
+            "explicit+reviewable escape hatch per R-16-6)",
+        )
+        return summary
+
+    # Step 3: R-12-9 primary predicate (CI fills changed_files via subprocess)
     if changed_files is None:
-        return summary  # SKIP: no PR diff context (local dry-run; M-FU#8 CI fill-in)
+        changed_files = _get_changed_files_via_git_diff()
+    if changed_files is None:
+        return summary  # SKIP: no PR diff context (local dry-run)
 
     has_test_file = any(_TESTS_PATH_PATTERN.search(p) for p in changed_files)
     if has_test_file:
         summary.add(
             Severity.PASS,
             f"G24: bugfix branch '{branch}' includes tests/ file in diff "
-            "(R-12-9 fire-path PASS; MVP-lenient predicate per N-2)",
+            "(R-12-9 fire-path PASS; R-16-3 trailer escape not needed)",
         )
     else:
         summary.add(
             Severity.FAIL,
             f"G24: bugfix branch '{branch}' MISSING regression test in diff "
             f"(no tests/ file in changed_files; per L63+L198 BLOCKING; "
-            "regression test must reproduce the bug per bdd-tdd.md L197-199)",
+            "add regression test OR include 'G24-Exempt: <reason>' trailer in "
+            "HEAD commit per R-16-3 if test不适用 — anti-gate-defeat per R-16-6)",
         )
 
     return summary
@@ -219,6 +316,22 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Override branch detection for G24 (local testing only; CI uses GITHUB_HEAD_REF)",
     )
+    parser.add_argument(
+        "--changed-files",
+        default=None,
+        help=(
+            "Comma-separated changed files for G24 (test injection only; "
+            "CI uses git diff GITHUB_BASE_REF..GITHUB_HEAD_REF per R-16-4)"
+        ),
+    )
+    parser.add_argument(
+        "--commit-message",
+        default=None,
+        help=(
+            "Override HEAD commit message for G24 trailer detection "
+            "(test injection only; CI uses git log -1 per R-16-9)"
+        ),
+    )
     args = parser.parse_args(argv)
 
     repo_root = Path(__file__).resolve().parent.parent.parent
@@ -241,7 +354,16 @@ def main(argv: list[str] | None = None) -> int:
             per_cap.print_messages()
 
     if args.check in ("g24", "both"):
-        g24_summary = _check_g24(branch=args.branch)
+        changed_files_arg: list[str] | None = None
+        if args.changed_files is not None:
+            changed_files_arg = [
+                p.strip() for p in args.changed_files.split(",") if p.strip()
+            ]
+        g24_summary = _check_g24(
+            branch=args.branch,
+            changed_files=changed_files_arg,
+            commit_message=args.commit_message,
+        )
         aggregate.merge(g24_summary)
         g24_summary.print_messages()
 

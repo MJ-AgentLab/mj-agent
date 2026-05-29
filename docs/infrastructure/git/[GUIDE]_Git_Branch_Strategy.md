@@ -333,6 +333,46 @@ git branch -d bugfix/25-guardrail-regex-fix
 > - **bugfix**：从 `develop` 创建，用于修复开发过程中发现的常规 Bug，PR 目标是 `develop`
 > - **hotfix**：从 `main` 创建，用于修复生产环境的紧急 Bug，PR 目标是 `main`，合并后还需同步到 `develop`
 
+#### G24 BLOCKING gate（`bugfix/*` 专属;Stage D D-5 + Stage E α' E-3 lock-in）
+
+`bugfix/*` 分支 PR **必含 regression test**（per sdd/gates.md L63 + sdd/adapters/bdd-tdd.md L197-199 G24 BLOCKING）：
+
+- **Primary 验证**: PR diff 必含至少 1 个 `tests/` 路径下的文件（NEW 或 modified）。Validator
+  `scripts/sdd/check_tdd_test_list.py --check g24` 自动 enforce;CI 失败 → PR 阻塞合并。
+- **覆盖语义**: regression test 须 reproduce 待修 Bug（per bdd-tdd.md L197-199 spec），
+  即 failing-before-fix → passing-after-fix。
+
+#### G24 Escape Hatch（Commit Trailer;R-16-3 Option d;Anti-Gate-Defeat 原则 R-16-6）
+
+合法 no-test bugfix（如 doc-only / config-only / migration-only fix）经由 **HEAD commit
+message trailer** 显式豁免；非 silent bypass（per R-16-6 anti-gate-defeat 原则）：
+
+```text
+fix(docs): typo in CLAUDE.md
+
+Trivial typo fix; no functional change.
+
+G24-Exempt: doc-only fix; no behavior change to test
+```
+
+- **Trailer 格式**: `G24-Exempt: <reason>`（冒号空格分隔;reason ≥1 char hard;≥10 char soft via reviewer culture）。
+- **Trailer location** (R-16-9): **HEAD commit only**（CI 在 branch tip 验）;后续 commit
+  无 trailer 不计;需 amend OR add HEAD commit 应用。
+- **Reviewer culture**: trailer 不绕过 review;reason 的合理性由 reviewer 判断（rubber-stamp = process drift）。
+
+简例汇总：
+
+| 场景 | tests/ in diff | G24-Exempt trailer | G24 结果 |
+|---|---|---|---|
+| 标准 bugfix（含 regression test） | ✅ | — | PASS |
+| Doc-only / config-only bugfix（无 test） | ❌ | ✅ + non-empty reason | PASS (with exempt note) |
+| Bugfix 漏 test 且无 trailer | ❌ | ❌ | **FAIL (BLOCKING)** |
+| 非 `bugfix/*` 分支 | — | — | SKIP (branch-conditional) |
+
+> [!NOTE]
+> G24 不适用 `hotfix/*`（生产紧急修复路径优先速度;hotfix 有独立 review 严格度）;不适用
+> `feature/*` / `documentation/*` / `maintain/*`（per sdd/adapters/bdd-tdd.md L198 "仅 bugfix/* 分支触发"）。
+
 ### 4.3 Documentation 分支
 
 当你需要**单独更新文档**（不涉及代码改动）时，使用 documentation 分支。流程和 feature 分支类似：
