@@ -113,6 +113,113 @@ class TestG24BugfixRegression:
         assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
 
 
+class TestG24BoundaryBranchMatrix:
+    """R-16-2 boundary branch precision: only ^bugfix/ fires (6 boundary cases)."""
+
+    def test_hotfix_branch_skips(self) -> None:
+        # hotfix is different urgency tier (per Git Branch Strategy guide)
+        summary = _check_g24(
+            branch="hotfix/123-emergency",
+            changed_files=["src/mj_agent/x.py"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+    def test_fix_branch_skips(self) -> None:
+        # 'fix' is not a canonical mj-agent branch type
+        summary = _check_g24(
+            branch="fix/typo",
+            changed_files=["src/mj_agent/x.py"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+    def test_bugfix_no_slash_skips(self) -> None:
+        # 'bugfix-something' (no slash) is malformed
+        summary = _check_g24(
+            branch="bugfix-something",
+            changed_files=["src/mj_agent/x.py"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+    def test_feature_bugfix_suggestion_skips(self) -> None:
+        # 'feature/bugfix-suggestion' is feature family
+        summary = _check_g24(
+            branch="feature/bugfix-suggestion",
+            changed_files=["src/mj_agent/x.py"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+    def test_documentation_branch_skips(self) -> None:
+        summary = _check_g24(
+            branch="documentation/some-doc-fix",
+            changed_files=["docs/some.md"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+    def test_maintain_branch_skips(self) -> None:
+        summary = _check_g24(
+            branch="maintain/dep-bump",
+            changed_files=["pyproject.toml"],
+        )
+        assert (summary.pass_count, summary.warn_count, summary.fail_count) == (0, 0, 0)
+
+
+class TestG24EscapeHatchTrailer:
+    """R-16-3 Option (d) commit trailer ``G24-Exempt: <reason>`` escape hatch.
+
+    Anti-gate-defeat (R-16-6): explicit + reviewable; HEAD commit only (R-16-9);
+    presence + non-empty reason hard check (reviewer culture handles reason quality).
+    """
+
+    def test_trailer_present_with_reason_skips_with_note(self) -> None:
+        # Doc-only bugfix legit case: trailer present + reason → PASS+note (not FAIL)
+        summary = _check_g24(
+            branch="bugfix/typo-claude-md",
+            changed_files=["CLAUDE.md"],
+            commit_message=(
+                "fix(docs): typo in CLAUDE.md\n\n"
+                "Trivial typo fix; no functional change.\n\n"
+                "G24-Exempt: doc-only fix; no behavior change to test\n"
+            ),
+        )
+        # Trailer present → bypass FAIL; record as PASS with trailer-exempt note
+        assert summary.fail_count == 0
+        assert summary.pass_count >= 1
+        assert any("exempt" in m.lower() or "G24-Exempt" in m for m in summary.messages)
+
+    def test_trailer_empty_reason_fails(self) -> None:
+        # Presence requires non-empty reason (per R-16-3 hard check)
+        summary = _check_g24(
+            branch="bugfix/typo-claude-md",
+            changed_files=["CLAUDE.md"],
+            commit_message="fix(docs): typo\n\nG24-Exempt:\n",  # empty reason
+        )
+        # Empty reason = treat as absent trailer → FAIL on no tests/
+        assert summary.fail_count >= 1
+
+    def test_trailer_absent_fails_on_no_tests(self) -> None:
+        # Doc-only bugfix WITHOUT trailer → FAIL (anti-gate-defeat;forces explicit)
+        summary = _check_g24(
+            branch="bugfix/typo-claude-md",
+            changed_files=["CLAUDE.md"],
+            commit_message="fix(docs): typo in CLAUDE.md\n",  # no trailer
+        )
+        assert summary.fail_count >= 1
+        assert any("regression" in m.lower() or "missing" in m.lower() for m in summary.messages)
+
+    def test_trailer_present_but_with_tests_passes_normally(self) -> None:
+        # Trailer + tests/ change → still PASS via normal path (trailer not needed)
+        summary = _check_g24(
+            branch="bugfix/foo",
+            changed_files=["src/mj_agent/foo.py", "tests/unit/test_foo.py"],
+            commit_message=(
+                "fix(foo): handle edge case\n\nG24-Exempt: extra precaution\n"
+            ),
+        )
+        # Normal path PASS (tests/ present);trailer extra is harmless
+        assert summary.pass_count >= 1
+        assert summary.fail_count == 0
+
+
 class TestSubflagDispatch:
     """R-12-1 subflag dispatch correctness."""
 
