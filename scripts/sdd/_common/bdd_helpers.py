@@ -271,13 +271,141 @@ def trace_req_ctr(scenario: Scenario, trace_data: dict) -> TraceResult:
     )
 
 
+# ===== Stage E α' E-0a M-FU#4 additive expansion (R-N v18 R-18-2 lock) =====
+# 4 NEW additions (3 funcs + 1 const). Section 5 cumulative discipline 守:
+# existing 5 funcs (parse_feature_file / extract_tags / load_trace_yml /
+# trace_req_ctr / FeatureParseError) + TraceResult shape UNTOUCHED.
+#
+# Refine 1 (Step 1.5 mini-review):
+# - load_runbook + check_justification_fields + JUSTIFICATION_FIELDS are
+#   byte-equivalent MIRROR of D-4 G22 check_bdd_unautomated.py local versions
+#   (_load_runbook + _check_justification_fields + _JUSTIFICATION_FIELDS).
+# - G22 D-4 merged code UNTOUCHED per §7 batch boundary discipline (D-1..D-5
+#   merged content immutable).
+# - Drift guard test asserts identical semantics until M-FU#10 consolidation
+#   (paired-edit warning: BOTH copies must stay identical until consolidated).
+#
+# Refine 2 (M-FU#10 register):
+# - M4-FU-G22-BDD-HELPERS-CONSOLIDATE: post-Stage-E refactor G22 to use
+#   bdd_helpers shared versions (M-FU registry 18 → 19 entries).
+#
+# R-18-6 evidence harness boundary: load_bdd_evidence READS evidence files;
+# does NOT generate populated pass_rate data (anti-fabrication per R-16-6
+# anti-gate-defeat principle; populated evidence comes from automated
+# scenario runs, NOT SDD fabrication).
+
+
+JUSTIFICATION_FIELDS: tuple[str, ...] = (
+    "原因",
+    "替代验证手段",
+    "升级触发条件",
+    "预计时间",
+)
+
+
+def load_runbook(capability_dir: Path) -> str | None:
+    """Load runbook.md text;None on missing/error (M-FU#4).
+
+    MIRROR of D-4 G22 ``check_bdd_unautomated._load_runbook`` (validator-local
+    there per N-3 D-5;promoted to bdd_helpers per M-FU#4 framework reuse).
+    G22 validator NOT touched (§7 batch boundary;D-4 merged preserved).
+    Until M-FU#10 consolidation, BOTH copies must stay identical per
+    paired-edit warning (drift guard test enforces).
+    """
+    runbook_path = capability_dir / "runbook.md"
+    if not runbook_path.exists():
+        return None
+    try:
+        return runbook_path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+
+def check_justification_fields(runbook_text: str | None) -> tuple[bool, list[str]]:
+    """MVP keyword presence check for 4-field justification (M-FU#4;R-15-1 coupling).
+
+    MIRROR of D-4 G22 ``check_bdd_unautomated._check_justification_fields``
+    (validator-local there;promoted to bdd_helpers per M-FU#4 framework reuse).
+    G22 validator NOT touched (§7 batch boundary). Same MVP semantic:
+    per-scenario sectioning standardized at M-FU#7 Stage E α' completion
+    (currently substring check across full runbook body).
+
+    Returns (all_present, missing_fields).
+    """
+    if runbook_text is None:
+        return False, list(JUSTIFICATION_FIELDS)
+    missing = [f for f in JUSTIFICATION_FIELDS if f not in runbook_text]
+    return len(missing) == 0, missing
+
+
+def load_bdd_evidence(
+    capability_dir: Path, scenario_name: str | None = None
+) -> dict | None:
+    """Find + load evidence/bdd/*.md frontmatter for a scenario (M-FU#4 primary).
+
+    Per R-N v18 R-18-2 additive expansion + R-15-1 G21+G22 share runbook
+    justification source coupling. G21 uses this helper for evidence pass_rate
+    primary check;falls back to runbook justification (R-15-1) if evidence
+    absent or pass_rate<1.0.
+
+    Search heuristic: glob ``capability_dir/evidence/bdd/*.md`` and parse
+    frontmatter via ``_common.frontmatter.parse_frontmatter`` (existing). If
+    ``scenario_name`` provided, prefer files whose stem contains keyword
+    (sanitized);else return first found with valid ``pass_rate`` field.
+
+    Schema (per bdd-tdd.md L137-150): expects ``pass_rate: float`` + optional
+    ``scenario_count`` + ``risk_breakdown`` + ``adapter_coverage``.
+
+    Graceful None (R-N v7 R-1 carryover): no evidence dir / no .md files /
+    no parseable frontmatter / no pass_rate field → None. Caller (G21
+    validator) handles fallback to runbook justification per R-15-1.
+
+    ★ Evidence harness boundary (R-18-6 + R-13-10): This helper READS
+    evidence files;does NOT generate fake pass_rate data (populated evidence
+    comes from automated scenario runs OR fallback runbook owner authorship;
+    anti-fabrication per R-16-6 anti-gate-defeat principle).
+    """
+    from scripts.sdd._common.frontmatter import parse_frontmatter
+
+    bdd_dir = capability_dir / "evidence" / "bdd"
+    if not bdd_dir.exists():
+        return None
+
+    md_files = sorted(bdd_dir.glob("*.md"))
+    if not md_files:
+        return None
+
+    # Heuristic: prefer files whose stem contains scenario_name keyword
+    if scenario_name:
+        sanitized = scenario_name.lower().replace(" ", "_")[:30]
+        matching = [f for f in md_files if sanitized in f.stem.lower()]
+        candidates = matching if matching else md_files
+    else:
+        candidates = md_files
+
+    for path in candidates:
+        try:
+            text = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        meta, _ = parse_frontmatter(text)
+        if isinstance(meta, dict) and "pass_rate" in meta:
+            return meta
+
+    return None
+
+
 __all__ = [
     "Feature",
     "FeatureParseError",
+    "JUSTIFICATION_FIELDS",
     "Scenario",
     "ScenarioTags",
     "TraceResult",
+    "check_justification_fields",
     "extract_tags",
+    "load_bdd_evidence",
+    "load_runbook",
     "load_trace_yml",
     "parse_feature_file",
     "trace_req_ctr",

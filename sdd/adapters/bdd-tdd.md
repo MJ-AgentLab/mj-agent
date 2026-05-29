@@ -158,7 +158,7 @@ adapter_coverage: [<adapter_name>, ...]
 
 - `.feature` 路径 + pytest-bdd JUnit XML / HTML 报告链接
 - 未自动化 scenario 的 justification（per `bdd-unautomated-justification` gate）
-- `@risk:high` / `@risk:critical` scenario 必含 `pass_rate: 1.0` 或 justification
+- `@risk:high` / `@risk:critical` scenario 必含 `pass_rate: 1.0` 或 justification（source：`runbook.md`，G21+G22 共用，per L121 + L160；R-15-1 resolution）
 
 **TDD evidence 子契约**：
 

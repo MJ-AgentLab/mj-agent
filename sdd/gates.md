@@ -57,7 +57,7 @@ ai_visibility: source-of-truth
 |---|---|---|---|
 | G19 | `scripts/sdd/check_bdd_scenario_trace.py` | 关键 scenario 绑定 REQ/CTR | M3 warning / M4 blocking |
 | G20 | `scripts/sdd/check_bdd_step_coverage.py` | 自动化 scenario 有 step definition；step 覆盖率达标 | M3 warning |
-| G21 | `scripts/sdd/check_bdd_acceptance.py` | 关键验收场景通过率 | M4 |
+| G21 | `scripts/sdd/check_bdd_acceptance.py` | `@risk:critical\|high` 验收场景通过率（`pass_rate: 1.0`）或 runbook.md justification fallback（同 G22，per L121） | M4 |
 | G22 | `scripts/sdd/check_bdd_unautomated.py` | 未自动化 scenario 在 runbook 说明原因 | M4 |
 | G23 | `scripts/sdd/check_tdd_test_list.py` | 高风险 task 有 tdd.test_list | M4 warning / M6 blocking |
 | G24 | 同 G23（bugfix-regression）| bugfix PR 必有 regression test | M4 blocking |
