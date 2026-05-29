@@ -64,7 +64,7 @@ links:
     bdd:
       feature: contracts/behavior.feature
       scenarios:
-        - "effective_llm_api_key returns 'EMPTY' sentinel for local provider when LLM_API_KEY is empty"
+        - 'effective_llm_api_key returns "EMPTY" sentinel for local provider when LLM_API_KEY is empty'
       automation_status: unautomated
     contracts:
       - contracts/provider.contract.yml

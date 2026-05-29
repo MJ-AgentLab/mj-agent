@@ -54,7 +54,10 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.sdd._common.bdd_helpers import (  # noqa: E402
     FeatureParseError,
     Scenario,
+    check_justification_fields,
     extract_tags,
+    load_bdd_evidence,
+    load_runbook,
     load_trace_yml,
     parse_feature_file,
     trace_req_ctr,
@@ -165,6 +168,113 @@ def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
     return summary
 
 
+def _validate_capability_with_evidence(
+    capability_dir: Path, repo_root: Path
+) -> Summary:
+    """G21 evidence predicate extension (Stage E α' E-0a M-FU#4 reduced per R-15-2).
+
+    Per R-15-1: G21 + G22 share runbook.md as justification source (bdd-tdd.md
+    L160→L121+L161 parsimony). G21 predicate per scenario:
+
+    1. Filter @risk:critical|high (D-3 R-9-1 inherit)
+    2. TAG layer: @REQ + @CTR present (R-9-2 layer b inherit; FAIL if missing)
+    3. TRACE layer: trace.yml bdd 层 binding (R-9-2 layer c inherit; WARN gap)
+    4. ★ EVIDENCE layer (M-FU#4 NEW):
+       a. evidence/bdd/*.md pass_rate >= 1.0 → PASS (primary)
+       b. else fallback: runbook.md 4-field justification full → PASS
+       c. else: WARN (R-18-4 intended gap exposure; NOT regression;
+          保 WARNING mode per R-15-* E-0a does NOT flip)
+
+    R-18-6 evidence harness boundary: this validator READS evidence;does NOT
+    populate fake pass_rate data. Empty evidence harness (E-0a schema-only)
+    + runbook fallback gap → intended WARN-raise per R-18-4 (E-0b owner
+    curation closes WARN → 0 → unblocks E-1 G21 BLOCKING flip).
+
+    R-16-6 anti-gate-defeat cross-ref: evidence + runbook fallback paths are
+    explicit + reviewable;NOT silent auto-exempt OR fabricated content.
+    """
+    summary = Summary()
+    feature_path = capability_dir / "contracts" / "behavior.feature"
+    display = resolve_display_path(capability_dir, repo_root)
+
+    if not feature_path.exists():
+        return summary
+
+    try:
+        feature = parse_feature_file(feature_path)
+    except FeatureParseError as exc:
+        summary.add(Severity.WARN, f"{display}: feature parse error ({exc})")
+        return summary
+
+    filtered = _filter_by_risk(feature.scenarios)
+    if not filtered:
+        return summary
+
+    trace_data = load_trace_yml(capability_dir)
+    trace_missing = trace_data is None
+    if trace_missing:
+        summary.add(
+            Severity.WARN,
+            f"{display}: trace.yml missing OR invalid "
+            "(G21 cannot verify bdd 层 binding; R-N v7 R-1 graceful)",
+        )
+        trace_data_for_check: dict = {"links": []}
+    else:
+        trace_data_for_check = trace_data
+
+    # Pre-load runbook + evidence (once per capability per R-15-1 coupling)
+    runbook_text = load_runbook(capability_dir)
+    runbook_4_field_full, _missing = check_justification_fields(runbook_text)
+
+    for scenario in filtered:
+        tags = extract_tags(scenario)
+        risk_label = ",".join(tags.risk)
+        result = trace_req_ctr(scenario, trace_data_for_check)
+
+        if not result.has_req_tag:
+            summary.add(
+                Severity.FAIL,
+                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "missing @REQ-NNN tag binding",
+            )
+            continue
+        if not result.has_ctr_tag:
+            summary.add(
+                Severity.FAIL,
+                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "missing @CTR-<slug> tag binding",
+            )
+            continue
+
+        # EVIDENCE layer (M-FU#4 R-15-2 reduced; evidence primary + runbook fallback)
+        evidence = load_bdd_evidence(capability_dir, scenario.name)
+        pass_rate_ok = (
+            evidence is not None and float(evidence.get("pass_rate", 0)) >= 1.0
+        )
+
+        if pass_rate_ok:
+            summary.add(
+                Severity.PASS,
+                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "evidence pass_rate=1.0 (M-FU#4 primary path)",
+            )
+        elif runbook_4_field_full:
+            summary.add(
+                Severity.PASS,
+                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "runbook justification 4-field fallback (R-15-1 coupling)",
+            )
+        else:
+            summary.add(
+                Severity.WARN,
+                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "neither evidence pass_rate=1.0 NOR runbook justification "
+                "(R-18-4 intended gap exposure;E-0b curation closes WARN→0)",
+            )
+
+    return summary
+
+
 def main(argv: list[str] | None = None) -> int:
     """G21 validator entry point."""
     parser = build_argparser(
@@ -191,7 +301,11 @@ def main(argv: list[str] | None = None) -> int:
 
     aggregate = Summary()
     for cap_dir in capabilities:
-        per_cap = _validate_capability(cap_dir, repo_root)
+        # Stage E α' E-0a M-FU#4 wire: use evidence predicate extension
+        # (D-3 base _validate_capability preserved for D-3 R-9-2 unit test
+        # regression per §7 batch boundary; main() uses NEW extension per
+        # R-15-1 G21+G22 runbook coupling + R-18-4 intended WARN-raise).
+        per_cap = _validate_capability_with_evidence(cap_dir, repo_root)
         aggregate.merge(per_cap)
         per_cap.print_messages()
 
@@ -199,7 +313,9 @@ def main(argv: list[str] | None = None) -> int:
         f"{_SCRIPT_NAME}: "
         f"{aggregate.pass_count}P / {aggregate.warn_count}W / {aggregate.fail_count}F "
         f"(over {len(capabilities)} capabilities; "
-        "@risk:critical|high subset per R-N v9 R-9-1)"
+        "@risk:critical|high × evidence pass_rate OR runbook fallback per "
+        "R-15-1 + R-18-* lock; 保 WARNING mode per Stage E α' E-0a; "
+        "WARN-raise = R-18-4 intended gap exposure;E-0b curation closes WARN→0)"
     )
     return aggregate.exit_code(strict=args.strict)
 
