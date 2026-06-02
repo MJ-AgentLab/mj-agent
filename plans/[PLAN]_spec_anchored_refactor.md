@@ -565,7 +565,7 @@ discipline (R-13-10) prevents:
 - ✅ **E-0b** — M-FU#7 runbook 4-field justification curation (4 pilots × 15 critical|high scenarios; +261 lines) → G21/G22 15W→0W — PR #198
 - ✅ **E-1/E-2** — G21+G22 combined BLOCKING flip (`continue-on-error:false` + `--strict`) — PR #199 (2026-06-02)
 - ✅ **E-3** — G24 bugfix workflow readiness — PR #194
-- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F); pending: capability promotion + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
+- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F) + ✅ promotion-readiness preflight + soak checkpoint (E-4-PR6: all 5 pilots ready/full-artifacts, gated on clean soak window — not yet elapsed, flip landed 2026-06-02); pending: capability promotion (post-soak) + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
 
 > **Impl reconcile**: E-1/E-2 actual mechanism = `--strict` (WARN→exit 1 via `_common/cli.py` `Summary.exit_code`), **not** the "WARN→FAIL Severity reclassification" wording in the E-1 row above (L525). Per the E-1/E-2 decision no validator severity was rewritten.
 
