@@ -104,6 +104,11 @@ Observation window: 1–2 weeks
 
 Evidence: **Action-N-2 M-FU Registry Reconciliation Batch** table in `plans/[PLAN]_spec_anchored_refactor.md` (§M4-FU Registry).
 
+### Soak-period cleanup — ✅ F8-SKILL-STEP-8 completed 2026-06-02 (E-4-PR7)
+
+- `M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX` → **completed**. Finding: the recipe is already worktree-safe — post-merge Step 8 delegates to `/mj-agent-git-sync`, whose Step 4 uses `git merge origin/develop` (not bare-repo `update-ref`); the #185 incident was ad-hoc, not a recipe bug. Resolution: added a `#185-lesson` worktree-safe guard note to `.claude/skills/mj-agent-flow-post-merge/SKILL.md` Step 8 (in-tree workflow skill — NOT the 必停 `src/mj_agent/skills/`; NOT content_hash-locked).
+- Remaining F-7-ready item: `11-FILE-ADR-025-RECONCILE` (independent small PR or F-7).
+
 ### M3 Carry-over Closure — ✅ triaged 2026-06-02 (E-4-PR3)
 
 - [x] Review `m3_fu_skill_5segment_normalize` → **closed (resolved by E-4-PR4)**
