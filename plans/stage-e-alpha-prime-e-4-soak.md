@@ -83,12 +83,15 @@ Observation window: 1–2 weeks
 - [x] EVAL ran (no blocker); outcome-layer eval (live DB) stays smoke-only, not in baseline denominator
 - Evidence: `capabilities/data-agent/safe-sql/evidence/reports/2026-06-02_adr-024-eval-baseline.md`
 
-### Action-N-2 Registry Batch
+### Action-N-2 Registry Batch — ✅ completed 2026-06-02 (E-4-PR5)
 
-- [ ] Register E-4 conceptual M-FU items only when needed
-- [ ] Do not pre-allocate M-FU numbers
-- [ ] Use master plan registry as source of truth
-- [ ] Include reason / scope / owner / target phase for each M-FU
+- [x] Reviewed all 18 registry entries + 2 M3 carry-over plans (per Cat Triage)
+- [x] Marked completed/superseded items (Cat-1 ×6 via #194/#195/#198/#199; M-FU#2; M3 carry-over via #202/#203)
+- [x] Kept active/deferred items explicit with target phase (M-FU#9 → M6; 3 carries → M5; 6 → Stage F/F-7; 2 ready as independent small PRs)
+- [x] No new M-FU numbers pre-allocated; master plan registry is SoT
+- [x] No capability promotion / Stage F closure mixed in
+
+Evidence: **Action-N-2 M-FU Registry Reconciliation Batch** table in `plans/[PLAN]_spec_anchored_refactor.md` (§M4-FU Registry).
 
 ### M3 Carry-over Closure — ✅ triaged 2026-06-02 (E-4-PR3)
 
