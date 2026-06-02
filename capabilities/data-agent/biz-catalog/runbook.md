@@ -189,4 +189,52 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 ---
 
+## §7 Unautomated Scenario Justifications (M-FU#7)
+
+> Per `sdd/adapters/bdd-tdd.md` L121 + L160 + L161 (G21+G22 share runbook
+> justification source per R-15-1 resolution); BDD scenarios that are not yet
+> automated must include 4-field justification (原因 / 替代验证手段 / 升级触发
+> 条件 / 预计时间).
+
+### G22/G21 Justification: load_catalog rejects YAML whose root parses to a list (not a mapping)
+
+- **REQ**: REQ-001 / **Risk**: high / **Adapter**: python
+- **原因**: M1 baseline；pytest-bdd 框架的 step definitions 集中到 M3 batch
+  land（与 safe-sql 同节奏）。
+- **替代验证手段**: catalog loader (`src/mj_agent/biz_catalog/loader.py`)
+  schema validation 路径 unit-tested；★ 具体 test 文件路径 TBD per owner
+  verify（worksheet 标 需 owner 核实）。
+- **升级触发条件**: M3 pytest-bdd step defs 集中实装；
+  `tests/bdd/data_agent/biz_catalog/` step folder 落地后该 BDD scenario 走
+  pytest-bdd 自动跑。
+- **预计时间**: M3 EOL（per Phase M3 BDD 集中实装节奏；与 safe-sql 同 batch）。
+
+### G22/G21 Justification: Catalog signal_tables must resolve in live biz_dws
+
+- **REQ**: REQ-002 / **Risk**: high / **Adapter**: python / **@gated:live_db**
+- **原因**: live_db 依赖 — automation 需 live test biz_dws postgres fixture
+  (per `@gated:live_db` tag)；CI runner 当前无 live_db。
+- **替代验证手段**: DEV 环境 manual verification（analyst 角色 SELECT 查询
+  biz_dws 验 signal_tables 解析）；catalog YAML 中静态 mapping 已 freeze
+  (`src/mj_agent/biz_catalog/qcm_catalog.yaml`)。
+- **升级触发条件**: live_db test fixture 实装（CI runner 接 test biz_dws OR
+  docker test postgres + seed data）。
+- **预计时间**: M3+（live_db infra 准备后；具体里程碑 TBD per owner planning）。
+
+### G22/G21 Justification: Active SKILL bodies reference only resolvable catalog symbols and DB tables
+
+- **REQ**: REQ-003 / **Risk**: high / **Adapter**: runtime-skill / **@gated:live_db**
+- **原因**: 跨 artifact 验证（SKILL bodies × catalog × live DB）；automation
+  需 live_db + runtime-skill loader integration（per `@gated:live_db` +
+  `@adapter:runtime-skill`）。
+- **替代验证手段**: SKILL body loader strip + frontmatter 一致性已 unit-tested
+  (V4 claude-skill contracts validator BLOCKING per Stage C C-a 34P/0W/0F
+  clean)；catalog symbol resolution × SKILL body cross-ref 当前 manual review。
+- **升级触发条件**: (a) live_db test fixture；(b) runtime-skill loader test
+  infrastructure（cross-ref validation harness 验 SKILL body 引用的 symbol
+  + DB table 都可解析）。
+- **预计时间**: M3+（live_db + runtime-skill infra；TBD per owner planning）。
+
+---
+
 > Phase M1 baseline. M2 will refine §3 troubleshooting with M3 BDD findings.
