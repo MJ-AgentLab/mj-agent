@@ -540,8 +540,10 @@ discipline (R-13-10) prevents:
 **EVAL baseline state** (per pre-flight findings):
 
 - Existing harness: `tests/eval/` (golden_seed.jsonl + test_component_against_seed.py + test_golden_seed_schema.py)
-- Pending baseline: M4-FU EVAL framework NOT yet baselined for Phase M4 strict mode (per
-  bdd-tdd.md L226 + L265 + ADR-024)
+- ✅ **E-4-PR2 baseline established (2026-06-02)**: `uv run pytest tests/eval -q` → 93P/0F/0skip exit 0;
+  `eval.baseline.pass_rate = 1.0` (component + golden-seed schema; no live dep). Evidence:
+  `capabilities/data-agent/safe-sql/evidence/reports/2026-06-02_adr-024-eval-baseline.md`. Outcome-layer
+  (live DB) eval remains smoke-only per ADR-024.
 - G21 tiered baselines defined (bdd-tdd.md L109): 70% baseline / 100% target / 50% advisory
   (RD9=B 试行;M3 末批观察 1 月再定)
 - E-4 work scope: baseline measure framework establish + soak observation
