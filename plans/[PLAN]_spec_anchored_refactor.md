@@ -24,9 +24,9 @@ phase_progress:
     B: completed                # PR #185 merged 2026-05-25T08:24:21Z (Stage B+C bundled; +920 lines / 12 commits; SHA 09adcd5)
     C: completed                # same PR #185
     D: completed                # PR #187/#188/#189/#190/#191 merged 2026-05-26..28 (5 units D-1..D-5; +2,492 insertions cumulative; SHA 0886f8a)
-    E: active                   # Stage E α' planning kickoff (Action-N-1 this PR); sub-stages E-0..E-4; Scoping decision Option (b) capability-owner curation (R-13-3)
+    E: active                   # E-0a #195 + E-0b #198 + E-1/E-2 BLOCKING flip #199 + E-3/G24 #194 all landed; E-4 soak active 2026-06-02 (tracker: plans/stage-e-alpha-prime-e-4-soak.md)
     F: pending                  # G26-G28 conditional + EVAL placeholders + F-7/F-8 closure (F-6 dropped per A-3 R-2 verdict)
-  overall: 66% complete         # A+B+C+D of A-F (4/6 stages); D landed 5/5 units; E α' planning underway
+  overall: ~80% complete        # A+B+C+D done; E sub-stages E-0..E-3 landed + E-1/E-2 flip #199; E-4 soak window active; F pending
   M5: pending
   M6: pending
 ---
@@ -526,6 +526,16 @@ discipline (R-13-10) prevents:
 | **E-2** | G22 BLOCKING flip (#6 ci.yml reclass + verify runbook 0W) + EVAL baseline integration | E-0 G22 prereqs done (#6/#7) | ci.yml + `check_bdd_unautomated.py` + tests | Small (~80-120 lines) |
 | **E-3** ⟂ | G24 bugfix workflow readiness — #8 predicate precision review + bugfix-exempt edge cases + escape hatch + first live-exercise simulation | M-FU#8 ready (NO E-0 dep;**parallel** per R-13-9) | `check_tdd_test_list.py` validator extension + tests + docs | Medium (~150-250 lines) |
 | **E-4** | Soak window (1-2 wk per R-13-6) + EVAL baseline harness completion (`tests/eval/` extensions per outline §4 R-1'' + ADR-024) + Action-N-2 M-FU resolutions batch + plans/[PLAN] Stage E close + `phase-m4-stage-e-alpha-prime-complete` tag eligible | E-1..E-3 done + soak observed clean | plans/ + tests/eval/ | Medium (~200-400 lines) |
+
+**Stage E α' progress (updated 2026-06-02)**:
+
+- ✅ **E-0a** — M-FU#1/#4/#5 (G21 evidence predicate + trace fix + spec amend) — PR #195
+- ✅ **E-0b** — M-FU#7 runbook 4-field justification curation (4 pilots × 15 critical|high scenarios; +261 lines) → G21/G22 15W→0W — PR #198
+- ✅ **E-1/E-2** — G21+G22 combined BLOCKING flip (`continue-on-error:false` + `--strict`) — PR #199 (2026-06-02)
+- ✅ **E-3** — G24 bugfix workflow readiness — PR #194
+- ⏳ **E-4** — soak window active (1-2 wk) + EVAL baseline + Action-N-2 + M3 carry-over closure + capability promotion + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
+
+> **Impl reconcile**: E-1/E-2 actual mechanism = `--strict` (WARN→exit 1 via `_common/cli.py` `Summary.exit_code`), **not** the "WARN→FAIL Severity reclassification" wording in the E-1 row above (L525). Per the E-1/E-2 decision no validator severity was rewritten.
 
 **EVAL baseline state** (per pre-flight findings):
 
