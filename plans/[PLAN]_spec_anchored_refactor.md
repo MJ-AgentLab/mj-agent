@@ -446,6 +446,38 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
   DETECTOR + M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR + M4-FU-F8-SKILL-STEP-8-WORKTREE-
   SYNC-FIX。
 
+**Action-N-2 M-FU Registry Reconciliation Batch (E-4-PR5; 2026-06-02)**:
+
+> Propagates Stage E α' resolutions per the §Action-N-2 trigger below, after #194-#203 landed.
+> This batch table is the **current-disposition SoT**; the per-entry inline `state:` fields above
+> record Stage-D-capture-time trajectory state (historical). Per registry-drift discipline
+> (R-13-7/R-13-10): no new M-FU numbers pre-allocated; nothing silently kept active.
+
+| M-FU / item | Disposition | Evidence | Follow-up |
+|---|---|---|---|
+| **M-FU#1** LLM-PROVIDER-TRACE-YML-BDD-COMPLETE | ✅ completed | #195 (E-0a) | none |
+| **M-FU#4** G21-EVIDENCE-PASS-RATE-STRICT | ✅ completed | #195 (E-0a) | none |
+| **M-FU#5** G21-RISK-CRITICAL-HIGH-FILTER-SCOPE-CLARIFY | ✅ completed | #195 (E-0a) | none |
+| **M-FU#6** G22-MODE-WARN-TO-BLOCKING-FLIP | ✅ completed | #199 (E-1/E-2 flip) | none |
+| **M-FU#7** RUNBOOK-JUSTIFICATION-CURATE-ALL-PILOTS | ✅ completed | #198 (E-0b) | none |
+| **M-FU#8** G24-BUGFIX-BRANCH-WORKFLOW-READINESS | ✅ completed | #194 (E-3) | none |
+| **M-FU#2** D-1-BRIEF-STEP-5-RUFF-MYPY-PARITY | ✅ completed (process lesson registered) | Stage D briefs | none |
+| **M-FU#3** FLOOR-ESTIMATE-CALIBRATION | 🔵 informational (ongoing accumulator) | — | no PR action; calibration continues across phases |
+| **M-FU#9** G23-TASKS-CURATION-SURFACE | ⏳ deferred → **M6** | per L62 G23 M4-warn/M6-block | M6 (G23 flip + `tasks.md` tdd.test_list curation) |
+| M4-FU-BODY-SHA256-CANONICAL-REFACTOR | ⏳ deferred → **M5** | blocked_by M5 `frontmatter.py` freeze | M5 |
+| M4-FU-V4-MODE-B-IMPL | ⏳ deferred → **M5** | likely WITHDRAW (Mode A adequate) | M5 final decision |
+| M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER | ⏳ deferred → **M5+** | per A-3 R-2 verdict | M5+ |
+| M4-FU-BODY-SHA256-DOCSTRING-CLARIFY | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
+| M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
+| M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
+| M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 (detector impl ~150-300 lines) |
+| M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | 🟡 active/ready | blocked_by: NONE | independent small PR (~11-line edit) OR F-7 |
+| M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | 🟡 active/ready | blocked_by: NONE | independent small skill PR OR F-7 |
+| M3 carry-over `m3_fu_v4_skills_complete` | ✅ completed | #183 / #202 | none |
+| M3 carry-over `m3_fu_skill_5segment_normalize` | ✅ completed | #203 | none |
+
+**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster), of which 2 (`11-FILE-ADR-025-RECONCILE`, `F8-SKILL-STEP-8`) are ready as independent small PRs. Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
+
 **2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
 `M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
 
@@ -533,7 +565,7 @@ discipline (R-13-10) prevents:
 - ✅ **E-0b** — M-FU#7 runbook 4-field justification curation (4 pilots × 15 critical|high scenarios; +261 lines) → G21/G22 15W→0W — PR #198
 - ✅ **E-1/E-2** — G21+G22 combined BLOCKING flip (`continue-on-error:false` + `--strict`) — PR #199 (2026-06-02)
 - ✅ **E-3** — G24 bugfix workflow readiness — PR #194
-- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`); pending: Action-N-2 + capability promotion + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
+- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F); pending: capability promotion + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
 
 > **Impl reconcile**: E-1/E-2 actual mechanism = `--strict` (WARN→exit 1 via `_common/cli.py` `Summary.exit_code`), **not** the "WARN→FAIL Severity reclassification" wording in the E-1 row above (L525). Per the E-1/E-2 decision no validator severity was rewritten.
 
