@@ -74,13 +74,14 @@ Observation window: 1–2 weeks
 - [ ] Confirm `--strict` path remains sufficient
 - [ ] Do not reclassify validator severity unless explicitly required by owner review
 
-### ADR-024 EVAL Baseline
+### ADR-024 EVAL Baseline — ✅ established 2026-06-02 (E-4-PR2)
 
-- [ ] Locate current EVAL entrypoint under `tests/eval/`
-- [ ] Run minimal EVAL baseline
-- [ ] Record `baseline_metric`
-- [ ] Record `baseline_value`
-- [ ] If EVAL cannot run, record blocker and proposed M-FU
+- [x] Locate current EVAL entrypoint under `tests/eval/`
+- [x] Run minimal EVAL baseline — `uv run pytest tests/eval -q` → 93 passed / 0 failed / 0 skipped, exit 0
+- [x] Record `baseline_metric` — `eval.baseline.pass_rate`
+- [x] Record `baseline_value` — `1.0` (93 component + golden-seed-schema assertions; 15-case seed; no live dep)
+- [x] EVAL ran (no blocker); outcome-layer eval (live DB) stays smoke-only, not in baseline denominator
+- Evidence: `capabilities/data-agent/safe-sql/evidence/reports/2026-06-02_adr-024-eval-baseline.md`
 
 ### Action-N-2 Registry Batch
 
