@@ -92,14 +92,14 @@ Observation window: 1–2 weeks
 
 ### M3 Carry-over Closure — ✅ triaged 2026-06-02 (E-4-PR3)
 
-- [x] Review `m3_fu_skill_5segment_normalize` → **still active (retargeted)**
+- [x] Review `m3_fu_skill_5segment_normalize` → **closed (resolved by E-4-PR4)**
 - [x] Review `m3_fu_v4_skills_complete` → **closed (superseded by #183)**
 - [x] Decide each: closed / active / obsolete
 
 | Carry-over | Decision | Rationale | Follow-up |
 |---|---|---|---|
 | `m3_fu_v4_skills_complete` | **closed** (`state: completed`) | All AC met & verified @ `a457cd2`: 10 SKILLs carry `Do not use for:`; V4 34P/0W/0F; V4 ci.yml BLOCKING "per M3-FU-V4-SKILLS-COMPLETE" (executed #183 / M4-A). | none |
-| `m3_fu_skill_5segment_normalize` | **active (retargeted)** | In-source SKILLs still 6-section (`## Related`); contracts freeze 6 incl. `## Related` but `sdd/adapters/runtime-skill.md` L70-71 still says "5 段式" → contract-vs-adapter inconsistency. | small PR: amend `sdd/adapters/runtime-skill.md` to allow `## Related` (option B, adapter level); owner review; no SKILL.md/必停 touch; old Agent_Side §2.1 archived in M5. |
+| `m3_fu_skill_5segment_normalize` | **closed** (`state: completed`) | Resolved by E-4-PR4: `sdd/adapters/runtime-skill.md` `body_section_heads` now documents `## Related` as the allowed 6th section, aligning the adapter doc with the contract-frozen 6-section shape (option B). No SKILL.md / contract / 必停 touch. | none |
 
 - [x] No unresolved carry-over silently kept; the one active item has a concrete minimal follow-up (not dragged to M6).
 - No Action-N-2 registry or capability-promotion changes in this PR.

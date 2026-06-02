@@ -2,7 +2,7 @@
 type: plan
 slug: m3-fu-skill-5segment-normalize
 summary: M3 follow-up plan — decide whether to normalize in-source SKILL.md to Agent_Side §2.1 canonical 5-段式 OR extend canonical to 6 sections (## Related); M2 Stage C batch 1 #1 spot-check 发现 3/3 active SKILL 均含 ## Related 第 6 段
-state: active
+state: completed
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-21
@@ -22,11 +22,10 @@ related_adrs: []
 > refines `plans/[PLAN]_spec_anchored_refactor.md` §M3 Task Breakdown；与
 > `M3-FU-CLAUDE-SKILL-ADR`（markdown-body-only convention 决议）同 family pattern.
 
-> **⏳ STILL ACTIVE — retargeted 2026-06-02 (E-4-PR3 triage)**. Verified on develop @ `a457cd2`:
-> - In-source SKILLs still carry `## Related` (6-section): 9/9 `src/mj_agent/skills/*/SKILL.md`; not normalized to 5 (option A not done) and no deciding ADR (A/B/C) exists.
-> - The runtime-skill **contracts** freeze 6 sections incl. `## Related` (`capabilities/*/contracts/runtime-skill.contract.yml` `body_section_heads`), **but** the new `sdd/adapters/runtime-skill.md` L70-71 still says "body 5 段式" (Agent_Side §2.1 wording, no `## Related`) → **contract-vs-adapter-doc inconsistency carried forward into SDD governance**.
-> - **Retarget**: the 5-vs-6 decision now applies to `sdd/adapters/runtime-skill.md` (active), NOT the M5-archive-bound Agent_Side §2.1.
-> - **Minimal follow-up PR** (recommended option B at adapter level): amend `sdd/adapters/runtime-skill.md` L70-71 to document `## Related` as an allowed 6th section, aligning the adapter doc with the frozen contracts. Owner review required (canonical adapter-text decision). Does **not** touch `src/mj_agent/skills/*/SKILL.md` (no 必停 surface); old Agent_Side §2.1 needs no separate fix (archived in M5).
+> **✅ RESOLVED 2026-06-02 (E-4-PR4 — Option B at adapter level; retargeted in E-4-PR3)**. Verified on develop @ `a457cd2`:
+> - In-source SKILLs carry `## Related` (6-section): 9/9 `src/mj_agent/skills/*/SKILL.md` — **kept as-is** (option A normalize-to-5 rejected; no SKILL.md / 必停 touch).
+> - runtime-skill **contracts** freeze 6 sections incl. `## Related`; the prior contract-vs-adapter-doc inconsistency (`sdd/adapters/runtime-skill.md` said "5 段式") is **fixed here**.
+> - **Resolution (E-4-PR4)**: amended `sdd/adapters/runtime-skill.md` `body_section_heads` to document `## Related` as the allowed 6th section (contracts = source of truth; legacy Agent_Side §2.1 5段式 is M5-archive-bound). No SKILL.md / contract / 必停 change. `state: completed`.
 
 ## §1 Background
 

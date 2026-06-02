@@ -67,8 +67,12 @@ M2 Stage C 新增 2 contract：
   `skills[]` 集合形式为 canonical 支持多 SKILL freeze）；每条包含：
   - `file` — 物理路径（如 `src/mj_agent/skills/safe-sql-analysis/SKILL.md`）
   - `version` — frozen frontmatter `version` 字段值
-  - `body_section_heads[]` — body 5 段式 sections（Agent_Side §2.1：`## Purpose` / `## When to
-    use` / `## Planning workflow` / `## Common patterns` / `## Anti-patterns`）
+  - `body_section_heads[]` — body sections（M2/M4 current canonical = **6 段**：`## Purpose` /
+    `## When to use` / `## Planning workflow` / `## Common patterns` / `## Anti-patterns` /
+    `## Related`）。`## Related` 是 allowed 第 6 section，且当前已被 runtime-skill contracts
+    冻结（contracts 是 source of truth）。旧 Agent_Side §2.1 的 5 段式表述是 M5-archive-bound
+    legacy wording，不再 override 当前 contract-frozen 6-section reality（per E-4-PR4；M3-FU
+    `skill-5segment-normalize` Option B resolution）
   - `content_hash: sha256:<HEX>` — body sha256（去 frontmatter 后计算）
   - `frozen_at: <ISO timestamp>`
   - `variables[]` — 模板变量集（mj-agent SKILL 当前 `[]` 静态拼接）
