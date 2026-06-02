@@ -64,15 +64,26 @@ E-4 tracks:
 
 Observation window: 1–2 weeks
 
-### G21/G22 Blocking Soak
+### G21/G22 Blocking Soak — 🟡 checkpoint 2026-06-02 (E-4-PR6); window NOT yet elapsed
 
-- [ ] Confirm new PRs execute G21/G22 as blocking checks
-- [ ] Confirm no false-positive from G21
-- [ ] Confirm no false-positive from G22
-- [ ] If false-positive appears, record capability / scenario / validator message
-- [ ] If real violation appears, confirm CI blocks as intended
-- [ ] Confirm `--strict` path remains sufficient
-- [ ] Do not reclassify validator severity unless explicitly required by owner review
+**Soak Checkpoint (E-4-PR6)**:
+- checkpoint_date: 2026-06-02
+- observed_since: 2026-06-02 (#199 flip merged same day)
+- latest_develop_commit: `626b00c` (#204)
+- G21 strict: 15P/0W/0F aggregate — per-cap: safe-sql 6P / biz-catalog 3P / llm-provider 3P / docker-compose 3P / mcp-governance SKIP (medium-only)
+- G22 strict: 15P/0W/0F aggregate (same per-cap split)
+- early signal: 5 PRs (#200-#204) merged under BLOCKING gates since the flip — **0 false-positives, 0 real violations**
+- false_positive_observed: no
+- real_violation_observed: no
+- **Decision: continue soak before promotion** — the 1–2 wk calendar window has NOT elapsed (flip landed same day); early signal is clean but insufficient for the window criterion.
+
+- [x] Confirm new PRs execute G21/G22 as blocking checks (#200-#204 ✓)
+- [x] Confirm no false-positive from G21 (0 across #200-#204)
+- [x] Confirm no false-positive from G22 (0 across #200-#204)
+- [ ] If false-positive appears, record capability / scenario / validator message (none so far)
+- [ ] If real violation appears, confirm CI blocks as intended (none so far)
+- [x] Confirm `--strict` path remains sufficient (15P/0W/0F under `--strict`)
+- [x] Do not reclassify validator severity (none reclassified)
 
 ### ADR-024 EVAL Baseline — ✅ established 2026-06-02 (E-4-PR2)
 
@@ -109,9 +120,21 @@ Evidence: **Action-N-2 M-FU Registry Reconciliation Batch** table in `plans/[PLA
 
 ### Capability State Promotion
 
-- [ ] Prepare promotion for 5 pilot capabilities from drafting to active
-- [ ] Do not promote until EVAL baseline and soak status are recorded
-- [ ] Confirm trace / runbook / evidence consistency before promotion
+- [x] Prepare promotion for 5 pilot capabilities from drafting to active — **preflight done (E-4-PR6); NOT promoted this PR**
+- [x] Do not promote until EVAL baseline and soak status are recorded — EVAL ✅ #201; soak checkpoint recorded above (window not elapsed → hold)
+- [x] Confirm trace / runbook / evidence consistency before promotion — all 5 have the full 9-artifact suite (spec / req / design / tasks / runbook / trace + contracts incl. behavior.feature + evidence subdirs)
+
+**Capability Promotion Readiness Preflight (E-4-PR6; 2026-06-02)** — readiness only; **no `lifecycle_state` changed**:
+
+| Capability | Current | Artifacts | G21/G22 | Readiness | Blocker / Next |
+|---|---|---|---|---|---|
+| `data-agent.safe-sql` | drafting | full ✓ | 6P/0W/0F | **ready · wait-soak** | none; promote after soak window |
+| `data-agent.biz-catalog` | drafting | full ✓ | 3P/0W/0F | **ready · wait-soak** | none; promote after soak window |
+| `data-agent.llm-provider` | drafting | full ✓ | 3P/0W/0F | **ready · wait-soak** | none; promote after soak window |
+| `infrastructure.docker-compose` | drafting | full ✓ | 3P/0W/0F | **ready · wait-soak** | none; promote after soak window |
+| `infrastructure.mcp-server-governance` | drafting | full ✓ | SKIP (medium-only) | **ready · wait-soak** ⚠ | no G21/G22 coverage (scenarios @risk:medium); readiness rests on its own contracts (mcp-server-inventory) + evidence — owner confirm acceptable before promotion |
+
+Promotion rule: separate PR; gated on a **clean soak window elapsed** + no readiness blocker. mcp-governance owner should confirm the medium-only (no-G21/G22-coverage) caveat is acceptable.
 
 ### Stage F Preparation
 
