@@ -2,11 +2,11 @@
 type: plan
 slug: m3-fu-v4-skills-complete
 summary: M3 follow-up plan — add "Do not use for:" reverse-trigger block to 6 mj-agent-infra-* SKILL.md files (the 6 real WARN findings V4 surfaces post M3-FU-V4-VALIDATOR-INVESTIGATE parser fix); cross-capability change with cascading content_hash + claude-skill.contract.yml amend + HITL gate trigger
-state: active
+state: completed
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-21
-updated: 2026-05-21
+updated: 2026-06-02
 track: shared
 refines:
   - plans/[PLAN]_spec_anchored_refactor.md
@@ -20,6 +20,12 @@ related_adrs: []
 > `plans/[PLAN]_spec_anchored_refactor.md` §M3 Task Breakdown；blocks Stage C
 > V4 blocking-gate flip (not done in Stage C C-a per Phase M2 §3.6 frozen surface
 > rule).
+
+> **✅ CLOSED 2026-06-02 (E-4-PR3 triage)** — superseded by **PR #183 (M4-A "V4-SKILLS-COMPLETE")**. All §4 AC met, verified on develop @ `a457cd2`:
+> - 10 target `.claude/skills/mj-agent-{infra,runtime}-*/SKILL.md` all carry the `Do not use for:` reverse-trigger block (0 missing).
+> - V4 `check_claude_skill_contracts.py --all` → **34 PASS / 0 WARN / 0 FAIL**.
+> - V4 ci.yml step is BLOCKING (`'V4 claude-skill contracts (BLOCKING per M3-FU-V4-SKILLS-COMPLETE; 34P/0W/0F clean)'`).
+> No further action; `state: completed`.
 
 ## §1 Background
 

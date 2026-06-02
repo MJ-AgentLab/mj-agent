@@ -6,7 +6,7 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-21
-updated: 2026-05-22
+updated: 2026-06-02
 track: shared
 disposition: M4-FU deferred (新增 disposition 枚举 D-3e; per Stage D Gate-1 2026-05-21; 必停 surface impact + bundle with V4-SKILLS-COMPLETE)
 deferred_at: 2026-05-21
@@ -21,6 +21,12 @@ related_adrs: []
 > M3 follow-up plan；M3 startup 后独立 ADR + 可能的 SKILL.md 平移 PR；不混入 M3 main work；
 > refines `plans/[PLAN]_spec_anchored_refactor.md` §M3 Task Breakdown；与
 > `M3-FU-CLAUDE-SKILL-ADR`（markdown-body-only convention 决议）同 family pattern.
+
+> **⏳ STILL ACTIVE — retargeted 2026-06-02 (E-4-PR3 triage)**. Verified on develop @ `a457cd2`:
+> - In-source SKILLs still carry `## Related` (6-section): 9/9 `src/mj_agent/skills/*/SKILL.md`; not normalized to 5 (option A not done) and no deciding ADR (A/B/C) exists.
+> - The runtime-skill **contracts** freeze 6 sections incl. `## Related` (`capabilities/*/contracts/runtime-skill.contract.yml` `body_section_heads`), **but** the new `sdd/adapters/runtime-skill.md` L70-71 still says "body 5 段式" (Agent_Side §2.1 wording, no `## Related`) → **contract-vs-adapter-doc inconsistency carried forward into SDD governance**.
+> - **Retarget**: the 5-vs-6 decision now applies to `sdd/adapters/runtime-skill.md` (active), NOT the M5-archive-bound Agent_Side §2.1.
+> - **Minimal follow-up PR** (recommended option B at adapter level): amend `sdd/adapters/runtime-skill.md` L70-71 to document `## Related` as an allowed 6th section, aligning the adapter doc with the frozen contracts. Owner review required (canonical adapter-text decision). Does **not** touch `src/mj_agent/skills/*/SKILL.md` (no 必停 surface); old Agent_Side §2.1 needs no separate fix (archived in M5).
 
 ## §1 Background
 
