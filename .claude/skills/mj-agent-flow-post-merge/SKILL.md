@@ -186,6 +186,8 @@ PR #<id> merge 触发 in-source canonical body 改动：
 - 当前 worktree（如 develop）需 pull 最新 develop（含本 PR commit）
 - 如 hotfix → main 合并后还要 sync 回 develop（mj-agent-git-sync 自动检测）
 
+> **⚠ Worktree-safe sync（#185 F-8 lesson;M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX）**：develop sync 必须是**工作树内**操作（`/mj-agent-git-sync` Step 4 `git merge origin/develop`，或 `git pull --ff-only`）——**切勿**用 bare-repo `git update-ref` 直接改 HEAD 指针，那只更新 ref 不更新工作树文件，会留下 stale 文件（#185 曾因此残留 13 个 stale 文件，事后 `git reset --hard HEAD` 救回）。若发现工作树与 HEAD 不一致，用 `git reset --hard HEAD` 对齐。
+
 ## Step 9: Plan Lifecycle Mark
 
 按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11「Working 文档生命周期」+ [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15 Rule 12，PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。

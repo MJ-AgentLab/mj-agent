@@ -342,7 +342,7 @@ deferred to Phase M5+ (NOT in Stage D scope).
   .env.example L54 → ADR-027; docker-compose.mj-agent.yml L2 → ADR-026); estimated_effort: ~30 min review
   + 11-line edit + commit + push + PR. surfaced_at: C-5 §4.1 2026-05-25.
 
-- **M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX** ★ **NEW (F-8 in-flight discovery)** — **state: active**;
+- **M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX** ★ **NEW (F-8 in-flight discovery)** — **state: completed (E-4-PR7 2026-06-02; recipe already worktree-safe via git-sync Step 4 `git merge origin/develop`; #185-lesson guard note added to post-merge Step 8)**;
   disposition: small docs/skill PR OR bundled into F-7 cluster amend; blocked_by: NONE (ready); trigger:
   F-8 Step 8 skill recipe bug — bare-repo `update-ref` updates HEAD pointer but NOT worktree files (13
   stale files surfaced in PR #185 F-8 run; workaround `git reset --hard HEAD` applied); scope:
@@ -472,7 +472,7 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
 | M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
 | M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 (detector impl ~150-300 lines) |
 | M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | 🟡 active/ready | blocked_by: NONE | independent small PR (~11-line edit) OR F-7 |
-| M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | 🟡 active/ready | blocked_by: NONE | independent small skill PR OR F-7 |
+| M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | ✅ completed (E-4-PR7) | recipe already worktree-safe (git-sync Step 4 `git merge`); #185-lesson guard note added to post-merge Step 8 | none |
 | M3 carry-over `m3_fu_v4_skills_complete` | ✅ completed | #183 / #202 | none |
 | M3 carry-over `m3_fu_skill_5segment_normalize` | ✅ completed | #203 | none |
 
