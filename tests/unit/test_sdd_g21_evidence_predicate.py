@@ -402,3 +402,72 @@ class TestTraceYmlMfu1Fix:
             f"  trace.yml:    {trace_scenario_name!r}\n"
             f"  behavior.feature: {feature_scenario_name!r}"
         )
+
+
+class TestStrictModeBlockingFlip:
+    """Stage E α' E-1: --strict is the BLOCKING mechanism for G21 (severity NOT
+    reclassified). main() uses _validate_capability_with_evidence; under --strict
+    a WARN (no evidence pass_rate=1.0 AND no runbook 4-field justification) →
+    exit 1. Proves the E-1 flip blocks on a gap and passes when justified.
+    """
+
+    _FEATURE = (
+        "Feature: T\n\n"
+        "  @REQ-001 @CTR-test @risk:critical @adapter:python\n"
+        "  Scenario: Strict-mode scenario\n"
+        "    Given a precondition\n"
+    )
+
+    def _scaffold(self, tmp_path: Path) -> Path:
+        cap_dir = _make_capability_dir(tmp_path)
+        (cap_dir / "contracts").mkdir()
+        (cap_dir / "contracts" / "behavior.feature").write_text(
+            self._FEATURE, encoding="utf-8"
+        )
+        (cap_dir / "trace.yml").write_text(
+            yaml.safe_dump(
+                {
+                    "capability": "test.cap",
+                    "schema_version": "1.2",
+                    "links": [
+                        {
+                            "req": "REQ-001",
+                            "bdd": {
+                                "feature": "contracts/behavior.feature",
+                                "scenarios": ["Strict-mode scenario"],
+                            },
+                        }
+                    ],
+                },
+                allow_unicode=True,
+            ),
+            encoding="utf-8",
+        )
+        return cap_dir
+
+    def test_runbook_justified_strict_exit_0(self, tmp_path: Path) -> None:
+        from scripts.sdd.check_bdd_acceptance import _validate_capability_with_evidence
+
+        cap_dir = self._scaffold(tmp_path)
+        _write_runbook(
+            cap_dir,
+            "# Runbook\n\n"
+            "原因: pre-Phase-M3 step defs land\n"
+            "替代验证手段: manual verification\n"
+            "升级触发条件: blocking on Phase M4\n"
+            "预计时间: M3 EOL\n",
+        )
+        summary = _validate_capability_with_evidence(cap_dir, tmp_path)
+        assert summary.warn_count == 0
+        assert summary.exit_code(strict=True) == 0
+
+    def test_no_evidence_no_runbook_strict_exit_1(self, tmp_path: Path) -> None:
+        from scripts.sdd.check_bdd_acceptance import _validate_capability_with_evidence
+
+        # §7 justification removed + no evidence → WARN → --strict blocks
+        cap_dir = self._scaffold(tmp_path)
+        summary = _validate_capability_with_evidence(cap_dir, tmp_path)
+        assert summary.warn_count >= 1
+        assert summary.exit_code(strict=True) == 1
+        # Pre-flip (WARNING mode, no --strict) did NOT block:
+        assert summary.exit_code(strict=False) == 0

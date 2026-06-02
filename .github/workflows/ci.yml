@@ -171,9 +171,13 @@ jobs:
       # (d) EVIDENCE pass_rate DEFERRED to M-FU#4 Stage E α'.
       # Dry-run baseline: 14P/1W/0F (1W = llm-provider/REQ-003 cross-gate inheritance
       # from D-2 G19 M-FU#1 trace curation gap).
-      - name: 'G21 BDD acceptance (warning per Stage D D-3; @risk:critical|high subset; 14P/1W/0F per R-N v9 R-9-2)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/check_bdd_acceptance.py --all
+      # ===== Stage E α' E-1 flip (this PR): WARNING → BLOCKING =====
+      # Mechanism: --strict (exit 1 on WARN per _common/cli.py exit_code) + continue-on-error:false.
+      # Post-E-0b (#198 merged) baseline: 15P/0W/0F. A future unjustified @risk:critical|high
+      # scenario → WARN → --strict exit 1 → blocks. (Severity NOT reclassified; per E-1/E-2 decision.)
+      - name: 'G21 BDD acceptance (BLOCKING per Stage E E-1; @risk:critical|high subset; 15P/0W/0F post-E-0b)'
+        continue-on-error: false
+        run: uv run python scripts/sdd/check_bdd_acceptance.py --all --strict
 
       # ===== End of Phase M4 Stage D D-3 G21 block =====
 
@@ -192,9 +196,12 @@ jobs:
       # Dry-run baseline: 0P/14W/0F (15 critical|high × unautomated, 1 "absorbed" by
       # M-FU#1 trace gap; G19+G21+G22 cross-gate inheritance reinforces M-FU#1+M-FU#7
       # priority; exit 0 per WARNING mode).
-      - name: 'G22 BDD unautomated justification (warning per Stage D D-4; @risk:critical|high × unautomated runbook.md check; 0P/14W/0F per R-N v10 R-10-2)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/check_bdd_unautomated.py --all
+      # ===== Stage E α' E-2 flip (this PR): WARNING → BLOCKING =====
+      # Mechanism: --strict + continue-on-error:false (same as E-1; G21+G22 share R-15-1 runbook source).
+      # Post-E-0b (#198 merged) baseline: 15P/0W/0F.
+      - name: 'G22 BDD unautomated justification (BLOCKING per Stage E E-2; @risk:critical|high × unautomated runbook.md check; 15P/0W/0F post-E-0b)'
+        continue-on-error: false
+        run: uv run python scripts/sdd/check_bdd_unautomated.py --all --strict
 
       # ===== End of Phase M4 Stage D D-4 G22 block =====
 
