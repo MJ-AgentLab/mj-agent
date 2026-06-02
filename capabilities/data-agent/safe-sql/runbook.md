@@ -251,5 +251,109 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 ---
 
+## §7 Unautomated Scenario Justifications (M-FU#7)
+
+> Per `sdd/adapters/bdd-tdd.md` L121 + L160 + L161 (G21+G22 share runbook
+> justification source per R-15-1 resolution); BDD scenarios that are not yet
+> automated must include 4-field justification (原因 / 替代验证手段 / 升级触发
+> 条件 / 预计时间).
+
+### G22/G21 Justification: L1 regex guardrail rejects blocked-keyword statement before DB contact
+
+- **REQ**: REQ-001 / **Risk**: critical / **Adapter**: python
+- **原因**: M1 baseline 只落 contract + scenario 文本；pytest-bdd 框架的 step
+  definitions 集中到 M3 batch land。
+- **替代验证手段**: `tests/unit/test_guardrail.py` 已覆盖等效语义 — `TestAccepted`
+  4 cases + `TestRejected` 含 9 个 blocked_keywords + `TestTableLevelAllowlist`
+  6 cases,共 ~24 unit tests。
+- **升级触发条件**: M3 step defs 集中实装,`tests/bdd/data_agent/safe_sql/` step
+  folder 建好。
+- **预计时间**: M3 EOL（per `plans/mj-agent-roadmap-v1.6.md` § Phase M3 BDD
+  集中实装节奏）。
+
+### G22/G21 Justification: L1b precheck rejects biz_dws fact-table query missing time-column predicate
+
+- **REQ**: REQ-002 / **Risk**: critical / **Adapter**: python
+- **原因**: M1 baseline 只落 contract + scenario 文本；pytest-bdd step definitions
+  集中到 M3 batch land（与 S1 同节奏）。
+- **替代验证手段**: `tests/unit/test_precheck.py` 已覆盖 sqlglot AST precheck
+  等效语义 ~13 cases — `TestNoSelectStar` (3) + **`TestRequireTimeRange` (5;
+  直接对应该 scenario 的 time-column predicate 规则)** + `TestRequireLimit`
+  (4 advisory) + `TestParseFailureGracefulFallback` (1)。
+- **升级触发条件**: M3 step defs 集中实装；`tests/bdd/data_agent/safe_sql/`
+  step folder 落地后该 BDD scenario 走 pytest-bdd 自动跑。
+- **预计时间**: M3 EOL（per roadmap-v1.6 § Phase M3 BDD 集中实装节奏；与 S1
+  同 batch）。
+
+### G22/G21 Justification: L3 connection enforces read-only transaction + bounded timeouts via DSN options ★ coverage 弱
+
+- **REQ**: REQ-003 / **Risk**: critical / **Adapter**: python
+- **原因**: M1 baseline；connection-layer test 基础设施（`test_dsn_options.py` +
+  `test_readonly_cursor.py`）尚未实装（per trace.yml L80-83 全 TBD-M3 标记）。
+- **替代验证手段 + 为何暂可接受**: 该 scenario 验证 connection 配置正确性。
+  双层硬保障:(a) `src/mj_agent/integrations/mj_system_db.py` 中 DSN options
+  在 connection 建立时**硬编码注入**（`default_transaction_read_only=on` +
+  `lock_timeout=5s` + `idle_in_transaction_session_timeout=10s`）— 配置漂移
+  即 connection 失败而非 silent 失效；(b) `analyst` PostgreSQL 角色 GRANT
+  仅 SELECT 权限（DB role 层强制）— form connection 层 + role 层 double-
+  defense。M3 unit test 落地前,prod 风险由双层硬约束缓解,**owner affirm
+  暂可接受**。
+- **升级触发条件**: M3 unit test 基础设施实装（`test_dsn_options.py` 验 DSN
+  options 字串 + `test_readonly_cursor.py` 验 rollback-on-exit 行为）。
+- **预计时间**: M3（per TBD-M3 markers；具体里程碑 TBD per owner planning）。
+
+### G22/G21 Justification: L4 statement_timeout cancellation translates to Chinese self-correction hint ★ 跨 repo + 弱
+
+- **REQ**: REQ-004 / **Risk**: critical / **Adapter**: python / **@reference-contract**
+- **原因**: M1 baseline；cross-repo reference contract（mj-system
+  `R__analyst_permissions.sql`）verification + live_db contract test 推迟到
+  M3/M4 分阶段（per trace.yml L110-111 TBD-M3 + TBD-M4 markers）。
+- **替代验证手段 + 为何暂可接受**: 三层保障:(a) SUT 侧
+  `contracts/execute-sql.contract.yml § l4_timeout_and_grant` 已 freeze；
+  `execute.py` 中 statement_timeout 显式 catch + 友好 Chinese hint 已实装；
+  (b) `analyst` role `statement_timeout=60s` 在上游 mj-system
+  `R__analyst_permissions.sql` 配置（跨仓 freeze）；(c) 任何 mj-system 上游
+  SQL migration 变更会触发其仓 PR review,被相关 reviewer 察觉。**owner
+  affirm**:跨仓 freeze + PR review 流程在 M3 unit / M4 live_db contract
+  test 落地前可接受。
+- **升级触发条件**: (a) M3 unit `test_execute_sql_timeout.py` 验 timeout
+  cancellation 转 Chinese hint；(b) M4 live_db contract
+  `test_safe_sql_grant_visibility.py` 验跨仓 grant 配置（live_db fixture
+  必须）。
+- **预计时间**: 分阶段 — M3（unit 部分）+ M4（live_db contract 部分）（per
+  TBD-M3 + TBD-M4 markers）。
+
+### G22/G21 Justification: execute_sql return envelope contains 8 required keys with documented types
+
+- **REQ**: REQ-005 / **Risk**: high / **Adapter**: python
+- **原因**: M1 baseline；envelope schema-conformance tests 推迟 M3（per
+  trace.yml L128-130 TBD-M3 markers）。
+- **替代验证手段**: `contracts/execute-sql.contract.yml § envelope_schema`
+  已 freeze 8 keys + types（`executed_sql / columns / rows / row_count /
+  truncated / statement_timeout_hit / business_summary / precheck_warnings`）；
+  `execute.py` 实现已落 envelope 装配代码。当前依靠 contract freeze + 代码
+  review 维持 schema 稳定。
+- **升级触发条件**: M3 envelope tests 实装（`test_execute_sql_envelope.py`
+  验 8 keys 存在 + types 正确 + truncation 行为）。
+- **预计时间**: M3 EOL（per TBD-M3 markers；与 S1/S2 同 batch）。
+
+### G22/G21 Justification: handle_sql_tool_errors middleware converts tool ValueError into ToolMessage
+
+- **REQ**: REQ-006 / **Risk**: high / **Adapter**: langchain-agent / **ADR-029**
+- **原因**: Unit 层已自动化 5 cases；BDD scenario + integration + smoke 层
+  推迟 M3（per trace.yml L147-154 TBD-M3 markers）。
+- **替代验证手段**: `tests/unit/test_tool_error_middleware.py` 已覆盖中间件
+  转换语义（per ADR-029）— `TestValueErrorConversion` (precheck rejection
+  → ToolMessage + guardrail rejection 保留 message) +
+  `TestRuntimeErrorConversion` (timeout passthrough + generic DB error) +
+  `TestUnexpectedExceptionFallback` (其他 exceptions 转 ToolMessage) = 5
+  cases 覆盖核心转换路径。
+- **升级触发条件**: M3 integration tests 实装
+  (`test_middleware_wrap_integration.py` 验 sync + async wrap_tool_call) +
+  smoke test 实装（`test_chainlit_astream_middleware.py` 验 astream 路径）。
+- **预计时间**: M3 EOL（per TBD-M3 markers；与 S1/S2 同 batch）。
+
+---
+
 > Phase M1 baseline. Phase M2 will refine §3 troubleshooting with M3 contract test
 > findings; Phase M5 will dissolve docs/runbook/dev_studio_walkthrough.md into this file.

@@ -205,4 +205,63 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 ---
 
+## §7 Unautomated Scenario Justifications (M-FU#7)
+
+> Per `sdd/adapters/bdd-tdd.md` L121 + L160 + L161 (G21+G22 share runbook
+> justification source per R-15-1 resolution); BDD scenarios that are not yet
+> automated must include 4-field justification (原因 / 替代验证手段 / 升级触发
+> 条件 / 预计时间).
+
+### G22/G21 Justification: DEV profile loads with explicit -f chain + --env-file
+
+- **REQ**: REQ-001 / **Risk**: high / **Adapter**: docker-container / **ADR-026**
+- **原因**: M1 baseline + ADR-026 4-file profile pattern 已落（base + override
+  + test + prod）；BDD 层 docker compose loading verification 推迟 M3
+  (docker-bdd-scenario-check per gates.md L51 + V5 sub-flags
+  M3-FU-V5-SUBFLAGS)。
+- **替代验证手段**: V5 docker contracts validator 自动验
+  `infra/docker/docker-compose.mj-agent.yml` 结构 + DEV/TEST/PROD overlay
+  链 (BLOCKING per Stage C C-a 2P/4W/0F clean)；CLAUDE.md § Commands 已
+  document DEV/TEST/PROD profile up 命令（含 `-f base -f override
+  --env-file` 显式 chain — compose 在子目录 + `-f` 显式 base 时 auto-load
+  override.yml 不生效是 quirk，必显式 `-f` 双链）；DEV up manual smoke 验证
+  已建立 SOP（per §1 Startup）。
+- **升级触发条件**: M3 pytest-bdd step defs + docker compose loading test
+  harness（验 `-f base -f override --env-file` chain 加载成功 + 缺 --env-file
+  时 `${VAR}` 落回 default sentinel 的 quirk 行为）。
+- **预计时间**: M3 EOL（per V5 sub-flags + TBD-M3 markers）。
+
+### G22/G21 Justification: Postgres healthcheck rejects half-initialized DB
+
+- **REQ**: REQ-002 / **Risk**: high / **Adapter**: docker-container
+- **原因**: M1 baseline；BDD 层 docker healthcheck 时序验证推迟 M3。
+- **替代验证手段**: postgres healthcheck 配置已落在
+  `infra/docker/docker-compose.mj-agent.yml` (`pg_isready` 探针) + init
+  script `postgres-init/01-bootstrap-mj-agent-memory.sh` 已实装（storage-stack
+  PR 后 auto-creates memory DB on container init）；DEV up 时 healthcheck
+  实际生效，manual 验 init script 未完成则探针失败（mj-agent 容器 depends_on
+  `service_healthy` 会阻塞启动）。
+- **升级触发条件**: M3 pytest-bdd step defs + docker test harness（健康检查
+  timing 验证；模拟 init script 中途失败 / 慢启动场景验 healthcheck 正确阻
+  mj-agent 启动）。
+- **预计时间**: M3 EOL（per TBD-M3 markers）。
+
+### G22/G21 Justification: Postgres init handles password with shell metacharacters unmangled
+
+- **REQ**: REQ-003 / **Risk**: high / **Adapter**: docker-container / **ADR-030**
+- **原因**: M1 baseline + ADR-030 secrets pipeline 已落（2-bundle trust-
+  boundary split: 应用 bundle `config/secrets.enc` + MCP bundle
+  `config/secrets-mcp.enc`）；BDD 层 shell-safety 验证推迟 M3。
+- **替代验证手段**: `scripts/setup-env.ps1` + entrypoint shell-safety pattern
+  已实装（passwords 经 setup script AES-256-CBC 解密 + 注入 `.env` 时正确
+  quote 避免 shell metachar 解释；postgres init script 读 env 时保留原值）；
+  manual 验证 with metacharacter-containing test passwords（含 `$/&/;/!`
+  等）DEV up 成功。当前无 automated BDD coverage。
+- **升级触发条件**: M3 pytest-bdd step defs + secret rotation test harness
+  （验 metacharacter passwords 经 setup-env.ps1 → .env → docker env → init
+  script 全 round-trip 不被 mangled）。
+- **预计时间**: M3 EOL（per ADR-030 + TBD-M3 markers）。
+
+---
+
 > Phase M1 baseline. ADR-026 + ADR-008 + ADR-030 governance.
