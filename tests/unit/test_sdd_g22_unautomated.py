@@ -139,3 +139,46 @@ class TestValidateCapability:
         assert any(
             "runbook" in m.lower() or "justification" in m.lower() for m in summary.messages
         )
+
+
+class TestStrictModeBlockingFlip:
+    """Stage E α' E-2: --strict is the BLOCKING mechanism (severity NOT reclassified).
+
+    Per ci.yml E-2 flip (continue-on-error:false + --strict): a CURATION WARN
+    (missing runbook justification) → exit 1 under --strict (per
+    _common/cli.py Summary.exit_code). Proves the gate blocks on a removed §7
+    justification block and passes when fully justified.
+    """
+
+    _FEATURE = (
+        "Feature: T\n\n"
+        "  @REQ-001 @CTR-test @risk:critical @adapter:python\n"
+        "  Scenario: Strict-mode scenario\n"
+        "    Given a precondition\n"
+    )
+
+    def test_full_justification_strict_exit_0(self, tmp_path: Path) -> None:
+        runbook = (
+            "# Runbook\n\n"
+            "原因: pre-Phase-M3 step defs land\n"
+            "替代验证手段: manual verification\n"
+            "升级触发条件: blocking on Phase M4\n"
+            "预计时间: M3 EOL\n"
+        )
+        cap_dir = _write_capability(
+            tmp_path, self._FEATURE, [_make_link("REQ-001", "Strict-mode scenario")], runbook
+        )
+        summary = _validate_capability(cap_dir, tmp_path)
+        assert summary.warn_count == 0
+        assert summary.exit_code(strict=True) == 0
+
+    def test_missing_justification_strict_exit_1(self, tmp_path: Path) -> None:
+        # §7 justification block removed (no runbook) → CURATION WARN → --strict blocks
+        cap_dir = _write_capability(
+            tmp_path, self._FEATURE, [_make_link("REQ-001", "Strict-mode scenario")]
+        )
+        summary = _validate_capability(cap_dir, tmp_path)
+        assert summary.warn_count >= 1
+        assert summary.exit_code(strict=True) == 1
+        # Pre-flip (WARNING mode, no --strict) the same gap did NOT block:
+        assert summary.exit_code(strict=False) == 0
