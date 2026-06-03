@@ -12,10 +12,10 @@
 
 | id | name | domain | lifecycle | archive | last_verified | adapter_coverage |
 |---|---|---|---|---|---|---|
-| [data-agent.biz-catalog](./data-agent/biz-catalog/spec.yml) | QCM Catalog Mirror | data-agent | drafting | active | 2026-05-20 | python, runtime-skill, tdd-bdd |
-| [data-agent.llm-provider](./data-agent/llm-provider/spec.yml) | LLM Provider Abstraction (ark + local-openai-compat) | data-agent | drafting | active | 2026-05-20 | python, tdd-bdd |
-| [data-agent.safe-sql](./data-agent/safe-sql/spec.yml) | Safe SQL 4-Layer Guardrails | data-agent | drafting | active | 2026-05-20 | python, langchain-agent, tdd-bdd |
-| [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | drafting | active | 2026-05-20 | docker-container, tdd-bdd |
+| [data-agent.biz-catalog](./data-agent/biz-catalog/spec.yml) | QCM Catalog Mirror | data-agent | active | active | 2026-06-03 | python, runtime-skill, tdd-bdd |
+| [data-agent.llm-provider](./data-agent/llm-provider/spec.yml) | LLM Provider Abstraction (ark + local-openai-compat) | data-agent | active | active | 2026-06-03 | python, tdd-bdd |
+| [data-agent.safe-sql](./data-agent/safe-sql/spec.yml) | Safe SQL 4-Layer Guardrails | data-agent | active | active | 2026-06-03 | python, langchain-agent, tdd-bdd |
+| [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | active | active | 2026-06-03 | docker-container, tdd-bdd |
 | [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | claude-code-skill, tdd-bdd |
 
 ## Cross-Capability References

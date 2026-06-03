@@ -7,16 +7,16 @@
 id: data-agent.biz-catalog
 name: QCM Catalog Mirror
 domain: data-agent
-lifecycle_state: drafting
+lifecycle_state: active             # M4 closure 2026-06-03 (drafting → active)
 archive_state: active
 adapter_coverage:
   - python                          # loader.py + finder.py modules
   - runtime-skill                   # 3 SKILL.md (biz-domain-context / qcm-analysis / safe-sql-analysis) reference catalog symbols
   - tdd-bdd
-last_verified: 2026-05-20
+last_verified: 2026-06-03
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 summary: >
   qcm_catalog.yaml mirror of the upstream business warehouse data dictionary;
   loaded once per process by load_catalog(); consumed by find_biz_context tool +
@@ -65,5 +65,6 @@ cross_capability_refs:
     surface: src/mj_agent/agent.py + src/mj_agent/biz_catalog/finder.py
     direction: outbound
 
-# TBD Phase M2: spec.yml.schema lock-down via check_capability_schema.py
-# TBD Phase M3: lifecycle_state drafting → contracted after contract test landing
+# Phase M2: spec.yml schema lock-down done via check_capability_schema.py (G1 blocking).
+# Phase M4 closure (2026-06-03): lifecycle_state drafting → active (E-4 soak early-accepted;
+# full 9-artifact suite). The M3 contracted-intermediate path was superseded by the M4 direct promotion.

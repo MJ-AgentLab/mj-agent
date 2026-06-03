@@ -4,15 +4,15 @@
 id: data-agent.llm-provider
 name: LLM Provider Abstraction (ark + local-openai-compat)
 domain: data-agent
-lifecycle_state: drafting
+lifecycle_state: active             # M4 closure 2026-06-03 (drafting → active)
 archive_state: active
 adapter_coverage:
   - python                          # llm.py + config.py + cli.py modules
   - tdd-bdd
-last_verified: 2026-05-20
+last_verified: 2026-06-03
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 summary: >
   make_llm() factory in src/mj_agent/llm.py branches on settings.llm_provider:
   ark (default; Volcengine + DeepSeek V3 with extra_body.thinking knob) vs

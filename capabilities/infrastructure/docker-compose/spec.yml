@@ -4,15 +4,15 @@
 id: infrastructure.docker-compose
 name: Docker Compose 4-File Profile (ADR-026)
 domain: infrastructure
-lifecycle_state: drafting
+lifecycle_state: active             # M4 closure 2026-06-03 (drafting → active)
 archive_state: active
 adapter_coverage:
   - docker-container                # Dockerfile + 4 compose YAMLs + runtime expected
   - tdd-bdd
-last_verified: 2026-05-20
+last_verified: 2026-06-03
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 summary: >
   4-file compose layering per ADR-026 (base + override-dev + test + prod);
   --env-file .env explicit required at every invocation (CLI substitution layer);
