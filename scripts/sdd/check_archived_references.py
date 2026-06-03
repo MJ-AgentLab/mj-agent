@@ -179,8 +179,8 @@ def _scan_file(
     return summary
 
 
-def main(argv: list[str] | None = None) -> int:
-    """G14/G15 validator entry point."""
+def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
+    """G14/G15 validator entry point. ``repo_root`` overridable for isolated tests."""
     parser = build_argparser(
         _SCRIPT_NAME,
         "G14/G15 archived-reference validator (active files must not cite hidden "
@@ -190,7 +190,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parent.parent.parent
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent.parent
     archive_dir = repo_root / "archive"
 
     if not archive_dir.exists():

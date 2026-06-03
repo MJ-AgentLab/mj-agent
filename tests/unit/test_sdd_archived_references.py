@@ -44,9 +44,13 @@ def _write_unit(archive_dir: Path, rel: str, ai_visibility: str) -> Path:
 # -------- (a) no archive/ → main() no-op --------
 
 
-def test_no_archive_dir_is_noop(capsys) -> None:
-    """No top-level archive/ → main() returns 0 with a clean no-op line."""
-    assert main(["--all"]) == 0
+def test_no_archive_dir_is_noop(capsys, tmp_path: Path) -> None:
+    """No archive/ under repo_root → main() returns 0 with a clean no-op line.
+
+    Isolated against an empty tmp repo_root (the real tree has a populated
+    archive/ since M5-PR3b).
+    """
+    assert main(["--all"], repo_root=tmp_path) == 0
     out = capsys.readouterr().out
     assert "no archive/ yet" in out
 

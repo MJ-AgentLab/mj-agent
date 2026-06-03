@@ -100,8 +100,8 @@ def _build_index_content(archive_dir: Path) -> str:
     return "\n".join(parts) + "\n"
 
 
-def main(argv: list[str] | None = None) -> int:
-    """archive/INDEX.md generator entry point."""
+def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
+    """archive/INDEX.md generator entry point. ``repo_root`` overridable for isolated tests."""
     parser = build_argparser(
         _SCRIPT_NAME,
         "Generate archive/INDEX.md from each archive unit's archive.yml. "
@@ -116,7 +116,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parent.parent.parent
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent.parent
     archive_dir = repo_root / "archive"
 
     if not archive_dir.exists():
