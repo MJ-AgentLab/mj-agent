@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-env-teardown
-description: This skill provides 3-level Docker environment cleanup for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-025 4-file layering). Profile-aware Step 0 picks which `-f` chain to teardown (dev `-f base -f override` / test `-f base -f test` / prod `-f base -f prod`). Three levels with safety confirmation: Level 1 `down` (containers + networks; volumes preserved → langgraph checkpointer data safe), Level 2 `down -v` (also wipes mj-agent-postgres-data + mj-agent-redis-data volumes — **all checkpointer + redis data lost permanently**), Level 3 `down -v --rmi local --remove-orphans` (also wipes locally-built images including mj-agent:0.1 → next `up` requires full rebuild ~3-5 minutes; Harbor-pulled test/prod images stay). Mirror of mj-system mj-sys-ops-env-teardown adapted to mj-agent's 3-service stack and 4-profile layering. Use this skill whenever the user says "停止 mj-agent compose", "清理 mj-agent 环境", "重置 mj-agent", "docker compose down", "mj-agent teardown", "拆 mj-agent 栈", "mj-agent compose down", "mj-agent 清空", "释放 mj-agent 资源", "重置 langgraph checkpointer 数据", "清掉 mj-agent volumes", "重新构建 mj-agent 镜像", or after compose-related troubleshooting wants a clean slate. Do not use for: env setup + secret 配置 (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); LLM endpoint probe (use mj-agent-infra-llm-endpoint-probe); compose lifecycle up/ps/logs (use mj-agent-infra-docker-compose); storage stack internals like postgres init script / redis schema (use mj-agent-infra-storage-stack); modifying compose files structure (that is C-flavor infra change; use /mj-agent-flow-implement); mj-system biz pg lifecycle (out of mj-agent governance — owned by mj-system stack).
+description: This skill provides 3-level Docker environment cleanup for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-026 4-file layering). Profile-aware Step 0 picks which `-f` chain to teardown (dev `-f base -f override` / test `-f base -f test` / prod `-f base -f prod`). Three levels with safety confirmation: Level 1 `down` (containers + networks; volumes preserved → langgraph checkpointer data safe), Level 2 `down -v` (also wipes mj-agent-postgres-data + mj-agent-redis-data volumes — **all checkpointer + redis data lost permanently**), Level 3 `down -v --rmi local --remove-orphans` (also wipes locally-built images including mj-agent:0.1 → next `up` requires full rebuild ~3-5 minutes; Harbor-pulled test/prod images stay). Mirror of mj-system mj-sys-ops-env-teardown adapted to mj-agent's 3-service stack and 4-profile layering. Use this skill whenever the user says "停止 mj-agent compose", "清理 mj-agent 环境", "重置 mj-agent", "docker compose down", "mj-agent teardown", "拆 mj-agent 栈", "mj-agent compose down", "mj-agent 清空", "释放 mj-agent 资源", "重置 langgraph checkpointer 数据", "清掉 mj-agent volumes", "重新构建 mj-agent 镜像", or after compose-related troubleshooting wants a clean slate. Do not use for: env setup + secret 配置 (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); LLM endpoint probe (use mj-agent-infra-llm-endpoint-probe); compose lifecycle up/ps/logs (use mj-agent-infra-docker-compose); storage stack internals like postgres init script / redis schema (use mj-agent-infra-storage-stack); modifying compose files structure (that is C-flavor infra change; use /mj-agent-flow-implement); mj-system biz pg lifecycle (out of mj-agent governance — owned by mj-system stack).
 ---
 
 # mj-agent Infra — Env Teardown
@@ -17,7 +17,7 @@ mj-agent 3 服务栈：
 | `mj-agent-postgres` | mj-agent-postgres | **langgraph checkpointer 全丢**（mj-agent-postgres-data volume）|
 | `mj-agent-redis` | mj-agent-redis | redis appendonly 全丢（mj-agent-redis-data volume）|
 
-PR-1 / ADR-025 4-file 分层意味着 teardown 命令必须**与 `up` 用同样的 `-f` 链**（compose 通过 name + -f 计算服务集合）。
+PR-1 / ADR-026 4-file 分层意味着 teardown 命令必须**与 `up` 用同样的 `-f` 链**（compose 通过 name + -f 计算服务集合）。
 
 ## When to Use
 
@@ -42,7 +42,7 @@ PR-1 / ADR-025 4-file 分层意味着 teardown 命令必须**与 `up` 用同样�
 
 ## Workflow
 
-### Step 0 — Profile selection（PR-1 / ADR-025 4-file 分层）
+### Step 0 — Profile selection（PR-1 / ADR-026 4-file 分层）
 
 询问 user 当前要 teardown 哪个 profile（必须与之前 `up` 用的 -f 链一致）：
 
@@ -143,7 +143,7 @@ docker images | grep "^mj-agent\s"
 ## Reference Files
 
 - [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
-- [[../../../docs/adr/[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
+- [[../../../docs/adr/[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
 - [[../../../infra/docker/docker-compose.mj-agent.yml|docker-compose.mj-agent.yml]] / `.override.yml` / `.test.yml` / `.prod.yml`
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1（破坏性操作必触 HITL）+ §4.15 Stage 17 post-merge cleanup
 - mj-system upstream `.claude/skills/mj-sys-ops-env-teardown/SKILL.md`（直接派生源；mj-agent 适配 3 服务栈 + 4 profile）

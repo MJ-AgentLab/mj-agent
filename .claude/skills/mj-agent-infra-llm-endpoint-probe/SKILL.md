@@ -1,13 +1,13 @@
 ---
 name: mj-agent-infra-llm-endpoint-probe
-description: This skill performs a 3-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-025 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) optional 1-token chat completion smoke. Reports endpoint reachability + model-list match + chat smoke result + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says "DGX endpoint check", "vLLM healthcheck", "SGLang healthcheck", "Ollama healthcheck", "local LLM probe", "/v1/models 探针", "DGX vLLM 是否可达", "LLM_BASE_URL 验证", "local-openai-compat 探活", "endpoint reachable", "LLM probe DGX", "DGX vLLM endpoint test", "本地 LLM 探针", or "LLM provider 切换后探活" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is probed implicitly by ChatOpenAI lazy init + `mj-agent check`; no /v1/models probe needed because ARK_API_KEY validation is sufficient); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use /mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).
+description: This skill performs a 3-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-027 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) optional 1-token chat completion smoke. Reports endpoint reachability + model-list match + chat smoke result + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says "DGX endpoint check", "vLLM healthcheck", "SGLang healthcheck", "Ollama healthcheck", "local LLM probe", "/v1/models 探针", "DGX vLLM 是否可达", "LLM_BASE_URL 验证", "local-openai-compat 探活", "endpoint reachable", "LLM probe DGX", "DGX vLLM endpoint test", "本地 LLM 探针", or "LLM provider 切换后探活" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is probed implicitly by ChatOpenAI lazy init + `mj-agent check`; no /v1/models probe needed because ARK_API_KEY validation is sufficient); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use /mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).
 ---
 
 # mj-agent Infra — LLM Endpoint Probe
 
 ## Overview
 
-3-step health probe for the OpenAI-compatible local LLM endpoint that mj-agent consumes when `LLM_PROVIDER=local-openai-compat` (ADR-025 + PR-2 of multi-env+DGX+MCP bundle).
+3-step health probe for the OpenAI-compatible local LLM endpoint that mj-agent consumes when `LLM_PROVIDER=local-openai-compat` (ADR-027 + PR-2 of multi-env+DGX+MCP bundle).
 
 DGX-Spark (192.168.0.189) is the team's local LLM compute node — vLLM / SGLang / Ollama / TGI / llama.cpp container served by other-team / dedicated-repo (deployment责任另议). mj-agent only consumes the endpoint via `LLM_BASE_URL` + `LLM_API_KEY`. This skill verifies reachability + correct model + 1-token chat works **before** mj-agent runtime depends on it.
 
@@ -181,7 +181,7 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025]]（PR-4 落地；LLM provider 抽象决策）
+- [[../../../docs/adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]]（PR-Γ 落地；LLM provider 抽象决策）
 - [[../../../src/mj_agent/llm.py|src/mj_agent/llm.py]]（make_llm() factory；ark vs local-openai-compat 分支）
 - [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）
 - [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）

@@ -109,14 +109,14 @@ Evidence: **Action-N-2 M-FU Registry Reconciliation Batch** table in `plans/[PLA
 ### Soak-period cleanup — ✅ F8-SKILL-STEP-8 completed 2026-06-02 (E-4-PR7)
 
 - `M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX` → **completed**. Finding: the recipe is already worktree-safe — post-merge Step 8 delegates to `/mj-agent-git-sync`, whose Step 4 uses `git merge origin/develop` (not bare-repo `update-ref`); the #185 incident was ad-hoc, not a recipe bug. Resolution: added a `#185-lesson` worktree-safe guard note to `.claude/skills/mj-agent-flow-post-merge/SKILL.md` Step 8 (in-tree workflow skill — NOT the 必停 `src/mj_agent/skills/`; NOT content_hash-locked).
-- `11-FILE-ADR-025-RECONCILE`: 🟡 partially done (E-4-PR8; see below).
+- `11-FILE-ADR-025-RECONCILE`: ✅ done (E-4-PR8/#207 4 free refs + E-4-PR9 6 locked SKILLs reconciled & re-frozen; see below).
 
-### Soak-period cleanup — 🟡 ADR-025 ref reconcile partial 2026-06-03 (E-4-PR8)
+### Soak-period cleanup — ✅ ADR-025 ref reconcile complete (E-4-PR8/#207 + E-4-PR9; 2026-06-03)
 
 - `M4-FU-11-FILE-ADR-025-RECONCILE` → **partially done**. Scoped via a verification workflow (adversarial lock/必停 classification of all 11 candidate files).
   - **Fixed (4 free refs)**: `src/mj_agent/llm.py` L3 + `src/mj_agent/config.py` L62 + `.env.example` L54 (ADR-025 → ADR-027); `infra/docker/docker-compose.mj-agent.yml` L2 (ADR-025 → ADR-026).
   - **N/A**: `src/mj_agent/tools/sql/execute.py` — has **no** ADR reference (the registry assumption was wrong); inserting one is authoring, not a stale-fix → skipped.
-  - **Deferred (6 content_hash-locked infra SKILLs)**: llm-endpoint-probe / storage-stack / studio-probe / docker-compose / env-setup / env-teardown — each carries stale ADR-025 refs (→ ADR-026/027/028) but editing them cascades to `claude-skill.contract.yml` body/description-hash + `mcp-server-trust-posture-change` HITL → separate gated PR (or fold into M5 archive ceremony which re-freezes contracts).
+  - **✅ Resolved in E-4-PR9 (6 content_hash-locked infra SKILLs)**: llm-endpoint-probe / storage-stack / studio-probe / docker-compose / env-setup / env-teardown — 15 stale ADR-025 refs → ADR-026/027/028 (LLM→027, compose→026, MCP→028); `claude-skill.contract.yml` re-frozen (6 `body_content_hash` + 3 `description_hash` + `frozen_at` 2026-06-03; V4 34P/0W/0F; all 6 hashes verified vs live files); `mcp-server-trust-posture-change` HITL declared (satisfied at PR review/merge).
 - Also fixed 3 tracker-drift items surfaced by the #200-#206 consistency audit (master-plan Action-N-2 "Outcome" prose + E-4 progress bullet re F8; this tracker's M3 "one active item" stale wording).
 
 ### M3 Carry-over Closure — ✅ triaged 2026-06-02 (E-4-PR3)

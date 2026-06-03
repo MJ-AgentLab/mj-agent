@@ -332,7 +332,7 @@ deferred to Phase M5+ (NOT in Stage D scope).
   estimated_effort: ~150-300 lines Python detector + ci.yml integration + tests. surfaced_at: C-5 §4.1
   Grep finding 2026-05-25.
 
-- **M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR** ★ **NEW (Stage C trajectory)** — **state: partially-completed (E-4-PR8 2026-06-03; 4 free comment/docstring refs fixed [llm.py/config.py/.env.example→027, compose→026]; execute.py = no-ref N/A; 6 content_hash-locked infra SKILLs deferred to HITL/contract-cascade PR or M5)**;
+- **M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR** ★ **NEW (Stage C trajectory)** — **state: completed (E-4-PR8/#207 4 free comment/docstring refs [llm.py/config.py/.env.example→027, compose→026] + E-4-PR9 6 content_hash-locked infra SKILLs reconciled + contract re-frozen via mcp-server-trust-posture-change HITL; execute.py = no-ref N/A)**;
   disposition: independent post-Action 2 OR bundled into F-7 cluster amend; blocked_by: NONE (ready);
   trigger: C-5 §4.1 #C5-4 11-file cumulative SUT-internal-docstring scope discovered via Grep; scope:
   ~11-line edit across 11 files; per-file authoritative ADR target per
@@ -471,12 +471,12 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
 | M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
 | M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
 | M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 (detector impl ~150-300 lines) |
-| M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | 🟡 partially done (E-4-PR8) | 4 free refs fixed (llm.py/config.py/.env.example→027; compose→026); execute.py no-ref N/A | 6 locked infra SKILLs → HITL/contract-cascade PR (or M5) |
+| M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | ✅ completed (E-4-PR8 + E-4-PR9) | 4 free refs (#207) + 6 locked infra SKILLs reconciled & contract re-frozen (E-4-PR9); execute.py no-ref N/A | none |
 | M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | ✅ completed (E-4-PR7) | recipe already worktree-safe (git-sync Step 4 `git merge`); #185-lesson guard note added to post-merge Step 8 | none |
 | M3 carry-over `m3_fu_v4_skills_complete` | ✅ completed | #183 / #202 | none |
 | M3 carry-over `m3_fu_skill_5segment_normalize` | ✅ completed | #203 | none |
 
-**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster); of these `F8-SKILL-STEP-8` ✅ done (E-4-PR7/#206) and `11-FILE-ADR-025-RECONCILE` 🟡 partially done (E-4-PR8: 4 free comment/docstring ADR refs fixed; `execute.py` has no ADR ref = N/A; **6 content_hash-locked infra SKILLs deferred** to a HITL/contract-cascade PR). Remaining F-7 cluster = 4 (DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR) + the 6 locked-SKILL ADR-ref fixes. Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
+**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster); of these `F8-SKILL-STEP-8` ✅ done (E-4-PR7/#206) and `11-FILE-ADR-025-RECONCILE` ✅ done (E-4-PR8/#207 4 free refs + E-4-PR9 6 content_hash-locked infra SKILLs reconciled & contract re-frozen; `execute.py` no-ref = N/A). Remaining F-7 cluster = 4 (DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR). Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
 
 **2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
 `M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
