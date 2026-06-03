@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Corpus-wide guard: no living references to archived framework files.
 
-Auto-discovers archived files from ``docs/archive/rule/`` directory by
+Auto-discovers archived files from the ``rule/`` archive directory by
 globbing ``[DEPRECATED]_*.md``. The ``[DEPRECATED]_`` filename prefix is
 mandated by ADR-019 (Phase C-1b). Each archived file's stem (without
 ``.md``) becomes a NEEDLE; the corresponding ARCHIVE_PREFIX is
 ``archive/rule/{stem}``.
+
+NEEDLES are unioned from BOTH the legacy ``docs/archive/rule`` location
+AND the future top-level ``archive/rule`` location (M5 Spec-Anchored
+Refactor move target), so the guard is correct pre-move (docs/archive/rule
+exists today) and post-move (archive/rule is born in the M5 move PRs).
+The ARCHIVE_PREFIX (``archive/rule/{stem}``) is already the future form.
 
 A line containing any NEEDLE outside ``docs/archive/`` is a *living*
 reference; it is permitted only if the same line also contains the
@@ -25,13 +31,22 @@ from pathlib import Path
 # Walk roots and per-file targets. ``plans/`` is excluded — working
 # documents naturally describe past migrations using NEEDLE literals
 # (e.g., ``[DEPRECATED]_...`` in plan body code blocks).
-WALK_DIRS = ("docs", "src")
+#
+# WALK_DIRS extended for the M5 Spec-Anchored Refactor: capabilities/,
+# decisions/, policies/, sdd/, docker/ are where living refs to archived
+# STANDARDs may sit post-move. docker/ doesn't exist yet — the
+# ``if not base.exists(): continue`` guard in iter_target_files handles
+# that absence.
+WALK_DIRS = ("docs", "src", "capabilities", "decisions", "policies", "sdd", "docker")
 WALK_FILES = ("CLAUDE.md",)
-SKIP_PATH_PARTS = (("docs", "archive"),)
+# Skip the legacy ``docs/archive`` tree AND the future top-level ``archive``
+# tree (M5 move target) so archived files themselves are never flagged.
+SKIP_PATH_PARTS = (("docs", "archive"), ("archive",))
 TEXT_SUFFIXES = {".md", ".py", ".txt", ".yml", ".yaml", ".toml", ".json", ".cfg", ".ini"}
 
-# Auto-discovery configuration.
-ARCHIVE_DIR = Path("docs/archive/rule")
+# Auto-discovery configuration. NEEDLES are unioned across both archive
+# locations (legacy docs/archive/rule + future top-level archive/rule).
+ARCHIVE_DIRS = (Path("docs/archive/rule"), Path("archive/rule"))
 # Glob: ``[DEPRECATED]_*.md``. Pathlib glob char-class escaping —
 # literal ``[`` and ``]`` must each be wrapped in their own char class.
 ARCHIVE_FILE_GLOB = "[[]DEPRECATED[]]_*.md"
@@ -42,15 +57,20 @@ def repo_root() -> Path:
 
 
 def discover_needles(root: Path) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Auto-discover NEEDLES + ARCHIVE_PREFIXES from archive directory.
+    """Auto-discover NEEDLES + ARCHIVE_PREFIXES from archive directories.
 
-    Returns sorted tuples (filename stems and corresponding archive
+    Unions stems across both ARCHIVE_DIRS (legacy ``docs/archive/rule`` +
+    future top-level ``archive/rule``); whichever exist contribute. Returns
+    sorted, de-duplicated tuples (filename stems and corresponding archive
     paths) so script behavior is deterministic across platforms.
     """
-    archive_dir = root / ARCHIVE_DIR
-    if not archive_dir.exists():
-        return (), ()
-    needles = tuple(sorted(p.stem for p in archive_dir.glob(ARCHIVE_FILE_GLOB)))
+    stems: set[str] = set()
+    for archive_dir in ARCHIVE_DIRS:
+        base = root / archive_dir
+        if not base.exists():
+            continue
+        stems.update(p.stem for p in base.glob(ARCHIVE_FILE_GLOB))
+    needles = tuple(sorted(stems))
     archive_prefixes = tuple(f"archive/rule/{n}" for n in needles)
     return needles, archive_prefixes
 
@@ -115,7 +135,8 @@ def main() -> int:
     self_rel = Path(__file__).resolve().relative_to(root)
     needles, archive_prefixes = discover_needles(root)
     if not needles:
-        print(f"OK: no archived files discovered (scanned {ARCHIVE_DIR.as_posix()})")
+        scanned = ", ".join(d.as_posix() for d in ARCHIVE_DIRS)
+        print(f"OK: no archived files discovered (scanned {scanned})")
         return 0
     all_violations: list[tuple[Path, int, str]] = []
     for path, rel in iter_target_files(root):

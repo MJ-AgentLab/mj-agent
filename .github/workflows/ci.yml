@@ -97,6 +97,28 @@ jobs:
 
       # ===== End of G1/G2/G9 Stage C block =====
 
+      # ===== Spec-Anchored Refactor M5-PR0 — archive catch-gates (WARNING mode) =====
+      # G11/G12/G14/G15/G17 gate-prep, wired WARNING-mode only (continue-on-error).
+      # NO-OP on the current tree (no top-level archive/ exists yet); correct once
+      # archive/ populates (proven by synthetic-fixture unit tests). The blocking
+      # flip (--strict + continue-on-error:false) is DEFERRED to the M5 move PRs —
+      # toggling a blocking gate is a HITL action (per policies/ai-agent.md §HITL
+      # Required Scenarios #5).
+
+      - name: 'G11/G12 archive manifest (WARNING per M5-PR0; no-op until archive/ born in move PRs)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_archive_manifest.py --all
+
+      - name: 'G14/G15 archived references (WARNING per M5-PR0; no-op until archive/ born in move PRs)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_archived_references.py --all
+
+      - name: 'archive/INDEX.md idempotency (WARNING per M5-PR0; no-op until archive/ born in move PRs)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/generate_archive_index.py --check
+
+      # ===== End of M5-PR0 archive catch-gate block =====
+
       # ===== Spec-Anchored Refactor Phase M3 Stage C — adapter validators (post C-a flip) =====
       # Per Phase M3 Stage C C-a flip strategy (kickoff Gate-1 approved):
       # V1 / V3 / V5 flipped to BLOCKING (empirical clean state — see commit body for

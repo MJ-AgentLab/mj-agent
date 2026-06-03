@@ -30,13 +30,13 @@ ai_visibility: source-of-truth
 | G8 | （evidence required）| capability `state: active` 后 evidence/ 至少 1 文件 | M4 blocking | TBD M4 |
 | G9 | `scripts/sdd/generate_index.py` | capabilities/INDEX.md auto-gen | M0 warning | warning |
 | G10 | reserved | — | — | — |
-| G11 | `scripts/sdd/check_archive_manifest.py` | archive.yml + ai_visibility 必填 | M5 blocking | TBD M5 |
-| G12 | `scripts/sdd/check_archive_manifest.py` | 同上 | M5 blocking | TBD M5 |
+| G11 | `scripts/sdd/check_archive_manifest.py` | archive.yml + ai_visibility 必填 | M5 blocking | M5-PR0 — WARNING (PR0); → blocking in move PRs |
+| G12 | `scripts/sdd/check_archive_manifest.py` | 同上（5 必填 + enum 校验）| M5 blocking | M5-PR0 — WARNING (PR0); → blocking in move PRs |
 | G13 | reserved | — | — | — |
-| G14 | `scripts/sdd/check_archived_references.py` | active 文件不引用 archived 路径 | M5 blocking | TBD M5 |
-| G15 | 同 G14 | — | M5 blocking | TBD M5 |
+| G14 | `scripts/sdd/check_archived_references.py` | active 文件不引用 archived 路径 | M5 blocking | M5-PR0 — WARNING (PR0); → blocking in move PRs |
+| G15 | 同 G14 | — | M5 blocking | M5-PR0 — WARNING (PR0); → blocking in move PRs |
 | G16 | reserved | — | — | — |
-| G17 | reserved（archive ai_visibility）| — | M5 blocking | TBD M5 |
+| G17 | reserved（archive ai_visibility）| 由 `check_archived_references.py` 的 ai_visibility 解析覆盖（reference→OK / hidden→WARN）；仍保留为预留位待 move PR 细化 | M5 blocking | M5-PR0 — covered by G14/G15 ai_visibility check; WARNING (PR0); → blocking in move PRs |
 
 ## §2 Stack-Specific Gate（8 adapter gate；Phase M2-M3）
 
