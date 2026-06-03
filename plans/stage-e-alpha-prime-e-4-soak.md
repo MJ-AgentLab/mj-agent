@@ -151,7 +151,8 @@ Evidence: **Action-N-2 M-FU Registry Reconciliation Batch** table in `plans/[PLA
 
 Promotion rule: separate PR; gated on a **clean soak window elapsed** + no readiness blocker. mcp-governance owner should confirm the medium-only (no-G21/G22-coverage) caveat is acceptable.
 
-### Stage F Preparation
+### Stage F Preparation — 📋 prep drafted 2026-06-03 (E-4-PR10)
 
-- [ ] Prepare M4 closure update
-- [ ] Prepare `phase-m4-complete` tag only after E-4 is complete
+- [x] Prepare M4 closure update → **drafted**: `plans/stage-f-m4-closure-prep.md` (entry gate · soak-wait plan · M4-closure sequence · Stage F / M5 / M6 remaining-work disposition)
+- [ ] Prepare `phase-m4-complete` tag only after E-4 is complete (held; gated on soak window + 5-capability promotion)
+- Soak-wait plan (option 1): promotion held until the soak window elapses (~2026-06-09 → 06-16) + `mcp-server-governance` caveat owner-confirm; **no early promote**.
