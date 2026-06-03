@@ -2,26 +2,124 @@
 # Copy to capabilities/infrastructure/docker-compose/contracts/compose.contract.yml.
 # Validated by scripts/sdd/check_docker_contracts.py (compose 子集；Phase M2 warning / M3 blocking).
 #
-# Phase M0 skeleton template — Docker Compose 4-file 配置 contract.
+# Skeleton template — Docker Compose 4-file 配置 contract.
+# M1 evolution: M0-flat fields are reshaped into nested blocks (file_layering /
+# invocation_contract / services / networks / volumes / postgres_init).
 
-compose_files:                            # 4-file layering (per ADR-026)
-  - docker/compose.yaml                   # base
-  - docker/compose.override.yml           # dev overlay
-  - docker/compose.test.yml               # test overlay
-  - docker/compose.prod.yml               # prod overlay
-networks_explicit: true                   # networks 显式声明
-healthcheck_required:                     # 每容器必须有 healthcheck
-  - mj-agent
-  - mj-agent-postgres
-env_file_explicit: true                   # --env-file .env 必须显式传递
-                                          # docker compose CLI 不在 infra/docker/ 子目录自动加载 .env
-                                          # 必须 `docker compose --env-file .env -f ...`
-secret_substitution_only_for:             # 仅允许这些字段引用 secret env var
-  - postgres_password
-  - mj_agent_memory_password
-external_networks:                        # 依赖的外部 network (per ADR-008)
-  - mj-system-backend-network             # depends on mj-system stack (analyst RO biz pg access)
-project_name_stable: true                 # docker compose 跨 profile 共用同一 project name
-                                          # (Phase 1 sub 1.H + ADR-026)
-# TBD Phase M2: 添加 restart_policy 字段 (dev / test / prod 策略不同)
-# TBD Phase M2: 添加 volumes 字段 (per profile 显式声明 + 命名约定)
+contract_id: <placeholder>                          # e.g. compose
+covers_requirements:
+  - <REQ-NNN>                                       # e.g. 4-file profile loading + healthcheck + env injection
+
+# 4-file layering (ADR-026)
+file_layering:
+  base:
+    path: infra/docker/docker-compose.mj-agent.yml  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
+    freeze_anchor: infra/docker/docker-compose.mj-agent.yml (<N> lines)
+    compose_project_name: <project-name>            # `name: <project>`; stable across profiles
+  overlays:
+    - profile: DEV
+      path: infra/docker/docker-compose.override.yml  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
+      freeze_anchor: infra/docker/docker-compose.override.yml (<N> lines)
+      key_additions: "<dev-specific additions, e.g. build context + dev log level>"
+    - profile: TEST
+      path: infra/docker/docker-compose.test.yml      # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
+      freeze_anchor: infra/docker/docker-compose.test.yml (<N> lines)
+      key_additions: "<test-specific additions, e.g. registry image + resource caps>"
+    - profile: PROD
+      path: infra/docker/docker-compose.prod.yml      # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
+      freeze_anchor: infra/docker/docker-compose.prod.yml (<N> lines)
+      key_additions: "<prod-specific additions, e.g. resource caps + logging driver>"
+
+# Invocation contract
+invocation_contract:
+  dev_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.override.yml up -d
+  test_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.test.yml up -d
+  prod_command: |
+    docker compose --env-file .env \
+      -f infra/docker/docker-compose.mj-agent.yml \
+      -f infra/docker/docker-compose.prod.yml up -d
+
+  why_explicit_overlay:
+    auto_load_disabled: "compose files in infra/docker/ subdir; auto-load of override.yml only fires when CLI in same dir as the base compose file"
+    explicit_f_overrides: "passing -f explicitly switches off auto-load even where it would have fired"
+
+  why_env_file_explicit:
+    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = infra/docker/"
+    repo_root_env_location: ".env lives at repo root, NOT in infra/docker/"
+    consequence_without_env_file: "${VAR:-sentinel} substitutes to sentinel; postgres init bakes sentinel into volume; connection fails with `password authentication failed`"
+
+  dual_injection_mechanism:
+    cli_substitution_layer:
+      mechanism: "--env-file .env"
+      purpose: "${VAR} substitution in compose YAML (before any container starts)"
+    container_env_layer:
+      mechanism: "env_file: ../../.env  (inside service definition)"
+      purpose: "inject env vars into running container"
+    both_required: "CLI for compose substitution; container for runtime env; one alone insufficient"
+
+# Services
+services:
+
+  <service-name>:
+    image: <image:tag>                              # DEV may add build:; TEST/PROD may override to registry
+    ports: ["<HOST>:<CONTAINER>"]
+    env_file: ../../.env
+    environment:
+      <ENV_KEY>: <value>
+    depends_on:                                      # startup order
+      <dependency-service>:
+        condition: service_healthy
+    healthcheck:
+      cmd: "<healthcheck command>"
+      interval: 30s
+      start_period: 30s
+      retries: 3
+    networks:
+      - <network-name>
+
+# Networks
+networks:
+  <external-network>:
+    external: true                                  # owned by another stack; this project only attaches
+    purpose: "<why this external network is required, e.g. biz pg analyst RO; ADR-008>"
+  <internal-network>:
+    type: bridge
+    labels:
+      isolation: internal                            # security label
+
+# Volumes
+volumes:
+  <volume-name>:
+    labels:
+      backup: <daily>
+
+# Postgres init script (shell-safe contract)
+postgres_init:
+  path: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
+  freeze_anchor: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh (<N> lines)
+  idempotency:
+    role_handling: "CREATE ROLE if missing; ALTER ROLE if exists"
+    database_handling: "CREATE DATABASE if missing"
+    grants: "GRANT CONNECT + CREATE to <memory user>"
+  shell_safety_pattern:
+    heredoc: "<<-'EOSQL'"                            # single-quoted; disables bash expansion entirely
+    env_read: "psql \\getenv reads env directly (no shell intermediary)"
+    sql_escape: "format('%I %L', name, password)  -- I = identifier; L = literal"
+    execution: "\\gexec executes the formatted DDL"
+    handles: "passwords with $ / backticks / quotes / parens / spaces"
+
+hitl_required:
+  - prod compose change                             # docker-compose.prod.yml any modification
+                                                    # (per policies/docker-runtime.md §4)
+
+# TBD Phase M3:
+#   - tests/docker/test_compose_config_dev.py  (docker compose config --env-file .env → exit 0 + structural assertions)
+#   - tests/docker/test_compose_config_test.py
+#   - tests/docker/test_compose_config_prod.py
+#   - tests/docker/test_external_network_required.py (compose up fails clearly if external network absent)

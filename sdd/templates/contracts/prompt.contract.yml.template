@@ -2,22 +2,52 @@
 # Copy to capabilities/<domain>/<capability-slug>/contracts/prompt.contract.yml.
 # Validated by scripts/sdd/check_prompt_contracts.py (Phase M2 warning / M3 blocking).
 #
-# Phase M0 skeleton template — Prompt (system.md) contract.
+# Skeleton template — Prompt (system.md) contract.
 # Note: SKILL.md (in-source canonical) use runtime-skill.contract.yml instead.
+#
+# content_hash canonical algorithm: see runtime-skill.contract.yml.template header
+# (identical across all runtime-skill / prompt contracts).
+
+contract_id: <placeholder>                          # e.g. prompt
+adapter: <adapter-slug>                             # per sdd/adapters/prompt.md (= prompt)
+covers_requirements:
+  - <REQ-NNN>                                       # which requirements depend on this prompt invariant
 
 prompt_path: src/mj_agent/prompts/system.md
-version: 1.3                              # 与 prompts/system.md frontmatter version 一致
-variables: []                             # static body; concatenates with SKILL.md
-frontmatter_required:
-  - version
+frontmatter_strip_contract: true                    # loader MUST strip frontmatter (Agent_Side §7.5)
+
+freeze_anchor:                                      # 复合对象 per sdd/adapters/prompt.md §Standards
+  file: src/mj_agent/prompts/system.md
+  version: <vX.Y>                                   # frontmatter version field; string-exact comparison
+                                                    # (any v-prefix strip / case change → FAIL)
+  body_section_heads:                               # body 结构锁 (system.md uses `#` H1-level sections)
+    - "# <Section heading 1>"
+    - "# <Section heading 2>"
+    - "# <Section heading N>"
+  content_hash: sha256:<HEX>                         # body 内容锁 (after frontmatter strip)
+  frozen_at: <ISO-8601-timestamp>                   # e.g. 2026-05-21T00:00:00Z
+
+frontmatter_required:                               # freeze-relevant subset (prose-like fields excluded;
+                                                    # body content_hash captures prose drift indirectly)
+  - version                                         # already frozen in freeze_anchor.version (must match)
   - state
-  - eval_references                       # Phase 2+ mandatory (per Agent_Side A8)
-eval_references:                          # Phase M2 起强制；指向 tests/eval/
-  - tests/eval/component/test_skill_routing.py
+  - <other-freeze-relevant-key>                     # e.g. model_binding / token_budget_estimate
+
+frontmatter_freeze:                                 # explicit frozen values for the non-version
+                                                    # freeze-relevant subset; string-exact comparison
+  state: active
+  <other-freeze-relevant-key>: <placeholder>        # e.g. model_binding: deepseek-v3
+
+variables: []                                       # static body; no template variables
+
 allowed_state_transitions:
-  - draft → active                        # requires eval_references non-empty
-  - active → deprecated                   # requires superseded_by
+  - draft → active                                  # requires eval_references non-empty (Phase 2+; Agent_Side A8)
+  - active → deprecated                             # requires superseded_by
+
 hitl_required:
-  - prompt_version_bump                   # 任何 body 修改或 version bump 触发
-# TBD Phase M2: 添加 forbidden_phrases 字段 (avoid prompt drift to relax 4 stops)
+  - prompt-version-bump                             # any system.md body / frontmatter version change triggers
+                                                    # canonical trigger description in sdd/gates.md §4
+                                                    # (hyphen canonical per C5)
+# Optional: eval_references: [<placeholder>]        # M2 advisory; M4-FU baseline per ADR-024
+# TBD Phase M2: 添加 forbidden_phrases 字段 (avoid prompt drift to relax 必停 gates)
 # TBD Phase M2: 添加 regression_eval 字段 (与 ADR-024 EVAL framework 联动)
