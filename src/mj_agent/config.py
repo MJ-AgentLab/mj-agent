@@ -59,7 +59,7 @@ class Settings(BaseSettings):
         default_factory=lambda: ["dwd_dim_product_interface", "dwd_dim_institution"]
     )
 
-    # ── 2. LLM Provider (multi-provider abstraction; ADR-025) ─────────
+    # ── 2. LLM Provider (multi-provider abstraction; ADR-027) ─────────
     # Provider selection: "ark" (default; Volcengine Ark + DeepSeek V3) reads
     # ark_base_url + ark_api_key; "local-openai-compat" (DGX-Spark vLLM /
     # SGLang / Ollama / TGI / llama.cpp) reads llm_base_url + llm_api_key.

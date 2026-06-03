@@ -1,5 +1,5 @@
 # =============================================
-# mj-agent compose stack — BASE (env-agnostic; see ADR-008 + ADR-025)
+# mj-agent compose stack — BASE (env-agnostic; see ADR-008 + ADR-026)
 #
 # 4-file layering (mirrors mj-system v3.2.2 docker-compose.{yml,override.yml,test.yml,prod.yml}):
 #   docker-compose.mj-agent.yml           — this file (BASE; env-agnostic; total)

@@ -1,6 +1,6 @@
 """LLM provider factory.
 
-mj-agent supports two providers (selected by `LLM_PROVIDER` env, ADR-025):
+mj-agent supports two providers (selected by `LLM_PROVIDER` env, ADR-027):
 
 - **ark** (default) — Volcengine Ark's OpenAI-compatible Chat Completions
   endpoint, DeepSeek V3 model, with `extra_body.thinking` knob driven by
