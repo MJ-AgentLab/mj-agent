@@ -2,20 +2,46 @@
 # Copy to capabilities/<domain>/<capability-slug>/contracts/python.contract.yml.
 # Validated by scripts/sdd/check_python_contracts.py (Phase M2 warning / M3 blocking).
 #
-# Phase M0 skeleton template — Python module 公开接口 contract.
+# Skeleton template — Python module 公开接口 contract.
+# M1 evolution: a capability may freeze MULTIPLE modules, so the canonical shape is a
+# `modules[]` collection (the M0 single `module` form is superseded).
 
-module: src.mj_agent.<package>.<module>   # 例：src.mj_agent.tools.sql.guardrail
-exports:
-  - name: <function_or_class_name>
-    signature: "def <name>(arg: type) -> ReturnType"   # PEP 484 风格
-    raises:
-      - ValueError: "<when this exception is raised>"
-      - RuntimeError: "<another exception condition>"
-  - name: <constant_or_frozen_set_name>
-    type: "frozenset[str]"
-    value_constraint: "<invariant the value must satisfy>"
-public_invariants:
-  - "All assertions raise ValueError; no other exception types"
-  - "<other invariant 2>"
-# TBD Phase M2: 添加 deprecated_exports 字段 (用于 backward-compat 软迁移)
-# TBD Phase M2: 添加 stability 字段 (stable / experimental / internal)
+contract_id: <placeholder>                          # e.g. python
+adapter: <adapter-slug>                             # per sdd/adapters/python.md (= python)
+covers_requirements:
+  - <REQ-NNN>                                       # which requirements these modules' public surface covers
+
+modules:                                            # one entry per Python module
+
+  - path: src.mj_agent.<package>.<module>           # 例：src.mj_agent.tools.sql.guardrail
+    freeze_anchor: src/mj_agent/<package>/<module>.py
+    exports:
+      - name: <function_or_class_name>
+        signature: "def <name>(arg: type) -> ReturnType"   # PEP 484 风格
+        public: true
+        raises:
+          - "ValueError: <when this exception is raised>"
+          - "RuntimeError: <another exception condition>"
+      - name: <constant_or_dataclass_name>
+        kind: dataclass                             # or: class | exception | constant
+        fields:
+          - "<field_name>: <type>"
+        public: true
+    public_invariants:
+      - "<invariant 1, e.g. never raises; all rejection paths return (False, reason)>"
+      - "<invariant 2>"
+
+  # ... repeat the `- path:` block per module this capability freezes
+
+# Public symbol non-actions (explicit; reverse-engineered from doc comments)
+non_actions:
+  - module: <module>
+    items:
+      - "<explicit non-action, e.g. does NOT scan SQL comments>"
+
+hitl_required:
+  - <placeholder>                                   # e.g. sql-guardrail-relax (hyphen canonical; or `none`)
+                                                    # canonical enum per policies/ai-agent.md §4
+
+# TBD Phase M2: scripts/sdd/check_python_contracts.py validates exports / signatures against actual code
+# TBD Phase M3: contract test imports each module + asserts public API surface (signature inspection)
