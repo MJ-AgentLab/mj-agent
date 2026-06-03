@@ -332,7 +332,7 @@ deferred to Phase M5+ (NOT in Stage D scope).
   estimated_effort: ~150-300 lines Python detector + ci.yml integration + tests. surfaced_at: C-5 §4.1
   Grep finding 2026-05-25.
 
-- **M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR** ★ **NEW (Stage C trajectory)** — **state: active**;
+- **M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR** ★ **NEW (Stage C trajectory)** — **state: partially-completed (E-4-PR8 2026-06-03; 4 free comment/docstring refs fixed [llm.py/config.py/.env.example→027, compose→026]; execute.py = no-ref N/A; 6 content_hash-locked infra SKILLs deferred to HITL/contract-cascade PR or M5)**;
   disposition: independent post-Action 2 OR bundled into F-7 cluster amend; blocked_by: NONE (ready);
   trigger: C-5 §4.1 #C5-4 11-file cumulative SUT-internal-docstring scope discovered via Grep; scope:
   ~11-line edit across 11 files; per-file authoritative ADR target per
@@ -471,12 +471,12 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
 | M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
 | M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
 | M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 (detector impl ~150-300 lines) |
-| M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | 🟡 active/ready | blocked_by: NONE | independent small PR (~11-line edit) OR F-7 |
+| M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | 🟡 partially done (E-4-PR8) | 4 free refs fixed (llm.py/config.py/.env.example→027; compose→026); execute.py no-ref N/A | 6 locked infra SKILLs → HITL/contract-cascade PR (or M5) |
 | M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | ✅ completed (E-4-PR7) | recipe already worktree-safe (git-sync Step 4 `git merge`); #185-lesson guard note added to post-merge Step 8 | none |
 | M3 carry-over `m3_fu_v4_skills_complete` | ✅ completed | #183 / #202 | none |
 | M3 carry-over `m3_fu_skill_5segment_normalize` | ✅ completed | #203 | none |
 
-**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster), of which 2 (`11-FILE-ADR-025-RECONCILE`, `F8-SKILL-STEP-8`) are ready as independent small PRs. Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
+**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster); of these `F8-SKILL-STEP-8` ✅ done (E-4-PR7/#206) and `11-FILE-ADR-025-RECONCILE` 🟡 partially done (E-4-PR8: 4 free comment/docstring ADR refs fixed; `execute.py` has no ADR ref = N/A; **6 content_hash-locked infra SKILLs deferred** to a HITL/contract-cascade PR). Remaining F-7 cluster = 4 (DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR) + the 6 locked-SKILL ADR-ref fixes. Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
 
 **2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
 `M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
@@ -565,7 +565,7 @@ discipline (R-13-10) prevents:
 - ✅ **E-0b** — M-FU#7 runbook 4-field justification curation (4 pilots × 15 critical|high scenarios; +261 lines) → G21/G22 15W→0W — PR #198
 - ✅ **E-1/E-2** — G21+G22 combined BLOCKING flip (`continue-on-error:false` + `--strict`) — PR #199 (2026-06-02)
 - ✅ **E-3** — G24 bugfix workflow readiness — PR #194
-- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F) + ✅ promotion-readiness preflight + soak checkpoint (E-4-PR6: all 5 pilots ready/full-artifacts, gated on clean soak window — not yet elapsed, flip landed 2026-06-02); pending: capability promotion (post-soak) + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
+- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F) + ✅ promotion-readiness preflight + soak checkpoint (E-4-PR6: all 5 pilots ready/full-artifacts, gated on clean soak window — not yet elapsed, flip landed 2026-06-02) + ✅ F8 skill-step worktree-safe fix (E-4-PR7/#206) + 🟡 ADR-025 ref reconcile (E-4-PR8: 4 free refs fixed; `execute.py` no-ref N/A + 6 locked infra SKILLs deferred to HITL/contract PR); pending: capability promotion (post-soak) + Stage F prep — tracker `plans/stage-e-alpha-prime-e-4-soak.md`
 
 > **Impl reconcile**: E-1/E-2 actual mechanism = `--strict` (WARN→exit 1 via `_common/cli.py` `Summary.exit_code`), **not** the "WARN→FAIL Severity reclassification" wording in the E-1 row above (L525). Per the E-1/E-2 decision no validator severity was rewritten.
 
