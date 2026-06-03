@@ -75,7 +75,7 @@ digraph sync {
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `docs/design/agent/[SPEC]_biz_catalog_*.md` / `scripts/diff_biz_schema.py` 输出 |
 | `src/mj_agent/config.py` | CLAUDE.md "Environment variables" / `.env.example` / `config/README.md` |
 | `tests/{unit,eval,integration,smoke,contract}/` | CLAUDE.md "Commands" pytest 段 |
-| `infra/docker/` | CLAUDE.md "Commands" Docker 段 / `docs/runbook/dev_studio_walkthrough.md` / mj-agent-infra-docker-compose SKILL |
+| `docker/` | CLAUDE.md "Commands" Docker 段 / `docs/runbook/dev_studio_walkthrough.md` / mj-agent-infra-docker-compose SKILL |
 | `pyproject.toml` / `uv.lock` | CLAUDE.md "Commands" / CHANGELOG.md（如显著 dep 变化） |
 | `.github/workflows/` | CLAUDE.md CI 段 / mj-agent-git-push GUIDE |
 | `.env.example` | CLAUDE.md "Environment variables" / `config/README.md` |

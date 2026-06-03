@@ -8,7 +8,7 @@ schema_version: "1.2"
 cross_capability_refs:
   - target: infrastructure.docker-compose
     direction: inbound                            # docker-compose deploys pg endpoints we connect to
-    surface: ".mcp.json pg-* entries + infra/docker/docker-compose.*.yml services"
+    surface: ".mcp.json pg-* entries + docker/compose.*.yml services"
     rationale: "5 pg-mj-agent-memory-* entries connect to docker-compose-deployed mj-agent-postgres (port 5433); 5 pg-mj-system-biz-* entries connect to mj-system biz pg via mj-system-backend-network"
     impact: "compose pg port / host changes must sync with .mcp.json URL env overrides"
 

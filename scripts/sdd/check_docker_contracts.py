@@ -1,7 +1,7 @@
 """scripts/sdd/check_docker_contracts.py — Phase M2 + M3-FU-V5-SUBFLAGS.
 
 Validates `capabilities/*/contracts/docker.contract.yml` AND
-`compose.contract.yml` against actual `infra/docker/Dockerfile` + 4 compose
+`compose.contract.yml` against actual `docker/Dockerfile` + 4 compose
 YAML files.
 
 Per blueprint §6 Phase M2 §3 + ADR-031 §5 docker-container adapter + ADR-026
@@ -333,7 +333,7 @@ def main(argv: list[str] | None = None) -> int:
         script_name="check_docker_contracts.py",
         description=(
             "Validate docker.contract.yml + compose.contract.yml against actual "
-            "infra/docker/ artifacts. Phase M2 commit 5.1 core lint + M3-FU-V5-SUBFLAGS "
+            "docker/ artifacts. Phase M2 commit 5.1 core lint + M3-FU-V5-SUBFLAGS "
             "sub-flags. Tolerates M1 nested schema vs M0 template flat schema (emits "
             "WARN about deviation). Sub-flags --bdd / --tdd / --compose-config toggle "
             "additive schema-layer checks beyond core lint."

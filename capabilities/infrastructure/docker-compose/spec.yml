@@ -26,11 +26,11 @@ summary: >
 requirements:
   - id: REQ-001
     statement: "Each profile invoked via explicit `-f base -f overlay` chain (NO override.yml auto-load); `--env-file .env` SHALL be supplied so compose YAML `${VAR}` substitution reads real values; DEV layers override.yml, TEST layers test.yml, PROD layers prod.yml"
-    rationale: "Compose files live in infra/docker/ subdir (not repo root) → auto-load of override.yml does NOT fire even in DEV; --env-file .env required because compose's project_directory = first -f file's dir, NOT developer cwd; forgetting --env-file → postgres init script bakes 'local-dev-only-replace' sentinel password into volume"
+    rationale: "Compose files live in docker/ subdir (not repo root) → auto-load of override.yml does NOT fire even in DEV; --env-file .env required because compose's project_directory = first -f file's dir, NOT developer cwd; forgetting --env-file → postgres init script bakes 'local-dev-only-replace' sentinel password into volume"
     priority: high
     bdd:
       examples:
-        - "Given clean docker daemon + mj-system stack up + .env populated / When `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml up -d` is invoked / Then all 3 services reach Up (healthy) within 60s; mj-agent connects to mj-agent-postgres:5432 internal AND mj-postgres:5432 on mj-system-backend-network"
+        - "Given clean docker daemon + mj-system stack up + .env populated / When `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d` is invoked / Then all 3 services reach Up (healthy) within 60s; mj-agent connects to mj-agent-postgres:5432 internal AND mj-postgres:5432 on mj-system-backend-network"
 
   - id: REQ-002
     statement: "mj-agent SHALL depends_on: service_healthy for both mj-agent-postgres and mj-agent-redis; postgres healthcheck SHALL use psql -U postgres -d $MJ_AGENT_MEMORY_DB -tc 'SELECT 1' (NOT pg_isready) so init script's CREATE DATABASE completes before downstream services start"
@@ -41,7 +41,7 @@ requirements:
         - "Given mj-agent-postgres is starting + init script has CREATEd role but not yet CREATEd database / When healthcheck probe runs psql -tc 'SELECT 1' -d mj_agent_memory / Then probe exits non-zero (DB doesn't exist); mj-agent depends_on service_healthy does not fire until DB exists"
 
   - id: REQ-003
-    statement: "Container images SHALL NOT bake secrets; orchestrator injects via --env-file .env (CLI substitution) + env_file: ../../.env (container env); config/secrets.enc SHALL NOT be decrypted inside image; postgres-init script SHALL safely handle passwords containing shell metacharacters via \\getenv + format() + \\gexec"
+    statement: "Container images SHALL NOT bake secrets; orchestrator injects via --env-file .env (CLI substitution) + env_file: ../.env (container env); config/secrets.enc SHALL NOT be decrypted inside image; postgres-init script SHALL safely handle passwords containing shell metacharacters via \\getenv + format() + \\gexec"
     rationale: "Secrets-in-image is 4 项必停 sql-guardrail-relax adjacent risk; init script must handle passwords with $/backticks/quotes/parens/spaces unmangled (PR #144 precipitating); ADR-030 secrets bundle split enforces split injection (app .env + MCP OS env)"
     priority: high
     bdd:
@@ -57,7 +57,7 @@ related_decisions:
 cross_capability_refs:
   - target: data-agent.llm-provider
     direction: inbound                            # llm-provider depends on us
-    surface: "compose env_file: ../../.env injects LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY per profile"
+    surface: "compose env_file: ../.env injects LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY per profile"
     reason: "LLM env vars travel from .env through compose CLI substitution + container env into mj-agent service"
 
   - target: infrastructure.mcp-server-governance
@@ -65,4 +65,4 @@ cross_capability_refs:
     surface: ".mcp.json wrapper scripts for pg connections share host/port matrix with compose profiles"
     reason: "WAN URLs in .mcp.json (test-wan / prod-wan) must align with compose-deployed pg endpoints"
 
-# TBD Phase M5: infra/docker/ → docker/ (path migration; ADR-026 Phase 6 plan)
+# Phase M5 (M5-PR2, 2026-06-03): infra/docker/ → docker/ done; compose files renamed compose*.yml

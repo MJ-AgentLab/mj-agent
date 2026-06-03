@@ -213,7 +213,7 @@ mj-agent 仅访问 上游业务系统 业务指标域：
 <details>
 <summary><strong>Docker compose 起不来 / mj-system-backend-network 不存在</strong></summary>
 
-mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [infra/docker/README.md](./infra/docker/README.md) + [ADR-008](./docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md)。
+mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [docker/README.md](./docker/README.md) + [ADR-008](./docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md)。
 
 </details>
 

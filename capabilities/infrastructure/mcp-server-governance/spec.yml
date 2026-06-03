@@ -47,7 +47,7 @@ related_decisions:
 cross_capability_refs:
   - target: infrastructure.docker-compose
     direction: inbound                            # docker-compose deploys pg endpoints we connect to
-    surface: ".mcp.json wrapped pg entries + infra/docker/docker-compose.*.yml pg services"
+    surface: ".mcp.json wrapped pg entries + docker/compose.*.yml pg services"
     reason: "pg-mj-agent-memory-* entries connect to mj-agent-postgres deployed by docker-compose; pg-mj-system-biz-* entries connect to mj-system biz pg also reachable via mj-system-backend-network"
   - target: data-agent.llm-provider
     direction: outbound

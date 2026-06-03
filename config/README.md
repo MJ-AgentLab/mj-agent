@@ -165,7 +165,7 @@ secrets.enc 内 `MJ_AGENT_MEMORY_USER=mj_agent_app` 一行覆盖所有 env 的 .
 
 | 已部署的容器 | 动作 |
 |---|---|
-| 本地 mj-agent-postgres 容器（如已跑过） | `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml down -v` 销毁卷；`up -d` 触发 init script 用新 role 重建。**checkpointer history 全丢**（dev 可接受）。 |
+| 本地 mj-agent-postgres 容器（如已跑过） | `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml down -v` 销毁卷；`up -d` 触发 init script 用新 role 重建。**checkpointer history 全丢**（dev 可接受）。 |
 | TEST / PROD 部署 | 不存在（mj-agent 未部署 TEST/PROD）；将来部署时 init script 直接用新 role 创建，无迁移负担。 |
 
 **已部署 prod 的备选**（将来若需要在已运行环境改名而不丢数据）：
@@ -177,7 +177,7 @@ ALTER ROLE mj_agent_memory RENAME TO mj_agent_app;
 
 ## Memory pg password rotation（dev / TEST / PROD 操作流程）
 
-`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 只在 volume
+`docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 只在 volume
 **首次创建**（data dir 空）由 postgres 镜像调用；后续 `.env` 中
 `MJ_AGENT_MEMORY_PASSWORD` 改变后 **不会自动同步**到已存在的 role —— 会出现
 `password authentication failed for user "mj_agent_app"` (PoolTimeout)。
@@ -211,10 +211,10 @@ docker exec mj-agent mj-agent check
 丢 langgraph checkpoint 数据；用于 dev / test 环境快速重置。
 
 ```powershell
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
-               -f infra/docker/docker-compose.override.yml down -v
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml `
-               -f infra/docker/docker-compose.override.yml up -d
+docker compose --env-file .env -f docker/compose.yaml `
+               -f docker/compose.override.yml down -v
+docker compose --env-file .env -f docker/compose.yaml `
+               -f docker/compose.override.yml up -d
 # 重启时 volume 重建，init script 跑新 password（含 #136 后的 CREATE OR ALTER 改造）
 ```
 
@@ -226,7 +226,7 @@ storage stack 双隔离约束 + 各环境 backup 策略文档。
 
 ### 场景 D: password 字符集安全（#144 起 init script 已无字符集约束）
 
-历史背景：早期（#144 之前）`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh`
+历史背景：早期（#144 之前）`docker/postgres-init/01-bootstrap-mj-agent-memory.sh`
 用 `<<-EOSQL` heredoc（**unquoted** delimiter），bash 对 SQL body 跑
 parameter / command / arithmetic substitution。如果 `MJ_AGENT_MEMORY_PASSWORD`
 含 `$word` / `` `cmd` `` / `$(cmd)` 等 shell metachar，bash 二次解析会**破坏**
@@ -243,7 +243,7 @@ DDL**，完全 bypass shell expansion；任意字符的 password（含 `$` / bac
 
 诊断提示：若 `mj-agent-postgres` 启动 log 同时出现 `command not found` 与
 `password authentication failed`，先确认 init script 版本 ≥ #144 修复
-（在容器内或 host 上 `grep '\\getenv mem_user' infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 应命中）；命中仍报错请走场景 A 手动同步并 file follow-up。
+（在容器内或 host 上 `grep '\\getenv mem_user' docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 应命中）；命中仍报错请走场景 A 手动同步并 file follow-up。
 
 ## 与 mj-system 的口令独立
 

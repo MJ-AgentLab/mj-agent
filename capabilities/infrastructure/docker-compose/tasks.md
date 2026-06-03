@@ -64,8 +64,8 @@ updated: 2026-05-20
 - **Priority**：medium
 - **Linked REQ**：N/A (path-only refactor)
 - **HITL trigger**：大规模目录迁移 (≥ 10 文件 — Dockerfile + 4 compose + entrypoint + postgres-init)
-- **Status**：TBD-M5
-- **Description**：Per ADR-026 phase 6 plan; relocate `infra/docker/` to `docker/`. Update all path refs (CLAUDE.md / mj-agent-infra-* skills / capabilities/infrastructure/docker-compose/contracts/*). Symlink for 1 week grace.
+- **Status**：✅ done (M5-PR2, 2026-06-03)
+- **Description**：Per ADR-026 phase 6 plan; relocated `infra/docker/` to `docker/` and renamed compose files to `compose*.yml` (`compose.yaml` base + `compose.{override,test,prod}.yml`). Updated all path refs (CLAUDE.md / mj-agent-infra-* skills / capabilities/infrastructure/docker-compose/contracts/*). `git mv` preserved history; no symlink grace needed (single-PR cut-over).
 
 ## In-Progress
 (none beyond T-001)

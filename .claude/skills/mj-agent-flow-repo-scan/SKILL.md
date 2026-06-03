@@ -107,7 +107,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 | 6.3 | **API 与 Studio** | LangGraph Studio (langgraph.json) / Chainlit `src/mj_agent/ui.py` / CLI `src/mj_agent/server/cli.py` (typer) | Read |
 | 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / find_biz_context 真实返回 / biz_dws + biz_dwd allowlist | mcp postgres-* / Read qcm_catalog |
 | 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | mcp postgres |
-| 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `docker-compose.mj-agent.yml` / `langgraph.json` / DEV/TEST/PROD profile | Read |
+| 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `compose.yaml` / `langgraph.json` / DEV/TEST/PROD profile | Read |
 | 6.7 | ~~n8n~~ | **跳过**——mj-agent 不用 n8n（与 mj-system 差异） | — |
 | 6.8 | **测试与验证** | 5 类 pytest（unit/eval/integration/smoke/contract）+ ruff + mypy strict + python -m compileall | Glob `tests/**` |
 | 6.9 | **文档治理** | docs/{rule,adr,assessments,_templates,infrastructure,guide,runbook,issues,design,evaluation,contracts}/ + INDEX.md + CLAUDE.md + CHANGELOG.md | Glob `docs/**` + Read |
@@ -197,7 +197,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
     uv run pytest tests/smoke -m smoke    # 需 ARK_API_KEY
     uv run mj-agent check
     uv run langgraph dev                  # Studio 探针 H1/H2/H3/R1/R2
-    docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+    docker compose -f docker/compose.yaml up -d
 - Checks not run and why:
     <显式说明>
 ```

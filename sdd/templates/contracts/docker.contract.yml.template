@@ -11,8 +11,8 @@ covers_requirements:
   - <REQ-NNN>                                       # e.g. image-layer constraints (no secrets baked)
 
 dockerfile:
-  path: infra/docker/Dockerfile                     # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-  freeze_anchor: infra/docker/Dockerfile (<N> lines)
+  path: docker/Dockerfile
+  freeze_anchor: docker/Dockerfile (<N> lines)
 
 base_image:
   builder_stage:
@@ -70,8 +70,8 @@ healthcheck:
   semantics: "<what the healthcheck validates>"
 
 entrypoint_script:
-  path: infra/docker/entrypoint.sh                  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-  freeze_anchor: infra/docker/entrypoint.sh (<N> lines)
+  path: docker/entrypoint.sh
+  freeze_anchor: docker/entrypoint.sh (<N> lines)
   shebang_options: "set -Eeuo pipefail"
   subcommand_router:
     - "<subcommand> → <action>"

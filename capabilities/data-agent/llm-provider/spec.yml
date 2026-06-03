@@ -54,7 +54,7 @@ related_decisions:
 cross_capability_refs:
   - target: infrastructure.docker-compose
     direction: outbound
-    surface: src/mj_agent/llm.py + infra/docker/docker-compose.*.yml (LLM env vars per profile)
+    surface: src/mj_agent/llm.py + docker/compose.*.yml (LLM env vars per profile)
     reason: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars set per compose profile; secrets injection is docker-compose capability's concern"
   - target: infrastructure.mcp-server-governance
     direction: outbound

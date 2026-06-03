@@ -66,7 +66,7 @@ git diff --stat HEAD
 | `tests/{unit,eval,integration,smoke,contract}/` | tests | 对应 pytest band |
 | `docs/` | docs | wikilinks + frontmatter |
 | `.claude/skills/` | claude-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
-| `infra/docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
+| `docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
 | `pyproject.toml` / `uv.lock` | deps | uv lock + uv sync |
 | `.github/workflows/` | ci | yamllint（如配置） |
 | `langgraph.json` | langgraph | Studio probe 必跑 |
@@ -104,7 +104,7 @@ python scripts/diff_biz_schema.py          # 与 mj-system 上游 STANDARD §2-�
 # Docker（仅检查 config，不启动）
 docker --version
 docker compose --version
-docker compose -f infra/docker/docker-compose.mj-agent.yml config   # 校验 yaml
+docker compose -f docker/compose.yaml config   # 校验 yaml
 ```
 
 ### Level B — 局部写入 / 外部依赖（HITL-confirm 后调）
@@ -123,10 +123,10 @@ uv run langgraph dev                       # 起 Studio；用户手动跑 H1/H2/
 # 详见 docs/runbook/dev_studio_walkthrough.md
 
 # Compose lifecycle
-docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
-docker compose -f infra/docker/docker-compose.mj-agent.yml ps
-docker compose -f infra/docker/docker-compose.mj-agent.yml logs --tail=50
-docker compose -f infra/docker/docker-compose.mj-agent.yml down
+docker compose -f docker/compose.yaml up -d
+docker compose -f docker/compose.yaml ps
+docker compose -f docker/compose.yaml logs --tail=50
+docker compose -f docker/compose.yaml down
 
 # uv lock（如 pyproject.toml 改动）
 uv lock
@@ -137,7 +137,7 @@ uv sync
 
 ```bash
 # 绝不在 verify skill 内自动调：
-docker compose -f infra/docker/docker-compose.mj-agent.yml down -v   # 删 volume（清 mj-agent-postgres 数据）
+docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-postgres 数据）
 # 任何对 mj-system biz pg 的 write 操作（mj-agent 是只读消费者；ADR-006 / ADR-009 红线）
 # .env / secrets.enc 改动（手工 + 加密）
 # 任何 prod profile 操作

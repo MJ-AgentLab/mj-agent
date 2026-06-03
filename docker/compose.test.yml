@@ -1,8 +1,8 @@
 # =============================================
 # mj-agent compose stack — TEST override (-f explicit; override.yml 不会自动加载)
 # Loaded by:
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.test.yml up -d
+#   docker compose -f docker/compose.yaml \
+#                  -f docker/compose.test.yml up -d
 # Run on: TEST host (192.168.0.179) — co-located with mj-system test stack
 # Features: Harbor pull (no local build) + MJ_CONFIG_PROFILE=test + 8C/12G + debug log
 # =============================================

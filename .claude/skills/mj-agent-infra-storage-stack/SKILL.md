@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-storage-stack
-description: This skill walks through mj-agent owned storage stack (mj-agent-postgres + mj-agent-redis containers; per ADR-008 standalone) — postgres init bootstrap (`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` auto-creates mj_agent_memory database for langgraph AsyncPostgresSaver), schema inspection, redis client status (no Python client wired yet — reserved for session cache / streaming buffer / rate limit), backup/restore guidance, and storage-only troubleshooting (separate from compose lifecycle). Make sure to use this skill whenever the user says "mj-agent-postgres", "mj-agent-redis", "memory checkpointer", "AsyncPostgresSaver", "langgraph memory", "mj_agent_memory database", "postgres init", "01-bootstrap-mj-agent-memory.sh", "storage stack", "storage 备份", "checkpointer schema", "redis future use", "session cache wiring" in the mj-agent context. Do not use for: full compose lifecycle (use mj-agent-infra-docker-compose); env / secret setup (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); modifying mj-agent-postgres init script structure (A flavor pure code; use /mj-agent-flow-implement); or accessing mj-system biz pg (out of scope — mj-agent is consumer-only per ADR-009).
+description: This skill walks through mj-agent owned storage stack (mj-agent-postgres + mj-agent-redis containers; per ADR-008 standalone) — postgres init bootstrap (`docker/postgres-init/01-bootstrap-mj-agent-memory.sh` auto-creates mj_agent_memory database for langgraph AsyncPostgresSaver), schema inspection, redis client status (no Python client wired yet — reserved for session cache / streaming buffer / rate limit), backup/restore guidance, and storage-only troubleshooting (separate from compose lifecycle). Make sure to use this skill whenever the user says "mj-agent-postgres", "mj-agent-redis", "memory checkpointer", "AsyncPostgresSaver", "langgraph memory", "mj_agent_memory database", "postgres init", "01-bootstrap-mj-agent-memory.sh", "storage stack", "storage 备份", "checkpointer schema", "redis future use", "session cache wiring" in the mj-agent context. Do not use for: full compose lifecycle (use mj-agent-infra-docker-compose); env / secret setup (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); modifying mj-agent-postgres init script structure (A flavor pure code; use /mj-agent-flow-implement); or accessing mj-system biz pg (out of scope — mj-agent is consumer-only per ADR-009).
 ---
 
 # mj-agent Infra — Storage Stack
@@ -36,7 +36,7 @@ mj-agent **owned storage stack**（独立于 mj-system biz pg；ADR-008）：
 - 仅 Studio probe → /mj-agent-infra-studio-probe
 
 **MUST NOT use for**：
-- ❌ 修改 `01-bootstrap-mj-agent-memory.sh` 结构 / Dockerfile / docker-compose.mj-agent.yml（C 风味；/mj-agent-flow-implement Step 3c）
+- ❌ 修改 `01-bootstrap-mj-agent-memory.sh` 结构 / Dockerfile / compose.yaml（C 风味；/mj-agent-flow-implement Step 3c）
 - ❌ 操作 mj-system biz pg（ADR-006 / ADR-009 红线；mj-agent 仅 consumer）
 - ❌ Wire 新 Redis Python client（A 风味纯代码；/mj-agent-flow-implement Step 3a；本 skill 仅说明 wiring 缺口 + 候选方案）
 
@@ -97,7 +97,7 @@ digraph storage {
 
 ## Postgres Init Inspection
 
-`infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 是 mj-agent-postgres 容器**首次启动**自动执行的 init script（postgres docker image 标准 entrypoint hook：`/docker-entrypoint-initdb.d/*.sh`）。
+`docker/postgres-init/01-bootstrap-mj-agent-memory.sh` 是 mj-agent-postgres 容器**首次启动**自动执行的 init script（postgres docker image 标准 entrypoint hook：`/docker-entrypoint-initdb.d/*.sh`）。
 
 ### 期望行为
 
@@ -112,7 +112,7 @@ digraph storage {
 
 ```bash
 # 1. 容器启动后 logs 含 init 完成
-docker compose -f infra/docker/docker-compose.mj-agent.yml logs mj-agent-postgres | grep -E "01-bootstrap|database system is ready"
+docker compose -f docker/compose.yaml logs mj-agent-postgres | grep -E "01-bootstrap|database system is ready"
 
 # 2. 数据库存在
 docker exec mj-agent-postgres psql -U postgres -c "\l" | grep mj_agent_memory
@@ -128,10 +128,10 @@ docker exec mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> -d mj_agent_memory 
 
 | 症状 | 原因 | 修复 |
 |---|---|---|
-| `permission denied: ./01-bootstrap-mj-agent-memory.sh` | Linux 上 init 脚本无 exec 权限 | `chmod +x infra/docker/postgres-init/*.sh` |
+| `permission denied: ./01-bootstrap-mj-agent-memory.sh` | Linux 上 init 脚本无 exec 权限 | `chmod +x docker/postgres-init/*.sh` |
 | `database "mj_agent_memory" does not exist` | init 没跑 / volume 残留旧状态 | `docker compose down -v`（**HITL-confirm**！丢数据）+ 重 up |
 | `password authentication failed for user <MJ_AGENT_MEMORY_USER>` | .env 中 `MJ_AGENT_MEMORY_PASSWORD` 与容器内 user 密码不一致；通常因 vol 残留旧密码 | `docker compose down -v`（**HITL**）+ 改 .env + 重 up |
-| `01-bootstrap-mj-agent-memory.sh` 报 syntax error | 编辑脚本时换行符 CRLF / Linux 不识 | `dos2unix infra/docker/postgres-init/*.sh`（或用 git config core.autocrlf input） |
+| `01-bootstrap-mj-agent-memory.sh` 报 syntax error | 编辑脚本时换行符 CRLF / Linux 不识 | `dos2unix docker/postgres-init/*.sh`（或用 git config core.autocrlf input） |
 
 > init 脚本只在**首次启动**（volume 空）跑；vol 已存在时跳过 → 改 init 脚本后必须 `down -v` 重建 vol（HITL-confirm；丢数据）。
 
@@ -234,7 +234,7 @@ per CLAUDE.md "Storage" 段：
 - ❌ 不替代 /mj-agent-infra-docker-compose（compose lifecycle up/ps/logs/down）
 - ❌ 不替代 /mj-agent-infra-env-setup（env / secret）
 - ❌ 不替代 /mj-agent-infra-studio-probe（H1/H2/H3/R1/R2 矩阵）
-- ❌ 不修改 `01-bootstrap-mj-agent-memory.sh` / Dockerfile / docker-compose.mj-agent.yml 结构（C 风味 → /mj-agent-flow-implement Step 3c）
+- ❌ 不修改 `01-bootstrap-mj-agent-memory.sh` / Dockerfile / compose.yaml 结构（C 风味 → /mj-agent-flow-implement Step 3c）
 - ❌ 不 wire Redis Python client（A 风味纯代码 → /mj-agent-flow-implement Step 3a）
 - ❌ 不操作 mj-system biz pg（ADR-006 / ADR-009 红线）
 - ❌ 不替代 langgraph 项目本身的 checkpointer schema 演进（schema 归 langgraph upstream）
@@ -247,13 +247,13 @@ per CLAUDE.md "Storage" 段：
 | Bash `docker exec mj-agent-postgres psql` | Schema inspection / Backup / Restore |
 | Bash `docker compose logs mj-agent-postgres` | Init / runtime troubleshooting |
 | Bash `pg_dump` / `pg_restore` (via docker exec) | Backup / Restore |
-| Read | `01-bootstrap-mj-agent-memory.sh` / `docker-compose.mj-agent.yml` 结构理解 |
+| Read | `01-bootstrap-mj-agent-memory.sh` / `compose.yaml` 结构理解 |
 | AskUserQuestion | `down -v` Level C HITL-confirm |
 
 ## Reference Files
 
-- [[../../../infra/docker/docker-compose.mj-agent.yml|infra/docker/docker-compose.mj-agent.yml]]（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）
-- [[../../../infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh|01-bootstrap-mj-agent-memory.sh]]（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）
+- [[../../../docker/compose.yaml|docker/compose.yaml]]（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）
+- [[../../../docker/postgres-init/01-bootstrap-mj-agent-memory.sh|01-bootstrap-mj-agent-memory.sh]]（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）
 - src/mj_agent/memory/checkpointer.py（langgraph AsyncPostgresSaver 接入；bugfix/async-checkpointer 引入）
 - [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + 双隔离边界）
 - [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）

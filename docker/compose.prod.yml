@@ -1,8 +1,8 @@
 # =============================================
 # mj-agent compose stack — PROD override (-f explicit; override.yml 不会自动加载)
 # Loaded by:
-#   docker compose -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.prod.yml up -d
+#   docker compose -f docker/compose.yaml \
+#                  -f docker/compose.prod.yml up -d
 # Run on: PROD host (192.168.0.106) — co-located with mj-system prod stack
 # Features: Harbor pull + MJ_CONFIG_PROFILE=prod + 4C/12G + json-file logging + 警示级日志
 # =============================================

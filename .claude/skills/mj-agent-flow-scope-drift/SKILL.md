@@ -86,7 +86,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 |---|---|
 | 文件路径片段（如 `mj_agent/agent.py`） | 显式提及 → in-scope |
 | 文件所在 mj-agent 模块（agent / llm / prompt / skill / sql / db / config / biz_catalog） | 模块级提及 → in-scope |
-| 文件类别（`src/`, `tests/`, `docs/`, `infra/docker/`, `.claude/`） | 类别级提及 → in-scope（覆盖性） |
+| 文件类别（`src/`, `tests/`, `docs/`, `docker/`, `.claude/`） | 类别级提及 → in-scope（覆盖性） |
 | 完全无匹配 | unclassified → 候选 drift |
 
 **风味识别（mj-agent 专属，per ADR-015 §决策点 3）**：
@@ -95,7 +95,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 |---|---|
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | A 纯代码 |
 | `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical**（永远 §3.1 必停 HITL） |
-| `infra/docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | C infra |
+| `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | C infra |
 
 **输出表格**：
 

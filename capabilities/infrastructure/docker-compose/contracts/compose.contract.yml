@@ -12,45 +12,45 @@ covers_requirements:
 # 4-file layering (ADR-026)
 file_layering:
   base:
-    path: infra/docker/docker-compose.mj-agent.yml
-    freeze_anchor: infra/docker/docker-compose.mj-agent.yml (247 lines)
+    path: docker/compose.yaml
+    freeze_anchor: docker/compose.yaml (247 lines)
     compose_project_name: mj-agent                # `name: mj-agent`; independent of mj-system project
   overlays:
     - profile: DEV
-      path: infra/docker/docker-compose.override.yml
-      freeze_anchor: infra/docker/docker-compose.override.yml (40 lines)
-      key_additions: "build: context: ../../ + dockerfile path; POSTGRES_DEV_HOST: mj-postgres; MJ_CONFIG_PROFILE: dev; debug log level"
+      path: docker/compose.override.yml
+      freeze_anchor: docker/compose.override.yml (40 lines)
+      key_additions: "build: context: ../ + dockerfile path; POSTGRES_DEV_HOST: mj-postgres; MJ_CONFIG_PROFILE: dev; debug log level"
     - profile: TEST
-      path: infra/docker/docker-compose.test.yml
-      freeze_anchor: infra/docker/docker-compose.test.yml (54 lines)
+      path: docker/compose.test.yml
+      freeze_anchor: docker/compose.test.yml (54 lines)
       key_additions: "image: 8.135.38.175/mj-agent/mj-agent:0.1 (Harbor); 8C/12G cap; debug log; test profile"
     - profile: PROD
-      path: infra/docker/docker-compose.prod.yml
-      freeze_anchor: infra/docker/docker-compose.prod.yml (70 lines)
+      path: docker/compose.prod.yml
+      freeze_anchor: docker/compose.prod.yml (70 lines)
       key_additions: "Same Harbor image; 4C/12G cap; warning log; json-file logging; prod profile"
 
 # REQ-001 — Invocation contract
 invocation_contract:
   dev_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.override.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.override.yml up -d
   test_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.test.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.test.yml up -d
   prod_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.prod.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.prod.yml up -d
 
   why_explicit_overlay:
-    auto_load_disabled: "compose files in infra/docker/ subdir; docker compose auto-load of override.yml only fires when CLI in same dir as docker-compose.yml"
+    auto_load_disabled: "compose files in docker/ subdir; docker compose auto-load of override.yml only fires when CLI in same dir as docker-compose.yml"
     explicit_f_overrides: "passing -f explicitly switches off auto-load even where it would have fired"
 
   why_env_file_explicit:
-    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = infra/docker/"
-    repo_root_env_location: ".env lives at repo root, NOT in infra/docker/"
+    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = docker/"
+    repo_root_env_location: ".env lives at repo root, NOT in docker/"
     consequence_without_env_file: "${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod} substitutes to sentinel; postgres init bakes sentinel into volume; agent connection fails with `password authentication failed`"
 
   dual_injection_mechanism:
@@ -58,7 +58,7 @@ invocation_contract:
       mechanism: "--env-file .env"
       purpose: "${VAR} substitution in compose YAML (before any container starts)"
     container_env_layer:
-      mechanism: "env_file: ../../.env  (inside service definition)"
+      mechanism: "env_file: ../.env  (inside service definition)"
       purpose: "inject env vars into running container"
     both_required: "CLI for compose substitution; container for runtime env; one alone insufficient"
 
@@ -68,7 +68,7 @@ services:
   mj-agent:
     image: mj-agent:0.1                          # DEV adds build:; TEST/PROD override to Harbor
     ports: ["8001:8000"]                          # avoid mj-app's 8000
-    env_file: ../../.env
+    env_file: ../.env
     environment:
       MJ_AGENT_MEMORY_HOST: mj-agent-postgres
       MJ_AGENT_MEMORY_PORT: "5432"
@@ -145,8 +145,8 @@ volumes:
 
 # Postgres init script (REQ-003 shell-safe contract)
 postgres_init:
-  path: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh
-  freeze_anchor: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh (85 lines)
+  path: docker/postgres-init/01-bootstrap-mj-agent-memory.sh
+  freeze_anchor: docker/postgres-init/01-bootstrap-mj-agent-memory.sh (85 lines)
   idempotency:
     role_handling: "CREATE ROLE if missing; ALTER ROLE if exists (PR #138)"
     database_handling: "CREATE DATABASE if missing"
@@ -159,7 +159,7 @@ postgres_init:
     handles: "passwords with $ / backticks / quotes / parens / spaces (PR #144 / #150)"
 
 hitl_required:
-  - prod compose change                            # docker-compose.prod.yml any modification (per policies/docker-runtime.md §4)
+  - prod compose change                            # compose.prod.yml any modification (per policies/docker-runtime.md §4)
 
 # TBD Phase M3:
 #   - tests/docker/test_compose_config_dev.py  (docker compose config --env-file .env -f base -f override → exit 0 + structural assertions)

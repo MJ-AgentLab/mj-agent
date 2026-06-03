@@ -13,45 +13,45 @@ covers_requirements:
 # 4-file layering (ADR-026)
 file_layering:
   base:
-    path: infra/docker/docker-compose.mj-agent.yml  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-    freeze_anchor: infra/docker/docker-compose.mj-agent.yml (<N> lines)
+    path: docker/compose.yaml
+    freeze_anchor: docker/compose.yaml (<N> lines)
     compose_project_name: <project-name>            # `name: <project>`; stable across profiles
   overlays:
     - profile: DEV
-      path: infra/docker/docker-compose.override.yml  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-      freeze_anchor: infra/docker/docker-compose.override.yml (<N> lines)
+      path: docker/compose.override.yml
+      freeze_anchor: docker/compose.override.yml (<N> lines)
       key_additions: "<dev-specific additions, e.g. build context + dev log level>"
     - profile: TEST
-      path: infra/docker/docker-compose.test.yml      # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-      freeze_anchor: infra/docker/docker-compose.test.yml (<N> lines)
+      path: docker/compose.test.yml
+      freeze_anchor: docker/compose.test.yml (<N> lines)
       key_additions: "<test-specific additions, e.g. registry image + resource caps>"
     - profile: PROD
-      path: infra/docker/docker-compose.prod.yml      # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-      freeze_anchor: infra/docker/docker-compose.prod.yml (<N> lines)
+      path: docker/compose.prod.yml
+      freeze_anchor: docker/compose.prod.yml (<N> lines)
       key_additions: "<prod-specific additions, e.g. resource caps + logging driver>"
 
 # Invocation contract
 invocation_contract:
   dev_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.override.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.override.yml up -d
   test_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.test.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.test.yml up -d
   prod_command: |
     docker compose --env-file .env \
-      -f infra/docker/docker-compose.mj-agent.yml \
-      -f infra/docker/docker-compose.prod.yml up -d
+      -f docker/compose.yaml \
+      -f docker/compose.prod.yml up -d
 
   why_explicit_overlay:
-    auto_load_disabled: "compose files in infra/docker/ subdir; auto-load of override.yml only fires when CLI in same dir as the base compose file"
+    auto_load_disabled: "compose files in docker/ subdir; auto-load of override.yml only fires when CLI in same dir as the base compose file"
     explicit_f_overrides: "passing -f explicitly switches off auto-load even where it would have fired"
 
   why_env_file_explicit:
-    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = infra/docker/"
-    repo_root_env_location: ".env lives at repo root, NOT in infra/docker/"
+    project_directory_rule: "compose's `${VAR}` substitution reads .env from project_directory = directory of first -f file = docker/"
+    repo_root_env_location: ".env lives at repo root, NOT in docker/"
     consequence_without_env_file: "${VAR:-sentinel} substitutes to sentinel; postgres init bakes sentinel into volume; connection fails with `password authentication failed`"
 
   dual_injection_mechanism:
@@ -59,7 +59,7 @@ invocation_contract:
       mechanism: "--env-file .env"
       purpose: "${VAR} substitution in compose YAML (before any container starts)"
     container_env_layer:
-      mechanism: "env_file: ../../.env  (inside service definition)"
+      mechanism: "env_file: ../.env  (inside service definition)"
       purpose: "inject env vars into running container"
     both_required: "CLI for compose substitution; container for runtime env; one alone insufficient"
 
@@ -69,7 +69,7 @@ services:
   <service-name>:
     image: <image:tag>                              # DEV may add build:; TEST/PROD may override to registry
     ports: ["<HOST>:<CONTAINER>"]
-    env_file: ../../.env
+    env_file: ../.env
     environment:
       <ENV_KEY>: <value>
     depends_on:                                      # startup order
@@ -101,8 +101,8 @@ volumes:
 
 # Postgres init script (shell-safe contract)
 postgres_init:
-  path: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh  # path → docker/... after the infra/docker→docker move (ADR-026, M5-PR2; rename per decision-a)
-  freeze_anchor: infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh (<N> lines)
+  path: docker/postgres-init/01-bootstrap-mj-agent-memory.sh
+  freeze_anchor: docker/postgres-init/01-bootstrap-mj-agent-memory.sh (<N> lines)
   idempotency:
     role_handling: "CREATE ROLE if missing; ALTER ROLE if exists"
     database_handling: "CREATE DATABASE if missing"
@@ -115,7 +115,7 @@ postgres_init:
     handles: "passwords with $ / backticks / quotes / parens / spaces"
 
 hitl_required:
-  - prod compose change                             # docker-compose.prod.yml any modification
+  - prod compose change                             # compose.prod.yml any modification
                                                     # (per policies/docker-runtime.md §4)
 
 # TBD Phase M3:

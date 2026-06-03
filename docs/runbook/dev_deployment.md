@@ -26,7 +26,7 @@ last-verified: 2026-05-12
 | `analyst` 角色凭据 | `.env` 中 `POSTGRES_ANALYST_USER/PASSWORD` 非空 | `scripts\setup-env.ps1` 解密 secrets.enc |
 | Volcengine Ark API key | `.env` 中 `ARK_API_KEY` 非空 | 同上 |
 | Memory DB 角色密码 | `.env` 中 `MJ_AGENT_MEMORY_USER/PASSWORD` 非空（首次 up 时被 init script 用来创 role；不需在 上游业务系统 pg 上预建任何东西——storage-stack PR 后 mj-agent 自带 postgres 容器自动 bootstrap）| `.env.example` 已给 DEV 默认值，照抄即可 |
-| 内网入口端口 (host:8001) 未被占用 | `netstat -ano \| findstr :8001` 空 | 改 docker-compose.mj-agent.yml ports 映射 |
+| 内网入口端口 (host:8001) 未被占用 | `netstat -ano \| findstr :8001` 空 | 改 compose.yaml ports 映射 |
 | host 5433 / 6379 未被占用 | `netstat -ano \| findstr ":5433 :6379"` 空 | mj-agent-postgres / mj-agent-redis 端口；改 ports 映射 |
 
 ## 2. 部署步骤
@@ -36,7 +36,7 @@ last-verified: 2026-05-12
 mj-agent repo 根目录：
 
 ```bash
-docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
+docker build -f docker/Dockerfile -t mj-agent:0.1 .
 docker image ls mj-agent:0.1   # 验证镜像存在；体积 ~ 780MB
 ```
 
@@ -64,11 +64,11 @@ mj-agent 是**独立 compose project**（`name: mj-agent`，per ADR-008），与
 
 ```bash
 docker compose --env-file .env \
-               -f infra/docker/docker-compose.mj-agent.yml \
-               -f infra/docker/docker-compose.override.yml up -d
+               -f docker/compose.yaml \
+               -f docker/compose.override.yml up -d
 docker compose --env-file .env \
-               -f infra/docker/docker-compose.mj-agent.yml \
-               -f infra/docker/docker-compose.override.yml ps
+               -f docker/compose.yaml \
+               -f docker/compose.override.yml ps
 ```
 
 `up -d` 会自动拉起 mj-agent + mj-agent-postgres + mj-agent-redis（depends_on 等 storage healthy 后启动 mj-agent）。首次 up 时 mj-agent-postgres 跑 init script 建 mj_agent_memory DB + role + GRANT。Docker Desktop / Portainer 视图里 上游业务系统 与 mj-agent 是 **2 个独立 compose project group**。
@@ -121,14 +121,14 @@ docker exec mj-agent mj-agent check
 
 | 现象 | 根因排查 | 处置 |
 |------|---------|------|
-| 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml up -d --force-recreate mj-agent` |
+| 容器启动 30s 后 unhealthy | `docker logs mj-agent`；常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set` | 重跑 setup-env.ps1，确认 .env 注入；`docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d --force-recreate mj-agent` |
 | Chainlit 502 / connection refused（容器内也不通）| `docker exec mj-agent ss -tlnp \| grep 8000` 看是否监听；CHAINLIT_HOST 必须 `0.0.0.0` 而非 `127.0.0.1` | Dockerfile 已设默认；如被 .env 覆盖 → 移除 .env 中 CHAINLIT_HOST |
 | Host curl 502 但浏览器 / 容器内 urllib 200 | host shell 有 `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY`（如 Clash / v2ray 系统代理）+ 未设 `NO_PROXY`；curl 走代理而代理对 localhost 返 502；浏览器有 implicit localhost bypass | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）或 `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 应用本身无问题 |
 | `mj-agent check` 报 `memory DB unreachable` | mj-agent-postgres 没起 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init script 是否跑通；如 .env 改过 MJ_AGENT_MEMORY_USER/PASSWORD 但 volume 持久了旧值 → `docker volume rm mj-agent-postgres-data` 重建（**会丢 checkpoint 历史**）|
 | `network mj-system-backend-network not found` | 上游业务系统 栈没起；mj-agent 单独跑会报这个 | 先在 上游业务系统 仓 `docker compose up -d`；再回 mj-agent 跑 up |
 | 容器内连 mj-agent-postgres 走 5432 但 host 端口 5433 → 不一致引发误解 | 这是**正常**的：mj-agent → 容器名 mj-agent-postgres:5432（容器内端口）；DBA 从 host 走 5433 是 ports 映射 | 文档写清楚即可，不动配置 |
 | 跑 SQL 触发 `statement_timeout` | 单查询 > 60s，DB 侧 GRANT 强制超时 | 改用 aggregate / drill_down 工具拆分；或加 LIMIT |
-| LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml restart mj-agent` |
+| LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml restart mj-agent` |
 
 ## 5. 回滚 / 拆栈
 
@@ -137,20 +137,20 @@ mj-agent 是独立 compose project（per ADR-008），拆栈用 mj-agent 自家�
 ```bash
 # Level 1 — 软停（保留 volume 中的 checkpoint 数据 + redis AOF）
 docker compose --env-file .env \
-               -f infra/docker/docker-compose.mj-agent.yml \
-               -f infra/docker/docker-compose.override.yml \
+               -f docker/compose.yaml \
+               -f docker/compose.override.yml \
                down
 
 # Level 2 — 拆栈 + 删 volume（⚠️ 丢 langgraph checkpointer 历史 + redis AOF；仅 dev/test）
 docker compose --env-file .env \
-               -f infra/docker/docker-compose.mj-agent.yml \
-               -f infra/docker/docker-compose.override.yml \
+               -f docker/compose.yaml \
+               -f docker/compose.override.yml \
                down -v
 
 # Level 3 — 完全清干净（含本地构建镜像；下次 up 需 --build 重建 ~30s）
 docker compose --env-file .env \
-               -f infra/docker/docker-compose.mj-agent.yml \
-               -f infra/docker/docker-compose.override.yml \
+               -f docker/compose.yaml \
+               -f docker/compose.override.yml \
                down -v --rmi local --remove-orphans
 ```
 
@@ -178,7 +178,7 @@ docker compose --env-file .env \
 
 ## 关联文档
 
-- [[infra/docker/README|infra/docker README]]: build / run / standalone 部署详情
+- [[docker/README|docker/ README]]: build / run / standalone 部署详情
 - [[GUIDE]_Analyst_Day_One|Analyst Day-One GUIDE]]: 1.I 试用阶段 day-1 流程
 - [[adr/[ADR]_006_Mj_System_Db_Boundary|ADR-006]]: 4 层数据边界
 - [[adr/[ADR]_009_Read_Only_Connection|ADR-009]]: 只读连接策略

@@ -124,7 +124,7 @@ uv run pytest tests/integration       # 需 POSTGRES_ANALYST_USER
 uv run pytest tests/smoke -m smoke    # 需 ARK_API_KEY；CI 不跑
 uv run mj-agent check                 # DB + LLM creds 健康
 uv run langgraph dev                  # Studio 探针 H1/H2/H3/R1/R2
-docker compose -f infra/docker/docker-compose.mj-agent.yml up -d
+docker compose -f docker/compose.yaml up -d
 ```
 
 ### Checks not run and why

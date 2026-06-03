@@ -8,8 +8,8 @@ covers_requirements:
   - REQ-003
 
 dockerfile:
-  path: infra/docker/Dockerfile
-  freeze_anchor: infra/docker/Dockerfile (123 lines)
+  path: docker/Dockerfile
+  freeze_anchor: docker/Dockerfile (123 lines)
 
 base_image:
   builder_stage:
@@ -76,8 +76,8 @@ healthcheck:
   semantics: "provider-aware credential check (no LLM endpoint contact); see data-agent.llm-provider REQ-003"
 
 entrypoint_script:
-  path: infra/docker/entrypoint.sh
-  freeze_anchor: infra/docker/entrypoint.sh (35 lines)
+  path: docker/entrypoint.sh
+  freeze_anchor: docker/entrypoint.sh (35 lines)
   shebang_options: "set -Eeuo pipefail"
   subcommand_router:
     - "serve  → exec mj-agent serve \"$@\""

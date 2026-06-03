@@ -72,7 +72,7 @@ git diff --name-only HEAD
 │  └─ #2 SQL guardrail / 数据边界
 ├─ src/mj_agent/skills/**/SKILL.md  OR  src/mj_agent/prompts/*.md  OR  src/mj_agent/biz_catalog/qcm_catalog.yaml
 │  └─ #3 In-source canonical（runtime LLM 上下文）— mj-agent 专属，永远 HITL
-├─ infra/docker/**  OR  docker-compose.mj-agent*.yml
+├─ docker/**  OR  docker/compose*.yml
 │  └─ #4 Docker compose + storage stack
 ├─ .github/workflows/**  OR  scripts/*.{py,ps1}
 │  └─ #5 CI/CD + scripts 自动化
@@ -88,7 +88,7 @@ git diff --name-only HEAD
 
 - 改 `src/mj_agent/llm.py` + `.env.example` 新增 `LLM_PROVIDER` → 主导 #1，次要 #6（在 SPEC §1 Context 注明）
 - 改 `qcm_catalog.yaml` + `src/mj_agent/biz_catalog/finder.py` → 主导 #3（in-source canonical 优先级最高），次要 #1
-- 改 `infra/docker/docker-compose.mj-agent.yml` + `.env.example` → 主导 #4，次要 #6
+- 改 `docker/compose.yaml` + `.env.example` → 主导 #4，次要 #6
 
 ---
 
@@ -128,7 +128,7 @@ git diff --name-only HEAD
 
 ### §4.4 Docker compose + storage stack
 
-- **适用范围**：`infra/docker/`、`docker-compose.mj-agent*.yml`、`postgres-init/*.sh`、storage stack（mj-agent-postgres + mj-agent-redis）
+- **适用范围**：`docker/`、`docker/compose*.yml`、`docker/postgres-init/*.sh`、storage stack（mj-agent-postgres + mj-agent-redis）
 - **必填段**：§1 Context + §2 Scope + §4 Configuration（环境变量 / volume / network 全列）+ §5 Error handling（healthcheck 失败处置）+ §6 Rollback（compose down 步骤 + 数据保留 / 清空选项）+ §7 Verification（compose up/down 排练 + healthcheck + 跨 profile dev/test/prod 验证）+ §8 Observability（容器日志 / 健康端点）
 - **可选 / 多数 N/A 段**：§3 Contract（infra 类不涉及 schema）
 - **常见 anti-pattern**：
