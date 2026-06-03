@@ -1,6 +1,6 @@
 # capabilities/data-agent/safe-sql/spec.yml
-# Phase M1 baseline (ADR-031). lifecycle_state=drafting — Phase M3 contract tests
-# will promote to verifying → active.
+# Phase M1 baseline (ADR-031). Promoted drafting → active in Phase M4 closure
+# (2026-06-03; E-4 soak early-accepted on run-based criterion + full 9-artifact suite).
 #
 # Reverse-engineered from existing src/mj_agent/ implementation; M1 establishes
 # the contract; 4 项必停 source files (guardrail.py / precheck.py / system.md
@@ -9,16 +9,16 @@
 id: data-agent.safe-sql
 name: Safe SQL 4-Layer Guardrails
 domain: data-agent
-lifecycle_state: drafting           # 9-state: idea / specified / contracted / planned / implementing / verifying / active / evolving / deprecated
+lifecycle_state: active             # 9-state: idea / specified / contracted / planned / implementing / verifying / active / evolving / deprecated  (M4 closure 2026-06-03)
 archive_state: active               # 5-state: active / deprecated / frozen / archived / purge-eligible
 adapter_coverage:
   - python                          # 6 modules under src/mj_agent/tools/sql/ + integrations/ + middleware/
   - langchain-agent                 # middleware wiring in make_graph (ADR-029)
   - tdd-bdd                         # behavior.feature scenarios + tdd.test_list[]
-last_verified: 2026-05-20
+last_verified: 2026-06-03
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 summary: >
   mj-agent core safety mainline — 4-layer SQL defense (L1 regex guardrail / L1b
   sqlglot AST precheck / L3 read-only connection / L4 statement_timeout + GRANT
@@ -92,5 +92,7 @@ cross_capability_refs:                # see trace.yml for full chain
     reason: "REQ-002 require_time_range reads qcm_catalog.yaml periods.*.time_column via _all_time_columns()"
     surface: src/mj_agent/tools/sql/precheck.py:58-59
 
-# TBD Phase M2: spec.yml.schema lock-down (check_capability_schema.py G1 blocking)
-# TBD Phase M3: lifecycle_state: drafting → contracted (after contracts/ + behavior.feature land + Phase M3 contract tests pass)
+# Phase M2: spec.yml schema lock-down done (check_capability_schema.py G1 blocking).
+# Phase M4 closure (2026-06-03): lifecycle_state drafting → active (E-4 soak early-accepted on
+# run-based criterion; 9-artifact suite + G8/G19/G21/G22 verified). The M3 contracted-intermediate
+# path was superseded by the M4 direct-to-active promotion (capability-promotion preflight #205).

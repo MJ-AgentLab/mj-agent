@@ -6,7 +6,7 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 track: shared
 refines:
   - plans/mj-agent-roadmap-v1.6.md
@@ -24,9 +24,9 @@ phase_progress:
     B: completed                # PR #185 merged 2026-05-25T08:24:21Z (Stage B+C bundled; +920 lines / 12 commits; SHA 09adcd5)
     C: completed                # same PR #185
     D: completed                # PR #187/#188/#189/#190/#191 merged 2026-05-26..28 (5 units D-1..D-5; +2,492 insertions cumulative; SHA 0886f8a)
-    E: active                   # E-0a #195 + E-0b #198 + E-1/E-2 BLOCKING flip #199 + E-3/G24 #194 all landed; E-4 soak active 2026-06-02 (tracker: plans/stage-e-alpha-prime-e-4-soak.md)
-    F: pending                  # G26-G28 conditional + EVAL placeholders + F-7/F-8 closure (F-6 dropped per A-3 R-2 verdict)
-  overall: ~80% complete        # A+B+C+D done; E sub-stages E-0..E-3 landed + E-1/E-2 flip #199; E-4 soak window active; F pending
+    E: completed                # E-0a #195 + E-0b #198 + E-1/E-2 BLOCKING flip #199 + E-3/G24 #194 + E-4 soak-period (#200-#209) all landed; E-4 soak EARLY-ACCEPTED on run-based criterion 2026-06-03 (owner risk acceptance — 10 clean blocking-runs #200-#209 + negative-test gate-block verification; calendar window waived; tracker: plans/stage-e-alpha-prime-e-4-soak.md)
+    F: completed                # M4 closure 2026-06-03: 4/5 capabilities promoted drafting→active (safe-sql/biz-catalog/llm-provider/docker-compose; mcp-server-governance held → M4-FU-MCP-GOV-PROMOTION-DEFER); G26-G28 conditional → M6; EVAL baseline done #201. F-7 cluster: governance-insight capture done, but the 4 F-7 polish/code items (incl DOCSTRING-DRIFT-DETECTOR ~150-300 LOC) + G22-BDD-HELPERS-CONSOLIDATE were DESCOPED from M4 → post-M4 tail/M5 (M4-FU follow-ups, NOT M4-blocking); F-6 dropped per A-3 R-2 verdict
+  overall: completed            # A+B+C+D+E+F done (2026-06-03); M4-FU tail rolls forward per §M4-FU Registry (F-7 polish + mcp-gov promotion → later; M-FU#9 → M6; 3 carries → M5); phase-m4-complete tag applied post-merge
   M5: pending
   M6: pending
 ---
@@ -285,7 +285,7 @@ deferred to Phase M5+ (NOT in Stage D scope).
 - R-N v12 (D-5): single+subflag dispatch + G24 BLOCKING immediate (NOT R-10-8 transplant)
   + branch-conditional SKIP + R-12-9 fire-path test 强制
 
-#### M4-FU Registry (18 entries: 9 carry + 9 NEW Stage D trajectory; Action-N-1 reconcile)
+#### M4-FU Registry (19 entries: 9 carry + 9 NEW Stage D trajectory + 1 post-Stage-E `M4-FU-MCP-GOV-PROMOTION-DEFER` [E-4-PR11]; Action-N-1 reconcile + Action-N-2 closure)
 
 - **M4-FU-BODY-SHA256-DOCSTRING-CLARIFY** — **state: active**; disposition: Bundle B-α small docs scope;
   blocked_by: M4-A close; scope: 澄清 `scripts/sdd/_common/frontmatter.py::body_sha256()` docstring 关于
@@ -467,16 +467,18 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
 | M4-FU-BODY-SHA256-CANONICAL-REFACTOR | ⏳ deferred → **M5** | blocked_by M5 `frontmatter.py` freeze | M5 |
 | M4-FU-V4-MODE-B-IMPL | ⏳ deferred → **M5** | likely WITHDRAW (Mode A adequate) | M5 final decision |
 | M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER | ⏳ deferred → **M5+** | per A-3 R-2 verdict | M5+ |
-| M4-FU-BODY-SHA256-DOCSTRING-CLARIFY | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
-| M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
-| M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 amend |
-| M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **Stage F** (F-7 cluster) | — | F-7 (detector impl ~150-300 lines) |
+| M4-FU-BODY-SHA256-DOCSTRING-CLARIFY | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped from M4 @ E-4-PR11) | — | M5 F-7 batch |
+| M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 F-7 batch |
+| M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 F-7 batch (critical wording reframe) |
+| M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 (detector impl ~150-300 lines + ci.yml + tests) |
+| M4-FU-G22-BDD-HELPERS-CONSOLIDATE | ⏳ deferred → **post-M4 tail / M5** | drift-guard test enforces parity meanwhile | M5 |
+| **M4-FU-MCP-GOV-PROMOTION-DEFER** ★ NEW (E-4-PR11) | 🟡 active → **post-M4 capability promotion** | E-4-PR11 (4/5 promoted; mcp-gov held drafting) | owner caveat-accept (medium-only) OR added @risk:high\|critical coverage |
 | M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | ✅ completed (E-4-PR8 + E-4-PR9) | 4 free refs (#207) + 6 locked infra SKILLs reconciled & contract re-frozen (E-4-PR9); execute.py no-ref N/A | none |
 | M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | ✅ completed (E-4-PR7) | recipe already worktree-safe (git-sync Step 4 `git merge`); #185-lesson guard note added to post-merge Step 8 | none |
 | M3 carry-over `m3_fu_v4_skills_complete` | ✅ completed | #183 / #202 | none |
 | M3 carry-over `m3_fu_skill_5segment_normalize` | ✅ completed | #203 | none |
 
-**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster); of these `F8-SKILL-STEP-8` ✅ done (E-4-PR7/#206) and `11-FILE-ADR-025-RECONCILE` ✅ done (E-4-PR8/#207 4 free refs + E-4-PR9 6 content_hash-locked infra SKILLs reconciled & contract re-frozen; `execute.py` no-ref = N/A). Remaining F-7 cluster = 4 (DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR). Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR.
+**Outcome**: Cat-1 (6) all completed (E-0a/E-0b/E-1/E-2/E-3); M-FU#2 completed; M-FU#3 informational-ongoing; M3 carry-over (2) completed (#202/#203). **Remaining**: M-FU#9 → M6; 3 carries → M5; 6 → Stage F (F-7 cluster); of these `F8-SKILL-STEP-8` ✅ done (E-4-PR7/#206) and `11-FILE-ADR-025-RECONCILE` ✅ done (E-4-PR8/#207 4 free refs + E-4-PR9 6 content_hash-locked infra SKILLs reconciled & contract re-frozen; `execute.py` no-ref = N/A). Remaining F-7 cluster = 4 (DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR). Supplementary (not in the 18-entry triage): `M4-FU-G22-BDD-HELPERS-CONSOLIDATE` surfaced in #195 commit — post-Stage-E paired-edit consolidation; drift-guard test (`test_drift_guard_matches_g22_d4_constants`) enforces parity meanwhile. No `phase-m4-complete` tag, capability promotion, or Stage F closure in this PR *(E-4-PR5 snapshot — superseded by the **M4 Closure Batch** below, which executed all three in E-4-PR11)*.
 
 **2 ★ Deferred to F-7 cluster amend** (NOT standalone M4-FU; per cumulative §4.1 disposition; bundle with
 `M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR` OR F-7 batch):
@@ -485,6 +487,21 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
   reconcile via spec doc update OR special-case SET SESSION)
 - C-1b §4.1 SUT-runbook drift (B-1 `c961dfc` runbook §3 L99 "10000" vs precheck.py L155 "1000" per
   authoritative; 10× magnitude wording correction)
+
+**M4 Closure Batch (E-4-PR11; 2026-06-03)** — Stage F closure executed; soak **early-accepted on run-based criterion** (owner risk acceptance):
+
+| Item | Disposition | Evidence |
+|---|---|---|
+| G21/G22 soak | ✅ **early-accepted** (run-based, N≥5 clean runs; calendar window waived) | post-flip blocking CI runs: #200-#204 = 5 genuine post-flip + #205-#209 same-workstream prep PRs, **all clean** (0 FP / 0 real-violation). G24 = branch-conditional (SKIP on these non-bugfix doc PRs → no G24 soak signal expected; fire-path validated separately #194). + **2 negative tests proving the gate blocks**: (a) runbook 4-field break → G21+G22 both 9P/6W/0F exit 1; (b) @REQ-tag drop → G21 14P/0W/1F exit 1; both restored clean |
+| Capability promotion | ✅ **4/5** drafting→active | safe-sql / biz-catalog / llm-provider / docker-compose `lifecycle_state: active`; G8 4P/0W/0F/**1SKIP (=mcp-gov, held drafting)**; `INDEX.auto.md` regenerated (G9 ✓) |
+| `infrastructure.mcp-server-governance` | ⏸ **held** → `M4-FU-MCP-GOV-PROMOTION-DEFER` | medium-only (G21/G22 SKIP — scenarios @risk:medium, no coverage); readiness rests on own contracts + evidence; promote on owner caveat-accept OR added @risk:high\|critical coverage |
+| F-7 cluster (4) + G22-BDD-HELPERS-CONSOLIDATE | ⏩ **roll forward** (post-M4 tail / M5) | DOCSTRING-CLARIFY / V4-MODE-B-CLEANUP / OUTLINE-WORDING / DOCSTRING-DRIFT-DETECTOR — non-blocking polish/code M4-FU; governance insights captured in F-7 note below |
+| G26-G28 conditional + EVAL placeholders | ⏩ G26-G28 → M6; EVAL baseline ✅ #201 | `eval.baseline.pass_rate=1.0` |
+| `phase_progress.M4` | ✅ **completed** (E+F) | `phase-m4-complete` tag applied post-merge; the Stage-E sub-tag `phase-m4-stage-e-alpha-prime-complete` is **subsumed by `phase-m4-complete`** (not separately applied) |
+
+> **NEW M4-FU** `M4-FU-MCP-GOV-PROMOTION-DEFER` (state: active; category: post-M4 capability promotion): promote `infrastructure.mcp-server-governance` drafting→active once (a) owner accepts the medium-only G21/G22-SKIP posture, OR (b) @risk:high|critical scenario coverage added. blocked_by: owner caveat-accept OR coverage. Named per post-Stage-D convention (no ad-hoc number; registry SoT per R-13-7/R-13-10).
+
+> **Soak early-accept rationale (owner risk acceptance, 2026-06-03)**: R-13-6's 1–2 wk *calendar* window is a self-imposed governance criterion, not a hard technical gate. Owner re-based it to a **run-based** criterion (N clean blocking-runs) — satisfied by #200-#209 (10 PRs, 0 FP / 0 real-violation) + actively verified the gate blocks on a real violation (negative test). Tradeoff accepted: trades calendar time-coverage for speed; risk low given clean signal + simple `--strict` gate on a stable 0W baseline + verified blocking (2 negative tests). Auditable override, **not** a silent skip. **Provenance**: owner authorized the run-based re-base + risk acceptance in-session on 2026-06-03; this E-4-PR11 closure PR is the recorded artifact, reviewed at merge. **N threshold**: ≥5 clean post-flip blocking runs (satisfied: #200-#204 genuine post-flip + #205-#209 prep, 0 FAIL).
 
 #### F-7 Cluster Amend Trajectory Note
 
@@ -522,7 +539,7 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
   total post-Stage-D + drift lesson registered. Discipline forward: cite plans/ SoT directly;
   snapshots quote not accumulate.
 
-**F-8 closure**: master plan `phase_progress.M4: completed` after Stages D+E+F land.
+**F-8 closure** ✅ **(2026-06-03; E-4-PR11)**: master plan `phase_progress.M4: completed` — Stages D+E+F all landed; `phase-m4-complete` tag applied post-merge.
 
 #### Stage E α' Outline (planning kickoff @ this PR Action-N-1; sub-stages E-0..E-4 per R-13-1)
 
@@ -565,7 +582,7 @@ discipline (R-13-10) prevents:
 - ✅ **E-0b** — M-FU#7 runbook 4-field justification curation (4 pilots × 15 critical|high scenarios; +261 lines) → G21/G22 15W→0W — PR #198
 - ✅ **E-1/E-2** — G21+G22 combined BLOCKING flip (`continue-on-error:false` + `--strict`) — PR #199 (2026-06-02)
 - ✅ **E-3** — G24 bugfix workflow readiness — PR #194
-- ⏳ **E-4** — soak active; ✅ EVAL baseline (#201) + ✅ M3 carry-over closed (E-4-PR3 triage + E-4-PR4: `v4-skills-complete` superseded #183; `5segment-normalize` resolved — `sdd/adapters/runtime-skill.md` aligned w/ frozen 6-section contracts incl. `## Related`) + ✅ Action-N-2 M-FU registry reconciled (E-4-PR5: Cat-1 ×6 completed, M3 carry-over closed, deferrals tagged M5/M6/F) + ✅ promotion-readiness preflight + soak checkpoint (E-4-PR6: all 5 pilots ready/full-artifacts, gated on clean soak window — not yet elapsed, flip landed 2026-06-02) + ✅ F8 skill-step worktree-safe fix (E-4-PR7/#206) + ✅ 11-FILE-ADR-025 reconcile complete (E-4-PR8/#207 4 free refs + E-4-PR9/#208 6 locked infra SKILLs + contract re-freeze) + ✅ Stage F prep + soak-wait plan (E-4-PR10; `plans/stage-f-m4-closure-prep.md`); pending: capability promotion (post-soak; window ~2026-06-09→06-16 + mcp-governance caveat) → Stage F closure — trackers `plans/stage-e-alpha-prime-e-4-soak.md` + `plans/stage-f-m4-closure-prep.md`
+- ✅ **E-4** — **complete (2026-06-03)**: EVAL baseline (#201) + M3 carry-over closed (#202/#203) + Action-N-2 registry reconciled (#204) + promotion-readiness preflight + soak checkpoint (#205) + F8 worktree-safe fix (#206) + 11-FILE-ADR-025 reconcile (#207/#208) + Stage F prep (#209) + **M4 closure (E-4-PR11): G21/G22 soak EARLY-ACCEPTED on run-based criterion (owner risk acceptance — 10 clean blocking-runs #200-#209 + negative-test gate-block verification; calendar window waived) + 4/5 capabilities promoted drafting→active (safe-sql/biz-catalog/llm-provider/docker-compose; mcp-server-governance held → `M4-FU-MCP-GOV-PROMOTION-DEFER`) → `phase_progress.M4` completed** — trackers `plans/stage-e-alpha-prime-e-4-soak.md` + `plans/stage-f-m4-closure-prep.md`
 
 > **Impl reconcile**: E-1/E-2 actual mechanism = `--strict` (WARN→exit 1 via `_common/cli.py` `Summary.exit_code`), **not** the "WARN→FAIL Severity reclassification" wording in the E-1 row above (L525). Per the E-1/E-2 decision no validator severity was rewritten.
 
@@ -587,8 +604,10 @@ discipline (R-13-10) prevents:
 - Monitoring: CI run history daily check;M-FU triggered on FAIL surge
 - Exit criteria: `phase-m4-stage-e-alpha-prime-complete` tag eligible
 
-**Action-N-2 trigger**: E-4 soak window pass + tag eligible → propagate Stage E α' close +
-M-FU resolutions batch (M-FU#1..#9 resolved + carry M-FU updated) + plans/ Stage F open。
+**Action-N-2 trigger** ✅ **FIRED (E-4-PR11; 2026-06-03)**: soak EARLY-ACCEPTED on run-based
+criterion (calendar window waived per owner risk acceptance) → Stage E α' closed + M-FU resolutions
+batch propagated (M-FU#1..#9 resolved/deferred + carry M-FU updated) + Stage F closed (M4 complete);
+see **M4 Closure Batch** above for the promotion + soak-accept disposition。
 
 ### Phase M5（~2 周）
 
