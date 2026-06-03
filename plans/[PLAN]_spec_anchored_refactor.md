@@ -609,27 +609,31 @@ criterion (calendar window waived per owner risk acceptance) → Stage E α' clo
 batch propagated (M-FU#1..#9 resolved/deferred + carry M-FU updated) + Stage F closed (M4 complete);
 see **M4 Closure Batch** above for the promotion + soak-accept disposition。
 
-### Phase M5（~2 周）
+### Phase M5（~1-1.5 周；**re-scoped 2026-06-03** per draft-b finding — STANDARD archive + 跨切面迁移 + 新增 PR4a 全部 → M6）
 
-**目标**：Archive ceremony —
+**目标**：低风险结构迁移（**不依赖** doc-governance kernel backfill）—
 
-- 旧 tri-track STANDARD（v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1）→
-  `archive/rule/` + `archive.yml` + TOMBSTONE.md
-- 现 `docs/archive/adr/` 9 deprecated ADR → `archive/decisions/superseded/`
-- 现 `docs/adr/` 20 active ADR → `decisions/`（per-file RENAME `[ADR]_NNN_*` → `ADR-NNN_*`；ADR-031 已在 `decisions/`）
-- `docs/runbook/` → 各 capability runbook.md
-- `docs/assessments/` → 各 capability evidence/assessments/
-- `docs/infrastructure/git/` → `policies/git-branching.md` 扩充
-- `docs/infrastructure/mcp/` → `capabilities/infrastructure/mcp-server-governance/`
-- `infra/docker/` → `docker/`（compose 4-file 平移；ADR-026）
-- `docs/INDEX.md` → redirect map（保留作 backward-compat grace period）
+- 现 `docs/adr/` 20 active ADR → `decisions/`（per-file RENAME `[ADR]_NNN_*` → `ADR-NNN_*`；ADR-031 已在 `decisions/`）；现 `docs/archive/adr/` 9 deprecated ADR → `archive/decisions/superseded/` + `archive.yml` + TOMBSTONE（**PR3**）
+- `infra/docker/` → `docker/`（compose 文件 **RENAME** `docker/compose*.yml` per decision-a 2026-06-03；ADR-026）（**PR2**；唯一 build-breaking 迁移）
+- `docs/INDEX.md` → redirect map（**仅覆盖本期 ADR + docker 迁移**；STANDARD/runbook/assessments/infra 行待 M6）
+- ✅ 已落：M5-PR0 archive catch-gates（#213，WARNING-mode）+ M5-PR1 template-align（#212）
 
-**HITL 重点**：大规模目录迁移（≥10 文件）触发 HITL；分 5 sub-PR 拆解.
+> **Re-sequenced to M6（draft-b 2026-06-03 finding + owner decision）**：4 tri-track STANDARD 归档 +
+> 跨切面文档迁移（`docs/runbook/`→capability runbook.md / `docs/assessments/`→`policies/` / `docs/infrastructure/git`→`policies/git-branching.md` / `docs/infrastructure/mcp`→mcp-server-governance capability）
+> + **新增前置子步 PR4a kernel-authoring**。原因：M2 只回填了 `sdd/adapters/*`（v0.2 ready），未回填
+> doc-governance pillar（`policies/documentation.md` / `sdd/constitution` / `sdd/gates` 仍 M0 skeleton "TBD Phase M2"）；
+> **0/4 STANDARD 今天可被干净 supersede**——直接归档会丢失 A1-A6/OB1-OB5 定义、`track` frontmatter 字段规范、
+> 12-type doc taxonomy、17-stage HITL loop 等 ~50 living files 依赖的治理。详 .claude `m5-standard-successor-mapping-draft`。
+> **Owner-approved homes（2026-06-03）**：A1-A6/OB + 12-type taxonomy + `track` 字段 → `policies/documentation.md`（填 M0 stubs）；
+> 17-stage execution loop → 新 `sdd/workflows/execution-loop.md`；EVAL authoring spec → defer 到 M6 EVAL 工作。
+
+**HITL 重点**：docker move 是唯一 build-breaking 迁移（contract `path`+`freeze_anchor` 同 commit；V5 BLOCKING）；
+ADR rename 双倍 wikilink 改写面；archive catch-gate（#213）blocking-flip 逐 move-PR HITL pause（policies/ai-agent.md HITL #5）.
 
 **M5 Task Breakdown — Follow-ups from Phase M2**（独立小 PR；与 archive ceremony 主线分离；
 便于 review / revert）：
 
-- **M5-FU-TEMPLATE-ALIGN** — 整理 `sdd/templates/contracts/` 与 M2 adapter doc 演进形态对齐
+- **M5-FU-TEMPLATE-ALIGN** ✅ **DONE（#212 / M5-PR1, 2026-06-03）** — 整理 `sdd/templates/contracts/` 与 M2 adapter doc 演进形态对齐
   （M2 期 `sdd/templates/` 受 §3.5 保护不修改；M5 整理时回写）；已知 drift item:
   - `runtime-skill.contract.yml.template` 单 `skill_path` 形式 → 多 `skills[]` 集合形式
     （per `sdd/adapters/runtime-skill.md` §Standards M2 evolution）
@@ -652,6 +656,14 @@ see **M4 Closure Batch** above for the promotion + soak-accept disposition。
 
 **目标**：
 
+- **Archive ceremony（从 M5 re-sequenced；draft-b 2026-06-03 finding）** — 前置 **PR4a kernel-authoring**：把
+  doc-governance gap content 回填进 kernel/policies（A1-A6/OB1-OB5 + 12-type taxonomy + `track` 字段 →
+  `policies/documentation.md`；archive-trigger 量化 + active-path-stability → `policies/archive.md`；working-doc
+  lifecycle → `sdd/lifecycle.md`；17-stage loop → 新 `sdd/workflows/execution-loop.md`）；然后 **PR4** 4 tri-track
+  STANDARD → `archive/rule/` + 跨切面文档迁移（runbook→capability / assessments→policies / infra/git→git-branching /
+  infra/mcp→capability）+ ref repoint + full INDEX redirect。PR4a 规模 ≈ 被 M2 跳过的 doc-governance backfill
+  子阶段（详 .claude `m5-standard-successor-mapping-draft`；owner-approved homes 见 §M5 re-sequence note）
+- EVAL authoring spec（Agent_Side §4 / ADR-024）port → 随本 M6 EVAL framework 工作落地（draft-b Q4 defer 决策）
 - CLAUDE.md root 瘦身至 ≤150 行（Phase M0 仅加 Codex Status；M6 才大瘦身）
 - 8 adapter gate 全 blocking
 - EVAL framework baseline run PASS
@@ -667,9 +679,9 @@ see **M4 Closure Batch** above for the promotion + soak-accept disposition。
 
 | 风险 | 触发 Phase | 缓解 |
 |---|---|---|
-| R-G1 目录大规模迁移引用失效 | M5 | 启动前全仓 grep + redirect map + G14/G15 blocking |
+| R-G1 目录大规模迁移引用失效 | M5（ADR+docker）/ M6（STANDARD+跨切面） | 启动前全仓 grep + redirect map + G14/G15 blocking（catch-gates #213 已建 WARNING；逐 move-PR flip blocking）|
 | R-G4 CLAUDE.md 瘦身丢失关键约束 | M6 | M6 末跑 ≥ 5 个典型 AI 任务 case study 验证；4 项必停 / Codex Status / archive 规则强制保留 |
-| R-G5 Archive 被 AI 误读为当前事实 | M5 | archive.yml ai_visibility 必填；G17 blocking；TOMBSTONE 顶部红 NOTE |
+| R-G5 Archive 被 AI 误读为当前事实 | M6（STANDARD archive re-sequenced + PR4a 先 author successors）| archive.yml ai_visibility 必填；G17 blocking；TOMBSTONE 顶部红 NOTE；PR4a 先把 governance 内容落 kernel 再归档 |
 | R-G18 BDD 自动化负担 | M3-M4 | warning 1 月观察；高风险自动化阈值从 70% 降到 50% 试行 |
 | R-G19 AI-generated code 难严格 red-green | M4-M6 | G26 改"PR body 含 test list + green pass" 软要求；G28 contract-test-first 仍严格 |
 
