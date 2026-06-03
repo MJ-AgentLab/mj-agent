@@ -22,10 +22,10 @@ tags:
 
 ## Context
 
-[[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] established the native 2-field schema
+[[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] established the native 2-field schema
 (`name` + `description` only) for `.claude/skills/*/SKILL.md` files, distinct from
 `src/mj_agent/skills/*/SKILL.md` (Agent_Side v1.0 §2 13-field schema).
-[[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] governs the `.claude/skills/` ecosystem
+[[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] governs the `.claude/skills/` ecosystem
 itself — naming (`mj-agent-<family>-<verb>`), 5 families (doc / flow / git / infra / runtime),
 34 SKILLs target.
 
@@ -131,8 +131,8 @@ SKILL effectiveness without human review.
 
 ## References
 
-- [[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — native 2-field schema baseline
-- [[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — `.claude/skills/` ecosystem
+- [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — native 2-field schema baseline
+- [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — `.claude/skills/` ecosystem
   governance (naming / families / lifecycle)
 - `decisions/ADR-031_Spec_Anchored_Refactor.md` — M1 framework; 7 adapter enablement list
   includes claude-code-skill adapter

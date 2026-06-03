@@ -3,7 +3,7 @@
 - **Stage**: Phase M4 Stage E α' E-4 (E-4-PR2)
 - **Branch**: `documentation/spec-anchored-refactor-m4-e-4-eval-baseline`
 - **Commit**: `23bc58e` (develop tip; #200 merged)
-- **Source**: ADR-024 (`docs/adr/[ADR]_024_Eval_Framework_Spec.md`)
+- **Source**: ADR-024 (`decisions/ADR-024_Eval_Framework_Spec.md`)
 - **Outcome**: ADR-024 EVAL baseline **established** — `tests/eval` 93/93 PASS (pass_rate 1.0); component (precheck) + golden-seed schema layers, no live DB / LLM.
 - **Prereqs landed**: #198 (E-0b runbook curation) + #199 (E-1/E-2 G21/G22 BLOCKING flip) + #200 (E-4 soak tracker).
 - **Placement note**: filed under `safe-sql` (not `llm-provider`) because the component layer runs `precheck_sql` (safe-sql L1b) and shares its rule source per the test docstring; `llm-provider/evidence` covers provider switching (ADR-027), unrelated to the seed/precheck eval.
@@ -57,7 +57,7 @@ default selection runs `tests/eval` directly.
 - `plans/stage-e-alpha-prime-e-4-soak.md` (E-4 tracker)
 - `plans/[PLAN]_spec_anchored_refactor.md` (master plan; `phase_progress.M4.E`)
 - `tests/eval/` (`golden_seed.jsonl` + `test_component_against_seed.py` + `test_golden_seed_schema.py`)
-- `docs/adr/[ADR]_024_Eval_Framework_Spec.md`
+- `decisions/ADR-024_Eval_Framework_Spec.md`
 
 ## §7 Codex
 

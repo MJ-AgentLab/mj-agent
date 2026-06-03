@@ -228,7 +228,7 @@ period: <daterange>               # 评估周期（如 "Phase 0" / "2026-04-01 �
 | Stage 集成 | 通用 | 与 HITL_Prompt v1.0 §4.6 stage 6 紧耦合 |
 | Schema | ADR-013 native（已确立） | ADR-013 native（同样） |
 
-两者**共存**，详见 [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地）+ [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]。
+两者**共存**，详见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地）+ [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]。
 
 ---
 
@@ -237,8 +237,8 @@ period: <daterange>               # 评估周期（如 "Phase 0" / "2026-04-01 �
 - 派生自：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|v1.0]]
 - 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]
 - 决策记录：
-  - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
-  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
+  - [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
+  - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
 - 同期子框架：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
 - Track C 引用（cross-ref 用）：
   - `[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt]]`（PR-A2）

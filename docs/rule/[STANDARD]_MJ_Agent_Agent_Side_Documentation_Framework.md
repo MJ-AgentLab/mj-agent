@@ -29,7 +29,7 @@ aliases:
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**（in-source canonical）+ EVAL 文档（`docs/evaluation/**`）。
 > **失败模式**：**沉默失败**（runtime 输出错 → 业务决策偏差）—— 审阅强度高于 Track A。
 > **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|v1.1（archive）]]
-> **首要变更（v1.1 → v1.2）**：§4 EVAL Authoring 从占位 "沿用 v1.0 §4 全部 TODO Phase 2 项" 升级为完整规范（4 子类 + body 八段 + frontmatter schema + A8/A11 transitional waiver 明确延续 Phase E）。详见 [[../adr/[ADR]_024_Eval_Framework_Spec|ADR-024]]。
+> **首要变更（v1.1 → v1.2）**：§4 EVAL Authoring 从占位 "沿用 v1.0 §4 全部 TODO Phase 2 项" 升级为完整规范（4 子类 + body 八段 + frontmatter schema + A8/A11 transitional waiver 明确延续 Phase E）。详见 [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]。
 
 > [!info]
 > **v1.1 → v1.2 变化速览**（issue #95 / Phase D-3）：
@@ -94,7 +94,7 @@ aliases:
 > - `.claude/skills/**` → Meta v2.1 §3.10（2 字段 ADR-013 native；与 marketplace plugin 同 schema）
 > - `mj-agentlab-marketplace/plugins/**` → ADR-013 决策（出本仓治理）
 >
-> 三者 schema 边界 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + Meta v2.1 §1 plugin loader 边界尊重原则锁定。
+> 三者 schema 边界 [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + Meta v2.1 §1 plugin loader 边界尊重原则锁定。
 
 ### 2.1 body 五段式
 
@@ -244,7 +244,7 @@ mj-agent 当前 `docs/evaluation/` 空（Phase D-3 未创建 sample EVAL）。Ph
 
 ### 4.7 Cross-ref
 
-- [[../adr/[ADR]_024_Eval_Framework_Spec|ADR-024]]（决策记录 + Alternatives + transitional waiver 延续 roadmap）
+- [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]（决策记录 + Alternatives + transitional waiver 延续 roadmap）
 - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3 类型表（EVAL 默认 track: agent）
 - §2.4 SKILL EVAL 耦合 A11
 - §3.2 PROMPT EVAL 引用 A8
@@ -335,7 +335,7 @@ mj-agent 当前 `docs/evaluation/` 空（Phase D-3 未创建 sample EVAL）。Ph
 
 ## 9. Plugin 关联
 
-沿用 v1.0 §9 与 §9.1（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] 锁定的 dual schema）+ §9.2 plugin skill 章节对应表。
+沿用 v1.0 §9 与 §9.1（[[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] 锁定的 dual schema）+ §9.2 plugin skill 章节对应表。
 
 > **v1.1 加注**：随 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 引入 in-tree `.claude/skills/`（engineering-workflow track；命名空间 `mj-agent-*`），mj-agent 仓内同时存在三种 SKILL 实体：
 >
@@ -354,9 +354,9 @@ mj-agent 当前 `docs/evaluation/` 空（Phase D-3 未创建 sample EVAL）。Ph
 - 派生自：[[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|v1.0]]
 - 上层：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.1]]
 - 决策记录：
-  - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
-  - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 锁定）
-  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
+  - [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]]（双轨原始决策）
+  - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 锁定）
+  - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v1.1 同期 tri-track 升级）
 - 同期子框架：[[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
 - 行业精度：沿用 v1.0（Anthropic Skills 仓 / skill-creator / DSPy / LangChain Hub / Semantic Kernel / Mitchell 2019 / Gebru 2018）
 - 现有 in-source canonical（沿用）：

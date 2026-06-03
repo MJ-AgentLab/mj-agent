@@ -48,7 +48,7 @@ requirements:
         - "Given LLM_PROVIDER=local-openai-compat and LLM_API_KEY empty / When settings.effective_llm_api_key is read / Then it returns literal string 'EMPTY' (NOT empty string) so downstream ChatOpenAI does not raise its own api_key error"
 
 related_decisions:
-  - docs/adr/[ADR]_027_LLM_Provider_Abstraction.md
+  - decisions/ADR-027_LLM_Provider_Abstraction.md
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 
 cross_capability_refs:

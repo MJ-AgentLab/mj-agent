@@ -11,7 +11,7 @@ description: This skill should be used when the user asks to start LangGraph Stu
 
 **Reference**:
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]] §4 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8 Level B（Studio probe 是 HITL-confirm 后跑的）
 
 ## 前置条件
@@ -197,9 +197,9 @@ INFO: API:    http://127.0.0.1:2024
 ## Reference Files
 
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（H1/H2/H3/R1/R2 矩阵权威源 + LangSmith trace 开关 + 常见诊断）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（4 层 SQL guardrail；R1/R2 验证依据）
-- [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS；R1 边界依据）
-- [[../../../docs/adr/[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]（最小必要出网；R2 反询依据）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 SQL guardrail；R1/R2 验证依据）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS；R1 边界依据）
+- [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（最小必要出网；R2 反询依据）
 - `src/mj_agent/prompts/system.md`（system prompt 当前 version；R1/R2 行为由 v1.3+ rule 2/3 决定）
 - `src/mj_agent/skills/{biz-domain-context,qcm-analysis,safe-sql-analysis}/SKILL.md`（H1/H2/H3 trajectory 涉及的 skill body）
 - `scripts/capture_walkthrough_evidence.py`（自动捕获 evidence 快照工具）

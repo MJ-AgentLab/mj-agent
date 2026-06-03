@@ -18,7 +18,7 @@ tags:
 
 # ADR-027: LLM Provider Abstraction
 
-> **历史**：本 ADR 与 [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] / [[[ADR]_028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive）。本 ADR 聚焦 LLM provider 抽象一题。
+> **历史**：本 ADR 与 [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] / [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive）。本 ADR 聚焦 LLM provider 抽象一题。
 
 ## Context
 
@@ -26,7 +26,7 @@ tags:
 
 项目负责人 2026-05-09 决策的 5 项关键约束：
 
-1. **DGX 仅作算力提供，不部署任何应用服务（含 mj-agent）** → DGX 支持本质是 LLM endpoint 切换，**不**是新加 profile（详见 [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] §D.3 OOS）
+1. **DGX 仅作算力提供，不部署任何应用服务（含 mj-agent）** → DGX 支持本质是 LLM endpoint 切换，**不**是新加 profile（详见 [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] §D.3 OOS）
 2. LLM serving 部署责任另议；mj-agent 仅做消费侧
 3. 默认行为完全保持 Ark 路径，向后兼容现有 `.env`
 4. local endpoint 使用 OpenAI-compatible API（vLLM / SGLang / Ollama / TGI / llama.cpp 标准协议）
@@ -98,8 +98,8 @@ tags:
 
 ## References
 
-- [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] — `Profile` enum 设计；DGX 不部署 mj-agent 决策起源
-- [[[ADR]_028_MCP_Server_Inventory_And_Governance|ADR-028]] — DGX SSH 通过 MCP `ssh-manager` 访问（运维路径，与 LLM 消费正交）
+- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] — `Profile` enum 设计；DGX 不部署 mj-agent 决策起源
+- [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — DGX SSH 通过 MCP `ssh-manager` 访问（运维路径，与 LLM 消费正交）
 - [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `src/mj_agent/llm.py` — `make_llm()` factory 实现
 - `src/mj_agent/config.py` — `Settings` `llm_provider` / `llm_base_url` / `llm_api_key` / `effective_llm_*` 字段

@@ -1,31 +1,51 @@
 ---
 type: decisions-index
+summary: Index of mj-agent architecture decision records (ADRs) in decisions/ — 21 active ADRs relocated from docs/adr/ during the SDD refactor (M5-PR3a); deprecated ADRs live under archive/decisions/superseded/.
 state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-03
 track: shared
 ai_visibility: source-of-truth
 ---
 
 # decisions/ INDEX
 
-> Phase M0 skeleton — 现有 ADR 仍在 `docs/adr/`；Phase M5 archive ceremony 时整体平移至本目录.
-> 本 INDEX 在 Phase M5 末由 `scripts/sdd/generate_index.py` 自动维护.
+> ✅ 平移完成 (M5-PR3a, 2026-06-03)：原 `docs/adr/` 20 个 active ADR 已 `git mv`
+> 至本目录（per-file RENAME `[ADR]_NNN_*` → `ADR-NNN_*`），全仓 living 引用同步改写。
+> 本 INDEX 当前为手工维护；Phase M5+ 末转由 `scripts/sdd/generate_index.py` 自动维护.
 
 ## Active ADRs
 
-| ADR | Domain | Decision | Summary |
+| ADR | Domain | Decision (state) | Summary |
 |---|---|---|---|
+| [ADR-000_Data_LLM_Boundary_Principles.md](./ADR-000_Data_LLM_Boundary_Principles.md) | DATA | accepted (active) | 最小必要出网、通道隔离、工具中介——后续所有安全相关决策的理论基础 |
+| [ADR-001_Python_Only_Agent_Runtime.md](./ADR-001_Python_Only_Agent_Runtime.md) | SYS | accepted (active) | Agent 逻辑、tools、skills、memory 全部留在 Python；前端仅作通信与渲染 |
+| [ADR-002_Skills_As_First_Class_Citizens.md](./ADR-002_Skills_As_First_Class_Citizens.md) | SKILL | accepted (active) | 所有专业能力以 skills/{name}/SKILL.md 格式封装，对齐 Claude Code skills 约定 |
+| [ADR-003_Progressive_Disclosure.md](./ADR-003_Progressive_Disclosure.md) | PROMPT | accepted (active) | 全局 system prompt 只含身份与原则；具体能力按需加载 |
+| [ADR-006_Fail_Safe_Reads.md](./ADR-006_Fail_Safe_Reads.md) | GUARDRAIL | accepted (active) | biz 库访问用只读账号 + SQL guardrail middleware 双层保护，四层防御 |
+| [ADR-008_Co_Deployment_With_Upstream_Warehouse.md](./ADR-008_Co_Deployment_With_Upstream_Warehouse.md) | OPS | accepted (active) | mj-agent 是独立的 compose project（自带 postgres + redis 存储栈），通过 `mj-system-backend-network` 接入上游 |
+| [ADR-009_Biz_Domain_As_Primary_Data_Source.md](./ADR-009_Biz_Domain_As_Primary_Data_Source.md) | INTEGRATION | accepted (active) | mj-agent 仅通过只读账号访问 biz 域，不访问 ODS/DWD 原始层 |
+| [ADR-011_Doc_Versioning_And_Archive_Convention.md](./ADR-011_Doc_Versioning_And_Archive_Convention.md) | SYS | accepted (active) | 文档治理新增 Major.Minor 版本演进与 docs/archive/ 归档机制（HITL 触发） |
+| [ADR-012_Two_Track_Documentation_Governance.md](./ADR-012_Two_Track_Documentation_Governance.md) | SYS | accepted (draft) | 引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 |
+| [ADR-013_Plugin_SKILL_md_Schema_Separation.md](./ADR-013_Plugin_SKILL_md_Schema_Separation.md) | SYS | accepted (draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description），与 in-source schema 分离 |
+| [ADR-014_Tri_Track_Documentation_Governance.md](./ADR-014_Tri_Track_Documentation_Governance.md) | SYS | accepted (active) | 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）；A12-A14 门禁 |
+| [ADR-016_In_Tree_Claude_Skills_Ecosystem.md](./ADR-016_In_Tree_Claude_Skills_Ecosystem.md) | WORKFLOW | accepted (active) | .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family） |
+| [ADR-020_Archive_Auto_Discovery.md](./ADR-020_Archive_Auto_Discovery.md) | SYS | accepted (active) | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from 归档目录 [DEPRECATED]_*.md glob |
+| [ADR-024_Eval_Framework_Spec.md](./ADR-024_Eval_Framework_Spec.md) | AGENT | accepted (active) | Agent_Side v1.1 → v1.2 archive ceremony；§4 EVAL Authoring 完整规范（4 子类 + body 八段） |
+| [ADR-026_Multi_Environment_Compose_Profile.md](./ADR-026_Multi_Environment_Compose_Profile.md) | OPS | accepted (active) | docker-compose 4-file 分层 (base + override + test + prod) 实现 dev/test/prod 三环境部署 |
+| [ADR-027_LLM_Provider_Abstraction.md](./ADR-027_LLM_Provider_Abstraction.md) | AGENT | accepted (active) | src/mj_agent/llm.py make_llm() 抽象为 provider 分支 factory（ark + local-openai-compat），支持 DGX-Spark |
+| [ADR-028_MCP_Server_Inventory_And_Governance.md](./ADR-028_MCP_Server_Inventory_And_Governance.md) | WORKFLOW | accepted (active) | 引入 .mcp.json 13 servers + 新建 MCP_Server_Governance STANDARD |
+| [ADR-029_Tool_Error_Surfacing_To_LLM.md](./ADR-029_Tool_Error_Surfacing_To_LLM.md) | AGENT | accepted (active) | SQL 工具异常通过 @wrap_tool_call 中间件转换为 ToolMessage，使 LLM 自纠正而非 graph 崩溃 |
+| [ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md](./ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) | OPS | accepted (active) | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL）拆出到独立的 config/secrets-mcp.enc |
 | [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | proposed (draft) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
-
-> 现有 `docs/adr/` 20 个 active ADR（编号至 ADR-032；其中 9 个 deprecated 已在 `docs/archive/adr/`，ADR-031 已在本目录）将在 Phase M5 archive ceremony 时平移至此目录.
+| [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | proposed (draft) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
 
 ## Deprecated / Superseded ADRs
 
 > Phase M5 起：现 `docs/archive/adr/` 9 个 deprecated ADR（010 / 015 / 017-019 / 021-023 / 025）
-> 将平移至 `archive/decisions/superseded/`.
+> 将平移至 `archive/decisions/superseded/`（独立后续 PR；本期 M5-PR3a 不动归档集）.
 
 ## Archive Cross-Reference
 
@@ -33,4 +53,4 @@ ai_visibility: source-of-truth
 
 ---
 
-> *Phase M0 skeleton — 仅 ADR-031 + 现有 ADR 引用占位.* Phase M5 平移时本 INDEX 转为自动生成.
+> *现 21 个 ADR（20 active 平移 + ADR-031）手工收录.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.

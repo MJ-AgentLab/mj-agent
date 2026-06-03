@@ -18,14 +18,14 @@ tags:
 
 # ADR-028: MCP Server Inventory + Governance STANDARD
 
-> **历史**：本 ADR 与 [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] / [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] 由历史 ADR-025 拆分而来（ADR-025 已 archive）。本 ADR 聚焦 MCP servers 与 governance STANDARD 一题。
+> **历史**：本 ADR 与 [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] / [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] 由历史 ADR-025 拆分而来（ADR-025 已 archive）。本 ADR 聚焦 MCP servers 与 governance STANDARD 一题。
 
 ## Context
 
 CLAUDE.md §A14 引用 `[STANDARD]_MJ_Agent_MCP_Server_Governance` 但 STANDARD **不存在**（dangling reference）；仓库根**无 `.mcp.json`** — Claude Code 内开发者：
 
 - 无法直连 mj-agent-memory 调试 langgraph_checkpoints 表
-- 无法 SSH 到 DGX-Spark 维护 LLM serving 容器（per [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] DGX 算力节点）
+- 无法 SSH 到 DGX-Spark 维护 LLM serving 容器（per [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] DGX 算力节点）
 - 无 GitHub MCP / 无 code semantic search MCP
 
 项目负责人 2026-05-09 决策：完整对标行业成熟 .mcp.json 模式，引入 13 servers + 落地 governance STANDARD。
@@ -58,9 +58,9 @@ STANDARD 提供：
 
 ### D.3 Independent secrets pipeline
 
-所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 secrets pipeline 注入；与上游业务系统 `MJ_SYS_*` env var 命名空间隔离（per [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]）。
+所有 `MJ_AGENT_*` 命名空间 env vars 由 mj-agent 自己的 secrets pipeline 注入；与上游业务系统 `MJ_SYS_*` env var 命名空间隔离（per [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]）。
 
-**注入路径自 [[[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] 起升级为 2-bundle 拆分**：app secrets 走 `config/secrets.enc → scripts/setup-env.ps1 → .env`；MCP secrets 走 `config/secrets-mcp.enc → .claude/scripts/setup-mcp-secrets.ps1 → HKCU\Environment`（**不入 .env**）。原 `.claude/scripts/setup-mcp-env.ps1`（mirror .env → OS env）已废弃删除。
+**注入路径自 [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] 起升级为 2-bundle 拆分**：app secrets 走 `config/secrets.enc → scripts/setup-env.ps1 → .env`；MCP secrets 走 `config/secrets-mcp.enc → .claude/scripts/setup-mcp-secrets.ps1 → HKCU\Environment`（**不入 .env**）。原 `.claude/scripts/setup-mcp-env.ps1`（mirror .env → OS env）已废弃删除。
 
 ### D.4 Wrapper script + 内部 baseline
 
@@ -98,11 +98,11 @@ STANDARD 提供：
 
 ## References
 
-- [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离
-- [[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — 与 SKILL governance 互补：本 ADR 治 `.mcp.json`，ADR-013 治 `.claude/skills/`
-- [[[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
-- [[[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]] / [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] — ADR-025 拆分姊妹
-- [[[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — 本 ADR §D.3 secrets pipeline 升级；2-bundle 拆分把 MCP secrets 从 `secrets.enc` 析出
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离
+- [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — 与 SKILL governance 互补：本 ADR 治 `.mcp.json`，ADR-013 治 `.claude/skills/`
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
+- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] / [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — ADR-025 拆分姊妹
+- [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — 本 ADR §D.3 secrets pipeline 升级；2-bundle 拆分把 MCP secrets 从 `secrets.enc` 析出
 - [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance]] v1.0 — 本 ADR 落地的实施细则
 - [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `.mcp.json` — 13 servers 实文件

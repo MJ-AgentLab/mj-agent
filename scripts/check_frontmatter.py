@@ -38,6 +38,7 @@ import frontmatter  # type: ignore[import-untyped]
 SCAN_ROOTS = (
     Path("docs"),
     Path("plans"),
+    Path("decisions"),  # M5-PR3a: active ADRs relocated docs/adr/ → decisions/; keep them frontmatter-validated
     Path("src/mj_agent/skills"),
     Path("src/mj_agent/prompts"),
 )

@@ -18,15 +18,15 @@ tags:
 
 # ADR-026: Multi-Environment Compose Profile (4-file Layering)
 
-> **历史**：本 ADR 与 [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] / [[[ADR]_028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive 至 `docs/archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md`）。本 ADR 聚焦 docker-compose 多环境部署一题。
+> **历史**：本 ADR 与 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] / [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive 至 `docs/archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md`）。本 ADR 聚焦 docker-compose 多环境部署一题。
 
 ## Context
 
 Phase 1 sub 1.H（PR #40）落地 mj-agent dev compose 后，mj-agent 一直处于 dev-only 形态。具体缺口：
 
-- [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] §Decision 已经明确 "环境矩阵 DEV/TEST/PROD 时间表对齐"；但 `docker/compose.yaml` 单文件硬编码 dev profile（`POSTGRES_DEV_HOST: mj-postgres` / `com.mj-agent.environment: "development"` 写死、无 `MJ_CONFIG_PROFILE` 注入、无资源限制）
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] §Decision 已经明确 "环境矩阵 DEV/TEST/PROD 时间表对齐"；但 `docker/compose.yaml` 单文件硬编码 dev profile（`POSTGRES_DEV_HOST: mj-postgres` / `com.mj-agent.environment: "development"` 写死、无 `MJ_CONFIG_PROFILE` 注入、无资源限制）
 - TEST/PROD 覆盖文件从未补齐，无法在 192.168.0.179 (TEST) / .106 (PROD) 主机部署
-- 项目负责人 2026-05-09 决策：**mj-agent 容器栈跟随上游业务系统在 TEST/PROD 同主机部署**；DGX (192.168.0.189) 仅作算力节点，**不部署任何应用服务（含 mj-agent）** → DGX 支持本质是 LLM provider 抽象（[[[ADR]_027_LLM_Provider_Abstraction|ADR-027]]），**不**在本 ADR 引入 dgx profile
+- 项目负责人 2026-05-09 决策：**mj-agent 容器栈跟随上游业务系统在 TEST/PROD 同主机部署**；DGX (192.168.0.189) 仅作算力节点，**不部署任何应用服务（含 mj-agent）** → DGX 支持本质是 LLM provider 抽象（[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]），**不**在本 ADR 引入 dgx profile
 
 ## Decision
 
@@ -45,7 +45,7 @@ Phase 1 sub 1.H（PR #40）落地 mj-agent dev compose 后，mj-agent 一直处�
 
 ### D.3 Compose project name 跨 profile 不变
 
-`name: mj-agent` 跨 4 profile 不变（per [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] 独立 compose project）。Docker Desktop / Portainer 视图中 mj-agent 始终显示为单一 group。
+`name: mj-agent` 跨 4 profile 不变（per [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] 独立 compose project）。Docker Desktop / Portainer 视图中 mj-agent 始终显示为单一 group。
 
 ### D.4 操作命令矩阵
 
@@ -89,13 +89,13 @@ teardown 同模式（同 -f 链 + `down` / `down -v` / `down -v --rmi local`，p
 
 - **A. 单一 compose 文件 + 多 `MJ_CONFIG_PROFILE` 分支**（sed/template 在 entrypoint 切换）：拒绝。compose 4-file 模式更易 reviewer 视角清晰；4-file 是行业成熟实践（Docker 官方文档示例 + 多数生产部署）。
 - **B. 加 `Profile = "dgx"` 到 enum + 写 `docker-compose.dgx.yml`**：用户决策 2 否决。DGX 仅算力，无 biz pg / 应用服务部署，加 profile 只会引入混淆。
-- **C. mj-agent 部署 LLM serving 容器（vLLM in compose）**：拒绝。GPU runtime + 模型权重 mount + 显存预留 = 大幅扩 compose 范围；mj-agent 仅 LLM 消费侧（详见 [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]]）。
+- **C. mj-agent 部署 LLM serving 容器（vLLM in compose）**：拒绝。GPU runtime + 模型权重 mount + 显存预留 = 大幅扩 compose 范围；mj-agent 仅 LLM 消费侧（详见 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）。
 
 ## References
 
-- [[[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 compose project + 独立 secrets pipeline；4-file 分层不破坏 `name: mj-agent`
-- [[[ADR]_027_LLM_Provider_Abstraction|ADR-027]] — DGX 算力消费侧抽象（与本 ADR 同期落地，原 ADR-025 拆分姊妹）
-- [[[ADR]_028_MCP_Server_Inventory_And_Governance|ADR-028]] — MCP 13 servers + governance STANDARD（同期落地，原 ADR-025 拆分姊妹）
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 compose project + 独立 secrets pipeline；4-file 分层不破坏 `name: mj-agent`
+- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — DGX 算力消费侧抽象（与本 ADR 同期落地，原 ADR-025 拆分姊妹）
+- [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — MCP 13 servers + governance STANDARD（同期落地，原 ADR-025 拆分姊妹）
 - [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR；本 ADR 是其拆分子项之一
 - `docker/compose.yaml` + `docker/compose.{override,test,prod}.yml` — 4-file 实文件
 - `mj-agent-infra-env-teardown` SKILL — teardown 流程（同 -f 链；3-level 安全模式）

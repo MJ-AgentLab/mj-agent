@@ -43,7 +43,7 @@ updated: 2026-05-20
 
 **Trace**：`trace.yml` REQ-001 row → `contracts/sql-guardrail.contract.yml` + `contracts/behavior.feature` Scenario 1 + `tests/unit/test_guardrail.py`
 
-**Related ADR**：[ADR-006 Fail-Safe Reads](../../../docs/adr/[ADR]_006_Fail_Safe_Reads.md)（Phase M5 路径 `decisions/ADR-006_*.md`）
+**Related ADR**：[ADR-006 Fail-Safe Reads](decisions/ADR-006_Fail_Safe_Reads.md)
 
 ---
 

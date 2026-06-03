@@ -24,7 +24,7 @@ mj-agent 需要选择一个数据边界作为主要访问层。各层的特点�
 | DWS | 按主题的汇总（带维度） | 高 | 适中 | 高 |
 | ADS | 面向应用的小结果集 | 高，但用途锁死 | 小 | 最高 |
 
-分析师场景需要**灵活维度探索 + 较稳语义**，DWS 天然匹配。ODS/DWD 暴露内部 schema 给 LLM 违反 [[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]] 的 P1（最小必要出网）——那些表有大量内部 tracking 字段与半结构化 payload。ADS 语义被锁死，不适合交互式分析。
+分析师场景需要**灵活维度探索 + 较稳语义**，DWS 天然匹配。ODS/DWD 暴露内部 schema 给 LLM 违反 [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]] 的 P1（最小必要出网）——那些表有大量内部 tracking 字段与半结构化 payload。ADS 语义被锁死，不适合交互式分析。
 
 此外，DWD 层有少数稳定的维度表（如产品接口、机构），分析师做 DWS join 时经常需要。
 
@@ -39,7 +39,7 @@ mj-agent 的数据访问边界：
 | 其余 `biz_dwd.*`、`biz_ods.*`、`biz_ads.*` | **不可读** |
 | `ops_*.*` | **不可读** |
 
-可读范围由 **上游业务系统的 `analyst` PostgreSQL 角色** GRANT 精确限定（见 [[ADR]_006_Fail_Safe_Reads|ADR-006]] 的 L4）。
+可读范围由 **上游业务系统的 `analyst` PostgreSQL 角色** GRANT 精确限定（见 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] 的 L4）。
 mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保持同步；自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）。Phase 1 阶段，对齐通过 `tests/contract/*` 防守性 fail-then-manual-fix + manual review 维持。
 
 ## Consequences
@@ -67,8 +67,8 @@ mj-agent 应用层的 SKILL.md 清单与 guardrail schema 白名单须与 L4 保
 
 ## References
 
-- [[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]（P1 最小必要出网）
-- [[ADR]_006_Fail_Safe_Reads|ADR-006]]（L4 角色权限实现本 ADR 的数据范围）
+- [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P1 最小必要出网）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（L4 角色权限实现本 ADR 的数据范围）
 - **Future work** — biz schema 自动同步机制规划在 Phase 2（[[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4）；Phase 1 通过 `qcm_catalog.yaml` + `tests/contract/*` + manual review 维持
 - `src/mj_agent/skills/query-writing/SKILL.md`（当前 skill 的表清单对齐此 ADR）
 - 上游业务系统 `R__analyst_permissions.sql`（L4 GRANT 定义）

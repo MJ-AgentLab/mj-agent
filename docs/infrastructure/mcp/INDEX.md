@@ -29,7 +29,7 @@ track: engineering-workflow
 
 - [返回上级索引](../../INDEX.md)
 - [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.2]] §3.7（STANDARD placement）+ §3.10（in-tree SKILL 治理）+ §7.7（A12-A14 PR gates）
-- [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §A14（PR gate 来源）
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §A14（PR gate 来源）
 - [[../../adr/[ADR]_022_P2_Framework_Enhancements|ADR-022]] §C.3.2（领域专属 STANDARD placement 决策矩阵）
 - [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（active 文件名无 `_vX.Y` 后缀依据）
 

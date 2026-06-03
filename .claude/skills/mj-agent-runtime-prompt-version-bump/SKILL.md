@@ -305,9 +305,9 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 11 + §4.7 Rule 9 + §4.15 Rule 11（EVAL backlog）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §3（PROMPT authoring：version / model_binding / token_budget_estimate / eval_references / supersedes）+ §7.3（frontmatter strip 契约）
-- [[../../../docs/adr/[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]（P1/P2/P3 不可放宽）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail）
-- [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only）
+- [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P1/P2/P3 不可放宽）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（H1/H2/H3/R1/R2 矩阵；评估 system.md 改动行为变化）
 - src/mj_agent/prompts/system.md（target file）
 - src/mj_agent/prompts/__init__.py（load_prompt / load_prompt_meta API）

@@ -169,7 +169,7 @@ GFM 会按源文件序号渲染，但为可读性 **建议** 手动写对序号�
 
 ```markdown
 [文档治理元框架](./[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md)
-[ADR-001](../adr/[ADR]_001_Python_Only_Agent_Runtime.md)
+[ADR-001](../adr/ADR-001_Python_Only_Agent_Runtime.md)
 ```
 
 路径规则：

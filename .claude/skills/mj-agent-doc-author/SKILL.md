@@ -226,8 +226,8 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2-§7（4 类自有类 authoring + frontmatter strip 契约）
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC/ADR/RUNBOOK 触发）
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
-- [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
+- [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）+ §决策点 4（runtime 硬约束）
 - 9 个 templates 全部在 `docs/_templates/`
 - mj-system `.claude/skills/mj-sys-doc-author/SKILL.md`（直接派生源；mj-agent 加 track-aware + 风味识别 + Q-B1 + 项目根例外）

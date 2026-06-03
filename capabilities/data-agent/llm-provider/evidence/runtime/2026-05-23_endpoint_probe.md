@@ -42,7 +42,7 @@ Per-row aggregate: REQ-001/002/003 rows Conceptual (no unit tests); mj-agent che
 
 3-source authoritative-vs-outlier triangulation:
 
-- **Authoritative**: `spec.yml` `related_decisions` lists `docs/adr/[ADR]_027_LLM_Provider_Abstraction.md`; `behavior.feature` L21/L33/L46 `@adr:ADR-027` tags; CLAUDE.md confirms ADR-027 active + ADR-025 archived in PR-Γ 2026-05-11 (split into ADR-026 Multi-Env Compose / ADR-027 LLM Provider Abstraction / ADR-028 MCP Server Governance)
+- **Authoritative**: `spec.yml` `related_decisions` lists `decisions/ADR-027_LLM_Provider_Abstraction.md`; `behavior.feature` L21/L33/L46 `@adr:ADR-027` tags; CLAUDE.md confirms ADR-027 active + ADR-025 archived in PR-Γ 2026-05-11 (split into ADR-026 Multi-Env Compose / ADR-027 LLM Provider Abstraction / ADR-028 MCP Server Governance)
 - **Outlier 3-file scope** (broader than initially identified):
   1. `src/mj_agent/llm.py` L3 module docstring: "mj-agent supports two providers (selected by `LLM_PROVIDER` env, ADR-025)"
   2. `src/mj_agent/config.py` L62 inline comment: "# ── 2. LLM Provider (multi-provider abstraction; ADR-025) ─────────"
@@ -82,7 +82,7 @@ Parallel to **C-1c §4 cross-repo limitation** (L4 GRANT + statement_timeout liv
 - `.claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md` (canonical SKILL; A-1 amended):
   - L3+L10 (★ ADR-025 archived reference per §4.1 drift; should be ADR-027)
   - 3-step probe Workflow (Step 0 pre-check + Step 1 /v1/models + Step 2 1-token chat smoke)
-- `docs/adr/[ADR]_027_LLM_Provider_Abstraction.md` (**authoritative** active decision record per PR-Γ 2026-05-11 split)
+- `decisions/ADR-027_LLM_Provider_Abstraction.md` (**authoritative** active decision record per PR-Γ 2026-05-11 split)
 - `docs/archive/adr/[DEPRECATED]_[ADR]_025_*.md` (historical reference; archived per PR-Γ; cited in §5 as drift context only)
 - `policies/ai-agent.md §4` — canonical 10-enum (NOT triggered for C-3; documented for batch boundary discipline)
 

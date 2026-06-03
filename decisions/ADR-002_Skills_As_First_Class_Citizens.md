@@ -61,7 +61,7 @@ Phase 1+ 将引入 skill registry 和 progressive disclosure（ADR-003）。
 
 ## References
 
-- [[ADR]_003_Progressive_Disclosure|ADR-003]]（skill 的加载策略）
+- [[decisions/ADR-003_Progressive_Disclosure|ADR-003]]（skill 的加载策略）
 - Anthropic Skills: `github.com/anthropics/skills`
 - Agent Skills best practices: `agentskills.io/skill-creation/best-practices`
 - 本仓库实例：`src/mj_agent/skills/query-writing/SKILL.md`

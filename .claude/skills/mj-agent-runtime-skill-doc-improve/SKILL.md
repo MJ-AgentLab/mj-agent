@@ -259,8 +259,8 @@ per HITL_Prompt §3.3 7-段格式：
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束 — 本 skill 是该约束的 reference 实现）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 10 + §4.7 Rule 9（B 风味永远 HITL）+ §4.15 Rule 11（EVAL backlog ticket）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2.1（五段式 body）+ §2.4（EVAL coupling A11）+ §7.3（frontmatter strip 契约）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；body Anti-patterns 强化依据）
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；body Anti-patterns 强化依据）
+- [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow）
 - src/mj_agent/skills/{biz-domain-context,qcm-analysis,safe-sql-analysis,query-writing,query-optimization,monthly-report,probe-fixture,biz-schema-exploration,mj-ddd-semantics}/SKILL.md（9 现有 in-source SKILL；本 skill 改进对象）
 - src/mj_agent/skills/__init__.py（load_skill / load_skill_meta API）
 

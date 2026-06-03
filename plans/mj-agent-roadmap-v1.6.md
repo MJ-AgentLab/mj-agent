@@ -187,7 +187,7 @@ mj-agent 作为 MJ-AgentLab 的一级仓库存在，与 mj-system、mj-agentlab-
 - **向 marketplace 贡献**：mj-agent 的通用 skills（特别是 `mj-ddd-semantics`）可发布到 marketplace
 
 **Future ADR (Phase 2): biz schema 三层同步机制**
-> ⚠️ ADR 编号待立项；早期 plan 占位编号 "ADR-011" 已被 [[../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011 Doc Versioning]] 占用。下方设计纲要保留作为 Phase 2 参考。
+> ⚠️ ADR 编号待立项；早期 plan 占位编号 "ADR-011" 已被 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011 Doc Versioning]] 占用。下方设计纲要保留作为 Phase 2 参考。
 - L1 结构层（自动化）：cross-repo dispatch + 自动 PR
 - L2 语义层（半自动）：PR review gate + 人工补充
 - L3 经验层（异步）：episodic memory 运行时积累

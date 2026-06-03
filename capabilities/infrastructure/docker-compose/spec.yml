@@ -49,9 +49,9 @@ requirements:
         - "Given MJ_AGENT_MEMORY_PASSWORD='p@$$`w\"\"ord' (contains $, backticks, double quotes) / When init script runs / Then CREATE ROLE dispatched with literal password unmangled; subsequent psql login from agent succeeds"
 
 related_decisions:
-  - docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md     # external network mj-system-backend-network
-  - docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md         # 4-file layering
-  - docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation.md    # secrets injection model
+  - decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md     # external network mj-system-backend-network
+  - decisions/ADR-026_Multi_Environment_Compose_Profile.md         # 4-file layering
+  - decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md    # secrets injection model
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 
 cross_capability_refs:

@@ -99,9 +99,9 @@ Single-layer-sufficient scenarios (no cross-layer dependency):
 - `tests/integration/test_mj_system_db.py` (5 tests gated on `live_db`; L3 partial empirical: list_biz_tables / describe_biz_table / execute_sql + 2 L1 reject integration confirmations)
 - Cross-repo `mj-system/sql/migrations/repeatable/R__analyst_permissions.sql` — L4 GRANT + statement_timeout authoritative source per spec.yml REQ-004 `reference_contract` block; SUT-side cannot empirically verify
 - `policies/data-boundary.md` — 数据-LLM 三原则 + 4 项必停 governance
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md` — 4-layer defense origin
-- `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md` — biz domain scope
-- `docs/adr/[ADR]_029_Tool_Error_Surfacing_To_LLM.md` — REQ-006 middleware (OUT OF SCOPE for this audit)
+- `decisions/ADR-006_Fail_Safe_Reads.md` — 4-layer defense origin
+- `decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md` — biz domain scope
+- `decisions/ADR-029_Tool_Error_Surfacing_To_LLM.md` — REQ-006 middleware (OUT OF SCOPE for this audit)
 
 ## §6 Forward
 

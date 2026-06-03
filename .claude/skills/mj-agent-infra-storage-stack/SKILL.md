@@ -255,9 +255,9 @@ per CLAUDE.md "Storage" 段：
 - [[../../../docker/compose.yaml|docker/compose.yaml]]（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）
 - [[../../../docker/postgres-init/01-bootstrap-mj-agent-memory.sh|01-bootstrap-mj-agent-memory.sh]]（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）
 - src/mj_agent/memory/checkpointer.py（langgraph AsyncPostgresSaver 接入；bugfix/async-checkpointer 引入）
-- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + 双隔离边界）
-- [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail；mj-agent-postgres 与 biz pg 双隔离）
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + 双隔离边界）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail；mj-agent-postgres 与 biz pg 双隔离）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Storage" 段（mj-agent-postgres + mj-agent-redis 职责说明）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Environment variables" 段（MJ_AGENT_MEMORY_HOST/PORT + MJ_AGENT_REDIS_HOST/PORT/PASSWORD 字段）
 - `.env.example`（MJ_AGENT_MEMORY_* + MJ_AGENT_REDIS_* 字段占位）

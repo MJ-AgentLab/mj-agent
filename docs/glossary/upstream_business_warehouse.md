@@ -14,7 +14,7 @@ track: shared
 ## 定义
 
 mj-agent 通过 `analyst` 只读 PostgreSQL 角色访问的 **外部业务数据仓库**。
-mj-agent 仅作为 **read-only 消费者**（per [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] + [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]），无 schema 演进权。
+mj-agent 仅作为 **read-only 消费者**（per [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] + [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]），无 schema 演进权。
 
 ## 何时用本术语
 
@@ -115,7 +115,7 @@ mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同�
 
 ## 关联文档
 
-- [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]（4 层 guardrail；本术语在 L1-L4 层均有出现）
-- [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009 Biz Domain as Primary Data Source]]（biz 域 only / 不访问 ODS/DWD）
-- [[../adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（co-deployment 边界）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]（4 层 guardrail；本术语在 L1-L4 层均有出现）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009 Biz Domain as Primary Data Source]]（biz 域 only / 不访问 ODS/DWD）
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（co-deployment 边界）
 - `CLAUDE.md` "Data boundary" 段

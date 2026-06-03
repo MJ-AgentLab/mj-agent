@@ -19,9 +19,9 @@
 
 注入路径：`secrets-mcp.enc → .claude/scripts/setup-mcp-secrets.ps1 → HKCU\Environment`（**不入 .env**；claude.exe 启动时读 OS env 解析 `.mcp.json` `${VAR}`）。
 
-**两份 bundle 共享同一团队口令**（不为口令隔离，仅为信任边界 + 注入路径隔离）。详细决策见 [[../docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]。
+**两份 bundle 共享同一团队口令**（不为口令隔离，仅为信任边界 + 注入路径隔离）。详细决策见 [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]。
 
-**与 mj-system 的关系**：mj-agent 是独立 compose project（[[../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]），
+**与 mj-system 的关系**：mj-agent 是独立 compose project（[[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]），
 **不共享 mj-system 的 secrets.enc / 团队口令**。变量命名虽与 mj-system 对齐（操作一致性），
 但解密管道完全独立——本 secrets.enc 由 mj-agent 团队自管。
 

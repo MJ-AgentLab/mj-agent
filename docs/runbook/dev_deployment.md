@@ -180,8 +180,8 @@ docker compose --env-file .env \
 
 - [[docker/README|docker/ README]]: build / run / standalone 部署详情
 - [[GUIDE]_Analyst_Day_One|Analyst Day-One GUIDE]]: 1.I 试用阶段 day-1 流程
-- [[adr/[ADR]_006_Mj_System_Db_Boundary|ADR-006]]: 4 层数据边界
-- [[adr/[ADR]_009_Read_Only_Connection|ADR-009]]: 只读连接策略
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]: 4 层数据边界
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]: 只读连接策略
 - 上游业务系统 docker-compose: `D:/workspace/10-software-project/projects/上游业务系统/develop/docker-compose.yml`
 
 ## 更新记录

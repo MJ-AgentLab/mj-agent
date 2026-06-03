@@ -107,7 +107,7 @@ ls docs/rule/*.md docs/adr/*.md docs/guide/*.md docs/runbook/*.md docs/infrastru
 
 ### Track 决策（v2.1 4 值）
 
-per [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表：
+per [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表：
 
 | Artifact 类型 / 范例 | track |
 |---|---|
@@ -201,7 +201,7 @@ per [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] �
 
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5 / §4.4
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3（12 类 + track 默认）
-- [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）
 - mj-system `.claude/skills/mj-sys-doc-plan/SKILL.md`（直接派生源；mj-agent 加 4 值 track + 风味 + B 风味 EVAL backlog 备注）
 

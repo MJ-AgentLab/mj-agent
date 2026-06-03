@@ -373,8 +373,8 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟）+ §决策点 5（EVAL backlog ticket auto-issue §4.15 Rule 11）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump 触发本 skill）+ §4.7 Rule 9（B 风味永远 HITL）+ §4.13（regression 处理）+ §4.15 Rule 11（EVAL backlog ticket auto-issue）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §4（EVAL authoring；本 skill 落地的源依据）+ §7.1 A8/A11（EVAL 引用同步审查；transitional waiver decay 进度）
-- [[../../../docs/adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] / [[../../../docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow；EVAL 自身 versioning + target version 紧耦合）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
+- [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow；EVAL 自身 versioning + target version 紧耦合）
 - 兄弟 read-only-by-design skills:
   - [[../mj-agent-runtime-skill-doc-improve/SKILL|mj-agent-runtime-skill-doc-improve]]（B 风味 SKILL 改动 → 衔接本 skill）
   - [[../mj-agent-runtime-prompt-version-bump/SKILL|mj-agent-runtime-prompt-version-bump]]（system.md 改动 → 衔接本 skill）

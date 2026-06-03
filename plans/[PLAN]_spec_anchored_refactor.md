@@ -119,7 +119,7 @@ review / revert）：
   CI V5 step updated to exercise all 3. Evidence:
   [[capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing]].
 - **M3-FU-CLAUDE-SKILL-ADR** — ✅ **COMPLETED 2026-05-22 (Stage D D-3a)**. ADR draft landed
-  at `docs/adr/[ADR]_032_Claude_Skill_Schema_Monitoring.md` (`state: draft / decision:
+  at `decisions/ADR-032_Claude_Skill_Schema_Monitoring.md` (`state: draft / decision:
   proposed`; promote → accepted at next HITL Gate-3 after Layer 1 V4 promotion to blocking).
   Defines 3-layer drift-prevention regime: V4 validator gate (Layer 1) + PR template A12
   prompt (Layer 2; existing per Meta v2.1 §7.7) + A6 quarterly audit (Layer 3; per

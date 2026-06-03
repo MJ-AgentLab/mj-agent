@@ -95,7 +95,7 @@ def _validate_module(
     if module_entry.get("public_invariants"):
         findings.append((Severity.WARN, f"{module_path_dotted}: public_invariants documented (informational; M3 will add machine-verifiable test)"))
     if module_entry.get("adr"):
-        findings.append((Severity.WARN, f"{module_path_dotted}: adr cross-ref '{module_entry['adr']}' not yet linked to docs/adr/ existence check (TBD-M3)"))
+        findings.append((Severity.WARN, f"{module_path_dotted}: adr cross-ref '{module_entry['adr']}' not yet linked to decisions/ existence check (TBD-M3)"))
     if module_entry.get("wiring"):
         findings.append((Severity.WARN, f"{module_path_dotted}: wiring spec documented (informational; M3 will validate make_graph middleware=[...] match)"))
 

@@ -348,7 +348,7 @@ refresher; covers repo / branches / env / tests / docs / commit / Studio).
 
 
 ADR-012 documents the v1.1 → v2.0 dual-track split
-(`docs/adr/[ADR]_012_Two_Track_Documentation_Governance.md`); the archived
+(`decisions/ADR-012_Two_Track_Documentation_Governance.md`); the archived
 predecessor lives at
 `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
 (state: deprecated). The corpus-wide guard `scripts/check_wikilinks.py`

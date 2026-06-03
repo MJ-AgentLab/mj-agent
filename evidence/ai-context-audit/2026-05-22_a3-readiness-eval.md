@@ -82,7 +82,7 @@ A-3 R-2 verdict → **Phase M4 outline §1 Stage F units count: 8 → 7** (F-6 A
 
 ## §5 Cross-references
 
-- ADR-024 §A8/A11: `docs/adr/[ADR]_024_Eval_Framework_Spec.md#L78-L83` 4 prereq verbatim; `#L85-L94` Main条款 4 EVAL type-conditional spec; `#L25` "5 SKILLs" baseline (Episode #A3-6 candidate refresh)
+- ADR-024 §A8/A11: `decisions/ADR-024_Eval_Framework_Spec.md#L78-L83` 4 prereq verbatim; `#L85-L94` Main条款 4 EVAL type-conditional spec; `#L25` "5 SKILLs" baseline (Episode #A3-6 candidate refresh)
 - A-1 brief §0 Episode #3 — V4 Mode B docstring-only finding; commit `683c700` body
 - A-2 commit `501cae8` — BODY-SHA256 + V4 Mode B joint investigation report (Episode #2-1...#2-9 originator; co-pattern frontmatter Option a)
 - `.claude/hooks/stop-claude-md-improver/on-stop.ps1#L22-L70` defense layer + `#L72-L77` stub body; Stage D D-1b commit `0d086c2` (defense layer landing) + commit `550e46b` (original draft-producer design)

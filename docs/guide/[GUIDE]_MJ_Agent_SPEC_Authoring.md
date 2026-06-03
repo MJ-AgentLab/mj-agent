@@ -251,8 +251,8 @@ SPEC Delta:
 - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC 起草 prompt；引用本 GUIDE）
 - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]（SPEC 是 code-track 文档；A1-A6 PR 门禁）
 - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]]（任务类型 #3 in-source canonical 治理）
-- [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（任务类型 #2 SQL guardrail 红线）
-- [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（任务类型 #2 数据边界）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（任务类型 #2 SQL guardrail 红线）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（任务类型 #2 数据边界）
 
 ## 更新记录
 

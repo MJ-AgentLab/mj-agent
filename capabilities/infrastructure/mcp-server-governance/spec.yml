@@ -40,8 +40,8 @@ requirements:
         - "Given .mcp.json is loaded / When wrapper-script reference is inspected for each pg-* server / Then all 10 entries reference .claude/scripts/pg-server-start.cmd; any entry referencing a different wrapper triggers A14 'credential mode changed' sub-check"
 
 related_decisions:
-  - docs/adr/[ADR]_028_MCP_Server_Inventory_And_Governance.md
-  - docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation.md     # MCP bundle vs app bundle split
+  - decisions/ADR-028_MCP_Server_Inventory_And_Governance.md
+  - decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md     # MCP bundle vs app bundle split
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 
 cross_capability_refs:

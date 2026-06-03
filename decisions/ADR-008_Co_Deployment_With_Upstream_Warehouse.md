@@ -23,7 +23,7 @@ track: code
 
 ## Context
 
-mj-agent 只读访问上游业务系统的 biz 域数据库（见 [[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]）。访问路径上存在多个运维问题需要决定：
+mj-agent 只读访问上游业务系统的 biz 域数据库（见 [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]）。访问路径上存在多个运维问题需要决定：
 
 - **网络**：mj-agent 需要访问 PostgreSQL，是部署在上游业务系统同网络内还是跨 VPC
 - **环境**：上游业务系统有三套环境（DEV/TEST/PROD），mj-agent 是复用还是独立搭建
@@ -91,8 +91,8 @@ mj-agent 与上游业务系统是**独立项目，独立 compose project，独�
 
 ## References
 
-- [[ADR]_006_Fail_Safe_Reads|ADR-006]]（4 层数据访问边界 L1-L4）
-- [[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（仅 biz_dws + 2 张 biz_dwd dim 表）
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层数据访问边界 L1-L4）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（仅 biz_dws + 2 张 biz_dwd dim 表）
 - [[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]（独立仓库 + 生态复用）
 - mj-agent `infra/docker/docker-compose.mj-agent.yml`（独立 compose project 定义）
 - mj-agent `infra/docker/README.md` §Standalone deploy（启动 / 拆栈步骤）
