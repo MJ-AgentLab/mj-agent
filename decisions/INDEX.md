@@ -20,7 +20,7 @@ ai_visibility: source-of-truth
 |---|---|---|---|
 | [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | proposed (draft) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
 
-> 现有 ADR-000~030（30 个 active；详 `docs/adr/`）将在 Phase M5 archive ceremony 时平移至此目录.
+> 现有 `docs/adr/` 20 个 active ADR（编号至 ADR-032；其中 9 个 deprecated 已在 `docs/archive/adr/`，ADR-031 已在本目录）将在 Phase M5 archive ceremony 时平移至此目录.
 
 ## Deprecated / Superseded ADRs
 

@@ -26,10 +26,10 @@ promote）.
 ## §2 Context
 
 mj-agent 在 Phase 0 期间形成的 tri-track STANDARD（v2.2 / Code_Side v1.1 / Agent_Side v1.2 /
-HITL_Prompt v1.1）+ 30 个 active ADR + ~100 个 `docs/` 文档构成了当前治理框架. 但实际开发中
+HITL_Prompt v1.1）+ 20 个 active ADR + ~100 个 `docs/` 文档构成了当前治理框架. 但实际开发中
 暴露出以下结构性问题：
 
-1. **缺乏机器可读 contract** — 30 个 ADR + 4 framework STANDARD 是人类可读的文字规则，CI 仅
+1. **缺乏机器可读 contract** — 20 个 ADR + 4 framework STANDARD 是人类可读的文字规则，CI 仅
    能校验 frontmatter / wikilink；行为契约靠 reviewer 记忆.
 2. **缺乏 capability 作为组织单元** — 业务逻辑（safe-sql / biz-catalog / llm-provider /
    docker-compose / mcp-governance）散落在 `src/mj_agent/**`、`tests/**`、`docs/**`、
@@ -126,7 +126,7 @@ ETL）.
 ### Neutral
 
 - 旧 docs/ 在 Phase M0-M5 期间并存；develop always-shippable
-- 现 30 active ADR 平移至 `decisions/`，编号 + content 保留
+- 现 20 active ADR 平移至 `decisions/`，编号 + content 保留
 
 ## §8 Implementation Plan Reference
 
