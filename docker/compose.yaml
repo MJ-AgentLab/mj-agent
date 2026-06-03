@@ -2,14 +2,14 @@
 # mj-agent compose stack — BASE (env-agnostic; see ADR-008 + ADR-026)
 #
 # 4-file layering (mirrors mj-system v3.2.2 docker-compose.{yml,override.yml,test.yml,prod.yml}):
-#   docker-compose.mj-agent.yml           — this file (BASE; env-agnostic; total)
-#   docker-compose.override.yml           — DEV (`-f` 显式；build + dev profile env)
-#   docker-compose.test.yml               — TEST (`-f` 显式；Harbor pull + 8C/12G)
-#   docker-compose.prod.yml               — PROD (`-f` 显式；Harbor + 4C/12G + json-file logging)
+#   compose.yaml                          — this file (BASE; env-agnostic; total)
+#   compose.override.yml                  — DEV (`-f` 显式；build + dev profile env)
+#   compose.test.yml                      — TEST (`-f` 显式；Harbor pull + 8C/12G)
+#   compose.prod.yml                      — PROD (`-f` 显式；Harbor + 4C/12G + json-file logging)
 #
-# 注意：因 compose 文件在 infra/docker/ 子目录（非仓根），且全部用 `-f` 显式调用，
+# 注意：因 compose 文件在 docker/ 子目录（非仓根），且全部用 `-f` 显式调用，
 #   override.yml **不**会自动加载（docker compose auto-load 仅在 cwd default 调用时触发）。
-#   所以 dev 也要显式 chain `-f docker-compose.mj-agent.yml -f docker-compose.override.yml`。
+#   所以 dev 也要显式 chain `-f docker/compose.yaml -f docker/compose.override.yml`。
 #
 # Independent compose project (per ADR-008):
 #   - `name: mj-agent` declared below; docker compose creates a dedicated project visible
@@ -33,31 +33,31 @@
 #
 # Usage — 3 profile entry points (from mj-agent repo root；全部用显式 `-f` 链)：
 #   # DEV
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.override.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.override.yml up -d
 #
 #   # TEST (run on 192.168.0.179)
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.test.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.test.yml up -d
 #
 #   # PROD (run on 192.168.0.106)
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.prod.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.prod.yml up -d
 #
 # Path resolution:
-#   With `-f infra/docker/docker-compose.mj-agent.yml`, project_directory =
-#   `infra/docker/`. All relative paths in this file resolve from there:
-#     `../../`             = mj-agent repo root
-#     `../../.env`         = mj-agent/.env
-#     `./postgres-init`    = infra/docker/postgres-init/
+#   With `-f docker/compose.yaml`, project_directory =
+#   `docker/`. All relative paths in this file resolve from there:
+#     `../`               = mj-agent repo root
+#     `../.env`           = mj-agent/.env
+#     `./postgres-init`    = docker/postgres-init/
 #
 # Env file (CLI substitution layer):
 #   docker compose's `${VAR}` substitution in compose YAML reads `.env` from
-#   the project_directory (= `infra/docker/`), NOT the developer's cwd. Since
+#   the project_directory (= `docker/`), NOT the developer's cwd. Since
 #   the real .env lives at the repo root, every `docker compose` invocation
 #   above passes `--env-file .env` explicitly so the postgres init script
 #   sees the real MJ_AGENT_MEMORY_PASSWORD instead of the `:-default` sentinel.
-#   The `env_file: ../../.env` directive inside service definitions is a
+#   The `env_file: ../.env` directive inside service definitions is a
 #   *different* mechanism — it injects vars into the running container, not
 #   into the CLI-level `${...}` substitution that runs before the container
 #   starts.
@@ -78,7 +78,7 @@ services:
     container_name: mj-agent
     hostname: mj-agent
     env_file:
-      - ../../.env
+      - ../.env
     environment:
       # Universal: mj-agent ALWAYS uses its own postgres + redis containers via
       # mj-agent-storage internal network (regardless of profile). Per-profile

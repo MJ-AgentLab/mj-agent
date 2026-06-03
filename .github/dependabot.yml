@@ -9,8 +9,8 @@
 #   - github-actions: bumps for actions/* + astral-sh/setup-uv used in
 #     `.github/workflows/ci.yml` (PR #51 pinned them to commit SHA;
 #     Dependabot bumps SHA + `# vX.Y.Z` comment together)
-#   - docker: bumps for FROM image digests in `infra/docker/Dockerfile`
-#     and `image:` digests in `docker-compose.mj-agent.yml` (PR #52
+#   - docker: bumps for FROM image digests in `docker/Dockerfile`
+#     and `image:` digests in `docker/compose.yaml` (PR #52
 #     pinned them to digest; Dependabot bumps digest + `# tag` comment)
 #
 # Out of scope (deferred):
@@ -56,7 +56,7 @@ updates:
 
   # ── Dockerfile FROM image digests ────────────────────────────────
   - package-ecosystem: "docker"
-    directory: "/infra/docker"
+    directory: "/docker"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -83,7 +83,7 @@ updates:
   # Note: Dependabot's `docker-compose` ecosystem watches `image:` lines
   # in compose files. Same digest-pinning convention as Dockerfile FROM.
   - package-ecosystem: "docker-compose"
-    directory: "/infra/docker"
+    directory: "/docker"
     schedule:
       interval: "weekly"
       day: "monday"

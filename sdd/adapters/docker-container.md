@@ -12,7 +12,7 @@ ai_visibility: source-of-truth
 
 # Adapter: Docker Container
 
-> Phase M2 内容化 — Docker Container adapter 治理 `infra/docker/`（M5 平移目标 `docker/`）
+> Phase M2 内容化 — Docker Container adapter 治理 `docker/`（M5-PR2 自 `infra/docker/` 平移完成）
 > 全部容器化制品：`Dockerfile` + 4-file compose 链 + 运行时 expected state.
 > §Standards / §BDD Rules / §TDD Rules 各段顶部 cross-ref 蓝图
 > `spec-anchored-calm-lampson.md` 手册 §23 Docker/Container Adapter Standards（注意：本
@@ -22,12 +22,12 @@ ai_visibility: source-of-truth
 
 **Included** — Docker Container adapter 治理：
 
-- `infra/docker/Dockerfile`（M5 平移目标 `docker/Dockerfile`；本 doc 在 M2 期间引用当前路径）
-- `infra/docker/docker-compose.mj-agent.yml`（compose base）+ 3 profile overlays
-  （`docker-compose.override.yml` dev / `docker-compose.test.yml` test /
-  `docker-compose.prod.yml` prod；ADR-026 4-file layering）
-- `infra/docker/entrypoint.sh` —— 容器启动脚本
-- `infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` —— pg init 脚本
+- `docker/Dockerfile`（M5-PR2 自 `infra/docker/Dockerfile` 平移完成）
+- `docker/compose.yaml`（compose base）+ 3 profile overlays
+  （`compose.override.yml` dev / `compose.test.yml` test /
+  `compose.prod.yml` prod；ADR-026 4-file layering）
+- `docker/entrypoint.sh` —— 容器启动脚本
+- `docker/postgres-init/01-bootstrap-mj-agent-memory.sh` —— pg init 脚本
 - 容器运行时状态（healthcheck / network attach / port binding / volume mount / depends_on
   graph）
 - 独立 compose project（per ADR-008）+ 依赖 `mj-system-backend-network` external network
@@ -69,13 +69,13 @@ M1 已落地 `capabilities/infrastructure/docker-compose/` capability：当前�
 
 > 本节对应蓝图手册 §23 Docker/Container Adapter Standards.
 
-`freeze_anchor`：per-file string path（M1 style，如 `infra/docker/Dockerfile`）；M2 新 contract
-**不涉**本 adapter 治理的必停 surface（4 项专属必停均在 src/agent/prompt/skill family；docker
-family 不在内）；M5+ 平移到 `docker/` 后 freeze_anchor 字符串同步更新.
+`freeze_anchor`：per-file string path（如 `docker/Dockerfile`；M5-PR2 自 `infra/docker/` 平移后
+freeze_anchor 字符串已同步更新）；M2 新 contract **不涉**本 adapter 治理的必停 surface（4 项专属
+必停均在 src/agent/prompt/skill family；docker family 不在内）.
 
 ### §Image schema (`docker.contract.yml`)
 
-- `dockerfile` — Dockerfile 路径（M2: `infra/docker/Dockerfile`；M5+: `docker/Dockerfile`）
+- `dockerfile` — Dockerfile 路径（`docker/Dockerfile`；M5-PR2 自 `infra/docker/Dockerfile` 平移）
 - `base_image_allowlist[]` — 允许的 base image 集合（如 `python:3.13-slim` /
   `python:3.13-bookworm`）
 - `user_required: non-root` — `USER` directive 必填（防 root 容器逃逸）
@@ -93,7 +93,7 @@ family 不在内）；M5+ 平移到 `docker/` 后 freeze_anchor 字符串同步�
   误删彼此 volume）
 - `networks_explicit: true` — `networks` 段显式声明（不允许 default network 模式）
 - `external_networks[]` — 依赖的 external network（`mj-system-backend-network` consumer 角色）
-- `env_file_explicit: true` — `--env-file .env` CLI flag 强制（compose 在 `infra/docker/` 子目
+- `env_file_explicit: true` — `--env-file .env` CLI flag 强制（compose 在 `docker/` 子目
   录时不自动 load .env；必须 explicit pass）
 - `secret_substitution_only_for[]` — 允许 substitute secret env var 的字段白名单
   （`postgres_password` / `mj_agent_memory_password`）

@@ -10,7 +10,7 @@ Feature: Docker Compose 4-File Profile + Healthcheck + Secret Safety
   So that compose up reliably produces a healthy stack with isolated credentials
 
   Background:
-    Given mj-agent compose project lives at infra/docker/
+    Given mj-agent compose project lives at docker/
     And the mj-system stack is already up (mj-system-backend-network external network exists)
     And .env is populated with MJ_AGENT_MEMORY_USER / MJ_AGENT_MEMORY_PASSWORD / MJ_AGENT_PG_SUPERUSER_PASSWORD
 
@@ -19,9 +19,9 @@ Feature: Docker Compose 4-File Profile + Healthcheck + Secret Safety
   @REQ-001 @CTR-compose @risk:high @adapter:docker-container @adr:ADR-026
   Scenario: DEV profile loads with explicit -f chain + --env-file
     Given a clean docker daemon
-    When `docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml up -d` is invoked
+    When `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d` is invoked
     Then within 90 seconds all 3 services (mj-agent / mj-agent-postgres / mj-agent-redis) reach `Up (healthy)` state
-    And mj-agent's `env_file: ../../.env` correctly injects MJ_AGENT_MEMORY_* into the container
+    And mj-agent's `env_file: ../.env` correctly injects MJ_AGENT_MEMORY_* into the container
     And mj-agent can connect to mj-agent-postgres:5432 via mj-agent-storage internal network
     And mj-agent can connect to mj-postgres:5432 via mj-system-backend-network external network
 

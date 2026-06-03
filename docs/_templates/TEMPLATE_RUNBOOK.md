@@ -113,7 +113,7 @@ mj-agent 常用验证命令（按 RUNBOOK 范围适当选择）：
 | `uv run mj-agent check` | DB + LLM creds 健康 |
 | `uv run langgraph dev` | Studio 可起；LangGraph runtime 正常 |
 | `uv run pytest tests/integration` | 集成测试（需 live biz DB） |
-| `docker compose -f infra/docker/docker-compose.mj-agent.yml ps` | mj-agent compose 容器状态 |
+| `docker compose -f docker/compose.yaml ps` | mj-agent compose 容器状态 |
 
 ---
 

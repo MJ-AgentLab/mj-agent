@@ -11,7 +11,7 @@
 # Entry: mj-agent serve  (Chainlit on $CHAINLIT_PORT, default 8000)
 # Healthcheck: mj-agent check
 #
-# Build:  docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
+# Build:  docker build -f docker/Dockerfile -t mj-agent:0.1 .
 # Run:    docker run --rm -p 8001:8000 --env-file .env mj-agent:0.1
 # =============================================
 
@@ -92,7 +92,7 @@ COPY --from=builder /app/README.md /app/README.md
 # excluded by .dockerignore (orchestrator injects via env). The codebook
 # itself is shipped (it's a YAML codename map; ADR-014).
 COPY config/ ./config/
-COPY infra/docker/entrypoint.sh /app/entrypoint.sh
+COPY docker/entrypoint.sh /app/entrypoint.sh
 
 # Chart / Excel artifact tmpdir (override with MJ_AGENT_CHART_TMPDIR).
 RUN mkdir -p /var/lib/mj-agent/charts && \

@@ -44,7 +44,6 @@ archive/
 docs/_baselines/
 
 # Docker runtime logs
-infra/docker/**/*.log
 docker/**/*.log
 
 # OS / IDE noise

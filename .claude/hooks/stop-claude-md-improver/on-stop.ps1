@@ -48,7 +48,7 @@ $WriteDenylist = @(
     'src/CLAUDE.md',
     'capabilities/CLAUDE.md',
     'tests/CLAUDE.md',
-    'infra/docker/CLAUDE.md',
+    'docker/CLAUDE.md',
     # 全 SKILL.md 防御 (含未来新增)
     '.claude/skills/**/SKILL.md',
     # 配置

@@ -81,7 +81,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 |---|---|---|
 | 测试套件 | ✅ | `uv run pytest tests/unit` 通过 |
 | Lint / Typecheck | ✅ | `uv run ruff check` / `uv run mypy src/mj_agent` 通过 |
-| Build / Compose | ✅ | `docker compose -f infra/docker/docker-compose.mj-agent.yml up -d` 启动成功 |
+| Build / Compose | ✅ | `docker compose -f docker/compose.yaml up -d` 启动成功 |
 | 文件存在性 grep | ✅ | `grep -l "..." src/` 命中预期数量 |
 | 文档校验 | ✅ | `python scripts/check_wikilinks.py` / `check_frontmatter.py` 0 violations |
 | Studio probe | ✅ | `uv run langgraph dev` H1/H2/H3/R1/R2 矩阵通过 |

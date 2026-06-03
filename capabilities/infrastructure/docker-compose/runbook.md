@@ -27,18 +27,18 @@ last_verified: 2026-05-20
 ```bash
 # DEV (local; builds image)
 docker compose --env-file .env \
-  -f infra/docker/docker-compose.mj-agent.yml \
-  -f infra/docker/docker-compose.override.yml up -d
+  -f docker/compose.yaml \
+  -f docker/compose.override.yml up -d
 
 # TEST (192.168.0.179; pulls Harbor image)
 docker compose --env-file .env \
-  -f infra/docker/docker-compose.mj-agent.yml \
-  -f infra/docker/docker-compose.test.yml up -d
+  -f docker/compose.yaml \
+  -f docker/compose.test.yml up -d
 
 # PROD (192.168.0.106; pulls Harbor image)
 docker compose --env-file .env \
-  -f infra/docker/docker-compose.mj-agent.yml \
-  -f infra/docker/docker-compose.prod.yml up -d
+  -f docker/compose.yaml \
+  -f docker/compose.prod.yml up -d
 ```
 
 **REQ-001 enforcement**：every invocation MUST include both `--env-file .env` AND the explicit `-f base -f overlay` chain. Forgetting either causes silent regression.
@@ -49,7 +49,7 @@ Use the `/mj-agent-infra-docker-compose` skill for guided lifecycle.
 
 ```bash
 # Service status
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.<overlay>.yml ps
+docker compose --env-file .env -f docker/compose.yaml -f docker/docker-compose.<overlay>.yml ps
 
 # Expected after ≤ 90s (REQ-002):
 # - mj-agent        Up (healthy)
@@ -115,7 +115,7 @@ docker network ls | grep mj-system-backend-network
 
 **Resolution**：
 
-- Verify init script is current: `cat infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh | grep -E "<<-'EOSQL'|\\\\getenv|\\\\gexec"`
+- Verify init script is current: `cat docker/postgres-init/01-bootstrap-mj-agent-memory.sh | grep -E "<<-'EOSQL'|\\\\getenv|\\\\gexec"`
 - Should see all 3 patterns. If any missing → file `[BUG]` against this capability with init script SHA
 - Workaround: temporarily change password to ASCII-only; restart stack; investigate
 
@@ -151,7 +151,7 @@ docker network ls | grep mj-system-backend-network
 - ADR-026 / ADR-008 / ADR-030 — design records
 - `docs/runbook/dev_studio_walkthrough.md` — broader Studio context (Phase M5 dissolves)
 - `§6.1 Volume Backup/Restore SOP` — cross-ref `/mj-agent-infra-env-teardown` Level 2 (destructive; REQ-006 checkpointer data lost warning)
-- `§6.2 Postgres Init Failure Recovery SOP` — cross-ref `infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (REQ-003 `\getenv` + `format` + `\gexec` chain)
+- `§6.2 Postgres Init Failure Recovery SOP` — cross-ref `docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (REQ-003 `\getenv` + `format` + `\gexec` chain)
 
 ## §5 Post-mortem Trigger
 
@@ -220,7 +220,7 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
   (docker-bdd-scenario-check per gates.md L51 + V5 sub-flags
   M3-FU-V5-SUBFLAGS)。
 - **替代验证手段**: V5 docker contracts validator 自动验
-  `infra/docker/docker-compose.mj-agent.yml` 结构 + DEV/TEST/PROD overlay
+  `docker/compose.yaml` 结构 + DEV/TEST/PROD overlay
   链 (BLOCKING per Stage C C-a 2P/4W/0F clean)；CLAUDE.md § Commands 已
   document DEV/TEST/PROD profile up 命令（含 `-f base -f override
   --env-file` 显式 chain — compose 在子目录 + `-f` 显式 base 时 auto-load
@@ -236,7 +236,7 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 - **REQ**: REQ-002 / **Risk**: high / **Adapter**: docker-container
 - **原因**: M1 baseline；BDD 层 docker healthcheck 时序验证推迟 M3。
 - **替代验证手段**: postgres healthcheck 配置已落在
-  `infra/docker/docker-compose.mj-agent.yml` (`pg_isready` 探针) + init
+  `docker/compose.yaml` (`pg_isready` 探针) + init
   script `postgres-init/01-bootstrap-mj-agent-memory.sh` 已实装（storage-stack
   PR 后 auto-creates memory DB on container init）；DEV up 时 healthcheck
   实际生效，manual 验 init script 未完成则探针失败（mj-agent 容器 depends_on

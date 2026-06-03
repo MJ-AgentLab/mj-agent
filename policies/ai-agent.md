@@ -87,8 +87,8 @@ of truth），LSP 仅作交互式辅助.
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
 | `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
 | `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
-| `database-migration` | `mj_agent_memory` schema / Alembic / `infra/docker/postgres-init/*` | mj-agent memory pg state 变更 |
-| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `infra/docker/docker-compose.prod.yml` / 数据-LLM 边界 ADR-000 | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger |
+| `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
+| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000 | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger |
 | `ci-blocking-gate-toggle` | `.github/workflows/ci.yml` `continue-on-error` flip 或新增 blocking gate | per Stage C C-a 流程；M-FU plan 必先 register |
 | `bulk-content-purge-or-migration` | ≥10 file delete/move 或 archive ceremony | 含义吸收原 "删除 / 迁移 / 归档历史内容" + "大规模目录迁移（≥10 文件）" |
 
@@ -215,7 +215,7 @@ M2 4-incident anchor.
    top-level not created.
 
 7. **D-2b/c/d batch bulk-pre-existence intercept** (2026-05-21, commit `3c4e416`, 同 D-2a
-   commit). 4 subdir CLAUDE.md (`capabilities/` + `tests/` + `infra/docker/` + 上述
+   commit). 4 subdir CLAUDE.md (`capabilities/` + `tests/` + `docker/` + 上述
    `src/mj_agent/`) 全在 commit `550e46b` 已落. Augment only path 应用 (cross-refs +
    §Gates slim + 各自 stale-marker refresh); 无任何 overwrite.
 

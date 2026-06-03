@@ -36,23 +36,23 @@ mj-agent is deployed independently of mj-system (per ADR-008): own compose proje
 
 | Component | File | Purpose |
 |---|---|---|
-| Base | `infra/docker/docker-compose.mj-agent.yml` | `name: mj-agent`; 3 services; networks (internal + external); volumes |
-| DEV overlay | `infra/docker/docker-compose.override.yml` | `build: ../../`; dev env vars; debug logs |
-| TEST overlay | `infra/docker/docker-compose.test.yml` | Harbor image; test env; 8C/12G |
-| PROD overlay | `infra/docker/docker-compose.prod.yml` | Harbor image; prod env; 4C/12G; json-file logging |
-| Image | `infra/docker/Dockerfile` | Multi-stage; non-root appuser; tini; `mj-agent check` healthcheck |
-| Entrypoint | `infra/docker/entrypoint.sh` | Subcommand router (serve/check/shell/passthrough); no secret decryption |
-| PG init | `infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` | Idempotent; heredoc `<<-'EOSQL'` + `\getenv` + `format()` + `\gexec` |
+| Base | `docker/compose.yaml` | `name: mj-agent`; 3 services; networks (internal + external); volumes |
+| DEV overlay | `docker/compose.override.yml` | `build: ../`; dev env vars; debug logs |
+| TEST overlay | `docker/compose.test.yml` | Harbor image; test env; 8C/12G |
+| PROD overlay | `docker/compose.prod.yml` | Harbor image; prod env; 4C/12G; json-file logging |
+| Image | `docker/Dockerfile` | Multi-stage; non-root appuser; tini; `mj-agent check` healthcheck |
+| Entrypoint | `docker/entrypoint.sh` | Subcommand router (serve/check/shell/passthrough); no secret decryption |
+| PG init | `docker/postgres-init/01-bootstrap-mj-agent-memory.sh` | Idempotent; heredoc `<<-'EOSQL'` + `\getenv` + `format()` + `\gexec` |
 
 **Why explicit `-f` chain even for DEV**：
 
-Compose's auto-load of `override.yml` fires only when CLI is invoked in the same dir as `docker-compose.yml`. Our compose files are in `infra/docker/`, not repo root. CLI from repo root with `-f infra/docker/docker-compose.mj-agent.yml` does NOT auto-load `override.yml`. Therefore even DEV requires explicit `-f override.yml`. Documentation in this capability + CLAUDE.md + `/mj-agent-infra-docker-compose` skill explicitly call this out.
+Compose's auto-load of `override.yml` fires only when CLI is invoked in the same dir as `docker-compose.yml`. Our compose files are in `docker/`, not repo root. CLI from repo root with `-f docker/compose.yaml` does NOT auto-load `override.yml`. Therefore even DEV requires explicit `-f override.yml`. Documentation in this capability + CLAUDE.md + `/mj-agent-infra-docker-compose` skill explicitly call this out.
 
 **Why `--env-file .env` always required**：
 
-Compose YAML's `${VAR}` substitution happens at CLI level, before any container starts. Compose looks for `.env` in `project_directory` (= directory of the first `-f` file = `infra/docker/`), NOT in developer's cwd. Without `--env-file .env` (which overrides project_directory lookup), `${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod}` substitutes to the sentinel — postgres init bakes that as password → mj-agent connection fails with `password authentication failed`.
+Compose YAML's `${VAR}` substitution happens at CLI level, before any container starts. Compose looks for `.env` in `project_directory` (= directory of the first `-f` file = `docker/`), NOT in developer's cwd. Without `--env-file .env` (which overrides project_directory lookup), `${MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod}` substitutes to the sentinel — postgres init bakes that as password → mj-agent connection fails with `password authentication failed`.
 
-`env_file: ../../.env` inside the service definition is SEPARATE — that injects env vars into the running container, not into CLI substitution. Both layers needed.
+`env_file: ../.env` inside the service definition is SEPARATE — that injects env vars into the running container, not into CLI substitution. Both layers needed.
 
 **Why psql instead of pg_isready**：
 
@@ -64,8 +64,8 @@ Compose YAML's `${VAR}` substitution happens at CLI level, before any container 
 Developer / CI                                ──── invokes
     │
     │  docker compose --env-file .env \
-    │    -f infra/docker/docker-compose.mj-agent.yml \
-    │    -f infra/docker/docker-compose.<overlay>.yml \
+    │    -f docker/compose.yaml \
+    │    -f docker/docker-compose.<overlay>.yml \
     │    up -d
     │
     ▼
@@ -78,7 +78,7 @@ Developer / CI                                ──── invokes
     │
     ├─► mj-agent (port 8001:8000)
     │    ├─► image: mj-agent:0.1 (DEV build) | Harbor image (TEST/PROD)
-    │    ├─► env_file: ../../.env             ──── container env layer
+    │    ├─► env_file: ../.env               ──── container env layer
     │    ├─► depends_on: service_healthy {mj-agent-postgres, mj-agent-redis}
     │    ├─► networks: [mj-system-network external, mj-agent-storage]
     │    └─► healthcheck: mj-agent check
@@ -110,7 +110,7 @@ Network topology:
 
 **Cross-capability dependencies (2 refs)**：
 
-- **llm-provider** (inbound)：LLM env vars (`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_API_KEY` / `ARK_API_KEY`) flow through `env_file: ../../.env` into mj-agent container
+- **llm-provider** (inbound)：LLM env vars (`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_API_KEY` / `ARK_API_KEY`) flow through `env_file: ../.env` into mj-agent container
 - **mcp-server-governance** (outbound)：`.mcp.json` WAN pg URLs (`MJ_AGENT_PG_*_WAN_URL`) reference the same host/port matrix as compose pg services
 
 ## §4 Tradeoffs

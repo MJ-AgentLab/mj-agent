@@ -89,7 +89,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 
 - ☐ **A 风味**：pure code（tools / memory / integrations / agent.py / tests / config）
 - ☐ **B 风味**：in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml）—— **永远 §3.1 必停 HITL**；建议先 propose-via-runtime-* （PR-C2）
-- ☐ **C 风味**：infra（infra/docker / pyproject.toml / langgraph.json / .env.example / scripts/）
+- ☐ **C 风味**：infra（docker/ / pyproject.toml / langgraph.json / .env.example / scripts/）
 
 ---
 

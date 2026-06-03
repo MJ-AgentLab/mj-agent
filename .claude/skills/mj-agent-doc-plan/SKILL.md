@@ -113,7 +113,7 @@ per [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] �
 |---|---|
 | `src/mj_agent/skills/**/SKILL.md` 改动 / `prompts/*.md` 改动 | `agent`（B 风味） |
 | `src/mj_agent/{tools,memory,integrations,server,...}/` + `tests/` | `code`（A 风味） |
-| `infra/docker/` / `pyproject.toml` / `qcm_catalog.yaml` / `.env.example` | `code`（C 风味） |
+| `docker/` / `pyproject.toml` / `qcm_catalog.yaml` / `.env.example` | `code`（C 风味） |
 | `.claude/skills/` / `.claude/settings.json` / `.mcp.json` / HITL_Prompt 类 STANDARD | `engineering-workflow` |
 | ADR / SPEC / STANDARD 跨多 track | `shared`（PR body 论证） |
 

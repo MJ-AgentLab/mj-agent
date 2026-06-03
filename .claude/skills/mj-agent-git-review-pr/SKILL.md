@@ -62,7 +62,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 - **In-source canonical**: `src/mj_agent/skills/**/SKILL.md`, `src/mj_agent/prompts/*.md`（**B 风味**，§3.1 必停）
 - **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`（§3.1 必停）
 - **SQL guardrail**: `src/mj_agent/tools/sql/{guardrail,precheck}.py`（§3.1 必停）
-- **Config**: `*.yaml`, `*.yml`, `*.toml`, `.env*`, `langgraph.json`, `infra/docker/*`
+- **Config**: `*.yaml`, `*.yml`, `*.toml`, `.env*`, `langgraph.json`, `docker/*`
 - **Docs**: `docs/**/*.md`, `*.md`
 - **Engineering-workflow**: `.claude/skills/**`, `.claude/settings.json`, `.mcp.json`
 - **Other**: 不匹配以上
@@ -89,7 +89,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 | `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1 必停 11）+ version bump 检查 |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停 12）+ scripts/diff_biz_schema.py 比对 |
 | `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停 13）+ ADR-006/009 红线检查 |
-| `infra/docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
+| `docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
 | `.env.example` / `secrets.enc` 改动 | D8（secret 管理）+ config/README.md 同步 |
 | `docs/` 改动 | 不动态检查；输出 "建议 /mj-agent-doc-review (PR-C1)" |
 | `.claude/skills/` 改动 | D9（A12 description 质量）+ A12-A14 自检 |

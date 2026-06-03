@@ -105,7 +105,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 |---|---|---|
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | **A 纯代码** | TDD red-green；ruff/mypy strict；Rules 1-8 |
 | `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical** | **永远 HITL**；A11 EVAL 门禁；frontmatter strip 契约不破坏；五段式 body 保持；Rules 9-12 |
-| `infra/docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | **C infra** | mj-agent check healthcheck；compose 排练；uv lock；Rules 13-15 |
+| `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | **C infra** | mj-agent check healthcheck；compose 排练；uv lock；Rules 13-15 |
 
 | Task 信号 | 路径 | 硬约束 |
 |---|---|---|
@@ -160,7 +160,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 ## Step 3c: Infra Path（C 风味，mj-agent 专属，Rules 13-15）
 
-**Rule 13（hard）**：compose 改动后必须手动 `docker compose -f infra/docker/docker-compose.mj-agent.yml up -d` + `down` 排练，记录在 PR description。
+**Rule 13（hard）**：compose 改动后必须手动 `docker compose -f docker/compose.yaml up -d` + `down` 排练，记录在 PR description。
 
 **Rule 14（hard）**：`pyproject.toml` 增依赖必须 `uv lock` + `uv sync`，确认 lock 文件 commit 同 PR。
 

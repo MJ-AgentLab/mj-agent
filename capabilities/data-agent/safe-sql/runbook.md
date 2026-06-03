@@ -36,18 +36,18 @@ uv run langgraph dev
 
 ### TEST / PROD profiles
 
-Per `infra/docker/CLAUDE.md` (Phase M5 will become `docker/CLAUDE.md`). 4-file
+Per `docker/CLAUDE.md`. 4-file
 profile chain; `--env-file .env` explicit.
 
 ```bash
 # DEV
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.override.yml up -d
+docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d
 
 # TEST (192.168.0.179)
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.test.yml up -d
+docker compose --env-file .env -f docker/compose.yaml -f docker/compose.test.yml up -d
 
 # PROD (192.168.0.106)
-docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml -f infra/docker/docker-compose.prod.yml up -d
+docker compose --env-file .env -f docker/compose.yaml -f docker/compose.prod.yml up -d
 ```
 
 ## §2 Health Check

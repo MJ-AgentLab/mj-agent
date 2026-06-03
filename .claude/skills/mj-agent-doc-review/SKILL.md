@@ -56,7 +56,7 @@ git diff --name-only develop...HEAD
 - **Code**: `src/mj_agent/`、`tests/`、`scripts/`、`pyproject.toml` / `uv.lock`
 - **In-source canonical**（B 风味）：`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`
 - **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`
-- **Config**: `.env.example`、`langgraph.json`、`infra/docker/`、`config/`、`.github/workflows/`
+- **Config**: `.env.example`、`langgraph.json`、`docker/`、`config/`、`.github/workflows/`
 - **Docs**: `docs/`、`CLAUDE.md`、`CHANGELOG.md`、`README.md`、`CONTRIBUTING.md`
 - **Engineering-workflow**: `.claude/skills/`、`.claude/settings.json`、`.mcp.json`
 

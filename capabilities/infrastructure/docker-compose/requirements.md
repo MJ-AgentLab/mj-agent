@@ -22,24 +22,24 @@ updated: 2026-05-20
 
 Two compose quirks force explicit `-f` chain even for DEV:
 
-1. **Auto-load disabled by subdir + explicit -f**: `docker-compose.override.yml` auto-load only fires when CLI is invoked in the SAME directory as `docker-compose.yml`. Compose files live in `infra/docker/`, not repo root → DEV must use explicit `-f override.yml`.
+1. **Auto-load disabled by subdir + explicit -f**: `compose.override.yml` auto-load only fires when CLI is invoked in the SAME directory as `compose.yaml`. Compose files live in `docker/`, not repo root → DEV must use explicit `-f compose.override.yml`.
 
-2. **`--env-file .env` required for CLI substitution**: `${VAR}` substitution in compose YAML reads `.env` from compose's `project_directory` (= directory of first `-f` file = `infra/docker/`), NOT developer's cwd. Without `--env-file .env`, the postgres init script reads `MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod` (sentinel default) and bakes it into the volume → password mismatch + cascade failure.
+2. **`--env-file .env` required for CLI substitution**: `${VAR}` substitution in compose YAML reads `.env` from compose's `project_directory` (= directory of first `-f` file = `docker/`), NOT developer's cwd. Without `--env-file .env`, the postgres init script reads `MJ_AGENT_MEMORY_PASSWORD:-local-dev-only-replace-in-prod` (sentinel default) and bakes it into the volume → password mismatch + cascade failure.
 
-`env_file: ../../.env` inside service definition is a **separate mechanism** — injects vars into running container, NOT into CLI-level `${...}` substitution that happens before container starts. Both layers required.
+`env_file: ../.env` inside service definition is a **separate mechanism** — injects vars into running container, NOT into CLI-level `${...}` substitution that happens before container starts. Both layers required.
 
 **Acceptance**：
 
 - 4 compose files exist:
-  - `infra/docker/docker-compose.mj-agent.yml` (base; 247 lines; `name: mj-agent`)
-  - `infra/docker/docker-compose.override.yml` (DEV overlay; 40 lines; local `build:` + dev env)
-  - `infra/docker/docker-compose.test.yml` (TEST; 54 lines; Harbor image + test resource limits)
-  - `infra/docker/docker-compose.prod.yml` (PROD; 70 lines; Harbor image + prod resource limits + json-file logging)
+  - `docker/compose.yaml` (base; 247 lines; `name: mj-agent`)
+  - `docker/compose.override.yml` (DEV overlay; 40 lines; local `build:` + dev env)
+  - `docker/compose.test.yml` (TEST; 54 lines; Harbor image + test resource limits)
+  - `docker/compose.prod.yml` (PROD; 70 lines; Harbor image + prod resource limits + json-file logging)
 - DEV invocation:
   ```bash
   docker compose --env-file .env \
-    -f infra/docker/docker-compose.mj-agent.yml \
-    -f infra/docker/docker-compose.override.yml up -d
+    -f docker/compose.yaml \
+    -f docker/compose.override.yml up -d
   ```
 - TEST invocation: same chain with `test.yml` as 2nd `-f`
 - PROD invocation: same chain with `prod.yml`
@@ -93,7 +93,7 @@ Two compose quirks force explicit `-f` chain even for DEV:
 
 **Priority**：high
 
-**Statement**：Container images SHALL NOT bake secrets; orchestrator SHALL inject via `--env-file .env` (CLI substitution) + `env_file: ../../.env` (container env); `config/secrets.enc` SHALL NOT be decrypted inside image; postgres-init script SHALL safely handle passwords containing shell metacharacters.
+**Statement**：Container images SHALL NOT bake secrets; orchestrator SHALL inject via `--env-file .env` (CLI substitution) + `env_file: ../.env` (container env); `config/secrets.enc` SHALL NOT be decrypted inside image; postgres-init script SHALL safely handle passwords containing shell metacharacters.
 
 **Rationale**：
 
@@ -109,7 +109,7 @@ Secrets-in-image is a permanent leak (image layers immutable). Two-layer injecti
   - psql `\getenv` reads env var directly (no shell intermediary)
   - `format('%I %L', name, password)` SQL-escapes identifier + literal
   - `\gexec` executes the formatted DDL
-- Compose file `env_file: ../../.env` reference is relative to compose file dir (`infra/docker/`), so resolves to repo root `.env`
+- Compose file `env_file: ../.env` reference is relative to compose file dir (`docker/`), so resolves to repo root `.env`
 - DEV `override.yml` adds `MJ_CONFIG_PROFILE: dev` + `MJ_AGENT_LOG_LEVEL: debug` env (no secrets in YAML literal)
 
 **BDD Examples**：

@@ -61,11 +61,11 @@ Memory  : src/mj_agent/memory/checkpointer.py           (Phase 1 sub 1.A;
 CLI     : src/mj_agent/server/cli.py                    (typer; `mj-agent
           serve` / `mj-agent check`)
 Infra   : src/mj_agent/integrations/mj_system_db.py — psycopg pool, read-only
-          infra/docker/{Dockerfile, entrypoint.sh,           (Phase 1 sub
-          docker-compose.mj-agent.yml,                       1.H; E2;
-            docker-compose.override.yml,                     ADR-025
-            docker-compose.test.yml,                         multi-env
-            docker-compose.prod.yml,                         compose
+          docker/{Dockerfile, entrypoint.sh,                 (Phase 1 sub
+          compose.yaml,                                      1.H; E2;
+            compose.override.yml,                            ADR-025
+            compose.test.yml,                                multi-env
+            compose.prod.yml,                                compose
           README.md,                                         layering)
           postgres-init/01-bootstrap-mj-agent-memory.sh      (storage-stack
           }                                                   PR; auto-creates
@@ -135,29 +135,29 @@ uv run mypy src/mj_agent                   # type-check
 
 # Phase 1 sub 1.H — Docker (independent compose project; attaches
 # mj-system-backend-network for biz pg consumer access via analyst RO role)
-docker build -f infra/docker/Dockerfile -t mj-agent:0.1 .
+docker build -f docker/Dockerfile -t mj-agent:0.1 .
 docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 # Storage-stack — independent compose project (mj-agent + 自带 postgres + redis)
 # 4-file profile layering per ADR-026 (mirror mj-system v3.2.2). All 3 profiles
 # use explicit `-f base -f overlay` chain (override.yml auto-load doesn't apply
-# because compose files live in infra/docker/ subdir and base loaded via -f).
+# because compose files live in docker/ subdir and base loaded via -f).
 # `--env-file .env` is also required for the same reason: docker compose CLI
 # looks for .env in the project directory (= the directory of the first -f
-# file = infra/docker/), NOT the developer's cwd; without it the `${VAR}`
+# file = docker/), NOT the developer's cwd; without it the `${VAR}`
 # substitutions in compose YAML fall through to their `:-default` sentinels
 # and the postgres init script bakes a placeholder password into the volume.
 # Pre-req: mj-system 栈已 up (mj-system-backend-network + mj-postgres exist).
 #
 # DEV (本地)
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.override.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.override.yml up -d
 # TEST (192.168.0.179)
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.test.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.test.yml up -d
 # PROD (192.168.0.106)
-#   docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml \
-#                  -f infra/docker/docker-compose.prod.yml up -d
+#   docker compose --env-file .env -f docker/compose.yaml \
+#                  -f docker/compose.prod.yml up -d
 #
 # DGX 算力消费侧：DGX 不部署 mj-agent (用户决策；ADR-025 §D.2)。任一 profile 下
 # 在 .env 设 LLM_PROVIDER=local-openai-compat + LLM_BASE_URL=http://192.168.0.189:8000/v1
@@ -378,7 +378,7 @@ integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver
 ADR-026/027/028 (PR-Γ；ADR-025 拆分；2026-05-11)：
 - **ADR-026 Multi-Environment Compose Profile**：docker-compose 4-file 分层
   (base + override + test + prod)；compose project name 跨 profile 不变；
-  dev 也用显式 `-f base -f override` 因本仓 compose 在 `infra/docker/`
+  dev 也用显式 `-f base -f override` 因本仓 compose 在 `docker/`
   子目录 + `-f` 显式 base 时 auto-load 不生效（quirk）。
 - **ADR-027 LLM Provider Abstraction**：`make_llm()` 抽象为 provider 分支
   factory（`ark` 默认 + `local-openai-compat` for DGX-Spark vLLM/SGLang/

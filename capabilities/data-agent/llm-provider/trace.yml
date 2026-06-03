@@ -8,7 +8,7 @@ schema_version: "1.2"
 cross_capability_refs:
   - target: infrastructure.docker-compose
     direction: outbound
-    surface: "infra/docker/docker-compose.*.yml env_file + src/mj_agent/llm.py + src/mj_agent/config.py"
+    surface: "docker/compose.*.yml env_file + src/mj_agent/llm.py + src/mj_agent/config.py"
     rationale: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars injected per compose profile"
     impact: "compose profile changes affecting LLM env vars must sync with this capability's provider.contract.yml"
 

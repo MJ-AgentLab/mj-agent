@@ -142,7 +142,7 @@ uv run pytest tests/smoke -m smoke    # 需 ARK_API_KEY
 uv run pytest tests/contract -m contract
 uv run mj-agent check
 uv run langgraph dev                  # Studio H1/H2/H3/R1/R2 探针
-docker compose -f infra/docker/docker-compose.mj-agent.yml up -d / down
+docker compose -f docker/compose.yaml up -d / down
 
 ### 6.3 Stage 11 AI 自检 tie-in
 

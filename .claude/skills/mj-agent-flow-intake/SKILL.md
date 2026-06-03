@@ -110,7 +110,7 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 | **biz_catalog** | `src/mj_agent/biz_catalog/qcm_catalog.yaml` 镜像 | **High** + §3.1 必停 |
 | 跨边界 | mj-system biz pg consumer（ADR-008 / ADR-009 数据边界） | Medium 起；触红线 → High |
 | 跨边界 | mj-agent-postgres / mj-agent-redis 容器（storage stack） | Medium 起 |
-| infra | `infra/docker/` / `pyproject.toml` / `langgraph.json` | Low / Medium |
+| infra | `docker/` / `pyproject.toml` / `langgraph.json` | Low / Medium |
 | docs | `docs/` / `CLAUDE.md` / `INDEX.md` | Low（纯 docs）/ Medium（含 STANDARD/ADR） |
 
 ## Step 4: AC 可验证性（gate）

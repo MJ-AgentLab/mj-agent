@@ -28,7 +28,7 @@ _FEATURE_FILE = (
 # -------- Background --------
 
 @given(parsers.re(re.escape(
-    "mj-agent compose project lives at infra/docker/"
+    "mj-agent compose project lives at docker/"
 )))
 def compose_project_at_infra_docker() -> None:
     """Background — path is canonical per CLAUDE.md / ADR-026."""
@@ -79,8 +79,8 @@ def given_clean_docker() -> None:
 
 
 @when(parsers.re(re.escape(
-    "`docker compose --env-file .env -f infra/docker/docker-compose.mj-agent.yml "
-    "-f infra/docker/docker-compose.override.yml up -d` is invoked"
+    "`docker compose --env-file .env -f docker/compose.yaml "
+    "-f docker/compose.override.yml up -d` is invoked"
 )))
 def when_compose_up_invoked() -> None:
     pass
@@ -95,7 +95,7 @@ def then_three_services_healthy(seconds: int) -> None:
 
 
 @then(parsers.re(re.escape(
-    "mj-agent's `env_file: ../../.env` correctly injects MJ_AGENT_MEMORY_* into the container"
+    "mj-agent's `env_file: ../.env` correctly injects MJ_AGENT_MEMORY_* into the container"
 )))
 def then_env_file_injected() -> None:
     pass
