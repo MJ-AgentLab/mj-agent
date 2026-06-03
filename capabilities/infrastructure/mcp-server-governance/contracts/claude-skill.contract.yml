@@ -31,16 +31,16 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose
-    description_hash: sha256:4b29c1b0351b853f81168fef1468c9627f7b5febba873c3965724c0a7a9d7271
-    body_content_hash: sha256:cd912d6334aedfc781f8541a8995b0d3bf1e1754766a5a09f385e9a79f2b492e
-    frozen_at: 2026-05-22T09:25:41Z
+    description_hash: sha256:5ca1ff7b90b4313751219c2618c7371fd2f4aba30efce7cb19b76e9a7159cc6e
+    body_content_hash: sha256:5126e86b682e971eb1c4d9b35ad957eaa84364fa85da1ec1a7f1ccc3bea951fd
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
       - "## Workflow"
       - "## Step 0: cwd Check"
       - "## Step 1: Pre-check（compose up 前）"
-      - "## §Profile Matrix（PR-1 / ADR-025 4-file 分层）"
+      - "## §Profile Matrix（PR-1 / ADR-026 4-file 分层）"
       - "## Step 2: Action"
       - "## Step 3: Verify（up 后）"
       - "## §Troubleshooting"
@@ -55,8 +55,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
     description_hash: sha256:21bf582db6aca2c9f7a6d18a7e1e98efdd2b2935a6f233fcd7525006a7196b1f
-    body_content_hash: sha256:400ed7f615947e9a0750f6ee22538ae59e7406d473a49e74e191cd26054494d7
-    frozen_at: 2026-05-21T00:00:00Z
+    body_content_hash: sha256:7e1e482047fb1af1a4747abd35633788a21e4386da10ba18d42595dc2fb52ba7
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
@@ -73,9 +73,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-env-teardown/SKILL.md
     name: mj-agent-infra-env-teardown
-    description_hash: sha256:517cb109812c71cf9d6cd566f4c83879632fac4142bd7919c15f8ce36588f13a
-    body_content_hash: sha256:a530f378b755b2f4a5ff658da07ac5964770cf153fd329c6311aefdfa197d82f
-    frozen_at: 2026-05-21T00:00:00Z
+    description_hash: sha256:77ca5b0ca70dcd867846654ebd89bd043c50b150990b6e56a8759e70f78ec2cb
+    body_content_hash: sha256:4ed6c9e75db6b7f12e9cc722ab20f58f9155847aa2479c9ab5f3a1975980ccaf
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -90,9 +90,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
     name: mj-agent-infra-llm-endpoint-probe
-    description_hash: sha256:a0fee2691592f42c90cf7a551a20d63228963c85ffbb0442abeffe177ccc1a00
-    body_content_hash: sha256:13bae1340830caa6befa7cd83cb3d069d820f5f2c68749c6b80292b0b9f48ffa
-    frozen_at: 2026-05-21T00:00:00Z
+    description_hash: sha256:3822c2acaf89b3d4411208307086002ba46e35e7f91e3c646980f76aa0180f04
+    body_content_hash: sha256:68a81a4309beb4e164f7672d5e1bc612a417946dd9a672d250feeb0420d99d8b
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -108,8 +108,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-storage-stack/SKILL.md
     name: mj-agent-infra-storage-stack
     description_hash: sha256:720aee94177182bd87622d78531ed32e70ca3171e314dd45eb3050568a5f391b
-    body_content_hash: sha256:edb5e1237b971884a88d2c023cbe3cd26834a129a0f1c94a8cfc9fd693788ac9
-    frozen_at: 2026-05-22T09:25:41Z
+    body_content_hash: sha256:90a4353ca0bf5013ef0401c3d9090e13e05fa97abe764d7422e28c80994991b9
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -129,8 +129,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-studio-probe/SKILL.md
     name: mj-agent-infra-studio-probe
     description_hash: sha256:f9c95010bd4bcd0a5da79d59d825e7139301fb98374407b65fa64940b6069572
-    body_content_hash: sha256:32dc9a4c1a23ea184dafd1f5b0421a60dbafbd147733660084b8596a1ab88a9b
-    frozen_at: 2026-05-21T00:00:00Z
+    body_content_hash: sha256:45faa816e67a9c2690c58e1359f815236005b90172c657f5f9f27a4404934723
+    frozen_at: 2026-06-03T02:59:59Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"

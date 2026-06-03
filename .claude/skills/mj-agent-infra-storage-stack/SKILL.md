@@ -217,7 +217,7 @@ per CLAUDE.md "Storage" 段：
 
 任一触发 → 开 issue / PR 设计 → /mj-agent-flow-implement Step 3a wire 客户端 + 配置加 .env 字段（`MJ_AGENT_REDIS_HOST/PORT/PASSWORD`，已在 .env.example 占位）+ src/mj_agent/integrations/ 加 redis client。
 
-> **Profile 注解（ADR-025）**：mj-agent-postgres + mj-agent-redis 在所有 4 profile (dev/test/prod) 下都是 mj-agent-owned；本 skill 操作与 profile **无关**（不需要按 profile 切 -f 链）— 仅 docker-compose lifecycle 命令需要按 profile 选 -f 链（详见 /mj-agent-infra-docker-compose）。DGX 不部署 mj-agent，故无 DGX-specific storage 操作。
+> **Profile 注解（ADR-026 + ADR-027）**：mj-agent-postgres + mj-agent-redis 在所有 4 profile (dev/test/prod) 下都是 mj-agent-owned；本 skill 操作与 profile **无关**（不需要按 profile 切 -f 链）— 仅 docker-compose lifecycle 命令需要按 profile 选 -f 链（详见 /mj-agent-infra-docker-compose）。DGX 不部署 mj-agent，故无 DGX-specific storage 操作。
 
 ## Storage-specific Troubleshooting
 
@@ -227,7 +227,7 @@ per CLAUDE.md "Storage" 段：
 | `mj-agent: connection refused on mj-agent-postgres:5432` | mj-agent-postgres 没起 / 没 healthy → /mj-agent-infra-docker-compose ps 检查 |
 | `psycopg.OperationalError: SSL connection has been closed` | mj-agent-postgres OOM / 重启 → docker logs 看 / 增 host memory |
 | volume 数据 corrupt | `down -v` + 重 up（**HITL**：丢数据）；推荐用 `/mj-agent-infra-env-teardown` Level 2 走 H3 hard-confirm；prod 场景走 vol snapshot 还原 |
-| DGX-mode session 报 connection refused 但 mj-agent-postgres 健康 | DGX 不部署 mj-agent；用户实际跑的是 dev/test/prod profile + LLM_BASE_URL 指向 DGX vLLM。storage 与 DGX 无关；此处 connection refused 是 mj-system biz pg 路径问题（per ADR-025 §D.2）→ /mj-agent-infra-llm-endpoint-probe 检查 LLM endpoint，或 /mj-agent-infra-docker-compose ps 检查 mj-system biz pg |
+| DGX-mode session 报 connection refused 但 mj-agent-postgres 健康 | DGX 不部署 mj-agent；用户实际跑的是 dev/test/prod profile + LLM_BASE_URL 指向 DGX vLLM。storage 与 DGX 无关；此处 connection refused 是 mj-system biz pg 路径问题（per ADR-027 §D.2）→ /mj-agent-infra-llm-endpoint-probe 检查 LLM endpoint，或 /mj-agent-infra-docker-compose ps 检查 mj-system biz pg |
 
 ## What This Skill DOES NOT DO
 

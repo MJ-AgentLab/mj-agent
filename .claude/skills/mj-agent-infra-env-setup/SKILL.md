@@ -100,11 +100,11 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 |---|---|---|
 | `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` | §1 | biz pg analyst RO（ADR-006 / ADR-009） |
 | `ARK_API_KEY` | §2 | Volcengine Ark；`LLM_PROVIDER=ark` 必填 |
-| `LLM_BASE_URL` / `LLM_API_KEY` | §2 | `LLM_PROVIDER=local-openai-compat` 必填（DGX-Spark vLLM/SGLang/Ollama；ADR-025 PR-2） |
+| `LLM_BASE_URL` / `LLM_API_KEY` | §2 | `LLM_PROVIDER=local-openai-compat` 必填（DGX-Spark vLLM/SGLang/Ollama；ADR-027 PR-2） |
 | `LANGSMITH_API_KEY` | §3 | LangSmith trace（可选；详见 dev_studio_walkthrough §5） |
 | `MJ_AGENT_MEMORY_PASSWORD` | §5 | mj-agent-postgres `mj_agent_app` role RW（storage-stack PR；postgres-init 用此值建 role） |
 | `MJ_AGENT_REDIS_PASSWORD` | §5b | future use；container ready 但无 client wired |
-| `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`（**5 个**） | §8 | ssh-manager MCP server（ADR-025 PR-3；9 entries 用 5 unique passwords：lan + wan 同主机共密码） |
+| `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`（**5 个**） | §8 | ssh-manager MCP server（ADR-028 PR-3；9 entries 用 5 unique passwords：lan + wan 同主机共密码） |
 | `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL`（**10 个**） | §9 | `.mcp.json` 包装脚本的连接 URL；WAN 必填（FRP 隧道无 fallback）；LAN 可选（有 placeholder） |
 
 > **失败模式**：
@@ -114,7 +114,7 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 
 ### Step 3 — `.env` 完整性核对
 
-> **LLM provider 分支**（PR-2 / ADR-025）：mj-agent 现支持两个 LLM provider，secret/config 必填字段不同：
+> **LLM provider 分支**（PR-2 / ADR-027）：mj-agent 现支持两个 LLM provider，secret/config 必填字段不同：
 > - `LLM_PROVIDER=ark`（默认）→ 必须 `ARK_API_KEY` 非空（或新通用 `LLM_API_KEY`）
 > - `LLM_PROVIDER=local-openai-compat`（DGX-Spark 本地 vLLM/SGLang/Ollama）→ 必须 `LLM_BASE_URL` 非空；`LLM_API_KEY` 可填 `EMPTY`
 > - 切换到 local-openai-compat 后，**必须**跑 `/mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康
