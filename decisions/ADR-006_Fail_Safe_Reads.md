@@ -24,7 +24,7 @@ mj-agent 面向内部分析师，访问上游业务系统 biz 域的汇总数据
 
 ## Decision
 
-采用**四层防御**体系（实现了 [[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]] 的 P3 工具中介原则）：
+采用**四层防御**体系（实现了 [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]] 的 P3 工具中介原则）：
 
 | 层 | 机制 | 实现位置 |
 |---|---|---|
@@ -60,7 +60,7 @@ mj-agent 面向内部分析师，访问上游业务系统 biz 域的汇总数据
 
 ## References
 
-- [[ADR]_000_Data_LLM_Boundary_Principles|ADR-000]]（P3 工具中介）
-- [[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（L2/L4 白名单的数据范围由 ADR-009 定义）
+- [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P3 工具中介）
+- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（L2/L4 白名单的数据范围由 ADR-009 定义）
 - `src/mj_agent/tools/sql/guardrail.py`、`execute.py`、`introspect.py`
 - `src/mj_agent/integrations/mj_system_db.py`

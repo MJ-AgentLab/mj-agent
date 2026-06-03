@@ -119,7 +119,7 @@ PR 校验门禁拆分（v2.0 → v2.1 增量）：
 
 `.claude/skills/<name>/` 中 `<name>` 强制使用 `mj-agent-<group>-<verb>` 三段式：
 
-- `<group>`：5 类（详见 [[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）
+- `<group>`：5 类（详见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）
   - `flow`（编排 stage 0/3/4/8/9/10/11/15/17，~9 skills）
   - `git`（编排 stage 1/2/12/13/14/16/17，~9 skills）
   - `doc`（doc 创建 / 校验 / 同步 / 迁移，~6 skills）
@@ -250,11 +250,11 @@ flow + git family in-tree（与项目流程紧耦合）；doc + runtime + infra 
 - 同期 Phase A 后续 PR：
   - PR-A2：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] + [[[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]]
   - PR-A3：3 模板（RUNBOOK / SPEC / HITL_STAGE）
-- Phase B 起首：[[[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + git family 5 P0 skills
+- Phase B 起首：[[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + git family 5 P0 skills
 - 关联现有 ADR：
-  - [[[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] —— 版本演进 + archive 工作流；本 v2.1 升级延迟 promote 即此模式变体
-  - [[[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] —— v1.1 → v2.0 双轨决策；本 v2.1 在其上加 Track C
-  - [[[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] —— in-tree vs marketplace SKILL schema 分离；本 v2.1 §3.10 / §7.7 A12 直接引用
+  - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] —— 版本演进 + archive 工作流；本 v2.1 升级延迟 promote 即此模式变体
+  - [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]] —— v1.1 → v2.0 双轨决策；本 v2.1 在其上加 Track C
+  - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] —— in-tree vs marketplace SKILL schema 分离；本 v2.1 §3.10 / §7.7 A12 直接引用
 - 上游派生源（mj-system v5.0+）：
   - `mj-system/docs/rule/[STANDARD]_AI_Engineering_Execution_HITL_Prompt.md`（17-stage HITL 闭环）
   - `mj-system/docs/rule/[STANDARD]_Documentation_Management_Framework.md` v5.2（doc 治理框架；mj-agent v1.1 / v2.0 间接派生源）

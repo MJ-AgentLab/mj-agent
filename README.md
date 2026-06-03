@@ -53,9 +53,9 @@ powershell -ExecutionPolicy Bypass -File .\mj-agent-clone-bare.ps1 `
 | 依赖管理 | uv | latest | [astral-sh/uv](https://github.com/astral-sh/uv) |
 | Agent 框架 | LangChain + LangGraph | 1.x / 1.1.8 | [CLAUDE.md §Architecture](./CLAUDE.md) |
 | 前端 UI | Chainlit | latest | [src/mj_agent/ui.py](./src/mj_agent/ui.py) |
-| 状态存储 | PostgreSQL（AsyncPostgresSaver） | 15+ | [ADR-006](./docs/adr/[ADR]_006_Fail_Safe_Reads.md) |
-| 容器化 | Docker Compose（4-file profile） | latest | [ADR-026](./docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md) |
-| LLM provider | Volcengine Ark / local-openai-compat | DeepSeek V3 / vLLM / SGLang / Ollama | [ADR-027](./docs/adr/[ADR]_027_LLM_Provider_Abstraction.md) |
+| 状态存储 | PostgreSQL（AsyncPostgresSaver） | 15+ | [ADR-006](./decisions/ADR-006_Fail_Safe_Reads.md) |
+| 容器化 | Docker Compose（4-file profile） | latest | [ADR-026](./decisions/ADR-026_Multi_Environment_Compose_Profile.md) |
+| LLM provider | Volcengine Ark / local-openai-compat | DeepSeek V3 / vLLM / SGLang / Ollama | [ADR-027](./decisions/ADR-027_LLM_Provider_Abstraction.md) |
 
 ## 前置条件
 
@@ -100,7 +100,7 @@ uv run mypy src/mj_agent                # Type-check（strict）
 
 ## LLM provider
 
-mj-agent 通过 `LLM_PROVIDER` 支持两种 provider（[ADR-027](./docs/adr/[ADR]_027_LLM_Provider_Abstraction.md)；DGX 不是部署 profile，仅作为 LLM 端点供应方）：
+mj-agent 通过 `LLM_PROVIDER` 支持两种 provider（[ADR-027](./decisions/ADR-027_LLM_Provider_Abstraction.md)；DGX 不是部署 profile，仅作为 LLM 端点供应方）：
 
 | Provider | 端点 | 用途 |
 |---|---|---|
@@ -213,7 +213,7 @@ mj-agent 仅访问 上游业务系统 业务指标域：
 <details>
 <summary><strong>Docker compose 起不来 / mj-system-backend-network 不存在</strong></summary>
 
-mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [docker/README.md](./docker/README.md) + [ADR-008](./docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md)。
+mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [docker/README.md](./docker/README.md) + [ADR-008](./decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md)。
 
 </details>
 

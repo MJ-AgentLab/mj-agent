@@ -82,7 +82,7 @@ Evidence chain (3 source triangulation):
   - `sqlglot_parse_failed` graceful fallback: L102 + L106
 - `tests/unit/test_precheck.py` — 123 lines / 4 classes / 13 tests (3 + 5 + 4 + 1) — empirical pass rate source (100% rule-ID coverage)
 - `policies/data-boundary.md` — 数据-LLM 三原则 + 4 项必停 governance
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md` — 4-layer defense origin (L1b sqlglot AST is layer 2 per ADR-006 §Component judge rule mirror)
+- `decisions/ADR-006_Fail_Safe_Reads.md` — 4-layer defense origin (L1b sqlglot AST is layer 2 per ADR-006 §Component judge rule mirror)
 
 ## §6 Forward
 

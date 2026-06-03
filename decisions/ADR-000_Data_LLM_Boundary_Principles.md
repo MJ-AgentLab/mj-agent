@@ -56,7 +56,7 @@ biz 域数据归属公司下游客户，受保密协议约束（但不含 PII）
 
 ## References
 
-- 实现：[[ADR]_006_Fail_Safe_Reads|ADR-006]]（P3 工具中介的数据库侧强制）
+- 实现：[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（P3 工具中介的数据库侧强制）
 - 实现（Phase 1）：ADR-012 Aggregate-first Analysis Loop（P1 落地机制）
 - 实现（Phase 3）：ADR-013 Generative UI with Data Handle Pattern（P2 落地机制）
 - 实现（Phase 1+2）：ADR-014 Customer Data Anonymization（P1/P2 补强）

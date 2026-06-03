@@ -89,7 +89,7 @@ aliases:
 | **plugin loader 边界尊重**（v2.1 新增） | Track C 资产由 Claude Code 主进程 load，不经 mj-agent Python loader；§7.5 frontmatter strip 契约对其无效；Track C SKILL 仅用 ADR-013 native 2 字段 schema |
 | **Active canonical 路径稳定**（v2.2 新增） | Active 文件名默认无 `_vX.Y` 后缀（version 仅在 frontmatter）；legacy 反向必带后缀；drop-suffix rename 视为 rule application（非 §5.9 #4 改名 trigger）；详见 §4.4 + ADR-018 |
 
-详见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Context 与 [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]] §Context。
+详见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Context 与 [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]] §Context。
 
 ---
 
@@ -278,7 +278,7 @@ docs/rule/
 
 ### 3.10 Engineering-workflow `[SKILL]` 治理（v2.1 新增）
 
-> **scope**：仅治 `.claude/skills/<name>/SKILL.md`（in-tree 工程流程技能）。**不**治 `src/mj_agent/skills/<name>/SKILL.md`（运行时；归 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2）。**不**治 marketplace plugin SKILL.md（出 governance；详见 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]）。
+> **scope**：仅治 `.claude/skills/<name>/SKILL.md`（in-tree 工程流程技能）。**不**治 `src/mj_agent/skills/<name>/SKILL.md`（运行时；归 [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2）。**不**治 marketplace plugin SKILL.md（出 governance；详见 [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]）。
 
 #### 3.10.1 Frontmatter schema（ADR-013 native）
 
@@ -289,7 +289,7 @@ description: <长 description；含 "Make sure to use this skill whenever..." �
 ---
 ```
 
-**仅 2 字段**。不引入 Agent_Side §2 的 13 字段。理由见 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + 本框架 §1 plugin loader 边界尊重原则。
+**仅 2 字段**。不引入 Agent_Side §2 的 13 字段。理由见 [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + 本框架 §1 plugin loader 边界尊重原则。
 
 > **A12 阻塞门禁**：`description` ≥ 200 chars，含正向触发短语 + `Do not use for:` 反向触发段（成熟 marketplace plugin 实践）。校验由 Phase C+ engineering-workflow 子规范细化。
 
@@ -311,7 +311,7 @@ description: <长 description；含 "Make sure to use this skill whenever..." �
 
 强制前缀 `mj-agent-<group>-<verb>`：
 
-- `<group>`：`flow` / `git` / `doc` / `runtime` / `infra`（5 类，详见 [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）
+- `<group>`：`flow` / `git` / `doc` / `runtime` / `infra`（5 类，详见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）
 - `<verb>`：动作短词（`intake` / `commit` / `validate` / `studio-probe` 等）
 
 slash command 自然成形 `/mj-agent-<group>-<verb>`。
@@ -349,7 +349,7 @@ track: code | agent | engineering-workflow | shared
 | **`engineering-workflow`**（v2.1 新增） | Track C — 工程流程文档（`.claude/` + HITL_Prompt + 工程流程 STANDARD） | 见 §3 类型表（physical 路径在 `.claude/**` 或 `docs/rule/[STANDARD]_*_HITL_Prompt*.md` / `_AI_Engineering_*.md` / `_Claude_Code_Settings_*.md` / `_MCP_Server_Governance_*.md` 时强制） |
 | `shared` | 跨轨 — 多 track reviewer 都需介入 | **过渡期**默认值；Phase 1 末收紧为 explicit required（沿用 v2.0） |
 
-边界 artifact 归属规则见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4。
+边界 artifact 归属规则见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4。
 
 > **path-to-track 决策树**（v2.1 引入，避免 PR 反复争议；v2.2 加 0 条覆盖项目根 markdown）：
 > 0. 路径是项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
@@ -398,7 +398,7 @@ mj-agent 当前所有 supersedes 都是 list（含单 string），与本规则�
 
 ### 4.4 Active canonical 路径稳定原则（v2.2 新增；ADR-018 决议）
 
-> **Partial supersede** [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §4.2 filename rule + §5.6.2 file-move-step。
+> **Partial supersede** [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §4.2 filename rule + §5.6.2 file-move-step。
 
 #### 4.4.1 主条款
 
@@ -420,13 +420,13 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 #### 4.4.5 Cross-ref
 
-[[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（决策记录 + Alternatives 4 拒）；[[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6（partial supersede）；[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] §5.9（trigger #4 改名）。
+[[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（决策记录 + Alternatives 4 拒）；[[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6（partial supersede）；[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]] §5.9（trigger #4 改名）。
 
 ---
 
 ## 5. 状态与生命周期
 
-> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
+> 沿用 [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0|v2.0]] §5 全部规则（含 §5.6 Major.Minor 版本演进 + archive 流程；详见 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]）。
 
 ### 5.7 双轨语境下的 archive
 
@@ -442,7 +442,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 ### 5.9 归档触发判定（v2.1 in-place 加；ADR-017 决议）
 
-> [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 仅给 HITL 触发的文字描述，缺量化标准；本节落显式判定。
+> [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 仅给 HITL 触发的文字描述，缺量化标准；本节落显式判定。
 
 | 触发归档？ | 场景 | 说明 |
 |---|---|---|
@@ -456,7 +456,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 **反例边界**：单段加新内容（如本节加 §5.9）属字段补充；§3 加新类目（如 v2.1 加 SKILL track C）属字段补充；§5 加新生命周期阶段属字段补充。仅当**整文档结构** / **规则枚举集合** / **filename / scope** 发生变化时才升级触发。
 
-**HITL 入口**：本节判定结果直接喂给 [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 HITL trigger；reviewer 在 PR review 阶段对照本节 5 类显式 cite。
+**HITL 入口**：本节判定结果直接喂给 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1 HITL trigger；reviewer 在 PR review 阶段对照本节 5 类显式 cite。
 
 **Cross-ref**：[[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（决策记录 + Alternatives）；ADR-011 §5.6（Living/Frozen + filename rule，§4.2 + §5.6.2 已被 ADR-018 partial supersede）；ADR-018 §Decision 子条款 §4.4.4（rename 解读）。
 
@@ -557,7 +557,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 - **2026-05-18** — 首次 retroactive：**cross-repo decoupling cleanup** 任务（PR [#118](https://github.com/MJ-AgentLab/mj-agent/pull/118) / [#121](https://github.com/MJ-AgentLab/mj-agent/pull/121) / [#122](https://github.com/MJ-AgentLab/mj-agent/pull/122) / [#123](https://github.com/MJ-AgentLab/mj-agent/pull/123) / [#124](https://github.com/MJ-AgentLab/mj-agent/pull/124)，2026-05-11 02:44-04:47Z，5 PR / 2h 03min / 85 文件 / +1755/-462 lines）实施期间未落盘 INTAKE/PLAN，事后补 [[[INTAKE]_cross_repo_decoupling_cleanup|[INTAKE]_cross_repo_decoupling_cleanup]] + [[[PLAN]_cross_repo_decoupling_cleanup|[PLAN]_cross_repo_decoupling_cleanup]]（均 `state: completed` + `retroactive: true`）。凭证密度评估：memory `project_cross_repo_decoupling_completion.md` + CLAUDE.md "项目起源说明（2026-05-11 update）" 段 + 5 PR description 完整 → 重建可信。流程债根因：实施跳过 Stage 0 Intake 落盘判定（[[../../.claude/skills/mj-agent-flow-intake/SKILL]] §2.1 6 项触发未识别）+ Stage 4 Plan body 落盘漏（HITL_Prompt §3.2 5 PR 链不豁免）；mj-agent 已通过 PR #163 PreToolUse hook 防 G1/G2 漏，工作流 SKILL 加硬性 gate（参考 hook-based defense pattern）留独立 follow-up 评估。
 
-**Cross-ref**：[[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（working doc 4 态机框架决策；archived per PR #122，wikilink 由 [[../adr/[ADR]_020_Archive_Auto_Discovery|ADR-020]] auto-discover 解析）；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.2 Stage 4 豁免 / §4.15 Rule 12 PR-state 联动；[[../../.claude/skills/mj-agent-flow-intake/SKILL]] §2.1 落盘判定。
+**Cross-ref**：[[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（working doc 4 态机框架决策；archived per PR #122，wikilink 由 [[decisions/ADR-020_Archive_Auto_Discovery|ADR-020]] auto-discover 解析）；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.2 Stage 4 豁免 / §4.15 Rule 12 PR-state 联动；[[../../.claude/skills/mj-agent-flow-intake/SKILL]] §2.1 落盘判定。
 
 ---
 
@@ -576,7 +576,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 | **类 1 — 全局高频标准** | trio（Meta / Code_Side / Agent_Side）+ HITL_Prompt + Commit_Message + GitHub_Markdown + 跨轨元规则 ADR（如 011 / 012 / 013 / 014 / 017 / 018） |
 | **类 2 — 高频运行信息** | 入口命令矩阵（`uv run mj-agent serve` / `check` / `langgraph dev`）+ 端口规则（8000 Chainlit / 2024 LangGraph Studio）+ 关键环境变量（`ARK_API_KEY` / `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`） |
 | **类 3 — 项目目录入口** | `docs/INDEX.md` + 核心运行时模块位置（`src/mj_agent/{agent,llm,config}.py` + `tools/` / `skills/` / `prompts/`） |
-| **类 4（v2.2 mj-agent 特化加） — runtime 语义** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[../adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（regex guardrail / sqlglot precheck / SKILL semantics / read-only conn + GRANT；[[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]]） |
+| **类 4（v2.2 mj-agent 特化加） — runtime 语义** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（regex guardrail / sqlglot precheck / SKILL semantics / read-only conn + GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI；[[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]]） |
 
 其余文档默认通过按需读取获取；**不要求**把全部细节缓存进 `CLAUDE.md`。
 
@@ -584,7 +584,7 @@ drop `_vX.Y` 后缀的 rename 视为 **rule application**（首次应用 §4.4 �
 
 #### 6.4.1 CLAUDE.md 三轨分段（v2.1 升级；v2.0 双轨分段）
 
-CLAUDE.md 内部按 track 分段，元规则放最顶。落地结构（详见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]）：
+CLAUDE.md 内部按 track 分段，元规则放最顶。落地结构（详见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]）：
 
 - 顶部 **元规则段**：Meta_Framework v2.x 自身 + `track: shared` 的 ADR（如 ADR-011 / ADR-012 / ADR-013 / ADR-014 / ADR-017 / ADR-018）
 - `## Code-Side Documentation`：所属 allowlist 中 `track: code` 的项；Phase 1+ 由 `mj-agent-doc-sync`（in-tree workflow skill，PR-C1）维护
@@ -668,7 +668,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 ### 8.1 v2.0 → v2.1 → v2.2 升级路径
 
-> 详见 §5.8 + §5.10 + [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
+> 详见 §5.8 + §5.10 + [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Decision + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
 
 1. **Phase A**（PR-A1）：v2.1 trio + ADR-014 + CLAUDE.md 三段化 以 `state: draft` 落地；v2.0 trio 保持 `state: active`
 2. **Phase A 续作**（PR-A2 / PR-A3）：HITL_Prompt v1.0 + ADR-015 + 模板补缺（RUNBOOK / SPEC / HITL_STAGE）
@@ -713,7 +713,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
    - 开发 / 部署 / 运维（影响服务可用性）→ `code`
    - **开发者使用 Claude Code 执行任务的工作流**（HITL 流程、技能编排、settings、MCP 配置）→ `engineering-workflow`（v2.1 新增）
    - 跨轨 / 模糊 → `shared`
-4. **边界规则**：见 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4 边界 artifact 归属表
+4. **边界规则**：见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4 边界 artifact 归属表
 
 ### 10.7 选择文件名（v2.2 新增；§4.4 落地清单）
 
@@ -742,7 +742,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
 
 - 派生自：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]
 - 决策记录：
-  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.0 → v2.1 三轨）
+  - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v2.0 → v2.1 三轨）
   - [[../adr/[ADR]_017_Archive_Trigger_Quantification|ADR-017]]（v2.1 §5.9 trigger 量化）
   - [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]（v2.2 §4.4 active path stability；partial supersede ADR-011 §4.2 + §5.6.2）
 - 同期子框架：
@@ -754,7 +754,7 @@ PR 触发 §6.4 allowlist 同步检查时，按文档自身 `track` 落入对应
   - `[[STANDARD]_MJ_Agent_MCP_Server_Governance_v1.0]]`（A14 阈值）
 - 内部沉淀：mj-agent in-tree workflow skills（5 family / 32 active）+ HITL_Prompt v1.0 17-stage 闭环 + 历史归档框架（v1.x → v2.x trio 演进；详见 `docs/archive/rule/`）
 - 关联 ADR：
-  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] — 版本演进 + archive 工作流；§4.2 + §5.6.2 已被 ADR-018 partial supersede；§5.6.1 已被 ADR-017 §5.9 细化；§5.6.3 / §5.6.4 保留
-  - [[../adr/[ADR]_012_Two_Track_Documentation_Governance|ADR-012]] — v1.1 → v2.0 双轨决策；本 v2.1 在其上加 Track C
-  - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — in-tree vs marketplace SKILL schema 分离；本 v2.1 §3.10 / §7.7 A12 直接引用
+  - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] — 版本演进 + archive 工作流；§4.2 + §5.6.2 已被 ADR-018 partial supersede；§5.6.1 已被 ADR-017 §5.9 细化；§5.6.3 / §5.6.4 保留
+  - [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]] — v1.1 → v2.0 双轨决策；本 v2.1 在其上加 Track C
+  - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — in-tree vs marketplace SKILL schema 分离；本 v2.1 §3.10 / §7.7 A12 直接引用
 - 行业精度：Hugging Face / MLflow / LangChain Hub / Anthropic Skills 仓 / DSPy / Semantic Kernel / Twelve-Factor / NIST AI BoM（沿用 v2.0）；v2.1 新增：in-tree workflow skill 编排 + HITL_Prompt v1.0 17-stage 闭环；v2.2 新增：active path stability 实践（多 active 主版本并存例外保留 `_vX.Y` 后缀）

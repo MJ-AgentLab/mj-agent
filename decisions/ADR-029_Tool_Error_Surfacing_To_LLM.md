@@ -21,7 +21,7 @@ tags:
 
 ## Context
 
-mj-agent 的 SQL 工具链（`src/mj_agent/tools/sql/execute.py` + `tools/sql/introspect.py`）按 [[[ADR]_006_Fail_Safe_Reads|ADR-006]] §L1（regex guardrail）/ §L1b（sqlglot 精检 precheck）/ §L3（read-only cursor + statement_timeout）分层拒绝越界 SQL：
+mj-agent 的 SQL 工具链（`src/mj_agent/tools/sql/execute.py` + `tools/sql/introspect.py`）按 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L1（regex guardrail）/ §L1b（sqlglot 精检 precheck）/ §L3（read-only cursor + statement_timeout）分层拒绝越界 SQL：
 
 | 来源 | 异常 | 出现位置 |
 |---|---|---|
@@ -50,7 +50,7 @@ def handle_sql_tool_errors(request, handler):
         return _convert(request, exc)  # → ToolMessage(content="工具...", tool_call_id=...)
 ```
 
-同模块同时提供 async 变体 `ahandle_sql_tool_errors`，覆盖 Chainlit `agraph.astream` 路径（参 [[[ADR]_006_Fail_Safe_Reads|ADR-006]] §L3 async bugfix 同源约束）。
+同模块同时提供 async 变体 `ahandle_sql_tool_errors`，覆盖 Chainlit `agraph.astream` 路径（参 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L3 async bugfix 同源约束）。
 
 `make_graph()` 在 `create_agent` kwargs 中追加 `middleware=[handle_sql_tool_errors]`（sync 和 async 均挂载——LangChain `wrap_tool_call` 装饰器内部按 handler 协程性自动派发）。
 
@@ -69,7 +69,7 @@ def handle_sql_tool_errors(request, handler):
 - **正面**：
   - 前端 hang 根因消除——任何工具异常都会产生一条 `ToolMessage`，graph 推进继续
   - LLM 可在下一轮 turn 读到具体拒绝原因（"require_time_range: ..."），按系统提示词的"加 `WHERE data_date >= ...`" 模板自纠正
-  - 与现有四层 guardrail（[[[ADR]_006_Fail_Safe_Reads|ADR-006]]）正交——L1/L1b/L3 rule 文本不动，只改"如何把拒绝告诉 LLM"
+  - 与现有四层 guardrail（[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）正交——L1/L1b/L3 rule 文本不动，只改"如何把拒绝告诉 LLM"
 - **负面**：
   - 多一层间接性：tool 报错后 LLM 看到的是中间件包装过的中文文本，不是原始 traceback；调试需在 `docker logs` 或 LangSmith trace 看原始异常
   - 中文错误前缀进入 LLM 上下文意味着多语言场景下需做翻译适配（当前 mj-agent 单语 zh-CN，不阻塞）
@@ -93,7 +93,7 @@ def handle_sql_tool_errors(request, handler):
 
 未采纳原因：
 - 重新实现 `create_agent` 已经做好的 model loop / system prompt / state 管理
-- 与 [[[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]] "skill body 经 `_build_system_prompt` 注入 create_agent" 的装配模型冲突
+- 与 [[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]] "skill body 经 `_build_system_prompt` 注入 create_agent" 的装配模型冲突
 
 ### 方案 C — 在 `agent.py` 用 `try/except` 包装每个 tool 注册
 
@@ -105,8 +105,8 @@ def handle_sql_tool_errors(request, handler):
 
 ## References
 
-- [[[ADR]_006_Fail_Safe_Reads|ADR-006]] — L1/L1b/L3 防御层，本 ADR 决定如何把这些层的 reject 告诉 LLM
-- [[[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]] — `create_agent` 装配模型为何不绕开
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] — L1/L1b/L3 防御层，本 ADR 决定如何把这些层的 reject 告诉 LLM
+- [[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]] — `create_agent` 装配模型为何不绕开
 - LangChain 1.2.x 文档：`langchain.agents.middleware.wrap_tool_call`（`/websites/langchain_oss_python_langchain` via Context7）
 - LangGraph `ToolCallRequest` 数据结构：`.venv/Lib/site-packages/langgraph/prebuilt/tool_node.py:130`
 - 触发本 ADR 的 frontend hang 排查：`develop` branch 2026-05-12 排查日志 / `docker logs mj-agent` 复现 traceback

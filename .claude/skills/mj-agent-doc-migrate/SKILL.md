@@ -22,8 +22,8 @@ description: This skill executes the Major.Minor version archive workflow for mj
    - PR-B3c-promote 是首例（v2.0 trio → archive；v2.1 trio + HITL_Prompt + ADR-014/015/016 → active）
 
 **Reference**:
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.2 标准 archive workflow
-- [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first 变体
+- [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.2 标准 archive workflow
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first 变体
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.6 + §5.8
 
 > mj-agent 已有 **3 次** archive workflow 先例：
@@ -233,8 +233,8 @@ uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALU
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1（PR review HITL trigger）+ §5.6.2（文件操作步骤）+ §5.6.3（archive 目录语义）+ §5.6.4（living vs frozen 引用）
-- [[../../../docs/adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3（skeleton-first 延迟 promote 变体）
+- [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1（PR review HITL trigger）+ §5.6.2（文件操作步骤）+ §5.6.3（archive 目录语义）+ §5.6.4（living vs frozen 引用）
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3（skeleton-first 延迟 promote 变体）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.6 + §5.7（双轨/三轨 archive 不变）+ §5.8（v2.0 → v2.1 升级路径，本 skill PR-B3c-promote 实例）
 - mj-agent 历史 archive 实例：
   - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md`（v1.0 → v1.1，2026-04）

@@ -25,7 +25,7 @@ tags:
 
 ### 空白 1：命名空间 collision 风险
 
-mj-agent 仓内同时存在三种 SKILL 实体（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §决策点 1-3 已定边界）：
+mj-agent 仓内同时存在三种 SKILL 实体（[[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §决策点 1-3 已定边界）：
 
 - in-source（runtime）：`src/mj_agent/skills/<name>/SKILL.md`，无前缀（如 `biz-domain-context`）
 - in-tree（workflow，本 ADR 引入）：`.claude/skills/<name>/SKILL.md`
@@ -246,8 +246,8 @@ deprecate / sunset 阈值按 family 不同（flow/git 3 月，runtime/infra 12 �
 - 直接前置：
   - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
   - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §5（32 skills hint matrix）
-  - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 边界）
-  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 5（命名空间初步）
+  - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 边界）
+  - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 5（命名空间初步）
   - [[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
 - 同期落地（PR-B1，本 PR）：
   - 5 P0 git skills：`.claude/skills/mj-agent-git-{issue,branch,commit,push,pr}/SKILL.md`

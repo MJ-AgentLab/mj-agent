@@ -142,8 +142,8 @@ docker images | grep "^mj-agent\s"
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
-- [[../../../docs/adr/[ADR]_026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
+- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
 - [[../../../docker/compose.yaml|compose.yaml]] / `.override.yml` / `.test.yml` / `.prod.yml`
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1（破坏性操作必触 HITL）+ §4.15 Stage 17 post-merge cleanup
 - mj-system upstream `.claude/skills/mj-sys-ops-env-teardown/SKILL.md`（直接派生源；mj-agent 适配 3 服务栈 + 4 profile）

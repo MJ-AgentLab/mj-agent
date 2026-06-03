@@ -82,9 +82,9 @@ requirements:
         - "Given L1 guardrail raises ValueError / When wrapped by handle_sql_tool_errors / Then middleware returns ToolMessage with content prefixed by '工具调用未通过校验' and preserved tool_call_id"
 
 related_decisions:
-  - docs/adr/[ADR]_006_Fail_Safe_Reads.md          # 4-layer defense origin (Phase M5 → decisions/ADR-006_*.md)
-  - docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md
-  - docs/adr/[ADR]_029_Tool_Error_Surfacing_To_LLM.md
+  - decisions/ADR-006_Fail_Safe_Reads.md          # 4-layer defense origin
+  - decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md
+  - decisions/ADR-029_Tool_Error_Surfacing_To_LLM.md
   - decisions/ADR-031_Spec_Anchored_Refactor.md    # M1 framework
 
 cross_capability_refs:                # see trace.yml for full chain

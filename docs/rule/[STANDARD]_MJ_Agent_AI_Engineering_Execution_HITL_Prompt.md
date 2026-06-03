@@ -26,7 +26,7 @@ supersedes:
 
 # mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.1
 
-> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
+> **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
 > **适用范围**：mj-agent 仓中 AI Agent / Claude Code 从任务准入到合并收尾的全流程
 > **目标受众**：开发者 / 项目负责人 / Claude Code AI Agent
 
@@ -157,7 +157,7 @@ Fallback:
 - 如果 skill 不可用，按本 prompt 的 PR 流程手动执行
 ```
 
-> **mj-agent 命名空间约定**：所有 in-tree workflow skill 强制使用 `mj-agent-<group>-<verb>` 三段式（`<group>` ∈ {flow, git, doc, runtime, infra}；详见 [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）；slash command 为 `/mj-agent-<group>-<verb>`。
+> **mj-agent 命名空间约定**：所有 in-tree workflow skill 强制使用 `mj-agent-<group>-<verb>` 三段式（`<group>` ∈ {flow, git, doc, runtime, infra}；详见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]，PR-B1 落地）；slash command 为 `/mj-agent-<group>-<verb>`。
 
 ---
 
@@ -254,9 +254,9 @@ mj-agent 专属新增：
 - 本规范 §3.1 必停规则（含 mj-agent 专属 4 项：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax）
 
 ### Consult If Affected
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
-- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
-- `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS/DWD）
+- `decisions/ADR-006_Fail_Safe_Reads.md`（数据边界 4 层 guardrail）
+- `decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（mj-agent 独立 compose / 上游业务系统 consumer 边界）
+- `decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS/DWD）
 - `docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`
 - `CLAUDE.md`（项目根 AI 高频上下文）
 
@@ -428,8 +428,8 @@ Fallback:
 - `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`（v2.0 active）
 - `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
 - `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md`
-- `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`
+- `decisions/ADR-006_Fail_Safe_Reads.md`
+- `decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`
 
 ## Skill Hint
 
@@ -574,9 +574,9 @@ Plan 不写：
 - `docs/_templates/TEMPLATE_RUNBOOK.md`（Phase A PR-A3 落地）
 
 ### Consult If Affected
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md`
-- `docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md`
-- `docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention.md`（涉及 STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT 版本演进时）
+- `decisions/ADR-006_Fail_Safe_Reads.md`
+- `decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`
+- `decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md`（涉及 STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT 版本演进时）
 
 ## Skill Hint
 
@@ -637,8 +637,8 @@ Fallback:
 - 风味 C 时：相关 RUNBOOK + `docs/runbook/dev_studio_walkthrough.md`
 
 ### Consult If Affected
-- `docs/adr/[ADR]_006_Fail_Safe_Reads.md`（SQL guardrail 涉及时）
-- `docs/adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse.md`（compose / network 涉及时）
+- `decisions/ADR-006_Fail_Safe_Reads.md`（SQL guardrail 涉及时）
+- `decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（compose / network 涉及时）
 
 ## Skill Hint
 
@@ -1233,7 +1233,7 @@ Fallback:
 | 文档审查（PR 范围） | `/mj-agent-doc-review` | P1；PR-C1 落地 |
 | 文档迁移（archive 工作流） | `/mj-agent-doc-migrate` | P2；PR-C1 落地 |
 
-> 注：marketplace plugin `mj-agent-code-doc-author` / `mj-agent-code-doc-plan` 与本表共存（详见 [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]）；本表 in-tree skills 与 stage 6 / stage 11 紧耦合。
+> 注：marketplace plugin `mj-agent-code-doc-author` / `mj-agent-code-doc-plan` 与本表共存（详见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]）；本表 in-tree skills 与 stage 6 / stage 11 紧耦合。
 
 ### 5.4 Runtime 域（mj-agent-runtime，4 个；**read-only by design**）
 
@@ -1296,13 +1296,13 @@ HITL 是风险与决策边界。
   - [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]（active）
   - [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]]（active）
 - 实施 ADR：
-  - [[../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track 升级）
-  - [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（mj-agent-* in-tree skills 命名空间 + lifecycle）
+  - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track 升级）
+  - [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（mj-agent-* in-tree skills 命名空间 + lifecycle）
 - 关联 ADR：
-  - [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]（数据边界 4 层 guardrail）
-  - [[../adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS/DWD）
-  - [[../adr/[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（archive 工作流）
-  - [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace SKILL schema 边界）
+  - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（数据边界 4 层 guardrail）
+  - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS/DWD）
+  - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（archive 工作流）
+  - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace SKILL schema 边界）
 - mj-agent 关联 STANDARD（cross-ref）：
   - [[STANDARD]_MJ_Agent_Commit_Message_Convention]]（§4.10 / §4.12 引用）
 - mj-agent 关联 GUIDE（cross-ref）：

@@ -21,7 +21,7 @@ related_prompts: []
 >
 > **不**用本模板：
 > - 起草 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`（in-tree workflow skill；engineering-workflow track；ADR-013 native 2-field schema；由 Claude Code 主进程发现）→ 用 [[TEMPLATE_WORKFLOW_SKILL|TEMPLATE_WORKFLOW_SKILL]]
-> - 起草 marketplace plugin SKILL.md（出本仓 governance）→ 参考 [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 内嵌范本
+> - 起草 marketplace plugin SKILL.md（出本仓 governance）→ 参考 [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 内嵌范本
 >
 > 三类 SKILL 区分速查见 [[../../CLAUDE|CLAUDE.md]] §"Three-source SKILL distinction"（in-source / in-tree / marketplace plugin 三类同名同形不同义；治理 track / loader / schema 各异，必须严格区分）。
 >

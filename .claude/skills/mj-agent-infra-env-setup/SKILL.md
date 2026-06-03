@@ -20,7 +20,7 @@ description: This skill should be used when the user asks to set up the .env fil
 - [[../../../scripts/setup-env.ps1|scripts/setup-env.ps1]]（app bundle 解密脚本）
 - [[../../../.claude/scripts/setup-mcp-secrets.ps1|setup-mcp-secrets.ps1]]（MCP bundle 解密脚本；ADR-030 新增）
 - [[../../../config/README.md|config/README.md]]（rotation / onboarding flow + ADR-030 2-bundle 模型）
-- [[../../../docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]（bundle 拆分决策）
+- [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]（bundle 拆分决策）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Environment variables" 段（secret 列表）
 
 ## 前置条件

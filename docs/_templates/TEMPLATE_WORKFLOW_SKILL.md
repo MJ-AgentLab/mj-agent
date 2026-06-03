@@ -71,7 +71,7 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 ## §2 Body 结构（上游业务系统 风格）
 
-上游业务系统 marketplace 现存 mj-sys-* skill body 风格作为既定事实标准（[[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 决策点 2）。Track C in-tree skill 沿用相同风格——**不**强制 Agent_Side §2.1 五段式（那是 Track B 专属）。
+上游业务系统 marketplace 现存 mj-sys-* skill body 风格作为既定事实标准（[[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] §Decision 决策点 2）。Track C in-tree skill 沿用相同风格——**不**强制 Agent_Side §2.1 五段式（那是 Track B 专属）。
 
 典型段落：
 
@@ -211,8 +211,8 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
 - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
-- [[../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
-- [[../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
+- [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
+- [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
 - 上游业务系统 v5.0+ `.claude/skills/mj-sys-*/SKILL.md`（直接派生源）
 
 ## §7 更新记录

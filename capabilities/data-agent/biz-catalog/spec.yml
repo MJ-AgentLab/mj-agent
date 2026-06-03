@@ -52,7 +52,7 @@ requirements:
         - "Given catalog has metric families {qrynum, tntcnt} and periods {daily, monthly} / When SKILL.md body references metric family / Then every referenced family exists in catalog metrics top-level mapping; every referenced biz_dws.* table resolves in live DB via analyst role"
 
 related_decisions:
-  - docs/adr/[ADR]_009_Biz_Domain_As_Primary_Data_Source.md      # biz domain access policy
+  - decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md      # biz domain access policy
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 
 cross_capability_refs:

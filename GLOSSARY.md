@@ -84,7 +84,7 @@
 
 ### Data boundary（L1-L4）
 
-**定义**：mj-agent 访问 biz domain 的 4 层防御机制（[ADR-006](docs/adr/[ADR]_006_Fail_Safe_Reads.md)）：
+**定义**：mj-agent 访问 biz domain 的 4 层防御机制（[ADR-006](decisions/ADR-006_Fail_Safe_Reads.md)）：
 - L1 regex guardrail（`tools/sql/guardrail.py`）：single-statement + SELECT-only + schema/table 白名单
 - L1b sqlglot AST precheck（`tools/sql/precheck.py`）：`no_select_star` / `require_time_range` / `require_limit`
 - L2 SKILL semantics（`skills/*/SKILL.md` + `qcm_catalog.yaml`）
@@ -93,7 +93,7 @@
 
 ### DGX-Spark
 
-**定义**：内网 GPU 节点（192.168.0.189），运行 vLLM / SGLang / Ollama 等 OpenAI 兼容 LLM endpoint；mj-agent 通过 `LLM_PROVIDER=local-openai-compat` 消费。**非**部署 profile —— DGX 不部署 mj-agent，仅作算力供应方（[ADR-027](docs/adr/[ADR]_027_LLM_Provider_Abstraction.md)）。
+**定义**：内网 GPU 节点（192.168.0.189），运行 vLLM / SGLang / Ollama 等 OpenAI 兼容 LLM endpoint；mj-agent 通过 `LLM_PROVIDER=local-openai-compat` 消费。**非**部署 profile —— DGX 不部署 mj-agent，仅作算力供应方（[ADR-027](decisions/ADR-027_LLM_Provider_Abstraction.md)）。
 **相关术语**：LLM provider / local-openai-compat / vLLM
 
 ---
@@ -139,7 +139,7 @@
 
 ### handle_sql_tool_errors（middleware）
 
-**定义**：[ADR-029](docs/adr/[ADR]_029_Tool_Error_Surfacing_To_LLM.md) 引入的 LangChain 1.x `@wrap_tool_call` middleware（`src/mj_agent/middleware/tool_errors.py`）；把 SQL tool ValueError / RuntimeError 转为 `ToolMessage` 喂回 LLM 自纠错，避免 graph crash 引发的 frontend hang。`make_graph` 装载为 `middleware=[handle_sql_tool_errors]`。
+**定义**：[ADR-029](decisions/ADR-029_Tool_Error_Surfacing_To_LLM.md) 引入的 LangChain 1.x `@wrap_tool_call` middleware（`src/mj_agent/middleware/tool_errors.py`）；把 SQL tool ValueError / RuntimeError 转为 `ToolMessage` 喂回 LLM 自纠错，避免 graph crash 引发的 frontend hang。`make_graph` 装载为 `middleware=[handle_sql_tool_errors]`。
 **相关术语**：Middleware / make_graph / SQL execute
 
 ### HITL gates（5 / 7 / 9 / 11 / 13）
@@ -182,7 +182,7 @@
 
 ### Living vs Frozen 引用
 
-**定义**：[ADR-011](docs/adr/[ADR]_011_Doc_Versioning_And_Archive_Convention.md) §5.6 引入的 archive 后的引用语义。Living 引用随版本自动跟到最新 active 路径；Frozen 引用 pin 到归档版本路径 + 必须带 archive 前缀。`scripts/check_wikilinks.py` 强制 Frozen 引用必须含 `archive/rule/` 路径前缀。
+**定义**：[ADR-011](decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md) §5.6 引入的 archive 后的引用语义。Living 引用随版本自动跟到最新 active 路径；Frozen 引用 pin 到归档版本路径 + 必须带 archive 前缀。`scripts/check_wikilinks.py` 强制 Frozen 引用必须含 `archive/rule/` 路径前缀。
 **相关术语**：Archive ceremony / Active path stability / supersedes
 
 ### local-openai-compat（LLM provider）
@@ -196,7 +196,7 @@
 
 ### make_graph / make_llm（factories）
 
-**定义**：`src/mj_agent/agent.py:make_graph()` 是 LangGraph 编译入口，`langgraph.json` 指向；惰性导入，import 模块不强制初始化 LLM。`src/mj_agent/llm.py:make_llm()` 是 LLM provider 分支 factory（[ADR-027](docs/adr/[ADR]_027_LLM_Provider_Abstraction.md)）；按 `LLM_PROVIDER` 分支 ark / local-openai-compat。缺凭据时 raise `LLMConfigError`。
+**定义**：`src/mj_agent/agent.py:make_graph()` 是 LangGraph 编译入口，`langgraph.json` 指向；惰性导入，import 模块不强制初始化 LLM。`src/mj_agent/llm.py:make_llm()` 是 LLM provider 分支 factory（[ADR-027](decisions/ADR-027_LLM_Provider_Abstraction.md)）；按 `LLM_PROVIDER` 分支 ark / local-openai-compat。缺凭据时 raise `LLMConfigError`。
 **相关术语**：LangChain / LLM provider / LangGraph Studio
 
 ### Memory checkpointer
@@ -206,7 +206,7 @@
 
 ### Middleware
 
-**定义**：LangChain 1.x 的 tool 调用拦截器；mj-agent 当前 1 个 middleware：`handle_sql_tool_errors`（[ADR-029](docs/adr/[ADR]_029_Tool_Error_Surfacing_To_LLM.md)）。`make_graph` 调 `create_agent(..., middleware=[handle_sql_tool_errors])`。
+**定义**：LangChain 1.x 的 tool 调用拦截器；mj-agent 当前 1 个 middleware：`handle_sql_tool_errors`（[ADR-029](decisions/ADR-029_Tool_Error_Surfacing_To_LLM.md)）。`make_graph` 调 `create_agent(..., middleware=[handle_sql_tool_errors])`。
 **相关术语**：handle_sql_tool_errors / make_graph
 
 ---
@@ -276,7 +276,7 @@
 
 ### setup-env.ps1 / setup-mcp-secrets.ps1（PowerShell 脚本）
 
-**定义**：mj-agent 两条 secrets 解密脚本（[ADR-030](docs/adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation.md) 2-bundle trust-boundary split）。`setup-env.ps1` 解密 `config/secrets.enc` 写 `.env`（app 凭据）；`.claude/scripts/setup-mcp-secrets.ps1` 解密 `config/secrets-mcp.enc` 直写 OS env（MCP secrets，bypass `.env`）。
+**定义**：mj-agent 两条 secrets 解密脚本（[ADR-030](decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) 2-bundle trust-boundary split）。`setup-env.ps1` 解密 `config/secrets.enc` 写 `.env`（app 凭据）；`.claude/scripts/setup-mcp-secrets.ps1` 解密 `config/secrets-mcp.enc` 直写 OS env（MCP secrets，bypass `.env`）。
 **相关术语**：Secrets bundle / .env / .mcp.json
 
 ### SQL execute（envelope）

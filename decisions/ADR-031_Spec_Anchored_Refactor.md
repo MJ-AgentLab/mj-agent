@@ -2,6 +2,7 @@
 type: adr
 adr_id: ADR-031
 slug: spec-anchored-refactor
+summary: mj-agent Maximum Spec-Anchored Refactor (Phase M0-M6) — restructure the tri-track STANDARD + 20 active ADR + ~100 docs governance corpus into the SDD Kernel + Capability Package + Business Policy three-pillar architecture, landing machine-readable contracts + capability lifecycle + CI gates.
 state: draft
 decision: proposed
 version: 0.1

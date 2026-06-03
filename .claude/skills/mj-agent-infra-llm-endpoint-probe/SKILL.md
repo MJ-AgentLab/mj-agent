@@ -181,7 +181,7 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]]（PR-Γ 落地；LLM provider 抽象决策）
+- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]（PR-Γ 落地；LLM provider 抽象决策）
 - [[../../../src/mj_agent/llm.py|src/mj_agent/llm.py]]（make_llm() factory；ark vs local-openai-compat 分支）
 - [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）
 - [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）

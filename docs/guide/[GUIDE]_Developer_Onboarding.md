@@ -49,7 +49,7 @@ owner: 项目负责人
   - GitHub & Gitee 账号（mj-agent 双推镜像）
 - **建议了解**：
   - LangChain 1.x / LangGraph 1.1.8 概念（不强求）
-  - PostgreSQL 只读权限模型（参见 [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]]）
+  - PostgreSQL 只读权限模型（参见 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）
 
 ---
 
@@ -299,8 +299,8 @@ Hook 命令 exit code 2 让 Claude Code 把 stderr 经 agent 视图喂回，AI �
 
 **学习包**
 
-- [ ] 已读 [[../adr/[ADR]_006_Fail_Safe_Reads|ADR-006]] 数据边界 4 层
-- [ ] 已读 [[../adr/[ADR]_027_LLM_Provider_Abstraction|ADR-027]] LLM provider 二分
+- [ ] 已读 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] 数据边界 4 层
+- [ ] 已读 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] LLM provider 二分
 
 ---
 

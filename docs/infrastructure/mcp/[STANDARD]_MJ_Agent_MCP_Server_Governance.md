@@ -33,7 +33,7 @@ tags:
 - **audit cadence**：增删按 PR 触发；不变集季度 review
 
 **不在本 STANDARD 范围**：
-- `.claude/skills/` SKILL governance（治理在 [[../../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + [[../../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + Meta v2.2 §3.10）
+- `.claude/skills/` SKILL governance（治理在 [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] + Meta v2.2 §3.10）
 - `mj-agentlab-marketplace` plugins MCP（治理在 marketplace 仓）
 - `.claude/settings.json` permissions allowlist（治理在 §A13 + 未来 `[STANDARD]_..._Claude_Code_Settings`）
 - 上游业务系统仓的 `.mcp.json`（独立 secrets pipeline per ADR-008；mj-agent 不审上游 MCP）
@@ -128,14 +128,14 @@ tags:
 
 ## §7 Cross-references
 
-- [[../../adr/[ADR]_008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离上游 `MJ_SYS_*`（env var literal）
-- [[../../adr/[ADR]_013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — `.claude/skills/` SKILL governance（与本 STANDARD 互补；本 STANDARD 治理 `.mcp.json`，ADR-013 治理 `.claude/skills/`）
-- [[../../adr/[ADR]_014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
-- [[../../adr/[ADR]_016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — `.claude/` 边界
+- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 secrets pipeline；`MJ_AGENT_*` 命名空间隔离上游 `MJ_SYS_*`（env var literal）
+- [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] — `.claude/skills/` SKILL governance（与本 STANDARD 互补；本 STANDARD 治理 `.mcp.json`，ADR-013 治理 `.claude/skills/`）
+- [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
+- [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] — `.claude/` 边界
 - [[../../adr/[ADR]_018_Active_Path_Stability|ADR-018]] — 本 STANDARD 文件名无 `_v1.0` 后缀依据
 - [[../../adr/[ADR]_022_P2_Framework_Enhancements|ADR-022]] §C.3.2 — 领域专属 STANDARD placement 决策（本文件落 `docs/infrastructure/mcp/` 而非 `docs/rule/`）
 - ADR-025（PR-4 落地；Multi-environment + LLM provider abstraction） — 跨 4 PR 的整体决策记录
-- [[../../adr/[ADR]_030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — MCP secrets 注入路径升级为独立 `secrets-mcp.enc` → HKCU；§3 credential mode "wrapped script" 行为不变，但 env var 来源变化
+- [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — MCP secrets 注入路径升级为独立 `secrets-mcp.enc` → HKCU；§3 credential mode "wrapped script" 行为不变，但 env var 来源变化
 - [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.7（STANDARD placement）+ §3.10（in-tree workflow SKILL governance；与本 STANDARD 平行）+ §7.7（A12-A14 PR gates）
 - `docs/_baselines/pg_server_baseline.md`（Phase Γ 落地；wrapper script 内部快照；季度 audit 漂移基准）
 - CLAUDE.md §Engineering-Workflow Documentation §A14（本 STANDARD 是 A14 的实施细则）

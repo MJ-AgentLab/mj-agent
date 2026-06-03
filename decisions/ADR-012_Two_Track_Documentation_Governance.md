@@ -166,8 +166,8 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
   - [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]]
   - [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.0]]
 - 互补 ADR：
-  - [[[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]]（Track B 起源）
-  - [[[ADR]_011_Doc_Versioning_And_Archive_Convention|ADR-011]]（v1.1 → v2.0 升级遵循的 archive 流程）
+  - [[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]]（Track B 起源）
+  - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（v1.1 → v2.0 升级遵循的 archive 流程）
 - v1.6 roadmap 受影响行号（需重编号到 015+）：
   - line 13-15（ADR-012 / 013 / 014 三主题声明）
   - line 118-120（数据流原则映射表）

@@ -14,7 +14,7 @@ track: agent
 
 ## Context
 
-[[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]] 确立了 skill 化路径。当 skill 数量增长到 5+（Phase 1 目标），把全部 SKILL.md 拼进 system prompt 会出现两类问题：
+[[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]] 确立了 skill 化路径。当 skill 数量增长到 5+（Phase 1 目标），把全部 SKILL.md 拼进 system prompt 会出现两类问题：
 
 1. **token 成本**：每次请求携带所有 skill 定义，即使当次用不到
 2. **注意力稀释**：LLM 的上下文注意力被不相关的 skill 细节占用，影响当前任务表现
@@ -61,7 +61,7 @@ Phase 1 引入 **skill 选择器**，基于用户提问的语义选取 top-K ski
 
 ## References
 
-- [[ADR]_002_Skills_As_First_Class_Citizens|ADR-002]]（skill 是封装单位）
+- [[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]]（skill 是封装单位）
 - `src/mj_agent/agent.py` — Phase 0 静态拼接实现
 - `src/mj_agent/prompts/system.md` — 全局层内容
 - Anthropic: *Equipping agents for the real world with Agent Skills*（关于 progressive disclosure 的 token 测算）
