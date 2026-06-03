@@ -22,7 +22,7 @@
 
 ### ADR / Architecture Decision Record
 
-**定义**：架构决策记录；记录为什么做某决策及其取代关系。mj-agent ADR 位于 `docs/adr/[ADR]_NNN_*.md`；frontmatter `decision: accepted | superseded | rejected`。Cross-repo decoupling 后 9 个继承自上游的 ADR 已 archive 至 `docs/archive/adr/`。
+**定义**：架构决策记录；记录为什么做某决策及其取代关系。mj-agent ADR 位于 `docs/adr/[ADR]_NNN_*.md`；frontmatter `decision: accepted | superseded | rejected`。Cross-repo decoupling 后 9 个继承自上游的 ADR 已 archive 至 `archive/decisions/superseded/`（M5-PR3b 由 `docs/archive/adr/` 平移）。
 **相关术语**：Canonical / Document Type Tags / supersedes
 
 ### Agent Side（Track B）

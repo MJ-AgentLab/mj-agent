@@ -221,8 +221,8 @@ M2 4-incident anchor.
 
 8. **D-3a ADR NNN namespace collision intercept** (2026-05-22, commit `633225b`). Naive
    next NNN = 031 (max `docs/adr/` active +1); pre-flight scan `decisions/` INDEX 发现
-   `decisions/ADR-031_Spec_Anchored_Refactor.md` 已占用. `docs/adr/` + `docs/archive/adr/`
-   + `decisions/` 共享单一 NNN namespace per `decisions/INDEX.md` L23. NNN bumped to 032.
+   `decisions/ADR-031_Spec_Anchored_Refactor.md` 已占用. `docs/adr/` + `archive/decisions/superseded/`
+   (M5-PR3b 由 `docs/archive/adr/` 平移) + `decisions/` 共享单一 NNN namespace per `decisions/INDEX.md` L23. NNN bumped to 032.
 
 9. **D-3b source provenance ambiguity intercept** (2026-05-22, commit `23a8504`). Plan body
    标 "restore" 但 verbatim 不在 git committed bytes (trim 发生于 `24b7ea3` (M2

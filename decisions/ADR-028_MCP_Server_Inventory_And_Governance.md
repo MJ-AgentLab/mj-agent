@@ -104,7 +104,7 @@ STANDARD 提供：
 - [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] / [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — ADR-025 拆分姊妹
 - [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — 本 ADR §D.3 secrets pipeline 升级；2-bundle 拆分把 MCP secrets 从 `secrets.enc` 析出
 - [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance]] v1.0 — 本 ADR 落地的实施细则
-- [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
+- [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `.mcp.json` — 13 servers 实文件
 - `.claude/scripts/{pg-server-start.cmd,pg-server-wrapper.mjs,setup-mcp-env.ps1}` — wrapper + env sync 脚本
 - `docs/_baselines/pg_server_baseline.md` — wrapper 内部 baseline（季度 audit 漂移基准）

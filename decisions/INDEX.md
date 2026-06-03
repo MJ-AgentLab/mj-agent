@@ -44,8 +44,9 @@ ai_visibility: source-of-truth
 
 ## Deprecated / Superseded ADRs
 
-> Phase M5 起：现 `docs/archive/adr/` 9 个 deprecated ADR（010 / 015 / 017-019 / 021-023 / 025）
-> 将平移至 `archive/decisions/superseded/`（独立后续 PR；本期 M5-PR3a 不动归档集）.
+> M5-PR3b 完成：9 个 deprecated ADR（010 / 015 / 017-019 / 021-023 / 025）已由 `docs/archive/adr/`
+> 平移至 `archive/decisions/superseded/`（+ `archive.yml` 清单 + `TOMBSTONE.md`；forward gateway 见
+> [[archive/decisions/superseded/INDEX|archive/decisions/superseded/INDEX]]）.
 
 ## Archive Cross-Reference
 

@@ -41,7 +41,7 @@ track: shared
 
 ## 架构决策（decisions/）
 
-> 2026-05-11 cross-repo decoupling cleanup（PR-Γ）后：9 个"记录从早期内部上游系统继承设计决策"的 ADR（010/015/017/018/019/021/022/023/025）已批量 archive 到 [[archive/adr/INDEX|docs/archive/adr/]]；其内容已沉淀为对应 framework STANDARD 段。ADR-025 拆分为 mj-agent 原生 ADR-026/027/028。
+> 2026-05-11 cross-repo decoupling cleanup（PR-Γ）后：9 个"记录从早期内部上游系统继承设计决策"的 ADR（010/015/017/018/019/021/022/023/025）已批量 archive 到 [[archive/decisions/superseded/INDEX|archive/decisions/superseded/]]（M5-PR3b 由 docs/archive/adr/ 平移）；其内容已沉淀为对应 framework STANDARD 段。ADR-025 拆分为 mj-agent 原生 ADR-026/027/028。
 
 | 文档 | domain | decision | 摘要 |
 |------|--------|----------|------|
@@ -73,7 +73,7 @@ track: shared
 
 ## 归档（docs/archive/）
 
-> Archive 由 Meta_Framework §5 流程触发的版本退役搬迁。详见 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention\|ADR-011]] + [[archive/adr/INDEX\|archive/adr/INDEX]]（9 个 cross-repo decoupling 归档 ADR forward gateway）。
+> Archive 由 Meta_Framework §5 流程触发的版本退役搬迁。详见 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention\|ADR-011]] + [[archive/decisions/superseded/INDEX\|archive/decisions/superseded/INDEX]]（9 个 cross-repo decoupling 归档 ADR forward gateway）。
 
 ### 归档 STANDARDs
 
@@ -86,19 +86,19 @@ track: shared
 
 ### 归档 ADRs（cross-repo decoupling cleanup，2026-05-11）
 
-详细 forward gateway 见 [[archive/adr/INDEX\|docs/archive/adr/INDEX.md]]。
+详细 forward gateway 见 [[archive/decisions/superseded/INDEX\|archive/decisions/superseded/INDEX.md]]。
 
 | 归档 ADR | 替代位置 | 归档原因 |
 |---|---|---|
-| [[archive/adr/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010]] | [[rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|Commit Message Convention v1.0]] | git/commit 规则已独立 STANDARD 化 |
-| [[archive/adr/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] | [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.1]] | 17-stage 闭环规则已独立 STANDARD 化（§4.1/§4.4 已 inline） |
-| [[archive/adr/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
-| [[archive/adr/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
-| [[archive/adr/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/adr/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |
-| [[archive/adr/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active → completed |
-| [[archive/adr/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements\|ADR-022]] | Code_Side v1.1 §3.4-§3.8 + Meta v2.2 §3.7/§3.8/§4.5/§4.6 | 5 项 framework 增强已并入对应 STANDARD 章节 |
-| [[archive/adr/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | `scripts/find_stale_docs.py` + `scripts/find_old_completed_plans.py` 注释 | 实际 scripts 已落地 |
-| [[archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction\|ADR-025]] | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026]] + [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027]] + [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028]] | 多 domain bundle ADR 拆分为 3 个焦点 ADR |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010]] | [[rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|Commit Message Convention v1.0]] | git/commit 规则已独立 STANDARD 化 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] | [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.1]] | 17-stage 闭环规则已独立 STANDARD 化（§4.1/§4.4 已 inline） |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/decisions/superseded/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active → completed |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements\|ADR-022]] | Code_Side v1.1 §3.4-§3.8 + Meta v2.2 §3.7/§3.8/§4.5/§4.6 | 5 项 framework 增强已并入对应 STANDARD 章节 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | `scripts/find_stale_docs.py` + `scripts/find_old_completed_plans.py` 注释 | 实际 scripts 已落地 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction\|ADR-025]] | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026]] + [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027]] + [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028]] | 多 domain bundle ADR 拆分为 3 个焦点 ADR |
 
 ## 模板（docs/\_templates/）
 

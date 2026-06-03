@@ -1,0 +1,8 @@
+archived_at: 2026-05-11
+reason: "9 ADRs recording design decisions inherited from an upstream business system; archived 2026-05-11 (PR-Γ cross-repo decoupling cleanup). Relocated docs/archive/adr/ → archive/decisions/superseded/ in the SDD refactor (M5-PR3b, 2026-06-03). Decision bodies are frozen snapshots; current governance lives in the active STANDARDs / superseding ADRs (see INDEX replaced-by)."
+original_path: docs/archive/adr/
+original_state: deprecated
+ai_visibility: reference
+retention_class: permanent
+related_decisions:
+  - decisions/ADR-031_Spec_Anchored_Refactor.md

@@ -8,9 +8,9 @@ updated: 2026-05-09
 state: deprecated
 archived: 2026-05-11
 replaced-by:
-  - docs/adr/[ADR]_026_Multi_Environment_Compose_Profile.md
-  - docs/adr/[ADR]_027_LLM_Provider_Abstraction.md
-  - docs/adr/[ADR]_028_MCP_Server_Inventory_And_Governance.md
+  - decisions/ADR-026_Multi_Environment_Compose_Profile.md
+  - decisions/ADR-027_LLM_Provider_Abstraction.md
+  - decisions/ADR-028_MCP_Server_Inventory_And_Governance.md
 decision: accepted
 track: shared
 tags:

@@ -85,7 +85,8 @@ ALLOW_LITERAL_SUBSTRINGS = (
     "glossary/upstream_business_warehouse",
     # Intra-mj-agent archive references (legitimate version lineage)
     "[DEPRECATED]_",               # any wikilink/path to an archive file
-    "archive/adr/",                # archive ADR path prefix
+    "archive/adr/",                # archive ADR path prefix (pre-M5-PR3b; legacy)
+    "archive/decisions/superseded/",  # relocated archive ADR path prefix (M5-PR3b)
     "archive/rule/",               # archive STANDARD path prefix
     # Cross-repo cleanup PR descriptions (PR/issue body text)
     "cross-repo decoupling",
