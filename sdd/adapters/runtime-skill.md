@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: runtime-skill
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-06-04
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -111,6 +111,66 @@ body = load_skill("safe-sql-analysis")  # frontmatter 已 strip
 # 错误（违反契约）：
 body = open("src/mj_agent/skills/safe-sql-analysis/SKILL.md").read()  # 含 frontmatter
 ```
+
+**渐进披露（progressive disclosure；bundled-resource subdir 治理）** — ported from
+Agent_Side §2.2 + §7.2（这是 kernel home；Agent_Side 后续 archive）.
+
+每个 `src/mj_agent/skills/<name>/` 目录除 `SKILL.md` 外**允许并被治理**以下三类 bundled-resource
+子目录（skill-creator 范式；[[../../decisions/ADR-003_Progressive_Disclosure|ADR-003]] 渐进披露
+原则 + [[../../decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]] skill 一等公民）：
+
+| 子目录 | 用途 | LLM 消费方式 |
+|---|---|---|
+| `scripts/` | SKILL 内部可执行脚本 / helper（Python / shell） | SKILL body 引用路径；LLM 按需读取或调用，非随 body 全量入 context |
+| `references/` | 深度参考资料 / data dictionary 摘录 / 长 schema 表 | SKILL body 引用；渐进披露 —— body 给入口，参考资料按需展开 |
+| `assets/` | 静态资产（模板 / 示例文件 / fixture 样本） | 非直接入 LLM context；供 SKILL workflow 引用 |
+
+**治理规则**（contract YAML 维度）：
+
+- `bundled_resources[]` — contract 可枚举本 SKILL 携带的 bundled-resource 文件（M3+ 落地；M2
+  advisory）；每条记 `path` + `kind: scripts | references | assets` + `content_hash`（可选，
+  防 orphan drift）
+- **orphan 检测**（Agent_Side §7.2 TODO 项的 kernel 落点）：`SKILL.md` body 引用了但目录中不存
+  在的 bundled resource → drift；或目录中存在但 body 从未引用的"孤儿文件" → advisory warning
+- **版本同步**：bundled resource 变更与 `SKILL.md` body 同 PR；`content_hash` 双锁（与 §Standards
+  `content_hash` 同机制）
+- **渐进披露不等于全量入 context**：`scripts/` + `references/` + `assets/` **不**随 SKILL body
+  拼进 system prompt（区别于 body 本身静态全量加载 per `_build_system_prompt()`）；它们是 LLM
+  在 trajectory 中按需展开的二级资源
+
+**关键边界** — 渐进披露子目录治理**仅适用于 `src/mj_agent/skills/<name>/`**（in-source canonical）。
+`.claude/skills/mj-agent-*/` 的 bundled resource 治理是 Track C 范围（`claude-code-skill` adapter），
+不在本 adapter scope.
+
+**触发描述质量（trigger-description quality；activation 字段 + 5-iteration 优化循环）** — ported
+from Agent_Side §2.3 + §1 设计原则（这是 kernel home）.
+
+in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否在正确时机被调用 —— **description
+决定 skill 是否被调用；undertriggering（该触发却没触发）是默认失败模式**（Agent_Side §1 设计目标）.
+
+- **`activation` 字段**（frontmatter）— 描述"用户问什么 / 在什么业务场景下"应激活本 SKILL；进入
+  routing 判定的关键 input。质量直接影响 LLM 是否选中该 SKILL
+- **5-iteration 描述优化循环**（Agent_Side §2.3 范式）：`activation` 描述不是一次写定，而是经
+  ≤5 轮迭代优化 —— 每轮跑代表性 query 集，观察 undertriggering（漏触发）/ overtriggering（误
+  触发）case，回填 `activation` 文本，直到触发准确性收敛
+- **undertriggering = 默认问题**：经验上 SKILL 写完的初版 `activation` 偏保守 → 该被调用时没被
+  调用（沉默失败，无报错，只是答案质量下降）；优化方向通常是**放宽 + 补正向 trigger 关键词**，
+  而非收紧
+
+**与 `claude-code-skill` adapter 的明确区分**（DISTINCT；不可混淆）：
+
+| 维度 | 本 adapter（runtime-skill） | `claude-code-skill` adapter |
+|---|---|---|
+| 治理对象 | `src/mj_agent/skills/<name>/SKILL.md`（in-source canonical） | `.claude/skills/mj-agent-*/SKILL.md`（in-tree workflow） |
+| schema | 13-field（Agent_Side §2）；触发字段名 `activation` | 2-field ADR-013 native（`name` + `description`） |
+| 触发优化 | `activation` 字段 + 5-iteration 循环（本节） | `description` ≥ 200 chars + `Do not use for:` 反向 trigger block（A12 gate） |
+| Loader | `load_skill()` strip frontmatter | Claude Code 主 process（不剥 frontmatter） |
+| 触发 fidelity 验证 | component-level EVAL（M4+）+ `runtime-skill-content-change` 必停 | script gate（≥200 chars / 反向 block）+ manual HITL |
+
+两者都治理"触发质量"但**对象、schema、字段名、验证机制完全不同** —— `claude-code-skill` adapter
+治理的是 ADR-013 2-field `.claude/` workflow skill 的 `description` 正/反向 trigger；本 adapter
+治理的是 in-source runtime SKILL 的 `activation` 字段 + 5-iteration 循环。混用 tag / gate 会导致
+治理边界漂移（per §Scope **Excluded** + §BDD Rules 何时 NOT 用）.
 
 ## §BDD Rules
 

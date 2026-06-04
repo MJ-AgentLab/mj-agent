@@ -2,7 +2,7 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.0
+version: 1.1
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-06-04
@@ -368,7 +368,82 @@ CLAUDE.md 内部按 track 分段，元规则放最顶。PR 触发 §7.1 allowlis
 - `## Engineering-Workflow Documentation`：`track: engineering-workflow` 项；A12-A14 门禁说明 +
   slash command 命名空间 + skill catalog 表 + HITL_Prompt 引用
 
+## §8 Per-type body authoring depth
+
+> 源：Code_Side §3.1 + §3.1.3（GUIDE）+ §3.4（RUNBOOK）。这些是 STANDARD 里的**逐类型 body
+> authoring 深度规则**；M6 PR4 archive ceremony 落地后从历史源迁入本节。
+
+### §8.0 Canonical body-authoring-depth authority
+
+`docs/_templates/TEMPLATE_*.md` 是**逐类型 body authoring-depth 的 canonical 权威**——每个
+canonical 类型（GUIDE / ADR / SPEC / RUNBOOK / POSTMORTEM / STANDARD / ISSUE / ASSESSMENT /
+SKILL / PROMPT / EVAL / CONTRACT）的 body 骨架由对应 `TEMPLATE_<TYPE>.md` 承载；撰写时
+**copy 模板、不即兴造 body**。本 §8 收纳 GUIDE / RUNBOOK 两类的 load-bearing 细节（骨架 + 原则），
+其余类型（POSTMORTEM / SPEC / ADR / ISSUE / ASSESSMENT / ...）的 body 深度直接以各自
+`TEMPLATE_*.md` 为准——例如 POSTMORTEM body 权威是 [[../docs/_templates/TEMPLATE_POSTMORTEM|TEMPLATE_POSTMORTEM]]，
+SPEC body 权威是 [[../docs/_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]，ADR body 权威是
+[[../docs/_templates/TEMPLATE_ADR|TEMPLATE_ADR]]。frontmatter schema（含类型专属字段）见 §6；
+本节只治 body。
+
+### §8.1 GUIDE body authoring（ORPH-09；源 Code_Side §3.1 + §3.1.3）
+
+GUIDE body 骨架（CN-numbered，codified；权威模板 [[../docs/_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]]）：
+
+```markdown
+# <GUIDE 标题>
+
+> **适用范围** / **目标受众** / **版本** / **最后更新** / **派生自** /
+> **关联文档**（header block，每行一项）
+
+## TL;DR
+- 阅读时间 / 涵盖范围 / 适用场景
+
+## Prerequisites
+- 目标读者 / 必备知识 / 建议了解
+
+## 目录
+- §0 适用场景
+- §1 ... §N
+
+## §0 适用场景
+## §1 <主体 1>
+## §2 <主体 2>
+## §N <主体 N>
+
+## 关联文档
+## 更新记录（表格：日期 | 版本 | 变更）
+```
+
+**复用原则（Code_Side §3.1.3；load-bearing）**：GUIDE 自身**不复述**已在其它 canonical 来源
+（README / CLAUDE.md / 其它 GUIDE / STANDARD）讲过的命令、配置、字段；**命令行 / 配置优先 wikilink
+到 README / CLAUDE.md**，GUIDE 仅承担「读哪份 / 顺序怎么连」，**不复制命令**。规避点：与 README /
+CLAUDE.md 的内容漂移。
+
+### §8.2 RUNBOOK body authoring（ORPH-10；源 Code_Side §3.4）
+
+RUNBOOK body 节段规约（权威模板 [[../docs/_templates/TEMPLATE_RUNBOOK|TEMPLATE_RUNBOOK]]）：
+
+```
+Trigger / Pre-checks / Steps / Rollback / Post-mortem trigger
+```
+
+| 节段 | 职责 |
+|---|---|
+| **Trigger** | 什么情况下执行本 RUNBOOK（告警特征 / 现象 / 与相邻 RUNBOOK 的边界），不含推测性 catch-all |
+| **Pre-checks** | 执行 Steps 前必须验证的状态 / 权限 / 备份；任一失败则不进 Steps |
+| **Steps** | 顺序执行，每步可复制粘贴命令 + 期望输出特征 + 异常处理 |
+| **Rollback** | 何时回滚 + 回滚命令组 + 回滚后验证 |
+| **Post-mortem trigger** | 事后判定是否建 POSTMORTEM |
+
+**Post-mortem-trigger rationale**：RUNBOOK 收尾显式判定「是否升级为 POSTMORTEM」，把「操作型即时
+修复」与「需要结构化复盘的事故」分流——故障导致生产事故 / 数据错误 / P1·P2 级影响时**必建**
+POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 **建议建**轻量版，纯流程 /
+命令修订则回到 RUNBOOK 本体编辑、不另建。POSTMORTEM body 权威见 §8.0 指定的
+[[../docs/_templates/TEMPLATE_POSTMORTEM|TEMPLATE_POSTMORTEM]]。
+
 ---
 
 > *M6 PR4a — kernel home for doc-governance（12 类分类 / `track` 字段 / A1-A6+OB1-OB5 / frontmatter
-> schema / CLAUDE.md sync allowlist）；§4 Review Cadence native sustained。源 STANDARD 在 PR4 archive 前留作历史源。*
+> schema / CLAUDE.md sync allowlist）；§4 Review Cadence native sustained。§8 per-type body
+> authoring depth（ORPH-09 GUIDE + ORPH-10 RUNBOOK；TEMPLATE_*.md designated authority）M6 PR4-OB-2
+> 迁入。源 STANDARD 在 PR4 archive 前留作历史源。*
