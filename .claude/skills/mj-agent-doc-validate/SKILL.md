@@ -198,10 +198,10 @@ uv run python scripts/check_frontmatter.py && uv run python scripts/check_wikili
 
 - [[../../../scripts/check_frontmatter.py|scripts/check_frontmatter.py]]（A2 + A3 + 4 值 TRACK_VALUES enum；v2.1 起首）
 - [[../../../scripts/check_wikilinks.py|scripts/check_wikilinks.py]]（A4 wikilink；含 living/frozen archive 判定）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §4 / §6.4（4 类 allowlist）+ §6.4.1（三段分组）+ §7（A1-A6 + OB1-OB5 标准）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 + OB1-OB5 适用 全 track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 仅 agent track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §7.7（A12-A14 engineering-workflow）
+- [[../../../policies/documentation|policies/documentation]] §2.6（项目根 markdown 例外）+ §6（frontmatter / state）+ §7.1（4 类 allowlist）+ §7.2（三段分组）+ §5.1（A1-A6）+ §5.2（OB1-OB5）
+- [[../../../policies/documentation|policies/documentation]] §5.1（A1-A6）+ §5.2（OB1-OB5 适用 全 track）
+- [[../../../policies/documentation|policies/documentation]] §5.3（A7-A11 仅 agent track 跨轨门禁）+ [[../../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] / [[../../../sdd/adapters/prompt|sdd/adapters/prompt]] / [[../../../sdd/adapters/contract|sdd/adapters/contract]]
+- A12-A14（engineering-workflow）：A12 → [[../../../sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards/§CI Gate；A13 → [[../../../policies/ci-gates|policies/ci-gates]] §5.1；A14 → [[../../../policies/ai-agent|policies/ai-agent]] §4
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；语法约束 manual review）
 - mj-system `.claude/skills/mj-sys-doc-validate/SKILL.md`（直接派生源；mj-agent 改用 2 scripts 包装而非 mj-system 单 validate_doc.py；mj-agent 加项目根例外）
 

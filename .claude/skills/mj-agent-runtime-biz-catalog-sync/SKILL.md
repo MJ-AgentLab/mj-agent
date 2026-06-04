@@ -1,6 +1,6 @@
 ---
 name: mj-agent-runtime-biz-catalog-sync
-description: This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` + `scripts/fetch_biz_schema.py`, proposes diff to qcm_catalog.yaml, and runs reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names. **Read-only by design** — propose diff + impact analysis, never directly Edit/Write to qcm_catalog.yaml. Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers HITL_Prompt §3.1 必停 12 (biz-catalog-sync) + §4.7 Rule 9 (B 风味永远 HITL). Do not use for: directly editing qcm_catalog.yaml (read-only by design); modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use /mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
+description: This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` + `scripts/fetch_biz_schema.py`, proposes diff to qcm_catalog.yaml, and runs reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names. **Read-only by design** — propose diff + impact analysis, never directly Edit/Write to qcm_catalog.yaml. Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers execution-loop §3.1 必停 12 (biz-catalog-sync) + §4.7 Rule 9 (B 风味永远 HITL). Do not use for: directly editing qcm_catalog.yaml (read-only by design); modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use /mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
 ---
 
 # mj-agent Runtime — Biz Catalog Sync
@@ -25,7 +25,7 @@ description: This skill detects + reports drift between mj-agent biz catalog mir
 - 用户提到 mj-system 上游 STANDARD §2-§4 演化（新增 metric / period / dimension / 同环比列 / 信号表 / 维表 join key）
 - 用户要"同步 biz_catalog / 检测 catalog drift / mirror mj-system §2-§4"
 - Stage 3 Repo Scan §6.6 检测到 biz_catalog drift
-- HITL_Prompt §4.4 Repo Scan §6 反向扫描发现 qcm_catalog.yaml 改动
+- execution-loop §4.4 Repo Scan §6 反向扫描发现 qcm_catalog.yaml 改动
 
 **MAY skip when**：
 
@@ -166,7 +166,7 @@ metrics:
 ## Impact Analysis
 
 - **Stage 8 B 风味边缘触发**：本改动是 biz_catalog 镜像漂移修复 → §3.1 必停 12 强制 HITL
-- **EVAL backlog ticket auto-issue**：per HITL_Prompt §4.15 Rule 11（如 SKILL.md 同步改动也触；qcm_catalog 单独不触，但建议绑定 SKILL diff）
+- **EVAL backlog ticket auto-issue**：per execution-loop §7.3 Rule 11（如 SKILL.md 同步改动也触；qcm_catalog 单独不触，但建议绑定 SKILL diff）
 - **find_biz_context 召回行为变化**：<具体；如"`qrynum` 业务问题召回时新增 dws_qcm_xxx_daily_total 候选">
 - **Studio probe 影响**：
   - H1（biz_dws 表查询）：<预期；如新表加入 list_biz_tables 输出>
@@ -177,7 +177,7 @@ metrics:
 
 ## HITL Questions（Domain Expert + 项目负责人 review）
 
-per HITL_Prompt §3.3 7-段格式：
+per execution-loop §3.3 7-段格式：
 
 问题 1: <方案 / 风险 / 边界>
 - 当前观察：mj-system 上游 STANDARD §2 新增 metric `qcm_xxx`
@@ -270,7 +270,7 @@ per HITL_Prompt §3.3 7-段格式：
 ## Reference Files
 
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 12 + §4.4 §6.6（biz_catalog drift detection in Repo Scan）+ §4.7 Rule 9
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 12 + §4.4 §6.6（biz_catalog drift detection in Repo Scan）+ §4.7 Rule 9
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only；catalog 是其实现）
 - src/mj_agent/biz_catalog/qcm_catalog.yaml（target file）
 - src/mj_agent/biz_catalog/{loader,finder}.py（catalog 加载入口；本 skill 不动这些）
@@ -301,6 +301,6 @@ HITL 通过后：
 - 手动 Edit tests/eval/golden_seed.jsonl（如 reference_sql 命中）
 - /mj-agent-infra-studio-probe 跑 H1/H2/H3 验证 find_biz_context 召回行为
 - /mj-agent-flow-self-review Stage 11
-- PR description 含 §4.15 Rule 11 EVAL backlog（如 SKILL/system 同步改动也触；catalog 单独不触但绑定 SKILL diff 时触）
+- PR description 含 execution-loop §7.3 Rule 11 EVAL backlog（如 SKILL/system 同步改动也触；catalog 单独不触但绑定 SKILL diff 时触）
 - /mj-agent-git-commit + /mj-agent-git-push + /mj-agent-git-pr
 ```

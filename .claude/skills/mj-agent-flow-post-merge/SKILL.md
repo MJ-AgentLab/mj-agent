@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-post-merge
-description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog ticket auto-issue** (per HITL_Prompt §4.15 Rule 11) when PR touches in-source canonical, **outputs frontmatter diff draft for plan state mark** (per HITL_Prompt §4.15 Rule 12 + Meta v2.2 §5.11; user applies via Edit tool), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; some are auto-runnable (delete branch / sync) while others are human-in-loop (CHANGELOG edits / follow-up issue creation / EVAL backlog ticket / **plan state mark** — skill outputs diff draft, user applies via Edit). Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
+description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog ticket auto-issue** (per execution-loop §7.3 Rule 11) when PR touches in-source canonical, **outputs frontmatter diff draft for plan state mark** (per lifecycle §2.2 Rule 12; user applies via Edit tool), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; some are auto-runnable (delete branch / sync) while others are human-in-loop (CHANGELOG edits / follow-up issue creation / EVAL backlog ticket / **plan state mark** — skill outputs diff draft, user applies via Edit). Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
 ---
 
 # mj-agent Flow — Post-merge Cleanup (HITL Stage 17)
@@ -13,14 +13,14 @@ description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17)
 2. Issue 关闭
 3. CHANGELOG 更新
 4. follow-up issue 创建
-5. **EVAL backlog ticket 自动开单**（mj-agent 专属，§4.15 Rule 11）
+5. **EVAL backlog ticket 自动开单**（mj-agent 专属，execution-loop §7.3 Rule 11）
 6. schedule 决策
 7. branch 清理
 8. develop 同步
-9. **plan 生命周期标记**（per Meta v2.2 §5.11；ADR-021；自动 active → completed）
+9. **plan 生命周期标记**（per lifecycle §2；ADR-021；自动 active → completed）
 10. **follow-up branch handoff**（如本次有 follow-up 工作 → 退出 skill + 委派 `/mj-agent-git-branch` 开**新 worktree**；NOT in-place `git checkout -b` 在当前 worktree）
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15（Rules 1-11，Rule 11 EVAL backlog 是 mj-agent 专属）+ Meta v2.2 §5.11 + Git Branch Strategy + PR Description Convention.
+**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §7（Post-merge sedimentation policy；§7.3 Rule 11 EVAL backlog 是 mj-agent 专属）+ [[../../../sdd/lifecycle|lifecycle]] §2（Working-doc lifecycle）+ Git Branch Strategy + PR Description Convention.
 
 ## Workflow
 
@@ -33,11 +33,11 @@ digraph post_merge {
   s2 [label="Step 2: Identify linked Issue\n• gh pr view <id> --json closingIssuesReferences\n• Or parse 'Closes #N' from PR body" shape=box];
   s3 [label="Step 3: CHANGELOG.md update?\n• User-facing? → add to [Unreleased]\n• Infra/docs? → skip" shape=diamond];
   s4 [label="Step 4: Follow-up issues\n• Deferred items in PR body?\n• 'Follow-up' / 'TODO' markers?" shape=box];
-  s5 [label="Step 5: EVAL backlog ticket\n(mj-agent 专属 §4.15 Rule 11)\nPR 触 src/mj_agent/skills/**/SKILL.md 或 prompts/system.md body 时" shape=diamond];
+  s5 [label="Step 5: EVAL backlog ticket\n(mj-agent 专属 execution-loop §7.3 Rule 11)\nPR 触 src/mj_agent/skills/**/SKILL.md 或 prompts/system.md body 时" shape=diamond];
   s6 [label="Step 6: Schedule agent?\n(see Schedule Triggers)" shape=diamond];
   s7 [label="Step 7: Branch cleanup\n→ delegate to /mj-agent-git-delete (PR-B3)" shape=box];
   s8 [label="Step 8: Develop sync\n→ delegate to /mj-agent-git-sync (PR-B3)" shape=box];
-  s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed\n• per Meta v2.2 §5.11" shape=box];
+  s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed\n• per lifecycle §2" shape=box];
   s10 [label="Step 10: Follow-up branch handoff\n• 有 follow-up 工作？\n  Yes → 退出 skill + /mj-agent-git-branch\n        (开新 worktree;\n         NOT in-place git checkout -b)\n  No  → 闭环结束" shape=diamond];
 
   out [label="Output: Post-merge Checklist\n+ next actions for user" shape=doublecircle];
@@ -116,7 +116,7 @@ gh pr view <pr-id> --json state,mergedAt,mergeCommit,baseRefName,headRefName,clo
 
 **输出**：每个 follow-up signal 对应一条 issue 草案，user 确认后用 `/mj-agent-git-issue` 或 `gh issue create` 实际创建。
 
-## Step 5: EVAL Backlog Ticket（mj-agent 专属，§4.15 Rule 11）
+## Step 5: EVAL Backlog Ticket（mj-agent 专属，execution-loop §7.3 Rule 11）
 
 **触发条件**：PR 触及 `src/mj_agent/skills/**/SKILL.md` body 或 `src/mj_agent/prompts/system.md` body 修改。
 
@@ -132,7 +132,7 @@ git diff $(gh pr view <pr-id> --json mergeCommit -q '.mergeCommit.oid')~1..$(gh 
 - Body:
 
 ```markdown
-## EVAL Backlog（自动开单 per HITL_Prompt §4.15 Rule 11）
+## EVAL Backlog（自动开单 per execution-loop §7.3 Rule 11）
 
 PR #<id> merge 触发 in-source canonical body 改动：
 - 文件：<list of changed SKILL.md / system.md>
@@ -190,7 +190,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 9: Plan Lifecycle Mark
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11「Working 文档生命周期」+ [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15 Rule 12，PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。
+按 [[../../../sdd/lifecycle|lifecycle]] §2「Working-doc Lifecycle」+ [[../../../sdd/lifecycle|lifecycle]] §2.2（Stage 17 Post-merge 自动化，PR-state→completed Rule 12），PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。
 
 ### 定位关联 plan
 
@@ -210,7 +210,7 @@ head -10 plans/[PLAN]_<id>_*.md
 # 2. skill 输出 diff 草案给 user：
 #    state: active     → state: completed
 #    updated: <旧>     → updated: <PR mergedAt 日期>
-#  + completed: <PR mergedAt ISO date>     # 新增字段（per HITL_Prompt §4.15 Rule 12）
+#  + completed: <PR mergedAt ISO date>     # 新增字段（per lifecycle §2.2 Rule 12）
 
 # 3. user 用 Edit 工具应用 diff（skill 不自动写 frontmatter；
 #    避免 false-automation 承诺；与 description "human-in-loop" 一致）
@@ -259,7 +259,7 @@ post-merge cleanup 跑完 Step 1-9 之后，执行 AI 经常处于"任务完成"
 mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-git-branch` SKILL §"Bare Repo Worktree 模型"）。在 `develop/` worktree 内 `git checkout -b maintain/post-merge-follow-up` 会：
 
 1. 把 `develop/` worktree 切到 follow-up 分支，`develop/` 不再代表 develop 分支 → 后续在此目录跑 `/mj-agent-git-sync` 等期望 develop 的工具会出错。
-2. 违反 HITL_Prompt §4.3 Rule 5「mj-agent 默认每 PR 一个 worktree」+ Rules「不使用 git checkout 切换分支」+ Fallback「禁止使用 `git checkout` 切分支」。
+2. 违反 execution-loop §4.3 Rule 5「mj-agent 默认每 PR 一个 worktree」+ Rules「不使用 git checkout 切换分支」+ Fallback「禁止使用 `git checkout` 切分支」。
 3. 违反 `mj-agent-git-branch` SKILL §Anti-patterns 第 2 条「不要 跳过 worktree 直接 `git checkout -b <branch>`——破坏 worktree-per-branch 模型」。
 
 ### 例外（不触发 Step 10）
@@ -293,7 +293,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
    - 建议建 [Follow-up] issue
    - 已建：#<id>（如已建）
 
-### EVAL Backlog Ticket（mj-agent §4.15 Rule 11）
+### EVAL Backlog Ticket（mj-agent execution-loop §7.3 Rule 11）
 - 检测：PR 触 src/mj_agent/skills/**/SKILL.md? **NO**
 - 检测：PR 触 prompts/system.md? **NO**
 - 结论：**不触发**（仅 documentation/* + .claude/skills/ 改动）
@@ -314,7 +314,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ### Develop Sync（→ /mj-agent-git-sync）
 - ☐ `cd ../develop && git pull origin develop --ff-only`
 
-### Plan Lifecycle Update（per Meta v2.2 §5.11）
+### Plan Lifecycle Update（per lifecycle §2）
 - ⏸ skipped — PR 无关联 working plan
 （如有，则）
 - ✅ `plans/[PLAN]_<id>_<desc>.md`: state `active` → `completed`，updated 刷到 <YYYY-MM-DD>
@@ -325,7 +325,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 （如触发，则）
 - 建议：退出本 skill，调 `/mj-agent-git-branch`（type=<feature|bugfix|documentation|maintain>，desc=<follow-up-kebab>）
-- ⚠️ **不要** 在当前 worktree 内 `git checkout -b <follow-up-branch>`（破坏 worktree-per-PR 约定；HITL §4.3 / git-branch anti-pattern）
+- ⚠️ **不要** 在当前 worktree 内 `git checkout -b <follow-up-branch>`（破坏 worktree-per-PR 约定；execution-loop §4.3 / git-branch anti-pattern）
 
 ### Next User Actions
 - [x] CHANGELOG：跳过（非用户感知）
@@ -358,9 +358,9 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.15（Rules 1-11，Rule 11 EVAL backlog mj-agent 专属）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11（Working 文档生命周期，Step 9 plan state 改 completed 依据）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.11（Working 文档 frontmatter schema 内嵌于 4 态机段）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §7（Post-merge sedimentation policy；§7.3 Rule 11 EVAL backlog mj-agent 专属）
+- [[../../../sdd/lifecycle|lifecycle]] §2（Working-doc 生命周期，Step 9 plan state 改 completed 依据；§2.2 Stage 17 自动化 Rule 12）
+- [[../../../sdd/lifecycle|lifecycle]] §2.1（Working 文档 frontmatter 4 态机段）
 - [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Branch lifecycle / cleanup）
 - [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（PR description fields；Step 4/5 解析依据）
 - `CHANGELOG.md`（Keep a Changelog format：Unreleased / Added / Changed / Fixed / Removed）
@@ -371,12 +371,12 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 ## Anti-patterns
 
-- **不要** 跳过 Step 5 EVAL backlog（mj-agent 专属硬约束；§4.15 Rule 11）
+- **不要** 跳过 Step 5 EVAL backlog（mj-agent 专属硬约束；execution-loop §7.3 Rule 11）
 - **不要** 在 §3.1 必停 10/11 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
 - **不要** 物理移动 plan 文件到 archive（仅改 frontmatter；GC 是 Phase 2 工作）
 - **不要** 自动改 plan `state: draft` → `completed`（违反生命周期；draft 不应跳过 active）
 - **不要** 删受保护分支 main / develop（硬性阻断）
-- **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；HITL_Prompt §4.3 Rule 5 + Rules + Fallback；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `/mj-agent-git-branch` 开新 worktree——见 Step 10。
+- **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；execution-loop §4.3 Rule 5 + Rules + Fallback；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `/mj-agent-git-branch` 开新 worktree——见 Step 10。
 
 ## Handoff
 

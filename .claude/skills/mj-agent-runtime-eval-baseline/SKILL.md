@@ -1,13 +1,13 @@
 ---
 name: mj-agent-runtime-eval-baseline
-description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for mj-agent in-source canonical changes (src/mj_agent/skills/**/SKILL.md or src/mj_agent/prompts/system.md) but is **read-only by design** — it analyzes target SKILL/PROMPT, drafts proposed eval_kind / dataset structure / baseline_metric+value / judges / regression_threshold, runs reverse-scan for existing eval_references, but does **NOT** execute the EVAL, write to docs/evaluation/, or modify any in-source canonical (per ADR-015 §决策点 4 runtime hard constraint + HITL_Prompt §3.1 必停 10/13 + §4.7 Rule 9 always-HITL + §4.15 Rule 11 EVAL backlog ticket auto-issue). User accepts proposed EVAL document via /mj-agent-doc-author after Domain Expert + Prompt Engineer review. The skill design is framework-independent; the actual EVAL run depends on Phase 2 EVAL framework readiness (PR-D2-enforcement). Make sure to use this skill whenever the user says "propose EVAL", "EVAL baseline", "set EVAL for SKILL", "A11 EVAL 强制 准备", "transitional waiver decay 准备", "EVAL backlog ticket", "design eval for system.md", "eval baseline for biz-domain-context", "B 风味 EVAL 准备", "Phase 2 EVAL design", "TEMPLATE_EVAL fill-in draft", or proposes any EVAL-related work for mj-agent in-source canonical (src/mj_agent/skills or prompts). Do not use for: directly running EVAL or writing to docs/evaluation/ (read-only by design — propose draft only); executing pytest tests/eval (use uv run pytest directly); modifying in-source SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); designing or running EVAL framework infrastructure itself (PR-D2-enforcement; out of this skill's read-only scope); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .claude/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
+description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for mj-agent in-source canonical changes (src/mj_agent/skills/**/SKILL.md or src/mj_agent/prompts/system.md) but is **read-only by design** — it analyzes target SKILL/PROMPT, drafts proposed eval_kind / dataset structure / baseline_metric+value / judges / regression_threshold, runs reverse-scan for existing eval_references, but does **NOT** execute the EVAL, write to docs/evaluation/, or modify any in-source canonical (per ADR-015 §决策点 4 runtime hard constraint + execution-loop §3.1 必停 10/13 + §4.7 Rule 9 always-HITL + §7.3 Rule 11 EVAL backlog ticket auto-issue). User accepts proposed EVAL document via /mj-agent-doc-author after Domain Expert + Prompt Engineer review. The skill design is framework-independent; the actual EVAL run depends on Phase 2 EVAL framework readiness (PR-D2-enforcement). Make sure to use this skill whenever the user says "propose EVAL", "EVAL baseline", "set EVAL for SKILL", "A11 EVAL 强制 准备", "transitional waiver decay 准备", "EVAL backlog ticket", "design eval for system.md", "eval baseline for biz-domain-context", "B 风味 EVAL 准备", "Phase 2 EVAL design", "TEMPLATE_EVAL fill-in draft", or proposes any EVAL-related work for mj-agent in-source canonical (src/mj_agent/skills or prompts). Do not use for: directly running EVAL or writing to docs/evaluation/ (read-only by design — propose draft only); executing pytest tests/eval (use uv run pytest directly); modifying in-source SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); designing or running EVAL framework infrastructure itself (PR-D2-enforcement; out of this skill's read-only scope); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .claude/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
 ---
 
 # mj-agent Runtime — EVAL Baseline
 
 ## Overview
 
-**Read-only by design**：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；user 接受后才写盘到 `docs/evaluation/`。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per ADR-015 §决策点 4 runtime 硬约束 + HITL_Prompt §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump）+ §4.7 Rule 9（B 风味永远 HITL）+ §4.15 Rule 11（PR merge 后 EVAL backlog ticket 自动开单）+ Agent_Side v1.1 §4 + §7.1 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
+**Read-only by design**：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；user 接受后才写盘到 `docs/evaluation/`。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per ADR-015 §决策点 4 runtime 硬约束 + execution-loop §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump）+ §4.7 Rule 9（B 风味永远 HITL）+ §7.3 Rule 11（PR merge 后 EVAL backlog ticket 自动开单）+ ADR-024 EVAL spec §4 + documentation §5.3 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
 
 **Why this skill exists**：
 
@@ -26,7 +26,7 @@ description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-i
 - 用户在 Stage 8 (B-flavor) Implementation 后要为本次 in-source canonical 改动设定 EVAL baseline
 - 用户提到 "propose EVAL / EVAL baseline / set EVAL / A11 EVAL 准备 / transitional waiver decay / TEMPLATE_EVAL fill-in / B 风味 EVAL 准备"
 - /mj-agent-runtime-skill-doc-improve 或 /mj-agent-runtime-prompt-version-bump propose diff 后 user 接受 → 自然衔接到本 skill
-- HITL_Prompt §4.15 Rule 11 EVAL backlog ticket 触发后，要从"开单"推进到"草稿就绪"
+- execution-loop §7.3 Rule 11 EVAL backlog ticket 触发后，要从"开单"推进到"草稿就绪"
 - Phase 2 EVAL framework 落地（PR-D2-enforcement 启动）前，把现有 9 个 in-source SKILL + system.md 的 eval_references 草稿先备齐
 
 **MAY skip when**：
@@ -234,14 +234,14 @@ judges: [<Step 5 选定 list>]
 ```markdown
 ## Impact Analysis
 
-- **A8 EVAL 引用同步审查**（per Agent_Side v1.1 §7.1 A8）：target 的 eval_references frontmatter field 应在本 EVAL 写盘后 append 本文件路径
+- **A8 EVAL 引用同步审查**（per documentation §5.3 A8）：target 的 eval_references frontmatter field 应在本 EVAL 写盘后 append 本文件路径
 - **A11 transitional waiver decay 进度**：当前 transitional / Phase 2 强制；本 EVAL 落地推进 1 个 target 进入 active EVAL coverage
 - **§4.15 Rule 11 EVAL backlog ticket**：merge 后自动开的 issue → 关联本 EVAL；issue 应 close 当 baseline_value 实测填回 active state
 - **Phase 2 EVAL framework 选型 unblock**：本 EVAL 草稿 dataset / judge prompt / regression criteria 框架无关；framework 选型决议（PR-D2-enforcement）后即可挂上跑
 - **关联 SKILL/PROMPT version**：target 的 frontmatter `version` 字段应同步 bump（per ADR-011）；如未 bump → propose 同步 bump 建议
 - **关联 SPEC/RUNBOOK**：如本 EVAL 由某 SPEC 触发 → 在 §1.2 关联
 
-## HITL Questions（Domain Expert + Prompt Engineer review；per HITL_Prompt §3.3 7-段格式）
+## HITL Questions（Domain Expert + Prompt Engineer review；per execution-loop §3.3 7-段格式）
 
 问题 1: eval_kind 选择 + 子类叠加是否合理？
 - 当前观察：选了 <list>
@@ -371,8 +371,8 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 
 - [[../../../docs/_templates/TEMPLATE_EVAL|TEMPLATE_EVAL.md]]（Phase D PR-D1 落地；本 skill 直接消费此模板填空）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟）+ §决策点 5（EVAL backlog ticket auto-issue §4.15 Rule 11）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump 触发本 skill）+ §4.7 Rule 9（B 风味永远 HITL）+ §4.13（regression 处理）+ §4.15 Rule 11（EVAL backlog ticket auto-issue）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §4（EVAL authoring；本 skill 落地的源依据）+ §7.1 A8/A11（EVAL 引用同步审查；transitional waiver decay 进度）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump 触发本 skill）+ §4.7 Rule 9（B 风味永远 HITL）+ §4.13（regression 处理）+ §7.3 Rule 11（EVAL backlog ticket auto-issue）
+- [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]（EVAL authoring spec；本 skill 落地的源依据）+ [[../../../policies/documentation|documentation]] §5.3（A8/A11 EVAL 引用同步审查；transitional waiver decay 进度）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow；EVAL 自身 versioning + target version 紧耦合）
 - 兄弟 read-only-by-design skills:

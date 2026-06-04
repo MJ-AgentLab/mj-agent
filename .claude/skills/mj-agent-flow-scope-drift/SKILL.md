@@ -9,7 +9,7 @@ description: This skill detects "scope drift" during mj-agent task implementatio
 
 17-stage 闭环中**最易遗漏**的 stage（实施跑偏检测）。比对 working tree diff vs linked Plan / SPEC / Issue scope，识别 commit 前的 implementation drift。
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停规则（`实现中 scope 明显扩大`）+ §4.4 Repo Scan 反向扫描原理（drift detection 的对偶）.
+**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停规则（`实现中 scope 明显扩大`）+ §4.4 Repo Scan 反向扫描原理（drift detection 的对偶）.
 
 ## Workflow
 
@@ -179,7 +179,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1（必停规则之"实现中 scope 明显扩大"）+ §4.4（Repo Scan 反向扫描，drift 的对偶）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1（必停规则之"实现中 scope 明显扩大"）+ §4.4（Repo Scan 反向扫描，drift 的对偶）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味分类，本 skill Step 3 风味识别依据）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 上游消费者，Step 2 嵌套调本 skill）
 - mj-system `.claude/skills/mj-sys-flow-scope-drift/SKILL.md`（直接派生源）
