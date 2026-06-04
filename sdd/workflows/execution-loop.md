@@ -2,7 +2,7 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.0
+version: 1.1
 owner: ranzuozhou
 created: 2026-06-04
 updated: 2026-06-04
@@ -345,7 +345,42 @@ intake-result.md` 用作留痕。
 
 ---
 
-## §7 Cross-refs
+## §7 Post-merge sedimentation policy（Stage 17）
+
+> Port from HITL_Prompt STANDARD §4.15（post-merge prompt Rules 9/10/11）。Stage 17 收尾阶段的
+> 沉淀闸；§1 stage 17 列出的 "EVAL backlog ticket 自动开单 / SPEC-* 漏项沉淀" 即指本节。完整收尾
+> 编排见 [[../../.claude/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]]。
+
+### §7.1 ASSESSMENT-on-optimization 闸（Rule 9）
+
+任务类型为 **optimization**，或 feature **含重构 / 性能改造** 时：必须判定是否建 ASSESSMENT 对比
+改造效果。pre-change 阶段未识别 ASSESSMENT 需求时，**post-merge 是最后一道闸**——决定**不**建
+ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未达预期 measurable improvement"）。
+
+### §7.2 SPEC-miss 沉淀阶梯（Rule 10）
+
+若本任务在 self-review / Review / CI 阶段产生 `SPEC-*` 漏项（按 `docs/_templates/TEMPLATE_SPEC.md`
+§3 Contract 子项命名 + SPEC Authoring GUIDE §5 短码映射），按层级沉淀：
+
+1. **默认**：PR description「AI 自检」段累计 `SPEC Delta: <code> @ <section>`；
+2. **触发达标后**（≥ 3 真实漏项跨 ≥ 2 任务）：新建 / 追加 `plans/[PLAN]_SPEC_Authoring_Miss_Ledger.md`；
+3. **升级 POSTMORTEM**：仅当漏项导致 merge 后事故 / 生产影响 / 数据错误 / CI-CD 发布失败 / P1-P2
+   级返工时，才写 `docs/postmortem/[POSTMORTEM]_*.md`。
+
+### §7.3 EVAL-backlog 自动开单（Rule 11；A11 transitional-waiver 兜底）
+
+若本 PR 触及 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 修改，
+**无论本 PR 是否带 EVAL 引用**，均开 follow-up Issue：`[EVAL backlog] <skill_name | prompt_name>
+@ <commit_sha>`，归 Phase D（Phase 2）EVAL framework 时一并完成。这是 A11 transitional-waiver 期内
+的兜底机制；触发面对应 [[../../policies/ai-agent|policies/ai-agent]] §4 canonical 10-enum 的
+`runtime-skill-content-change` / `prompt-version-or-body-change`。
+
+> **Rule 12（PR 关联 plan state 标记）不在本节**——其 `active → completed` 落地在
+> [[../lifecycle|sdd/lifecycle]] §2.2（Stage 17 自动化），漏落盘事后补救在 §2.5。
+
+---
+
+## §8 Cross-refs
 
 - **每个 stage 的 detailed prompt**（源 §4.1-§4.15 完整步骤 + Output 结构）：由
   `.claude/skills/mj-agent-*` SKILL 拥有（active 执行路径）——`mj-agent-flow-*`

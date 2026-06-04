@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-04
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -95,6 +95,11 @@ of truth），LSP 仅作交互式辅助.
 补充 procedural HITL（不绑单一 surface anchor；走 PR review 流程，不入上表 canonical enum）：
 - ADR `state` 变化（`draft → active` / `active → deprecated` / `supersede`）
 - Phase 边界（Stage entry / closure；per Phase M2/M3 kickoff outline）
+
+> **Post-merge tail（EVAL-backlog 自动开单）**：`runtime-skill-content-change` /
+> `prompt-version-or-body-change` 触及的 PR merge 后，自动开 `[EVAL backlog]` follow-up Issue
+> （A11 transitional-waiver 期兜底；无论本 PR 是否带 EVAL 引用）。规则体见
+> `sdd/workflows/execution-loop.md §7.3`（HITL_Prompt §4.15 Rule 11 的 kernel home）。
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 
