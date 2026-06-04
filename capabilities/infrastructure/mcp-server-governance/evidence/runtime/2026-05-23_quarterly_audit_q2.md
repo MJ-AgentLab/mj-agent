@@ -110,7 +110,7 @@ Parallel to **C-3 endpoint empirical limitation** (LLM endpoint network actions)
   - `mj-agent-infra-env-setup/SKILL.md` (★ NEW; → ADR-027 + ADR-028 per-line)
   - `mj-agent-infra-env-teardown/SKILL.md` (★ NEW; → ADR-026)
 - Authoritative ADR active set: **ADR-026** (Multi-Env Compose) + **ADR-027** (LLM Provider) + **ADR-028** (MCP Governance) + ADR-029 (Tool Error Middleware) — per PR-Γ 2026-05-11 split from archived ADR-025
-- Archived ADR-025 historical reference (`docs/archive/adr/[DEPRECATED]_[ADR]_025_*.md`; wikilink target file path persists post-archive per archive ceremony retention)
+- Archived ADR-025 historical reference (`archive/decisions/superseded/[DEPRECATED]_[ADR]_025_*.md`; relocated from docs/archive/adr/ in M5-PR3b; wikilink target file path persists post-archive per archive ceremony retention)
 - C-3 evidence `runtime/2026-05-23_endpoint_probe.md` §4.1 (originally 3-file scope; now 4-file post-C-4 expansion; 11-file post-C-5 expansion)
 - C-4 evidence `runtime/2026-05-23_compose_smoke.md` §4.1 (docker-compose.mj-agent.yml L2 ADR-025 → ADR-026) + §4.2 (.env.example L54 cross-cap C-3 expansion)
 

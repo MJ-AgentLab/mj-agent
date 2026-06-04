@@ -18,7 +18,7 @@ tags:
 
 # ADR-026: Multi-Environment Compose Profile (4-file Layering)
 
-> **历史**：本 ADR 与 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] / [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive 至 `docs/archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md`）。本 ADR 聚焦 docker-compose 多环境部署一题。
+> **历史**：本 ADR 与 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] / [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] 由历史 ADR-025 拆分而来（ADR-025 已 archive 至 `archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md`）。本 ADR 聚焦 docker-compose 多环境部署一题。
 
 ## Context
 
@@ -96,7 +96,7 @@ teardown 同模式（同 -f 链 + `down` / `down -v` / `down -v --rmi local`，p
 - [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]] — 独立 compose project + 独立 secrets pipeline；4-file 分层不破坏 `name: mj-agent`
 - [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — DGX 算力消费侧抽象（与本 ADR 同期落地，原 ADR-025 拆分姊妹）
 - [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — MCP 13 servers + governance STANDARD（同期落地，原 ADR-025 拆分姊妹）
-- [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR；本 ADR 是其拆分子项之一
+- [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR；本 ADR 是其拆分子项之一
 - `docker/compose.yaml` + `docker/compose.{override,test,prod}.yml` — 4-file 实文件
 - `mj-agent-infra-env-teardown` SKILL — teardown 流程（同 -f 链；3-level 安全模式）
 - 实施 PRs：[#99](https://github.com/MJ-AgentLab/mj-agent/pull/99)（compose layering 落地）+ [#104](https://github.com/MJ-AgentLab/mj-agent/pull/104)（env-teardown SKILL + ADR-025 originally）

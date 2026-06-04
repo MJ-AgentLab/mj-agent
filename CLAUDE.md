@@ -12,7 +12,7 @@ delegate execution to Codex. See [AGENTS.md](./AGENTS.md) + `policies/ai-agent.m
 the full boundary; each task output must declare `Codex invocation: NONE`.
 
 > **项目起源说明（2026-05-11 update）**：mj-agent 文档治理框架在 bootstrap
-> 阶段曾参考某内部上游业务系统的实践沉淀（详见 `docs/archive/adr/[DEPRECATED]_*`
+> 阶段曾参考某内部上游业务系统的实践沉淀（详见 `archive/decisions/superseded/[DEPRECATED]_*`
 > 9 个 archived ADR 与 `docs/archive/rule/[DEPRECATED]_*` 框架历史版本）；
 > 当前所有 active STANDARD 已独立维护，无跨仓依赖。runtime 层 mj-agent
 > 通过 `analyst` 只读 PostgreSQL 角色访问"上游业务系统"（术语见
@@ -319,7 +319,7 @@ v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
   inlined and mj-agent-native (PR #118 commit-3 supplements). Stage 8
   Implementation has three flavors (A pure code / B in-source canonical
   always-HITL / C infra). Original derivation provenance archived to
-  `docs/archive/adr/[DEPRECATED]_[ADR]_015_*`.
+  `archive/decisions/superseded/[DEPRECATED]_[ADR]_015_*`.
 
 Archived (`docs/archive/rule/`, `state: deprecated`):
 - `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` — replaced
@@ -391,9 +391,9 @@ ADR-026/027/028 (PR-Γ；ADR-025 拆分；2026-05-11)：
   baseline 在 `docs/_baselines/pg_server_baseline.md`。
 
 历史归档：ADR-010/015/017/018/019/021/022/023/025 共 9 个 ADR 已批量
-archive 至 `docs/archive/adr/`（PR-Γ；2026-05-11；cross-repo decoupling
-cleanup）— 决策内容已沉淀为对应 framework STANDARD 段；详见
-[[docs/archive/adr/INDEX|archive/adr/INDEX]]。
+archive 至 `archive/decisions/superseded/`（原 `docs/archive/adr/`；M5-PR3b 平移；
+PR-Γ；2026-05-11；cross-repo decoupling cleanup）— 决策内容已沉淀为对应 framework
+STANDARD 段；详见 [[archive/decisions/superseded/INDEX|archive/decisions/superseded/INDEX]]。
 
 `track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
 declares `track: code | agent | engineering-workflow | shared`. Boundary

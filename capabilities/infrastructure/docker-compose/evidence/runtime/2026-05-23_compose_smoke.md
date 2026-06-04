@@ -93,7 +93,7 @@ Parallel to **C-3 endpoint empirical limitation** (network actions out of SUT sc
 - `infra/docker/entrypoint.sh` + `infra/docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (canonical scripts; REQ-003 shell-safe init)
 - `.env.example` (canonical env template; **★ L54 archived ADR-025 reference per §4.2 cross-cap C-3 #C3-4 expansion**)
 - `decisions/ADR-026_Multi_Environment_Compose_Profile.md` (**authoritative** active decision record per PR-Γ 2026-05-11 split; should be referenced in docker-compose.mj-agent.yml L2 instead of archived ADR-025 per §4.1)
-- `docs/archive/adr/[DEPRECATED]_[ADR]_025_*.md` (historical reference; archived per PR-Γ; cited in §5 as drift context only)
+- `archive/decisions/superseded/[DEPRECATED]_[ADR]_025_*.md` (historical reference; archived per PR-Γ; relocated from docs/archive/adr/ in M5-PR3b; cited in §5 as drift context only)
 - C-3 evidence file `2026-05-23_endpoint_probe.md` §4.1 (3-file scope drift; **now 4-file post-C-4 §4.2 expansion**)
 
 ## §6 Forward

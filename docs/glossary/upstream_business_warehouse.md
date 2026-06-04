@@ -84,7 +84,7 @@ mj-agent 大多数 active 文档**不需要** inline mj-system URL —— body �
 ### 例外（允许 inline URL 的位置）
 
 - 本 glossary 段（唯一合法 active inline URL 持有者；元文档边界）
-- `docs/archive/adr/[DEPRECATED]_*.md`：per ADR-019 frozen snapshot，既有 URL 不动
+- `archive/decisions/superseded/[DEPRECATED]_*.md`（M5-PR3b 由 `docs/archive/adr/` 平移）：per ADR-019 frozen snapshot，既有 URL 不动
 - 代码层 fenced code block 中的 literal（罕见；如展示外部脚本片段对照）
 
 ### Forward guard

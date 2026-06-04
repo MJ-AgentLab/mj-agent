@@ -100,7 +100,7 @@ tags:
 
 - [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] — `Profile` enum 设计；DGX 不部署 mj-agent 决策起源
 - [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — DGX SSH 通过 MCP `ssh-manager` 访问（运维路径，与 LLM 消费正交）
-- [[../archive/adr/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
+- [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `src/mj_agent/llm.py` — `make_llm()` factory 实现
 - `src/mj_agent/config.py` — `Settings` `llm_provider` / `llm_base_url` / `llm_api_key` / `effective_llm_*` 字段
 - `.env.example` 中 LLM provider 段（含 ark / local-openai-compat 两 provider 注释）

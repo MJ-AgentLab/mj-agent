@@ -54,13 +54,14 @@ def _write_unit(archive_dir: Path, rel: str, manifest: dict | None, *, content: 
 # -------- (a) no archive/ → main() no-op --------
 
 
-def test_no_archive_dir_is_noop(capsys) -> None:
-    """No top-level archive/ → main() returns 0 with a clean no-op line.
+def test_no_archive_dir_is_noop(capsys, tmp_path: Path) -> None:
+    """No archive/ under repo_root → main() returns 0 with a clean no-op line.
 
-    main() derives repo_root from __file__; the current real tree has no
-    top-level archive/, so this exercises the genuine no-op path.
+    Isolated against an empty tmp repo_root: since M5-PR3b the real tree has a
+    populated top-level archive/, so we pass an empty repo_root to exercise the
+    genuine no-op path rather than depending on repo state.
     """
-    assert main(["--all"]) == 0
+    assert main(["--all"], repo_root=tmp_path) == 0
     out = capsys.readouterr().out
     assert "no archive/ yet" in out
 

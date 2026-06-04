@@ -83,7 +83,7 @@ Parallel to **C-1c §4 cross-repo limitation** (L4 GRANT + statement_timeout liv
   - L3+L10 (★ ADR-025 archived reference per §4.1 drift; should be ADR-027)
   - 3-step probe Workflow (Step 0 pre-check + Step 1 /v1/models + Step 2 1-token chat smoke)
 - `decisions/ADR-027_LLM_Provider_Abstraction.md` (**authoritative** active decision record per PR-Γ 2026-05-11 split)
-- `docs/archive/adr/[DEPRECATED]_[ADR]_025_*.md` (historical reference; archived per PR-Γ; cited in §5 as drift context only)
+- `archive/decisions/superseded/[DEPRECATED]_[ADR]_025_*.md` (historical reference; archived per PR-Γ; relocated from docs/archive/adr/ in M5-PR3b; cited in §5 as drift context only)
 - `policies/ai-agent.md §4` — canonical 10-enum (NOT triggered for C-3; documented for batch boundary discipline)
 
 ## §6 Forward

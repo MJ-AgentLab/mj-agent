@@ -166,8 +166,8 @@ def _find_missing_manifest_dirs(archive_dir: Path, repo_root: Path) -> Summary:
     return summary
 
 
-def main(argv: list[str] | None = None) -> int:
-    """G11/G12 validator entry point."""
+def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
+    """G11/G12 validator entry point. ``repo_root`` overridable for isolated tests."""
     parser = build_argparser(
         _SCRIPT_NAME,
         "G11/G12 archive manifest validator (archive.yml required fields + enums). "
@@ -176,7 +176,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parent.parent.parent
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent.parent
     archive_dir = repo_root / "archive"
 
     if not archive_dir.exists():
