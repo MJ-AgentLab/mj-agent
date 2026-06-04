@@ -25,9 +25,9 @@ owner: 项目负责人
 > **最后更新**：2026-05-18
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
-> GUIDE）、[[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]、
-> [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]、
-> [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]
+> GUIDE）、[[policies/documentation|documentation policy]]、
+> [[sdd/adapters/runtime-skill|runtime-skill adapter]]、
+> [[sdd/workflows/execution-loop|执行闭环 workflow]]
 
 ---
 
@@ -81,7 +81,7 @@ owner: 项目负责人
 | 仅要本地体验 agent | §3 → §7 |
 
 读完本份后下一站：根据角色 / 兴趣，进入 [[../infrastructure/git/INDEX|git GUIDEs]]
-深入或 [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side §3]]
+深入或 [[policies/documentation|documentation policy]] §8
 学认证类型的 authoring 细节。
 
 ## §0.5 权限/账号申请清单
@@ -175,17 +175,17 @@ uv run pytest tests/smoke -m smoke   # 需 DB + LLM（无凭据时 skip）
 ## §5 三轨道文档约定
 
 mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级；
-[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10）：
+[[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards）：
 - **Track A 代码侧**（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code
   / STANDARD-code / ISSUE-code / ASSESSMENT-code）——
-  [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
+  [[policies/documentation|documentation policy]]
 - **Track B 智能体侧**（in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT）——
-  [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
+  [[sdd/adapters/runtime-skill|runtime-skill adapter]]（+ [[policies/documentation|documentation policy]] §5.3 门禁）
 - **Track C 工程编排侧**（`.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json`
-  / HITL_Prompt 等）—— [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]
-  + Meta v2.2 §3.10 / §7.7
+  / 执行闭环 等）—— [[sdd/workflows/execution-loop|执行闭环 workflow]]
+  + [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Scope / §Standards
 - **Meta 元层**（types / layers / lifecycle / archive / `track`）——
-  Meta_Framework v2.2
+  [[policies/documentation|documentation policy]]（+ [[policies/archive|archive policy]]）
 
 > **⚠️ 两类 "skill" 严格区分**（误判事故防护）：
 > - **Track B 业务 skill**：`src/mj_agent/skills/<name>/SKILL.md` —— 运行时 LLM 输入；
@@ -203,12 +203,12 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 
 | 类型 | 模板 | Authoring 规格章节 |
 | --- | --- | --- |
-| GUIDE | [[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]] | Code_Side §3.1 |
-| ADR | [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] | Code_Side §3.2 |
-| CONTRACT | [[../_templates/TEMPLATE_CONTRACT|TEMPLATE_CONTRACT]] | Code_Side §3.x |
-| SKILL（Track B；in-source 业务）| [[../_templates/TEMPLATE_SKILL|TEMPLATE_SKILL]] | Agent_Side §2 |
+| GUIDE | [[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]] | documentation policy §8.1 |
+| ADR | [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] | documentation policy §8 |
+| CONTRACT | [[../_templates/TEMPLATE_CONTRACT|TEMPLATE_CONTRACT]] | contract adapter |
+| SKILL（Track B；in-source 业务）| [[../_templates/TEMPLATE_SKILL|TEMPLATE_SKILL]] | runtime-skill adapter |
 | WORKFLOW_SKILL（Track C；in-tree 工程）| [[../_templates/TEMPLATE_WORKFLOW_SKILL|TEMPLATE_WORKFLOW_SKILL]] | ADR-013 + ADR-016 |
-| PROMPT | [[../_templates/TEMPLATE_PROMPT|TEMPLATE_PROMPT]] | Agent_Side §3 |
+| PROMPT | [[../_templates/TEMPLATE_PROMPT|TEMPLATE_PROMPT]] | prompt adapter |
 
 ## §6 提交与推送
 
@@ -308,10 +308,10 @@ Hook 命令 exit code 2 让 Claude Code 把 stderr 经 agent 视图喂回，AI �
 
 - [[../infrastructure/git/INDEX|git GUIDEs]]（4 份）
 - [[[GUIDE]_Quick_Start_Setup|Quick Start Setup（5 分钟赶时间版）]]
-- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]
-- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]]
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]]
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]
+- [[policies/documentation|documentation policy]]
+- [[sdd/adapters/runtime-skill|runtime-skill adapter]] / [[sdd/adapters/prompt|prompt adapter]] / [[sdd/adapters/contract|contract adapter]]
+- [[policies/archive|archive policy]]
+- [[sdd/workflows/execution-loop|执行闭环 workflow]]
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message Convention]]
 - [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]]
 - [[../INDEX|docs/INDEX]]

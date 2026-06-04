@@ -19,7 +19,7 @@ owner: 项目负责人
 
 # TEMPLATE: Repo Scan Result（HITL Stage 3）
 
-> **使用方法**：`/mj-agent-flow-repo-scan` 执行完成后，把下方 fenced markdown block 内容**复制为对话输出**（不写文件，per HITL_Prompt §4.4 Rules）。
+> **使用方法**：`/mj-agent-flow-repo-scan` 执行完成后，把下方 fenced markdown block 内容**复制为对话输出**（不写文件，per [[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3 Repo Scan Rules）。
 >
 > **何时复制本模板**：
 > - 用户已有 Issue + branch，准备进 Stage 4 Plan / Stage 6 SPEC / Stage 8 实现
@@ -30,7 +30,7 @@ owner: 项目负责人
 > - Stage 0 Intake 准入（用 mj-agent-flow-intake 输出 Intake Result）
 > - Stage 9 实施中 scope drift 检测（用 mj-agent-flow-scope-drift）
 >
-> **关联**：[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.4 + `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描详细步骤）。
+> **关联**：[[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3 + `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描详细步骤）。
 
 ---
 
@@ -167,7 +167,7 @@ docker compose -f docker/compose.yaml up -d
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.4（Stage 3 prompt）
+- [[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3（Repo Scan）
 - `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描完整步骤）
 - [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]]（如 SPEC = Create/Update 时使用）
 

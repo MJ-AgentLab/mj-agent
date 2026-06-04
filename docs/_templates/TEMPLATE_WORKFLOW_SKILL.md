@@ -11,7 +11,7 @@ description: 1-2 sentences describing what this skill does, then "Triggers on" +
 > - 起草 `src/mj_agent/skills/<name>/SKILL.md`（runtime SKILL；Track B；13-field schema + 五段式 body）→ 用 [[TEMPLATE_SKILL|TEMPLATE_SKILL]]
 > - 起草 marketplace plugin SKILL.md（出本仓 governance）→ 参考 ADR-013 §Decision 内嵌范本
 >
-> **规格依据**：Meta v2.2 §3.10 + ADR-013（2-field schema 决策）+ ADR-016（in-tree skill 命名 + lifecycle）。
+> **规格依据**：[[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards + ADR-013（2-field schema 决策）+ ADR-016（in-tree skill 命名 + lifecycle）。
 
 ---
 
