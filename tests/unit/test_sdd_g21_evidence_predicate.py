@@ -135,11 +135,12 @@ class TestLoadRunbookMirror:
         assert result is None
 
 
-class TestCheckJustificationFieldsMirror:
-    """M-FU#4 NEW helper + drift guard against D-4 G22 versions.
+class TestCheckJustificationFields:
+    """M-FU#4 shared justification helper in bdd_helpers (used by G21 + G22).
 
-    Refine 1 Step 1.5: byte-equivalent MIRROR until M-FU#10 consolidation
-    post-Stage-E. Paired-edit warning enforced via drift guard test below.
+    Post M5-PR6 consolidation (M4-FU-G22-BDD-HELPERS-CONSOLIDATE): G22 imports
+    JUSTIFICATION_FIELDS + check_justification_fields from bdd_helpers directly,
+    so the byte-equivalent D-4 duplicate + its paired-edit drift-guard are retired.
     """
 
     def test_none_runbook_returns_all_missing(self) -> None:
@@ -151,25 +152,6 @@ class TestCheckJustificationFieldsMirror:
         all_present, missing = check_justification_fields(None)
         assert all_present is False
         assert set(missing) == set(JUSTIFICATION_FIELDS)
-
-    def test_drift_guard_matches_g22_d4_constants(self) -> None:
-        """★ M-FU#10 paired-edit drift guard.
-
-        Asserts bdd_helpers JUSTIFICATION_FIELDS == check_bdd_unautomated
-        ._JUSTIFICATION_FIELDS. Until M-FU#10 consolidation, BOTH copies
-        MUST stay identical (4-field semantic + tuple order) — drift
-        causes gate behavior inconsistency (G21 vs G22 disagreeing on
-        what 'justified' means).
-        """
-        from scripts.sdd._common.bdd_helpers import JUSTIFICATION_FIELDS
-        from scripts.sdd.check_bdd_unautomated import _JUSTIFICATION_FIELDS
-
-        assert JUSTIFICATION_FIELDS == _JUSTIFICATION_FIELDS, (
-            "★ DRIFT DETECTED: bdd_helpers.JUSTIFICATION_FIELDS diverged from "
-            "check_bdd_unautomated._JUSTIFICATION_FIELDS. Per M-FU#10 paired-edit "
-            "warning until consolidation, BOTH copies must stay identical to "
-            "prevent G21/G22 disagreeing on 'justified' semantics."
-        )
 
 
 class TestG21PredicateExtension:

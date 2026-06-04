@@ -91,6 +91,11 @@ def body_sha256(text: str) -> str:
 
     Used by claude-skill / runtime-skill / prompt contracts to lock down
     `freeze_anchor.content_hash` against the 4 项必停 source files.
+
+    Strips frontmatter via the canonical `strip_frontmatter` (the single shared
+    "Mode A" path used by every caller). The alternative per-validator
+    `_strip_frontmatter` helper ("Mode B") was proposed but NOT adopted —
+    WITHDRAWN, Mode A canonical is adequate (see M4-FU-V4-MODE-B-IMPL).
     """
     body = strip_frontmatter(text)
     return hashlib.sha256(body.encode("utf-8")).hexdigest()

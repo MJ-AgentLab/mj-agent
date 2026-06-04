@@ -23,8 +23,6 @@ from pathlib import Path
 import yaml
 from scripts.sdd._common.bdd_helpers import Scenario
 from scripts.sdd.check_bdd_unautomated import (
-    _JUSTIFICATION_FIELDS,
-    _check_justification_fields,
     _filter_unautomated_critical_high,
     _validate_capability,
 )
@@ -95,9 +93,14 @@ class TestCheckJustification:
     """R-10-2 layer (b) MVP keyword presence check."""
 
     def test_runbook_none_all_missing(self) -> None:
-        all_present, missing = _check_justification_fields(None)
+        from scripts.sdd._common.bdd_helpers import (
+            JUSTIFICATION_FIELDS,
+            check_justification_fields,
+        )
+
+        all_present, missing = check_justification_fields(None)
         assert all_present is False
-        assert set(missing) == set(_JUSTIFICATION_FIELDS)
+        assert set(missing) == set(JUSTIFICATION_FIELDS)
 
 
 class TestValidateCapability:
