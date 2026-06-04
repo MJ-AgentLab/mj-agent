@@ -1,6 +1,6 @@
 archived_at: 2026-06-04
-reason: "The 4 tri-track documentation STANDARDs (Meta_Framework v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1) archived in M6 PR4 of the SDD Spec-Anchored Refactor (2026-06-04). Their doc-governance content migrated to the SDD kernel — policies/ (documentation / archive / ci-gates / ai-agent) + sdd/ (lifecycle / adapters / workflows). Bodies are cite-by-vintage frozen snapshots; current authority lives in the kernel (see each file's replaced-by + TOMBSTONE.md)."
-original_path: docs/rule/
+reason: "The 4 tri-track documentation STANDARDs (Meta_Framework v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1) archived in M6 PR4 of the SDD Spec-Anchored Refactor (2026-06-04). Their doc-governance content migrated to the SDD kernel — policies/ (documentation / archive / ci-gates / ai-agent) + sdd/ (lifecycle / adapters / workflows). Bodies are cite-by-vintage frozen snapshots; current authority lives in the kernel (see each file's replaced-by + TOMBSTONE.md). PR4-consol (2026-06-04) additionally consolidated the 8 older archived STANDARD versions (Documentation_Management_Framework v1.0/v1.1, Meta v2.0/v2.1, Code_Side v1.0, Agent_Side v1.0/v1.1, HITL_Prompt v1_0) into this directory from docs/archive/rule/."
+original_path: "docs/rule/ (tri-track) + docs/archive/rule/ (8 older versions, PR4-consol)"
 ai_visibility: reference
 retention_class: permanent
 related_decisions:

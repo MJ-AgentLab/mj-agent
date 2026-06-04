@@ -81,7 +81,7 @@ track: shared
 |------|------|------|
 | [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0\|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]] | Phase 0 | 评估 上游业务系统 git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据 |
 
-## 归档（docs/archive/）
+## 归档（archive/）
 
 > Archive 由 Meta_Framework §5 流程触发的版本退役搬迁。详见 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention\|ADR-011]] + [[archive/decisions/superseded/INDEX\|archive/decisions/superseded/INDEX]]（9 个 cross-repo decoupling 归档 ADR forward gateway）。
 
@@ -266,7 +266,7 @@ track: shared
 | `docs/postmortem/` | 事故复盘 | 首次事故发生时 |
 | `docs/issues/` | 延后问题 | 首次需要时 |
 | `docs/api/` | 对外 API 规范 | 如有外部调用方出现 |
-| `docs/archive/legacy/` | 历史归档 | 首次需要归档时 |
+| `archive/legacy/` | 历史归档（top-level archive/；PR4-consol 后 docs/archive/ 已并入） | 首次需要归档时 |
 
 ---
 
