@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: prompt
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-06-04
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -105,6 +105,31 @@ hitl_required:
   M4 EVAL framework baseline 后 mandatory per ADR-024）
 - `forbidden_phrases[]` — 防 prompt drift "relax 4 stops" 关键短语黑名单（M3+ 落地）
 - `regression_eval` — 与 ADR-024 EVAL framework 联动（M4-FU baseline）
+- `token_budget_estimate` — **可选 PROMPT frontmatter 字段**（ported from Agent_Side §3.3；这是
+  kernel home）。本 prompt body 进入 LLM context 的估算 token 数；用于 context budget 规划（防
+  system prompt + 全量 SKILL 拼接膨胀超模型窗口）。`character_budget`（见 `runtime-skill.md`
+  §Standards）是 runtime SKILL 维度的同类约束；二者在 contract 层可交叉校验"system.md 估算 +
+  `_ACTIVE_SKILLS` 估算 ≤ 模型 context 预算"。M3+ 落地；M2 advisory，缺失不阻 PR
+
+**`model_binding` 规则（跨模型 prompt 需独立版本）** — ported from Agent_Side §3.4（这是 kernel
+home）.
+
+- **规则**：一个 prompt 若 bound 到不同 model（如从 DeepSeek V3 / Ark 迁到 DGX-Spark 本地
+  vLLM/SGLang/Ollama，per `langchain-agent.md` provider 抽象 + ADR-027），**必须**作为**独立
+  version** 维护 —— 不可同一 `version` 复用跨 model body，因为 prompt 措辞 / few-shot / 推理
+  toggle 在不同 model 上行为不同，沉默 regression 风险高
+- **frontmatter 体现**：跨 model 迁移触发 `version` bump（绝不复用旧 version）；可选记
+  `model_binding` 字段标注本 version 绑定的目标 model id / provider（如
+  `model_binding: ark/deepseek-v3` vs `model_binding: local-openai-compat/<model-id>`）
+- **与 `freeze_anchor` 联动**：`model_binding` 变更 = 语义级变更 → 触发 `prompt-version-bump`
+  必停（与 body / `version` 字段变更同 gate）；contract `freeze_anchor` 锁的是"某 version 在某
+  model 上的 body"，换 model 即换 freeze 对象
+- **与 EVAL 联动**（M4+）：跨 model 独立 version 各自需独立 `eval_references`（同一 prompt 在
+  model A 通过的 baseline 不能 carry over 到 model B）；A8 强制范围按 version 粒度
+
+> **边界**：`model_binding` 是 PROMPT frontmatter 维度的 invariant 治理（本 adapter）；"换 model
+> 后 agent 实际选错 tool 顺序"是行为 regression → 走 `@adapter:langchain-agent`（behavior owner），
+> 不在本 adapter scope（per §BDD Rules `@adapter:prompt` 何时 NOT 用）.
 
 ## §BDD Rules
 

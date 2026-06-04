@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-04
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -49,6 +49,35 @@ ai_visibility: source-of-truth
 |---|---|---|
 | `.claude/settings.json` | 团队共享（commit） | `permissions.deny` 红线（4 项必停文件 + secrets.enc + `Bash(rm -rf:*)`）+ `enabledPlugins` + hooks 配置 |
 | `.claude/settings.local.json` | 个人（gitignore） | `permissions.allow` 白名单（个人偏好的 Bash 命令豁免）+ 个人偏好 |
+
+### §5.1 A13 — `.claude/settings.json` PR 阻塞条件（engineering-workflow track）
+
+> 上文 §4 Review Cadence + 本节 §5 边界表把 `permissions.deny` 红线 + 季度审计
+> 框定为 **审计** cadence；本子节把 A13 升格为 **PR 阻塞 ruleset** —— 任一 PR 触动
+> `.claude/settings.json` 时 reviewer 必须按以下 3 条逐项核对，任一不满足即阻塞合并。
+> 源：Meta_Framework STANDARD §7.7 A13；决策依据
+> [[../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace
+> 配置分离，settings.json 属项目级 in-tree）+
+> [[../decisions/ADR-032_Claude_Skill_Schema_Monitoring|ADR-032]]（engineering-workflow
+> 配置漂移监控）。Phase C `[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0` 落地后本节迁为
+> cross-ref。
+
+任一 PR 变更 `.claude/settings.json` 时，下列 3 条为 **阻塞条件**（A13；与 §4 季度审计
+红线列表同源但语义不同 —— 审计是周期性巡检，本节是逐 PR 的 hard gate）：
+
+| # | 阻塞条件 | 判定 | 不满足后果 |
+|---|---|---|---|
+| (a) | `permissions.allow` **不出现裸 `Bash`**（无 sub-pattern 限定） | 必须用 scoped 形式（如 `Bash(uv run *)` / `Bash(git status:*)`）；裸 `Bash` = 无界 shell 授权 | 阻塞合并；要求改 scoped pattern |
+| (b) | `permissions.deny` **必须携带 secret pattern 兜底** | 含 `.env` / `secrets.enc` / API-key glob（如 `Read(./.env)` / `Edit(./.env)` / `Write(./.env)` / `Read(**/secrets*.enc)`）；与 §5 边界表「红线（4 项必停文件 + secrets.enc）」一致 | 阻塞合并；缺失即补齐 deny 条目 |
+| (c) | `enabledPlugins` **增删需 PR body 描述用途与来源** | 任何 `enabledPlugins` add/remove 必须在 PR body 给出 justification（用途 + 来源 + trust posture） | 阻塞合并；要求补 PR body 说明 |
+
+**与 §4 关系**：§4 季度 / model-release 审计是 cadence 巡检（catch 漂移）；§5.1 是 PR-time
+hard gate（catch 引入）。两者共用同一 `permissions.deny` 红线定义，避免双源漂移。
+
+**Cross-ref**：`.claude/skills/` 新建目录的准入规则（A13 的姊妹门，针对 skill 目录而非
+settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新目录准入规则」；
+`.mcp.json` server 增删（A14）见 `policies/ai-agent.md` §4
+`mcp-server-trust-posture-change` + `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`。
 
 ## §6 CI gate 命名映射
 

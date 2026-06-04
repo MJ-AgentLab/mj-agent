@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: claude-code-skill
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-06-04
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -44,6 +44,32 @@ ai_visibility: source-of-truth
 | in-source (runtime) | `src/mj_agent/skills/<name>/` | 13-field (Agent_Side §2) | `load_skill()` strip | NOT 本 adapter（runtime-skill） |
 | in-tree (workflow) | `.claude/skills/mj-agent-*/` | 2-field (ADR-013 native) | Claude Code 主 process | **本 adapter** |
 | marketplace plugin | `mj-agentlab-marketplace/plugins/<plugin>/` | 2-field (ADR-013 native) | Claude Code plugin loader | out of mj-agent governance |
+
+### `.claude/` 新目录准入规则
+
+> 源：Meta_Framework STANDARD §3.6 新目录准入规则（engineering-workflow 专属条目）+
+> §7.6 `.claude/` 边界。决策依据
+> [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（in-tree
+> `mj-agent-*` namespace + lifecycle）+
+> [[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs
+> marketplace schema 分离）。本规则界定哪些 `.claude/` 新目录可由普通 PR 直接引入、哪些需
+> kernel-policy 修订。
+
+| 新目录 / 资源 | 准入门槛 | 说明 |
+|---|---|---|
+| `.claude/skills/<group>/`（新 skill family 目录） | **普通 PR 直接新增** —— 无需 Meta / kernel 修订 | 仅需符合 ADR-016 `mj-agent-<group>-<verb>` namespace + 通过 A12 description 质量门；不触动 kernel-policy。5 family（flow / git / doc / runtime / infra）已立，新增第 6 family（如 M6 evidence）走此路径 |
+| `.claude/hooks/`（**首次启用**） | **需 kernel-policy 修订** —— Meta §7.6 `.claude/` 边界子条款 | hooks 影响所有工具调用，治理强度高；首次引入 hooks 必须先修订 §7.6.x 子条款（kernel-policy 级），再落 hooks 文件；不可由普通 PR 直接引入 |
+| `.mcp.json` server 增删 | **联动 MCP_Server_Governance STANDARD（A14）** | 详见下方注；本 adapter 不重复 |
+
+**`.mcp.json` 半边由别处覆盖**：`.mcp.json` server 增删的准入 / trust posture / credential
+mode 已由 `policies/ai-agent.md` §4 `mcp-server-trust-posture-change`（A14 必停 gate）+ 领域
+专属 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` 覆盖；本 adapter
+只承载 **skills / hooks 两半** 的显式准入规则，`.mcp.json` 半不在此重述。
+
+**Cross-ref**：`.claude/settings.json` 的 A13 PR 阻塞条件（裸 `Bash` 禁用 / `permissions.deny`
+secret pattern 兜底 / `enabledPlugins` justification）见 `policies/ci-gates.md` §5.1。三者
+（settings.json A13 / skills+hooks 准入 / `.mcp.json` A14）共同构成 engineering-workflow track
+的 `.claude/` 边界 PR 门禁面。
 
 ## §Contract Output
 

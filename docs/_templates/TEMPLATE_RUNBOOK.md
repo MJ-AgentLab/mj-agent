@@ -145,7 +145,7 @@ rollback-command-2
 | 故障由本 RUNBOOK 之外原因触发 | **不必建**（更新触发条件即可） |
 | 流程 / 命令需要修订 | **不必建**，回到本 RUNBOOK 编辑 |
 
-详见 [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side]] §3.5 POSTMORTEM Authoring。
+详见 [[../../policies/documentation|policies/documentation]] §8（其 §8.0 指定 [[TEMPLATE_POSTMORTEM|TEMPLATE_POSTMORTEM]] 为 POSTMORTEM body 权威）。
 
 ---
 
