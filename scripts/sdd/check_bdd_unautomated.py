@@ -59,6 +59,7 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.sdd._common.bdd_helpers import (  # noqa: E402
     FeatureParseError,
     Scenario,
+    check_justification_fields,
     extract_tags,
     load_trace_yml,
     parse_feature_file,
@@ -71,12 +72,10 @@ from scripts.sdd._common.discovery import (  # noqa: E402
 
 _SCRIPT_NAME = "check_bdd_unautomated"
 _TARGET_RISK_LEVELS = frozenset({"critical", "high"})
-_JUSTIFICATION_FIELDS: tuple[str, ...] = (
-    "原因",
-    "替代验证手段",
-    "升级触发条件",
-    "预计时间",
-)
+# Justification 4-field constant (JUSTIFICATION_FIELDS) + check_justification_fields
+# live in bdd_helpers, shared with G21. G22 consumes them directly post the
+# M5-PR6 consolidation (M4-FU-G22-BDD-HELPERS-CONSOLIDATE); the byte-equivalent
+# D-4 local duplicate + its drift-guard test are retired.
 
 
 def _filter_unautomated_critical_high(
@@ -129,24 +128,6 @@ def _load_runbook(capability_dir: Path) -> str | None:
         return None
 
 
-def _check_justification_fields(runbook_text: str | None) -> tuple[bool, list[str]]:
-    """Check runbook.md for justification 4 fields per R-10-2 layer (b).
-
-    MVP keyword presence (N-1 inline): simple substring matching for the
-    4 canonical Chinese field names. M-FU#7 Stage E α' will standardize
-    runbook sectioning (per-scenario sections + structured YAML sidecar)
-    at which point strict mode (M-FU#6 BLOCKING flip) may use richer
-    per-scenario parsing.
-
-    Returns (all_present, missing_fields).
-    """
-    if runbook_text is None:
-        return False, list(_JUSTIFICATION_FIELDS)
-
-    missing = [f for f in _JUSTIFICATION_FIELDS if f not in runbook_text]
-    return len(missing) == 0, missing
-
-
 def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
     """Validate G22 for one capability per R-N v10 R-10-6 2-layer policy.
 
@@ -186,7 +167,7 @@ def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
     for scenario in filtered:
         tags = extract_tags(scenario)
         risk_label = ",".join(tags.risk)
-        all_present, missing_fields = _check_justification_fields(runbook_text)
+        all_present, missing_fields = check_justification_fields(runbook_text)
 
         if all_present:
             summary.add(

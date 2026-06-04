@@ -6,14 +6,15 @@ ADR-016 namespace pattern + ADR-013 description quality bar.
 Per blueprint §6 Phase M2 §3 + ADR-031 §5 claude-code-skill adapter. Phase M2
 warning mode; M3 strict.
 
-Two modes:
-  - **Mode A (default)**: scan ALL `.claude/skills/*/SKILL.md` regardless of
-    capability contracts. Acts as a linter for ADR-013 schema enforcement.
-    Default at M2 — expected to surface ≥5 natural WARN across 34 SKILLs
-    (per Subagent C survey + user augmentation expectation).
-  - **Mode B**: when `capabilities/*/contracts/claude-skill.contract.yml` is
-    present (Stage C will add for mcp-server-governance), validate the
-    contract's `skill_path` reference resolves and matches contract spec.
+Mode A only (ADR-013 schema linter): scan ALL `.claude/skills/*/SKILL.md`
+regardless of capability contracts, enforcing the ADR-013 native 2-field schema
+(surfaced ≥5 natural WARN across 34 SKILLs per the Subagent C survey).
+
+The proposed "Mode B" — read `capabilities/*/contracts/claude-skill.contract.yml`
+to validate the contract's `skill_path` resolves + matches spec — was WITHDRAWN
+(M4-FU-V4-MODE-B-IMPL): Mode-A schema-linting is canonical + adequate, and the
+locked infra SKILLs' content_hash/description_hash freeze is enforced separately
+via the `mcp-server-trust-posture-change` HITL, not by this linter.
 
 Validates (per user augmentation + ADR-013 + ADR-016):
   - **Schema (ADR-013 native; 2-field)**: ONLY `name` + `description`; any

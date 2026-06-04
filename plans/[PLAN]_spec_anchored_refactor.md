@@ -464,14 +464,14 @@ counted as standalone M-FU entries — they are tracking aids,not deliverables�
 | **M-FU#2** D-1-BRIEF-STEP-5-RUFF-MYPY-PARITY | ✅ completed (process lesson registered) | Stage D briefs | none |
 | **M-FU#3** FLOOR-ESTIMATE-CALIBRATION | 🔵 informational (ongoing accumulator) | — | no PR action; calibration continues across phases |
 | **M-FU#9** G23-TASKS-CURATION-SURFACE | ⏳ deferred → **M6** | per L62 G23 M4-warn/M6-block | M6 (G23 flip + `tasks.md` tdd.test_list curation) |
-| M4-FU-BODY-SHA256-CANONICAL-REFACTOR | ⏳ deferred → **M5** | blocked_by M5 `frontmatter.py` freeze | M5 |
-| M4-FU-V4-MODE-B-IMPL | ⏳ deferred → **M5** | likely WITHDRAW (Mode A adequate) | M5 final decision |
-| M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER | ⏳ deferred → **M5+** | per A-3 R-2 verdict | M5+ |
-| M4-FU-BODY-SHA256-DOCSTRING-CLARIFY | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped from M4 @ E-4-PR11) | — | M5 F-7 batch |
-| M4-FU-V4-MODE-B-CLEANUP | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 F-7 batch |
-| M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 F-7 batch (critical wording reframe) |
-| M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **post-M4 tail / M5** (F-7 descoped) | — | M5 (detector impl ~150-300 lines + ci.yml + tests) |
-| M4-FU-G22-BDD-HELPERS-CONSOLIDATE | ⏳ deferred → **post-M4 tail / M5** | drift-guard test enforces parity meanwhile | M5 |
+| M4-FU-BODY-SHA256-CANONICAL-REFACTOR | ⏳ deferred → **M6** | larger refactor of `body_sha256()`; build post-archive-ceremony on the settled tree | M6 |
+| M4-FU-V4-MODE-B-IMPL | ✅ **WITHDRAWN** (M5-PR6, 2026-06-04) | Mode A schema-linting canonical + adequate; Mode B per-contract `skill_path` validation never needed (content_hash freeze enforced via mcp-server-trust-posture-change HITL) | none |
+| M4-FU-A2-HOOK-IMPROVER-BODY-M5-DEFER | ⏳ deferred → **M6** | blocked_by EVAL Phase-2 maturity (an M6 deliverable) | M6 |
+| M4-FU-BODY-SHA256-DOCSTRING-CLARIFY | ✅ **done** (M5-PR6) | `body_sha256()` docstring clarifies the Mode-A canonical `strip_frontmatter` path (Mode B withdrawn) | none |
+| M4-FU-V4-MODE-B-CLEANUP | ✅ **done** (M5-PR6) | `check_claude_skill_contracts.py` docstring → Mode-A-only; the dead Mode B "two modes" promise removed + WITHDRAW recorded | none |
+| M4-FU-OUTLINE-STAGE-B-WORDING-REFRAME | ✅ **resolved-moot** (M5-PR6) | the "补 §L2/§L3/§L4" wording lived in an ephemeral B-1 kickoff brief (not a tracked repo doc); the reframe finding (runbook §1-§5 + L1/L1b/L4 as tags inside §3) is recorded in this registry — no repo edit needed | none |
+| M4-FU-DOCSTRING-DRIFT-DETECTOR | ⏳ deferred → **M6** | ~150-300 LOC detector + ci.yml + tests; build post-ceremony so its baseline is the settled tree | M6 |
+| M4-FU-G22-BDD-HELPERS-CONSOLIDATE | ✅ **done** (M5-PR6) | G22 now imports `JUSTIFICATION_FIELDS` + `check_justification_fields` from `bdd_helpers` directly (shared with G21); the byte-equivalent D-4 local duplicate + its drift-guard test retired (G22 still 15P/0W/0F) | none |
 | **M4-FU-MCP-GOV-PROMOTION-DEFER** ★ NEW (E-4-PR11) | 🟡 active → **post-M4 capability promotion** | E-4-PR11 (4/5 promoted; mcp-gov held drafting) | owner caveat-accept (medium-only) OR added @risk:high\|critical coverage |
 | M4-FU-11-FILE-ADR-025-RECONCILE-SMALL-DOCS-PR | ✅ completed (E-4-PR8 + E-4-PR9) | 4 free refs (#207) + 6 locked infra SKILLs reconciled & contract re-frozen (E-4-PR9); execute.py no-ref N/A | none |
 | M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX | ✅ completed (E-4-PR7) | recipe already worktree-safe (git-sync Step 4 `git merge`); #185-lesson guard note added to post-merge Step 8 | none |
