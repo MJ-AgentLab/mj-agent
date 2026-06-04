@@ -199,11 +199,12 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §4.7（双段约束；沿用 v2.0 §4 全部规则）+ §6.4（4 类 allowlist；PR #173 显式展开）+ §6.4.1（三段分组）+ §7.7（A12-A14）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §7.1（A1-A6 全 track）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §7.1（A7-A11 agent track）
+- [[../../../policies/documentation|policies/documentation]] §2.6（项目根 markdown 例外）+ §7.1（4 类 allowlist；PR #173 显式展开）+ §7.2（CLAUDE.md 三段分组）（双段 PR description 约束沿用 v2.0 §4 全部规则）
+- A12-A14（engineering-workflow）：A12 → [[../../../sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards/§CI Gate；A13 → [[../../../policies/ci-gates|policies/ci-gates]] §5.1；A14 → [[../../../policies/ai-agent|policies/ai-agent]] §4
+- [[../../../policies/documentation|policies/documentation]] §5.1（A1-A6 全 track）
+- [[../../../policies/documentation|policies/documentation]] §5.3（A7-A11 agent track 跨轨门禁）+ [[../../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] / [[../../../sdd/adapters/prompt|sdd/adapters/prompt]] / [[../../../sdd/adapters/contract|sdd/adapters/contract]]
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加；语法 manual review）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（§12 前置检查）+ §4.8（Local Verification）+ §4.9 Rule 5a-5d
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（§12 前置检查在 loop 中的位置）+ §5（Local Verification）+ §3（HITL 规则）
 - `.github/PULL_REQUEST_TEMPLATE/`（5 PR templates）
 - mj-system `.claude/skills/mj-sys-doc-review/SKILL.md`（直接派生源；mj-agent 加 tri-track A12-A14 + mj-agent 扩展 §7.2.1 反扫 + 项目根 markdown 例外）
 

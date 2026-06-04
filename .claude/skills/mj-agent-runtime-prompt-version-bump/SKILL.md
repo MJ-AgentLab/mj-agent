@@ -1,13 +1,13 @@
 ---
 name: mj-agent-runtime-prompt-version-bump
-description: This skill walks through proposing diffs + version bump for mj-agent in-source system prompt (src/mj_agent/prompts/system.md; Track B Agent_Side §3 PROMPT) — frontmatter `version` field bump (semver-style v0.1 → v0.2) + body changes + `eval_references` sync (A11/A8 PROMPT EVAL coupling) + cross-ref audit. **Read-only by design** — propose diff + impact analysis, never directly Edit/Write to src/mj_agent/prompts/. Make sure to use this skill whenever the user says "system.md 升级", "prompt version bump", "升 v1.7 → v1.8", "改 system prompt", "改 system.md", "prompt 改进", "B 风味 system prompt", "system prompt rule 调整", "ADR-000 P1/P2/P3 调整", "system.md `version` 字段", "eval_references for prompt" in the mj-agent context. Triggers HITL_Prompt §3.1 必停 11 (prompt-version-bump) + §4.7 Rule 9 (B 风味永远 HITL) + §4.15 Rule 11 (EVAL backlog ticket auto-issue). Do not use for: directly editing src/mj_agent/prompts/system.md (read-only by design); modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); validating frontmatter (use mj-agent-doc-validate); or new prompt creation (use mj-agent-doc-author with TEMPLATE_PROMPT).
+description: This skill walks through proposing diffs + version bump for mj-agent in-source system prompt (src/mj_agent/prompts/system.md; Track B sdd/adapters/prompt PROMPT) — frontmatter `version` field bump (semver-style v0.1 → v0.2) + body changes + `eval_references` sync (A11/A8 PROMPT EVAL coupling) + cross-ref audit. **Read-only by design** — propose diff + impact analysis, never directly Edit/Write to src/mj_agent/prompts/. Make sure to use this skill whenever the user says "system.md 升级", "prompt version bump", "升 v1.7 → v1.8", "改 system prompt", "改 system.md", "prompt 改进", "B 风味 system prompt", "system prompt rule 调整", "ADR-000 P1/P2/P3 调整", "system.md `version` 字段", "eval_references for prompt" in the mj-agent context. Triggers execution-loop §3.1 必停 11 (prompt-version-bump) + §4.7 Rule 9 (B 风味永远 HITL) + §7.3 Rule 11 (EVAL backlog ticket auto-issue). Do not use for: directly editing src/mj_agent/prompts/system.md (read-only by design); modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); validating frontmatter (use mj-agent-doc-validate); or new prompt creation (use mj-agent-doc-author with TEMPLATE_PROMPT).
 ---
 
 # mj-agent Runtime — Prompt Version Bump
 
 ## Overview
 
-**Read-only by design**：propose diff + version bump 走查 for `src/mj_agent/prompts/system.md`；user 接受后才写盘。这是 mj-agent 专属的 **Track B in-source PROMPT 守门人** skill，per ADR-015 §决策点 4 + HITL_Prompt §3.1 必停 11（prompt-version-bump）+ §4.7 Rule 9。
+**Read-only by design**：propose diff + version bump 走查 for `src/mj_agent/prompts/system.md`；user 接受后才写盘。这是 mj-agent 专属的 **Track B in-source PROMPT 守门人** skill，per ADR-015 §决策点 4 + execution-loop §3.1 必停 11（prompt-version-bump）+ §4.7 Rule 9。
 
 **Why this skill exists**：
 
@@ -26,7 +26,7 @@ description: This skill walks through proposing diffs + version bump for mj-agen
 - 用户提到"system.md 升级 / prompt version bump / 升 v1.7 → v1.8"
 - ADR-000 P1/P2/P3 数据边界原则有调整
 - system.md 现有 hard rule 要紧 / 放宽（如 v1.3 收紧 R1/R2 行为）
-- HITL_Prompt §4.7 Stage 8 B 风味识别后系统提示改动
+- execution-loop §4.7 Stage 8 B 风味识别后系统提示改动
 
 **MAY skip when**：
 
@@ -87,7 +87,7 @@ body = load_prompt("system")           # body only (frontmatter stripped per §7
 - `eval_references`: list（A8 transitional waiver 期内可注释 TODO）
 - `track`: agent
 
-## Step 2: Body Audit（per Agent_Side §3）
+## Step 2: Body Audit（per sdd/adapters/prompt §Standards）
 
 system.md 典型段：
 
@@ -185,7 +185,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 ## Impact Analysis
 
 - **Stage 8 B 风味触发**：本改动是 in-source PROMPT body 修改 → §3.1 必停 11 强制 HITL
-- **EVAL backlog ticket auto-issue**：per HITL_Prompt §4.15 Rule 11，PR merge 后自动开
+- **EVAL backlog ticket auto-issue**：per execution-loop §7.3 Rule 11，PR merge 后自动开
 - **Studio probe 影响**：
   - H1（biz_dws 表查询）：<预期保持/变化>
   - H2（最近 7 天趋势）：<预期>
@@ -197,7 +197,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 
 ## HITL Questions（Domain Expert + Prompt Engineer review）
 
-参 HITL_Prompt §3.3 7-段格式：
+参 execution-loop §3.3 7-段格式：
 
 问题 1: <方案 / 风险 / 边界>
 - 当前观察：
@@ -303,8 +303,8 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 ## Reference Files
 
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 11 + §4.7 Rule 9 + §4.15 Rule 11（EVAL backlog）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §3（PROMPT authoring：version / model_binding / token_budget_estimate / eval_references / supersedes）+ §7.3（frontmatter strip 契约）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 11 + §4.7 Rule 9 + §7.3 Rule 11（EVAL backlog）
+- [[../../../sdd/adapters/prompt|prompt]]（PROMPT authoring：version / model_binding / token_budget_estimate / eval_references / supersedes + frontmatter strip 契约）
 - [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P1/P2/P3 不可放宽）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only）
@@ -331,6 +331,6 @@ HITL 通过后：
 - /mj-agent-doc-author（带 Q-B1）写盘 → /mj-agent-flow-self-review Stage 11
 - /mj-agent-infra-studio-probe 跑 H1/H2/H3/R1/R2 验证行为变化（mandatory for system.md changes）
 - 如 SKILL.md 同步改：/mj-agent-runtime-skill-doc-improve
-- PR description 含 §4.15 Rule 11 EVAL backlog ticket
+- PR description 含 execution-loop §7.3 Rule 11 EVAL backlog ticket
 - /mj-agent-git-commit + /mj-agent-git-push + /mj-agent-git-pr
 ```

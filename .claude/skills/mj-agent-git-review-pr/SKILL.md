@@ -98,7 +98,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 
 - **D1 mj-agent 模块边界**：列新模块目录，对照 CLAUDE.md "Architecture" 段
 - **D2 graph 装配**：读 agent.py，确认 `_ACTIVE_SKILLS` + `make_graph` + `langgraph.json` 入口一致
-- **D3 in-source SKILL**：读 SKILL.md body 改动；确认 13 字段 frontmatter（Agent_Side §2 schema）+ 五段式 body 保持；A11 `eval_references` 同步审查
+- **D3 in-source SKILL**：读 SKILL.md body 改动；确认 13 字段 frontmatter（sdd/adapters/runtime-skill schema）+ 五段式 body 保持；A11 `eval_references` 同步审查
 - **D4 system.md**：读 prompt body 改动；确认 frontmatter `version` bump（如适用）+ `eval_references` 同步
 - **D5 biz catalog**：跑 `python scripts/diff_biz_schema.py` 比对 mj-system 上游 STANDARD §2-§4
 - **D6 SQL guardrail**：检查 BIZ_ALLOWED_DWD_TABLES 修改是否扩边界；ADR-006 4 层 guardrail / ADR-009 biz 域 only 红线
@@ -215,8 +215,8 @@ GitHub Comment 格式（建议）：
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1 必停 4 项 mj-agent 专属（D3-D6 触发依据）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 + §7.7（D9 A12-A14 self-check）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §3.1（必停规则）+ [[../../../policies/ai-agent|policies/ai-agent]] §4（mj-agent 专属必停 surface；D3-D6 触发依据）
+- [[../../../sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards（eng-wf SKILL 治理）+ §CI Gate（A12 gate）；A13 → [[../../../policies/ci-gates|policies/ci-gates]] §5.1；A14 → [[../../../policies/ai-agent|policies/ai-agent]] §4（D9）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（D6 数据边界红线）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]] §5.2（F3 Branch×Type 矩阵）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Architecture"（D1 模块边界依据）

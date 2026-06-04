@@ -108,8 +108,7 @@ PR merge 后写 evidence + 事故复盘 + runtime / security capture.
 
 ## §3 HITL Stage Mapping
 
-> 详 `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md`（Phase M5 平移
-> 至 `decisions/` + `policies/ai-agent.md`）.
+> 详 `sdd/workflows/execution-loop.md` §1（17-stage loop）+ `policies/ai-agent.md` §4（必停 surface）.
 
 每 stage 至少 1 个 skill；多数 stage 由多个 skill 协作（如 Stage 8 由 `mj-agent-flow-implement`
 + `mj-agent-runtime-*`（runtime 触发时）+ `mj-agent-doc-sync`（doc 同步）协作完成）.
@@ -119,7 +118,7 @@ PR merge 后写 evidence + 事故复盘 + runtime / security capture.
 - ❌ 不要直接读 SKILL.md body — 用 `Skill` 工具 invocation（per Claude Code skill 系统）
 - ❌ 不要在 `runtime-*` skill 内绕过 read-only 约束直接 Edit `src/mj_agent/skills/`、
   `prompts/`、`agent.py`、`tools/`、`biz_catalog/`（详 `policies/data-boundary.md` §3）
-- ❌ 不要混用 in-tree skill schema 与 in-source skill schema — 13-field Agent_Side vs 2-field
+- ❌ 不要混用 in-tree skill schema 与 in-source skill schema — 13-field `sdd/adapters/runtime-skill` vs 2-field
   ADR-013 native（详 `sdd/constitution.md` §3.3）
 
 ## §5 Related

@@ -24,7 +24,7 @@ description: This skill executes the Major.Minor version archive workflow for mj
 **Reference**:
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.2 标准 archive workflow
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3 skeleton-first 变体
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.6 + §5.8
+- [[../../../policies/archive|policies/archive]] §1.1（归档触发判定）+ §2（状态/生命周期）+ §4（STANDARD 整体归档 ceremony；含 skeleton-first 延迟 promote）
 
 > mj-agent 已有 **3 次** archive workflow 先例：
 > - v1.0 → v1.1（initial, ADR-011 自身落地，2026-04）
@@ -235,7 +235,7 @@ uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALU
 
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]] §5.6.1（PR review HITL trigger）+ §5.6.2（文件操作步骤）+ §5.6.3（archive 目录语义）+ §5.6.4（living vs frozen 引用）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 3（skeleton-first 延迟 promote 变体）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §5.6 + §5.7（双轨/三轨 archive 不变）+ §5.8（v2.0 → v2.1 升级路径，本 skill PR-B3c-promote 实例）
+- [[../../../policies/archive|policies/archive]] §2（状态/归档生命周期，track 保留）+ §4（STANDARD 整体归档 ceremony；含 v2.0 → v2.1 升级路径，本 skill PR-B3c-promote 实例）
 - mj-agent 历史 archive 实例：
   - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md`（v1.0 → v1.1，2026-04）
   - `docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`（v1.1 → v2.0 trio，2026-04）

@@ -174,8 +174,8 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.9 Rule 5a（反向扫描含 in-source canonical）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 治理例外）+ §6.4（4 类 allowlist；PR #173 显式展开）+ §6.4.1（CLAUDE.md tri-track 三段分组）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 8 在 loop 的位置；反向扫描含 in-source canonical）
+- [[../../../policies/documentation|policies/documentation]] §2.6（项目根 markdown 治理例外）+ §7.1（4 类 allowlist；PR #173 显式展开）+ §7.2（CLAUDE.md tri-track 三段分组）
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Architecture" / "Data boundary" / "Commands" / "LLM provider" 段（high-frequency sync 目标；§6.4 类 1-4 全覆盖）
 - mj-system `.claude/skills/mj-sys-doc-sync/SKILL.md`（直接派生源；mj-agent 加 mapping 表 + Q-B1 + tri-track CLAUDE.md sync + 项目根例外）

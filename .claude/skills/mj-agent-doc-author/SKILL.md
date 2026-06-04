@@ -221,11 +221,11 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（项目根 markdown 例外）+ §3 / §4 / §5 / §6（types / frontmatter / state / archive / index）+ §4.3.1（path-to-track 决策树含 0 条）+ §4.4（active path stability）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]] §3.1-§3.8（8 类继承类 authoring）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.1]] §2-§7（4 类自有类 authoring + frontmatter strip 契约）
+- [[../../../policies/documentation|policies/documentation]] §2.6（项目根 markdown 例外）+ §2.1（12 类 types）/ §6（frontmatter / state）/ §3（track + §3.1 path-to-track 决策树含 0 条）（archive workflow → [[../../../policies/archive|policies/archive]] §1.2 active path stability）
+- [[../../../policies/documentation|policies/documentation]] §8.1 / §8.2（8 类继承类 body authoring depth）+ §6.2（type-frontmatter）
+- [[../../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] + [[../../../sdd/adapters/prompt|sdd/adapters/prompt]] + [[../../../sdd/adapters/contract|sdd/adapters/contract]]（4 类自有类 authoring + frontmatter strip 契约）
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC/ADR/RUNBOOK 触发）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 6 SPEC/ADR/RUNBOOK 在 17-stage loop 的位置）
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）+ §决策点 4（runtime 硬约束）

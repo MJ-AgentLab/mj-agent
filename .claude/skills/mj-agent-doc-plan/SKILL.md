@@ -10,9 +10,9 @@ description: This skill evaluates what documentation is needed for an mj-agent t
 按 mj-agent 项目 scope 评估需要哪些文档（10 类 × Action 决策矩阵：Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / Local ISSUE / ASSESSMENT / CHANGELOG / INDEX）。**Stage 4 sub** of HITL_Prompt 17-stage 闭环；典型由 `/mj-agent-flow-plan` Step 3 嵌套调用。
 
 **Reference**:
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5 Stage 4 Plan + §4.4 Stage 3 Repo Scan §7.1
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 4 Plan + Stage 3 Repo Scan 在 17-stage loop 的位置；Documentation Decision 矩阵 §7.1）
 - mj-system `[STANDARD]_AI_Engineering_Repo_Scan` §7.1（Lite Phase A 占位上游 Documentation Decision 矩阵权威）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]]（12 canonical 类型 + tri-track 分类 + §2.6 项目根 markdown 5 件治理例外）
+- [[../../../policies/documentation|policies/documentation]] §2.1（12 canonical 类型 + 默认 track）+ §3（tri-track 分类）+ §2.6（项目根 markdown 5 件治理例外）
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
 
 ## When to Use
@@ -199,8 +199,8 @@ per [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5 / §4.4
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3（12 类 + track 默认）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 4 / Stage 3 在 17-stage loop 的位置）
+- [[../../../policies/documentation|policies/documentation]] §2.1（12 类 + track 默认）+ §3（track 决策树）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味）
 - mj-system `.claude/skills/mj-sys-doc-plan/SKILL.md`（直接派生源；mj-agent 加 4 值 track + 风味 + B 风味 EVAL backlog 备注）

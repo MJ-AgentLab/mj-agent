@@ -1,15 +1,15 @@
 ---
 name: mj-agent-flow-verify
-description: This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / pytest unit+eval / compileall / wikilinks / frontmatter / git status) and HITL-confirms Level B side-effecting checks (pytest integration+smoke+contract / mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .claude/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "uv run pytest", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with HITL_Prompt §4.8 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
+description: This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / pytest unit+eval / compileall / wikilinks / frontmatter / git status) and HITL-confirms Level B side-effecting checks (pytest integration+smoke+contract / mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .claude/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "uv run pytest", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
 ---
 
 # mj-agent Flow — Local Verification (HITL Stage 10)
 
 ## Overview
 
-Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `/mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） 双段约束）without manual command typing。
+Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `/mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（execution-loop §6 双段约束；实操矩阵见 §5）without manual command typing。
 
-**Reference**: [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8（Level A / Level B 命令矩阵）+ [CLAUDE.md "Commands"](../../../CLAUDE.md) 段（uv-based 命令）。
+**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A / Level B 命令矩阵）+ [CLAUDE.md "Commands"](../../../CLAUDE.md) 段（uv-based 命令）。
 
 ## Workflow
 
@@ -75,7 +75,7 @@ git diff --stat HEAD
 
 ## Step 2: Command Matrix（Level A / B / C，mj-agent tune）
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.8。
+按 [[../../../sdd/workflows/execution-loop|execution-loop]] §5。
 
 ### Level A — 完全只读（自动可调）
 
@@ -154,7 +154,7 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 
 ## Step 4: HITL Prompt for Level B
 
-按 [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.3 7-段格式，最多 3-5 问：
+按 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.3 7-段格式，最多 3-5 问：
 
 ```markdown
 ### Level B HITL（待确认）
@@ -224,7 +224,7 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 - ☐ User 跳过 Level B → 仅 Level A 7/7 PASS，可继续 self-review
 
 ### Next Action
-verify 报告应填入 mj-agent-flow-self-review 的「本地验证」段（Meta v2.2 §4.7（沿用 v2.0 §4；实操 prompt 见 HITL_Prompt §4.8 + §4.9） 双段；Stage 11）。
+verify 报告应填入 mj-agent-flow-self-review 的「本地验证」段（execution-loop §6 双段；实操矩阵见 §5；Stage 11）。
 ```
 
 ## What This Skill DOES NOT DO
@@ -234,7 +234,7 @@ verify 报告应填入 mj-agent-flow-self-review 的「本地验证」段（Meta
 - ❌ 不替代 mj-agent-flow-self-review（self-review = Stage 11；verify = Stage 10）
 - ❌ 不替代 PR review（PR review = Stage 15-16）
 - ❌ 不修复 verify 失败（仅报告；user 决定后修复）
-- ❌ 不输出「AI 自检」段内容（verify 输出只属「本地验证」段，按 §4.7 双段约束）
+- ❌ 不输出「AI 自检」段内容（verify 输出只属「本地验证」段，按 execution-loop §6 双段约束）
 - ❌ 不跑 mj-system biz pg write（红线）
 
 ## Direct Bash Calls（No Sub-skill Delegation）
@@ -255,10 +255,10 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 
 ## Reference Files
 
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8（Level A/B 命令矩阵）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A/B 命令矩阵）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Commands" 段（uv-based 命令）
 - [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（Studio H1/H2/H3/R1/R2 探针）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §4.7（本地验证 vs AI 自检 双段；沿用 v2.0 §4 全部规则；实操 prompt 见 HITL_Prompt §4.8 + §4.9）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §6（本地验证 vs AI 自检 双段；实操矩阵见 §5）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 下游消费者）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 上游）
 - `tests/{unit,eval,integration,smoke,contract}/`（5 类测试 entry）
@@ -270,7 +270,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 
 - **不要** 自动跑 Level C（删 volume / 改 secret）
 - **不要** 跨 Level 把 Level B 写到「本地验证」自动跑（HITL-confirm 必须）
-- **不要** 把 verify 输出塞到「AI 自检」段（违反 §4.7 双段约束）
+- **不要** 把 verify 输出塞到「AI 自检」段（违反 execution-loop §6 双段约束）
 - **不要** 在 mj-system biz pg 上跑 write 操作（ADR-006 / ADR-009 红线）
 - **不要** 跳过 B 风味（in-source canonical 改动）的 Studio probe / smoke 验证
 
