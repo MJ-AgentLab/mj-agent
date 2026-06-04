@@ -105,26 +105,26 @@ track: shared
 | 模板 | 用途 |
 |------|------|
 | `TEMPLATE_ADR.md` | 架构决策记录骨架 |
-| `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.1 |
+| `TEMPLATE_GUIDE.md` | GUIDE 骨架（CN-numbered 详规，codified 自 4 份 reference GUIDE）；规格见 [[policies/documentation\|documentation policy]] §8.1 |
 | `TEMPLATE_SKILL.md` | in-source SKILL 骨架（复制到 `src/mj_agent/skills/<name>/SKILL.md`；13 字段 + 五段式） |
 | `TEMPLATE_PROMPT.md` | in-source PROMPT 骨架（复制到 `src/mj_agent/prompts/<name>.md`） |
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
-| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3；Phase D-1 加 last-verified 字段) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；frontmatter 含 ADR-022 C.3.1 `last-verified`（state: active 时强制）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.4 |
+| `TEMPLATE_RUNBOOK.md` (Phase A PR-A3；Phase D-1 加 last-verified 字段) | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；frontmatter 含 ADR-022 C.3.1 `last-verified`（state: active 时强制）；规格见 [[policies/documentation\|documentation policy]] §8.2 |
 | `TEMPLATE_SPEC.md` (Phase A PR-A3；PR-118 加 §0 Task Type Identification) | SPEC 骨架；body §0 + 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；§0 任务类型识别按 [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|SPEC Authoring GUIDE]] §3 决策树 + §4 8 类裁剪规则 |
 | `TEMPLATE_REPO_SCAN_RESULT.md` (PR-118 commit-3) | HITL Stage 3 Repo Scan Result 输出结构（对话输出，**不**写文件）；与 `mj-agent-flow-repo-scan` SKILL Output Format 一致；含 8-dim Evidence Map + 10 行 Documentation Decision + Stale Doc Reverse Scan + Plan Verdict + HITL Questions |
 | `TEMPLATE_PLAN.md` (PR-118 commit-3) | HITL Stage 4 Plan body 模板（写到 `plans/[PLAN]_*.md`）；轻量 5-6 段（Scope / Task Breakdown / Risk Control / Verification / AC + 可选 Phase 子包 / 严格守约）；从 plans/ 既有 18 份范例综合 |
-| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL_Prompt §4 单 stage prompt 模板；匹配 §2 通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.1]] 配套 |
+| `TEMPLATE_HITL_STAGE.md` (Phase A PR-A3) | HITL §4 单 stage prompt 模板；匹配通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[sdd/workflows/execution-loop\|执行闭环 workflow]] §2 配套 |
 | `TEMPLATE_WORKFLOW_SKILL.md` (Phase B PR-B1) | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
-| `TEMPLATE_POSTMORTEM.md` (Phase D-1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.5 |
-| `TEMPLATE_ISSUE.md` (Phase D-1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.7 |
-| `TEMPLATE_ASSESSMENT.md` (Phase D-1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|Code_Side v1.1]] §3.8 |
-| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；上游业务系统 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|Agent_Side v1.1]] §4（Phase 2 EVAL framework 落地后 A8/A11 强制） |
+| `TEMPLATE_POSTMORTEM.md` (Phase D-1) | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[policies/documentation\|documentation policy]] §8.0 + §6.2 |
+| `TEMPLATE_ISSUE.md` (Phase D-1) | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
+| `TEMPLATE_ASSESSMENT.md` (Phase D-1) | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
+| `TEMPLATE_EVAL.md` (Phase D PR-D1; mj-agent 原生) | EVAL 骨架（Track B 自有；上游业务系统 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]]（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
 ---
 
 ## 运行时 canonical（in-source）
 
-按 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.1]] §2.3 / §4.6（沿用 v2.0 不变），以下文件虽位于 `src/` 但属于 canonical 治理范围：
+按 [[policies/documentation\|documentation policy]] §2.2（+ §6.1 supersedes），以下文件虽位于 `src/` 但属于 canonical 治理范围：
 
 | 文件 | 类型 | 运行时作用 |
 |------|------|-----------|
@@ -258,5 +258,5 @@ track: shared
 
 ## 快速链接
 
-- Claude Code 工作区配置：`.claude/`（项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta v2.2]] §7.6 + [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014]]）
+- Claude Code 工作区配置：`.claude/`（项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[sdd/adapters/claude-code-skill\|claude-code-skill adapter]] §Scope + [[policies/ci-gates\|ci-gates policy]] §5 + [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014]]）
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）

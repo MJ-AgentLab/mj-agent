@@ -3,7 +3,7 @@
 > **面向对象**：环境已就绪、准备提交 PR 的开发者。
 > 如需搭建开发环境，请先阅读 [docs/guide/[GUIDE]_Developer_Onboarding.md](docs/guide/[GUIDE]_Developer_Onboarding.md)（15 分钟完整版）或 [docs/guide/[GUIDE]_Quick_Start_Setup.md](docs/guide/[GUIDE]_Quick_Start_Setup.md)（5 分钟赶时间版）。
 > 本文档遵循「**摘要 + 跳转**」模式：每段精炼概览，深度细则跳转对应 STANDARD / GUIDE。
-> 项目根具名文件治理边界：见 [docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) §2.6 + [docs/rule/[STANDARD]_GitHub_Markdown.md](docs/rule/[STANDARD]_GitHub_Markdown.md) §14。
+> 项目根具名文件治理边界：见 [policies/documentation.md](policies/documentation.md) §2.6 + [docs/rule/[STANDARD]_GitHub_Markdown.md](docs/rule/[STANDARD]_GitHub_Markdown.md) §14。
 
 ## 目录
 
@@ -154,7 +154,7 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 | 文档 PR 门禁 | 触发 A1-A14 时（见 §7）已自检通过 |
 | AI 自检 | AI 生成内容已对照 mj-agent 现状验证（无幻觉 / 引用路径有效 / 与既有规范一致） |
 
-> **本地验证 vs AI 自检**严格区分（per [docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) §4.7 类比）：「测试通过」是本地验证，**不是** AI 自检通过；「代码看起来正常」是 AI 自检，**不是** 本地验证。
+> **本地验证 vs AI 自检**严格区分（per [sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md) §5 本地验证 / §6 AI 自检）：「测试通过」是本地验证，**不是** AI 自检通过；「代码看起来正常」是 AI 自检，**不是** 本地验证。
 
 ---
 
@@ -176,14 +176,14 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 
 ## 文档贡献规范
 
-修改 `docs/**` 文档时遵循 mj-agent **三轨道**治理（[docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) v2.2）：
+修改 `docs/**` 文档时遵循 mj-agent **三轨道**治理（[policies/documentation.md](policies/documentation.md)）：
 
 | 轨道 | 范围 | 主 STANDARD |
 |---|---|---|
-| Track A 代码侧 | GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code | [Code_Side v1.1](docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md) |
-| Track B 智能体侧 | in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT | [Agent_Side v1.1](docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md) |
-| Track C 工程编排侧 | `.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json` / `.mcp.json` / HITL_Prompt | [HITL_Prompt v1.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) + Meta v2.2 §3.10 / §7.7 |
-| Shared 元层 | types / layers / lifecycle / archive / `track` 字段 | [Meta v2.2](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) |
+| Track A 代码侧 | GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code | [policies/documentation.md](policies/documentation.md) |
+| Track B 智能体侧 | in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT | [sdd/adapters/runtime-skill.md](sdd/adapters/runtime-skill.md)（+ [policies/documentation.md](policies/documentation.md) §5.3 门禁） |
+| Track C 工程编排侧 | `.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json` / `.mcp.json` / 执行闭环 | [sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)（+ [sdd/adapters/claude-code-skill.md](sdd/adapters/claude-code-skill.md) for Meta §3.10 / §7.7） |
+| Shared 元层 | types / layers / lifecycle / archive / `track` 字段 | [policies/documentation.md](policies/documentation.md)（+ [policies/archive.md](policies/archive.md)） |
 
 ### A1-A14 PR 门禁速查
 
@@ -199,7 +199,7 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 
 ### 项目根 5 文件例外
 
-项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。详见 [Meta v2.2 §2.6](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md)。
+项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。详见 [policies/documentation.md §2.6](policies/documentation.md)。
 
 ### 新文档默认值
 
@@ -217,8 +217,8 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 | 推送工作流 | [Git Push Workflow](docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md) |
 | Commit 规范完整版 | [Commit Message Convention](docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md) |
 | PR 描述字段详解 | [PR Description Convention](docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md) |
-| HITL 17-stage 执行闭环 | [HITL_Prompt v1.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) |
-| 三轨道文档治理 | [Meta_Framework v2.2](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) |
+| HITL 17-stage 执行闭环 | [sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md) |
+| 三轨道文档治理 | [policies/documentation.md](policies/documentation.md) |
 | GitHub Markdown 语法 | [GitHub Markdown v1.1](docs/rule/[STANDARD]_GitHub_Markdown.md) |
 | 文档总入口 | [docs/INDEX.md](docs/INDEX.md) |
 | 术语表 | [GLOSSARY.md](GLOSSARY.md) |
