@@ -32,12 +32,22 @@ track: shared
 
 | 文档 | 摘要 |
 |------|------|
-| [[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|mj-agent 文档治理元框架 v2.2]] (active；stable path) | 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（ADR-018；上游业务系统 v5.2 §4.1 派生；partial supersede ADR-011 §4.2 + §5.6.2）；v2.1 sustained §3.10 + §7.6 + §5.9；v2.1/v2.0 已 archive |
-| [[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework\|mj-agent 代码侧文档治理框架 v1.1（Track A）]] (active) | Track A minor bump（v1.0 → v1.1）— §0/§3.9/§7.3 加注 Track C engineering-workflow 共享 A1-A6 + cross-ref 工程流程 STANDARDs；与 Meta v2.1 同期 promote；v1.0 已 archive |
-| [[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework\|mj-agent 智能体侧文档治理框架 v1.2（Track B）]] (active；stable path) | Track B v1.2 — §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema；ADR-024 决议）；A8/A11 transitional waiver 延续 Phase E；v1.1 已 archive；§5/§6/§7.x sustained from v1.1 |
-| [[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.0]] (active) | Track C 主 STANDARD（engineering-workflow）；规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）的 prompt 结构、引用规则与 HITL 触发条件；§3.1 通用 + 4 项 mj-agent 专属必停规则（runtime-skill / prompt-version / biz-catalog / sql-guardrail）；§4 含 3 风味 Implementation（A 纯代码 / B in-source canonical 永远 HITL / C infra）+ EVAL backlog ticket 自动开单 |
-| [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则，与 Meta_Framework v2.1 §4 字段语义互补 |
+| _tri-track 治理 STANDARD（Meta v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1）_ | **M6 PR4（2026-06-04）已 archive → `archive/rule/`**；doc-governance active 真相源迁入 SDD kernel（见下方 §SDD Kernel 真相源 + 归档明细见 §归档 STANDARDs + [[archive/INDEX\|archive/INDEX]]） |
+| [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] (active) | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则；**未归档**（与 tri-track 正交，独立维护） |
 | [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft） |
+
+## SDD Kernel 真相源（policies/ + sdd/）
+
+> M6 PR4 起，tri-track 文档治理 STANDARD 已 archive；其 active 真相源迁入 SDD kernel：
+
+| Kernel 文档 | 治理范围 |
+|------|------|
+| [[policies/documentation\|policies/documentation]] | 12 类文档分类 / `track` 字段 + 决策树 / PR 门禁 A1-A6 + OB1-OB5 / frontmatter schema + 类型专属 / per-type body 深度（§8）/ CLAUDE.md sync-allowlist |
+| [[policies/archive\|policies/archive]] | 归档触发判定 / active-path-stability / 状态机 / `archive.yml` manifest schema / ceremony playbook / ai_visibility + G14/G15 / retention |
+| [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 4 态（含 §2.5 retroactive 补落）/ archive 5 态 / 转移触发 + gate 联动 |
+| [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
+| `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/claude-code-skill\|claude-code-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.claude/` SKILL 治理（A7-A14 surface） |
+| [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 settings.json blocking |
 
 ## 架构决策（decisions/）
 
@@ -82,7 +92,11 @@ track: shared
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0\|Framework v1.0（archive）]] | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v1.1 引入 §5.6（Major.Minor 版本演进与归档机制）和 §4.2 filename `_vX.Y` 强制规则 |
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.0 引入 `track` frontmatter 字段与双轨子框架；详见 [[decisions/ADR-012_Two_Track_Documentation_Governance\|ADR-012]] |
 | Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.1 trio (现 v2.2 stable) + HITL_Prompt v1.0 | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理；详见 [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014]] |
-| Meta_Framework v2.1 (archive) | [[rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework\|Meta_Framework v2.2（stable path）]] | v2.2 引入 §4.4 active canonical 路径稳定原则（已归档 ADR-018 决议；filename rename 触发已归档 ADR-017 §5.9 trigger #4） |
+| Meta_Framework v2.1 (archive) | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2\|Meta_Framework v2.2（archive）]] | v2.2 引入 §4.4 active canonical 路径稳定原则（已归档 ADR-018 决议；filename rename 触发已归档 ADR-017 §5.9 trigger #4）；v2.2 本身已于 M6 PR4 archive |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2\|Meta_Framework v2.2（archive）]] | SDD kernel：[[policies/documentation\|policies/documentation]] + [[policies/archive\|policies/archive]] + [[sdd/lifecycle\|sdd/lifecycle]] + [[sdd/adapters/claude-code-skill\|claude-code-skill]] | **M6 PR4（2026-06-04）**：tri-track doc-governance 内容迁入 SDD kernel（policies/ + sdd/）；本 STANDARD 作 cite-by-vintage frozen 快照（ADR-011 §5.6 + ADR-019） |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1（archive）]] | [[policies/documentation\|policies/documentation]]（§1 / §2 / §5 A1-A6 / §6 / §8） | M6 PR4：Track A 代码侧文档治理迁入 kernel |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.2\|Agent_Side v1.2（archive）]] | [[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] + [[policies/documentation\|documentation]] §5.3 + [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024]]（EVAL，仍 active） | M6 PR4：Track B 智能体侧治理迁入 adapters；EVAL spec 留 ADR-024（PR4b guard，未归档） |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1\|HITL_Prompt v1.1（archive）]] | [[sdd/workflows/execution-loop\|execution-loop]] + [[policies/ai-agent\|ai-agent]] §4 | M6 PR4：Track C 17-stage 执行闭环迁入 execution-loop |
 
 ### 归档 ADRs（cross-repo decoupling cleanup，2026-05-11）
 

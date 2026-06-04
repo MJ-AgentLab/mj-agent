@@ -5,9 +5,11 @@ summary: Track B 智能体侧文档治理 v1.2 — §4 EVAL Authoring 完整规�
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-09
-state: active
+state: deprecated
 version: v1.2
 track: agent
+archived: 2026-06-04
+replaced-by: "../../sdd/adapters/runtime-skill.md"
 supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1"
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0"
@@ -23,7 +25,10 @@ aliases:
   - Track B 子框架 v1.2
 ---
 
-# MJ-Agent 智能体侧文档治理框架（Track B）
+# MJ-Agent 智能体侧文档治理框架（Track B）（已归档；deprecated）
+
+> [!warning]
+> **本副本为 M6 PR4 归档（state: deprecated；archived: 2026-06-04）**。本 Track B STANDARD 的文档治理内容已迁移至 **SDD kernel**：runtime SKILL 治理 → `sdd/adapters/runtime-skill`；PROMPT 治理 → `sdd/adapters/prompt`；agent-facing CONTRACT 治理 → `sdd/adapters/contract`；A7-A11 PR 门禁 → `policies/documentation §5.3`；EVAL spec 仍在 active `decisions/ADR-024`（未迁移；仍权威）。本副本作为 M6 PR4 时期 cite-by-vintage frozen snapshot 保留（per ADR-011 §5.6 + ADR-019；归档文件不更新内部 wikilink）；当前权威以 SDD kernel 为准。
 
 > **状态（Phase D-3 完成后）**：`state: active`，`version: v1.2`。v1.1 已 archive 至 `docs/archive/rule/[DEPRECATED]_..._v1.1.md` + `state: deprecated`。**Active canonical 路径稳定**（ADR-018 §4.4）：本文件名无 `_vX.Y` 后缀。
 > **职责**：治理 Track B 文档（SKILL / PROMPT / EVAL / agent-facing CONTRACT / ADR-agent / SPEC-agent / GUIDE-agent）的 authoring 深度规则、PR 校验、loader 契约 ——**仅限 `src/mj_agent/{skills,prompts}/**` 范围**（in-source canonical）+ EVAL 文档（`docs/evaluation/**`）。

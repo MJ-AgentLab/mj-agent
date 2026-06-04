@@ -5,9 +5,11 @@ summary: 元框架 v2.2 — 引入 §4.4 active canonical 路径稳定原则（A
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-18
-state: active
+state: deprecated
 version: v2.2
 track: shared
+archived: 2026-06-04
+replaced-by: "../../policies/documentation.md"
 supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1"
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0"
@@ -26,7 +28,10 @@ aliases:
   - mj-agent 文档治理元框架
 ---
 
-# MJ-Agent 文档治理元框架
+# MJ-Agent 文档治理元框架（已归档；deprecated）
+
+> [!warning]
+> **本副本为 M6 PR4 归档（state: deprecated；archived: 2026-06-04）**。本 STANDARD 的文档治理内容已迁移至 **SDD kernel**：taxonomy / track / A1-A6 / frontmatter / sync-allowlist → `policies/documentation`；archive triggers / path-stability / ceremony → `policies/archive`；working-doc lifecycle → `sdd/lifecycle`；§3.10 + §7.7-A12 + new-dir → `sdd/adapters/claude-code-skill`；A13 → `policies/ci-gates §5.1`；A14 → `policies/ai-agent §4`。本副本作为 M6 PR4 时期 cite-by-vintage frozen snapshot 保留（per ADR-011 §5.6 + ADR-019；归档文件不更新内部 wikilink）；当前权威以 SDD kernel 为准。
 
 > **状态（Phase C-1a 完成后）**：`state: active`，`version: v2.2`（frontmatter）。**Active canonical 路径稳定原则**首次落地：本文档文件名**无 `_vX.Y` 后缀**（stable path = `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`）；版本仅在 frontmatter `version` 字段。详见 §4.4 + [[../adr/[ADR]_018_Active_Path_Stability|ADR-018]]。
 > **派生自**：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta_Framework v2.1（archive）]]

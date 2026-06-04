@@ -5,9 +5,11 @@ summary: Track A 代码侧文档治理（v1.0 → v1.1 minor bump）— 加注 T
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-09
-state: active
+state: deprecated
 version: v1.1
 track: code
+archived: 2026-06-04
+replaced-by: "../../policies/documentation.md"
 supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0"
 tags:
@@ -20,7 +22,10 @@ aliases:
   - Track A 子框架 v1.1
 ---
 
-# MJ-Agent 代码侧文档治理框架 v1.1（Track A）
+# MJ-Agent 代码侧文档治理框架 v1.1（Track A）（已归档；deprecated）
+
+> [!warning]
+> **本副本为 M6 PR4 归档（state: deprecated；archived: 2026-06-04）**。本 Track A STANDARD 的文档治理内容已迁移至 **SDD kernel** `policies/documentation`：§1 docs-as-contract / §2 taxonomy / §5 A1-A6+OB / §6 frontmatter / §8 per-type body。本副本作为 M6 PR4 时期 cite-by-vintage frozen snapshot 保留（per ADR-011 §5.6 + ADR-019；归档文件不更新内部 wikilink）；当前权威以 SDD kernel 为准。
 
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`。v1.0 已 archive 至 `docs/archive/rule/` + `state: deprecated`。与 [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] 同期 promote。
 > **职责**：治理 Track A 文档（GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code）的 authoring 深度规则与 PR 校验。
