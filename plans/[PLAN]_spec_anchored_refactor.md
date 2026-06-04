@@ -27,7 +27,7 @@ phase_progress:
     E: completed                # E-0a #195 + E-0b #198 + E-1/E-2 BLOCKING flip #199 + E-3/G24 #194 + E-4 soak-period (#200-#209) all landed; E-4 soak EARLY-ACCEPTED on run-based criterion 2026-06-03 (owner risk acceptance — 10 clean blocking-runs #200-#209 + negative-test gate-block verification; calendar window waived; tracker: plans/stage-e-alpha-prime-e-4-soak.md)
     F: completed                # M4 closure 2026-06-03: 4/5 capabilities promoted drafting→active (safe-sql/biz-catalog/llm-provider/docker-compose; mcp-server-governance held → M4-FU-MCP-GOV-PROMOTION-DEFER); G26-G28 conditional → M6; EVAL baseline done #201. F-7 cluster: governance-insight capture done, but the 4 F-7 polish/code items (incl DOCSTRING-DRIFT-DETECTOR ~150-300 LOC) + G22-BDD-HELPERS-CONSOLIDATE were DESCOPED from M4 → post-M4 tail/M5 (M4-FU follow-ups, NOT M4-blocking); F-6 dropped per A-3 R-2 verdict
   overall: completed            # A+B+C+D+E+F done (2026-06-03); M4-FU tail rolls forward per §M4-FU Registry (F-7 polish + mcp-gov promotion → later; M-FU#9 → M6; 3 carries → M5); phase-m4-complete tag applied post-merge
-  M5: pending
+  M5: completed                # M5 closure 2026-06-04 (re-scoped per #214): PR0 gate-prep #213 + PR1 template-align #212 + PR2 docker→docker/ #215 + PR3a active-ADR docs/adr→decisions/ #216 + PR3b deprecated-ADR→archive/decisions/superseded/ #217 + PR6 F-7 amend #218. STANDARD-archive + PR4a kernel-authoring + runbook/assessments/infra relocations + EVAL port → re-sequenced to M6 (draft-b finding); archive-gate blocking-flip → M6. docs/INDEX refs current (no redirect-map artifact). phase-m5-complete tag applied post-merge.
   M6: pending
 ---
 
@@ -609,7 +609,9 @@ criterion (calendar window waived per owner risk acceptance) → Stage E α' clo
 batch propagated (M-FU#1..#9 resolved/deferred + carry M-FU updated) + Stage F closed (M4 complete);
 see **M4 Closure Batch** above for the promotion + soak-accept disposition。
 
-### Phase M5（~1-1.5 周；**re-scoped 2026-06-03** per draft-b finding — STANDARD archive + 跨切面迁移 + 新增 PR4a 全部 → M6）
+### Phase M5 ✅ **COMPLETED 2026-06-04**（~1-1.5 周；**re-scoped 2026-06-03** per draft-b finding — STANDARD archive + 跨切面迁移 + 新增 PR4a 全部 → M6）
+
+> **M5 closure (2026-06-04)**: re-scoped M5 (docker + ADR structural moves) done — PR0 gate-prep #213 · PR1 template-align #212 · PR2 `infra/docker/`→`docker/` #215 · PR3a 20 active ADR `docs/adr/`→`decisions/` (rename) #216 · PR3b 9 deprecated ADR→`archive/decisions/superseded/` #217 · PR6 F-7 amend #218. **Deferred to M6** (draft-b finding): 4 tri-track STANDARD archive→`archive/rule/` + the **PR4a kernel-authoring** prereq + runbook/assessments/infra relocations + EVAL spec port + the **archive-gate blocking-flip** (G11/G12/G14/G15 → blocking once `archive/rule/` + its manifests exist & the 47 forward-ref WARNs resolve). `phase-m5-complete` tag applied post-merge.
 
 **目标**：低风险结构迁移（**不依赖** doc-governance kernel backfill）—
 
