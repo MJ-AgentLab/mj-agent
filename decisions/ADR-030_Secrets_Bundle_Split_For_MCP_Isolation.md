@@ -140,7 +140,7 @@ mj-system 的 MCP secrets 不经 `.env` 中转，直接进 OS env。
 - [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — MCP server inventory + STANDARD MCP_Server_Governance；本 ADR 是 ADR-028 §D.3 "Independent secrets pipeline" 的落地细化
 - [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance v1.0]] — §3 credential mode "wrapped script (env var via cmd)" 行为不变；本 ADR 改的是注入这些 env 的**机制**（从 .env mirror 改为 .enc direct）
 - [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — PR-3 把 MCP secrets 加入 single secrets.enc 的初始决策；本 ADR 修订其注入路径声明
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §5.9 — 本 ADR 触发 "决策性变更" 条件（secrets 边界重新划分 + 注入路径切换）
+- [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2|Meta v2.2]] §5.9 — 本 ADR 触发 "决策性变更" 条件（secrets 边界重新划分 + 注入路径切换）
 - mj-system 参考实现：`D:\workspace\10-software-project\projects\mj-system\develop\.claude\scripts\setup-sys-ops-env.ps1`（蓝本）
 - mj-system 治理蓝本：`D:\workspace\10-software-project\projects\mj-system\develop\docs\design\SecretsEncryption\[SPEC]_SYS_Secrets_Encryption_And_Setup_Automation.md` v2.3
 - 实施 PR：本 ADR 同 PR 一并 merge（待补 PR 链接）

@@ -149,7 +149,7 @@ type_specific_required["eval"] = (
 ## References
 
 - 派生源：industry references — LangChain Hub model evals / DSPy assertions / Anthropic Skills 仓 evaluation 模式 / OpenAI Evals framework；mj-system 上游暂无对位 EVAL framework（mj-agent 原生）
-- 落地：[[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]] §4
+- 落地：[[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.2|Agent_Side v1.2]] §4
 - 落地（archive）：[[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1|Agent_Side v1.1（archive）]]
 - 关联 ADR：ADR-011/017/018/019/020/021/022/023 全部 sustained 互补
 - 关联 GitHub Issue：[#95](https://github.com/MJ-AgentLab/mj-agent/issues/95)

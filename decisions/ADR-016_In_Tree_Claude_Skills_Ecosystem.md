@@ -21,7 +21,7 @@ tags:
 
 ## Context
 
-[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10 + [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §5 锁定了 mj-agent 引入 in-tree 工程编排 SKILL 的方向：32 skills 分 5 family（flow 9 / git 9 / doc 6 / runtime 4 / infra 4），全部进 `.claude/skills/`，不走 marketplace。但落地前还有几个具体决策没明确：
+[[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10 + [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1|HITL_Prompt v1.1]] §5 锁定了 mj-agent 引入 in-tree 工程编排 SKILL 的方向：32 skills 分 5 family（flow 9 / git 9 / doc 6 / runtime 4 / infra 4），全部进 `.claude/skills/`，不走 marketplace。但落地前还有几个具体决策没明确：
 
 ### 空白 1：命名空间 collision 风险
 
@@ -244,8 +244,8 @@ deprecate / sunset 阈值按 family 不同（flow/git 3 月，runtime/infra 12 �
 ## References
 
 - 直接前置：
-  - [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
-  - [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §5（32 skills hint matrix）
+  - [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
+  - [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1|HITL_Prompt v1.1]] §5（32 skills hint matrix）
   - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（dual schema 边界）
   - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 5（命名空间初步）
   - [[../adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束）
