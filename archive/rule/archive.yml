@@ -1,0 +1,7 @@
+archived_at: 2026-06-04
+reason: "The 4 tri-track documentation STANDARDs (Meta_Framework v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1) archived in M6 PR4 of the SDD Spec-Anchored Refactor (2026-06-04). Their doc-governance content migrated to the SDD kernel — policies/ (documentation / archive / ci-gates / ai-agent) + sdd/ (lifecycle / adapters / workflows). Bodies are cite-by-vintage frozen snapshots; current authority lives in the kernel (see each file's replaced-by + TOMBSTONE.md)."
+original_path: docs/rule/
+ai_visibility: reference
+retention_class: permanent
+related_decisions:
+  - decisions/ADR-031_Spec_Anchored_Refactor.md

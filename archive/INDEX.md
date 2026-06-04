@@ -11,4 +11,5 @@
 | original_path | archived_at | reason | ai_visibility | retention_class | superseded_by |
 |---|---|---|---|---|---|
 | docs/archive/adr/ | 2026-05-11 | 9 ADRs recording design decisions inherited from an upstream business system; archived 2026-05-11 (PR-Γ cross-repo decoupling cleanup). Relocated docs/archive/adr/ → archive/decisions/superseded/ in the SDD refactor (M5-PR3b, 2026-06-03). Decision bodies are frozen snapshots; current governance lives in the active STANDARDs / superseding ADRs (see INDEX replaced-by). | reference | permanent |  |
+| docs/rule/ | 2026-06-04 | The 4 tri-track documentation STANDARDs (Meta_Framework v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1) archived in M6 PR4 of the SDD Spec-Anchored Refactor (2026-06-04). Their doc-governance content migrated to the SDD kernel — policies/ (documentation / archive / ci-gates / ai-agent) + sdd/ (lifecycle / adapters / workflows). Bodies are cite-by-vintage frozen snapshots; current authority lives in the kernel (see each file's replaced-by + TOMBSTONE.md). | reference | permanent |  |
 

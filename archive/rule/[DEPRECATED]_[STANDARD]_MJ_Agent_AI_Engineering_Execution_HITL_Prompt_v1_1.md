@@ -5,9 +5,11 @@ summary: 规范 AI 在 mj-agent 17 阶段执行闭环（Intake → Post-merge）
 owner: 项目负责人
 created: 2026-05-08
 updated: 2026-05-11
-state: active
+state: deprecated
 version: v1.1
 track: engineering-workflow
+archived: 2026-06-04
+replaced-by: "../../sdd/workflows/execution-loop.md"
 tags:
   - standard
   - ai-engineering
@@ -24,7 +26,10 @@ supersedes:
   - "mj-agent@archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_0"
 ---
 
-# mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.1
+# mj-agent AI 工程执行闭环与 HITL Prompt 规范 v1.1（已归档；deprecated）
+
+> [!warning]
+> **本副本为 M6 PR4 归档（state: deprecated；archived: 2026-06-04）**。本 Track C engineering-workflow STANDARD 的内容已迁移至 **SDD kernel**：17 阶段执行闭环 + §7 post-merge → `sdd/workflows/execution-loop`；HITL gate 枚举 → `policies/ai-agent §4`。本副本作为 M6 PR4 时期 cite-by-vintage frozen snapshot 保留（per ADR-011 §5.6 + ADR-019；归档文件不更新内部 wikilink）；当前权威以 SDD kernel 为准。
 
 > **状态（Phase B PR-B3c-promote 完成后）**：`state: active`，`track: engineering-workflow`（reclassify 完成；与 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4 边界表一致）。`scripts/check_frontmatter.py` 同期已加 `engineering-workflow` 到 TRACK_VALUES 允许值集合。
 > **适用范围**：mj-agent 仓中 AI Agent / Claude Code 从任务准入到合并收尾的全流程
