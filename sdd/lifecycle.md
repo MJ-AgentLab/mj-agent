@@ -2,7 +2,7 @@
 type: sdd-kernel
 artifact: lifecycle
 state: active
-version: 1.0
+version: 1.1
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-06-04
@@ -83,6 +83,40 @@ state 由 `active` 改 `completed` 并刷 `updated` 字段；**不移动文件�
 
 > Cross-ref：ADR-021（working-doc lifecycle 决策；已 archive 至 `archive/decisions/superseded/`，
 > 按编号 prose 引用）；ADR-023（plan GC infra）；Stage 17 自动化 [[../.claude/skills/mj-agent-flow-post-merge/SKILL|mj-agent-flow-post-merge]] Step 9。
+
+### §2.5 Retroactive 补落（漏落盘事后补救）
+
+> 源：Meta §5.11.6（ADR-021 follow-up）。区别于 §2.2 Stage 17 自动化（`active → completed`）
+> 与 §2.4 archived 物理归档（`completed → archived`）——本节治"实施期漏落盘 `[PLAN]` / `[INTAKE]`，
+> 事后审计补救"的路径。
+
+**触发场景**（事后发现漏落盘 + 满足任一）：
+
+1. **多 PR 链 ≥ 3** 且不满足 `sdd/workflows/execution-loop.md §3.2` Stage 4 豁免（即非单文件
+   Low-risk bugfix / documentation）；
+2. **High 风险**（含 §3.1 mj-agent 专属 4 必停之一：runtime-skill-content-change /
+   prompt-version-or-body-change / biz-catalog-sync / sql-guardrail-relax）；
+3. **跨 ≥ 5 个 canonical 文档**，或改动 Track C primary 执行闭环治理。
+
+**补落规则**：
+
+- **state 直接置 `completed`**（不走 `draft → active` 中间态）+ 填 `completed: <最后 PR merged ISO 日期>`；
+- frontmatter 加 `retroactive: true`（机器可识别；`scripts/check_frontmatter.py` 对未知字段宽容，不破坏 schema）；
+- 头部加 `> [!warning]` 声明框：醒目标注"事后回填，非真实 Stage 0/4 输出"，引导读者关注内容 trace；
+- **凭证 trace 段必加**：逐段标内容来源（PR description / commit / memory / CLAUDE.md update /
+  vault 草稿），避免 time-shift bias；
+- 在归档源 Meta §5.11.6.1（历史落地记录）追加 1 行时间序记录。
+
+**不补落判定**（凭证已充分，可跳过补落；满足任一即可不补）：
+
+- `CLAUDE.md` 已有同等深度的 "YYYY-MM-DD update" 段；
+- memory feedback / project 文件已完整覆盖决策点；
+- commit message + PR body 已含 7 段 PLAN 同等信息。
+
+> Cross-ref：ADR-021（同上，prose 引用）；`sdd/workflows/execution-loop.md §3.2` Stage 4 豁免 +
+> §7 post-merge 沉淀；本 doc §2.2 Stage 17 `active → completed` 自动化；
+> [[../.claude/skills/mj-agent-flow-intake/SKILL|mj-agent-flow-intake]] §2.1 落盘判定。历史首次
+> retroactive 落地记录（2026-05-18 cross-repo decoupling）留在归档源 Meta §5.11.6.1（frozen 历史）。
 
 ## §3 Capability 状态转移触发条件
 
