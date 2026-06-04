@@ -1,7 +1,7 @@
 ---
 type: standard
 domain: WORKFLOW
-summary: HITL_Prompt §4 stage prompt 模板（mj-agent 工程流程编排专用），匹配 §2 通用结构
+summary: 执行闭环 stage prompt 模板（mj-agent 工程流程编排专用），匹配执行闭环通用结构
 tags:
   - template
   - hitl
@@ -28,7 +28,7 @@ owner: 项目负责人
 >
 > - 起草普通 SPEC（用 [[TEMPLATE_SPEC|TEMPLATE_SPEC]]）
 > - 起草 ADR（用 [[TEMPLATE_ADR|TEMPLATE_ADR]]）
-> - 起草 SKILL.md body 主体（参考 `[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10.2` 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
+> - 起草 SKILL.md body 主体（参考 [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
 
 ---
 
@@ -135,7 +135,7 @@ mj-agent 专属规则（如有；可删此段）：
 
 ---
 
-## §1 Reference Docs 规则（沿用 HITL_Prompt §2.1）
+## §1 Reference Docs 规则（沿用执行闭环 §2）
 
 - 标准文档用于约束行为
 - 模板文档用于约束输出结构
@@ -144,7 +144,7 @@ mj-agent 专属规则（如有；可删此段）：
 - 不要写"参考所有 docs/**"
 - 如果参考文档、Issue、Plan、代码现状冲突，必须触发 HITL
 
-## §2 Skill Hint 规则（沿用 HITL_Prompt §2.2）
+## §2 Skill Hint 规则（沿用执行闭环 §2 + §4）
 
 若某阶段已有对应 mj-agent-* skill，应在 Prompt 中标记推荐 slash command，但不把它作为唯一执行路径。Fallback 段必须给出"skill 不可用时"的手动执行指引。
 
@@ -152,8 +152,8 @@ mj-agent 专属规则（如有；可删此段）：
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本模板的目标使用场景）
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §3.10（in-tree workflow SKILL 的 schema 与 body 风格）
+- [[sdd/workflows/execution-loop|执行闭环 workflow]]（本模板的目标使用场景）
+- [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards（in-tree workflow SKILL 的 schema 与 body 风格）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track + engineering-workflow track）
 
 ## 更新记录

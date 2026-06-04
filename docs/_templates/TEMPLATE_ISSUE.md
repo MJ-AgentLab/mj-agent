@@ -134,7 +134,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 
 ## §7 验证计划
 
-> 按 [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §4.7 拆「本地验证」与「AI 自检」双段。
+> 按 [[sdd/workflows/execution-loop|执行闭环 workflow]] §5（本地验证）/ §6（AI 自检）拆「本地验证」与「AI 自检」双段。
 
 ### §7.1 本地验证（人类客观可重复检查）
 
@@ -151,7 +151,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 - [ ] 引用路径有效（issue / PR / 文档相对链接）
 - [ ] 无残留调试代码、硬编码或敏感信息
 - [ ] 文档与实现一致
-- [ ] 5a/5b/5c/5d 反向扫描（per HITL_Prompt §4.9 Rule 5；mj-agent 扩展含 in-source canonical）
+- [ ] 5a/5b/5c/5d 反向扫描（per [[sdd/workflows/execution-loop|执行闭环 workflow]] §6 自检；mj-agent 扩展含 in-source canonical）
 - [ ] B 风味改动通过 mj-agent-runtime-* propose-diff 流程（如适用）
 
 ---

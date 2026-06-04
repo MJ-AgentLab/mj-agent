@@ -23,7 +23,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 仓内所有 `docs/design/<module>/[SPEC]_*.md` 起草与更新（HITL Stage 6）
 > **目标受众**：SPEC 起草者（开发 / AI Agent / Reviewer）
 > **版本**：v0.1
-> **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6
+> **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[sdd/workflows/execution-loop|执行闭环 workflow]]（Stage 6 SPEC 起草）
 
 ---
 
@@ -37,7 +37,7 @@ mj-agent 物理上只有 **1 份 SPEC 模板**（[[../_templates/TEMPLATE_SPEC|T
 
 1. **§3 任务类型识别决策树**：按改动文件路径 5 秒判定任务类型
 2. **§4 8 类任务详解**：每类的必填段 / 可选段 / 常见 anti-pattern
-3. **§5 与 HITL_Prompt 的引用映射**：HITL_Prompt §4.6 / §4.9 / §4.13 / §4.15 中提到 SPEC-* 短码时如何对应到 TEMPLATE_SPEC.md 的具体 subsection
+3. **§5 与执行闭环的引用映射**：执行闭环各 stage（SPEC 起草 / Self-review 等）中提到 SPEC-* 短码时如何对应到 TEMPLATE_SPEC.md 的具体 subsection
 4. **§6 与 §3.1 必停规则的关系**：哪些任务类型自动触发 mj-agent 专属必停 4 项
 
 ---
@@ -56,7 +56,7 @@ mj-agent 物理上只有 **1 份 SPEC 模板**（[[../_templates/TEMPLATE_SPEC|T
 | §8 | Observability | 5/8 类必填；任务类型 5/6/8 多数 N/A |
 | §9 | Open questions | 任意；起草发现而不影响 v0.1 promote 的项 |
 
-> **写法约定**：某段"不涉及"时**显式**写 `§X 不涉及（理由：...）`，**不要**保留空标题或 TODO 占位（per [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side]] OB3 内容边界）。
+> **写法约定**：某段"不涉及"时**显式**写 `§X 不涉及（理由：...）`，**不要**保留空标题或 TODO 占位（per [[policies/documentation|documentation policy]] §5.2 OB3 内容边界）。
 
 ---
 
@@ -118,13 +118,13 @@ git diff --name-only HEAD
 ### §4.3 In-source canonical（runtime LLM 上下文）— mj-agent 专属
 
 - **适用范围**：`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`、`src/mj_agent/biz_catalog/qcm_catalog.yaml`
-- **永远触发** [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.1 必停 trigger 10 / 11 / 12（视改动文件而定）
+- **永远触发** [[policies/ai-agent|ai-agent policy]] §4 必停 trigger 10 / 11 / 12（视改动文件而定）
 - **必填段**：§1 Context（必说明为何 LLM 行为变化）+ §2 Scope + §3.3 行为不变量（LLM 输出契约，非 schema）+ §5 Error handling（degradation 行为）+ §7 Verification（必含 §7.3 EVAL coverage；A8/A11 transitional waiver 期内可注释 TODO）+ §8.3 LangSmith trace metadata + **新增 "frontmatter strip 契约" 子段**（说明 loader 行为不变；不允许把 frontmatter 字段塞进 body）
 - **可选 / 多数 N/A 段**：§3.1 输入 schema / §3.2 输出 schema（不适用 LLM body）；§4 Configuration（除非引入新 hyperparameter）；§6 Rollback（version 回退路径必填）
 - **常见 anti-pattern**：
   - ❌ §7.3 EVAL coverage 直接写 "TBD"（即使 transitional waiver 也要写 backlog ticket 链接）
   - ❌ frontmatter strip 契约段缺失 → loader 行为可能漂移
-  - ❌ 五段式 body 结构（Purpose / When to use / Planning workflow / Common patterns / Anti-patterns）破坏 → 见 [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side]] §2.1
+  - ❌ 五段式 body 结构（Purpose / When to use / Planning workflow / Common patterns / Anti-patterns）破坏 → 见 [[sdd/adapters/runtime-skill|runtime-skill adapter]]
 
 ### §4.4 Docker compose + storage stack
 
@@ -174,15 +174,15 @@ git diff --name-only HEAD
 - **常见 anti-pattern**：
   - ❌ §7 跳过人读端到端验证（自动化校验过 ≠ 阅读体验过；尤其 STANDARD / GUIDE 类）
   - ❌ INDEX.md 改动漏 cross-ref 一致性（新增 entry 但未更新 ADR/RUNBOOK 入口）
-  - ❌ allowlist 文档（per Meta v2.2 §6.4）改动跳过 CLAUDE.md 同步检查（A6 阻塞）
+  - ❌ allowlist 文档（per [[policies/documentation|documentation policy]] §7.1）改动跳过 CLAUDE.md 同步检查（A6 阻塞）
 
 ---
 
-## §5 与 HITL_Prompt 的引用映射
+## §5 与执行闭环的引用映射
 
-[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] 多处用 `Contract.Input` / `Configuration` / `Error handling` 等短码标记 SPEC 漏项（替代旧 `SPEC-*` 短码 prefix）；下表给出本 GUIDE / TEMPLATE_SPEC 章节 ↔ 短码映射：
+[[sdd/workflows/execution-loop|执行闭环 workflow]] 多处用 `Contract.Input` / `Configuration` / `Error handling` 等短码标记 SPEC 漏项（替代旧 `SPEC-*` 短码 prefix）；下表给出本 GUIDE / TEMPLATE_SPEC 章节 ↔ 短码映射：
 
-| HITL_Prompt 短码 | TEMPLATE_SPEC.md 章节 | 本 GUIDE 章节 |
+| 执行闭环短码 | TEMPLATE_SPEC.md 章节 | 本 GUIDE 章节 |
 |---|---|---|
 | `Contract.Input` | §3.1 输入 schema | §4 各类任务的"必填段" |
 | `Contract.Output` | §3.2 输出 schema | 同上 |
@@ -194,7 +194,7 @@ git diff --name-only HEAD
 | `Verification` | §7 Verification | 8/8 类必填 |
 | `Observability` | §8 Observability | §4.1 / §4.2 / §4.4 必填 |
 
-**典型用法**：HITL_Prompt §4.9 5d (AI Self-review SPEC Delta Check) 输出示例：
+**典型用法**：执行闭环 §6 AI Self-review（SPEC Delta Check）输出示例：
 
 ```
 SPEC Delta:
@@ -206,9 +206,9 @@ SPEC Delta:
 
 ## §6 与 §3.1 必停规则的关系
 
-[[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.1 列 12 项通用必停 + 4 项 mj-agent 专属必停。下表标注哪些任务类型自动触发哪些 §3.1 项：
+[[policies/ai-agent|ai-agent policy]] §4 列 12 项通用必停 + 4 项 mj-agent 专属必停。下表标注哪些任务类型自动触发哪些必停项：
 
-| 任务类型 | 自动触发的 §3.1 必停项 |
+| 任务类型 | 自动触发的 ai-agent §4 必停项 |
 |---|---|
 | #1 Python 应用代码 | 通用 1-12（按 PR 实际触及） |
 | #2 SQL guardrail | **mj-agent 专属 13**（sql-guardrail-relax 永远必停）+ 通用 3 / 4 / 7 |
@@ -217,15 +217,15 @@ SPEC Delta:
 | #5 CI/CD + scripts | 通用 6 / 9（生产配置 / 新依赖） |
 | #6 Config / secrets / deps | 通用 5 / 9（secret / 新依赖）+ 视情况 mj-agent 专属 12（如改 biz_catalog 相关 var） |
 | #7 Engineering-workflow infra | 通用 7（公共 API 行为变化）；A12-A14 PR 门禁阻塞 |
-| #8 文档治理 | 一般无 §3.1 触发；除非改 framework STANDARD（触 A6 CLAUDE.md 同步） |
+| #8 文档治理 | 一般无 ai-agent §4 必停触发；除非改 framework STANDARD（触 A6 CLAUDE.md 同步） |
 
-**SPEC §1 Context 必须显式标注本 SPEC 触发的 §3.1 项**，让 reviewer 一眼判定 HITL 强度。
+**SPEC §1 Context 必须显式标注本 SPEC 触发的 ai-agent §4 必停项**，让 reviewer 一眼判定 HITL 强度。
 
 ---
 
 ## §7 何时不需要写 SPEC
 
-并非所有改动都需要 SPEC。下列场景按 [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §3.2 自主处理，**不**需要走 Stage 6 SPEC：
+并非所有改动都需要 SPEC。下列场景按 [[sdd/workflows/execution-loop|执行闭环 workflow]] §3 自主处理，**不**需要走 Stage 6 SPEC：
 
 - 拼写 / 链接 / frontmatter 小修
 - lint 修复
@@ -233,7 +233,7 @@ SPEC Delta:
 - 与代码变更直接对应的文档同步（一对一映射）
 - 已有 SPEC 的 typo / 术语统一
 
-如不确定是否要写 SPEC，先走 [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt]] §4.4 Repo Scan，§7.1 Documentation Decision 矩阵会判定 SPEC = Create / Update / None。
+如不确定是否要写 SPEC，先走 [[sdd/workflows/execution-loop|执行闭环 workflow]] Repo Scan 阶段，其 Documentation Decision 矩阵会判定 SPEC = Create / Update / None。
 
 ---
 
@@ -248,9 +248,9 @@ SPEC Delta:
 ## 关联文档
 
 - [[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC.md]]（本 GUIDE 指导填写的目标模板）
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.6（Stage 6 SPEC 起草 prompt；引用本 GUIDE）
-- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.1]]（SPEC 是 code-track 文档；A1-A6 PR 门禁）
-- [[../rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework|Agent_Side v1.2]]（任务类型 #3 in-source canonical 治理）
+- [[sdd/workflows/execution-loop|执行闭环 workflow]]（Stage 6 SPEC 起草；引用本 GUIDE）
+- [[policies/documentation|documentation policy]]（SPEC 是 code-track 文档；§5 PR 门禁）
+- [[sdd/adapters/runtime-skill|runtime-skill adapter]]（任务类型 #3 in-source canonical 治理）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（任务类型 #2 SQL guardrail 红线）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（任务类型 #2 数据边界）
 

@@ -13,8 +13,8 @@ track: code
 
 > **所属目录**：`docs/guide/`
 > **说明**：面向开发者与运维角色的 上手 / 操作 GUIDE。模板与 authoring 规则参见
-> [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side]]
-> §3.1。摘要取自每份文档 frontmatter `summary`。
+> [[policies/documentation|documentation policy]]
+> §8.1。摘要取自每份文档 frontmatter `summary`。
 
 ---
 
@@ -32,7 +32,7 @@ track: code
 
 - [返回上级索引](../INDEX.md)
 - [[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git 操作 GUIDE）
-- [[../rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework|Code_Side v1.0]] §3.1（GUIDE 撰写规格）
+- [[policies/documentation|documentation policy]] §8.1（GUIDE 撰写规格）
 - [[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]]（GUIDE 骨架）
 
 ---

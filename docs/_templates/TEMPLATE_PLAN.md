@@ -19,7 +19,7 @@ owner: 项目负责人
 
 # TEMPLATE: Plan body（HITL Stage 4）
 
-> **使用方法**：复制本模板**主体段**到 `plans/[PLAN]_<topic>.md`（**不**写到 `docs/plans/`，per HITL_Prompt §4.5 Rules）。
+> **使用方法**：复制本模板**主体段**到 `plans/[PLAN]_<topic>.md`（**不**写到 `docs/plans/`，per [[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 4 Plan Rules）。
 >
 > **何时复制本模板**：
 > - Stage 4 Plan body 编写或更新（基于 Stage 3 Repo Scan Result）
@@ -121,7 +121,7 @@ track: shared / code / agent / engineering-workflow
 
 ## 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.5（Stage 4 Plan prompt）
+- [[sdd/workflows/execution-loop|执行闭环 workflow]] §1（Stage 4 Plan）
 - `.claude/skills/mj-agent-flow-plan/SKILL.md`（Plan body 编排器）
 - [[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（plans/ 4 态机）
 - [[TEMPLATE_REPO_SCAN_RESULT|TEMPLATE_REPO_SCAN_RESULT]]（Plan 上游 Stage 3 输出）
