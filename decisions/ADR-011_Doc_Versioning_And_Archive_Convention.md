@@ -113,6 +113,6 @@ Browse-without-git **未被** 列入动机——deprecated 版本不需要从工
 - [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1|Framework v1.1（archive）]] §4.2 / §5.5 / §5.6 / §3.6 —— 本决策的执行（v1.1 已归档；后续由 ADR-012 升级至 v2.0 trio）
 - [[../archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0|Framework v1.0（archive）]] —— 被本决策归档的前版本
 - [[[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions]] —— Phase 0 governance KEEP/ADAPT/DEFER 模式先例
-- [[../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ System Git Conventions Adoption Assessment v1.0]] —— 同期 governance 评估文档
+- [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|MJ System Git Conventions Adoption Assessment v1.0]] —— 同期 governance 评估文档
 - [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|MJ-Agent Commit Message Convention v1.0]] —— Phase 0 governance peer
 - 用户互动证据（2026-04-25 brainstorming session）：Q1 motivations（filename-signal + cite-by-vintage，NOT browse-without-git）/ Q2 approach（B）/ Q3 granularity（B1 + HITL）/ Q4 HITL gate（A3 = git branch + PR review）；ExitPlanMode 批准
