@@ -97,19 +97,20 @@ jobs:
 
       # ===== End of G1/G2/G9 Stage C block =====
 
-      # ===== Spec-Anchored Refactor M5-PR0 — archive catch-gates (WARNING mode) =====
-      # G11/G12/G14/G15/G17 gate-prep, wired WARNING-mode only (continue-on-error).
-      # NO-OP on the current tree (no top-level archive/ exists yet); correct once
-      # archive/ populates (proven by synthetic-fixture unit tests). The blocking
-      # flip (--strict + continue-on-error:false) is DEFERRED to the M5 move PRs —
-      # toggling a blocking gate is a HITL action (per policies/ai-agent.md §HITL
-      # Required Scenarios #5).
+      # ===== Spec-Anchored Refactor — archive catch-gates =====
+      # G11/G12 BLOCKING since M6 PR4-flip (owner-gated ci-blocking-gate-toggle, option (c),
+      # 2026-06-05). archive/ populated by the M6 PR4 ceremony (#229 tri-track + #231 consol);
+      # pre-flight: check_archive_manifest --all --strict = 2P/0W/0F exit 0 verified before flip.
+      # G14/G15 + G17 remain WARNING (continue-on-error) — G14/G15 still has 13 forward-ref WARNs
+      # to the not-yet-built archive/legacy/ + archive/capabilities/ subtrees; their blocking flip
+      # is tracked as M6-FU-G14G15-BLOCKING-FLIP (build subtrees / rework refs first). Toggling a
+      # blocking gate is a HITL action (policies/ai-agent.md §4 ci-blocking-gate-toggle).
 
-      - name: 'G11/G12 archive manifest (WARNING per M5-PR0; no-op until archive/ born in move PRs)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/check_archive_manifest.py --all
+      - name: 'G11/G12 archive manifest (BLOCKING per M6 PR4-flip; archive/ populated #229/#231)'
+        continue-on-error: false
+        run: uv run python scripts/sdd/check_archive_manifest.py --all --strict
 
-      - name: 'G14/G15 archived references (WARNING per M5-PR0; no-op until archive/ born in move PRs)'
+      - name: 'G14/G15 archived references (WARNING — M6-FU-G14G15-BLOCKING-FLIP: archive/legacy + archive/capabilities forward-refs pending)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_archived_references.py --all
 
