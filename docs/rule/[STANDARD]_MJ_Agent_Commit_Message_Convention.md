@@ -336,7 +336,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] —— 历史决策记录（保留原 ADR 编号 + 文件名以稳定 wikilink；ADR-010 在 PR-Γ 候选 archive）
 - [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套适配评估 v1.0]] —— 决策依据
-- [[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.2]] §6.4 —— CLAUDE.md 同步触发条件（§6.4.1 在元框架基础上引入双轨分段）
+- [[policies/documentation|policies/documentation]] §7（CLAUDE.md sync allowlist；§7.2 三轨分段）—— CLAUDE.md 同步触发条件（原 Meta §6.4/§6.4.1；tri-track trio 已 M6 PR4 archive）
 - [[[STANDARD]_GitHub_Markdown|GitHub-Flavored Markdown 编写规范 v1.0]] —— 本文 Markdown/YAML 语法依据
 - `CLAUDE.md §Repo conventions` —— 仓库级 commit 约定（待与本规范同步）
 
