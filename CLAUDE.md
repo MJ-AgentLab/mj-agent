@@ -432,7 +432,7 @@ Repo conventions (code-side, all governed by Track A standards):
   `feat / fix / perf / refactor / test / docs / infra`. Scopes derive
   from `src/mj_agent/` modules — see STANDARD §4 for the closed allowlist.
 - ADRs live in `docs/adr/`; Phase 0 ships 000/001/002/003/006/008/009/010/011/012/013 (012/013 `state: draft`, others `state: active`; all `decision: accepted`). ADR-029 (2026-05-12) adds the `handle_sql_tool_errors` middleware policy — SQL tool exceptions surface to the LLM as `ToolMessage` instead of crashing the graph; supersedes the implicit ToolNode raise-through behavior that produced the 2026-05-12 frontend hang.
-  See ADR-010 + matching `docs/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0.md`
+  See ADR-010 + matching `capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0.md`
   for the git/commit adoption rationale and Keep/Adapt/Defer matrix.
   See ADR-011 for the doc versioning + archive convention installed in v1.1
   of the Framework standard.
