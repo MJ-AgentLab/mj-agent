@@ -13,7 +13,7 @@ the full boundary; each task output must declare `Codex invocation: NONE`.
 
 > **项目起源说明（2026-05-11 update）**：mj-agent 文档治理框架在 bootstrap
 > 阶段曾参考某内部上游业务系统的实践沉淀（详见 `archive/decisions/superseded/[DEPRECATED]_*`
-> 9 个 archived ADR 与 `docs/archive/rule/[DEPRECATED]_*` 框架历史版本）；
+> 9 个 archived ADR 与 `archive/rule/[DEPRECATED]_*` 框架历史版本）；
 > 当前所有 active STANDARD 已独立维护，无跨仓依赖。runtime 层 mj-agent
 > 通过 `analyst` 只读 PostgreSQL 角色访问"上游业务系统"（术语见
 > `docs/glossary/upstream_business_warehouse.md`）；代码层 literal
@@ -269,9 +269,9 @@ See `config/README.md` §6.4 for security tradeoffs and `-Reload` diagnostics.
 ## Documentation
 
 > **元规则段（cross-track meta）**: this section governs all three tracks.
-> Per Meta_Framework v2.1 §6.4.1, this 元规则 段 sits **above** the
-> `Code-Side Documentation`, `Agent-Side Documentation`, and
-> `Engineering-Workflow Documentation` sections so Claude reads
+> Per `policies/documentation.md` §7.2 (CLAUDE.md 三轨分段), this 元规则 段
+> sits **above** the `Code-Side Documentation`, `Agent-Side Documentation`,
+> and `Engineering-Workflow Documentation` sections so Claude reads
 > cross-track rules first before track-specific guidance.
 
 **跨项目借鉴边界**：mj-agent 文档治理框架曾参考某内部上游业务系统实践沉淀（详见
@@ -285,49 +285,34 @@ mj-agent native 范本而非外部模板；frontmatter 用 mj-agent 自身 patte
 集中到 `docs/glossary/upstream_business_warehouse.md` §如何引用上游业务系统
 元文档段。
 
-All canonical documentation follows the **v2.1 tri-track trio** + HITL_Prompt
-v1.0 (Phase B PR-B3c-promote completed; v2.0 trio archived to
-`docs/archive/rule/` + `state: deprecated`):
+The **v2.x tri-track trio** (Documentation_Meta_Framework v2.2 /
+Code_Side_Documentation_Framework v1.1 / Agent_Side_Documentation_Framework
+v1.2) + HITL_Prompt v1.1 were **archived in M6 PR4** (SDD Spec-Anchored
+Refactor; ADR-031) — relocated `docs/rule/` → `archive/rule/` + `state:
+deprecated` (frozen snapshots; see `archive/rule/TOMBSTONE.md` for the
+migration map). Their **doc-governance content now lives in the SDD kernel**
+(`policies/` + `sdd/`); refer to the kernel homes below, not the archived
+STANDARDs:
 
-- `docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md`
-  (active) — cross-track meta rules (types / layers / lifecycle /
-  archive / `track` frontmatter field with 4 values: code | agent |
-  engineering-workflow | shared / CLAUDE.md tri-track sync §6.4.1 /
-  §3.10 in-tree workflow SKILL governance / §7.7 .claude/ boundary +
-  A12-A14 PR gates). **v2.2 sustained 2026-05-18** (借鉴 mj-system §3.1
-  + §6.4 结构): §2.6 项目根 5 文件具名职责表（README / CONTRIBUTING /
-  CHANGELOG / GLOSSARY / CLAUDE.md）+ 例外条款 (A1-A3 不适用 / A4+A6 仍
-  适用) + §4.3.1 path-to-track 决策树补 0 条覆盖项目根 markdown +
-  §6.4 显式展开 3 类 allowlist + 加 mj-agent 特化第 4 类「runtime 语义」
-  (LLM provider matrix + Data boundary L1-L4 + HITL gates).
-- `docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md`
-  (active) — Track A authoring depth + PR gates A1-A6 + OB1-OB5 for
-  code-side canonical types (GUIDE / ADR-code / SPEC-code / RUNBOOK /
-  POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code).
-  v1.1 minor bump: §0/§3.9/§7.3 cross-ref engineering-workflow
-  STANDARDs.
-- `docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md`
-  (active) — Track B authoring depth + PR gates A7-A10 + A11 + loader
-  frontmatter-strip contract for agent-side canonical types (SKILL /
-  PROMPT / EVAL / agent-facing CONTRACT). v1.1 minor bump: §2/§7.5
-  scope clarified to in-source only (`.claude/skills/**` excluded —
-  governed by Meta v2.1 §3.10 instead).
-- `docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md`
-  (Track C primary STANDARD; active) — 17-stage HITL execution loop
-  governing `.claude/skills/` workflow + Stage prompts + HITL gates at
-  stages 5/7/9/11/13. §4.1 (Intake) / §4.4 (Repo Scan) content is
-  inlined and mj-agent-native (PR #118 commit-3 supplements). Stage 8
-  Implementation has three flavors (A pure code / B in-source canonical
-  always-HITL / C infra). Original derivation provenance archived to
-  `archive/decisions/superseded/[DEPRECATED]_[ADR]_015_*`.
-
-Archived (`docs/archive/rule/`, `state: deprecated`):
-- `[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md` — replaced
-  by v2.1 (tri-track + A12-A14)
-- `[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md` —
-  replaced by v1.1 (engineering-workflow cross-ref)
-- `[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md` —
-  replaced by v1.1 (in-source only scope)
+- `policies/documentation.md` — **cross-track meta rules** (canonical home):
+  12-type taxonomy (§2) + `track` frontmatter field (4 values code | agent |
+  engineering-workflow | shared) + path-to-track decision tree (§3) + **PR
+  gates A1-A6 + OB1-OB5 (§5; the唯一权威定义)** + frontmatter schema incl.
+  type-specific fields (§6) + per-type body authoring depth (§8) + **CLAUDE.md
+  sync allowlist (§7; 4 类 allowlist + 三轨分段)** + 项目根 5 文件例外 (§2.6).
+- `policies/archive.md` — archive triggers + active-path-stability + manifest
+  schema (`archive.yml`) + ceremony + `ai_visibility` + G14/G15 + retention.
+- `sdd/lifecycle.md` — capability 9-state (SDD 主轴) / working-doc 4-state
+  (`plans/**`) / canonical-doc archive 5-state (active → deprecated → frozen
+  → archived → purge-eligible).
+- `sdd/workflows/execution-loop.md` — **17-stage HITL execution loop**
+  (kernel home; HITL gates at stages 5 / 7 / 9 / 11 / 13) + verification
+  matrix + self-review + §7 post-merge sedimentation (Rules 9/10/11).
+- `sdd/adapters/{runtime-skill,prompt,contract,claude-code-skill}.md` —
+  agent-side gates A7-A11 (SKILL / PROMPT / CONTRACT + loader frontmatter-strip
+  contract) + the `.claude/` SKILL A12 gate (ADR-013 native schema).
+- `policies/ai-agent.md` §4 — HITL canonical 10-enum + Codex boundary;
+  `policies/ci-gates.md` §5.1 — A13 `.claude/settings.json` PR gate.
 
 Markdown + YAML syntax (GFM rendering target):
 `docs/rule/[STANDARD]_GitHub_Markdown.md` (**v1.1 minor bump 2026-05-18**:
@@ -338,42 +323,39 @@ Markdown + YAML syntax (GFM rendering target):
 `docs/guide/[GUIDE]_Developer_Onboarding.md` (mj-agent end-to-end day-1 +
 refresher; covers repo / branches / env / tests / docs / commit / Studio).
 
-**项目根具名文件 5 件（Meta v2.2 §2.6；不入 canonical 治理表，A1-A3 不适用，A4+A6 仍适用）**：
+**项目根具名文件 5 件（`policies/documentation.md` §2.6；不入 canonical 治理表，A1-A3 不适用，A4+A6 仍适用）**：
 - `README.md` — 项目入口和快速启动（PR #171 借鉴 mj-system 8 段结构扩写）
 - `CONTRIBUTING.md` — 协作与提交流程（PR-D 新建；「摘要 + 跳转」模式 8 段；环境已就绪开发者入口；
   与 Developer_Onboarding 互补不重复）
 - `CHANGELOG.md` — 版本变更日志
 - `GLOSSARY.md` — 项目术语索引（PR-D 新建；A-W 字母分段 ~40 术语；专题深度词典在 `docs/glossary/`）
-- `CLAUDE.md` — AI 高频上下文缓存（本文件；同步策略见 Meta v2.2 §6.4 4 类 allowlist）
+- `CLAUDE.md` — AI 高频上下文缓存（本文件；同步策略见 `policies/documentation.md` §7 4 类 allowlist）
 
 
-ADR-012 documents the v1.1 → v2.0 dual-track split
-(`decisions/ADR-012_Two_Track_Documentation_Governance.md`); the archived
-predecessor lives at
-`docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`
-(state: deprecated). The corpus-wide guard `scripts/check_wikilinks.py`
-enforces that any reference to the v1.1 filename outside `docs/archive/`
-must be frozen (archive-prefixed) — living refs are migrated to the v2.0
-trio.
+Trio-evolution lineage (one-line pointer): ADR-012 (dual-track split) →
+ADR-013 (in-tree SKILL schema separation) → ADR-014 (tri-track) record the
+v1.1 → v2.x history; the SDD reorientation that archived the trio is
+ADR-031 (Spec-Anchored Refactor). The frozen v1.1 predecessor lives at
+`archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md`.
 
-Versioning rule (Meta_Framework v2.1 §4.2 + §5.6 sustained from v2.0 +
-Framework v1.1): types with `version` frontmatter (STANDARD/SPEC/EVAL/
-CONTRACT/ASSESSMENT) carry `_vX.Y` in the filename. On formal version
-evolution (HITL judgment at PR review), the old file moves to
-`docs/archive/<original-subdir>/`, the new file lands as `_v<new>.md`,
-`state` flips to `deprecated` on the archive copy, and corpus-wide
-references are audited (Living updates to `_v<new>`; Frozen pins to
-`_v<old>`). Daily edits stay in-place — the rename + archive ceremony
-fires only when the change qualifies as substantive evolution. ADR-011
-documents the rationale; ADR-014 §决策点 3 skeleton-first describes the
-延迟 promote 变体 used for v2.0 → v2.1. ADR-020 (Phase C-3-1) 把 `scripts/check_wikilinks.py` 改为 auto-discover
-NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob — 零维护 archive
-引用校验；新增 archive 文件自动纳入校验。
-ADR-024 (Phase D-3) EVAL framework spec：Agent_Side v1.1 → v1.2 archive
-ceremony；§4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/
-integration + body 八段 + frontmatter schema）；A8/A11 transitional waiver
-**延续 Phase E**（前置条件 4 项 roadmap）；check_frontmatter.py EVAL 类型
-条件；不 supersede；mj-agent 原生；Phase D 收尾。
+Versioning + archive convention (now `policies/archive.md` + `sdd/lifecycle.md`
+§4 canonical-doc 5-state): types with `version` frontmatter (STANDARD / SPEC /
+EVAL / CONTRACT / ASSESSMENT) carry `_vX.Y` in the filename. On formal version
+evolution (HITL judgment at PR review) the archive ceremony fires — the old
+file is git-mv'd to `archive/<original-subdir>/`, `state` flips to
+`deprecated` → `frozen`, an `archive.yml` manifest is written, and
+corpus-wide references are audited (Living updates to `_v<new>`; Frozen pins
+to `_v<old>`). Daily edits stay in-place per active-path-stability
+(`policies/archive.md` §1). ADR-011 documents the original rationale.
+`scripts/check_wikilinks.py` (ADR-020; Phase C-3-1) auto-discovers NEEDLES
+from the `[DEPRECATED]_*.md` glob — now unioned across **both**
+`docs/archive/rule/` (legacy) and `archive/rule/` (M6 move target), so any
+living reference to an archived STANDARD stem outside `docs/archive/` must
+carry the `archive/rule/{stem}` pin; new archive files are auto-covered.
+ADR-024 (Phase D-3) is the **still-active** EVAL framework spec (NOT archived
+by M6 PR4): §4 EVAL authoring 完整规范（4 子类 outcome / trajectory /
+component / integration + body 八段 + frontmatter schema）；A8/A11 transitional
+waiver 延续；cite ADR-024 (not the archived Agent_Side snapshot) for EVAL.
 
 ADR-026/027/028 (PR-Γ；ADR-025 拆分；2026-05-11)：
 - **ADR-026 Multi-Environment Compose Profile**：docker-compose 4-file 分层
@@ -395,23 +377,21 @@ archive 至 `archive/decisions/superseded/`（原 `docs/archive/adr/`；M5-PR3b 
 PR-Γ；2026-05-11；cross-repo decoupling cleanup）— 决策内容已沉淀为对应 framework
 STANDARD 段；详见 [[archive/decisions/superseded/INDEX|archive/decisions/superseded/INDEX]]。
 
-`track` frontmatter field (Meta v2.1 §4.3.1): every canonical doc
-declares `track: code | agent | engineering-workflow | shared`. Boundary
+`track` frontmatter field (`policies/documentation.md` §3): every canonical
+doc declares `track: code | agent | engineering-workflow | shared`. Boundary
 rules are written into ADR-012 §Decision 决策点 4 (v2.0 dual-track origin)
 + ADR-014 §Decision 决策点 4 (v2.1 tri-track) to avoid per-PR re-litigation.
 Phase 1 末 will collapse the implicit default and require `track`
-explicitly. The path-to-track decision tree is in Meta v2.1 §4.3.1
-(block quote). `scripts/check_frontmatter.py` enforces the 4-value
-TRACK_VALUES enum.
+explicitly. The path-to-track decision tree is in `policies/documentation.md`
+§3.1. `scripts/check_frontmatter.py` enforces the 4-value TRACK_VALUES enum.
 
 ## Code-Side Documentation
 
-> **Track A (code-side)** — governed by Code_Side_Framework v1.1 §7.1
-> (A1-A6 阻塞式) + §7.2 (OB1-OB5 非阻塞观察). Reviewer: SWE Reviewer
-> 充分（per Code_Side §8）. Failures are **loud** (compile / test /
-> deploy break).
+> **Track A (code-side)** — governed by `policies/documentation.md` §5.1
+> (A1-A6 阻塞式) + §5.2 (OB1-OB5 非阻塞观察). Reviewer: SWE Reviewer
+> 充分（§5.4）. Failures are **loud** (compile / test / deploy break).
 
-PR gates A1-A6 (blocking, see Code_Side §7.1):
+PR gates A1-A6 (blocking, see `policies/documentation.md` §5 — the唯一权威定义):
 
 - **A1**: 路径与文件名合法 — `[TYPE][_Subject]_Description[_vX.Y].md` or
   type-specific format.
@@ -425,8 +405,9 @@ PR gates A1-A6 (blocking, see Code_Side §7.1):
 - **A6**: allowlist 文档（框架/架构/核心运行入口）变更已同步检查
   `CLAUDE.md` (this file).
 
-Non-blocking observations OB1-OB5 (see Code_Side §7.2; Phase 1 fills the
-thresholds): 文档长度区间 / 时态一致性 / 内容边界 / 摘要质量 / 内部一致性.
+Non-blocking observations OB1-OB5 (see `policies/documentation.md` §5.2;
+Phase 1 fills the thresholds): 文档长度区间 / 时态一致性 / 内容边界 /
+摘要质量 / 内部一致性.
 
 Repo conventions (code-side, all governed by Track A standards):
 
@@ -463,14 +444,17 @@ Repo conventions (code-side, all governed by Track A standards):
 
 ## Agent-Side Documentation
 
-> **Track B (agent-side)** — governed by Agent_Side_Framework v1.1 §7.1
-> (A7-A10 阻塞式) + §7.5 (frontmatter strip 契约). Reviewer: Domain
-> Expert / Prompt Engineer **+** SWE (≥ 2 reviewers per Agent_Side §8).
-> Failures are **silent** (wrong answers / hallucinations / business
-> decision drift) — every LLM call that consumes SKILL/PROMPT body is a
-> production output.
+> **Track B (agent-side)** — governed by `sdd/adapters/runtime-skill.md` +
+> `sdd/adapters/prompt.md` + `sdd/adapters/contract.md` (A7-A11 阻塞式 +
+> frontmatter strip 契约); surface-anchored subset in
+> `policies/ai-agent.md` §4; cross-track分工 in `policies/documentation.md`
+> §5.3. Reviewer: Domain Expert / Prompt Engineer **+** SWE (≥ 2 reviewers,
+> `policies/documentation.md` §5.4). Failures are **silent** (wrong answers /
+> hallucinations / business decision drift) — every LLM call that consumes
+> SKILL/PROMPT body is a production output.
 
-PR gates A7-A10 (blocking, see Agent_Side §7.1):
+PR gates A7-A11 (blocking, see `sdd/adapters/{runtime-skill,prompt,contract}.md`
++ `policies/documentation.md` §5.3):
 
 - **A7**: 新增/修改 `[SKILL]` 时 `src/mj_agent/skills/<name>/` 目录与
   文档身份一致（同名）.
@@ -481,8 +465,9 @@ PR gates A7-A10 (blocking, see Agent_Side §7.1):
 - **A10**: 新增/修改 `[CONTRACT]` `state: active` 时 `schema_ref`
   存在并指向存在 schema 文件.
 
-Frontmatter strip 契约 (Agent_Side §7.5, hard constraint): code that
-loads in-source canonical docs as LLM input **must** strip YAML
+Frontmatter strip 契约 (now `sdd/adapters/runtime-skill.md` §Frontmatter
+Strip; the loader contract — A11 PR gate enforces it, M3+ blocking): code
+that loads in-source canonical docs as LLM input **must** strip YAML
 frontmatter. Implementation:
 
 - **In-source canonical**: `src/mj_agent/skills/**/SKILL.md` and
@@ -496,8 +481,8 @@ frontmatter. Implementation:
 Agent-side authoring quick reference:
 
 - **New skill**: create `src/mj_agent/skills/<name>/` with a `SKILL.md`
-  based on `TEMPLATE_SKILL.md` (body 五段式 per Agent_Side §2.1: Purpose
-  / When to use / Planning workflow / Common patterns / Anti-patterns),
+  based on `TEMPLATE_SKILL.md` (body 五段式 per `sdd/adapters/runtime-skill.md`:
+  Purpose / When to use / Planning workflow / Common patterns / Anti-patterns),
   then wire it in `src/mj_agent/agent.py`.
 - **New prompt version**: update `src/mj_agent/prompts/<name>.md` body +
   bump `version` in frontmatter; promote to `state: active` only with an
@@ -510,14 +495,17 @@ Agent-side authoring quick reference:
 
 ## Engineering-Workflow Documentation
 
-> **Track C (engineering-workflow)** — governed by Meta_Framework v2.1
-> §3.10 / §7.7 (A12-A14 阻塞式) + `[STANDARD]_..._AI_Engineering_Execution_HITL_Prompt_v1.0`
-> (Track C primary STANDARD; PR-A2). Reviewer: Tooling Reviewer + SWE.
+> **Track C (engineering-workflow)** — governed by `sdd/adapters/claude-code-skill.md`
+> (A12 `.claude/` SKILL schema + `.claude/` 新目录准入) + `policies/ci-gates.md`
+> §5.1 (A13 settings.json PR gate) + `policies/ai-agent.md` §4 (A14
+> `mcp-server-trust-posture-change` HITL gate); 17-stage execution loop in
+> `sdd/workflows/execution-loop.md`. Reviewer: Tooling Reviewer + SWE.
 > Failures are **process drift** (HITL skipped / wrong skill invoked /
 > settings.json regression) — distinct from Track A loud failures and
 > Track B silent failures.
 
-PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
+PR gates A12-A14 (blocking, see `sdd/adapters/claude-code-skill.md` [A12] +
+`policies/ci-gates.md` §5.1 [A13] + `policies/ai-agent.md` §4 [A14]):
 
 - **A12**: `.claude/skills/<name>/SKILL.md` uses ADR-013 native schema
   only (`name` + `description` only — NO 13-field Agent_Side schema);
@@ -525,17 +513,18 @@ PR gates A12-A14 (blocking, see Meta v2.1 §7.7):
   reverse-trigger block; `name` matches directory and conforms to
   `mj-agent-<group>-<verb>` namespace; body has `## Overview` +
   `## Workflow` (other sections flexible).
-- **A13**: `.claude/settings.json` allowlist diffs reviewed against
-  `[STANDARD]_..._Claude_Code_Settings_v1.0` (Phase C+); no bare `Bash`
+- **A13**: `.claude/settings.json` allowlist diffs reviewed per
+  `policies/ci-gates.md` §5.1 (PR-blocking ruleset; Phase C+); no bare `Bash`
   in `permissions.allow`; secret patterns required in `permissions.deny`;
   `enabledPlugins` changes require PR-body justification.
 - **A14**: `.mcp.json` server changes declare trust posture (first-party
   / third-party / community) + credential mode (none / OAuth / API key /
   wrapped script) in PR body per the §4 declaration template in
   `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
-  (active per ADR-025 PR-3；领域专属 placement per ADR-022 §C.3.2). Quarterly
-  audit (per STANDARD §6) re-evaluates trust posture + syncs `.claude/scripts/
-  pg-server-*` against mj-system upstream.
+  (active per ADR-025 PR-3；领域专属 placement per ADR-022 §C.3.2). The HITL
+  trigger anchor is `policies/ai-agent.md` §4 `mcp-server-trust-posture-change`.
+  Quarterly audit (per STANDARD §6) re-evaluates trust posture + syncs
+  `.claude/scripts/pg-server-*` against mj-system upstream.
 
 In-tree skill catalog: `.claude/skills/mj-agent-*/` (target ~32 skills
 across 5 families: flow / git / doc / runtime / infra). Slash-command
@@ -581,7 +570,7 @@ Active in-tree skills（按 family 分组；填充随 phase 推进）:
 | infra | `/mj-agent-infra-llm-endpoint-probe` | 10 sub | **active**（ADR-025 PR-2） |
 | infra | `/mj-agent-infra-env-teardown` | 17 sub / 8 (C-flavor) | **active**（ADR-025 PR-4） |
 
-**v2.1 promote** (Phase B PR-B3c-promote 完成 ✅) ：v2.0 trio 已 archive 至 `docs/archive/rule/` + `state: deprecated`；v2.1 trio + HITL_Prompt v1.0 + ADR-014/015/016 全部 `state: active`；A12-A14 PR 门禁正式启用（不再 "v2.1 promote 前预自检"）；scripts/check_frontmatter.py TRACK_VALUES 已扩 4 值。
+**Tri-track governance status**（M6 SDD refactor 后）：v2.x trio + HITL_Prompt 已 archive 至 `archive/rule/`（doc-governance 迁入 kernel；见 §Documentation）；**A12-A14 PR 门禁 active**（kernel-homed — 见上方 Engineering-Workflow gates）；`scripts/check_frontmatter.py` `TRACK_VALUES` 4 值（code / agent / engineering-workflow / shared）enforced。
 
 Repo conventions (engineering-workflow track):
 
