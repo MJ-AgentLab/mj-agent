@@ -107,7 +107,7 @@ track: shared
 | 归档 ADR | 替代位置 | 归档原因 |
 |---|---|---|
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System\|ADR-010]] | [[rule/[STANDARD]_MJ_Agent_Commit_Message_Convention\|Commit Message Convention v1.0]] | git/commit 规则已独立 STANDARD 化 |
-| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] | [[rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt\|HITL_Prompt v1.1]] | 17-stage 闭环规则已独立 STANDARD 化（§4.1/§4.4 已 inline） |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation\|ADR-015]] | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 闭环规则曾独立 STANDARD 化（HITL_Prompt），M6 PR4 archive 后迁入 execution-loop kernel |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/decisions/superseded/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |

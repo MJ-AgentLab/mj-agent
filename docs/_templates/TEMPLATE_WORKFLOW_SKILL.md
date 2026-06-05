@@ -31,7 +31,7 @@ description: 1-2 sentences describing what this skill does, then "Triggers on" +
 
 **目标**：让 Claude Code 在用户描述触及本 skill 业务范围时**主动调用**。description 是唯一触发机制——Claude Code 只读 frontmatter，不读 body。
 
-**A12 阻塞条件**（[[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §7.7）：
+**A12 阻塞条件**（[[sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards/§CI Gate；原 Meta §7.7）：
 
 1. ≥ 200 chars
 2. 含**正向触发短语**（What it does + When to trigger，含中英文关键词）
@@ -209,8 +209,8 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 ## §6 关联文档
 
-- [[../rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]]（本类 SKILL 在 17-stage 闭环中的位置；§5 矩阵）
-- [[../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.1]] §3.10（in-tree workflow SKILL 治理）
+- [[sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（本类 SKILL 在 17-stage 闭环中的位置；§4 stage→skill 映射）
+- [[sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards（in-tree workflow SKILL 治理；原 Meta §3.10）
 - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
 - [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
 - 上游业务系统 v5.0+ `.claude/skills/mj-sys-*/SKILL.md`（直接派生源）
