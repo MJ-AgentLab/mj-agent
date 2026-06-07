@@ -4,7 +4,7 @@ live agent and dump a structured evidence markdown.
 Usage::
 
     uv run python scripts/capture_walkthrough_evidence.py \
-        --output docs/runbook/walkthrough_evidence_$(Get-Date -Format yyyy-MM-dd).md
+        --output capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence_$(Get-Date -Format yyyy-MM-dd).md
 
 The script needs a running ``.env`` with valid ``POSTGRES_ANALYST_*`` +
 ``ARK_API_KEY`` (and a model ID activated for the account). Each case
@@ -175,7 +175,13 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=_PROJECT_ROOT / "docs" / "runbook" / "walkthrough_evidence.md",
+        default=_PROJECT_ROOT
+        / "capabilities"
+        / "data-agent"
+        / "safe-sql"
+        / "evidence"
+        / "runtime"
+        / "walkthrough_evidence.md",
         help="output markdown path",
     )
     args = parser.parse_args()
@@ -194,10 +200,7 @@ def main() -> int:
         if rec["error"]:
             print(f"  ERROR: {rec['error']}")
         else:
-            print(
-                f"  ok ({rec['elapsed_sec']}s, "
-                f"{len(rec['tool_calls'])} tool calls)"
-            )
+            print(f"  ok ({rec['elapsed_sec']}s, {len(rec['tool_calls'])} tool calls)")
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(render_markdown(records), encoding="utf-8")

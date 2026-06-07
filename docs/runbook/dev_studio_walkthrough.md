@@ -66,8 +66,9 @@ uv run langgraph dev
 ## 4. 验证 walkthrough
 
 > Evidence 由 `scripts/capture_walkthrough_evidence.py` 在 DEV profile
-> 下针对实时 LLM + 实时 DB 自动捕获；快照见 `walkthrough_evidence.md`
-> （同目录），可随时重跑刷新。下表为快照摘要——**预期 vs 实际行为**。
+> 下针对实时 LLM + 实时 DB 自动捕获；快照见
+> `capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md`
+> （M6 X2 迁入 safe-sql capability `evidence/runtime/`），可随时重跑刷新。下表为快照摘要——**预期 vs 实际行为**。
 
 | ID | 问题 | 预期 trajectory | 实际 trajectory（system.md v1.3）| 实际结果 / 注记 |
 |---|---|---|---|---|
@@ -83,8 +84,8 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 合规口径既未在数据通道穿透（无 `biz_ods` 访问、无无界导出），也未在
 对话通道遗漏（边界声明明确）。
 
-证据原始捕获：见 `walkthrough_evidence.md`（同目录，可重跑
-`scripts/capture_walkthrough_evidence.py` 刷新）。
+证据原始捕获：见 `capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md`
+（可重跑 `scripts/capture_walkthrough_evidence.py` 刷新）。
 
 ## 5. LangSmith trace 开关
 
