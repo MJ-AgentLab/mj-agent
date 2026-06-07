@@ -248,11 +248,12 @@ track: shared
 
 ---
 
-## 运维手册（docs/runbook/）
+## 运维手册（docs/runbook/ — M6 X3/X4 已解散）
 
-| 文档 | 摘要 |
-|---|---|
-| `docs/runbook/dev_studio_walkthrough.md` | MVP 开发态 LangGraph Studio 试用与诊断 walkthrough：前置依赖、`.env` 配置、Studio 启动、H1/H2/H3/R1/R2 验证矩阵（引用 Plan A）、LangSmith trace 开关、常见诊断、测试与回归命令矩阵 |
+> **`docs/runbook/` 已解散，运维内容按 capability 就近收敛 + 开发者 GUIDE**：
+> - `dev_deployment.md` → `capabilities/infrastructure/docker-compose/runbook.md`（M6 X3）
+> - `dev_studio_walkthrough.md` → `docs/guide/[GUIDE]_Developer_Onboarding.md` §7（M6 X4）
+> - `walkthrough_evidence.md` → `capabilities/data-agent/safe-sql/evidence/runtime/`（M6 X2）
 
 ---
 

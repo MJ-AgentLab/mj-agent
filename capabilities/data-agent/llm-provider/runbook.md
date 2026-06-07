@@ -134,7 +134,7 @@ uv run pytest tests/unit/test_llm.py tests/unit/test_config_llm_fields.py -q
 - `contracts/behavior.feature` — 3 Gherkin scenarios
 - `/mj-agent-infra-llm-endpoint-probe` skill — endpoint reachability + model id + 1-token smoke
 - ADR-027 — LLM Provider Abstraction decision record
-- `docs/runbook/dev_studio_walkthrough.md` — broader Studio context (Phase M5 dissolves)
+- `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio context (M6 X4 absorbed dev_studio_walkthrough)
 
 ## §5 Post-mortem Trigger
 

@@ -101,7 +101,7 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 | `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` | §1 | biz pg analyst RO（ADR-006 / ADR-009） |
 | `ARK_API_KEY` | §2 | Volcengine Ark；`LLM_PROVIDER=ark` 必填 |
 | `LLM_BASE_URL` / `LLM_API_KEY` | §2 | `LLM_PROVIDER=local-openai-compat` 必填（DGX-Spark vLLM/SGLang/Ollama；ADR-027 PR-2） |
-| `LANGSMITH_API_KEY` | §3 | LangSmith trace（可选；详见 dev_studio_walkthrough §5） |
+| `LANGSMITH_API_KEY` | §3 | LangSmith trace（可选；详见 Developer_Onboarding §7.2） |
 | `MJ_AGENT_MEMORY_PASSWORD` | §5 | mj-agent-postgres `mj_agent_app` role RW（storage-stack PR；postgres-init 用此值建 role） |
 | `MJ_AGENT_REDIS_PASSWORD` | §5b | future use；container ready 但无 client wired |
 | `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`（**5 个**） | §8 | ssh-manager MCP server（ADR-028 PR-3；9 entries 用 5 unique passwords：lan + wan 同主机共密码） |
@@ -292,7 +292,7 @@ uv run pytest tests/eval
 - `.env.example`（非 secret 字段模板；ASCII-only）
 - `CLAUDE.md` "Environment variables" 段
 - `pyproject.toml` / `uv.lock`（依赖）
-- [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（Studio 探针前置）
+- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（Studio 探针前置）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.7 Rule 15（C 风味 secret 同步硬约束）
 
 ## Handoff

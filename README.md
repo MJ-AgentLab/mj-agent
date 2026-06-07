@@ -199,7 +199,7 @@ mj-agent 仅访问 上游业务系统 业务指标域：
 <details>
 <summary><strong>LangGraph Studio 不弹浏览器 / 2024 端口占用</strong></summary>
 
-端口默认 `http://127.0.0.1:2024`；占用时用 `uv run langgraph dev --port 2025`，浏览器手工打开。详细诊断见 [docs/runbook/dev_studio_walkthrough.md](./docs/runbook/dev_studio_walkthrough.md)。
+端口默认 `http://127.0.0.1:2024`；占用时用 `uv run langgraph dev --port 2025`，浏览器手工打开。详细诊断见 [docs/guide/[GUIDE]_Developer_Onboarding.md §7](./docs/guide/[GUIDE]_Developer_Onboarding.md)。
 
 </details>
 

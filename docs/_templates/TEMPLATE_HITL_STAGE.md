@@ -115,7 +115,7 @@ mj-agent 专属规则（如有；可删此段）：
 |---|---|---|
 | `### 4.X <Stage 名称>` | stage 编号；mj-agent 17-stage 闭环已分配 §4.1-§4.15；新增 stage 用 4.16+；子 stage 用 §4.X.Y | `### 4.16 Studio E2E Probe` |
 | `## Task` | 本 stage 的目标语句 + "不做什么"边界 | "请进行 Studio E2E 探针。不要创建 Issue ..." |
-| `### Must Follow` | 必须遵守的规范文档（不可少） | `docs/runbook/dev_studio_walkthrough.md` |
+| `### Must Follow` | 必须遵守的规范文档（不可少） | `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `### Use As Template` | 输出结构模板（可选；某些 stage 没有模板就省略此子段） | `docs/_templates/TEMPLATE_REPO_SCAN_RESULT.md` |
 | `### Consult If Affected` | 仅当涉及对应领域时参考的文档 | `decisions/ADR-006_Fail_Safe_Reads.md` |
 | `Preferred Skill` | 首选 skill，加状态注释（"PR-B2 落地"等） | `/mj-agent-flow-intake`（PR-B2 落地） |

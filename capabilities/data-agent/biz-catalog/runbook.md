@@ -11,7 +11,7 @@ last_verified: 2026-05-20
 
 # Runbook: QCM Catalog Mirror
 
-> Phase M1 baseline. ≥ 3 sections. Cross-refs `docs/runbook/dev_studio_walkthrough.md` (Phase M5 will dissolve).
+> Phase M1 baseline. ≥ 3 sections. Cross-refs `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 (M6 X4 dissolved dev_studio_walkthrough into it).
 
 ## §1 Startup
 
@@ -113,7 +113,7 @@ Expected:
 - `contracts/behavior.feature` — 3 Gherkin scenarios
 - `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and live DB
 - `policies/data-boundary.md` §3 — biz-catalog-sync 4 项必停 governance
-- `docs/runbook/dev_studio_walkthrough.md` — broader Studio walkthrough (Phase M5 dissolves)
+- `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
 - `§6.1 Catalog Freshness Check Cadence SOP` — cross-ref `qcm_catalog.yaml source.status` + `scripts/diff_biz_schema.py` reference
 - `§6.2 Catalog-Sync Skill Walkthrough SOP` — wraps `/mj-agent-runtime-biz-catalog-sync` skill (black-box workflow reference; `biz-catalog-sync` canonical 10-enum HITL per `policies/ai-agent.md §4`)
 - `§6.3 Upstream PR Linkage SOP` — cross-repo coordination with mj-system PR1/PR2 tracking (generic wording; specific PRs evolve)
