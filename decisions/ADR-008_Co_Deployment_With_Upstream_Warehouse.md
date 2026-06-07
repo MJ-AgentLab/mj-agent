@@ -96,7 +96,7 @@ mj-agent 与上游业务系统是**独立项目，独立 compose project，独�
 - [[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]（独立仓库 + 生态复用）
 - mj-agent `infra/docker/docker-compose.mj-agent.yml`（独立 compose project 定义）
 - mj-agent `infra/docker/README.md` §Standalone deploy（启动 / 拆栈步骤）
-- mj-agent `docs/runbook/dev_deployment.md` §2.3（DEV 部署 runbook）
+- mj-agent `capabilities/infrastructure/docker-compose/runbook.md` §1（DEV 部署；原 `dev_deployment.md` §2.3，M6 X3 并入 capability runbook）
 - **Future work** — biz schema 同步机制规划在 Phase 2（见 [[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）；Phase 1 阶段通过 `tests/contract/*` + `qcm_catalog.yaml` 静态镜像 + manual review 维持
 - 上游业务系统 `docker-compose.yml`（被 attach 的 `mj-system-backend-network` Docker network 创建方）
 - PR #42 (storage-stack) / #44 (standalone project) / #45 (hardened healthcheck) / #46 (CI gates) — Architectural evolution 实施链
