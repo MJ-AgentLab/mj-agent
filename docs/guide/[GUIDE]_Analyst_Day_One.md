@@ -25,7 +25,7 @@ owner: 项目负责人
 > **版本**：v0.1
 > **最后更新**：2026-05-07
 > **派生自**：mj-agent 原生
-> **关联文档**：[[runbook/dev_deployment|DEV Deployment Runbook]]、`[TEMPLATE]_Trial_Issue.md`（vault）、[[../mj-agent-roadmap-v1.6|路线图 v1.6]]
+> **关联文档**：[[capabilities/infrastructure/docker-compose/runbook|DEV Deployment Runbook]]、`[TEMPLATE]_Trial_Issue.md`（vault）、[[../mj-agent-roadmap-v1.6|路线图 v1.6]]
 
 ---
 
@@ -154,7 +154,7 @@ P 级判定：
 
 ## 关联文档
 
-- [[runbook/dev_deployment|DEV Deployment Runbook]]：你拿到的内网 URL 来自哪
+- [[capabilities/infrastructure/docker-compose/runbook|DEV Deployment Runbook]]：你拿到的内网 URL 来自哪
 - vault [[../[TEMPLATE]_Trial_Issue|Trial Issue 模板]]：怎么写 ISSUE
 - vault [[../[CHECKLIST]_Phase_1_Exit|Phase 1 Exit Checklist]]：试用末对账表
 - [[mj-agent-roadmap-v1.6|路线图 v1.6]]：本试用所属 Phase 1 在整个项目的位置

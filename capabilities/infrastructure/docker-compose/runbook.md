@@ -2,16 +2,21 @@
 type: capability-runbook
 capability: infrastructure.docker-compose
 state: drafting
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-23
+updated: 2026-06-07
 last_verified: 2026-05-20
 ---
 
 # Runbook: Docker Compose 4-File Profile
 
-> Phase M1 baseline.
+> Phase M1 baseline. **M6 X3** absorbed `docs/runbook/dev_deployment.md` (DEV
+> deploy prereqs + image build, V1–V9 verification matrix, Chainlit/proxy
+> troubleshooting). The source runbook's Phase-1-trial scaffolding (analyst
+> trial-loop handoff, out-of-scope notes, changelog) was intentionally dropped;
+> 3-level teardown is cross-referenced (§6.1 + `/mj-agent-infra-env-teardown`),
+> not duplicated.
 
 ## §1 Startup
 
@@ -45,11 +50,47 @@ docker compose --env-file .env \
 
 Use the `/mj-agent-infra-docker-compose` skill for guided lifecycle.
 
+### DEV first-deploy: image build + Chainlit access
+
+> Absorbed from `dev_deployment.md` (M6 X3). DEV **builds** the image locally;
+> TEST/PROD **pull** the Harbor image (see Per-profile commands above).
+
+DEV host ports must be free before `up`:
+
+| Port | Service | Check (Windows) |
+|---|---|---|
+| host **8001** → 8000 | mj-agent Chainlit 内网入口 | `netstat -ano \| findstr :8001` empty |
+| host **5433** → 5432 | mj-agent-postgres | `netstat -ano \| findstr :5433` empty |
+| host **6379** | mj-agent-redis | `netstat -ano \| findstr :6379` empty |
+
+```bash
+# 1. Build the DEV image (~780MB; TEST/PROD skip — they pull Harbor)
+docker build -f docker/Dockerfile -t mj-agent:0.1 .
+
+# 2. Prepare .env — 6 app keys: first 4 injected by setup-env.ps1, last 2 are
+#    .env.example DEV defaults (copy as-is):
+#      POSTGRES_ANALYST_USER / POSTGRES_ANALYST_PASSWORD   <- team secret
+#      ARK_API_KEY                                          <- team secret
+#      LANGSMITH_API_KEY                                    <- team secret
+#      MJ_AGENT_MEMORY_USER=mj_agent_app                    <- .env.example default
+#      MJ_AGENT_MEMORY_PASSWORD=local-dev-only-...          <- DEV placeholder OK
+cp .env.example .env && .\scripts\setup-env.ps1
+
+# 3. up (DEV chain) — also pulls mj-agent-postgres + mj-agent-redis (depends_on
+#    service_healthy); first up runs the pg init script to create the
+#    mj_agent_memory DB + role + GRANT
+docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d
+
+# 4. 内网入口验证
+docker exec mj-agent mj-agent check     # expect: CHECK OK + 5-line summary
+# browser: http://<DEV-host-ip>:8001     # expect: Chainlit "Welcome"
+```
+
 ## §2 Health Check
 
 ```bash
 # Service status
-docker compose --env-file .env -f docker/compose.yaml -f docker/docker-compose.<overlay>.yml ps
+docker compose --env-file .env -f docker/compose.yaml -f docker/compose.<overlay>.yml ps
 
 # Expected after ≤ 90s (REQ-002):
 # - mj-agent        Up (healthy)
@@ -63,6 +104,24 @@ docker compose <chain> logs -f mj-agent-postgres
 # Healthcheck output
 docker inspect --format='{{.State.Health.Status}}' mj-agent
 ```
+
+### DEV deployment verification matrix (V1–V9)
+
+> Absorbed from `dev_deployment.md` §3 (M6 X3). DEV deployment is complete when every row is green.
+
+| ID | 验证 | 命令 / 操作 | 期望 |
+|----|------|-------------|------|
+| V1 | 3 容器 healthy | `docker ps --filter name=mj-agent --format "{{.Names}}: {{.Status}}"` | mj-agent / -postgres / -redis 全 `healthy` |
+| V2 | biz DB 可达 | `docker exec mj-agent mj-agent check` | `CHECK OK` |
+| V3 | memory DB 可达 | 同 V2，输出含 `memory db = mj_agent_memory` | OK |
+| V3b | mj-agent-postgres 直连 | `psql -h localhost -p 5433 -U postgres -d mj_agent_memory -c '\dt'` | 列出 langgraph checkpoint 表（checkpoints / checkpoint_writes / checkpoint_blobs / checkpoint_migrations）|
+| V3c | redis 可 ping | `docker exec mj-agent-redis redis-cli ping` | `PONG` |
+| V4 | Chainlit 监听 | `docker logs mj-agent \| grep "available at"` | `http://0.0.0.0:8000` |
+| V5 | 内网访问 | 浏览器 `http://<DEV-IP>:8001` | Chainlit Welcome |
+| V6 | 最小问答 | Chainlit 输入"biz 域有哪些表？" | list_biz_tables → 65+ 表 |
+| V7 | 数据边界 | 输入"select * from biz_ods.foo" | L1 guardrail 友好拒绝 |
+| V8 | LangSmith trace | V6 后看 LangSmith mj-agent-dev project | 新 trace 含 4 工具调用 |
+| V9 | 容器内存 | `docker stats mj-agent mj-agent-postgres mj-agent-redis` | 三容器合 < 1GB（无大查询时）|
 
 ## §3 Troubleshooting
 
@@ -78,7 +137,7 @@ docker compose <chain> down -v
 docker compose --env-file .env <chain> up -d
 ```
 
-Use `/mj-agent-infra-env-teardown` skill for 3-level safety teardown (Level 2 = down -v).
+Use `/mj-agent-infra-env-teardown` skill for 3-level safety teardown (Level 2 = down -v). Teardown 只拆 mj-agent / mj-agent-postgres / mj-agent-redis 3 容器 + `mj-agent-storage` 内部网络；`mj-system-postgres` / `-app` / `-n8n` 不受影响（`mj-system-backend-network` 是 external，归 mj-system，per ADR-008）。
 
 ### Symptom: `mj-agent` service stuck in "Created" or restarting
 
@@ -138,6 +197,29 @@ docker network ls | grep mj-system-backend-network
 - If unreachable: VPN required for Harbor access from PROD host
 - Build locally (DEV pattern) as emergency fallback (not recommended for PROD — bypass CI image signing)
 
+### Symptom: Chainlit 502 / connection refused (DEV 内网入口)
+
+> Absorbed from `dev_deployment.md` §4 (M6 X3). First triage container-internal vs host-side:
+
+```bash
+docker exec mj-agent python -c "import urllib.request as r; print(r.urlopen('http://127.0.0.1:8000/').status)"
+```
+
+**Diagnostic**：
+- Returns `200` → app healthy inside the container; the fault is host-side (proxy) → see the proxy row below.
+- Raises / hangs → process not up or bound wrong. `CHAINLIT_HOST` must be `0.0.0.0`, not `127.0.0.1` — the Dockerfile sets this default; if a `.env` override forces `127.0.0.1`, remove it.
+
+**Resolution / DEV runtime quick-reference**：
+
+| 现象 | 根因 | 处置 |
+|---|---|---|
+| 容器启动 30s 后 unhealthy | `docker logs mj-agent` 常见 `ARK_API_KEY not set` / `POSTGRES_ANALYST_USER not set`（compose env 注入缺失）| 重跑 `setup-env.ps1`；`docker compose --env-file .env <chain> up -d --force-recreate mj-agent` |
+| host curl 502 但浏览器 / 容器内 urllib 200 | host shell `HTTP_PROXY`/`HTTPS_PROXY`/`ALL_PROXY`（Clash/v2ray）未排除 localhost；curl 走代理返 502，浏览器有 implicit localhost bypass | 单次 `curl --noproxy '*' http://localhost:8001/`；持久 `$env:NO_PROXY="localhost,127.0.0.1,::1"`（PS）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；应用本身健康，无需 restart |
+| `mj-agent check` 报 memory DB unreachable | mj-agent-postgres 未 healthy 或凭据错 | `docker logs mj-agent-postgres` 看 init；若改过 `MJ_AGENT_MEMORY_*` 但 volume 持久旧值 → §6.2 init recovery（`down -v` 丢 checkpoint 历史）|
+| 容器内走 5432 而 host 走 5433 的端口困惑 | 正常：容器内 `mj-agent-postgres:5432`；host 经 ports 映射走 5433 | 文档写清即可，不动配置 |
+| 跑 SQL 触发 `statement_timeout` | 单查询 > 60s（L4 `analyst` role GRANT 强制；非 compose 问题）| 拆分查询 / 加 `LIMIT` |
+| LangSmith trace 看不到 | `.env` 中 `LANGSMITH_TRACING=false` | 改 `true` + 验 `LANGSMITH_API_KEY` 非空；`docker compose --env-file .env <chain> restart mj-agent` |
+
 ## §4 Related Artifacts
 
 - `contracts/docker.contract.yml` — Dockerfile lint + entrypoint contract
@@ -149,6 +231,8 @@ docker network ls | grep mj-system-backend-network
 - `/mj-agent-infra-env-setup` skill — first-time setup (decrypt + compose up)
 - `/mj-agent-infra-env-teardown` skill — 3-level safety teardown
 - ADR-026 / ADR-008 / ADR-030 — design records
+- ADR-006 (4-layer data boundary) / ADR-009 (read-only biz connection) — data-access design (absorbed from dev_deployment 关联文档, M6 X3)
+- `docker/README.md` — image build / standalone run / compose detail
 - `docs/runbook/dev_studio_walkthrough.md` — broader Studio context (Phase M5 dissolves)
 - `§6.1 Volume Backup/Restore SOP` — cross-ref `/mj-agent-infra-env-teardown` Level 2 (destructive; REQ-006 checkpointer data lost warning)
 - `§6.2 Postgres Init Failure Recovery SOP` — cross-ref `docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (REQ-003 `\getenv` + `format` + `\gexec` chain)
