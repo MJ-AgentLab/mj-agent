@@ -11,7 +11,7 @@ description: This skill performs a 3-step healthcheck against an OpenAI-compatib
 
 DGX-Spark (192.168.0.189) is the team's local LLM compute node — vLLM / SGLang / Ollama / TGI / llama.cpp container served by other-team / dedicated-repo (deployment责任另议). mj-agent only consumes the endpoint via `LLM_BASE_URL` + `LLM_API_KEY`. This skill verifies reachability + correct model + 1-token chat works **before** mj-agent runtime depends on it.
 
-**Stage 10 sub** of HITL_Prompt 17-stage 闭环；典型在 self-review 前用于 `LLM_PROVIDER=local-openai-compat` 模式的 endpoint 验证；与 `mj-agent-infra-studio-probe` 互补（Studio 测 graph 行为，本 skill 测纯 LLM endpoint）。
+**Stage 10 sub** of the 17-stage 执行闭环；典型在 self-review 前用于 `LLM_PROVIDER=local-openai-compat` 模式的 endpoint 验证；与 `mj-agent-infra-studio-probe` 互补（Studio 测 graph 行为，本 skill 测纯 LLM endpoint）。
 
 ## When to Use
 
@@ -186,7 +186,7 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 - [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）
 - [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）
 - [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（端到端 5 项验证；LLM 是 H1/H2/H3 happy path 前置条件）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.10 Stage 10 Local Verification
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（Stage 10 Local Verification；原 HITL_Prompt §4.10，M6 PR4 archived → kernel）
 - vLLM docs: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
 - Ollama OpenAI compat: https://github.com/ollama/ollama/blob/main/docs/openai.md
 - mj-system upstream `.claude/skills/mj-sys-ops-env-setup`（间接派生源；mj-agent 简化为单一 endpoint 探针，不含 mj-system 多 SSH 编排）

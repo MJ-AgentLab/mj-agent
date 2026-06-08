@@ -7,7 +7,7 @@ description: This skill provides 3-level Docker environment cleanup for the mj-a
 
 ## Overview
 
-3-level Docker 清理 skill — 与 `mj-agent-infra-env-setup` / `mj-agent-infra-docker-compose` 互补。**Stage 17 sub** of HITL_Prompt 17-stage 闭环（post-merge / 工作完结清理）；也可作为 **Stage 8 sub C-flavor**（mid-task 清理重来）。
+3-level Docker 清理 skill — 与 `mj-agent-infra-env-setup` / `mj-agent-infra-docker-compose` 互补。**Stage 17 sub** of the 17-stage 执行闭环（post-merge / 工作完结清理）；也可作为 **Stage 8 sub C-flavor**（mid-task 清理重来）。
 
 mj-agent 3 服务栈：
 
@@ -145,7 +145,7 @@ docker images | grep "^mj-agent\s"
 - [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）
 - [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）
 - [[../../../docker/compose.yaml|compose.yaml]] / `.override.yml` / `.test.yml` / `.prod.yml`
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §3.1（破坏性操作必触 HITL）+ §4.15 Stage 17 post-merge cleanup
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §7（Stage 17 post-merge cleanup）+ [[../../../policies/ai-agent|policies/ai-agent]] §4（破坏性操作必触 HITL）；原 HITL_Prompt §3.1 / §4.15，M6 PR4 archived → kernel
 - mj-system upstream `.claude/skills/mj-sys-ops-env-teardown/SKILL.md`（直接派生源；mj-agent 适配 3 服务栈 + 4 profile）
 
 ## Anti-patterns

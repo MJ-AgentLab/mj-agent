@@ -12,7 +12,7 @@ description: This skill should be used when the user asks to set up the .env fil
 1. `scripts/setup-env.ps1` — 解密 `config/secrets.enc`，注入 ~6-8 app secrets 到 `.env`
 2. `.claude/scripts/setup-mcp-secrets.ps1` — 解密 `config/secrets-mcp.enc`，写入 15 MCP secrets 到 OS User-level env（不入 `.env`）
 
-加上 `uv sync` 依赖安装 + 最小 `.env` validation。**Stage 8 (C-flavor) sub** of HITL_Prompt 17-stage 闭环。
+加上 `uv sync` 依赖安装 + 最小 `.env` validation。**Stage 8 (C-flavor) sub** of the 17-stage 执行闭环。
 
 新机器 / 新贡献者上手时第一个调用的 infra skill。
 
@@ -293,7 +293,7 @@ uv run pytest tests/eval
 - `CLAUDE.md` "Environment variables" 段
 - `pyproject.toml` / `uv.lock`（依赖）
 - [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（Studio 探针前置）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.7 Rule 15（C 风味 secret 同步硬约束）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（C 风味 secret 同步硬约束；原 HITL_Prompt §4.7 Rule 15，M6 PR4 archived → kernel）
 
 ## Handoff
 

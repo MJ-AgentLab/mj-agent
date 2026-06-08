@@ -7,12 +7,12 @@ description: This skill should be used when the user asks to start LangGraph Stu
 
 ## Overview
 
-`uv run langgraph dev` 启 Studio + 跑 5 项 walkthrough 验证矩阵（H1/H2/H3 happy path + R1/R2 数据边界 red line）。**Stage 10 sub** of HITL_Prompt 17-stage 闭环；典型在 self-review 前用作 LLM 行为对比 / 数据边界回归测试。
+`uv run langgraph dev` 启 Studio + 跑 5 项 walkthrough 验证矩阵（H1/H2/H3 happy path + R1/R2 数据边界 red line）。**Stage 10 sub** of the 17-stage 执行闭环；典型在 self-review 前用作 LLM 行为对比 / 数据边界回归测试。
 
 **Reference**:
 - [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7.1 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8 Level B（Studio probe 是 HITL-confirm 后跑的）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §6（本地验证段；Studio probe 是 HITL-confirm 后跑的）；原 HITL_Prompt §4.8 Level B，M6 PR4 archived → kernel
 
 ## 前置条件
 
@@ -203,7 +203,7 @@ INFO: API:    http://127.0.0.1:2024
 - `src/mj_agent/prompts/system.md`（system prompt 当前 version；R1/R2 行为由 v1.3+ rule 2/3 决定）
 - `src/mj_agent/skills/{biz-domain-context,qcm-analysis,safe-sql-analysis}/SKILL.md`（H1/H2/H3 trajectory 涉及的 skill body）
 - `scripts/capture_walkthrough_evidence.py`（自动捕获 evidence 快照工具）
-- `walkthrough_evidence.md`（自动生成快照，与 Developer_Onboarding §7.1 表对位）
+- `capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md`（自动生成快照，与 Developer_Onboarding §7.1 表对位）
 
 ## Anti-patterns
 

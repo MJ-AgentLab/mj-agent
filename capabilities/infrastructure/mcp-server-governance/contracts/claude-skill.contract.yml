@@ -14,6 +14,17 @@
 # - body_section_heads: enumerated for structural drift detection
 # - content_hash canonical algorithm: strip frontmatter via regex + LF normalize + SHA-256 UTF-8;
 #   see safe-sql/runtime-skill.contract.yml header for full canonical spec.
+# - M6 freeze-refresh (2026-06-08): all 6 skills re-frozen via the documented canonical
+#   algorithm above on CURRENT content (regex strip `(?ms)^---\r?\n.*?\r?\n---\r?\n` count=1 +
+#   LF-normalize \r\n & lone \r -> \n + SHA-256). This SUPERSEDES the 2026-06-03 values, which
+#   were produced by a now-lost process and had drifted (M5-PR2/PR3a + M6 X2/X4 edited bodies
+#   without re-freezing). Hashes are now REPRODUCIBLE: re-running the algorithm on the current
+#   SKILL.md files matches the recorded values. Trigger: the M6 freeze-refresh batch re-pointed
+#   the dangling archived-doc refs (HITL_Prompt -> sdd/workflows/execution-loop; dev_deployment
+#   -> docker-compose capability runbook; walkthrough_evidence -> safe-sql evidence path) in the
+#   6 infra SKILL bodies (HITL-authorized; descriptions untouched). No CI gate reads these (V4 is
+#   Mode-A schema-lint only; Mode B withdrawn per M4-FU-V4-MODE-B-IMPL) — HITL drift record per
+#   policies/ai-agent §7.
 
 contract_id: claude-skill
 adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
@@ -31,9 +42,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose
-    description_hash: sha256:5ca1ff7b90b4313751219c2618c7371fd2f4aba30efce7cb19b76e9a7159cc6e
-    body_content_hash: sha256:5126e86b682e971eb1c4d9b35ad957eaa84364fa85da1ec1a7f1ccc3bea951fd
-    frozen_at: 2026-06-03T02:59:59Z
+    description_hash: sha256:f27f41f250567b5f8d3681d1bcc9151b0808efab60d84021754bb3b3ab324b08
+    body_content_hash: sha256:a66a9aa49dfb16b8dc9fffc0bab8d404fabfc28054fd3022b4f546a51698c3a2
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -55,8 +66,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
     description_hash: sha256:21bf582db6aca2c9f7a6d18a7e1e98efdd2b2935a6f233fcd7525006a7196b1f
-    body_content_hash: sha256:7e1e482047fb1af1a4747abd35633788a21e4386da10ba18d42595dc2fb52ba7
-    frozen_at: 2026-06-03T02:59:59Z
+    body_content_hash: sha256:d0391d599b1f43576686f7034fd8771b9a5102ca95cfa67fe95f5ff2f5193371
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
@@ -74,8 +85,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-env-teardown/SKILL.md
     name: mj-agent-infra-env-teardown
     description_hash: sha256:77ca5b0ca70dcd867846654ebd89bd043c50b150990b6e56a8759e70f78ec2cb
-    body_content_hash: sha256:4ed6c9e75db6b7f12e9cc722ab20f58f9155847aa2479c9ab5f3a1975980ccaf
-    frozen_at: 2026-06-03T02:59:59Z
+    body_content_hash: sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -91,8 +102,8 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
     name: mj-agent-infra-llm-endpoint-probe
     description_hash: sha256:3822c2acaf89b3d4411208307086002ba46e35e7f91e3c646980f76aa0180f04
-    body_content_hash: sha256:68a81a4309beb4e164f7672d5e1bc612a417946dd9a672d250feeb0420d99d8b
-    frozen_at: 2026-06-03T02:59:59Z
+    body_content_hash: sha256:67dd429f29485da7c074471396e8718f24be2d9a1985f1435244374c54d3cfa0
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -107,9 +118,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-storage-stack/SKILL.md
     name: mj-agent-infra-storage-stack
-    description_hash: sha256:720aee94177182bd87622d78531ed32e70ca3171e314dd45eb3050568a5f391b
-    body_content_hash: sha256:90a4353ca0bf5013ef0401c3d9090e13e05fa97abe764d7422e28c80994991b9
-    frozen_at: 2026-06-03T02:59:59Z
+    description_hash: sha256:d1a7c9bc66b5a1369f94d0d43ce3ab8acd1c86aa3a5e269bd9034035abff97d1
+    body_content_hash: sha256:b4e4ec4dce74f04c011d3e1accd5d838e59ca7d6f9fba7da9d05431b45b63572
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -128,9 +139,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-studio-probe/SKILL.md
     name: mj-agent-infra-studio-probe
-    description_hash: sha256:f9c95010bd4bcd0a5da79d59d825e7139301fb98374407b65fa64940b6069572
-    body_content_hash: sha256:45faa816e67a9c2690c58e1359f815236005b90172c657f5f9f27a4404934723
-    frozen_at: 2026-06-03T02:59:59Z
+    description_hash: sha256:815bed2b9c94279651758f2259062a890954a0257881c6ef892d6bbb72fdb2fa
+    body_content_hash: sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6
+    frozen_at: 2026-06-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
