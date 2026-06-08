@@ -63,7 +63,7 @@ ai_visibility: source-of-truth
 
 **`.mcp.json` 半边由别处覆盖**：`.mcp.json` server 增删的准入 / trust posture / credential
 mode 已由 `policies/ai-agent.md` §4 `mcp-server-trust-posture-change`（A14 必停 gate）+ 领域
-专属 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` 覆盖；本 adapter
+专属 `capabilities/infrastructure/mcp-server-governance/`（capability；former MCP STANDARD archived M6 X5）覆盖；本 adapter
 只承载 **skills / hooks 两半** 的显式准入规则，`.mcp.json` 半不在此重述。
 
 **Cross-ref**：`.claude/settings.json` 的 A13 PR 阻塞条件（裸 `Bash` 禁用 / `permissions.deny`

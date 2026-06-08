@@ -46,7 +46,7 @@ CLAUDE.md §A14 引用 `[STANDARD]_MJ_Agent_MCP_Server_Governance` 但 STANDARD 
 
 ### D.2 STANDARD placement：领域专属 → `docs/infrastructure/mcp/`
 
-新建 [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance v1.0]]，路径 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`（与 git/cicd 子目录平行；filename 无 `_v1.0` 后缀 per active path stability 原则）。
+新建 STANDARD MCP Server Governance v1.0，路径 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`（与 git/cicd 子目录平行；filename 无 `_v1.0` 后缀 per active path stability 原则）。**M6 X5 已 archive → [[capabilities/infrastructure/mcp-server-governance/design|mcp-server-governance capability]]（frozen 副本 `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`）。**
 
 STANDARD 提供：
 
@@ -103,7 +103,7 @@ STANDARD 提供：
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §A14 — PR gate 来源
 - [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] / [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — ADR-025 拆分姊妹
 - [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] — 本 ADR §D.3 secrets pipeline 升级；2-bundle 拆分把 MCP secrets 从 `secrets.enc` 析出
-- [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance]] v1.0 — 本 ADR 落地的实施细则
+- [[capabilities/infrastructure/mcp-server-governance/design|mcp-server-governance capability]]（原 STANDARD MCP Server Governance v1.0；本 ADR 落地的实施细则；M6 X5 archived → `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`）
 - [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR
 - `.mcp.json` — 13 servers 实文件
 - `.claude/scripts/{pg-server-start.cmd,pg-server-wrapper.mjs,setup-mcp-env.ps1}` — wrapper + env sync 脚本

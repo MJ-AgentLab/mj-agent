@@ -45,7 +45,7 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
 | Wrapper | `.claude/scripts/pg-server-start.cmd` | Cmd wrapper invoking pg-server-wrapper.mjs |
 | JS wrapper | `.claude/scripts/pg-server-wrapper.mjs` | Node-based; URL override from env |
 | Baseline | `docs/_baselines/pg_server_baseline.md` | SOR for wrapper behavior; quarterly diff |
-| STANDARD | `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` | §4 PR template; §6 quarterly audit process |
+| Governance contract | `contracts/governance.contract.yml` | §a14_pr_gate (PR template) + §quarterly_audit (former MCP STANDARD §4/§6; STANDARD archived M6 X5 → `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`) |
 | A14 gate | `.github/PULL_REQUEST_TEMPLATE.md` (PR body field) | Reviewer-checked at PR review time |
 
 **Why wrapper script (10 pg entries) instead of 10 distinct configs**：
@@ -93,12 +93,12 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
                                                                 Test LAN/WAN / Prod LAN/WAN / DGX-Spark LAN/WAN)
 
 A14 PR Gate (Phase M3+ blocking):
-  PR body §4 template (per MCP STANDARD)
+  PR body template (per contracts/governance.contract.yml §a14_pr_gate)
     └─► declares per-entry trust_posture + credential_mode + rationale
        └─► reviewer ensures every changed entry has the block
           └─► CI: scripts/sdd/check_a14_gate.py (Phase M3+)
 
-Quarterly Audit (§6 of MCP STANDARD):
+Quarterly Audit (per contracts/governance.contract.yml §quarterly_audit):
   └─► DRI re-evaluates trust_posture of each server
      └─► diff .claude/scripts/pg-server-* against docs/_baselines/pg_server_baseline.md
         └─► if drift: file ADR for posture upgrade or wrapper baseline refresh
@@ -130,6 +130,6 @@ Quarterly Audit (§6 of MCP STANDARD):
 
 3. **`ssh-manager` 9-host aggregation: count as 1 server or 9?** REQ-001 currently counts as 1 (matches `.mcp.json` entry count); per-host trust posture might require separate enumeration in quarterly audit. Phase M2 decision.
 
-4. **MCP STANDARD `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` not read during survey** (scope: no docs reads). Should REQ-001 wording be re-verified against the STANDARD before authoring? Phase M2 reverify.
+4. ~~MCP STANDARD not read during survey~~ **RESOLVED (M6 X5)**: the former MCP STANDARD was archived → `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`; its §1–§8 content is now covered by this capability (contracts + design). §2 trust-posture downgrade rule + §3 credential rules / `template_var` mode were folded into `governance.contract.yml` / `mcp-server.contract.yml`.
 
 > Phase M2 will fill in adapter §BDD Rules + §TDD Rules per `sdd/adapters/claude-code-skill.md`.

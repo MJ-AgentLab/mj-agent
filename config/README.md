@@ -293,7 +293,7 @@ prod-lan,prod-wan}` 默认值带 `REPLACE_WITH_TEAM_*_PASSWORD` 占位字面量�
 LAN URLs 由 `MJ_AGENT_PG_*_URL` env vars override，WAN URLs（FRP-tunneled
 remote pg）必填 `MJ_AGENT_PG_*_WAN_URL` 否则 MCP server 启动失败。
 
-详见 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` §5。
+详见 `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`（13-server inventory；former MCP STANDARD §5，M6 X5 archived）。
 
 ### 6.4 Claude Code MCP secrets 注入（ADR-030 后；mj-ops 风格 OS-level 注入）
 

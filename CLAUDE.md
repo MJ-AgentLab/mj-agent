@@ -368,8 +368,9 @@ ADR-026/027/028 (PR-Γ；ADR-025 拆分；2026-05-11)：
   Ollama）；`Profile` enum 不扩 dgx — DGX 仅作算力节点，不部署 mj-agent；
   endpoint 健康用 `/mj-agent-infra-llm-endpoint-probe`。
 - **ADR-028 MCP Server Inventory + Governance**：`.mcp.json` 13 servers
-  + 新建领域专属 STANDARD `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
-  (per ADR-022 §C.3.2；A14 PR gate 正式生效)；独立 secrets pipeline
+  + 新建领域专属 STANDARD（per ADR-022 §C.3.2；A14 PR gate 正式生效；**M6 X5 已 archive
+  → `capabilities/infrastructure/mcp-server-governance/` capability package**，frozen 副本
+  `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`)；独立 secrets pipeline
   (`MJ_AGENT_*` 命名空间 vs 上游 `MJ_SYS_*`；per ADR-008)；wrapper script 内部
   baseline 在 `docs/_baselines/pg_server_baseline.md`。
 
@@ -520,9 +521,9 @@ PR gates A12-A14 (blocking, see `sdd/adapters/claude-code-skill.md` [A12] +
   `enabledPlugins` changes require PR-body justification.
 - **A14**: `.mcp.json` server changes declare trust posture (first-party
   / third-party / community) + credential mode (none / OAuth / API key /
-  wrapped script) in PR body per the §4 declaration template in
-  `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
-  (active per ADR-025 PR-3；领域专属 placement per ADR-022 §C.3.2). The HITL
+  wrapped script) in PR body per the A14 declaration template in
+  `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`
+  §a14_pr_gate (former MCP STANDARD §4, archived M6 X5 → `archive/rule/`). The HITL
   trigger anchor is `policies/ai-agent.md` §4 `mcp-server-trust-posture-change`.
   Quarterly audit (per STANDARD §6) re-evaluates trust posture + syncs
   `.claude/scripts/pg-server-*` against mj-system upstream.

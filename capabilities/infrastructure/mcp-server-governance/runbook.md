@@ -120,7 +120,7 @@ done
 
 **Resolution**：
 
-- Add the §4 block to PR body per template in `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
+- Add the A14 block to PR body per template in `contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block`
 - Block includes: server_name + change_type + trust_posture + credential_mode + rationale
 - Reviewer must approve the block before merge
 - A14 gate enforcement: Phase M3+ blocking; warning at M1 (per `contracts/behavior.feature` REQ-001)
@@ -143,7 +143,7 @@ done
 - `contracts/behavior.feature` — 2 Gherkin scenarios
 - ADR-028 — MCP Server Inventory + Governance
 - ADR-030 — Secrets Bundle Split (MCP bundle vs app bundle)
-- `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` — §4 template + §6 quarterly audit
+- `contracts/governance.contract.yml` — §a14_pr_gate template + §quarterly_audit (former MCP STANDARD §4/§6, archived M6 X5 → `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md`)
 - `docs/_baselines/pg_server_baseline.md` — wrapper baseline SOR
 - `.claude/scripts/pg-server-start.cmd` + `.claude/scripts/pg-server-wrapper.mjs`
 - `.claude/scripts/setup-mcp-secrets.ps1` — env var population (Phase 2+ → secrets-pipeline)

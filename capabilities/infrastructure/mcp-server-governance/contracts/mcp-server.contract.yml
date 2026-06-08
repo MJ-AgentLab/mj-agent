@@ -144,15 +144,30 @@ wrapper_script_consistency:
   baseline_sor: docs/_baselines/pg_server_baseline.md
   quarterly_diff_target: "community pg MCP upstream"
 
+# Credential mode rules (folded from former MCP STANDARD §3, M6 X5)
+credential_rules:
+  modes:                                            # 5 modes (§3 matrix)
+    - none                                          # public service; no creds
+    - OAuth                                         # browser OAuth; token not in .mcp.json/.env
+    - api_key_via_env                               # ${VAR} template injected from env
+    - wrapped_script_url_override                   # cmd wrapper + URL ${VAR}; via secrets-mcp.enc (ADR-030)
+    - template_var                                  # URL contains ${VAR} directly (equiv to api_key; current .mcp.json wraps it, so unused)
+  prohibited:
+    - "plaintext credential (password / token / connection string) written into .mcp.json"
+    - ".mcp.json with a real IP while creds sit in an unprotected file"
+    - "wrapper script containing a hard-coded credential"
+  mandatory:
+    - "every ${VAR}-template env var MUST be declared as a placeholder in .env.example (even if empty) so onboarding devs know which secrets are needed"
+
 # A14 PR gate (REQ-001)
 a14_gate:
   trigger: ".mcp.json file modification"
   required_pr_body_block:
-    template_location: "docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4"
+    template_location: "contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block (former MCP STANDARD §4 archived M6 X5 → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md)"
     required_fields:
       - server_name
       - trust_posture (one of: first-party / third-party / first-party-wrapper / community)
-      - credential_mode (one of: none / OAuth / api_key_via_env / wrapped_script_url_override)
+      - credential_mode (one of: none / OAuth / api_key_via_env / wrapped_script_url_override / template_var)
       - rationale (for added / changed entries)
   enforcement_phase:
     M1: manual_reviewer_check                      # informational

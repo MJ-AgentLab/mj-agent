@@ -16,7 +16,7 @@ updated: 2026-05-20
 
 **Priority**：medium
 
-**Statement**：`.mcp.json` SHALL declare 13 server entries with trust posture + credential mode per entry; any modification SHALL trigger A14 PR gate declaration block in PR body per §4 template in `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`.
+**Statement**：`.mcp.json` SHALL declare 13 server entries with trust posture + credential mode per entry; any modification SHALL trigger A14 PR gate declaration block in PR body per the template in `contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block` (former MCP STANDARD §4, archived M6 X5).
 
 **Rationale**：
 

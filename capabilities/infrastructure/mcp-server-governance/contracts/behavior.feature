@@ -13,7 +13,7 @@ Feature: MCP Server Inventory + Governance (A14 PR Gate + Wrapper Consistency)
   Background:
     Given .mcp.json declares exactly 13 server entries
     And 10 of those 13 entries are pg-* wrapper-based (5 mj-agent memory + 5 mj-system biz)
-    And the A14 PR gate template lives at `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4`
+    And the A14 PR gate template lives at `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` (a14_pr_gate.pr_body_required_block)
 
   # ---------- REQ-001 — 14th server triggers A14 gate ----------
 

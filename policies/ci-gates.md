@@ -37,7 +37,7 @@ ai_visibility: source-of-truth
 |---|---|---|---|
 | 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
-| MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` 13 server trust posture + credential mode（per A14 PR gate + `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`） |
+| MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` 13 server trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`） |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
 
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md`（与 `policies/documentation.md`
@@ -77,7 +77,7 @@ hard gate（catch 引入）。两者共用同一 `permissions.deny` 红线定义
 **Cross-ref**：`.claude/skills/` 新建目录的准入规则（A13 的姊妹门，针对 skill 目录而非
 settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新目录准入规则」；
 `.mcp.json` server 增删（A14）见 `policies/ai-agent.md` §4
-`mcp-server-trust-posture-change` + `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`。
+`mcp-server-trust-posture-change` + `capabilities/infrastructure/mcp-server-governance/`（capability；former MCP STANDARD archived M6 X5）。
 
 ## §6 CI gate 命名映射
 

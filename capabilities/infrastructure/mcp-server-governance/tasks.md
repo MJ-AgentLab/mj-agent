@@ -22,7 +22,7 @@ updated: 2026-05-20
 - **Phase**：M1 (contract; informational) / M2 (CI warning) / M3 (CI blocking)
 - **Priority**：medium / **Linked REQ**：REQ-001
 - **Contract changed?**：no
-- **HITL trigger**：any .mcp.json modification → A14 gate per `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4`
+- **HITL trigger**：any .mcp.json modification → A14 gate per `contracts/governance.contract.yml §a14_pr_gate` (former MCP STANDARD §4, archived M6 X5)
 - **Status**：done (M1 contract); TBD-M3 tests + automation
 - **TDD test_list**：
   - **TBD-M3** `tests/contract/test_mcp_inventory.py::test_thirteen_server_entries`

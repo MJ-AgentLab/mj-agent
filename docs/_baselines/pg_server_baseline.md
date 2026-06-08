@@ -11,7 +11,7 @@ track: engineering-workflow
 
 # pg-server Wrapper Internal Baseline
 
-> 本基线快照锁定 `.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 当前内容；作为 [[../infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance|STANDARD MCP Server Governance]] §6 季度 audit 的漂移检测基准。
+> 本基线快照锁定 `.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 当前内容；作为 `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §quarterly_audit（former MCP STANDARD §6，M6 X5 archived）季度 audit 的漂移检测基准。
 >
 > **更新流程**：实际 wrapper script 改动 → PR-time diff vs 本 baseline → 本 baseline 同步更新 + bump `updated:` 字段。漂移阈值由 audit 决定（默认任何字符级改动即标 PR review 必须解释）。
 

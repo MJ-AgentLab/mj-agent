@@ -24,7 +24,7 @@ summary: >
 
 requirements:
   - id: REQ-001
-    statement: ".mcp.json SHALL declare 13 server entries with trust posture + credential mode per entry; any modification triggers A14 PR gate declaration block in PR body per §4 template in docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md"
+    statement: ".mcp.json SHALL declare 13 server entries with trust posture + credential mode per entry; any modification triggers A14 PR gate declaration block in PR body per the template in contracts/governance.contract.yml a14_pr_gate.pr_body_required_block (former MCP STANDARD §4, archived M6 X5)"
     rationale: "13-server inventory is the trust-boundary surface for Claude Code; trust posture (first-party / third-party / community) + credential mode (none / OAuth / API key / wrapped script) must be reviewed at each change; quarterly audit re-evaluates"
     priority: medium
     bdd:
