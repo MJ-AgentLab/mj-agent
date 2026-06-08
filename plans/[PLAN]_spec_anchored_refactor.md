@@ -2,11 +2,11 @@
 type: plan
 slug: spec-anchored-refactor
 summary: 长寿命 working plan 覆盖 mj-agent Maximum Spec-Anchored Refactor 的 Phase M0-M6 (~14-16 周) — 把当前 tri-track STANDARD + 20 ADR + ~100 docs 治理框架重构为 SDD Kernel + Capability Package + Business Policy 三柱结构，并落地 A1-A6 + B1 大型代码库 AI 协作最佳实践骨架；refines mj-agent-roadmap-v1.6 + data-agent-mvp-framework（不取代）；起源于 ADR-031 决策
-state: active
+state: completed
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-03
+updated: 2026-06-08
 track: shared
 refines:
   - plans/mj-agent-roadmap-v1.6.md
@@ -28,7 +28,7 @@ phase_progress:
     F: completed                # M4 closure 2026-06-03: 4/5 capabilities promoted drafting→active (safe-sql/biz-catalog/llm-provider/docker-compose; mcp-server-governance held → M4-FU-MCP-GOV-PROMOTION-DEFER); G26-G28 conditional → M6; EVAL baseline done #201. F-7 cluster: governance-insight capture done, but the 4 F-7 polish/code items (incl DOCSTRING-DRIFT-DETECTOR ~150-300 LOC) + G22-BDD-HELPERS-CONSOLIDATE were DESCOPED from M4 → post-M4 tail/M5 (M4-FU follow-ups, NOT M4-blocking); F-6 dropped per A-3 R-2 verdict
   overall: completed            # A+B+C+D+E+F done (2026-06-03); M4-FU tail rolls forward per §M4-FU Registry (F-7 polish + mcp-gov promotion → later; M-FU#9 → M6; 3 carries → M5); phase-m4-complete tag applied post-merge
   M5: completed                # M5 closure 2026-06-04 (re-scoped per #214): PR0 gate-prep #213 + PR1 template-align #212 + PR2 docker→docker/ #215 + PR3a active-ADR docs/adr→decisions/ #216 + PR3b deprecated-ADR→archive/decisions/superseded/ #217 + PR6 F-7 amend #218. STANDARD-archive + PR4a kernel-authoring + runbook/assessments/infra relocations + EVAL port → re-sequenced to M6 (draft-b finding); archive-gate blocking-flip → M6. docs/INDEX refs current (no redirect-map artifact). phase-m5-complete tag applied post-merge.
-  M6: pending
+  M6: completed                # M6 closure 2026-06-08 (this PR; closes the M0-M6 refactor). DELIVERED: PR4a kernel-authoring (#220-#223) + PR4-OB orphan backfill (#224-#225) + PR4-refs D1-D3 (#226-#228) + PR4 tri-track STANDARD archive/consol (#229-#231) + claudemd-slim-v1 (#232) + PR4-flip G11/G12 BLOCKING (#233) + cross-cutting doc migration X1-X6 (#234/#236/#237/#238/#240/#241) + PR4-refs-gap (#235) + freeze-refresh w/ reproducible contract re-freeze (#242) + CLAUDE.md 601→150 aggressive slim w/ R-G4 6-case validation (#243) + first SDD-structure metrics report (#244). Full suite green (unit/eval/bdd/contract 414+). DEFERRED → Phase-2 (draft-b Q4 owner decision): EVAL framework authoring-spec port + EVAL baseline run + 4 mj-agent-evidence-* skills + scripts/sdd metrics-automation generator. ROLLED FORWARD as M6-FU: (1) 8-gate-full-blocking — G11/G12 + G21/G22 BLOCKING done; G14/G15/G17 + G23 remain WARNING → **M6-FU-G14G15-BLOCKING-FLIP** (needs archive/legacy + archive/capabilities forward-ref rework FIRST, then ci-blocking-gate-toggle owner must-stop) + M-FU#9 G23-TASKS-CURATION; (2) mcp-server-governance drafting→active still held (M4-FU-MCP-GOV-PROMOTION-DEFER); (3) pre-existing GUIDE-staleness sweeps (GitHub_Setup release-runbook path → cicd/; git-GUIDE archived-ref refs). ≥5 case-study ✅ (R-G4 via #243). phase-m6-complete tag applied post-merge.
 ---
 
 # [PLAN] Spec-Anchored Refactor — Long-Lived Working Plan
@@ -654,24 +654,32 @@ ADR rename 双倍 wikilink 改写面；archive catch-gate（#213）blocking-flip
   估时 ~1-2h（视 drift 项规模）；scope 限 `sdd/templates/contracts/`；不修改 adapter docs
   自身；依赖 M5 startup；独立小 PR.
 
-### Phase M6（~3-4 周）
+### Phase M6（~3-4 周）— ✅ COMPLETE @ tag `phase-m6-complete` (2026-06-08; closes M0-M6)
+
+> **Closure (2026-06-08)**: DELIVERED archive ceremony + kernel-authoring + cross-cutting
+> migration X1-X6 + freeze-refresh + CLAUDE.md ≤150 slim (R-G4 validated) + metrics report +
+> green test suite (see `phase_progress.M6` for the per-PR list). DEFERRED → Phase-2: EVAL
+> framework port + baseline + 4 evidence-family skills + metrics-automation. ROLLED FORWARD
+> as M6-FU: full-gate-blocking (G14/G15/G17/G23 flip — prereq forward-ref rework + owner
+> ci-blocking-gate-toggle must-stop), mcp-gov promotion, GUIDE-staleness sweeps. The goals
+> below are the original M6 plan; ✅ = done, ⏭ Phase-2, 🔁 M6-FU annotations inline.
 
 **目标**：
 
-- **Archive ceremony（从 M5 re-sequenced；draft-b 2026-06-03 finding）** — 前置 **PR4a kernel-authoring**：把
+- ✅ **Archive ceremony（从 M5 re-sequenced；draft-b 2026-06-03 finding）** — 前置 **PR4a kernel-authoring**：把
   doc-governance gap content 回填进 kernel/policies（A1-A6/OB1-OB5 + 12-type taxonomy + `track` 字段 →
   `policies/documentation.md`；archive-trigger 量化 + active-path-stability → `policies/archive.md`；working-doc
   lifecycle → `sdd/lifecycle.md`；17-stage loop → 新 `sdd/workflows/execution-loop.md`）；然后 **PR4** 4 tri-track
   STANDARD → `archive/rule/` + 跨切面文档迁移（runbook→capability / assessments→policies / infra/git→git-branching /
   infra/mcp→capability）+ ref repoint + full INDEX redirect。PR4a 规模 ≈ 被 M2 跳过的 doc-governance backfill
   子阶段（详 .claude `m5-standard-successor-mapping-draft`；owner-approved homes 见 §M5 re-sequence note）
-- EVAL authoring spec（Agent_Side §4 / ADR-024）port → 随本 M6 EVAL framework 工作落地（draft-b Q4 defer 决策）
-- CLAUDE.md root 瘦身至 ≤150 行（Phase M0 仅加 Codex Status；M6 才大瘦身）
-- 8 adapter gate 全 blocking
-- EVAL framework baseline run PASS
-- 4 个 evidence family skill 加载（`mj-agent-evidence-*`）
-- 度量首份报告（capability 数量 / contract 数量 / evidence 覆盖率 / HITL trigger 频率）
-- 全 test 通过（unit + contracts + bdd + tdd + integration + smoke）
+- ⏭ **Phase-2**: EVAL authoring spec（Agent_Side §4 / ADR-024）port → EVAL framework 工作（draft-b Q4 defer 决策）
+- ✅ CLAUDE.md root 瘦身至 ≤150 行（#243: 601→150；R-G4 6-case validated）
+- 🔁 **M6-FU**: 8 adapter gate 全 blocking（G11/G12 + G21/G22 done；G14/G15/G17 + G23 仍 WARNING → M6-FU-G14G15-BLOCKING-FLIP：需 forward-ref rework + owner ci-blocking-gate-toggle must-stop）
+- ⏭ **Phase-2**: EVAL framework baseline run PASS
+- ⏭ **Phase-2**: 4 个 evidence family skill 加载（`mj-agent-evidence-*`）
+- ✅ 度量首份报告（#244: `evidence/metrics/2026-06-08_sdd_structure_metrics.md`；自动化 generator → Phase-2）
+- ✅ 全 test 通过（unit/eval/bdd/contract green；integration/smoke skip-clean no-creds）
 
 ## §3 Risk Control
 
