@@ -117,6 +117,6 @@ uv run pytest tests/contract -m contract
 
 - [ ] A12：`.claude/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
 - [ ] A13：`.claude/settings.json` allowlist diffs reviewed；无 bare `Bash` in `permissions.allow`；secrets 在 `permissions.deny`
-- [ ] A14：`.mcp.json` server 变更声明 trust posture + credential mode（per `docs/infrastructure/mcp/[STANDARD]_*`）
+- [ ] A14：`.mcp.json` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
 
 </details>

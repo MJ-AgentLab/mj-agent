@@ -20,7 +20,7 @@ Per-source canonical reference + B-5 micro 微调 minimal anchor:
 - **`governance.contract.yml` §6** (canonical contract; 4 audit task definitions verbatim per yaml L51-77): `re_evaluate_trust_posture` (per-server trust posture review) + `diff_wrapper_baseline` (pg_server_baseline.md diff) + `check_unmaintained_servers` (per-server health + last-commit) + `check_secret_sentinel_overrides` (sentinel env var validation)
 - **`.mcp.json`** (canonical 必停 surface per memory 9 immutables; 13-server inventory verified): github (1) + serena (2) + 10 pg-* wrapped (5 mj-agent memory dev/test-lan/test-wan/prod-lan/prod-wan + 5 mj-system biz same 5 profiles) + ssh-manager (1; 9 SSH host entries via 5 unique passwords)
 - **`docs/_baselines/pg_server_baseline.md`** (canonical baseline; frozen at 2026-05-11): pg-server-{start.cmd,wrapper.mjs} setTypeParser overrides + 4 audit items
-- **`docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`** §4 (canonical STANDARD; A14 PR gate template source)
+- **`contracts/governance.contract.yml`** §a14_pr_gate (A14 PR gate template source; former MCP STANDARD §4 archived M6 X5)
 - **`.claude/scripts/setup-mcp-secrets.ps1`** (canonical script; sentinel pattern source for check_secret_sentinel_overrides)
 - **B-5 commit `46b0147` runbook** (micro 微调 minimal anchor per Path β / Option b; NO §6 SOPs; §1 +1 trust posture breakdown + §3 +1 14th-server symptom clarifier + §4 +2 cross-cap refs)
 
@@ -100,7 +100,7 @@ Parallel to **C-3 endpoint empirical limitation** (LLM endpoint network actions)
 - **B-5 commit `46b0147` runbook** (Path β micro 微调; §1 +1 trust posture breakdown + §3 +1 14th-server Phase M3+ blocking clarifier + §4 +2 cross-cap refs to docker-compose + llm-provider per spec.yml `cross_capability_refs`)
 - **`.mcp.json` 13-server inventory**: 1 github (first-party) + 1 serena (third-party LSP) + 10 wrapped pg-* (5 mj-agent-memory dev/test-lan/test-wan/prod-lan/prod-wan + 5 mj-system-biz same 5 profiles; all `.claude\scripts\pg-server-start.cmd`) + 1 ssh-manager (third-party; 9 SSH host entries via 5 unique passwords per env: cloud + runner-lan/wan + test-lan/wan + prod-lan/wan + dgx-lan/wan)
 - `docs/_baselines/pg_server_baseline.md` (canonical baseline; frozen at 2026-05-11; pg-server-{start.cmd,wrapper.mjs} setTypeParser(1114/1184) overrides)
-- `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` §4 (A14 PR gate template source)
+- `contracts/governance.contract.yml` §a14_pr_gate (A14 PR gate template source; former MCP STANDARD §4 archived M6 X5)
 - `.claude/scripts/setup-mcp-secrets.ps1` (sentinel pattern source per ADR-030 secrets bundle split; 5 SSH + 10 PG URL = 15 env vars)
 - **6 SKILL.md files referencing ADR-025** (per Grep #C5-4; F-7 reconcile target list per §4.1 per-file table):
   - `mj-agent-infra-llm-endpoint-probe/SKILL.md` (per C-3 §4.1; → ADR-027)

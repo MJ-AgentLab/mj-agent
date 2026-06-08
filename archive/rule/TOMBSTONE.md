@@ -44,6 +44,28 @@ ACTIVE** and is NOT archived by this ceremony. The A8 / A11 EVAL transitional
 waiver continues per ADR-024 (deferred to a later phase). Cite ADR-024, not this
 archived Agent_Side snapshot, for EVAL authoring.
 
+## M6 X5 — MCP Server Governance STANDARD (separate ceremony, 2026-06-08)
+
+`[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md` (formerly
+`docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md` v1.0) was
+archived in **M6 X5** of the cross-cutting doc migration — a DIFFERENT ceremony
+from the tri-track above (different original path; **superseded by a capability
+package**, not the SDD kernel):
+
+| Archived STANDARD | Capability successor |
+|---|---|
+| `MJ_Agent_MCP_Server_Governance_v1_0` §4 PR template + §6 quarterly audit | `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` |
+| §1-§3 scope / trust posture / credential mode + §5 13-server inventory | `.../contracts/mcp-server.contract.yml` + `.../design.md` |
+
+3 orphans folded into the capability during X5: §2 trust-posture downgrade rule
+(90d-no-commit / 30d-security-unresponsive → community) → `governance.contract.yml
+§trust_posture_downgrade`; §3 5th `template_var` credential mode + prohibited /
+mandatory credential rules → `mcp-server.contract.yml §credential_rules`; §6 audit
+output naming refined to `evidence/runtime/` (was `docs/assessments/`). Its companion
+`docs/infrastructure/mcp/INDEX.md` was git-rm'd (subdir dissolved). The BDD test
+`tests/bdd/infrastructure/mcp_governance/` was repointed from the STANDARD §4 to
+`governance.contract.yml a14_pr_gate.pr_body_required_block`.
+
 ## Not archived — STANDARDs still ACTIVE in `docs/rule/`
 
 The following `docs/rule/` STANDARDs are **NOT** part of this archive ceremony

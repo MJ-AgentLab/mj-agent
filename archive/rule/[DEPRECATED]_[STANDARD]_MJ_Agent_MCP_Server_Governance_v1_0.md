@@ -5,9 +5,11 @@ summary: mj-agent .mcp.json MCP server 治理规范 — trust posture 分级、c
 owner: 项目负责人
 created: 2026-05-09
 updated: 2026-05-09
-state: active
+state: deprecated
 track: engineering-workflow
 version: v1.0
+archived: 2026-06-08
+replaced-by: "../../capabilities/infrastructure/mcp-server-governance/"
 tags:
   - standard
   - mcp
@@ -16,7 +18,10 @@ tags:
   - engineering-workflow
 ---
 
-# mj-agent MCP Server 治理规范 v1.0
+# mj-agent MCP Server 治理规范 v1.0（已归档；deprecated）
+
+> [!warning]
+> **本副本为 M6 X5 归档（state: deprecated；archived: 2026-06-08）**。本 MCP Server 治理 STANDARD 的内容已迁移至 capability package **`capabilities/infrastructure/mcp-server-governance/`**：A14 PR-body 模板 + 季度 audit → `contracts/governance.contract.yml`；13-server inventory + per-server trust posture + credential mode（含 §2 90d/30d 降级规则 + §3 5 类 credential mode / 禁止·强制规则，M6 X5 folded）→ `contracts/mcp-server.contract.yml`；§1-§3/§5 设计与威胁模型 → `design.md`。本副本作为 cite-by-vintage frozen snapshot 保留（per ADR-011 §5.6 + ADR-019；归档文件不更新内部 wikilink）；当前权威以 capability 为准。
 
 > **所属目录**：`docs/infrastructure/mcp/`（**领域专属**落点 per [[../../adr/[ADR]_022_P2_Framework_Enhancements|ADR-022]] C.3.2 + Meta v2.2 §3.7；与 `docs/infrastructure/git/` / `docs/infrastructure/cicd/` 平行）
 > **状态**：`state: active`（PR-3 of multi-env+DGX+MCP bundle 落地）

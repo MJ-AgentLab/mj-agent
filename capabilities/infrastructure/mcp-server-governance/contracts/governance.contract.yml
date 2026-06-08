@@ -11,22 +11,37 @@ covers_requirements:
 # A14 PR Gate definition
 a14_pr_gate:
   meta_framework_ref: "Meta v2.1 §7.7 A14"
-  governance_doc: "docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4"
+  # M6 X5: the former MCP STANDARD (docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md)
+  # was archived; this contract + design.md are now the authoritative governance home.
+  governance_doc: "this capability (contracts/governance.contract.yml §a14_pr_gate + design.md); former STANDARD §4 archived → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md"
 
   trigger_files:
     - .mcp.json
     - .claude/scripts/pg-server-start.cmd
     - .claude/scripts/pg-server-wrapper.mjs
 
+  # Full §4 template (M6 X5: folded from former MCP STANDARD §4 — all 3 sub-blocks:
+  # server-entries table + trust-posture-change declaration + credential-safety checklist).
   pr_body_required_block:
     format: |
       ## MCP Server Governance (A14)
 
-      <Per-server table listing each added / removed / changed server with:>
+      ### Added / removed / changed server entries
 
       | Server name | Change | Trust posture | Credential mode | Rationale |
       |---|---|---|---|---|
-      | <name> | added/removed/changed | first-party / third-party / first-party-wrapper / community | none / OAuth / api_key_via_env / wrapped_script_url_override | <≥ 1 sentence> |
+      | <name> | added/removed/changed | first-party / third-party / first-party-wrapper / community | none / OAuth / api_key_via_env / wrapped_script_url_override / template_var | <≥ 1 sentence> |
+
+      ### Trust posture changes
+
+      - any third-party → community downgrade → linked issue / mitigation
+      - any new community-tier server → upstream URL + last-commit date + 3-commit review summary
+
+      ### Credential safety review
+
+      - [ ] no plaintext credential written into .mcp.json
+      - [ ] ${VAR} placeholder added to .env.example
+      - [ ] wrapper script (if any) Read-verified to contain no hard-coded credential
 
     minimum_fields:
       - server_name
@@ -34,11 +49,24 @@ a14_pr_gate:
       - trust_posture
       - credential_mode
       - rationale
+      - trust_posture_change_declaration (downgrade → issue/mitigation; new community → upstream URL + last-commit + 3-commit review)
+      - credential_safety_checklist (no plaintext in .mcp.json / ${VAR} in .env.example / wrapper no hard-coded credential)
 
   reviewer_action:
     M1: "Reviewer manually checks PR body has block before approving"
     M2: "scripts/sdd/check_a14_gate.py emits CI warning if block missing"
     M3: "scripts/sdd/check_a14_gate.py blocks PR if block missing"
+
+# §2 trust posture downgrade rule (folded from former MCP STANDARD §2, M6 X5)
+trust_posture_downgrade:
+  third_party_to_community:
+    - trigger: maintainer_unreachable
+      condition: "no upstream commit in 90 days"
+      action: "downgrade third-party → community; open PR review"
+    - trigger: security_issue_unresponsive
+      condition: "reported security issue with no maintainer response in 30 days"
+      action: "downgrade third-party → community; open PR review"
+  community_tier_requirement: "strongly recommend wrapping in .claude/scripts/ as a fallback"
 
 # Quarterly audit process (§6 of MCP STANDARD)
 quarterly_audit:

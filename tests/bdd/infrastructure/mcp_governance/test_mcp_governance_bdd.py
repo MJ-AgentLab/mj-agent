@@ -6,7 +6,7 @@ Binds 2 scenarios from
 - REQ-001 Adding a 14th MCP server triggers A14 PR gate body declaration —
   this is a META gate (PR review process), not a runtime SUT behaviour.
   Binding emits a structural assertion: A14 template section exists in the
-  governance STANDARD, and current .mcp.json has the expected 13 entries.
+  governance contract, and current .mcp.json has the expected 13 entries.
 
 - REQ-002 All 10 pg-* entries reference the same wrapper script — direct
   static check on .mcp.json content (no live MCP server needed).
@@ -29,9 +29,11 @@ _FEATURE_FILE = (
 
 _REPO_ROOT = Path(__file__).resolve().parents[4]
 _MCP_JSON = _REPO_ROOT / ".mcp.json"
-_GOVERNANCE_STANDARD = (
-    _REPO_ROOT / "docs" / "infrastructure" / "mcp"
-    / "[STANDARD]_MJ_Agent_MCP_Server_Governance.md"
+# M6 X5: the former MCP STANDARD was archived; A14 governance now lives in the
+# capability's governance contract (governance.contract.yml a14_pr_gate).
+_GOVERNANCE_CONTRACT = (
+    _REPO_ROOT / "capabilities" / "infrastructure" / "mcp-server-governance"
+    / "contracts" / "governance.contract.yml"
 )
 
 
@@ -60,16 +62,17 @@ def given_10_pg_entries() -> None:
 
 @given(parsers.re(re.escape(
     "the A14 PR gate template lives at "
-    "`docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md §4`"
+    "`capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` "
+    "(a14_pr_gate.pr_body_required_block)"
 )))
 def given_a14_template_exists() -> None:
-    assert _GOVERNANCE_STANDARD.exists(), (
-        f"A14 governance STANDARD not found at {_GOVERNANCE_STANDARD}"
+    assert _GOVERNANCE_CONTRACT.exists(), (
+        f"A14 governance contract not found at {_GOVERNANCE_CONTRACT}"
     )
-    text = _GOVERNANCE_STANDARD.read_text(encoding="utf-8")
-    # Section 4 is the declaration template
-    assert re.search(r"^#+\s*§?\s*4", text, re.MULTILINE), (
-        "A14 governance STANDARD missing §4 declaration template heading"
+    text = _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
+    # The a14_pr_gate.pr_body_required_block key holds the declaration template
+    assert "a14_pr_gate" in text and "pr_body_required_block" in text, (
+        "A14 governance contract missing a14_pr_gate.pr_body_required_block"
     )
 
 
@@ -102,8 +105,8 @@ def given_hypothetical_14th_pr() -> None:
 
 @when("the reviewer parses the PR body", target_fixture="governance_standard_text")
 def when_reviewer_parses(governance_standard_text: str | None = None) -> str:
-    # Capture the STANDARD text so the @then steps can scan it.
-    return _GOVERNANCE_STANDARD.read_text(encoding="utf-8")
+    # Capture the governance contract text so the @then steps can scan it.
+    return _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
 
 
 @then(parsers.re(re.escape(
@@ -195,7 +198,7 @@ def then_all_pg_refer_same_wrapper(pg_wrapper_refs: dict[str, str]) -> None:
 )))
 def then_a14_deviation_check_documented() -> None:
     """Descriptive — governance scaffolding present in STANDARD."""
-    text = _GOVERNANCE_STANDARD.read_text(encoding="utf-8")
+    text = _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
     assert "credential" in text.lower(), (
-        "STANDARD missing credential-mode documentation"
+        "governance contract missing credential-mode documentation"
     )

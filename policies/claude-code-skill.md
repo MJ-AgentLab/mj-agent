@@ -44,7 +44,7 @@ deny-list 三重保险（详 `policies/data-boundary.md` §3）.
 
 ## §6 MCP Server Governance
 
-> TBD: Phase M2 — 与 `docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md`
+> TBD: Phase M2 — 与 `capabilities/infrastructure/mcp-server-governance/`（capability；former MCP STANDARD archived M6 X5）
 > 互引（per ADR-028）；A14 PR gate 实施细则.
 
 ---
