@@ -7,7 +7,7 @@ description: This skill walks through the mj-agent compose stack lifecycle (up/p
 
 ## Overview
 
-包装 `docker/compose.yaml` 的 lifecycle 操作（up / ps / logs / down）+ 启停 pre-checks + troubleshooting。**Stage 8 sub C-flavor** of HITL_Prompt 17-stage 闭环。
+包装 `docker/compose.yaml` 的 lifecycle 操作（up / ps / logs / down）+ 启停 pre-checks + troubleshooting。**Stage 8 sub C-flavor** of the 17-stage 执行闭环。
 
 mj-agent 是 **独立 compose project**（ADR-008，post storage-stack PR）—— 与 mj-system 解耦：
 - 自带 project name `mj-agent`（Docker Desktop / Portainer 单独可见）
@@ -249,7 +249,7 @@ docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 | `error: pull access denied for 8.135.38.175/mj-agent/mj-agent` | TEST/PROD profile 拉 Harbor 失败：镜像未推 / Harbor namespace 未创建 / docker login 缺 | (a) 先 `docker login 8.135.38.175`；(b) 确认 Harbor 上有 `mj-agent/mj-agent:0.1` tag；(c) 必要时改 image tag 到实际可用 tag |
 | dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml config` 看合并结果；确认 dev `-f` 链含 override.yml |
 | test/prod profile 起来后 mj-agent 报 `connection refused mj-postgres:5432` | mj-system 栈没在同主机 up；或 mj-system-backend-network 不存在 | TEST/PROD 主机必须先起 mj-system 栈（mj-postgres healthy + mj-system-backend-network 存在）；mj-agent 只是 consumer |
-| host curl 502 但浏览器正常 + 容器内 `python urllib` 200 | host shell `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` 未排除 localhost（Clash / v2ray 系统代理常见）；浏览器有 implicit localhost bypass、curl 无条件走代理 | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 容器健康，不需 restart；详见 `docs/runbook/dev_deployment.md` §4 |
+| host curl 502 但浏览器正常 + 容器内 `python urllib` 200 | host shell `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` 未排除 localhost（Clash / v2ray 系统代理常见）；浏览器有 implicit localhost bypass、curl 无条件走代理 | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY="localhost,127.0.0.1,::1"`（PowerShell）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 容器健康，不需 restart；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |
 
 ## Output Format
 
@@ -308,7 +308,7 @@ docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 - [[../../../docker/README.md|docker/README.md]]（compose 详细说明，如有）
 - [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + mj-system-backend-network external 边界）
 - [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（dev mode 替代方案：uv run langgraph dev，不依赖 compose）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.7 Rule 13（compose 改动后必排练 up/down，记录 PR）+ §4.8 Level B / Level C 命令矩阵
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（17-stage 执行闭环；compose 改动后排练 up/down + 记录 PR；§5/§6 命令矩阵；原 HITL_Prompt §4.7 Rule 13 / §4.8，M6 PR4 archived → kernel）
 - mj-system upstream `mj-sys-ops-env-{setup,teardown}/SKILL.md`（间接派生源；mj-agent 简化为本 skill 的 lifecycle 段 + 独立 compose 项目；不实现 ETL 编排）
 
 ## Anti-patterns

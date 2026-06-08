@@ -12,7 +12,7 @@ mj-agent **owned storage stack**（独立于 mj-system biz pg；ADR-008）：
 - **mj-agent-postgres** — langgraph `AsyncPostgresSaver` 后端 store（memory checkpointer）
 - **mj-agent-redis** — reserved（未 wire Python client；候选用途：session cache / streaming buffer / rate limit）
 
-**Stage 8 sub C-flavor** of HITL_Prompt 17-stage 闭环；与 `/mj-agent-infra-docker-compose`（lifecycle）+ `/mj-agent-infra-env-setup`（creds）+ `/mj-agent-infra-studio-probe`（runtime）互补。
+**Stage 8 sub C-flavor** of the 17-stage 执行闭环；与 `/mj-agent-infra-docker-compose`（lifecycle）+ `/mj-agent-infra-env-setup`（creds）+ `/mj-agent-infra-studio-probe`（runtime）互补。
 
 **Why this skill exists**：
 
