@@ -13,6 +13,8 @@ track: code
 
 > **所属目录**：`docs/infrastructure/git/`
 > **说明**：4 份 GUIDE 是 mj-agent git 治理基础设施，已按 mj-agent 12 scope、Phase 0 状态与 v2.0 framework 校对。摘要取自每份文档 frontmatter `summary`。
+>
+> **规则真相源（M6 X6）**：git **规则**（分支类型 / G1·G2 worktree / PR 模板矩阵 / SemVer bump）的权威已迁入 SDD kernel — [[policies/git-branching|policies/git-branching]] + [[policies/release|policies/release]]；本目录 4 份 GUIDE 保留为 **operational how-to**（仓库初始化、worktree 搭建、推送前检查、gh CLI 用法），**不归档**。
 
 ---
 
@@ -30,10 +32,10 @@ track: code
 ## 关联入口
 
 - [返回上级索引](../../INDEX.md)
-- [[../../rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.0]]
+- [[policies/documentation|policies/documentation]]（原 Meta 框架；tri-track M6 PR4 archived → kernel）
 - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]]
-- [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]]
+- [[archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions]]（archived）
+- [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]]（M6 X1 迁入 capability evidence）
 
 ---
 
