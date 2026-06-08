@@ -78,7 +78,40 @@ PRs from `feature/` / `bugfix/` / `documentation/` / `maintain/` **必须** `--b
 
 ## §4 PR Template + Commit Message Validation
 
-> TBD: Phase M2 — PR template fields（per blueprint §9.3）+ commit message regex 校验.
+PR-body templates live in `.github/PULL_REQUEST_TEMPLATE/` (6 files). This section is
+the **rule-level summary** (M6 X6 — absorbed from
+`docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`, which keeps the
+operational how-to: per-template field detail, `gh` CLI usage, self-check ↔
+code-review alignment).
+
+### §4.1 Template × branch type × target branch (per G2)
+
+| Template | Branch type | Target | Scenario |
+|---|---|---|---|
+| `feature.md` | `feature/*` | develop | new skill / tool / prompt / refactor |
+| `bugfix.md` | `bugfix/*` | develop | bug found on develop |
+| `documentation.md` | `documentation/*` | develop | docs-only |
+| `maintain.md` | `maintain/*` | develop | CI/CD / deps / scripts / config |
+| `hotfix.md` | `hotfix/*` | **main** | production emergency |
+| `release.md` | develop → main | **main** | version release (Phase 1+; see `policies/release`) |
+
+`gh pr create --base <develop|main> --template <name>.md` — base is `develop` for all
+except `hotfix` / `release` → `main` (G2).
+
+### §4.2 Branch type × allowed commit type (PR self-check verifies)
+
+| Branch type | Allowed commit types |
+|---|---|
+| `feature/*` | feat / perf / refactor / test / docs |
+| `bugfix/*` | fix / test / docs |
+| `documentation/*` | docs |
+| `maintain/*` | infra / docs |
+| `hotfix/*` | fix |
+
+Full commit-type allowlist + branch↔commit alignment matrix:
+`docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §4-§5.
+
+> TBD: Phase M2 — automated commit-message regex validation (CI gate).
 
 ## §5 与 SDD Workflows 联动
 

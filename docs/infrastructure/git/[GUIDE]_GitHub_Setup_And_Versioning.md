@@ -350,8 +350,9 @@ mj-agent Phase 0 暂未引入版本发布流程；待 Phase 1+ 与 `docs/runbook
 - [[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — 推送前检查 + 推送流程
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
 - [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
-- [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] — 决策依据与 Keep/Adapt/Defer 矩阵
-- [[../../assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]] — 适配证据
+- [[archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions]]（archived）— 决策依据与 Keep/Adapt/Defer 矩阵
+- [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]]（M6 X1 迁入 capability evidence）— 适配证据
+- SemVer 规则真相源（M6 X6）：[[policies/release|policies/release]]（本 GUIDE §3-§4 的 operational how-to 配套）
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 - 开发者上手指南 —— Phase 0.5 待 `docs/guide/[GUIDE]_Developer_Onboarding.md` 启用
 

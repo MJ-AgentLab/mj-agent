@@ -18,7 +18,7 @@ track: shared
 > - 治理元规则：[../sdd/constitution.md](../sdd/constitution.md) +
 >   [../sdd/lifecycle.md](../sdd/lifecycle.md) + [../sdd/gates.md](../sdd/gates.md)
 > - Capability：[../capabilities/INDEX.md](../capabilities/INDEX.md)（Phase M1 起 5 pilot）
-> - Business Policy：[../policies/](../policies/)（9 native 文件）
+> - Business Policy：[../policies/](../policies/)（10 native 文件；M6 X6 加 `release.md`）
 > - ADR 新址：[../decisions/INDEX.md](../decisions/INDEX.md)（Phase M5 平移；当前 ADR-031 draft）
 > - Codex 边界：[../AGENTS.md](../AGENTS.md)
 > - 术语表：[../GLOSSARY.md](../GLOSSARY.md)
@@ -48,6 +48,7 @@ track: shared
 | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
 | `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/claude-code-skill\|claude-code-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.claude/` SKILL 治理（A7-A14 surface） |
 | [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 settings.json blocking |
+| [[policies/git-branching\|policies/git-branching]] / [[policies/release\|policies/release]] | 分支类型 / commit 类型 / G1·G2 worktree / PR 模板矩阵（§4）/ SemVer bump 规则 + dev·release tags（M6 X6 把 git **规则**从 `docs/infrastructure/git/` GUIDEs absorb 进 kernel；GUIDEs 保留 operational how-to，不归档）|
 
 ## 架构决策（decisions/）
 
