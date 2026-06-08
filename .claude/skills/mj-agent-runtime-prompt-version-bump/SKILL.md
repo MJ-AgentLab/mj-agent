@@ -51,7 +51,7 @@ digraph bump {
 
   s2 [label="Step 2: Body audit\nIdentity / Principles / Tools / Hard rules / Soft rules" shape=box];
 
-  s3 [label="Step 3: 反向扫描\ngrep references in:\n• src/mj_agent/agent.py (_build_system_prompt)\n• src/mj_agent/skills/**/SKILL.md (cross-ref)\n• docs/runbook/dev_studio_walkthrough.md (R1/R2 矩阵)" shape=box];
+  s3 [label="Step 3: 反向扫描\ngrep references in:\n• src/mj_agent/agent.py (_build_system_prompt)\n• src/mj_agent/skills/**/SKILL.md (cross-ref)\n• docs/guide/[GUIDE]_Developer_Onboarding.md §7 (R1/R2 矩阵)" shape=box];
 
   s4 [label="Step 4: 数据边界 sanity check\n• ADR-000 P1/P2/P3 不被改弱\n• ADR-006 4 层 guardrail 不被绕过\n• ADR-009 biz 域 only 不被破坏" shape=box];
 
@@ -115,8 +115,8 @@ grep "_build_system_prompt\|system.md" src/mj_agent/agent.py
 # 2. SKILL.md 是否引用 system.md hard rules
 grep -r "system.md\|hard rule\|ADR-000\|P1\|P2\|P3\|ADR-006" src/mj_agent/skills/
 
-# 3. dev_studio_walkthrough §4 H1/H2/H3/R1/R2 矩阵是否捕获本 prompt 行为
-grep "H1\|H2\|H3\|R1\|R2\|system.md v" docs/runbook/dev_studio_walkthrough.md
+# 3. Developer_Onboarding §7.1 H1/H2/H3/R1/R2 矩阵是否捕获本 prompt 行为
+grep "H1\|H2\|H3\|R1\|R2\|system.md v" "docs/guide/[GUIDE]_Developer_Onboarding.md"
 
 # 4. ADR / SPEC 是否引用本 prompt
 grep -r "system.md\|system prompt" docs/adr/ docs/design/
@@ -241,7 +241,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 ### Reverse Scan
 - agent.py _build_system_prompt: <命中行号 / 集成方式>
 - SKILL.md cross-ref: <命中清单>
-- dev_studio_walkthrough §4: <R1/R2 矩阵 cited>
+- Developer_Onboarding §7.1: <R1/R2 矩阵 cited>
 - ADR / SPEC cross-ref: <命中清单>
 
 ### 数据边界 Sanity Check
@@ -308,7 +308,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 - [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P1/P2/P3 不可放宽）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only）
-- [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（H1/H2/H3/R1/R2 矩阵；评估 system.md 改动行为变化）
+- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（H1/H2/H3/R1/R2 矩阵；评估 system.md 改动行为变化）
 - src/mj_agent/prompts/system.md（target file）
 - src/mj_agent/prompts/__init__.py（load_prompt / load_prompt_meta API）
 - src/mj_agent/agent.py:_build_system_prompt（system.md 拼装入口）

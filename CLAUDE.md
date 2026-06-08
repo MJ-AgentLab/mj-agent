@@ -169,7 +169,8 @@ docker run --rm --env-file .env -p 8001:8000 mj-agent:0.1
 
 Studio dev walkthrough (env + verification matrix + LangSmith trace
 toggles + diagnostic table) lives in
-`docs/runbook/dev_studio_walkthrough.md`.
+`docs/guide/[GUIDE]_Developer_Onboarding.md` §7 (M6 X4 absorbed the former
+`docs/runbook/dev_studio_walkthrough.md`).
 
 `pyproject.toml` pins `addopts = "-m 'not smoke'"`, so plain `uv run pytest`
 excludes smoke by default — pass `-m smoke` to opt in. `tests/conftest.py`

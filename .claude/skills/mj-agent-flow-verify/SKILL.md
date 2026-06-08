@@ -120,7 +120,7 @@ uv run mj-agent check                      # DB + LLM creds 健康（Docker heal
 
 # Studio probe（需 .env + Ark API key + biz pg consumer access）
 uv run langgraph dev                       # 起 Studio；用户手动跑 H1/H2/H3/R1/R2 矩阵
-# 详见 docs/runbook/dev_studio_walkthrough.md
+# 详见 docs/guide/[GUIDE]_Developer_Onboarding.md §7
 
 # Compose lifecycle
 docker compose -f docker/compose.yaml up -d
@@ -257,7 +257,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A/B 命令矩阵）
 - [[../../../CLAUDE.md|CLAUDE.md]] "Commands" 段（uv-based 命令）
-- [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（Studio H1/H2/H3/R1/R2 探针）
+- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（Studio H1/H2/H3/R1/R2 探针）
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §6（本地验证 vs AI 自检 双段；实操矩阵见 §5）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 下游消费者）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 上游）

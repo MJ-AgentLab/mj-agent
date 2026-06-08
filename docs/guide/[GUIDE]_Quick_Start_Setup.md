@@ -24,7 +24,7 @@ owner: 项目负责人
 > **版本**：v0.1
 > **最后更新**：2026-05-18
 > **派生自**：mj-agent 原生（参考 mj-system 仓库 `[GUIDE]_Quick_Start_Setup.md` 9 步速查 + Troubleshooting 表的结构与写法；命令与术语均按 mj-agent 自身资产派生）
-> **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../CLAUDE|CLAUDE.md]]、[[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]]
+> **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../CLAUDE|CLAUDE.md]]
 
 ---
 
@@ -66,7 +66,7 @@ owner: 项目负责人
 
 - 理解仓库结构 / 双远端 / 分支模型 / 三轨道文档 / 提交推送 → [[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]
 - 理解 LLM provider 切换 / 数据边界 4 层 / 测试矩阵 → [[../../README|README]] + [[../../CLAUDE|CLAUDE.md]]
-- 故障诊断 / LangSmith trace / Studio H1-R2 验证矩阵 → [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]]
+- 故障诊断 / LangSmith trace / Studio H1-R2 验证矩阵 → [[[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7
 
 读完本份后下一站：跑通后回到 Developer Onboarding 补背景知识。
 
@@ -200,7 +200,7 @@ biz_dws 里有哪些日度总量表？
 | PowerShell `ExecutionPolicy` 阻 | `powershell -ExecutionPolicy Bypass -File ...` 或临时 `Set-ExecutionPolicy -Scope Process Bypass` |
 | `uv sync` 卡 deepseek/torch 包 | 公网代理 / 镜像源问题；可设 `UV_INDEX_URL` 切国内镜像 |
 
-更深诊断（H1/H2/H3 happy path + R1/R2 red line）见 [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]] §8 诊断表。
+更深诊断（H1/H2/H3 happy path + R1/R2 red line）见 [[[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7.3 诊断表。
 
 ---
 
@@ -210,7 +210,6 @@ biz_dws 里有哪些日度总量表？
 - [[[GUIDE]_Analyst_Day_One|Analyst Day-One]] — 分析师角色 day-1（非开发者）
 - [[../../README|README]] — 技术栈 / 命令矩阵 / 文档导航
 - [[../../CLAUDE|CLAUDE.md]] — AI 高频上下文 / Commands / Architecture
-- [[../runbook/dev_studio_walkthrough|Dev Studio Walkthrough]] — Studio 完整 walkthrough + 诊断
 
 ## 更新记录
 

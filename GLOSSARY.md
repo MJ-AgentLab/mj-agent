@@ -172,7 +172,7 @@
 
 ### LangGraph Studio
 
-**定义**：LangGraph 自带的本地开发 UI；启动 `uv run langgraph dev`；默认 `http://127.0.0.1:2024`。完整 walkthrough 见 [docs/runbook/dev_studio_walkthrough.md](docs/runbook/dev_studio_walkthrough.md)。
+**定义**：LangGraph 自带的本地开发 UI；启动 `uv run langgraph dev`；默认 `http://127.0.0.1:2024`。完整 walkthrough 见 [docs/guide/[GUIDE]_Developer_Onboarding.md §7](docs/guide/[GUIDE]_Developer_Onboarding.md)。
 **相关术语**：Chainlit / make_graph
 
 ### LangSmith

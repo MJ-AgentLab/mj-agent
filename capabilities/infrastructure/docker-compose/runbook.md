@@ -233,7 +233,7 @@ docker exec mj-agent python -c "import urllib.request as r; print(r.urlopen('htt
 - ADR-026 / ADR-008 / ADR-030 — design records
 - ADR-006 (4-layer data boundary) / ADR-009 (read-only biz connection) — data-access design (absorbed from dev_deployment 关联文档, M6 X3)
 - `docker/README.md` — image build / standalone run / compose detail
-- `docs/runbook/dev_studio_walkthrough.md` — broader Studio context (Phase M5 dissolves)
+- `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio context (M6 X4 absorbed dev_studio_walkthrough)
 - `§6.1 Volume Backup/Restore SOP` — cross-ref `/mj-agent-infra-env-teardown` Level 2 (destructive; REQ-006 checkpointer data lost warning)
 - `§6.2 Postgres Init Failure Recovery SOP` — cross-ref `docker/postgres-init/01-bootstrap-mj-agent-memory.sh` (REQ-003 `\getenv` + `format` + `\gexec` chain)
 

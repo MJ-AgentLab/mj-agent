@@ -58,7 +58,7 @@
 - **L1 outcome eval**：用 `golden_seed.jsonl`（16 case）跑 outcome 检查，集成进 pytest（`tests/eval/test_outcome.py`）；所有 P0 case 进 smoke。
 - **L3 component eval**：以 `component_judge.md` 中的 P0/P1 规则做 sqlglot 程序化检查（与 PR2 预校验共用），LLM 仅做歧义 fallback。
 - **smoke 测试**：(a) 镜像 mj-system GUIDE §6.1 6 条 psql 用例；(b) 加 4 条 trajectory smoke：表发现、top-N、月度同比、拒绝 ODS/DML（与 Plan C C1 范围**合并**——见 Coordination 段）；(c) 与 `golden_seed.jsonl` 中标 P0 的 case 互查覆盖。
-- **Runbook**：`docs/runbook/dev_studio_walkthrough.md`，**直接引用 Plan A 输出的 H1/H2/H3/R1/R2 evidence**，不重写；包含 `.env` 配置、`uv run langgraph dev`、Studio 打开、LangSmith tracing 开关。
+- **Runbook**：`docs/guide/[GUIDE]_Developer_Onboarding.md` §7（M6 X4 并入；原 `docs/runbook/dev_studio_walkthrough.md`），**直接引用 Plan A 输出的 H1/H2/H3/R1/R2 evidence**，不重写；包含 `.env` 配置、`uv run langgraph dev`、Studio 打开、LangSmith tracing 开关。
 - **判定**：每个 PR 都跑 `uv run pytest tests/unit`；有 DB+LLM 环境跑 `tests/integration` + `tests/eval` + `tests/smoke -m smoke`。
 
 ## Test Plan
