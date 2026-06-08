@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-studio-probe
-description: This skill should be used when the user asks to start LangGraph Studio, run Studio walkthrough, verify mj-agent end-to-end behavior, or check the H1/H2/H3/R1/R2 verification matrix in mj-agent. Make sure to use this skill whenever the user says "Studio 探针", "studio probe", "langgraph dev", "起 Studio", "Studio 验证", "H1 H2 H3", "R1 R2", "verify Studio", "agent 闭环验证", "试用 mj-agent", "biz_dws 查询测试", "boundary 验证", "ADR-006 测试", "data boundary test" in the mj-agent context. Wraps `uv run langgraph dev` startup + interactive H1/H2/H3 happy-path probes (biz_dws table list / 7-day trend / Top-N institution) + R1/R2 red-line probes (biz_ods refusal / unbounded export). Outputs a Probe Report aligned with docs/runbook/dev_studio_walkthrough §4. Pre-requirement: env setup done (use mj-agent-infra-env-setup first if not). Do not use for: env setup itself (use mj-agent-infra-env-setup), Docker compose lifecycle (use mj-agent-infra-docker-compose in PR-C3), or pytest-based smoke tests (use uv run pytest tests/smoke directly).
+description: This skill should be used when the user asks to start LangGraph Studio, run Studio walkthrough, verify mj-agent end-to-end behavior, or check the H1/H2/H3/R1/R2 verification matrix in mj-agent. Make sure to use this skill whenever the user says "Studio 探针", "studio probe", "langgraph dev", "起 Studio", "Studio 验证", "H1 H2 H3", "R1 R2", "verify Studio", "agent 闭环验证", "试用 mj-agent", "biz_dws 查询测试", "boundary 验证", "ADR-006 测试", "data boundary test" in the mj-agent context. Wraps `uv run langgraph dev` startup + interactive H1/H2/H3 happy-path probes (biz_dws table list / 7-day trend / Top-N institution) + R1/R2 red-line probes (biz_ods refusal / unbounded export). Outputs a Probe Report aligned with the H1/H2/H3/R1/R2 verification matrix in docs/guide/[GUIDE]_Developer_Onboarding.md §7.1. Pre-requirement: env setup done (use mj-agent-infra-env-setup first if not). Do not use for: env setup itself (use mj-agent-infra-env-setup), Docker compose lifecycle (use mj-agent-infra-docker-compose in PR-C3), or pytest-based smoke tests (use uv run pytest tests/smoke directly).
 ---
 
 # mj-agent Infra — LangGraph Studio Probe
@@ -10,7 +10,7 @@ description: This skill should be used when the user asks to start LangGraph Stu
 `uv run langgraph dev` 启 Studio + 跑 5 项 walkthrough 验证矩阵（H1/H2/H3 happy path + R1/R2 数据边界 red line）。**Stage 10 sub** of HITL_Prompt 17-stage 闭环；典型在 self-review 前用作 LLM 行为对比 / 数据边界回归测试。
 
 **Reference**:
-- [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]] §4 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
+- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7.1 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt|HITL_Prompt v1.1]] §4.8 Level B（Studio probe 是 HITL-confirm 后跑的）
 
@@ -30,7 +30,7 @@ description: This skill should be used when the user asks to start LangGraph Stu
 | 用户说"起 Studio" 但 .env 未配 | 提示先 `/mj-agent-infra-env-setup` |
 | 用户说"试用 mj-agent" | 完整 5 步：start → H1 → H2 → H3 → R1 → R2 |
 | 用户说"只验数据边界" | 跳到 R1 + R2 |
-| 用户说"system.md 改了，回归" | 完整 5 步 + 对比 dev_studio_walkthrough §4 已捕获快照 |
+| 用户说"system.md 改了，回归" | 完整 5 步 + 对比 Developer_Onboarding §7.1 已捕获快照 |
 | 在场会话中已 Studio 起着 | 跳过 Step 1，直接进 H1-R2 |
 
 ## Workflow
@@ -191,19 +191,19 @@ INFO: API:    http://127.0.0.1:2024
 | Bash `uv run langgraph dev` | Step 1 启 Studio |
 | Bash `uv run mj-agent check` | Step 0 prerequisite verify |
 | Browser（user 手动） | Step 2-6 在 Studio UI 上跑 H1/H2/H3/R1/R2 |
-| Read `docs/runbook/dev_studio_walkthrough.md` §4 | 验证矩阵参考 |
+| Read `docs/guide/[GUIDE]_Developer_Onboarding.md` §7.1 | 验证矩阵参考 |
 | Bash `python scripts/capture_walkthrough_evidence.py` | 自动捕获 evidence 快照（已存在脚本，可选刷新 walkthrough_evidence.md） |
 
 ## Reference Files
 
-- [[../../../docs/runbook/dev_studio_walkthrough|dev_studio_walkthrough]]（H1/H2/H3/R1/R2 矩阵权威源 + LangSmith trace 开关 + 常见诊断）
+- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（H1/H2/H3/R1/R2 矩阵权威源 + LangSmith trace 开关 + 常见诊断）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 SQL guardrail；R1/R2 验证依据）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS；R1 边界依据）
 - [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（最小必要出网；R2 反询依据）
 - `src/mj_agent/prompts/system.md`（system prompt 当前 version；R1/R2 行为由 v1.3+ rule 2/3 决定）
 - `src/mj_agent/skills/{biz-domain-context,qcm-analysis,safe-sql-analysis}/SKILL.md`（H1/H2/H3 trajectory 涉及的 skill body）
 - `scripts/capture_walkthrough_evidence.py`（自动捕获 evidence 快照工具）
-- `walkthrough_evidence.md`（自动生成快照，与 dev_studio_walkthrough §4 表对位）
+- `walkthrough_evidence.md`（自动生成快照，与 Developer_Onboarding §7.1 表对位）
 
 ## Anti-patterns
 

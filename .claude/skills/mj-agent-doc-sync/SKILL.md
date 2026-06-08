@@ -66,7 +66,7 @@ digraph sync {
 
 | Code 路径 | 影响的 docs |
 |---|---|
-| `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Architecture" 段 / `README.md` "架构概览" 段（PR #171 起新加；ASCII 拓扑图，需保持简化版与 CLAUDE.md 同步）/ `docs/runbook/dev_studio_walkthrough.md` |
+| `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Architecture" 段 / `README.md` "架构概览" 段（PR #171 起新加；ASCII 拓扑图，需保持简化版与 CLAUDE.md 同步）/ `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `src/mj_agent/llm.py` | CLAUDE.md "LLM provider" 段 / `README.md` "LLM provider" 段（PR #171 保留；provider 表 + .env 配置）/ Studio walkthrough / **§6.4 类 4 命中**（runtime 语义）|
 | `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1 必停 10/11；建议先 /mj-agent-runtime-prompt-version-bump（PR-C2）propose diff |
 | `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1 必停 10；建议先 /mj-agent-runtime-skill-doc-improve（PR-C2）propose diff |
@@ -75,11 +75,11 @@ digraph sync {
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `docs/design/agent/[SPEC]_biz_catalog_*.md` / `scripts/diff_biz_schema.py` 输出 |
 | `src/mj_agent/config.py` | CLAUDE.md "Environment variables" / `.env.example` / `config/README.md` |
 | `tests/{unit,eval,integration,smoke,contract}/` | CLAUDE.md "Commands" pytest 段 |
-| `docker/` | CLAUDE.md "Commands" Docker 段 / `docs/runbook/dev_studio_walkthrough.md` / mj-agent-infra-docker-compose SKILL |
+| `docker/` | CLAUDE.md "Commands" Docker 段 / `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 / mj-agent-infra-docker-compose SKILL |
 | `pyproject.toml` / `uv.lock` | CLAUDE.md "Commands" / CHANGELOG.md（如显著 dep 变化） |
 | `.github/workflows/` | CLAUDE.md CI 段 / mj-agent-git-push GUIDE |
 | `.env.example` | CLAUDE.md "Environment variables" / `config/README.md` |
-| `langgraph.json` | `docs/runbook/dev_studio_walkthrough.md` |
+| `langgraph.json` | `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `.claude/skills/<name>/SKILL.md` 改动 | INDEX.md "工程编排技能" 段 / CLAUDE.md "Engineering-Workflow Documentation" 段 |
 | `.claude/settings.json` 改动 | CLAUDE.md A13 自检（v2.1 §7.7） |
 | `.mcp.json` 改动 | CLAUDE.md A14 自检 + 待落地 `[STANDARD]_MCP_Server_Governance_v1.0` |

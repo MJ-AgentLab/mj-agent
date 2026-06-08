@@ -11,9 +11,9 @@ last_verified: 2026-05-20
 
 # Runbook: Safe SQL 4-Layer Guardrails
 
-> Phase M1 baseline. ≥ 3 sections per quality baseline. References existing
-> `docs/runbook/dev_studio_walkthrough.md` for shared startup context (M5
-> migration will dissolve docs/runbook/ into capability runbooks).
+> Phase M1 baseline. ≥ 3 sections per quality baseline. References
+> `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 for shared startup context
+> (M6 X4 dissolved dev_studio_walkthrough into it; docs/runbook/ now empty).
 
 ## §1 Startup
 
@@ -169,7 +169,7 @@ but `qcm_catalog.yaml periods.*.time_column` still references the old name.
 - `contracts/execute-sql.contract.yml` — REQ-003 / REQ-004 / REQ-005 details
 - `contracts/python.contract.yml` — module signatures + REQ-006 middleware
 - `contracts/behavior.feature` — 6 Gherkin scenarios
-- `docs/runbook/dev_studio_walkthrough.md` — broader Studio walkthrough (Phase M5 will dissolve into capability runbooks)
+- `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
 - `policies/data-boundary.md` — 数据-LLM 三原则 + 4 项必停 governance
 - `§6.1 L2 Schema/Table Whitelist Extension SOP` — cross-ref `src/mj_agent/tools/sql/guardrail.py` `allowed_tables_per_schema` + `sql-guardrail-relax` canonical 10-enum HITL (per `policies/ai-agent.md §4`)
 - `§6.2 L3 Statement Timeout & Lock Timeout Tuning SOP` — cross-ref behavior.feature REQ-003/REQ-004 + `mj_system_db.py` DSN options + upstream `R__analyst_permissions.sql`
@@ -356,4 +356,4 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 ---
 
 > Phase M1 baseline. Phase M2 will refine §3 troubleshooting with M3 contract test
-> findings; Phase M5 will dissolve docs/runbook/dev_studio_walkthrough.md into this file.
+> findings; M6 X4 dissolved docs/runbook/dev_studio_walkthrough.md into docs/guide/[GUIDE]_Developer_Onboarding.md §7 (owner-approved target; not this file).
