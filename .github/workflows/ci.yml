@@ -101,9 +101,10 @@ jobs:
       # G11/G12 BLOCKING since M6 PR4-flip (owner-gated ci-blocking-gate-toggle, option (c),
       # 2026-06-05). archive/ populated by the M6 PR4 ceremony (#229 tri-track + #231 consol);
       # pre-flight: check_archive_manifest --all --strict = 2P/0W/0F exit 0 verified before flip.
-      # G14/G15 + G17 remain WARNING (continue-on-error) — G14/G15 still has 13 forward-ref WARNs
-      # to the not-yet-built archive/legacy/ + archive/capabilities/ subtrees; their blocking flip
-      # is tracked as M6-FU-G14G15-BLOCKING-FLIP (build subtrees / rework refs first). Toggling a
+      # G14/G15 + G17 remain WARNING (continue-on-error) — G14/G15 forward-ref WARNs to the
+      # not-yet-built archive/legacy/ + archive/capabilities/ subtrees (18 as-of completion-audit
+      # PR2; count drifts with prose edits — step output is the SoT); their blocking flip is
+      # tracked as M6-FU-G14G15-BLOCKING-FLIP (build subtrees / rework refs first). Toggling a
       # blocking gate is a HITL action (policies/ai-agent.md §4 ci-blocking-gate-toggle).
 
       - name: 'G11/G12 archive manifest (BLOCKING per M6 PR4-flip; archive/ populated #229/#231)'

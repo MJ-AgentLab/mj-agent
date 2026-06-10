@@ -65,7 +65,7 @@ ai_visibility: source-of-truth
 | Gate | 脚本 | 含义 | 阻塞模式（真值） |
 |---|---|---|---|
 | G19 | `scripts/sdd/check_bdd_scenario_trace.py` | 关键 scenario 绑定 REQ/CTR | blocking@ci |
-| G20 | — 无脚本（`check_bdd_step_coverage.py` 未建）| 自动化 scenario 有 step definition | manual-canonical(pytest-bdd 收集期 `StepDefinitionNotFoundError` 在 BLOCKING `tests/bdd` step 天然强制；未自动化集合由 G22 兜底) |
+| G20 | — 无脚本（`check_bdd_step_coverage.py` 未建）| 自动化 scenario 有 step definition | manual-canonical(pytest-bdd `StepDefinitionNotFoundError` 在 BLOCKING `tests/bdd` step 对**实际执行**的 scenario 强制；env-gated skip 的 scenario 在 CI 不触发该检查——本地带创跑覆盖；未自动化集合由 G22 兜底) |
 | G21 | `scripts/sdd/check_bdd_acceptance.py --strict` | `@risk:critical\|high` 验收：evidence pass_rate 1.0 或 runbook justification fallback | blocking@ci |
 | G22 | `scripts/sdd/check_bdd_unautomated.py --strict` | 未自动化 critical\|high scenario 必有 runbook 4-field justification | blocking@ci |
 | G23 | `scripts/sdd/check_tdd_test_list.py --check g23` | 高风险 task 有 tdd.test_list | warning@ci（M6 blocking flip 未执行 — 见 §5 历史注）|

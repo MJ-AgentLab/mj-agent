@@ -7,7 +7,9 @@ deferred.)
 Multi-gate single script + subflag dispatch (R-N v12 R-12-1; V5 precedent
 ``check_docker_contracts.py --bdd --tdd --compose-config``):
 
-Per sdd/gates.md L62-L63 + L96 + sdd/adapters/bdd-tdd.md L197-199:
+Per sdd/gates.md §3 G23/G24/G25 rows + sdd/adapters/bdd-tdd.md L197-199
+(gates.md "L62/L63/L96" citations below quote the v0.1 layout, retained as
+historical context; the v0.2 truth-table re-tabled those rows):
 
 > L62 G23 | check_tdd_test_list.py | 高风险 task 有 tdd.test_list | M4 warning / M6 blocking
 > L63 G24 | 同 G23（bugfix-regression）| bugfix PR 必有 regression test | M4 blocking
