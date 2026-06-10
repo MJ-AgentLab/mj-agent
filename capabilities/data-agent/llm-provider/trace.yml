@@ -1,9 +1,10 @@
 # capabilities/data-agent/llm-provider/trace.yml
 # schema v1.2.
 # Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
-# automation_status reflects tests/bdd CI reality; the 12 TBD-M3 placeholders
-# resolved — 6 to the new tests/unit/test_llm.py (this PR), 6 dropped with
-# coverage notes (config/CLI matrix → Phase-2 re-scope).
+# automation_status reflects tests/bdd CI reality; the 12 M3-era placeholders
+# resolved — 6 re-pointed to the new tests/unit/test_llm.py (plus 1 net-new
+# sentinel test there, hence 7 entries below), 6 dropped with coverage notes
+# (config/CLI matrix → Phase-2 re-scope).
 
 capability: data-agent.llm-provider
 generated: 2026-05-20

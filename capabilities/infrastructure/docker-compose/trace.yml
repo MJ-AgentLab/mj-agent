@@ -1,7 +1,7 @@
 # capabilities/infrastructure/docker-compose/trace.yml
 # schema v1.2.
 # Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): the 17
-# TBD-M3 tests/docker/* placeholders dropped → Phase-2 re-scope
+# M3-era tests/docker/* placeholders dropped → Phase-2 re-scope
 # (plans/[PLAN]_spec_anchored_refactor.md M6-FU-TESTS-DOCKER-PHASE2-RESCOPE).
 # automation_status stays `unautomated` for all 3 REQs: the pytest-bdd bindings
 # exist but their step bodies are placeholders (docker_available-gated; skipped

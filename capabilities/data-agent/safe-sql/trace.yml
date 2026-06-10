@@ -4,7 +4,7 @@
 # Validated by scripts/sdd/check_traceability.py (Phase M2 warning / M3 blocking).
 # Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
 # automation_status now reflects tests/bdd CI reality (M3 Stage B landing);
-# TBD-M3/M4 test placeholders resolved (real bdd binding / new unit tests /
+# M3/M4-era test placeholders resolved (real bdd binding / new unit tests /
 # Phase-2 re-scope pointers — see plans/[PLAN]_spec_anchored_refactor.md registry).
 
 capability: data-agent.safe-sql

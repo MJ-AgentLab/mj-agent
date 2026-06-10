@@ -1,7 +1,7 @@
 # capabilities/infrastructure/mcp-server-governance/trace.yml
 # schema v1.2.
 # Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
-# automation_status reflects tests/bdd CI reality; the 7 TBD-M3 placeholders
+# automation_status reflects tests/bdd CI reality; the 7 M3-era placeholders
 # (tests/contract/* + check_a14_gate.py) dropped → Phase-2 re-scope
 # (plans/[PLAN]_spec_anchored_refactor.md M6-FU-TESTS-DOCKER-PHASE2-RESCOPE +
 # M6-FU-TESTS-CONTRACT-DIR-RENAME-RESCOPE).
