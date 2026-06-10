@@ -198,6 +198,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 ### G22/G21 Justification: load_catalog rejects YAML whose root parses to a list (not a mapping)
 
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking); justification below retained as historical record + G21 fallback source.
+
 - **REQ**: REQ-001 / **Risk**: high / **Adapter**: python
 - **原因**: M1 baseline；pytest-bdd 框架的 step definitions 集中到 M3 batch
   land（与 safe-sql 同节奏）。
@@ -211,6 +213,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 ### G22/G21 Justification: Catalog signal_tables must resolve in live biz_dws
 
+> **Status (post-M6 truth-up 2026-06-10): automated (live_db env-gated)** — pytest-bdd binding real; skips in CI without POSTGRES_ANALYST_USER; justification below retained as historical record + G21 fallback source.
+
 - **REQ**: REQ-002 / **Risk**: high / **Adapter**: python / **@gated:live_db**
 - **原因**: live_db 依赖 — automation 需 live test biz_dws postgres fixture
   (per `@gated:live_db` tag)；CI runner 当前无 live_db。
@@ -222,6 +226,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 - **预计时间**: M3+（live_db infra 准备后；具体里程碑 TBD per owner planning）。
 
 ### G22/G21 Justification: Active SKILL bodies reference only resolvable catalog symbols and DB tables
+
+> **Status (post-M6 truth-up 2026-06-10): automated (live_db env-gated)** — pytest-bdd binding real; skips in CI without POSTGRES_ANALYST_USER; justification below retained as historical record + G21 fallback source.
 
 - **REQ**: REQ-003 / **Risk**: high / **Adapter**: runtime-skill / **@gated:live_db**
 - **原因**: 跨 artifact 验证（SKILL bodies × catalog × live DB）；automation

@@ -1,5 +1,10 @@
 # capabilities/infrastructure/mcp-server-governance/trace.yml
 # schema v1.2.
+# Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
+# automation_status reflects tests/bdd CI reality; the 7 TBD-M3 placeholders
+# (tests/contract/* + check_a14_gate.py) dropped → Phase-2 re-scope
+# (plans/[PLAN]_spec_anchored_refactor.md M6-FU-TESTS-DOCKER-PHASE2-RESCOPE +
+# M6-FU-TESTS-CONTRACT-DIR-RENAME-RESCOPE).
 
 capability: infrastructure.mcp-server-governance
 generated: 2026-05-20
@@ -25,16 +30,17 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "Adding a 14th MCP server triggers A14 PR gate body declaration"
-      automation_status: unautomated
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/mcp-server.contract.yml
       - contracts/governance.contract.yml
     tests:
-      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_thirteen_server_entries"
-      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_per_entry_trust_posture_declared"
-      - "TBD-M3: tests/contract/test_mcp_inventory.py::test_credential_mode_per_entry"
-      - "TBD-M3: scripts/sdd/check_a14_gate.py (warning at M2 / blocking at M3)"
-      - "TBD-M3: tests/contract/test_a14_gate.py::test_pr_body_contains_mcp_block_when_mcp_json_changed"
+      - tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_001_a14_gate_template_exists
+      # tests/contract/test_mcp_inventory.py ×3 + check_a14_gate.py +
+      # test_a14_gate.py placeholders dropped: A14 declaration surface covered by
+      # the bdd binding (PR-template check); inventory/trust-posture contract
+      # tests + A14 script automation → Phase-2 re-scope
+      # (plans/[PLAN]_spec_anchored_refactor.md registry).
     tasks:
       - tasks.md#T-002
     prs:
@@ -47,12 +53,14 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "All 10 pg-* entries reference the same wrapper script"
-      automation_status: unautomated
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/mcp-server.contract.yml
     tests:
-      - "TBD-M3: tests/contract/test_mcp_pg_wrapper_consistency.py::test_all_pg_entries_use_same_wrapper"
-      - "TBD-M3: tests/contract/test_mcp_pg_wrapper_consistency.py::test_pg_wrapper_baseline_aligned"
+      - tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_002_pg_wrapper_consistency
+      # test_mcp_pg_wrapper_consistency.py ×2 placeholders dropped: wrapper-script
+      # consistency asserted by the bdd binding; baseline-diff contract test →
+      # Phase-2 re-scope (plans/[PLAN]_spec_anchored_refactor.md registry).
     tasks:
       - tasks.md#T-003
     prs:
@@ -63,7 +71,8 @@ links:
 # Summary:
 # - 2 REQs (both @risk:medium)
 # - 2 BDD scenarios
+# - bdd automation_status: 2 automated / 0 unautomated
 # - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
 # - 2 cross-capability refs (≤ 5 ✓)
-# - 7 TBD-M3 test placeholders + 0 existing tests
+# - 2 real test entries (2 bdd bindings); 0 TBD placeholders
 # - Quarterly audit cycle: M4+ automated

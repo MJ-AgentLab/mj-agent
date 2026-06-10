@@ -260,6 +260,8 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 ### G22/G21 Justification: L1 regex guardrail rejects blocked-keyword statement before DB contact
 
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking); justification below retained as historical record + G21 fallback source.
+
 - **REQ**: REQ-001 / **Risk**: critical / **Adapter**: python
 - **原因**: M1 baseline 只落 contract + scenario 文本；pytest-bdd 框架的 step
   definitions 集中到 M3 batch land。
@@ -272,6 +274,8 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
   集中实装节奏）。
 
 ### G22/G21 Justification: L1b precheck rejects biz_dws fact-table query missing time-column predicate
+
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking); justification below retained as historical record + G21 fallback source.
 
 - **REQ**: REQ-002 / **Risk**: critical / **Adapter**: python
 - **原因**: M1 baseline 只落 contract + scenario 文本；pytest-bdd step definitions
@@ -286,6 +290,8 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
   同 batch）。
 
 ### G22/G21 Justification: L3 connection enforces read-only transaction + bounded timeouts via DSN options ★ coverage 弱
+
+> **Status (post-M6 truth-up 2026-06-10): automated (live_db env-gated)** — pytest-bdd binding real; skips in CI without POSTGRES_ANALYST_USER. New offline `tests/unit/test_dsn_options.py` closes the ★ coverage 弱 gap flagged below.
 
 - **REQ**: REQ-003 / **Risk**: critical / **Adapter**: python
 - **原因**: M1 baseline；connection-layer test 基础设施（`test_dsn_options.py` +
@@ -325,6 +331,8 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 ### G22/G21 Justification: execute_sql return envelope contains 8 required keys with documented types
 
+> **Status (post-M6 truth-up 2026-06-10): automated (live_db env-gated)** — pytest-bdd binding real; skips in CI without POSTGRES_ANALYST_USER. New offline `tests/unit/test_execute_sql_envelope.py` covers the 8-key schema + truncation without DB.
+
 - **REQ**: REQ-005 / **Risk**: high / **Adapter**: python
 - **原因**: M1 baseline；envelope schema-conformance tests 推迟 M3（per
   trace.yml L128-130 TBD-M3 markers）。
@@ -338,6 +346,8 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 - **预计时间**: M3 EOL（per TBD-M3 markers；与 S1/S2 同 batch）。
 
 ### G22/G21 Justification: handle_sql_tool_errors middleware converts tool ValueError into ToolMessage
+
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking); justification below retained as historical record + G21 fallback source.
 
 - **REQ**: REQ-006 / **Risk**: high / **Adapter**: langchain-agent / **ADR-029**
 - **原因**: Unit 层已自动化 5 cases；BDD scenario + integration + smoke 层
