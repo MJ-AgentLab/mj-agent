@@ -1,6 +1,10 @@
-"""scripts/sdd/check_tdd_test_list.py — G23 + G24 TDD validator (Stage D D-5 FINAL).
+"""scripts/sdd/check_tdd_test_list.py — G23 + G24 + G25 TDD validator.
 
-Dual-gate single script + subflag dispatch (R-N v12 R-12-1; V5 precedent
+(Stage D D-5 FINAL landed G23+G24; completion-audit PR2 added G25
+changed-code-has-test as a third subflag — warning mode, M6 blocking flip
+deferred.)
+
+Multi-gate single script + subflag dispatch (R-N v12 R-12-1; V5 precedent
 ``check_docker_contracts.py --bdd --tdd --compose-config``):
 
 Per sdd/gates.md L62-L63 + L96 + sdd/adapters/bdd-tdd.md L197-199:
@@ -78,6 +82,9 @@ _TESTS_PATH_PATTERN = re.compile(r"(^|/)tests/")
 # R-16-3 Option (d) commit trailer escape hatch: presence + non-empty reason hard
 # check. Reviewer culture handles reason quality. HEAD commit only per R-16-9.
 _G24_EXEMPT_TRAILER_PATTERN = re.compile(r"^G24-Exempt:\s+(\S.*)$", re.MULTILINE)
+# G25 (changed-code-has-test; completion-audit PR2): production Python under
+# src/mj_agent/ changed in a PR should come with a tests/ change.
+_SRC_PY_PATTERN = re.compile(r"^src/mj_agent/.*\.py$")
 
 
 def _split_into_task_sections(tasks_md_text: str) -> list[str]:
@@ -297,8 +304,52 @@ def _check_g24(
     return summary
 
 
+def _check_g25(changed_files: list[str] | None = None) -> Summary:
+    """G25: changed src/mj_agent Python code should have a tests/ change (WARN).
+
+    Per gates.md G25 row (同 G23 changed-code-has-test; completion-audit PR2
+    real impl). Decision flow:
+
+    1. No diff context (changed_files None and no CI env) → SKIP exit 0
+       (local dry-run; CI fills via ``_get_changed_files_via_git_diff``).
+    2. No ``src/mj_agent/**/*.py`` in the diff → SKIP (gate not applicable).
+    3. src change + ≥1 ``tests/`` file in diff → PASS.
+    4. src change + no ``tests/`` file → **WARN** (NOT FAIL — the gates.md
+       M6 blocking flip stays deferred per M6-FU-G27-G28/G25 disposition;
+       flipping is a ci-blocking-gate-toggle HITL action).
+
+    DI mirrors _check_g24 (N-1): ``--changed-files`` injection for unit tests;
+    production reads git diff via GITHUB_BASE_REF/HEAD_REF.
+    """
+    summary = Summary()
+    if changed_files is None:
+        changed_files = _get_changed_files_via_git_diff()
+    if changed_files is None:
+        return summary  # SKIP: no PR diff context (local dry-run)
+
+    src_changes = [p for p in changed_files if _SRC_PY_PATTERN.match(p)]
+    if not src_changes:
+        return summary  # SKIP: no production Python change
+
+    has_test_file = any(_TESTS_PATH_PATTERN.search(p) for p in changed_files)
+    if has_test_file:
+        summary.add(
+            Severity.PASS,
+            f"G25: {len(src_changes)} src/mj_agent Python change(s) accompanied by "
+            "tests/ change in diff",
+        )
+    else:
+        summary.add(
+            Severity.WARN,
+            f"G25: {len(src_changes)} src/mj_agent Python change(s) WITHOUT tests/ "
+            "change in diff (warning mode; M6 blocking flip deferred — "
+            "ci-blocking-gate-toggle HITL)",
+        )
+    return summary
+
+
 def main(argv: list[str] | None = None) -> int:
-    """G23 + G24 validator entry point per R-12-1 subflag dispatch."""
+    """G23 + G24 + G25 validator entry point per R-12-1 subflag dispatch."""
     parser = build_argparser(
         _SCRIPT_NAME,
         "G23/G24 TDD test_list + bugfix-regression validator (per gates.md L62-L63 + L96; "
@@ -307,9 +358,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--check",
-        choices=["g23", "g24", "both"],
+        choices=["g23", "g24", "g25", "both"],
         default="both",
-        help="Which gate(s) to run: g23 (warning) / g24 (blocking) / both",
+        help=(
+            "Which gate(s) to run: g23 (warning) / g24 (blocking) / g25 "
+            "(changed-code-has-test, warning; completion-audit PR2) / both "
+            "(g23+g24 — unchanged semantics; g25 runs only when explicit)"
+        ),
     )
     parser.add_argument(
         "--branch",
@@ -353,12 +408,13 @@ def main(argv: list[str] | None = None) -> int:
             aggregate.merge(per_cap)
             per_cap.print_messages()
 
+    changed_files_arg: list[str] | None = None
+    if args.changed_files is not None:
+        changed_files_arg = [
+            p.strip() for p in args.changed_files.split(",") if p.strip()
+        ]
+
     if args.check in ("g24", "both"):
-        changed_files_arg: list[str] | None = None
-        if args.changed_files is not None:
-            changed_files_arg = [
-                p.strip() for p in args.changed_files.split(",") if p.strip()
-            ]
         g24_summary = _check_g24(
             branch=args.branch,
             changed_files=changed_files_arg,
@@ -366,6 +422,11 @@ def main(argv: list[str] | None = None) -> int:
         )
         aggregate.merge(g24_summary)
         g24_summary.print_messages()
+
+    if args.check == "g25":
+        g25_summary = _check_g25(changed_files=changed_files_arg)
+        aggregate.merge(g25_summary)
+        g25_summary.print_messages()
 
     print(
         f"{_SCRIPT_NAME}: "
