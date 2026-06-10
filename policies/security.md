@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -15,11 +15,25 @@ ai_visibility: source-of-truth
 > Phase M0 skeleton — secret 暴露 gate + 漏洞 exception + 2-bundle secrets 信任边界 + 跨仓
 > attribution 禁止规则. 详细内容在 Phase M2 内容填充.
 
-## §1 Secret 暴露 Gate
+## §1 Secret 暴露 Gate（G7 — completion-audit PR2 实装）
 
-> TBD: Phase M2 — `scripts/sdd/check_secret_exposure.py`（G7 Phase M2 blocking）扫描
-> `config/secrets.enc` / `config/secrets-mcp.enc` 不入 image / 不入 git；扫 .env / 明文密码 /
-> token / API key pattern 不在 active 文件中.
+`scripts/sdd/check_secret_exposure.py`（warning@ci；blocking flip 另走
+`ci-blocking-gate-toggle` HITL）。**语义修正**（原 M0 skeleton TBD 措辞反了）：禁止入
+git / image 的是**解密产物** — `.env` / `config/secrets*.conf` / `*.pem` / `*.key`；
+`config/secrets.enc` / `config/secrets-mcp.enc` **密文 bundle 按 ADR-030 有意入库**，不在
+禁止面。三项静态检查（CI 无 secrets 可跑）：
+
+1. **tracked-files（FAIL）**：`git ls-files` 不得含 `.env` / `.env.*`（`.env.example` 除外）/
+   `config/secrets*.conf` / `*.pem` / `*.key`。
+2. **.gitignore 钉子（WARN）**：`.env` / `config/secrets.conf` / `config/secrets-mcp.conf`
+   三条 ignore 必在。
+3. **docker build-context（WARN）**：`docker/Dockerfile` 的 `COPY config/` + DEV compose
+   `context: ../`（仓根）+ 根目录无 `.dockerignore` → 本地解密过的 `config/secrets*.conf`
+   会被打进 DEV image（`docker/.dockerignore` 对仓根 context 无效）。已知 gap 如实 WARN；
+   是否补根目录 `.dockerignore` 是 owner 决策项。
+
+明文密码 / token / API-key pattern 的 active 文件内容扫描（原 TBD 第二句）不在 G7 静态
+范围 — 依赖 secret-pattern 启发式，误报面大；→ Phase-2 与 EVAL evidence harness 一并评估。
 
 ## §2 漏洞 Exception 处理流程
 
