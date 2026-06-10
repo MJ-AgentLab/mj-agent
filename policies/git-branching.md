@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-10
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -13,7 +13,8 @@ ai_visibility: source-of-truth
 # Policy: Git Branching
 
 > Phase M0 skeleton — branch type / commit type / G1/G2 worktree 规则.
-> 完整 11 branch type（Phase 6 扩充）+ 历史事故记录 + G1/G2 enforcement 在 Phase M2 内容填充.
+> （原 skeleton 注 "完整 11 branch type（Phase 6 扩充）" 已 DECLINED — 见 §1 Decision 块；
+> 维持 5 branch type + 7 commit type。）
 
 ## §1 Branch Types
 
@@ -26,8 +27,15 @@ ai_visibility: source-of-truth
 - `maintain/`（CI/CD / Docker / deps / scripts / 配置）
 - `hotfix/`（生产紧急修复；base = main）
 
-Phase M6 扩充至 11 type（per blueprint §§21 关键变更汇总）：
-+ `optimization/` / `release/` / `archive/` / `runtime/` / `data/` / `agent/`.
+> **Decision（2026-06-10；completion-audit PR3；M6-FU-BRANCH-TYPE-5LOCK）**：原蓝图
+> "Phase M6 扩充至 11 type（+ `optimization/` / `release/` / `archive/` / `runtime/` /
+> `data/` / `agent/`）" **DECLINED — 维持 5 type**。理由：M0-M6 全程 ~70 个 PR 无一需要
+> 新类型——archive ceremony 实际走 `documentation/*`（M6 PR4 先例）、release 流程由
+> `policies/release.md` 承载（develop→main 不需要专用 branch type）、runtime/data/agent
+> 类变更均被 `feature/`+scope 覆盖；空集扩类只增加 guard hook + PR 模板 + CI 触发分支
+> 矩阵的维护面。按 `M4-FU-V4-MODE-B-IMPL` WITHDRAWN 先例归档。**复活条件**：连续 ≥3 个
+> PR 因类型不匹配被迫误标（如 release 自动化落地后 develop→main 需要专属 CI 触发），由
+> owner 重开 ADR 评估。
 
 > TBD: Phase M5 平移 — Commit Message Convention v1.0 § Branch ↔ commit-type alignment matrix.
 
@@ -43,7 +51,9 @@ Phase M6 扩充至 11 type（per blueprint §§21 关键变更汇总）：
 | `docs` | 文档 / ADR |
 | `infra` | CI/CD / Docker / scripts / 配置 |
 
-> TBD: Phase M6 — 扩充至 11 commit type（与 11 branch type 对齐矩阵）.
+> **Decision（2026-06-10；completion-audit PR3；M6-FU-BRANCH-TYPE-5LOCK）**：扩充至 11
+> commit type DECLINED — **维持 7**（与 §1 维持 5 branch type 同决策同理由；对齐矩阵现状
+> 见 §4.2）。复活条件同 §1 Decision 块。
 
 ## §3 G1 / G2 Worktree Rules
 
