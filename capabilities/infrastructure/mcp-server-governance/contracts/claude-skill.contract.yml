@@ -25,6 +25,10 @@
 #   6 infra SKILL bodies (HITL-authorized; descriptions untouched). No CI gate reads these (V4 is
 #   Mode-A schema-lint only; Mode B withdrawn per M4-FU-V4-MODE-B-IMPL) — HITL drift record per
 #   policies/ai-agent §7.
+# - DGX consumer-side PR-A re-freeze (2026-06-11): mj-agent-infra-llm-endpoint-probe re-frozen
+#   via the same canonical algorithm after the Step 3b tool-calling smoke enhancement
+#   (3-step -> 4-step; description + body both changed; body_section_heads unchanged;
+#   HITL-authorized per vault [PLAN]_mj-agent_DGX_Consumer_Side_Execution v1.1 §1).
 
 contract_id: claude-skill
 adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
@@ -101,9 +105,9 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
     name: mj-agent-infra-llm-endpoint-probe
-    description_hash: sha256:3822c2acaf89b3d4411208307086002ba46e35e7f91e3c646980f76aa0180f04
-    body_content_hash: sha256:67dd429f29485da7c074471396e8718f24be2d9a1985f1435244374c54d3cfa0
-    frozen_at: 2026-06-08T00:00:00Z
+    description_hash: sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff
+    body_content_hash: sha256:8b79ed76f62b3930841aaea18e22e9416a63488a5e2601bbf55e54099a070a60
+    frozen_at: 2026-06-11T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"

@@ -4,7 +4,7 @@ domain: AGENT
 summary: src/mj_agent/llm.py make_llm() 抽象为 provider 分支 factory（ark + local-openai-compat），支持 DGX-Spark vLLM/SGLang/Ollama 等 OpenAI-compatible local endpoint；Profile enum 不扩 dgx（DGX 不部署 mj-agent）
 owner: 项目负责人
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-06-11
 state: active
 decision: accepted
 track: code
@@ -65,8 +65,9 @@ tags:
 - Step 1：reachable check（`curl -sI ${LLM_BASE_URL}/models` 或 Ollama `/api/tags` fallback）
 - Step 2：model id match（响应 JSON `data[].id` 包含目标 model）
 - Step 3：1-token chat smoke（`POST /chat/completions` with `max_tokens=1`）
+- Step 3b：tool-calling smoke（最小 tools 数组 auto tool choice + named `tool_choice` 判别重试；2026-06-11 DGX 消费侧 PR-A 增——mj-agent `ALL_TOOLS` 硬依赖 tool-calling）
 
-3 步全过 → endpoint 可用；任一失败 → 输出诊断 + 建议（vLLM serve 重启 / SGLang `--port` 检查 / Ollama `pull` 模型 / 网络连通性）。
+4 步全过 → endpoint 可用；任一失败 → 输出诊断 + 建议（vLLM serve 重启 / SGLang `--port` 检查 / Ollama `pull` 模型 / 网络连通性 / tool parser flag）。
 
 ## Consequences
 
@@ -75,7 +76,7 @@ tags:
 - **DGX 算力消费即插即用**：开发者切 env vars 即可消费 DGX vLLM；不需新写 compose / 改 enum
 - **向后兼容**：现有 dev / Phase 1 流程行为完全一致
 - **Provider 解耦**：未来加新 provider（如 OpenRouter / Together AI）只需扩 factory 分支，不破坏 `make_llm()` API
-- **诊断友好**：`/mj-agent-infra-llm-endpoint-probe` 提供 3-step probe；快速定位 endpoint 问题
+- **诊断友好**：`/mj-agent-infra-llm-endpoint-probe` 提供 4-step probe（含 tool-calling smoke）；快速定位 endpoint 问题
 
 ### 负面
 
@@ -104,5 +105,5 @@ tags:
 - `src/mj_agent/llm.py` — `make_llm()` factory 实现
 - `src/mj_agent/config.py` — `Settings` `llm_provider` / `llm_base_url` / `llm_api_key` / `effective_llm_*` 字段
 - `.env.example` 中 LLM provider 段（含 ark / local-openai-compat 两 provider 注释）
-- `mj-agent-infra-llm-endpoint-probe` SKILL — 3-step endpoint probe
+- `mj-agent-infra-llm-endpoint-probe` SKILL — 4-step endpoint probe（含 tool-calling smoke）
 - 实施 PR：[#101](https://github.com/MJ-AgentLab/mj-agent/pull/101)（PR-2 of original ADR-025 4-PR sequence）

@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-23
+updated: 2026-06-11
 last_verified: 2026-05-20
 ---
 
@@ -49,7 +49,7 @@ Probe endpoint reachability (out-of-scope of this capability; delegated):
 ```bash
 # Use the dedicated skill:
 /mj-agent-infra-llm-endpoint-probe
-# 3-step probe: reachable / model id match / 1-token chat smoke
+# 4-step probe: reachable / model id match / 1-token chat smoke / tool-calling smoke
 ```
 
 ## §2 Health Check
@@ -180,7 +180,7 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md`.
 - **替代验证手段**: `make_llm()` 中 provider 分支已实装（`local-openai-compat`
   分支构造 ChatOpenAI 时**不**传 `extra_body.thinking`，仅 ark 分支传）；
   DGX-Spark 端点 manual smoke 通过 `/mj-agent-infra-llm-endpoint-probe`
-  (3-step probe: reachable + model id match + 1-token chat smoke)。
+  (4-step probe: reachable + model id match + 1-token chat smoke + tool-calling smoke)。
 - **升级触发条件**: M3 pytest-bdd step defs + `local-openai-compat` provider
   mock harness（验 ChatOpenAI 构造时 `extra_body` 字段不含 `thinking` key）。
 - **预计时间**: M3 EOL（per Phase M3 BDD 集中实装节奏）。
