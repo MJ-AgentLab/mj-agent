@@ -76,13 +76,15 @@ track: shared
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1` + `migrate-secrets-bundle-split.ps1`；删除旧 `setup-mcp-env.ps1` |
 
-## 评估（capabilities/**/evidence/assessments/）
+## 评估（capabilities/**/evidence/assessments/ + 仓级 evidence/assessments/）
 
 > M6 cross-cutting migration（X1）：`docs/assessments/` 已并入 capability `evidence/assessments/`（blueprint §16/§19.4）。
+> capability 域内评估进所属 capability 的 evidence 树；**仓级横切评估**（评估对象跨全仓，如重构完成度）进顶层 `evidence/assessments/`（与 `evidence/metrics/`、`evidence/ai-context-audit/` 同族）。
 
 | 文档 | 周期 | 摘要 |
 |------|------|------|
 | [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0\|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]] | Phase 0 | 评估 上游业务系统 git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据 |
+| [[evidence/assessments/[ASSESSMENT]_Spec_Anchored_Refactor_Completion\|Spec-Anchored Refactor 完成度评估 v1.1]] | M0-M6 + completion-audit（2026-05-20 ~ 2026-06-11） | 蓝图 26 维对照：意图达成 ~92%（19✅/3🔄/2⏳/2❌）；§4.2 六项登记外缺口经 5-PR 修复链（#247-#251）对账闭环，处置 SoT = plan registry 12 行 |
 
 ## 归档（archive/）
 
