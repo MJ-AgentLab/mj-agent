@@ -1,15 +1,15 @@
 ---
 name: mj-agent-infra-llm-endpoint-probe
-description: This skill performs a 3-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-027 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) optional 1-token chat completion smoke. Reports endpoint reachability + model-list match + chat smoke result + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says "DGX endpoint check", "vLLM healthcheck", "SGLang healthcheck", "Ollama healthcheck", "local LLM probe", "/v1/models 探针", "DGX vLLM 是否可达", "LLM_BASE_URL 验证", "local-openai-compat 探活", "endpoint reachable", "LLM probe DGX", "DGX vLLM endpoint test", "本地 LLM 探针", or "LLM provider 切换后探活" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is probed implicitly by ChatOpenAI lazy init + `mj-agent check`; no /v1/models probe needed because ARK_API_KEY validation is sufficient); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use /mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).
+description: This skill performs a 4-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-027 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) 1-token chat completion smoke, (4) tool-calling smoke — minimal tools array via default auto tool choice plus one named tool_choice discriminating retry, asserting finish_reason=tool_calls + parseable function arguments (mj-agent binds ALL_TOOLS into create_agent, so tool-calling is a hard dependency). Reports endpoint reachability + model-list match + chat smoke result + tool-calling capability verdict + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / missing tool parser flags / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says "DGX endpoint check", "vLLM healthcheck", "SGLang healthcheck", "Ollama healthcheck", "local LLM probe", "/v1/models 探针", "DGX vLLM 是否可达", "LLM_BASE_URL 验证", "local-openai-compat 探活", "endpoint reachable", "LLM probe DGX", "DGX vLLM endpoint test", "本地 LLM 探针", or "LLM provider 切换后探活" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is probed implicitly by ChatOpenAI lazy init + `mj-agent check`; no /v1/models probe needed because ARK_API_KEY validation is sufficient); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use /mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).
 ---
 
 # mj-agent Infra — LLM Endpoint Probe
 
 ## Overview
 
-3-step health probe for the OpenAI-compatible local LLM endpoint that mj-agent consumes when `LLM_PROVIDER=local-openai-compat` (ADR-027 + PR-2 of multi-env+DGX+MCP bundle).
+4-step health probe for the OpenAI-compatible local LLM endpoint that mj-agent consumes when `LLM_PROVIDER=local-openai-compat` (ADR-027 + PR-2 of multi-env+DGX+MCP bundle).
 
-DGX-Spark (192.168.0.189) is the team's local LLM compute node — vLLM / SGLang / Ollama / TGI / llama.cpp container served by other-team / dedicated-repo (deployment责任另议). mj-agent only consumes the endpoint via `LLM_BASE_URL` + `LLM_API_KEY`. This skill verifies reachability + correct model + 1-token chat works **before** mj-agent runtime depends on it.
+DGX-Spark (192.168.0.189) is the team's local LLM compute node — vLLM / SGLang / Ollama / TGI / llama.cpp container served by other-team / dedicated-repo (deployment责任另议). mj-agent only consumes the endpoint via `LLM_BASE_URL` + `LLM_API_KEY`. This skill verifies reachability + correct model + 1-token chat + tool-calling **before** mj-agent runtime depends on it.
 
 **Stage 10 sub** of the 17-stage 执行闭环；典型在 self-review 前用于 `LLM_PROVIDER=local-openai-compat` 模式的 endpoint 验证；与 `mj-agent-infra-studio-probe` 互补（Studio 测 graph 行为，本 skill 测纯 LLM endpoint）。
 
@@ -114,8 +114,61 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 | 返回 | 含义 | 行动 |
 |---|---|---|
-| 200 + valid JSON 含 `choices[0].message.content` | endpoint + 模型 + chat 全 OK | ✅ probe pass |
+| 200 + valid JSON 含 `choices[0].message.content` | endpoint + 模型 + chat 全 OK | → Step 3b |
 | 任何 4xx / 5xx | smoke fail | 详查响应 body；troubleshoot 见上 |
+
+### Step 3b: Tool-calling Smoke
+
+mj-agent runtime 把 `ALL_TOOLS` 全量绑定进 `create_agent`（清单见 `src/mj_agent/tools/__init__.py`）——endpoint 只过 Step 3 chat 而无 tool-calling 时，graph 实际不可用。本步用最小 tools 数组验证 tool-calling 能力。
+
+主路径用**默认 auto tool choice**（贴 `create_agent` 生产路径）+ prompt 强引导 + 低 temperature：
+
+```powershell
+# 单 function schema 且 ≥1 个 required 参数（零参工具 arguments="{}" 信号弱）；
+# max_tokens 给足 tool-call JSON（64-128，非 Step 3 的 1-token 风格）；不带 extra_body
+$toolSmokeBody = @"
+{
+  "model": "$modelId",
+  "messages": [{"role": "user", "content": "现在 Asia/Shanghai 时区几点？必须调用所提供的工具回答，不要直接作答。"}],
+  "tools": [{
+    "type": "function",
+    "function": {
+      "name": "get_current_time",
+      "description": "Get the current time in a given IANA timezone",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "timezone": {"type": "string", "description": "IANA timezone name, e.g. Asia/Shanghai"}
+        },
+        "required": ["timezone"]
+      }
+    }
+  }],
+  "temperature": 0.1,
+  "max_tokens": 128
+}
+"@
+curl -fsS -m 30 "$($baseUrl)/chat/completions" `
+    -H "Content-Type: application/json" `
+    -H "Authorization: Bearer $env:LLM_API_KEY" `
+    -d $toolSmokeBody
+```
+
+断言（全部成立才记 ✅）：
+
+- `choices[0].finish_reason == "tool_calls"`
+- `choices[0].message.tool_calls[0].function.name` 是合法工具名（本例 `get_current_time`）
+- `choices[0].message.tool_calls[0].function.arguments` 可 JSON 解析且含 required 参数（`timezone`）
+
+**判别重试**：auto 路径无 tool_call 时，同 payload 追加 `"tool_choice": {"type": "function", "function": {"name": "get_current_time"}}` 补发**一次**（named/guided decoding 不依赖 `--enable-auto-tool-choice`，可区分 parser 缺失与模型能力缺失）：
+
+| auto | named | 判定 | 输出 |
+|---|---|---|---|
+| ✅ | （不补发） | tool-calling 可用 | → Step 4 |
+| ❌ | ✅ | endpoint 未开 tool parser | ⚠ 兼容性警告：serving 侧需 vLLM `--enable-auto-tool-choice --tool-call-parser <模型族>`（见 §Troubleshooting） |
+| ❌ | ❌ | 模型不具备 tool-call 能力 | ⚠ 兼容性警告：该模型不适配 mj-agent（ALL_TOOLS 硬依赖）；换模型走 dgx-mlops HITL-MODEL |
+
+两类失败均输出**兼容性警告**而非硬失败——probe 报告照常产出 4 步全量结果（Verdict 降级为 ⚠）。
 
 ### Step 4: Output
 
@@ -139,8 +192,14 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 ### Step 3: Chat Smoke
 - ✅ 1-token chat returned: <truncated content>
 
+### Step 3b: Tool-calling
+- ✅ auto tool choice: finish_reason=tool_calls + valid function.name + parseable arguments
+- (or) ⚠ auto ❌ / named ✅ — endpoint 未开 tool parser（vLLM 需 --enable-auto-tool-choice --tool-call-parser）
+- (or) ⚠ auto ❌ / named ❌ — 模型不具备 tool-call 能力（mj-agent ALL_TOOLS 硬依赖；→ dgx-mlops HITL-MODEL）
+
 ### Verdict
 - ✅ ALL pass — `mj-agent serve` should work with current LLM provider config
+- (or) ⚠ PASS with tool-calling warning — Step 1-3 通过但 Step 3b 兼容性警告（mj-agent runtime 不可用：先开 tool parser 或换模型）
 - (or) ❌ FAIL at Step <n> — see Troubleshooting
 
 ### Next
@@ -158,6 +217,9 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 | Step 2 model id 不匹配 | vLLM `--model meta-llama/Llama-3-70B` 与 .env `LLM_MODEL_ID=deepseek-v3-2-251201` 不一致 | (a) 改 .env LLM_MODEL_ID 对齐 vLLM 实际 load 的 model；(b) 或要求 vLLM 改 --model；mj-agent 不强制单一 model |
 | Step 3 422 with `extra_body unsupported` | mj-agent llm.py 在 local-openai-compat 路径误传 `extra_body.thinking` | 检查 `src/mj_agent/llm.py` `make_llm()` local 分支不应含 extra_body（PR-2 设计已修；此为 regression 信号）|
 | Step 3 500 model load failed | vLLM 模型权重缺失 / OOM | SSH DGX 查 vLLM 容器日志；mj-agent 侧无修复手段 |
+| Step 3b auto 路径无 tool_calls（named 可通） | endpoint 未开 tool parser | vLLM 启动加 `--enable-auto-tool-choice --tool-call-parser <模型族>`（如 hermes / llama3_json / deepseek_v3；flag 拼写以执行时 vLLM 版本 tool_calling 文档为准）；SGLang / Ollama 查各自 tool-call 开关 |
+| Step 3b 422 或 tools 字段被忽略 | serving 层不支持 / 未启用 tools | 查 serving 启动参数与版本（OpenAI-compat 层须支持 tools）；vLLM 同上行 flag |
+| Step 3b auto + named 双败（持续无 tool_call） | 模型不具备 tool-call 能力 | 该模型不适配 mj-agent（ALL_TOOLS 硬依赖，清单见 `src/mj_agent/tools/__init__.py`）；换模型走 dgx-mlops HITL-MODEL |
 | Ollama 走 /v1/models 返 404 | Ollama 默认不开 OpenAI compatible 模式 | Ollama 启动加 `OLLAMA_HOST=0.0.0.0:11434 ollama serve`；本 skill Step 1 fallback 自动探 /api/tags |
 
 ## What This Skill DOES NOT DO
@@ -174,7 +236,7 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 | Tool | 用途 |
 |---|---|
-| Bash `curl -fsS` | Step 1/2/3 endpoint 探针 |
+| Bash `curl -fsS` | Step 1/2/3/3b endpoint 探针 |
 | Bash `Test-NetConnection` | Step 1 端口连通性 |
 | Bash `ConvertFrom-Json` | Step 2 model id 提取 |
 | Read `.env` | Step 0 配置读取 |
@@ -184,10 +246,12 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 - [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]（PR-Γ 落地；LLM provider 抽象决策）
 - [[../../../src/mj_agent/llm.py|src/mj_agent/llm.py]]（make_llm() factory；ark vs local-openai-compat 分支）
 - [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）
+- [[../../../src/mj_agent/tools/__init__.py|src/mj_agent/tools/__init__.py]]（ALL_TOOLS 清单；Step 3b tool-calling 硬依赖的事实源）
 - [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）
 - [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（端到端 5 项验证；LLM 是 H1/H2/H3 happy path 前置条件）
 - [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（Stage 10 Local Verification；原 HITL_Prompt §4.10，M6 PR4 archived → kernel）
 - vLLM docs: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html
+- vLLM tool calling: https://docs.vllm.ai/en/stable/features/tool_calling.html
 - Ollama OpenAI compat: https://github.com/ollama/ollama/blob/main/docs/openai.md
 - mj-system upstream `.claude/skills/mj-sys-ops-env-setup`（间接派生源；mj-agent 简化为单一 endpoint 探针，不含 mj-system 多 SSH 编排）
 
@@ -196,8 +260,10 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 - ❌ 不在 `LLM_PROVIDER=ark` 模式下跑（Ark 无 /v1/models 端点契约；strict 探针无意义）
 - ❌ 不带 `-m` timeout 跑 curl（DGX 不可达时会挂死）
 - ❌ 不在 Step 3 chat smoke 带 `extra_body`（vLLM/SGLang/Ollama 不接受；探针应 mirror llm.py local 分支行为）
+- ❌ 不在 Step 3b tool-calling smoke 带 `extra_body`（同 Step 3；探针 mirror llm.py local 分支行为）
+- ❌ Step 3b 不超 1 次工具往返（断言 tool_calls 产生即止；不执行工具、不回传 tool result、不做 agent loop）
 - ❌ 不修复 LLM serving 容器问题（out-of-scope；troubleshoot 仅给客户端侧建议）
-- ❌ 不用 production model 跑 smoke 时 `max_tokens` 忘 cap（DGX 算力宝贵；冒烟用 1 token）
+- ❌ 不用 production model 跑 smoke 时 `max_tokens` 忘 cap（DGX 算力宝贵；冒烟用 1 token，tool-calling 用 ≤128）
 
 ## Handoff
 
@@ -208,5 +274,6 @@ LLM endpoint probe 完成
 - Step 1 fail → SSH DGX 排查 vLLM 容器 / 网络
 - Step 2 fail → 改 .env LLM_MODEL_ID 或对齐 vLLM --model
 - Step 3 fail → 检查 src/mj_agent/llm.py local 分支不带 extra_body
+- Step 3b warning → serving 侧加 tool parser flag（vLLM --enable-auto-tool-choice --tool-call-parser）或换模型（dgx-mlops HITL-MODEL）
 - 准备 dev → mj-agent serve (Chainlit on host:8001)
 ```

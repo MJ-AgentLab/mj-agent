@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-11
 ---
 
 # Design: LLM Provider Abstraction
@@ -47,7 +47,7 @@ openai integration). Two operational needs require an abstraction layer:
 | Config | `src/mj_agent/config.py` | 8 LLM-related Settings fields + 2 cached_property helpers |
 | Error | `src/mj_agent/llm.py:LLMConfigError(RuntimeError)` | Raised at make_llm call time (lazy validation; Settings stays constructible) |
 | CLI health | `src/mj_agent/server/cli.py:check` | Provider-aware credential validation (no endpoint contact) |
-| Endpoint probe | `.claude/skills/mj-agent-infra-llm-endpoint-probe/` | 3-step probe (reachable + model id + 1-token chat) — out-of-scope here |
+| Endpoint probe | `.claude/skills/mj-agent-infra-llm-endpoint-probe/` | 4-step probe (reachable + model id + 1-token chat + tool-calling) — out-of-scope here |
 
 **Why lazy validation (LLMConfigError at make_llm time, not Settings construction)**：
 
@@ -108,7 +108,7 @@ openai integration). Two operational needs require an abstraction layer:
 [Endpoint probe]                          ──── .claude/skills/mj-agent-infra-llm-endpoint-probe
        │  (out of scope of this capability)
        │
-       └──► 3-step probe: reachable + model id + 1-token chat
+       └──► 4-step probe: reachable + model id + 1-token chat + tool-calling
 ```
 
 **Cross-capability dependencies (2 outbound)**：

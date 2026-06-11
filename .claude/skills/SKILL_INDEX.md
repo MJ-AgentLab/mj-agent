@@ -4,7 +4,7 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-11
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -74,7 +74,7 @@ Stack 启停 / 探针 / contract 反向校验.
 |---|---|---|
 | `mj-agent-infra-docker-compose` | active | 3 profile compose 启动 / 切换 / debug |
 | `mj-agent-infra-storage-stack` | active | mj-agent-postgres + redis 启停 + 健康自检 |
-| `mj-agent-infra-llm-endpoint-probe` | active | LLM endpoint 3 步健康探针（ark / DGX） |
+| `mj-agent-infra-llm-endpoint-probe` | active | LLM endpoint 4 步健康探针（ark / DGX；含 tool-calling smoke） |
 | `mj-agent-infra-env-setup` | active | 首次 clone 后 setup-env / setup-mcp-secrets 端到端 |
 | `mj-agent-infra-env-teardown` | active | 3-level safety teardown |
 | `mj-agent-infra-studio-probe` | active | LangGraph Studio 启动 + 1-shot 测试问答 |
