@@ -12,7 +12,7 @@ aliases:
   - 重构完成度评估
 created: 2026-06-10
 updated: 2026-06-11
-state: draft
+state: active
 version: v1.1
 track: shared
 owner: ranzuozhou
