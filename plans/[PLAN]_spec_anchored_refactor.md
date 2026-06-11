@@ -6,7 +6,7 @@ state: completed
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-08
+updated: 2026-06-10
 track: shared
 refines:
   - plans/mj-agent-roadmap-v1.6.md
@@ -680,6 +680,27 @@ ADR rename 双倍 wikilink 改写面；archive catch-gate（#213）blocking-flip
 - ⏭ **Phase-2**: 4 个 evidence family skill 加载（`mj-agent-evidence-*`）
 - ✅ 度量首份报告（#244: `evidence/metrics/2026-06-08_sdd_structure_metrics.md`；自动化 generator → Phase-2）
 - ✅ 全 test 通过（unit/eval/bdd/contract green；integration/smoke skip-clean no-creds）
+
+#### Post-M6 Completion-Audit Disposition Registry（M6-FU batch; 2026-06-10）
+
+> 完成度评估（vault `mj-agent-refactor-completion-assessment.md` v1.0 §4.2 "登记外缺口"）
+> 全仓核验后的 4-PR 修复链（audit PR1-PR4）处置总账 — 目标：消灭全部"登记外"状态，每项
+> 要么修复、要么 ceremony 登记（defer / WITHDRAWN / decline）。沿 Action-N-2 批次表格式；
+> 本表为这批条目的 current-disposition SoT。lifecycle 不禁对 `state: completed` plan 追加
+> 登记段（本段即追加；plan 主体不动）。
+
+| M-FU / item | Disposition | Evidence | Follow-up |
+|---|---|---|---|
+| M6-FU-TRACE-AUTOMATION-TRUTH-UP | ✅ completed | audit PR1（#247）：17 条 bdd link 13 翻 `automated` / 4 留 honest `unautomated`；~54 个 TBD-M3/M4 测试占位消灭（真绑定 / 新测试 / re-scope 指针）；G22 基线 15P→**4P/0W/0F**；新增 test_llm / test_dsn_options / test_execute_sql_envelope 共 17 测试 | none |
+| M6-FU-GATES-TRUTH-UP | ✅ completed | audit PR2（#248）：G3 real impl（5P/0W/0F）+ G7 新建（2P/1W/0F；含语义修正——禁的是解密产物非 .enc 密文）+ G25 子旗；ci.yml 3 warning step 接线 + 陈旧 step 名刷新；gates.md v0.2 阻塞模式真值化（G4/G20→manual-canonical；G5→covered-by(G2)） | G3/G7/G25 blocking flip 各自走 ci-blocking-gate-toggle HITL（无日程承诺） |
+| M6-FU-G26-RED-GREEN-WITHDRAWN | ✅ **WITHDRAWN**（2026-06-10） | R-G19 缓解已将 red-green evidence 软化为 AI-代码场景软要求；PR 模板 "Verification Plan" 段承载等效证据；gates.md v0.2 G26 行已标 withdrawn（per M4-FU-V4-MODE-B-IMPL WITHDRAWN 先例） | 复活条件：EVAL Phase-2 evidence harness 落地后重评 |
+| M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER | ⏳ deferred → **Phase-2** | `check_tdd_refactor_contract.py`（G27/G28 + docker-tdd-contract-test 同执行体家族）从未建；原 gates.md §5 "G28 M3 blocking 严格执行" 经 audit 核验从未接线；v0.2 已真值化为 deferred | Phase-2（与 EVAL harness 同窗评估实装价值） |
+| M6-FU-BRANCH-TYPE-5LOCK | ✅ completed | audit PR3（本 PR）：`policies/git-branching.md` §1/§2 Decision 块 DECLINED — 维持 5 branch type + 7 commit type；M0-M6 ~70 PR 无一需要新型；archive 走 documentation/*、release 由 policies/release.md 承载 | 复活条件写明于 Decision 块（≥3 PR 类型误标 → owner 重开 ADR） |
+| M6-FU-POLICIES-TBD-SWEEP | 🟡 active | policies/ 全仓超期 in-file TBD 现存 **20 个 `> TBD` 块 + 3 处 footer 提及**（行号 as-of audit PR3 HEAD）：ai-agent 106/112（footer 273）；ci-gates 20/24/29/84（footer 88）；claude-code-skill 21/26/31/43/47；data-boundary 61（footer 98）；docker-runtime 21/30/38；git-branching 40/87/124（原 §1 11-type + §2 11-commit-type 两处已本 PR DECLINED 关闭）；security 40/54（原 §1 已 audit PR2 实装关闭） | 逐文件 Phase-2 内容填充或 decline；防再逃逸机制 = audit PR4 的 execution-loop §7.4 closure checklist |
+| M6-FU-TESTS-DOCKER-PHASE2-RESCOPE | ⏳ deferred → **Phase-2** | tests/docker/ 17 条占位 audit PR1 已从 docker-compose trace.yml 删除并指回本条；compose-config 静态面今日已被 `check_docker_contracts.py --compose-config`（BLOCKING）部分覆盖；真 compose 行为 harness 需 CI docker 支持或本地 smoke 框架 | Phase-2 |
+| M6-FU-TESTS-CONTRACT-DIR-RENAME-RESCOPE | ⏳ deferred → **Phase-2** | 蓝图 tests/ 7/11 缺口的可行动面：`tests/contract`→`contracts` 改名悬置 + mcp-gov 7 条 contract-test 占位（audit PR1 已删并指回本条）；db / data_quality / agents / prompts 子目录对应 Phase-2 功能面（非 M0-M6 欠账） | Phase-2 |
+| M6-FU-CAPABILITIES-TBD-SWEEP | 🟡 active | **验证 workflow（11-agent adversarial pass）增补发现**：trace.yml 真值化后，capabilities/ 兄弟文档仍存 **111 处 TBD-M3/M4 跨 19 文件**（INDEX.md + 各 capability 的 spec.yml / requirements.md / design.md / tasks.md / runbook.md / contracts/*.contract.yml），部分已被 PR1 真值化反向证伪（如 tasks.md 仍把已建的 test_llm.py 等标 TBD；runbook §7 justification 正文引用已被改写的 trace.yml 行段——已由 PR1 状态注框定为 historical record）；另含 4 个链外 validator docstring 的 gates.md v0.1 行号引用（check_bdd_* 等；chain 内 check_tdd_test_list.py 已 audit PR2 follow-up 修正） | Phase-2 逐 capability 内容对账（与 M6-FU-POLICIES-TBD-SWEEP 同批；§7.4 closure checklist 防再逃逸） |
+| M6-FU-D9-RESIDUAL-ACCEPT | ✅ accepted+annotated | 评估 §4.2 D-9 七子项中除 settings-deny（audit PR4 实装）与 prompts-record（M6-FU-PROMPTS-TOPLEVEL-NO-MIGRATE）外的 5 残项显式处置：(1) `docker/healthchecks/healthcheck.sh` 不建——compose 内联 healthcheck 为事实标准，接受偏差；(2) `db/` 占位 + grants.contract.yml——并入 Phase-2 memory-checkpointer capability 时一并裁决；(3) `diff_biz_schema.py` 改名入 sdd/——低优先，随下次 scripts 整理；(4) CLAUDE.md 长度软超（capabilities/ 114>100、docker/ 98>80）——OB1 级观察项，接受不动；(5) GLOSSARY ~349 / README ~251 超软上限——软上限，接受 | none（(2)(3) 各随其宿主工作自然消化；无独立日程） |
 
 ## §3 Risk Control
 
