@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.1
+version: 1.2
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-06-04
+updated: 2026-06-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -374,6 +374,23 @@ ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未
 @ <commit_sha>`，归 Phase D（Phase 2）EVAL framework 时一并完成。这是 A11 transitional-waiver 期内
 的兜底机制；触发面对应 [[../../policies/ai-agent|policies/ai-agent]] §4 canonical 10-enum 的
 `runtime-skill-content-change` / `prompt-version-or-body-change`。
+
+### §7.4 Milestone / Phase closure 收幕清单（v1.2；completion-audit PR4）
+
+> 背景：M6 closure 后的完成度评估发现 6 项"登记外"债务（既不在 Phase-2 defer 也不在 M6-FU
+> register）——逃逸根因是 closure 只对账了 register 内条目，没有全仓扫尾。任何 Milestone /
+> Phase 宣布 closure 的 PR，post-merge（Stage 17）必须执行下列三项收幕检查，结果写进
+> closure PR body 或 plan 的 phase_progress 块：
+
+1. **TBD-M\<N\> 大扫除**：`grep -rn "TBD-M<N>\|TBD: Phase M<N>" --include="*.md" --include="*.yml"`
+   全仓扫描本阶段到期占位；逐条处置（实装 / 改指真实物 / ceremony 登记 defer / decline），
+   零静默滚动——滚动必须在 M-FU registry 留行。
+2. **M-FU registry 对账批处理**：沿 Action-N-2 批次表格式核对本阶段全部 M-FU 条目
+   disposition（completed / deferred→slug / WITHDRAWN+理由 / active+owner）；登记外发现项
+   一律补行。
+3. **gates.md 阻塞模式 vs ci.yml 真值抽查**：逐 gate 比对 `sdd/gates.md` 真值列与
+   `.github/workflows/ci.yml` per-step `continue-on-error` 实况（含 step 名内嵌基线计数是否
+   陈旧）；偏差要么修文档要么走 `ci-blocking-gate-toggle` HITL 修 CI——不允许带偏差 closure。
 
 > **Rule 12（PR 关联 plan state 标记）不在本节**——其 `active → completed` 落地在
 > [[../lifecycle|sdd/lifecycle]] §2.2（Stage 17 自动化），漏落盘事后补救在 §2.5。
