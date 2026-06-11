@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-10
+updated: 2026-06-11
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -28,9 +28,10 @@ git / image 的是**解密产物** — `.env` / `config/secrets*.conf` / `*.pem`
 2. **.gitignore 钉子（WARN）**：`.env` / `config/secrets.conf` / `config/secrets-mcp.conf`
    三条 ignore 必在。
 3. **docker build-context（WARN）**：`docker/Dockerfile` 的 `COPY config/` + DEV compose
-   `context: ../`（仓根）+ 根目录无 `.dockerignore` → 本地解密过的 `config/secrets*.conf`
-   会被打进 DEV image（`docker/.dockerignore` 对仓根 context 无效）。已知 gap 如实 WARN；
-   是否补根目录 `.dockerignore` 是 owner 决策项。
+   `context: ../`（仓根）→ 根目录 `.dockerignore` 必须存在**且覆盖** `config/secrets*.conf`
+   （`docker/.dockerignore` 对仓根 context 无效；空文件 / 无覆盖同样 WARN）。根目录
+   `.dockerignore` 已 owner-approved 落地（2026-06-11 completion-audit follow-up）——
+   本地解密产物自此物理上进不了 DEV image。
 
 明文密码 / token / API-key pattern 的 active 文件内容扫描（原 TBD 第二句）不在 G7 静态
 范围 — 依赖 secret-pattern 启发式，误报面大；→ Phase-2 与 EVAL evidence harness 一并评估。

@@ -1,0 +1,32 @@
+# 根目录 .dockerignore — owner-approved 2026-06-11（completion-audit follow-up）。
+#
+# DEV compose build 的 context 是仓根（docker/compose.override.yml `context: ../`），
+# 而 dockerignore 只在 context 根生效 → docker/.dockerignore 对该路径无效，必须由本文件
+# 承担。G7（scripts/sdd/check_secret_exposure.py）校验本文件存在且覆盖解密产物。
+#
+# Dockerfile 实际 COPY 面：pyproject.toml / uv.lock / README.md / src/ / config/ /
+# docker/entrypoint.sh — 下列排除项均不在该面内（config/ 仅剔除解密产物；
+# config/secrets*.enc 密文按 ADR-030 有意入镜像允许范围）。
+
+# ── 解密产物（绝不入镜像）──
+.env
+.env.*
+!.env.example
+config/secrets*.conf
+**/*.pem
+**/*.key
+
+# ── 私有/本地配置（含 settings.local.json 等本地放行项）──
+.claude
+.serena
+
+# ── 构建无关的大目录（缩 context；不影响任何 COPY）──
+.git
+.venv
+.worktrees
+**/__pycache__
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.langgraph_api
+learning

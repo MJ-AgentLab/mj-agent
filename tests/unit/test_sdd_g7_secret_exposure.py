@@ -62,24 +62,43 @@ class TestGitignorePins:
 class TestBuildContext:
     _DOCKERFILE_WITH_COPY = "FROM python:3.14-slim\nCOPY config/ ./config/\n"
     _OVERRIDE_REPO_ROOT = "services:\n  mj-agent:\n    build:\n      context: ../\n"
+    _DOCKERIGNORE_COVERING = "# comment\n.env\nconfig/secrets*.conf\n.git\n"
+    _DOCKERIGNORE_UNRELATED = "# only hygiene, no secrets coverage\n.git\n.venv\n"
 
     def test_copy_config_repo_root_context_no_dockerignore_warns(self) -> None:
         summary = _check_build_context(
-            self._DOCKERFILE_WITH_COPY, self._OVERRIDE_REPO_ROOT, False
+            self._DOCKERFILE_WITH_COPY, self._OVERRIDE_REPO_ROOT, None
         )
         assert summary.warn_count == 1
-        assert any(".dockerignore" in m for m in summary.messages)
+        assert any("NO root" in m for m in summary.messages)
 
-    def test_root_dockerignore_present_passes(self) -> None:
+    def test_root_dockerignore_with_secrets_coverage_passes(self) -> None:
         summary = _check_build_context(
-            self._DOCKERFILE_WITH_COPY, self._OVERRIDE_REPO_ROOT, True
+            self._DOCKERFILE_WITH_COPY, self._OVERRIDE_REPO_ROOT, self._DOCKERIGNORE_COVERING
+        )
+        assert summary.warn_count == 0
+        assert summary.pass_count == 1
+
+    def test_root_dockerignore_without_coverage_warns(self) -> None:
+        """An empty/unrelated .dockerignore must not satisfy the gate."""
+        summary = _check_build_context(
+            self._DOCKERFILE_WITH_COPY, self._OVERRIDE_REPO_ROOT, self._DOCKERIGNORE_UNRELATED
+        )
+        assert summary.warn_count == 1
+        assert any("does NOT cover" in m for m in summary.messages)
+
+    def test_explicit_file_pair_counts_as_coverage(self) -> None:
+        summary = _check_build_context(
+            self._DOCKERFILE_WITH_COPY,
+            self._OVERRIDE_REPO_ROOT,
+            "config/secrets.conf\nconfig/secrets-mcp.conf\n",
         )
         assert summary.warn_count == 0
         assert summary.pass_count == 1
 
     def test_no_config_copy_passes(self) -> None:
         summary = _check_build_context(
-            "FROM python:3.14-slim\nCOPY src/ ./src/\n", self._OVERRIDE_REPO_ROOT, False
+            "FROM python:3.14-slim\nCOPY src/ ./src/\n", self._OVERRIDE_REPO_ROOT, None
         )
         assert summary.warn_count == 0
         assert summary.pass_count == 1

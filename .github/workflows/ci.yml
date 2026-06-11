@@ -259,14 +259,15 @@ jobs:
       #     critical|high REQs (replaces M0 skeleton). Baseline 5P/0W/0F.
       # G7: decrypted artifacts (.env / config/secrets*.conf / *.pem / *.key) not
       #     tracked + .gitignore pins + docker build-context exposure. Baseline
-      #     2P/1W/0F — the 1W is the known root-.dockerignore gap (owner decision).
+      #     3P/0W/0F since the owner-approved root .dockerignore (2026-06-11
+      #     follow-up; validator also verifies its secrets-conf coverage).
       # G25: changed src/mj_agent **.py without tests/ change → WARN; fires only
       #     in PR context (GITHUB_BASE_REF/HEAD_REF); SKIPs on push runs.
       - name: 'G3 contracts (warning at landing; real impl per completion-audit PR2; 5P/0W/0F)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_contracts.py --all
 
-      - name: 'G7 secret exposure (warning at landing; 2P/1W/0F — known .dockerignore WARN; completion-audit PR2)'
+      - name: 'G7 secret exposure (warning; 3P/0W/0F post owner-approved root .dockerignore; completion-audit PR2 + follow-up)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_secret_exposure.py --all
 

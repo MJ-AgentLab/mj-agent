@@ -41,7 +41,9 @@
       "Edit(./config/secrets.enc)",
       "Write(./config/secrets.enc)",
       "Edit(./config/secrets-mcp.enc)",
-      "Write(./config/secrets-mcp.enc)"
+      "Write(./config/secrets-mcp.enc)",
+      "Edit(./src/mj_agent/skills/**/SKILL.md)",
+      "Write(./src/mj_agent/skills/**/SKILL.md)"
     ]
   },
   "hooks": {

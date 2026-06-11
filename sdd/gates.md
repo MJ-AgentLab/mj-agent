@@ -5,7 +5,7 @@ state: active
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-10
+updated: 2026-06-11
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -34,7 +34,7 @@ ai_visibility: source-of-truth
 | G4 | — 无脚本 | PR scope 与 plan 漂移 | manual-canonical(PR 模板 "Plan-vs-Diff Scope Declaration" 段 + Stage 9 `mj-agent-flow-scope-drift` skill) |
 | G5 | `scripts/sdd/check_traceability.py` | trace.yml schema 合规 | covered-by(G2)（同脚本同 step）|
 | G6 | （内置 §4 hard stops）| 4 项专属必停拦截 | manual-canonical(`.claude/scripts/guard-git-workflow.ps1` PreToolUse hook + runtime SKILL anti-patterns + HITL 人审) |
-| G7 | `scripts/sdd/check_secret_exposure.py` | **解密产物**（.env / config/secrets*.conf / *.pem / *.key）不入 git；.gitignore 钉子；docker build-context 暴露检查。`config/secrets*.enc` 密文 per ADR-030 **有意入库**，不在禁止面 | warning@ci（completion-audit PR2 实装落地；含 1 个已知根目录 .dockerignore 缺失 WARN — owner 决策项）|
+| G7 | `scripts/sdd/check_secret_exposure.py` | **解密产物**（.env / config/secrets*.conf / *.pem / *.key）不入 git；.gitignore 钉子；docker build-context 暴露检查（根目录 `.dockerignore` 须存在**且覆盖** `config/secrets*.conf`）。`config/secrets*.enc` 密文 per ADR-030 **有意入库**，不在禁止面 | warning@ci（completion-audit PR2 实装；根目录 .dockerignore owner-approved 落地 2026-06-11 → 基线 3P/0W/0F）|
 | G8 | `scripts/sdd/check_capability_evidence_required.py` | capability `lifecycle_state: active` 后 evidence/ 至少 1 文件 | blocking@ci |
 | G9 | `scripts/sdd/generate_index.py --check` | capabilities/INDEX.auto.md 幂等 | blocking@ci |
 | G10 | reserved | — | reserved |
