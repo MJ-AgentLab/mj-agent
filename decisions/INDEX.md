@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-03
+updated: 2026-06-11
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -41,6 +41,7 @@ ai_visibility: source-of-truth
 | [ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md](./ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) | OPS | accepted (active) | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL）拆出到独立的 config/secrets-mcp.enc |
 | [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | proposed (draft) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
 | [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | proposed (draft) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
+| [ADR-033_DGX_Ops_Sister_Repo_Boundary.md](./ADR-033_DGX_Ops_Sister_Repo_Boundary.md) | OPS | accepted (active) | DGX serving/ops 归独立姊妹仓 dgx-mlops；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算） |
 
 ## Deprecated / Superseded ADRs
 
@@ -54,4 +55,4 @@ ai_visibility: source-of-truth
 
 ---
 
-> *现 21 个 ADR（20 active 平移 + ADR-031）手工收录.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
+> *现 22 个 ADR 手工收录（21 前收录 + ADR-033）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.

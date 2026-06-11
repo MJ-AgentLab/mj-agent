@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-05-18
+updated: 2026-06-11
 state: draft
 track: shared
 ---
@@ -75,6 +75,7 @@ track: shared
 | [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] (PR-Γ；ADR-025 拆分) | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1` + `migrate-secrets-bundle-split.ps1`；删除旧 `setup-mcp-env.ps1` |
+| [[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary\|ADR-033 DGX Ops Sister-Repo Boundary]] | OPS | accepted | DGX-Spark serving/ops 归独立姊妹仓 `MJ-AgentLab/dgx-mlops`；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算）；T-1/T-2/T-5 跟踪锚点 |
 
 ## 评估（capabilities/**/evidence/assessments/ + 仓级 evidence/assessments/）
 
