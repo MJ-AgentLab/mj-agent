@@ -157,6 +157,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md`.
 
 ### G22/G21 Justification: Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty
 
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking) + new offline `tests/unit/test_llm.py`; justification below retained as historical record + G21 fallback source.
+
 - **REQ**: REQ-001 / **Risk**: high / **Adapter**: python / **ADR-027**
 - **原因**: M1 baseline + ADR-027 配置错误处理路径已落；BDD 层 step defs 推迟
   M3（与 safe-sql 同节奏）。
@@ -170,6 +172,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md`.
 
 ### G22/G21 Justification: Local provider constructs ChatOpenAI without extra_body.thinking
 
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking) + new offline `tests/unit/test_llm.py`; justification below retained as historical record + G21 fallback source.
+
 - **REQ**: REQ-002 / **Risk**: high / **Adapter**: python / **ADR-027**
 - **原因**: M1 baseline + ADR-027 phased rollout（vLLM/SGLang/Ollama 不接受
   `thinking` 参数 — 传入会 422；Ark DeepSeek V3 接受）；BDD 层验证推迟 M3。
@@ -182,6 +186,8 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md`.
 - **预计时间**: M3 EOL（per Phase M3 BDD 集中实装节奏）。
 
 ### G22/G21 Justification: effective_llm_api_key returns "EMPTY" sentinel for local provider when LLM_API_KEY is empty ★ post M-FU#1 fix
+
+> **Status (post-M6 truth-up 2026-06-10): automated** — pytest-bdd binding green in CI (tests/bdd blocking) + new offline `tests/unit/test_llm.py`; justification below retained as historical record + G21 fallback source.
 
 - **REQ**: REQ-003 / **Risk**: high / **Adapter**: python
 - **原因**: M1 baseline + ADR-027 sentinel 设计 edge case（vLLM-like endpoints

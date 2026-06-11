@@ -1,5 +1,10 @@
 # capabilities/data-agent/llm-provider/trace.yml
 # schema v1.2.
+# Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
+# automation_status reflects tests/bdd CI reality; the 12 M3-era placeholders
+# resolved — 6 re-pointed to the new tests/unit/test_llm.py (plus 1 net-new
+# sentinel test there, hence 7 entries below), 6 dropped with coverage notes
+# (config/CLI matrix → Phase-2 re-scope).
 
 capability: data-agent.llm-provider
 generated: 2026-05-20
@@ -25,67 +30,70 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty"
-      automation_status: unautomated
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/provider.contract.yml
       - contracts/python.contract.yml
     tests:
-      - "TBD-M3: tests/unit/test_llm.py::test_ark_missing_creds_raises_llm_config_error"
-      - "TBD-M3: tests/unit/test_llm.py::test_ark_constructs_chatopenai_with_thinking_param"
-      - "TBD-M3: tests/unit/test_llm.py::test_ark_prefers_llm_api_key_over_legacy"
+      - tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_001_ark_empty_creds
+      - tests/unit/test_llm.py::test_ark_missing_creds_raises_llm_config_error
+      - tests/unit/test_llm.py::test_ark_thinking_flag_shapes_extra_body          # parametrized enabled/disabled
+      - tests/unit/test_llm.py::test_ark_falls_back_to_llm_api_key_when_ark_key_empty
     tasks:
       - tasks.md#T-002
     prs:
       - "PR-M1-1 (contract); PR-M3-X (tests)"
     evidence:
-      - "TBD-M3"
+      - "tests/bdd binding green in CI; evidence harness → Phase-2 (EVAL)"
 
   - req: REQ-002                                  # local-openai-compat provider
     bdd:
       feature: contracts/behavior.feature
       scenarios:
         - "Local provider constructs ChatOpenAI without extra_body.thinking"
-      automation_status: unautomated
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/provider.contract.yml
       - contracts/python.contract.yml
     tests:
-      - "TBD-M3: tests/unit/test_llm.py::test_local_openai_compat_no_thinking_param"
-      - "TBD-M3: tests/unit/test_llm.py::test_local_missing_base_url_raises"
-      - "TBD-M3: tests/unit/test_llm.py::test_local_uses_empty_sentinel_for_empty_api_key"
+      - tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_002_local_no_thinking
+      - tests/unit/test_llm.py::test_local_constructs_without_extra_body
+      - tests/unit/test_llm.py::test_local_missing_base_url_raises_llm_config_error
+      - tests/unit/test_llm.py::test_local_empty_api_key_constructs_via_empty_sentinel
     tasks:
       - tasks.md#T-003
     prs:
       - "PR-M1-1 (contract); PR-M3-X (tests)"
     evidence:
-      - "TBD-M3"
+      - "tests/bdd binding green in CI; evidence harness → Phase-2 (EVAL)"
 
   - req: REQ-003                                  # provider switch + config schema + CLI awareness
     bdd:
       feature: contracts/behavior.feature
       scenarios:
         - 'effective_llm_api_key returns "EMPTY" sentinel for local provider when LLM_API_KEY is empty'
-      automation_status: unautomated
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/provider.contract.yml
       - contracts/python.contract.yml
     tests:
-      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_effective_api_key_returns_empty_sentinel_for_local"
-      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_effective_base_url_ark_fallback"
-      - "TBD-M3: tests/unit/test_config_llm_fields.py::test_settings_rejects_invalid_provider_value"
-      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_ark_missing_key_failure_message"
-      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_local_missing_url_failure_message"
-      - "TBD-M3: tests/unit/test_cli_check_provider_aware.py::test_check_success_output_includes_provider_and_endpoint"
+      - tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_003_local_empty_sentinel
+      - tests/unit/test_llm.py::test_local_effective_api_key_empty_sentinel
+      # test_config_llm_fields.py ×3 + test_cli_check_provider_aware.py ×3
+      # placeholders dropped: sentinel + provider-switch core covered by the bdd
+      # binding + test_llm.py; full config-schema / CLI-check matrix → Phase-2
+      # re-scope (plans/[PLAN]_spec_anchored_refactor.md registry).
     tasks:
       - tasks.md#T-004
     prs:
       - "PR-M1-1 (contract); PR-M3-X (tests)"
     evidence:
-      - "TBD-M3"
+      - "tests/bdd binding green in CI; evidence harness → Phase-2 (EVAL)"
 
 # Summary:
 # - 3 REQs (all @risk:high)
 # - 3 BDD scenarios
+# - bdd automation_status: 3 automated / 0 unautomated
 # - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
 # - 2 cross-capability refs (docker-compose + mcp-governance; ≤ 5 ✓)
-# - **0 existing tests; 12 TBD-M3 placeholders** — biggest gap among 5 pilots
+# - 10 real test entries (3 bdd bindings + 7 in new tests/unit/test_llm.py); 0 TBD placeholders

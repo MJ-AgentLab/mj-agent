@@ -1,5 +1,8 @@
 # capabilities/data-agent/biz-catalog/trace.yml
 # REQ → BDD → CONTRACT → TEST → TASK → PR → EVIDENCE traceability (schema v1.2).
+# Post-M6 completion-audit truth-up (M6-FU-TRACE-AUTOMATION-TRUTH-UP): bdd
+# automation_status reflects tests/bdd CI reality; M3-era test placeholders
+# resolved; stale test node-ids re-pointed to current names.
 
 capability: data-agent.biz-catalog
 generated: 2026-05-20
@@ -26,34 +29,37 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "load_catalog rejects YAML whose root parses to a list (not a mapping)"
-      automation_status: unautomated              # Phase M3 BDD step defs
+      automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/catalog.contract.yml
     tests:
+      - tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_001_load_catalog_rejects_list_root
       - tests/unit/test_biz_catalog.py::test_catalog_top_level_keys
-      - tests/unit/test_biz_catalog.py::test_catalog_metric_families
-      - tests/unit/test_biz_catalog.py::test_catalog_periods
-      - "TBD-M3: tests/unit/test_loader_yaml_validation.py::test_load_catalog_rejects_non_mapping_root"
+      - tests/unit/test_biz_catalog.py::test_catalog_metrics_match_standard
+      - tests/unit/test_biz_catalog.py::test_catalog_periods_match_standard
+      # test_loader_yaml_validation.py placeholder dropped: non-mapping-root
+      # rejection is covered by the bdd binding above (real step implementation).
     tasks:
       - tasks.md#T-002
     prs:
       - "PR-M1-1"
     evidence:
-      - "TBD-M3: evidence/bdd/2026-XX-XX_schema_completeness_scenarios_pass.md"
+      - "tests/bdd binding green in CI; evidence harness → Phase-2 (EVAL)"
 
   - req: REQ-002                                  # Catalog ↔ DB alignment
     bdd:
       feature: contracts/behavior.feature
       scenarios:
         - "Catalog signal_tables must resolve in live biz_dws"
-      automation_status: unautomated
+      automation_status: automated                # env-gated: live_db fixture skips without POSTGRES_ANALYST_USER
     contracts:
       - contracts/catalog-db-alignment.contract.yml
     tests:
+      - tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_002_signal_tables_resolve_live
       - tests/contract/test_qcm_catalog_alignment.py::TestSignalTables
       - tests/contract/test_qcm_catalog_alignment.py::TestDimensionTables
       - tests/contract/test_qcm_catalog_alignment.py::TestPeriodTimeColumns
-      - tests/contract/test_qcm_catalog_alignment.py::TestForbiddenSchemas
+      - tests/contract/test_qcm_catalog_alignment.py::TestForbiddenAccess
     tasks:
       - tasks.md#T-003
     prs:
@@ -66,25 +72,28 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "Active SKILL bodies reference only resolvable catalog symbols and DB tables"
-      automation_status: unautomated
+      automation_status: automated                # env-gated: live_db fixture skips without POSTGRES_ANALYST_USER
     contracts:
       - contracts/catalog-db-alignment.contract.yml
     tests:
-      - tests/contract/test_biz_schema_alignment.py::TestSkillTableRefs           # references stale `mj-ddd-semantics`
-      - tests/contract/test_biz_schema_alignment.py::TestMetricColumnPatterns
-      - "TBD-M3: tests/contract/test_biz_schema_alignment.py rewrite for 3 current _ACTIVE_SKILLS (T-005)"
+      - tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_003_skill_catalog_coherence
+      - tests/contract/test_biz_schema_alignment.py::TestSkillTableReferences     # references stale `mj-ddd-semantics`
+      - tests/contract/test_biz_schema_alignment.py::TestSkillMetricColumnsResolve
+      # rewrite-for-3-_ACTIVE_SKILLS placeholder dropped: tracked as tasks.md#T-005
+      # (capability curation), not a missing test file.
     tasks:
       - tasks.md#T-004
       - tasks.md#T-005                              # cleanup
     prs:
       - "PR-M1-1 (contract); PR-M3-X (test cleanup)"
     evidence:
-      - "TBD-M3"
+      - "runbook.md §7 justification (G21 fallback); evidence harness → Phase-2 (EVAL)"
 
 # Summary stats:
 # - 3 REQs (all @risk:high; 0 critical)
 # - 3 BDD scenarios @risk:high
+# - bdd automation_status: 3 automated (REQ-002/003 live_db env-gated) / 0 unautomated
 # - 2 contract files + behavior.feature = 3 contracts (≤ 5 ✓)
 # - 2 cross-capability refs (safe-sql inbound + tool-chain outbound; ≤ 5 ✓)
 # - 0 reference_contracts (no cross-repo deps; STANDARD lives in mj-agent)
-# - 8 existing tests + 2 TBD-M3 placeholders
+# - 11 real test entries (3 bdd bindings + 8 existing); 0 TBD placeholders
