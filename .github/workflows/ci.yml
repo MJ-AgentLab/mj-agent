@@ -101,9 +101,10 @@ jobs:
       # G11/G12 BLOCKING since M6 PR4-flip (owner-gated ci-blocking-gate-toggle, option (c),
       # 2026-06-05). archive/ populated by the M6 PR4 ceremony (#229 tri-track + #231 consol);
       # pre-flight: check_archive_manifest --all --strict = 2P/0W/0F exit 0 verified before flip.
-      # G14/G15 + G17 remain WARNING (continue-on-error) — G14/G15 still has 13 forward-ref WARNs
-      # to the not-yet-built archive/legacy/ + archive/capabilities/ subtrees; their blocking flip
-      # is tracked as M6-FU-G14G15-BLOCKING-FLIP (build subtrees / rework refs first). Toggling a
+      # G14/G15 + G17 remain WARNING (continue-on-error) — G14/G15 forward-ref WARNs to the
+      # not-yet-built archive/legacy/ + archive/capabilities/ subtrees (18 as-of completion-audit
+      # PR2; count drifts with prose edits — step output is the SoT); their blocking flip is
+      # tracked as M6-FU-G14G15-BLOCKING-FLIP (build subtrees / rework refs first). Toggling a
       # blocking gate is a HITL action (policies/ai-agent.md §4 ci-blocking-gate-toggle).
 
       - name: 'G11/G12 archive manifest (BLOCKING per M6 PR4-flip; archive/ populated #229/#231)'
@@ -163,7 +164,7 @@ jobs:
       # All 5 pilots currently `lifecycle_state: drafting` → 5SKIP baseline at landing;
       # enforcement activates as capabilities mature per state machine (tracked by
       # M4-FU-CAPABILITY-STATE-EVOLVE-PILOTS).
-      - name: 'G8 capability evidence required (BLOCKING per Stage D D-1; 0P/0W/0F/5SKIP per current pilot state)'
+      - name: 'G8 capability evidence required (BLOCKING per Stage D D-1; 4P/0W/0F/1SKIP per current pilot state)'
         run: uv run python scripts/sdd/check_capability_evidence_required.py --all
 
       # ===== End of Phase M4 Stage D D-1 G8 block =====
@@ -177,7 +178,7 @@ jobs:
       # TRACE layer (maintenance concern) = WARN on trace.yml bdd 层 mapping gap;
       # healthy = PASS. Dry-run baseline: 16P/1W/0F (1 WARN = llm-provider/REQ-003
       # trace gap; M4-FU-LLM-PROVIDER-TRACE-YML-BDD-COMPLETE).
-      - name: 'G19 BDD scenario trace (BLOCKING per Stage D D-2; 16P/1W/0F per R-N v8 R-1)'
+      - name: 'G19 BDD scenario trace (BLOCKING per Stage D D-2; 17P/0W/0F post completion-audit PR1)'
         run: uv run python scripts/sdd/check_bdd_scenario_trace.py --all --scope full
 
       # ===== End of Phase M4 Stage D D-2 G19 block =====
@@ -221,8 +222,10 @@ jobs:
       # priority; exit 0 per WARNING mode).
       # ===== Stage E α' E-2 flip (this PR): WARNING → BLOCKING =====
       # Mechanism: --strict + continue-on-error:false (same as E-1; G21+G22 share R-15-1 runbook source).
-      # Post-E-0b (#198 merged) baseline: 15P/0W/0F.
-      - name: 'G22 BDD unautomated justification (BLOCKING per Stage E E-2; @risk:critical|high × unautomated runbook.md check; 15P/0W/0F post-E-0b)'
+      # Post-E-0b (#198 merged) baseline: 15P/0W/0F. Post completion-audit PR1
+      # automation_status truth-up: 4P/0W/0F (unautomated critical|high set narrowed
+      # to safe-sql REQ-004 + docker-compose x3; smaller P-count = honest signal, not a gate relax).
+      - name: 'G22 BDD unautomated justification (BLOCKING per Stage E E-2; @risk:critical|high × unautomated runbook.md check; 4P/0W/0F post completion-audit PR1 truth-up)'
         continue-on-error: false
         run: uv run python scripts/sdd/check_bdd_unautomated.py --all --strict
 
@@ -248,6 +251,30 @@ jobs:
 
       # ===== End of Phase M4 Stage D D-5 G23+G24 block =====
       # ===== Stage D FINAL unit closure: D-1 G8 + D-2 G19 + D-3 G21 + D-4 G22 + D-5 G23/G24 all landed =====
+
+      # ===== Post-M6 completion-audit PR2 — G3 / G7 real impl + G25 subflag (M6-FU-GATES-TRUTH-UP) =====
+      # All three land in WARNING mode (continue-on-error: true). Blocking flips
+      # are separate ci-blocking-gate-toggle HITL actions (policies/ai-agent.md §4).
+      # G3: contracts/ non-empty + *.contract.yml parse + behavior.feature for
+      #     critical|high REQs (replaces M0 skeleton). Baseline 5P/0W/0F.
+      # G7: decrypted artifacts (.env / config/secrets*.conf / *.pem / *.key) not
+      #     tracked + .gitignore pins + docker build-context exposure. Baseline
+      #     2P/1W/0F — the 1W is the known root-.dockerignore gap (owner decision).
+      # G25: changed src/mj_agent **.py without tests/ change → WARN; fires only
+      #     in PR context (GITHUB_BASE_REF/HEAD_REF); SKIPs on push runs.
+      - name: 'G3 contracts (warning at landing; real impl per completion-audit PR2; 5P/0W/0F)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_contracts.py --all
+
+      - name: 'G7 secret exposure (warning at landing; 2P/1W/0F — known .dockerignore WARN; completion-audit PR2)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_secret_exposure.py --all
+
+      - name: 'G25 changed-code-has-test (warning; PR-context only, SKIP on push; completion-audit PR2)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_tdd_test_list.py --check g25 --all
+
+      # ===== End of completion-audit PR2 G3/G7/G25 block =====
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
