@@ -16,16 +16,16 @@ Three checks:
 (2) .gitignore pins (WARN): required ignore entries present
     (`.env` / `config/secrets.conf` / `config/secrets-mcp.conf`).
 (3) docker build-context (WARN): `docker/Dockerfile` has `COPY config/` AND
-    the DEV compose build context is the repo root AND the repo root has no
-    `.dockerignore` → a locally-decrypted `config/secrets*.conf` would be
-    copied into a DEV image. Reported as an honest WARN; whether to add a
-    root `.dockerignore` is an owner decision (NOT auto-fixed here).
-    Note: `docker/.dockerignore` exists but is ineffective for `context: ../`
-    builds — dockerignore applies at the context root only.
+    the DEV compose build context is the repo root → the repo root MUST have
+    a `.dockerignore` that covers `config/secrets*.conf` (file missing OR
+    coverage absent both WARN — an empty .dockerignore must not satisfy the
+    gate). Root `.dockerignore` landed owner-approved 2026-06-11
+    (completion-audit follow-up). Note: `docker/.dockerignore` is ineffective
+    for `context: ../` builds — dockerignore applies at the context root only.
 
-WARNING mode at landing (`continue-on-error: true` in ci.yml); expected
-baseline 2P/1W/0F (the known build-context WARN). Blocking flip is a separate
-`ci-blocking-gate-toggle` HITL action.
+WARNING mode (`continue-on-error: true` in ci.yml); expected baseline
+3P/0W/0F since the owner-approved root .dockerignore (was 2P/1W at PR2
+landing). Blocking flip is a separate `ci-blocking-gate-toggle` HITL action.
 """
 
 from __future__ import annotations
@@ -101,12 +101,36 @@ def _check_gitignore_pins(gitignore_text: str | None) -> Summary:
     return summary
 
 
+def _dockerignore_covers_secrets(dockerignore_text: str) -> bool:
+    """True if the root .dockerignore excludes the decrypted secrets conf files.
+
+    Accepted coverage forms (non-comment lines): the canonical glob
+    ``config/secrets*.conf``, an equivalent broader glob, or both explicit
+    file entries. Keeps the predicate simple — coverage of `.env`/key
+    material is encouraged but not gated (the Dockerfile never COPYs them).
+    """
+    lines = {
+        line.strip()
+        for line in dockerignore_text.splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    }
+    if {"config/secrets*.conf", "config/secrets*", "**/secrets*.conf"} & lines:
+        return True
+    return {"config/secrets.conf", "config/secrets-mcp.conf"} <= lines
+
+
 def _check_build_context(
     dockerfile_text: str | None,
     compose_override_text: str | None,
-    root_dockerignore_exists: bool,
+    root_dockerignore_text: str | None,
 ) -> Summary:
-    """Check (3): COPY config/ + repo-root build context + no root .dockerignore → WARN."""
+    """Check (3): COPY config/ + repo-root build context needs an EFFECTIVE root .dockerignore.
+
+    WARN when the file is missing OR exists but does not cover
+    config/secrets*.conf (an empty/unrelated .dockerignore must not satisfy
+    the gate). Root .dockerignore landed owner-approved 2026-06-11
+    (completion-audit follow-up) — baseline moved 2P/1W → 3P/0W.
+    """
     summary = Summary()
     if dockerfile_text is None:
         summary.add(Severity.WARN, "docker/Dockerfile missing — build-context check skipped")
@@ -117,19 +141,31 @@ def _check_build_context(
         compose_override_text and _CONTEXT_REPO_ROOT_PATTERN.search(compose_override_text)
     )
 
-    if copies_config and context_is_repo_root and not root_dockerignore_exists:
-        summary.add(
-            Severity.WARN,
-            "docker/Dockerfile `COPY config/` + DEV compose context=repo-root + NO root "
-            ".dockerignore: a locally-decrypted config/secrets*.conf would enter the DEV "
-            "image (docker/.dockerignore is ineffective for context: ../). Owner decision "
-            "whether to add a root .dockerignore — not auto-fixed (completion-audit PR2).",
-        )
+    if copies_config and context_is_repo_root:
+        if root_dockerignore_text is None:
+            summary.add(
+                Severity.WARN,
+                "docker/Dockerfile `COPY config/` + DEV compose context=repo-root + NO root "
+                ".dockerignore: a locally-decrypted config/secrets*.conf would enter the DEV "
+                "image (docker/.dockerignore is ineffective for context: ../).",
+            )
+        elif not _dockerignore_covers_secrets(root_dockerignore_text):
+            summary.add(
+                Severity.WARN,
+                "root .dockerignore exists but does NOT cover config/secrets*.conf — "
+                "the exclusion is ineffective for the `COPY config/` + repo-root-context "
+                "DEV build; add the canonical glob line.",
+            )
+        else:
+            summary.add(
+                Severity.PASS,
+                "docker build-context exposure clean (root .dockerignore covers "
+                "config/secrets*.conf for the repo-root-context DEV build)",
+            )
     else:
         summary.add(
             Severity.PASS,
-            "docker build-context exposure clean (COPY config/ guarded by root "
-            ".dockerignore or non-root context)",
+            "docker build-context exposure clean (no COPY config/ or non-root context)",
         )
     return summary
 
@@ -191,7 +227,7 @@ def main(argv: list[str] | None = None) -> int:
     context_summary = _check_build_context(
         _read_text_or_none(repo_root / "docker" / "Dockerfile"),
         _read_text_or_none(repo_root / "docker" / "compose.override.yml"),
-        (repo_root / ".dockerignore").exists(),
+        _read_text_or_none(repo_root / ".dockerignore"),
     )
     aggregate.merge(context_summary)
     context_summary.print_messages()
