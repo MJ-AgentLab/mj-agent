@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-11
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -29,7 +29,9 @@ PR 必须 HITL.
 
 ## High-Level Steps
 
-1. **Impact scope** — `scripts/sdd/check_plan_vs_diff.py` 输出受影响 capability 列表.
+1. **Impact scope** — 跑 `scripts/sdd/check_capability_impact.py` 输出受影响 capability 列表
+   （输入 = 计划触及的文件清单；实现中可用 `git diff --name-only | ... --stdin`）；unmapped
+   文件交人工 + `/mj-agent-flow-scope-drift` 判定.
 2. **Cross-cap review preparation** — 每受影响 capability 各起草 evolve plan
    （per `evolve-capability.md`）.
 3. **Joint HITL Gate-1** — domain expert（每 capability owner）+ SDD reviewer 共审
@@ -50,7 +52,8 @@ PR 必须 HITL.
 
 ## TBD: Phase M2 内容填充
 
-- cross-capability impact scope 自动检测脚本（per scripts/sdd/check_plan_vs_diff.py 演进）
+- `check_capability_impact.py` 映射全量化（spec.yml `owned_paths[]` 字段 + G1 schema 扩展；
+  当前轻量版 unmapped 交人判）
 - shared step definition / shared contract 集中管理位置（tests/bdd/shared/ + contracts/shared/）
 
 ---
