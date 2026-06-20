@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-plan
-description: This skill orchestrates mj-agent working Plan body authoring (HITL Stage 4) — produces complete `plans/[PLAN]_*.md` content with 8 sections (linked artifacts / context / scope / 任务拆解 / 执行顺序 / 风险 / 验证 / AC / 关联), sub-calling mj-agent-doc-plan (PR-B4) for §7.1 Documentation Decision matrix and optionally mj-agent-flow-repo-scan when fact-check missing. Make sure to use this skill whenever the user says "写 plan", "写 plan body", "执行计划", "draft plan", "task breakdown", "任务拆解", "怎么推进", "Plan §X 步骤", "实施计划", "Stage 4 plan", "plan body 主体", or has Repo Scan output in hand and is ready to lay out the working plan in mj-agent. Direction-distinct from mj-agent-doc-plan which only evaluates **what documentation is needed**; this skill handles the **full Plan body**. Outputs Plan body draft in conversation; does NOT auto-write file. Do not use for: Stage 0 Intake (use mj-agent-flow-intake), Stage 3 Repo Scan (use mj-agent-flow-repo-scan), Stage 6 SPEC/ADR/RUNBOOK authoring (use mj-agent-doc-author in PR-B4), or Stage 8 Implementation (use mj-agent-flow-implement).
+description: This skill orchestrates mj-agent working Plan body authoring (HITL Stage 4) — produces complete `plans/[PLAN]_*.md` content with 8 sections (linked artifacts / context / scope / 任务拆解 / 执行顺序 / 风险 / 验证 / AC / 关联), sub-calling mj-agent-doc-plan (PR-B4) for §7.1 Documentation Decision matrix and optionally mj-agent-flow-repo-scan when fact-check missing. Make sure to use this skill whenever the user says "写 plan", "写 plan body", "执行计划", "draft plan", "task breakdown", "任务拆解", "怎么推进", "Plan §X 步骤", "实施计划", "Stage 4 plan", "plan body 主体", or has Repo Scan output in hand and is ready to lay out the working plan in mj-agent. Direction-distinct from mj-agent-doc-plan which only evaluates **what documentation is needed**; this skill handles the **full Plan body**. Outputs the Plan body, then after Owner 拍板 (Stage 5 Gate 1) writes it to plans/[PLAN]_*.md directly via Write (ADR-034 propose→拍板→apply; no manual paste). Do not use for: Stage 0 Intake (use mj-agent-flow-intake), Stage 3 Repo Scan (use mj-agent-flow-repo-scan), Stage 6 SPEC/ADR/RUNBOOK authoring (use mj-agent-doc-author in PR-B4), or Stage 8 Implementation (use mj-agent-flow-implement).
 ---
 
 # mj-agent Flow — Plan Body Authoring (HITL Stage 4)
@@ -34,7 +34,7 @@ digraph plan {
   s5 [label="Step 5: Verification plan\nLevel A 只读 + Level B HITL-confirm\n+ Stage 11 self-review checklist tie-in" shape=box];
   s6 [label="Step 6: Completion criteria + 关联\nAC checklist + Issue/SPEC/ADR refs\n+ frontmatter (state=active)" shape=box];
 
-  out [label="Output: Plan body draft (8 sections)\n→ user reviews then Write to plans/[PLAN]_*.md" shape=doublecircle];
+  out [label="Output: Plan body (8 sections)\n→ Owner 拍板 (Stage 5) → AI Writes to plans/[PLAN]_*.md" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> out;
 }
@@ -224,14 +224,14 @@ state: "active"
 - `plans/[PLAN]_<issue-id>_<short-desc>.md`
 
 ### Next Action
-- [ ] User reviews Plan body draft
-- [ ] User confirms then Write to suggested path
+- [ ] Owner 拍板 Plan body (Stage 5 Gate 1)
+- [ ] 拍板后 AI Writes to suggested path
 - [ ] Continue to Stage 6 (SPEC) or Stage 8 (Implementation)
 ```
 
 ## What This Skill DOES NOT DO
 
-- ❌ 不直接写 `plans/[PLAN]_*.md`（仅输出草案；user 决定后用 Write）
+- ❌ 未经 Owner 拍板（Stage 5 Gate 1）就写 `plans/[PLAN]_*.md`（拍板后 AI 直接 Write）
 - ❌ 不替代 `mj-agent-doc-plan`（doc-plan 仅 §7.1 子集；本 skill 上位）
 - ❌ 不替代 `mj-agent-flow-repo-scan`（repo-scan 是 Stage 3 事实核查；本 skill 是 Stage 4 plan 编写，需 repo-scan 输出）
 - ❌ 不替代 `mj-agent-doc-author`（author 是 Stage 6 SPEC/ADR/RUNBOOK；本 skill 仅产 working Plan body）
@@ -250,7 +250,7 @@ state: "active"
 | `mj-agent-flow-repo-scan` | Step 1 prerequisite（建议先 Stage 3） |
 | `mj-agent-doc-author`（PR-B4） | 后续 Stage 6 接力（Documentation Decision Action=Create 时） |
 | `mj-agent-flow-implement` | 后续 Stage 8 接力 |
-| Write（user 触发） | 用户确认 Plan body 草案后落盘 |
+| Write | Owner 拍板（Stage 5 Gate 1）后 AI 把 Plan body 落盘到 plans/ |
 
 ## Reference Files
 
@@ -274,8 +274,8 @@ state: "active"
 ## Handoff
 
 ```
-Plan body draft 已输出（对话）。
-用户确认后用 Write 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
+Plan body 已输出（对话）。
+Owner 拍板（HITL Gate 1 / Stage 5）后由 AI Write 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
 HITL Gate 1（Stage 5）通过后下一步：
   → Stage 6 /mj-agent-doc-author 写 SPEC/ADR/RUNBOOK（PR-B4 落地）
   → Stage 8 /mj-agent-flow-implement 直接实施（如不需新 SPEC）

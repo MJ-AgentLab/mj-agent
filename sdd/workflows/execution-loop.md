@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.2
+version: 1.3
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-06-10
+updated: 2026-06-20
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -132,6 +132,28 @@ command，但**不**把它作为唯一执行路径——同时给出 `Use When` 
 > 权限、安全、生产、发布、兼容性、in-source SKILL/PROMPT body、qcm_catalog 镜像或
 > 任务边界的事项，必须暂停并请求人工确认。
 
+### §3.0 HITL 执行模型（拍板即落盘；v1.3）
+
+> **暂停 ≠ 让 Owner 手动转写。** HITL = **AI 呈现方案/选项/diff + impact 分析 →
+> Owner 拍板（决策）→ AI 直接落盘并执行**。Owner 的职责是**决策**，不是粘贴/复制/
+> 编写内容；AI 不得把落盘动作甩回给 Owner 手动完成。
+
+拍板有两种形态：
+
+1. **内容多选 / 方案选择** → `AskUserQuestion`（结构见 §3.3）；Owner 选定后 AI 落盘。
+2. **权限门（逐写确认）** → 对 `ask` 列表面（4 项 in-source 专属必停，见 §3.1）与
+   **protected paths**（`.claude/**`、`.mcp.json`、`.claude.json`）的 Edit/Write，
+   harness 在交互模式**强制弹权限 prompt**（`permissions.allow` 不可抑制）——该 prompt
+   **就是拍板**；Owner 批准后 AI 写入。落盘后由 **merge review（A13 settings allowlist /
+   A14 .mcp.json trust posture 等 PR gate）兜底**。
+
+> **enforce 机制变更（ADR-034）**：4 项 in-source 专属必停由"`settings.json` 物理
+> `deny`（AI 完全不能写）"改为"`ask` 列表逐写拍板（AI 可在 Owner 批准后落盘）"；
+> 物理硬锁兜底转为"拍板 prompt + 合并审查"。**仅在交互模式成立**——`auto` / `bypass`
+> 模式下 `ask` 会被自动放行且 protected-path privilege-escalation 被 classifier 硬拦，
+> 故放宽类 / privilege 文件改动必须在交互模式执行。`git commit/push/PR/merge` 与
+> "是否变更必停面"的判断仍是独立拍板点，只是拍板后由 AI 执行而非 Owner 手动。
+
 ### §3.1 必须暂停确认
 
 通用项（出现以下任一即暂停）：
@@ -164,6 +186,11 @@ mj-agent 专属新增（4 项硬必停）：
 
 > canonical 的 HITL required-scenarios 10-enum 收敛口径见
 > [[../../policies/ai-agent|policies/ai-agent]] §4；本节是其在执行闭环里的展开。
+>
+> **enforce（per §3.0）**：上述 4 项 in-source 专属必停由 `.claude/settings.json`
+> `ask` 列表逐写拍板门 enforce（不再是 `deny` 物理硬锁）——AI 可在 Owner 权限 prompt
+> 批准后落盘，合并审查（A13/A14）兜底。"暂停"= 呈现方案 + 等拍板 + 拍板后 AI 落盘，
+> **不要求 Owner 手动转写**。
 
 ### §3.2 可以默认处理
 
@@ -211,12 +238,17 @@ intake-result.md` 用作留痕。
   A.
   B.
   C.
+- Owner 执行步骤（仅当需 AI 无法自取的外部信息：ip / port / key / token / endpoint
+  等 → 给精确命令 + env 变量名 + 失败现象；详 policies/ai-agent §8）：
 - 我的建议：
 - 默认假设：
 - 是否必须等待人工确认：是 / 否
 ```
 
-每次最多提出 **3-5 个**关键问题。
+每次最多提出 **3-5 个**关键问题。格式定位 = **选项 + （必要时）可执行步骤**，让 Owner
+能"拍板选择"或"照步骤执行"，而非自行编写内容。当 AI 需要无法自取的外部信息时，
+`Owner 执行步骤` 字段必填具体命令（见 [[../../policies/ai-agent|policies/ai-agent]] §8
+External-Info Handoff Discipline）。
 
 ---
 
@@ -247,13 +279,15 @@ intake-result.md` 用作留痕。
 |---|---|---|---|
 | **git** | 9 | 1 Issue / 2 Branch / 12 Commit / 13 Push / 14 PR / 15 Review-others-PR / 16 Merge-check / 17 Delete / 17 Sync | `/mj-agent-git-issue` `/mj-agent-git-branch` `/mj-agent-git-commit` `/mj-agent-git-push` `/mj-agent-git-pr` `/mj-agent-git-review-pr` `/mj-agent-git-check-merge` `/mj-agent-git-delete` `/mj-agent-git-sync` |
 | **doc** | 6 | 4 sub Plan / 6 Author / 11 sub Validate / 8 sub Sync / 15 sub Review / archive Migrate | `/mj-agent-doc-plan` `/mj-agent-doc-author` `/mj-agent-doc-validate` `/mj-agent-doc-sync` `/mj-agent-doc-review` `/mj-agent-doc-migrate` |
-| **runtime** | 4 | 8 (B-flavor) sub；**read-only by design** | `/mj-agent-runtime-skill-doc-improve` `/mj-agent-runtime-prompt-version-bump` `/mj-agent-runtime-biz-catalog-sync` `/mj-agent-runtime-eval-baseline` |
+| **runtime** | 4 | 8 (B-flavor) sub；**propose → 拍板 → apply** | `/mj-agent-runtime-skill-doc-improve` `/mj-agent-runtime-prompt-version-bump` `/mj-agent-runtime-biz-catalog-sync` `/mj-agent-runtime-eval-baseline` |
 | **infra** | 4 | 8 (C-flavor) / 10 sub | `/mj-agent-infra-env-setup` `/mj-agent-infra-studio-probe` `/mj-agent-infra-docker-compose` `/mj-agent-infra-storage-stack` |
 
-> **Runtime family 硬约束**：所有 `mj-agent-runtime-*` 是 **read-only inspect**
-> 设计——它们 propose diff、跑反向扫描、列出影响清单，但**不**直接修改
-> `src/mj_agent/{skills,prompts,agent.py,tools}/`。SKILL.md `## Anti-patterns`
-> 段明文写 "Do NOT modify src/mj_agent/..."；A12 描述质量门禁校验此约束。
+> **Runtime family 约束（v1.3 / ADR-034）**：所有 `mj-agent-runtime-*` 先做
+> **分析 + propose diff + impact 反扫**（列出影响清单），**但落盘前必须 Owner 拍板**——
+> 拍板后由 skill 经 `ask` 权限门直接 Edit/Write `src/mj_agent/{skills,prompts,
+> biz_catalog,tools}/`（不再"read-only 永不写"、不再甩回 Owner 手动粘贴）。SKILL.md
+> `## Anti-patterns` 段明文写 "❌ 未经 Owner 拍板就落盘 / ❌ 跳过 impact 分析直接改"；
+> A12 描述质量门禁校验此约束。
 
 ---
 

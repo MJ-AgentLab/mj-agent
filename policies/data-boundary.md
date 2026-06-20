@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-06-20
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -64,23 +64,28 @@ LLM **不直接握 SQL**，所有数据访问经 `src/mj_agent/tools/sql/{guardr
 
 ## §3 4 项 mj-agent 专属必停（native；与 `sdd/gates.md` §4 同步）
 
-任一修改触发以下文件必须 HITL（**不可绕过；不在 CI gate 自动化覆盖范围**）：
+任一修改触发以下文件必须 HITL（**逐写拍板，不可静默绕过；不在 CI gate 自动化覆盖范围**）：
 
 | Hard Stop | 路径 | 触发原因 | 工作流 |
 |---|---|---|---|
 | sql-guardrail-relax | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | L1/L1b 防御层；放宽 = 安全主线动摇 | `sdd/workflows/cross-capability-change.md` |
-| runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | LLM 行为契约 | `mj-agent-runtime-skill-doc-improve` skill（read-only） |
-| prompt-version-bump | `src/mj_agent/prompts/system.md` version + body | 系统提示词行为边界 | `mj-agent-runtime-prompt-version-bump` skill（read-only） |
-| biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | mirror 上游业务系统数据字典 | `mj-agent-runtime-biz-catalog-sync` skill（read-only） |
+| runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | LLM 行为契约 | `mj-agent-runtime-skill-doc-improve` skill（propose+拍板+apply） |
+| prompt-version-bump | `src/mj_agent/prompts/system.md` version + body | 系统提示词行为边界 | `mj-agent-runtime-prompt-version-bump` skill（propose+拍板+apply） |
+| biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | mirror 上游业务系统数据字典 | `mj-agent-runtime-biz-catalog-sync` skill（propose+拍板+apply） |
 
-**执行机制**（三层防御）：
+**执行机制**（ADR-034；拍板即落盘——AI 提议 + Owner 拍板 + AI 落盘，不再要求 Owner 手动转写）：
 
-1. **PreToolUse hook**：`.claude/scripts/guard-git-workflow.ps1` 在 Edit / Write 工具调用时
-   拦截上述路径；hook 阻塞当前操作并要求用户确认（详 `.claude/settings.json`）.
-2. **Runtime skill anti-patterns**：`.claude/skills/mj-agent-runtime-*/SKILL.md` 内显式 ##
-   Anti-patterns 段写"不直接 Edit；仅产出 diff 草案"（per A12 description gate）.
-3. **A12-A14 PR gate**：PR review 阶段 reviewer 必须 check 4 项专属必停清单（per
-   `mj-agent-refactored-structure.md` §17 CLAUDE.md `Output Requirements`）.
+1. **`ask` 权限门（逐写拍板）**：上述 4 路径在 `.claude/settings.json` `permissions.ask`
+   列表（precedence `deny` > `ask` > `allow`，覆盖顶部 blanket `Edit`/`Write` allow）——AI 对其
+   Edit/Write 在交互模式触发**逐写权限 prompt**（= Owner 拍板）；批准后 AI 落盘。
+   （原 `deny` 物理硬锁已于 ADR-034 解除。）⚠️ **注**：`.claude/scripts/guard-git-workflow.ps1`
+   PreToolUse hook 仅 `matcher=Bash` 且只管 G1/G2 git 命令，**不**拦上述 4 路径的 Edit/Write——
+   本 4 面的门来自 settings.json `ask`，非该 hook。
+2. **Runtime skill 工作流**：`.claude/skills/mj-agent-runtime-*/SKILL.md` 先做 propose diff +
+   impact 反扫，**Owner 拍板后**由 skill 经 `ask` 门落盘（`## Anti-patterns` 段写"❌ 未经
+   Owner 拍板就落盘 / ❌ 跳过 impact 分析直接改"；per A12 description gate）.
+3. **A12-A14 PR gate（合并审查兜底）**：PR review 阶段 reviewer 必须 check 4 项专属必停清单 +
+   A13 settings allowlist diff；落盘后的合并审查是物理硬锁解除后的主兜底层.
 
 ## §4 跨能力变更触发条件
 

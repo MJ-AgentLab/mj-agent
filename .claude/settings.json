@@ -30,6 +30,12 @@
       "Read(./.env)",
       "Edit(./.env)",
       "Write(./.env)",
+      "Edit(./config/secrets.enc)",
+      "Write(./config/secrets.enc)",
+      "Edit(./config/secrets-mcp.enc)",
+      "Write(./config/secrets-mcp.enc)"
+    ],
+    "ask": [
       "Edit(./src/mj_agent/tools/sql/guardrail.py)",
       "Write(./src/mj_agent/tools/sql/guardrail.py)",
       "Edit(./src/mj_agent/tools/sql/precheck.py)",
@@ -38,10 +44,6 @@
       "Write(./src/mj_agent/prompts/system.md)",
       "Edit(./src/mj_agent/biz_catalog/qcm_catalog.yaml)",
       "Write(./src/mj_agent/biz_catalog/qcm_catalog.yaml)",
-      "Edit(./config/secrets.enc)",
-      "Write(./config/secrets.enc)",
-      "Edit(./config/secrets-mcp.enc)",
-      "Write(./config/secrets-mcp.enc)",
       "Edit(./src/mj_agent/skills/**/SKILL.md)",
       "Write(./src/mj_agent/skills/**/SKILL.md)"
     ]

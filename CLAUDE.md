@@ -19,18 +19,26 @@ Executing the **data-agent MVP** (Phase 1) per `plans/[PLAN]_mj-agent-data-agent
 cross-repo attribution: `docs/glossary/upstream_business_warehouse.md` (bootstrap borrowed
 external problem-framing only; all active governance is mj-agent-native).
 
-## 必停 surfaces (pause for HITL — never edit / flip unilaterally)
+## 必停 surfaces (pause for HITL 拍板 — AI 提议 + Owner 拍板后 AI 落盘；never flip unilaterally)
 
-- **Data/agent 必停** (5): `src/mj_agent/tools/sql/guardrail.py` (L1) ·
+> **HITL 模型 (ADR-034 / execution-loop §3.0)**：暂停 ≠ 让 Owner 手动转写。AI 呈现方案/diff →
+> Owner 拍板（AskUserQuestion 选 / 权限 prompt 批准）→ **AI 直接落盘**。下列必停面由
+> `.claude/settings.json` `permissions.ask` 逐写拍板门 enforce（原 `deny` 物理硬锁已解除），
+> A13/A14 合并审查兜底；**仅交互模式成立**（`auto`/`bypass` 下放宽类改动被 classifier 硬拦）。
+
+- **Data/agent 必停** (5; `ask`-gated): `src/mj_agent/tools/sql/guardrail.py` (L1) ·
   `tools/sql/precheck.py` (L1b) · `prompts/system.md` · `skills/*/SKILL.md` bodies ·
   `biz_catalog/qcm_catalog.yaml`.
 - **Infra freeze skills** (6): `.claude/skills/mj-agent-infra-*/SKILL.md` —
   content-hash freeze per `policies/ai-agent.md` §7; record in
   `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`.
+- **Protected paths** (`.claude/**` / `.mcp.json` / `.claude.json`): harness 硬编码——交互模式
+  写入必弹权限 prompt（= 拍板，`allow` 不可抑制）；AI 改、Owner 拍板、A13/A14 兜底（per §9）.
 - **Gated actions**: CI gate blocking-flip (`continue-on-error true→false`) =
-  `ci-blocking-gate-toggle`; `.mcp.json` trust-posture change = A14; `.env` is
-  permission-denied. HITL canonical 10-enum + pre-flight discipline:
-  `policies/ai-agent.md` §4 / §7. HITL gates fire at execution-loop stages 5/7/9/11/13.
+  `ci-blocking-gate-toggle`; `.mcp.json` trust-posture change = A14; `.env` /
+  `config/secrets*.enc` 保持 permission-`deny`（AI 取不到的外部 secret 走 §8 给 Owner 步骤）.
+  HITL canonical 10-enum + pre-flight discipline: `policies/ai-agent.md` §4 / §7 / §8 / §9.
+  HITL gates fire at execution-loop stages 5/7/9/11/13.
 
 ## Architecture
 

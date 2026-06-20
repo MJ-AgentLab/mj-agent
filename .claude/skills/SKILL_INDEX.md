@@ -83,10 +83,10 @@ Stack 启停 / 探针 / contract 反向校验.
 | `mj-agent-stack-prompt-regression` | Phase M2-M3 | system.md / SKILL.md regression eval（ADR-024 联动） |
 | `mj-agent-stack-agent-eval` | Phase M2-M3 | LangChain tool schema + HITL behavior eval |
 
-### Layer 4: 领域执行型（4；read-only by design）— runtime
+### Layer 4: 领域执行型（4；propose → 拍板 → apply）— runtime
 
-提议 src/mj_agent/ 关键文件 diff，**不直接 Edit**（详 `policies/data-boundary.md` §3 4 项专属
-必停）.
+提议 src/mj_agent/ 关键文件 diff + impact，**Owner 拍板后经 `ask` 门直接 Edit 落盘**（详
+`policies/data-boundary.md` §3 4 项专属必停 + ADR-034 deny→ask）.
 
 | Skill | 触发场景 |
 |---|---|
@@ -125,7 +125,7 @@ PR merge 后写 evidence + 事故复盘 + runtime / security capture.
 
 - `sdd/adapters/claude-code-skill.md` — Claude Code skill adapter contract
 - `policies/claude-code-skill.md` — in-tree workflow skill 治理政策
-- `policies/data-boundary.md` §3 — 4 项专属必停（runtime family read-only by design 三层防御）
+- `policies/data-boundary.md` §3 — 4 项专属必停（runtime family propose→拍板→apply；ADR-034 deny→ask）
 
 ---
 

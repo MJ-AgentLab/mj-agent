@@ -1,13 +1,13 @@
 ---
 name: mj-agent-runtime-skill-doc-improve
-description: This skill proposes diffs for mj-agent in-source SKILL.md body content (src/mj_agent/skills/**/SKILL.md; Track B runtime-skill adapter 13-field + 五段式 body — Purpose / When to use / Planning workflow / Common patterns / Anti-patterns) but is **read-only by design** — it analyzes runtime SKILL quality, drafts proposed diff, runs reverse-scan against existing references, but does **NOT** directly write to src/. User accepts diff via /mj-agent-doc-author or manual Edit after Domain Expert + Prompt Engineer review (per ADR-015 §决策点 4 runtime hard constraint + execution-loop §3.1 必停 10 + §4.7 Rule 9 always-HITL). Make sure to use this skill whenever the user says "升级 SKILL", "改 SKILL.md body", "improve runtime SKILL", "skill 五段式", "skill body 优化", "B 风味 in-source canonical 改动", "propose diff for SKILL", "SKILL doc improve", "skill-creator 5-iteration on runtime SKILL", "升级 query-writing 五段式", or proposes any change to a file under src/mj_agent/skills/<name>/SKILL.md in mj-agent context. Do not use for: directly editing src/mj_agent/skills/**/SKILL.md (read-only by design — propose diff only); modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .claude/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
+description: This skill analyzes mj-agent in-source SKILL.md body content (src/mj_agent/skills/**/SKILL.md; Track B runtime-skill adapter 13-field + 五段式 body — Purpose / When to use / Planning workflow / Common patterns / Anti-patterns), proposes a diff + impact reverse-scan, and **after Owner 拍板 applies the change directly via Edit through the settings.json `ask` permission gate** (ADR-034 propose→拍板→apply; no more read-only handoff, no manual paste). Domain Expert + Prompt Engineer review happens at the 拍板 prompt per execution-loop §3.0 / §3.1 必停 (runtime-skill-content-change) + §4.2 Runtime constraint. Make sure to use this skill whenever the user says "升级 SKILL", "改 SKILL.md body", "improve runtime SKILL", "skill 五段式", "skill body 优化", "B 风味 in-source canonical 改动", "propose diff for SKILL", "SKILL doc improve", "skill-creator 5-iteration on runtime SKILL", "升级 query-writing 五段式", or proposes any change to a file under src/mj_agent/skills/<name>/SKILL.md in mj-agent context. Do not use for: modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .claude/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
 ---
 
 # mj-agent Runtime — SKILL Doc Improve
 
 ## Overview
 
-**Read-only by design**：propose diffs for `src/mj_agent/skills/<name>/SKILL.md` body content；user 接受后才写盘。这是 mj-agent 专属的 **Track B in-source canonical 守门人** skill，per ADR-015 §决策点 4 runtime 类目硬约束 + execution-loop §3.1 必停 10（runtime-skill-content-change）+ §4.7 Rule 9（B 风味永远 HITL）。
+**Propose → 拍板 → apply**（ADR-034）：propose diff + impact 反扫 for `src/mj_agent/skills/<name>/SKILL.md` body content；**Owner 拍板后由本 skill 经 settings.json `ask` 权限门直接 Edit 落盘**（不再 read-only、不再要 Owner 手动粘贴）。这是 mj-agent 专属的 **Track B in-source canonical 守门人** skill，per execution-loop §3.0 拍板模型 + §3.1 必停（runtime-skill-content-change）+ §4.2 Runtime 约束。
 
 **Why this skill exists**：
 
@@ -16,7 +16,7 @@ description: This skill proposes diffs for mj-agent in-source SKILL.md body cont
 - 必须 Domain Expert + Prompt Engineer review，不能仅 SWE
 - 自动化 Edit 难以校验语义正确（与代码不同，文档语义无 type checker）
 
-**hard constraint**: 本 skill 永远不直接调用 Edit/Write 到 `src/mj_agent/skills/**`。仅产生 proposed diff + impact analysis，user 接受后用 /mj-agent-doc-author 或手动 Edit 落盘。
+**hard constraint**: 本 skill **先 propose diff + impact analysis，落盘前必须 Owner 拍板**（AskUserQuestion + `ask` 权限 prompt）；拍板后由本 skill 直接 Edit `src/mj_agent/skills/**` 落盘——不跳过 impact 分析、不未经拍板就写。
 
 ## When to Use
 
@@ -34,12 +34,12 @@ description: This skill proposes diffs for mj-agent in-source SKILL.md body cont
 
 **MUST NOT use for**：
 
-- ❌ 直接 Edit src/mj_agent/skills/**/SKILL.md（read-only by design 硬约束）
+- ❌ 跳过本 skill 的 propose + impact 分析、未经 Owner 拍板盲改 src/mj_agent/skills/**/SKILL.md body
 - ❌ 改 system.md → `/mj-agent-runtime-prompt-version-bump`
 - ❌ 改 qcm_catalog.yaml → `/mj-agent-runtime-biz-catalog-sync`
 - ❌ 改 .claude/skills/SKILL.md（engineering-workflow track；不同 schema）→ `/mj-agent-doc-author`
 
-## Workflow（Read-only）
+## Workflow（propose → 拍板 → apply）
 
 ```dot
 digraph improve {
@@ -52,13 +52,13 @@ digraph improve {
 
   s3 [label="Step 3: 反向扫描\ngrep references in:\n• src/mj_agent/agent.py (_ACTIVE_SKILLS)\n• src/mj_agent/prompts/system.md (cross-ref)\n• docs/ (skill name 引用)" shape=box];
 
-  s4 [label="Step 4: Propose diff (DRAFT ONLY)\n• body 改动建议\n• frontmatter version bump?\n• eval_references 同步审查 (A11 transitional waiver)\n• Anti-patterns 段强化建议" shape=box];
+  s4 [label="Step 4: Propose diff (待拍板)\n• body 改动建议\n• frontmatter version bump?\n• eval_references 同步审查 (A11 transitional waiver)\n• Anti-patterns 段强化建议" shape=box];
 
   s5 [label="Step 5: Impact analysis\n• 改动 stage 8 B 风味 触发\n• §3.1 必停 10 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket 自动开单" shape=box];
 
   s6 [label="Step 6: Output proposed diff\n+ HITL Questions for Domain Expert review" shape=diamond];
 
-  hitl [label="STOP — User decides:\n• Accept → user 用 /mj-agent-doc-author 写盘\n• Refine → 回 Step 4\n• Reject → 取消" shape=doublecircle];
+  hitl [label="拍板 — Owner decides:\n• Accept → 本 skill 经 ask 门直接 Edit 落盘\n• Refine → 回 Step 4\n• Reject → 取消" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> hitl;
 }
@@ -110,7 +110,7 @@ grep -r "<skill-name>" src/mj_agent/skills/
 
 输出每条命中：file:line + 引用内容；有命中说明改 body 也要同步改 cross-ref。
 
-## Step 4: Propose Diff（DRAFT only）
+## Step 4: Propose Diff（待拍板）
 
 ### Body 改动建议
 
@@ -141,7 +141,7 @@ grep -r "<skill-name>" src/mj_agent/skills/
 
 ### Anti-patterns 段强化（B 风味专属）
 
-mj-agent 专属硬约束（参 ADR-015 §决策点 4；本 skill 自己也含此约束）：
+mj-agent 专属硬约束（参 ADR-006/009 数据边界；本 skill 自己也含此约束）：
 
 ```markdown
 ## Anti-patterns
@@ -180,9 +180,9 @@ per execution-loop §3.3 7-段格式：
 
 ## Step 6: Output Proposed Diff + HITL
 
-输出 STOP at this step — **不**自动调用 /mj-agent-doc-author 写盘。等 user：
+输出 proposed diff + impact + HITL Questions，**等 Owner 拍板**（AskUserQuestion）：
 
-- **Accept** → user 复制 diff → 用 /mj-agent-doc-author 或手动 Edit 写盘 → /mj-agent-flow-self-review 接 Stage 11
+- **Accept** → 本 skill 经 settings.json `ask` 权限门**直接 Edit `src/mj_agent/skills/<name>/SKILL.md` 落盘**（Owner 在 `ask` prompt 二次批准）→ /mj-agent-flow-self-review 接 Stage 11
 - **Refine** → 回 Step 4 调整
 - **Reject** → 取消，记录 review notes（可选写到 plans/[INTAKE]_*.md）
 
@@ -227,14 +227,14 @@ per execution-loop §3.3 7-段格式：
 
 ### Next Action（HITL pause）
 - ☐ Domain Expert + Prompt Engineer review
-- ☐ User accept → /mj-agent-doc-author 写盘
+- ☐ Owner 拍板 Accept → 本 skill 经 ask 门直接 Edit 落盘
 - ☐ Refine → 调 Step 4
 - ☐ Reject → 取消
 ```
 
 ## What This Skill DOES NOT DO
 
-- ❌ **不直接调用 Edit / Write 到 src/mj_agent/skills/**（read-only by design 硬约束；ADR-015 §决策点 4）
+- ❌ **未经 Owner 拍板就 Edit / Write 到 src/mj_agent/skills/**（拍板后才落盘；ADR-034 propose→拍板→apply）
 - ❌ 不修改 src/mj_agent/agent.py / tools/ / integrations/（这些是 A 风味，纯代码）
 - ❌ 不修改 system.md → /mj-agent-runtime-prompt-version-bump
 - ❌ 不修改 qcm_catalog.yaml → /mj-agent-runtime-biz-catalog-sync
@@ -252,11 +252,11 @@ per execution-loop §3.3 7-段格式：
 | Grep | Step 3 反向扫描 |
 | AskUserQuestion | Step 6 HITL Questions（Domain Expert review） |
 
-> **不**调用 Edit / Write（read-only by design）。
+> Edit / Write 仅在 Owner 拍板后调用（ADR-034 propose→拍板→apply）。
 
 ## Reference Files
 
-- [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 4（runtime 类目硬约束 — 本 skill 是该约束的 reference 实现）
+- [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现；supersede ADR-015 §决策点 4 read-only 残留）
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 10 + §4.7 Rule 9（B 风味永远 HITL）+ §7.3 Rule 11（EVAL backlog ticket）
 - [[../../../sdd/adapters/runtime-skill|runtime-skill]]（五段式 body + frontmatter strip 契约）+ [[../../../policies/documentation|documentation]] §5.3（EVAL coupling A11）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；body Anti-patterns 强化依据）
@@ -266,7 +266,7 @@ per execution-loop §3.3 7-段格式：
 
 ## Anti-patterns
 
-- ❌ **永远不直接 Edit src/mj_agent/skills/** （read-only by design；违反此约束 = 违反 ADR-015 §决策点 4 + execution-loop §3.1 必停 10）
+- ❌ **未经 Owner 拍板就直接 Edit src/mj_agent/skills/** （拍板后才落盘；违反 = 违反 ADR-034 + execution-loop §3.0/§3.1）
 - ❌ 不跳过 Step 5 Impact Analysis（缺这步 PR review 时 Domain Expert 没法判定）
 - ❌ 不跳过 §3.1 必停 HITL（每次 B 风味改动都触发；不能"低风险 typo 直接走"）
 - ❌ 不在 SKILL body 加 hardcoded credentials / API keys（即便是 propose diff 也不能；reviewer 看到时仍是泄露）
@@ -277,7 +277,7 @@ per execution-loop §3.3 7-段格式：
 ```
 Proposed Diff 已输出（HITL pause）。
 HITL 通过后：
-- /mj-agent-doc-author（带 Q-B1 mj-agent 专属节点）正式写盘 → /mj-agent-flow-self-review (Stage 11)
+- 本 skill 拍板后经 ask 门直接落盘（大改时 /mj-agent-doc-author 带 Q-B1 协助）→ /mj-agent-flow-self-review (Stage 11)
 - 如 system.md / qcm_catalog.yaml 同步改：参 /mj-agent-runtime-prompt-version-bump / /mj-agent-runtime-biz-catalog-sync
 - 如 EVAL 引用要补：Phase D `/mj-agent-runtime-eval-baseline`（PR-D2）
 - PR description 注明 execution-loop §7.3 Rule 11 EVAL backlog ticket 已开
