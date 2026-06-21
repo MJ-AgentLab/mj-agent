@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-review-respond
-description: This skill processes review comments and CI failures on **your own** PR (HITL Stage 15) — fetches PR reviews via gh CLI, classifies each comment (bug / suggestion / style / architecture / requirement / test / CI failure), evaluates impact on Plan/SPEC/ADR + mj-agent-specific surfaces (in-source canonical / biz_catalog / SQL guardrail), drafts modification plan + reply per comment, outputs HITL questions when comments touch requirement/API/schema/permission/user-visible-behavior or §3.1 必停 4 项. Make sure to use this skill whenever the user says "处理 review", "回应 review", "处理 PR feedback", "我的 PR 收到了 review", "review 回复", "respond to review", "comment triage", "PR comment 分类", "CI failure 分析", "Stage 15", "review respond" in the mj-agent context, or pastes a PR URL belonging to themselves with reviews to handle. Direction-distinct from mj-agent-git-review-pr (audits **others'** PRs for architecture compliance — opposite direction). Outputs per-comment classification + modification plan + reply draft + HITL flags; does NOT auto-reply, auto-commit, or auto-modify the PR. Do not use for: reviewing someone else's PR (use mj-agent-git-review-pr in PR-B3+), pre-commit self-check (use mj-agent-flow-self-review, Stage 11), or pre-merge readiness (use mj-agent-git-check-merge in PR-B3+).
+description: This skill processes review comments and CI failures on **your own** PR (HITL Stage 15) — fetches PR reviews via gh CLI, classifies each comment (bug / suggestion / style / architecture / requirement / test / CI failure), evaluates impact on Plan/SPEC/ADR + mj-agent-specific surfaces (in-source canonical / biz_catalog / SQL guardrail), drafts modification plan + reply per comment, outputs HITL questions when comments touch requirement/API/schema/permission/user-visible-behavior or §3.1 必停 4 项. Make sure to use this skill whenever the user says "处理 review", "回应 review", "处理 PR feedback", "我的 PR 收到了 review", "review 回复", "respond to review", "comment triage", "PR comment 分类", "CI failure 分析", "Stage 15", "review respond" in the mj-agent context, or pastes a PR URL belonging to themselves with reviews to handle. Direction-distinct from mj-agent-git-review-pr (audits **others'** PRs for architecture compliance — opposite direction). Outputs per-comment classification + modification plan + reply draft + HITL flags; after Owner 拍板 auto-posts the replies to GitHub via gh / mcp__github__ (ADR-034 Q2 落盘+发帖); does NOT auto-commit or auto-modify code (those stay gated). Do not use for: reviewing someone else's PR (use mj-agent-git-review-pr in PR-B3+), pre-commit self-check (use mj-agent-flow-self-review, Stage 11), or pre-merge readiness (use mj-agent-git-check-merge in PR-B3+).
 ---
 
 # mj-agent Flow — Respond to Review Comments (HITL Stage 15)
@@ -240,14 +240,14 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## What This Skill DOES NOT DO
 
-- ❌ 不 auto-reply（仅输出 reply drafts；user 手动 paste 到 GitHub）
+- ✅ 拍板后 auto-reply（Owner 拍板后 AI 经 gh / mcp__github__ 自动发 reply 到 GitHub；不再要 user 手动 paste）
 - ❌ 不 auto-commit / auto-push 修改
 - ❌ 不修改 Plan / SPEC / ADR（仅建议；user 决定后调 /mj-agent-doc-sync 或 /mj-agent-doc-author，PR-B4/C1）
 - ❌ 不替代 `/mj-agent-git-review-pr`（方向相反——本 skill 处理 own PR comments；review-pr 审别人 PR）
 - ❌ 不替代 `/mj-agent-flow-self-review`（self-review = Stage 11 commit 前自检；本 skill = Stage 15 处理外部 reviewer feedback）
 - ❌ 不替代 `/mj-agent-git-check-merge`（check-merge = Stage 16 技术合并门）
 - ❌ 不直接调 GitHub API 修 PR（add comment / dismiss review / approve / merge 仍需 user 操作）
-- ❌ B 风味 comment **不**自动改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + /mj-agent-runtime-* propose diff，PR-C2）
+- ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + /mj-agent-runtime-* propose→拍板→apply）
 
 ## Sub-skill / Tool Calls
 
@@ -276,7 +276,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 - **不要** 在 B 风味 comment 触发时自动接受改动（强制 HITL；建议 follow-up PR）
 - **不要** push-back 不给理由（必须技术性）
-- **不要** 把 review-respond 输出直接 paste 到 GitHub（仅是 draft；user 决定后手动 paste）
+- 拍板后由 AI 经 gh / mcp__github__ 发 reply 到 GitHub（Owner 拍板 = 发帖授权；不再要 user 手动 paste）
 - **不要** 跳过 §3.1 必停 4 项 mj-agent 专属维度判断
 - **不要** 在 #2 类需求 / #6 类 in-source canonical comment 上给 GO（必 HITL）
 
@@ -289,6 +289,6 @@ HITL 通过 → user 决定每条 comment 处理后：
   → 文档同步 → /mj-agent-doc-sync (PR-C1) 或手工 Edit
   → 重测 → /mj-agent-flow-verify (Stage 10) 跑相关命令
   → 新 commit → /mj-agent-git-commit + /mj-agent-git-push
-  → 回复 GitHub → user 手动 paste reply drafts
+  → 回复 GitHub → Owner 拍板后 AI 经 gh / mcp__github__ 发 reply
   → 等 reviewer 重审 → /mj-agent-git-check-merge (Stage 16)
 ```

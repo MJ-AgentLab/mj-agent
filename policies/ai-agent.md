@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-06-20
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -82,7 +82,7 @@ of truth），LSP 仅作交互式辅助.
 | Enum | Surface anchor | Notes |
 |---|---|---|
 | `sql-guardrail-relax` | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | 4 层 SQL 防御核心；`sdd/workflows/cross-capability-change.md` |
-| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；read-only diff via `mj-agent-runtime-skill-doc-improve` |
+| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；propose+拍板+apply via `mj-agent-runtime-skill-doc-improve` |
 | `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
 | `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
@@ -100,6 +100,14 @@ of truth），LSP 仅作交互式辅助.
 > `prompt-version-or-body-change` 触及的 PR merge 后，自动开 `[EVAL backlog]` follow-up Issue
 > （A11 transitional-waiver 期兜底；无论本 PR 是否带 EVAL 引用）。规则体见
 > `sdd/workflows/execution-loop.md §7.3`（HITL_Prompt §4.15 Rule 11 的 kernel home）。
+
+> **Enforce 机制（ADR-034；拍板即落盘）**：本 enum 触发 = **AI 提议 + Owner 拍板 + AI
+> 落盘**，不再要求 Owner 手动转写。前 4 项 in-source 专属必停由 `.claude/settings.json`
+> `ask` 列表逐写拍板门 enforce（原 `deny` 物理硬锁已解除）；`mcp-server-trust-posture-change`
+> 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce。两类
+> 落盘后均由 **merge review（A13 settings allowlist / A14 .mcp.json trust posture）兜底**。
+> **仅交互模式成立**——`auto` / `bypass` 模式下放宽类改动被 classifier 硬拦，须切交互模式
+> （详 §9 + `sdd/workflows/execution-loop.md §3.0`）。
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 
@@ -268,6 +276,47 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 - `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` — dep-change sub-rule (resolved at Stage D D-3f;
   see §7 Sub-rule above)
 
+## §8 External-Info Handoff Discipline（native；ADR-034）
+
+当某步骤需要 **AI 无法自取的外部信息**（ip / port / endpoint URL / API key / token /
+secret / DB 凭证 / 远程主机状态等——含被 `.claude/settings.json` `deny` 锁掉的 `.env` /
+`secrets*.enc`），AI **不得**只抛一句含糊的"请提供 X"。必须给出**具体可执行的 Owner 操作
+步骤**：
+
+1. **精确命令**：可直接复制运行的命令（PowerShell / bash / docker / curl），含占位符变量名
+   （如 `<MJ_AGENT_MEMORY_USER>`），而非"自行配置"。优先复用既有脚本（`scripts/setup-env.ps1`
+   / `.claude/scripts/setup-mcp-secrets.ps1` / `mj-agent check`）。
+2. **env 变量名 / 落点**：明确写哪个 env key、落到 `.env` 还是 HKCU OS env、是否需重启终端 +
+   Claude Code（per `config/README.md`）。
+3. **失败现象 + 校验**：给出"成功长这样 / 失败长这样"的判据（如 `curl /models` 返回码、
+   `grep -E '^LLM_PROVIDER='` 命中）。
+4. **会话内执行提示**：交互式登录类（如 `gcloud auth login`）提示用户用 `! <command>` 前缀
+   在会话内跑，输出直接进会话。
+
+操作落点：HITL 提问的 `Owner 执行步骤` 字段（`sdd/workflows/execution-loop.md §3.3`）。
+`infra-*` skill 已是此范式样板（`mj-agent-infra-env-setup` 的 Claude vs User Execution
+Boundary 表 + `mj-agent-infra-llm-endpoint-probe` 的 curl 探针）。
+
+## §9 Protected-Path 拍板 + Merge-Review 兜底（native；ADR-034）
+
+`.claude/**`（除 `.claude/worktrees`）、`.mcp.json`、`.claude.json` 是 Claude Code **硬编码
+protected paths**——它们与 `ask` 列表面统一走"AI 改、Owner 拍板、AI 落盘"，**消灭一切手动
+编辑**：
+
+- **交互模式**（`default` / `plan` / `acceptEdits`）：写 protected path 触发 **harness 强制
+  权限 prompt**（`permissions.allow` 不可抑制，安全检查先于 allow 评估）——该 prompt **就是
+  Owner 拍板**；批准后 AI 落盘。这是比普通文件**更强**的门（每写必拍板），非更弱。
+- **合并审查兜底**：`.claude/settings.json` 改动由 **A13**（settings allowlist review）兜底；
+  `.mcp.json` trust posture 由 **A14** + `mcp-server-governance/contracts/governance.contract.yml`
+  `§a14_pr_gate` 兜底。
+- **`auto` / `bypass` 例外（harness 固定、不可禁用）**：`auto` 模式下 protected-path 的
+  privilege-escalation（放宽 `settings.json` permissions / 改 `.mcp.json` trust）被 classifier
+  **硬拦**；`bypass` 模式跳过全部检查。故此类改动 **必须在交互模式执行**，不在 `auto` 模式跑。
+
+precedence：`deny` > `ask` > `allow`（具体 path 在 `ask` 即使 `Edit` 在 `allow` 也弹）。
+仍保持 `deny` 的面：`.env`（含 Read）/ `config/secrets*.enc` / `rm -rf` 类——这些不是
+"拍板后让 AI 写"的对象（外部 secret 走 §8 给 Owner 步骤）。
+
 ---
 
-> *Phase M0 — 4 段 native；其余 TBD Phase M2.*
+> *Phase M0 — 4 段 native；§8/§9 native（ADR-034，2026-06-20）；§5/§6 余 TBD Phase M2.*

@@ -76,6 +76,7 @@ track: shared
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1` + `migrate-secrets-bundle-split.ps1`；删除旧 `setup-mcp-env.ps1` |
 | [[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary\|ADR-033 DGX Ops Sister-Repo Boundary]] | OPS | accepted | DGX-Spark serving/ops 归独立姊妹仓 `MJ-AgentLab/dgx-mlops`；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算）；T-1/T-2/T-5 跟踪锚点 |
+| [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034 HITL Propose → 拍板 → Apply Model]] | WORKFLOW | accepted | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（`.claude/**` / `.mcp.json`）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff 纪律 + Owner 执行步骤字段；仅交互模式成立；supersede ADR-015 §决策点 4 残留 |
 
 ## 评估（capabilities/**/evidence/assessments/ + 仓级 evidence/assessments/）
 

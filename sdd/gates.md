@@ -5,7 +5,7 @@ state: active
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-11
+updated: 2026-06-20
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -33,7 +33,7 @@ ai_visibility: source-of-truth
 | G3 | `scripts/sdd/check_contracts.py` | contracts/ 非空 + *.contract.yml 可解析 + behavior.feature 存在性（critical\|high REQ 必填） | warning@ci（completion-audit PR2 实装落地；blocking flip 另走 ci-blocking-gate-toggle HITL）|
 | G4 | — 无脚本 | PR scope 与 plan 漂移 | manual-canonical(PR 模板 "Plan-vs-Diff Scope Declaration" 段 + Stage 9 `mj-agent-flow-scope-drift` skill) |
 | G5 | `scripts/sdd/check_traceability.py` | trace.yml schema 合规 | covered-by(G2)（同脚本同 step）|
-| G6 | （内置 §4 hard stops）| 4 项专属必停拦截 | manual-canonical(`.claude/scripts/guard-git-workflow.ps1` PreToolUse hook + runtime SKILL anti-patterns + HITL 人审) |
+| G6 | （内置 §4 hard stops）| 4 项专属必停拦截 | manual-canonical(`.claude/settings.json` `permissions.ask` 逐写拍板门 + runtime SKILL propose→拍板→apply 工作流 + A13/A14 PR 合并审查 + HITL 人审；ADR-034 deny→ask) |
 | G7 | `scripts/sdd/check_secret_exposure.py` | **解密产物**（.env / config/secrets*.conf / *.pem / *.key）不入 git；.gitignore 钉子；docker build-context 暴露检查（根目录 `.dockerignore` 须存在**且覆盖** `config/secrets*.conf`）。`config/secrets*.enc` 密文 per ADR-030 **有意入库**，不在禁止面 | warning@ci（completion-audit PR2 实装；根目录 .dockerignore owner-approved 落地 2026-06-11 → 基线 3P/0W/0F）|
 | G8 | `scripts/sdd/check_capability_evidence_required.py` | capability `lifecycle_state: active` 后 evidence/ 至少 1 文件 | blocking@ci |
 | G9 | `scripts/sdd/generate_index.py --check` | capabilities/INDEX.auto.md 幂等 | blocking@ci |
@@ -77,15 +77,17 @@ ai_visibility: source-of-truth
 
 ## §4 mj-agent specific hard stops（4 项 in-source 专属必停；canonical enum subset）
 
-以下 in-source 文件任何变更**永久 manual blocking**（不可绕过；不在 CI gate 自动化覆盖范围 — 由
-`.claude/scripts/guard-git-workflow.ps1` PreToolUse hook + 各 runtime SKILL anti-patterns 段
-+ A12 description gate + HITL 强制人审）. 这 4 项是 `policies/ai-agent.md §4 HITL Required
+以下 in-source 文件任何变更**manual ask-gated（逐写拍板，不可静默绕过）**；不在 CI gate 自动化
+覆盖范围 — 由 `.claude/settings.json` `permissions.ask` 列表（逐写权限 prompt = Owner 拍板）+ 各
+runtime SKILL 工作流（propose → 拍板 → apply）+ A12 description gate + A13/A14 PR 合并审查兜底
+enforce（ADR-034：原 `deny` 物理硬锁已解除为 `ask` 拍板门；`guard-git-workflow.ps1` 仅管 G1/G2
+git，不拦这 4 面 Edit/Write）. 这 4 项是 `policies/ai-agent.md §4 HITL Required
 Scenarios — Canonical 10-Enum` 的 in-source 子集（前 4 行）：
 
 | Hard Stop Enum | 路径 | 工作流 |
 |---|---|---|
 | `sql-guardrail-relax` | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | `sdd/workflows/cross-capability-change.md`（safe-sql 跨 4 层影响）|
-| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | `mj-agent-runtime-skill-doc-improve` skill（read-only 提议 diff）|
+| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | `mj-agent-runtime-skill-doc-improve` skill（propose → 拍板 → apply）|
 | `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md` version 或 body | `mj-agent-runtime-prompt-version-bump` skill（含义吸收原 `prompt-version-bump` + body 行为边界变更）|
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `mj-agent-runtime-biz-catalog-sync` skill |
 

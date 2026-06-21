@@ -68,8 +68,8 @@ digraph sync {
 |---|---|
 | `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Architecture" 段 / `README.md` "架构概览" 段（PR #171 起新加；ASCII 拓扑图，需保持简化版与 CLAUDE.md 同步）/ `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `src/mj_agent/llm.py` | CLAUDE.md "LLM provider" 段 / `README.md` "LLM provider" 段（PR #171 保留；provider 表 + .env 配置）/ Studio walkthrough / **§6.4 类 4 命中**（runtime 语义）|
-| `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1 必停 10/11；建议先 /mj-agent-runtime-prompt-version-bump（PR-C2）propose diff |
-| `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1 必停 10；建议先 /mj-agent-runtime-skill-doc-improve（PR-C2）propose diff |
+| `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1 必停；经 /mj-agent-runtime-prompt-version-bump propose→拍板→apply |
+| `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1 必停；经 /mj-agent-runtime-skill-doc-improve propose→拍板→apply |
 | `src/mj_agent/tools/sql/*.py` | `docs/design/agent/[SPEC]_*.md` / CLAUDE.md "Data boundary" 段 / `README.md` "Data boundary" 段（PR #171 保留）/ ADR-006 / **§6.4 类 4 命中** |
 | `src/mj_agent/integrations/mj_system_db.py` | CLAUDE.md "Data boundary" / `README.md` "Data boundary" 段 / ADR-006 / ADR-009 / **§6.4 类 4 命中** |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `docs/design/agent/[SPEC]_biz_catalog_*.md` / `scripts/diff_biz_schema.py` 输出 |
@@ -138,16 +138,16 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 | Phase 2 中（接口描述变） | 参数类型/名称描述变但函数签名未变 | 用户说"只改格式/注释" | Q-08 |
 | Phase 2 中（大幅删除） | 单文档删除 > MAX(30 行, 25%) | 用户说"大幅修改/重写" | D-02 |
 | Phase 4 前（CLAUDE.md > 10 行） | CLAUDE.md 需修改超 10 行 | 用户说"不用更新 CLAUDE.md" | D-03 |
-| Phase 1 后（B 风味命中） | mapping 命中 src/mj_agent/{skills,prompts}/* | 用户已通过 /mj-agent-runtime-* propose diff + 接受 | **Q-B1**（mj-agent 专属 §3.1 必停） |
+| Phase 1 后（B 风味命中） | mapping 命中 src/mj_agent/{skills,prompts}/* | 经 /mj-agent-runtime-* propose + 拍板 + apply | **Q-B1**（mj-agent 专属 §3.1 必停） |
 
 ### Q-B1（mj-agent 专属）
 
 ```
 检测到 code 改动触及 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
 §3.1 必停 10/11 触发；建议先：
-(1) 用 /mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 /mj-agent-runtime-prompt-version-bump（如 system.md）propose diff（PR-C2 落地后）
+(1) 用 /mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 /mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
 (2) Domain Expert + Prompt Engineer review
-(3) user 接受后才同步 docs
+(3) Owner 拍板后 runtime skill 落盘 + 再同步 docs
 
 或：(A) 仅 sync 非 in-source 部分（推荐；in-source 留给 runtime skill 单独处理）/ (B) 跳过 B 风味流程直接 sync（user 全责）
 ```
@@ -169,7 +169,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 | Edit | Phase 2 / Phase 4 update |
 | Grep | Phase 3 cross-ref + 反向扫描 |
 | AskUserQuestion | Q-07/Q-08/D-02/D-03/Q-B1 |
-| `/mj-agent-runtime-*`（PR-C2） | Q-B1 触发；B 风味 propose diff |
+| `/mj-agent-runtime-*` | Q-B1 触发；B 风味 propose→拍板→apply |
 | `/mj-agent-doc-validate` | Phase 5 sub-call |
 
 ## Reference Files
@@ -182,8 +182,8 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ## Anti-patterns
 
-- **不要** auto-edit src/mj_agent/{skills,prompts}/（B 风味必 propose diff via runtime）
-- **不要** auto-edit CLAUDE.md（D-03 manual；§6.4.1 三段分流不可自动）
+- **不要** 绕过 runtime skill 直改 src/mj_agent/{skills,prompts}/（B 风味必经 /mj-agent-runtime-* propose→拍板→apply）
+- **不要** 未经 Owner 拍板 auto-edit CLAUDE.md（§6.4.1 三段分流需 Owner 拍板；拍板后 AI 落盘）
 - **不要** 跳过 §7.2.1 反扫的 mj-agent 扩展（in-source canonical body 是反扫目标）
 - **不要** 在 D-02/D-03 触发时跳过用户确认
 - **不要** 主动维护项目根 markdown 5 件的 frontmatter（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md）—— per Meta v2.2 §2.6 例外，项目根 markdown 不写 frontmatter；A1-A3 不适用；本 skill 仅在「项目根 markdown 段内容反映了 §6.4 4 类某项」时同步内容，不补 frontmatter
@@ -192,5 +192,5 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ```
 Sync 完成 → /mj-agent-doc-validate 全跑 → PASS 后 /mj-agent-git-commit
-B 风味场景 → 先 /mj-agent-runtime-* propose diff → user 接受 → 再 sync
+B 风味场景 → 先 /mj-agent-runtime-* propose → 拍板 → apply → 再 sync
 ```

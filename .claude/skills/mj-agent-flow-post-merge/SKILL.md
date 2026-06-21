@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-post-merge
-description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog ticket auto-issue** (per execution-loop §7.3 Rule 11) when PR touches in-source canonical, **outputs frontmatter diff draft for plan state mark** (per lifecycle §2.2 Rule 12; user applies via Edit tool), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; some are auto-runnable (delete branch / sync) while others are human-in-loop (CHANGELOG edits / follow-up issue creation / EVAL backlog ticket / **plan state mark** — skill outputs diff draft, user applies via Edit). Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
+description: This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog ticket auto-issue** (per execution-loop §7.3 Rule 11) when PR touches in-source canonical, **marks plan state active→completed via Edit after Owner 拍板** (per lifecycle §2.2 Rule 12; ADR-034 propose→拍板→apply), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; some are auto-runnable (delete branch / sync) while others are human-in-loop (CHANGELOG edits / follow-up issue creation / EVAL backlog ticket / **plan state mark** — skill proposes the active→completed diff, then Edits it after Owner 拍板). Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
 ---
 
 # mj-agent Flow — Post-merge Cleanup (HITL Stage 17)
@@ -190,7 +190,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 9: Plan Lifecycle Mark
 
-按 [[../../../sdd/lifecycle|lifecycle]] §2「Working-doc Lifecycle」+ [[../../../sdd/lifecycle|lifecycle]] §2.2（Stage 17 Post-merge 自动化，PR-state→completed Rule 12），PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 仅**输出 frontmatter diff 草案**（见 §标记动作）；由 user 用 Edit 工具应用 diff 改 frontmatter（不在 skill 内自动写）。
+按 [[../../../sdd/lifecycle|lifecycle]] §2「Working-doc Lifecycle」+ [[../../../sdd/lifecycle|lifecycle]] §2.2（Stage 17 Post-merge 自动化，PR-state→completed Rule 12），PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 先**输出 frontmatter diff 草案**（见 §标记动作）；**Owner 拍板后由本 skill 用 Edit 工具直接应用 diff 改 frontmatter**（ADR-034 propose→拍板→apply；不再要 user 手动 Edit）。
 
 ### 定位关联 plan
 
@@ -201,7 +201,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 3. **PR body 匹配**：搜 `plans/[PLAN]_*.md` / `plans/[INTAKE]_*.md` 引用
 4. **如全无 → skip + 输出"PR 无关联 working plan"**
 
-### 标记动作（human-in-loop；skill 不自动写文件）
+### 标记动作（propose → 拍板 → AI Edit）
 
 ```bash
 # 1. 读 frontmatter 当前 state（skill 自动跑）
@@ -212,8 +212,8 @@ head -10 plans/[PLAN]_<id>_*.md
 #    updated: <旧>     → updated: <PR mergedAt 日期>
 #  + completed: <PR mergedAt ISO date>     # 新增字段（per lifecycle §2.2 Rule 12）
 
-# 3. user 用 Edit 工具应用 diff（skill 不自动写 frontmatter；
-#    避免 false-automation 承诺；与 description "human-in-loop" 一致）
+# 3. Owner 拍板后本 skill 用 Edit 工具直接应用 diff（ADR-034；
+#    state: active → completed 经 Edit 落盘；draft 态仍不自动改，见下）
 ```
 
 **不动**：
@@ -338,7 +338,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ## What This Skill DOES NOT DO
 
 - ❌ 不直接编辑 CHANGELOG（仅输出建议；user 决定后用 Edit）
-- ❌ 不直接创建 follow-up issue（仅输出 draft；user 确认后用 /mj-agent-git-issue）
+- ❌ 未经 Owner 拍板就创建 follow-up issue（拍板后 AI 经 /mj-agent-git-issue 创建）
 - ❌ 不直接调 `/schedule`（仅识别 signal + 建议；user 决定）
 - ❌ 不删 main / develop / 受保护分支（仅清 feature/bugfix/maintain/documentation/hotfix）
 - ❌ 不强制清 worktree（如 user 说"保留 worktree 供其他工作"，跳过 Step 7）

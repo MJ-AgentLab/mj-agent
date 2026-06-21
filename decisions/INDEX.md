@@ -42,6 +42,7 @@ ai_visibility: source-of-truth
 | [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | proposed (draft) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
 | [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | proposed (draft) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
 | [ADR-033_DGX_Ops_Sister_Repo_Boundary.md](./ADR-033_DGX_Ops_Sister_Repo_Boundary.md) | OPS | accepted (active) | DGX serving/ops 归独立姊妹仓 dgx-mlops；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算） |
+| [ADR-034_HITL_Propose_Decide_Apply_Model.md](./ADR-034_HITL_Propose_Decide_Apply_Model.md) | WORKFLOW | accepted (active) | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（.claude/** / .mcp.json）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff；仅交互模式成立（auto classifier 硬拦放宽类）。supersede ADR-015 §决策点 4 残留 |
 
 ## Deprecated / Superseded ADRs
 
@@ -55,4 +56,4 @@ ai_visibility: source-of-truth
 
 ---
 
-> *现 22 个 ADR 手工收录（21 前收录 + ADR-033）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
+> *现 23 个 ADR 手工收录（22 前收录 + ADR-034）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
