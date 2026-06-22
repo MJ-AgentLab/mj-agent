@@ -73,6 +73,8 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 
 如 Stage 3 Repo Scan **未运行** → 提示先用 `/mj-agent-flow-repo-scan`，再回本 skill；或低风险任务下显式跳过（记录跳过理由）。
 
+**逼问回流（leading word「逼问」）**：若 context 里仍有**未决分支 / 真歧义**（Stage 0 未逼清，或 plan 期才浮现）→ 先回 `/mj-agent-flow-intake` Step 2b 的逼问纪律（**一次一问 + 推荐答案锚点**）逼清，再进 Step 2 拆解。**校准**：逼问只对前期真歧义；方向已明确 → 直接进 Step 2，不加门（与 `/mj-agent-flow-scope-drift` Stage 9「实现中查偏离」分工不同）。
+
 ## Step 2: Task Breakdown
 
 | 拆解原则 | 说明 |
