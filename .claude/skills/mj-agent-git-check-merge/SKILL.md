@@ -41,7 +41,7 @@ gh pr view <number> --json number,title,headRefName,mergeable,body,reviews,statu
 
 | # | 检查 | 数据来源 |
 |---|---|---|
-| [1] 合并冲突 | `mergeable` 字段：MERGEABLE / CONFLICTING / UNKNOWN |
+| [1] 合并冲突 | `mergeable` 字段：MERGEABLE / CONFLICTING / UNKNOWN（CONFLICTING → 解冲突走 `/mj-agent-git-sync` §H2a 按意图纪律） |
 | [2] CI 检查 | `statusCheckRollup` JSON 数组 |
 | [3] Review 状态 | `reviews` 字段（≥1 Approve = Pass / 否则 Pending） |
 | [4] PR 描述完整性 | `body` + `headRefName`（按 mj-agent 5 branch type 分支感知必填字段） |
