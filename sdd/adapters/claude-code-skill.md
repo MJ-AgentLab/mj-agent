@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: claude-code-skill
 state: draft
-version: 0.3
+version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-06-22
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -86,6 +86,10 @@ M2 Stage C 新增 1 contract：
 ## §Standards
 
 > 本节对应蓝图手册 §22.7 Claude Code Skill Adapter Standards.
+
+### §Standards.1a 技能正文工艺质量（指针）
+
+> **A12**（§CI Gate）只管 description **最低门**（≥200 chars + `Do not use for:` 反向触发段）；description / body **写得好不好**（可预测性为根、双负载权衡、信息阶梯、leading words、no-op 剪枝、五大失效模式）由 [[../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]]（正文质量层，单一真相源；本 adapter **不复制其正文**）治理。in-tree workflow SKILL 起草 / 改写应过其 §9 作者自检清单。
 
 **Required fields** (contract YAML schema)：
 

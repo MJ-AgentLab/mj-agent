@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: runtime-skill
 state: draft
-version: 0.3
+version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-06-22
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -156,6 +156,8 @@ in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否�
 - **undertriggering = 默认问题**：经验上 SKILL 写完的初版 `activation` 偏保守 → 该被调用时没被
   调用（沉默失败，无报错，只是答案质量下降）；优化方向通常是**放宽 + 补正向 trigger 关键词**，
   而非收紧
+
+> **正文工艺质量（指针）**：`activation` 与 body **写得好不好**（可预测性为根、双负载权衡、信息阶梯、leading words、no-op 剪枝、五大失效模式）由 [[../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]]（正文质量层，单一真相源；本 adapter **不复制其正文**）治理。in-source SKILL body 起草 / 改写应过其 §9 作者自检清单；B 风味必停（`runtime-skill-content-change`）不变。
 
 **与 `claude-code-skill` adapter 的明确区分**（DISTINCT；不可混淆）：
 
