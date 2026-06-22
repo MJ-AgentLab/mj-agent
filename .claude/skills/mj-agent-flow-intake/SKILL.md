@@ -96,6 +96,26 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 - 前置依赖（已有 ADR / SPEC / 上游 Issue）
 - 后续独立 PR（避免 scope 膨胀）
 
+## Step 2b: Grilling 逼问纪律（仅前期真歧义）
+
+> **leading word「逼问」**（per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）。**仅对前期真歧义开**、用于把模糊需求逼清——**不是执行门**。
+
+**何时触发**（任一）：需求含**未决分支** / **新颖**（无既有 ADR/SPEC/catalog 对位） / **真歧义**（同一描述 ≥2 种合理解读）。已定方向的任务**不触发** → 直接进 Step 3。
+
+**逼问纪律**：
+- **一次一问** —— 一次抛多问令人迷失；逐题推进。
+- **每问附推荐答案锚点** —— 给出你的首选答案 + 理由，用户只需 同意 / 改正（对齐 mj-agent `AskUserQuestion`「(Recommended) 首选项放第一」惯例；离散单点用 `AskUserQuestion`，连续追问走对话）。
+- **沿 design tree 逐依赖下钻** —— 上层决定锁定后再问其依赖项。
+- **能查代码 / glossary / catalog 就别臆测** —— 先 `find_biz_context` / 读 `qcm_catalog.yaml` / glossary，查不到再问。
+- **停止判据（checkable）** —— design-tree 每分支标 `resolved` 或 `defer(M-FU)`；全标完即停，进 Step 3。
+
+**校准（关键，防违背「方向明确就执行」偏好）**：**逼问 ≠ 执行门**。仅在前期把模糊需求逼清，**不**对已定方向的执行段加门。方向一旦明确，立即停问、进 Step 3，不空转。
+
+❌ Anti-patterns：
+- 把逼问用于**已定方向**的执行段（= 过度 gate；违反偏好）。
+- 一次抛多问；不给推荐答案、让用户从零回答。
+- 能查 catalog / 代码却臆测发问。
+
 ## Step 3: 影响范围（mj-agent 7 模块 + 跨边界）
 
 | 范畴 | 检查重点 | 涉及时升档 |
