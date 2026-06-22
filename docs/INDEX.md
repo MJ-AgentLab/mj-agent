@@ -35,6 +35,7 @@ track: shared
 | _tri-track 治理 STANDARD（Meta v2.2 / Code_Side v1.1 / Agent_Side v1.2 / HITL_Prompt v1.1）_ | **M6 PR4（2026-06-04）已 archive → `archive/rule/`**；doc-governance active 真相源迁入 SDD kernel（见下方 §SDD Kernel 真相源 + 归档明细见 §归档 STANDARDs + [[archive/INDEX\|archive/INDEX]]） |
 | [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] (active) | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则；**未归档**（与 tri-track 正交，独立维护） |
 | [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.0]] | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例（draft） |
+| [[STANDARD]_MJ_Agent_Skill_Authoring_Craft\|技能写作工艺规范 v1.0]] (draft) | 定义两类 skill（in-source runtime / in-tree workflow）正文与 description 的写作工艺质量准则——可预测性为根、双负载权衡、信息阶梯、leading words、五大失效模式 + no-op 剪枝；是 ADR-013/016 schema 层与 A12 description 最低门之上的「正文质量层」 |
 
 ## SDD Kernel 真相源（policies/ + sdd/）
 
