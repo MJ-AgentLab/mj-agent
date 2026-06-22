@@ -207,7 +207,7 @@ track: shared
 | `/mj-agent-git-delete` | 17 sub Branch Cleanup | **active**（PR-B3b） |
 | `/mj-agent-git-sync` | 17 sub / hotfix 同步 | **active**（PR-B3b） |
 
-### flow family（PR-B2 + PR-B3 落地共 9）
+### flow family（PR-B2 + PR-B3 落地共 9；P1 新增 flow-diagnose = 10）
 
 | Skill | Stage | Status |
 |---|---|---|
@@ -220,6 +220,7 @@ track: shared
 | `/mj-agent-flow-scope-drift` | 9 Scope Drift Gate | **active**（PR-B3a） |
 | `/mj-agent-flow-review-respond` | 15 Review/CI（own PR） | **active**（PR-B3a） |
 | `/mj-agent-flow-post-merge` | 17 Post-merge | **active**（PR-B3a） |
+| `/mj-agent-flow-diagnose` | 8/10 邻接 · 诊断（非新 stage） | **active**（P1 · 采纳评估 §3.3；硬/flaky/perf bug feedback-loop-first） |
 
 ### doc family（PR-B4 + PR-C1 落地共 6）
 
@@ -250,7 +251,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
 
-合计 32 skills（9/9 + 9/9 + 6/6 + **4/4** + 4/4 = **32/32 全部落地**；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：flow **10**（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 4（ADR-016 设计态目标 32；**on-disk 实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——设计态计数与实装存在既有 drift，全量刷新 = M-FU）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 

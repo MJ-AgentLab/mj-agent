@@ -158,6 +158,8 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 **Sub-call (optional)**：`superpowers:systematic-debugging`。手动等价：写假设 → 测 → 收窄 → 重复。
 
+**委派判据（硬 bug / perf / flaky）**：bug 难复现 / 性能回归 / flaky（时好时坏）/ 查不出根因 → 调 `/mj-agent-flow-diagnose`（feedback-loop-first 6 步：先建会变红的 tight「红信号」再下钻、先回归测试后修、事后预防归因）。**简单显见 bug**（typo / 明确单点）仍在本 3b 内按 Rule 7 解决，不必委派。
+
 ## Step 3c: Infra Path（C 风味，mj-agent 专属，Rules 13-15）
 
 **Rule 13（hard）**：compose 改动后必须手动 `docker compose -f docker/compose.yaml up -d` + `down` 排练，记录在 PR description。

@@ -259,7 +259,7 @@ External-Info Handoff Discipline）。
 > skills（git 9 / doc 6 / runtime 4 / infra 4）。各 skill 详细描述见对应
 > `.claude/skills/<skill-name>/SKILL.md`。
 
-### §4.1 流程编排器（mj-agent-flow family，9 个）
+### §4.1 流程编排器（mj-agent-flow family，9 个 + 1 邻接子纪律 flow-diagnose）
 
 | Stage | 推荐 Skill |
 |---|---|
@@ -267,6 +267,7 @@ External-Info Handoff Discipline）。
 | 3 Repo Scan | [[../../.claude/skills/mj-agent-flow-repo-scan/SKILL\|mj-agent-flow-repo-scan]] |
 | 4 Plan body 编写 | [[../../.claude/skills/mj-agent-flow-plan/SKILL\|mj-agent-flow-plan]] |
 | 8 Implementation 编码段 | [[../../.claude/skills/mj-agent-flow-implement/SKILL\|mj-agent-flow-implement]] |
+| 8/10 邻接 · 诊断（非新 stage） | [[../../.claude/skills/mj-agent-flow-diagnose/SKILL\|mj-agent-flow-diagnose]]（硬/flaky/perf bug；flow-implement Step 3b 委派） |
 | 9 Scope Drift Gate | [[../../.claude/skills/mj-agent-flow-scope-drift/SKILL\|mj-agent-flow-scope-drift]] |
 | 10 Local Verification | [[../../.claude/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]] |
 | 11 AI Self-review | [[../../.claude/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]] |
