@@ -116,6 +116,15 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 - 一次抛多问；不给推荐答案、让用户从零回答。
 - 能查 catalog / 代码却臆测发问。
 
+## Step 2c: 术语主动锐化（ubiquitous language）
+
+> 借「domain-modeling」**主动**锐化领域语言的思路、按 mj-agent native 承载（**不引入 `CONTEXT.md`**——挂既有分布式工件：glossary / catalog / decisions）。
+
+- **当场挑战**：intake 遇术语与既有 [[../../../docs/glossary/upstream_business_warehouse|glossary]] / `qcm_catalog.yaml` **冲突或模糊** → 不放过，当场厘清。
+- **边界场景压测**：用具体 edge case 逼出概念边界（"X 算不算 Y？这种情况归哪类？"）。
+- **即时更新工件**：术语一旦敲定**立即** inline 更新对应工件——术语 → glossary；指标 / 维度 → `qcm_catalog.yaml`（**4 必停面之一**，改动走 `/mj-agent-runtime-biz-catalog-sync` propose→拍板→apply，**不被本纪律绕过**）；难逆决策 → `decisions/` ADR（开列判据见 `/mj-agent-doc-author`）。
+- 跨上游仓术语：走 attribution → glossary 元文档 wikilink（跨仓解耦规约）。
+
 ## Step 3: 影响范围（mj-agent 7 模块 + 跨边界）
 
 | 范畴 | 检查重点 | 涉及时升档 |

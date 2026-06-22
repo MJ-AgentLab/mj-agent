@@ -73,7 +73,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 
 如 Stage 3 Repo Scan **未运行** → 提示先用 `/mj-agent-flow-repo-scan`，再回本 skill；或低风险任务下显式跳过（记录跳过理由）。
 
-**逼问回流（leading word「逼问」）**：若 context 里仍有**未决分支 / 真歧义**（Stage 0 未逼清，或 plan 期才浮现）→ 先回 `/mj-agent-flow-intake` Step 2b 的逼问纪律（**一次一问 + 推荐答案锚点**）逼清，再进 Step 2 拆解。**校准**：逼问只对前期真歧义；方向已明确 → 直接进 Step 2，不加门（与 `/mj-agent-flow-scope-drift` Stage 9「实现中查偏离」分工不同）。
+**逼问回流（leading word「逼问」）**：若 context 里仍有**未决分支 / 真歧义**（Stage 0 未逼清，或 plan 期才浮现）→ 先回 `/mj-agent-flow-intake` Step 2b 的逼问纪律（**一次一问 + 推荐答案锚点**）逼清，再进 Step 2 拆解。**校准**：逼问只对前期真歧义；方向已明确 → 直接进 Step 2，不加门（与 `/mj-agent-flow-scope-drift` Stage 9「实现中查偏离」分工不同）。**术语锐化回流**：plan 期遇术语与 glossary/catalog 冲突或模糊 → 回 `/mj-agent-flow-intake` Step 2c 主动锐化（挑战 + 边界场景压测 + 即时更新工件；catalog 改动走 biz-catalog-sync 必停）。
 
 ## Step 2: Task Breakdown
 
@@ -84,6 +84,13 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 | 依赖排序 | 拓扑顺序，前置先做 |
 | 命名一致 | Stage 8a / 8b / 8c... 编号便于跟踪 |
 | **风味识别**（mj-agent 专属） | 标注每子任务属于 §4.7 哪个风味：A 纯代码 / B in-source canonical 永远 HITL / C infra |
+| **纵切优先**（leading word「纵切」/ tracer-bullet） | 拆多 PR/issue 时优先**端到端纵切**而非按层水平切——见下「纵切纪律」 |
+
+**纵切纪律（leading word「纵切」，per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）**：
+- 每片**端到端穿透相关层**且**自身可验、可独立 review-合**（如新增一业务指标：`qcm_catalog.yaml` 条目 → `find_biz_context`/tool → guardrail/precheck 放行 → 一条 eval case），按 **blocked-by 依赖序**发布。
+- 先 **prefactoring**：make the change easy（必要预重构单独成片），then make the easy change。
+- ❌ **水平切**（先全 catalog → 再全 tool → 再全 test）——单片不可独立验、强层间耦合。
+- 切片落 issue 时继承该片 AC + blocked-by 序（→ `/mj-agent-git-issue` Scope 纵切片归属）。
 
 **输出格式**（写入 Plan §3 任务拆解）：
 
@@ -152,6 +159,8 @@ docker compose -f docker/compose.yaml up -d / down
 - mj-agent 扩展：runtime SKILL.md / system.md / qcm_catalog.yaml 反向扫描
 - scope-drift Severity 预期值
 ```
+
+**Testing-seam-first（借 to-prd）**：列验证命令前先定**测试缝**——①优先复用既有缝；②**最小化新缝（理想 1 个）**；③缝放最高合理架构层。mj-agent 缝常 = 一条 `tests/eval` case 或一条 `tests/unit`；纵切片（Step 2）的"可验"判据就挂在该缝上。
 
 ## Step 6: Completion Criteria + 关联
 

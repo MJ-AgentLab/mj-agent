@@ -150,6 +150,17 @@ digraph author {
 | **API 专属** | `docs/api/` | 跨服务的 API 约定 |
 | **领域专属** | `docs/infrastructure/<domain>/` | 与具体技术领域绑定（git / cicd / database） |
 
+## ADR 开列判据（何时才开 ADR）
+
+> 配合 §12 前置检查 / Q-03。借「domain-modeling」**仅难逆决策才开 ADR** 的思路、按 mj-agent native 承载——防 ADR 泛滥。
+
+仅当**三者皆真**才开 ADR（否则 inline 记录于 SPEC / glossary / catalog，不开 ADR）：
+1. **难逆** —— 决策落地后回退成本高（schema / 数据边界 / 部署形态类）。
+2. **反直觉** —— 选择非显而易见，未来读者会问"为什么不是另一种"。
+3. **真权衡** —— 存在被放弃的合理替代方案，需记录取舍理由。
+
+主动领域建模产物归属（**不引入 `CONTEXT.md`**，挂既有分布式工件）：术语 → `docs/glossary/` / `GLOSSARY.md`；业务指标 / 维度 → `biz_catalog/qcm_catalog.yaml`（**4 必停面之一** → `/mj-agent-runtime-biz-catalog-sync` propose→拍板→apply）；难逆决策 → `decisions/` ADR。
+
 ## ADR Numbering
 
 Scan `docs/adr/` for max existing `[ADR]_NNN_*` number, new = max + 1（zero-padded 3 digits）。Start at 001 if empty。
