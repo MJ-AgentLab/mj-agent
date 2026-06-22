@@ -73,6 +73,8 @@ mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message
 - **In-scope**: <本 issue 覆盖的具体范围>
 - **Out-of-scope**: <相邻但不覆盖>
 
+> **纵切片归属**（承 `/mj-agent-flow-plan` Step 2 纵切纪律）：若本 issue 是某 milestone 的一个**端到端纵切片**，In-scope 应是**自身可验、可独立 review-合**的窄完整路径；用 `blocked-by` 标依赖序，**不**按层水平切。
+
 ## Acceptance Criteria
 
 - [ ] 验收标准 1（可验证 / 可测试）
