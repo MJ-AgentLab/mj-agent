@@ -91,6 +91,8 @@ body = load_skill("<skill-name>")           # body only (frontmatter stripped pe
 - ⚠️ 段缺失 / 内容偏弱（建议改进）
 - ❌ 段错位 / 矛盾内容（必须修）
 
+> **正文工艺质量**：五段式 body「写得好不好」过 [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §9 作者自检清单（可预测性 / 双负载权衡 / no-op 剪枝 / 五大失效模式）；本 audit 治「段结构」、该 STANDARD 治「正文质量」，互补。
+
 ## Step 3: 反向扫描
 
 ```bash

@@ -88,6 +88,7 @@ track: shared
 |------|------|------|
 | [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0\|上游业务系统 Git 规范在 mj-agent 的适配评估 v1.0]] | Phase 0 | 评估 上游业务系统 git 基础设施与 commit 规范在 mj-agent 的适用性，给出 Keep/Adapt/Defer 矩阵与社区证据 |
 | [[evidence/assessments/[ASSESSMENT]_Spec_Anchored_Refactor_Completion\|Spec-Anchored Refactor 完成度评估 v1.1]] | M0-M6 + completion-audit（2026-05-20 ~ 2026-06-11） | 蓝图 26 维对照：意图达成 ~92%（19✅/3🔄/2⏳/2❌）；§4.2 六项登记外缺口经 5-PR 修复链（#247-#251）对账闭环，处置 SoT = plan registry 12 行 |
+| [[evidence/assessments/[ASSESSMENT]_mattpocock-skills-adoption\|mattpocock-skills 采纳评估 v1.0]] | 2026-06-21 调研 / 2026-06-22 升格 | Matt Pocock 19 技能哲学采纳：ADOPT 4 + ADAPT 8 + COVERED 3 + REJECT 4；只借「内核工艺纪律」按 native 承载、治理类不引入；§六 3.1-3.6 roadmap 已实施（PR #260-#264） |
 
 ## 归档（archive/）
 

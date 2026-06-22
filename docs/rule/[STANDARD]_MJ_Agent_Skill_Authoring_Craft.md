@@ -192,7 +192,7 @@ leading word = 用一个**预训练里已有的紧凑概念**锚定一类行为�
 
 ## 10 参考
 
-- mattpocock-skills 采纳评估 §3.1（本规范的思路来源 + 借鉴边界）——当前为 vault 草稿 `sdd-development/mj-agent/[ASSESSMENT]_mattpocock-skills-adoption.md`（在 SCAN_ROOTS 外）；经 `/mj-agent-doc-author` 升格入仓 `evidence/assessments/` 后再改为 wikilink
+- [[../../evidence/assessments/[ASSESSMENT]_mattpocock-skills-adoption|mattpocock-skills 采纳评估]] §3.1（本规范的思路来源 + 借鉴边界；2026-06-22 已升格入仓 `evidence/assessments/`）
 - [[../../sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards / §CI Gate（A12；in-tree 2-field schema）
 - [[../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] §Standards（in-source 13-field；`activation` + 5-iteration + 渐进披露）
 - [[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace schema 分离）
