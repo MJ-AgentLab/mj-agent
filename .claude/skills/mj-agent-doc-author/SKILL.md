@@ -236,6 +236,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 - [[../../../policies/documentation|policies/documentation]] §8.1 / §8.2（8 类继承类 body authoring depth）+ §6.2（type-frontmatter）
 - [[../../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] + [[../../../sdd/adapters/prompt|sdd/adapters/prompt]] + [[../../../sdd/adapters/contract|sdd/adapters/contract]]（4 类自有类 authoring + frontmatter strip 契约）
 - [[../../../docs/rule/[STANDARD]_GitHub_Markdown|GitHub_Markdown v1.1]] §14（项目根 README 与 Markdown 特例；PR #173 新加）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §9（写 SKILL/STANDARD body 时过作者自检清单——可预测性 / 双负载权衡 / leading words / no-op 剪枝）
 - [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 6 SPEC/ADR/RUNBOOK 在 17-stage loop 的位置）
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点 4（边界 artifact 表）
