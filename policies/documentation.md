@@ -5,7 +5,7 @@ state: active
 version: 1.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-06-23
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -141,6 +141,10 @@ CONTRACT（agent-facing tool）。
 **治理例外条款**：项目根 5 文件**不进入 canonical 治理表**——不强制 frontmatter（A2 不适用）、
 不强制类型 body 骨架、不计入 A1-A3 PR 门禁。**但仍受**：A4 wikilink 完整性、A6 CLAUDE.md sync
 （§7 allowlist 触发时同步）、GitHub_Markdown §14 项目根特例。与 §3 path-to-track 决策树第 0 条衔接。
+
+> **代偿纪律（gate-light ≠ 免责）**：项目根 5 文件豁免 A1-A3、缺自动化卫生门兜底，故**不得复制易变派生事实**
+> ——如 active 技能数/名单（真值在 `agent.py:_ACTIVE_SKILLS`）、工具数、middleware 数等。这类事实**一律指向
+> 单一真值源**（代码 / 对应 kernel policy），不在根文件硬写数字或枚举，避免无 sync 门时的 code→doc 漂移复发。
 
 ## §3 track frontmatter 字段（4 值枚举 + 决策树）
 

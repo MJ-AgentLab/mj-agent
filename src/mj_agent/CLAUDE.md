@@ -30,8 +30,7 @@
 
 ## SKILL 加载（in-source canonical）
 
-- 启用列表：`agent.py:_ACTIVE_SKILLS`（当前 MVP 3 个：biz-domain-context / qcm-analysis /
-  safe-sql-analysis）
+- 启用列表：`agent.py:_ACTIVE_SKILLS`（active 名单与数量以该 tuple 为单一真值源；不在此硬写，避免漂移）
 - Loader：`load_skill()` 必须 strip frontmatter（详 `sdd/adapters/runtime-skill.md` §
   Frontmatter Strip 契约；A11 PR gate from Phase M3 blocking）
 
