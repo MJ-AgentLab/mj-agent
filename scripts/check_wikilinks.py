@@ -184,9 +184,11 @@ def iter_content_lines(text: str):
 def clean_target(raw: str, kind: str) -> str | None:
     """Normalize a captured link target; return None if it should be skipped.
 
-    Skips external (scheme / protocol-relative), same-document anchors, and
-    absolute (``/...``) targets. Strips Markdown link titles, angle brackets,
-    wikilink display text (``|``), and ``#anchor`` fragments.
+    Skips external (scheme / protocol-relative), same-document anchors,
+    absolute (``/...``) targets, and illustrative placeholders with no path
+    content (e.g. the ``[[...]]`` syntax example in a heading). Strips
+    Markdown link titles, angle brackets, wikilink display text (``|``), and
+    ``#anchor`` fragments.
     """
     t = raw.strip()
     if kind == "md":
@@ -202,6 +204,11 @@ def clean_target(raw: str, kind: str) -> str | None:
     if not t or t.startswith("/"):
         return None
     if _EXTERNAL_RE.match(t):
+        return None
+    # Illustrative placeholder (e.g. ``[[...]]`` in a heading) — no resolvable
+    # filename. Also dodges a Windows-vs-Linux split: Windows strips trailing
+    # dots, so ``...`` resolves to the repo root and masks the issue locally.
+    if not any(ch.isalnum() for ch in t):
         return None
     return t
 

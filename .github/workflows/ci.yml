@@ -64,6 +64,11 @@ jobs:
       - name: Wikilinks (canonical docs)
         # Belt-and-suspenders alongside the frontmatter validator: catches
         # broken `[[...]]` references that mypy / ruff / pytest can't see.
+        # MJ_AGENT_A4_STRICT=1 makes the root-file A4 link resolution
+        # (#267 items 1-2) BLOCKING instead of warning-mode — a deliberate
+        # ci-blocking-gate-toggle (owner-approved; baseline was clean at flip).
+        env:
+          MJ_AGENT_A4_STRICT: "1"
         run: uv run python scripts/check_wikilinks.py
 
       - name: No cross-repo refs (forward guard)
