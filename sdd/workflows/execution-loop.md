@@ -5,7 +5,7 @@ state: active
 version: 1.3
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-06-20
+updated: 2026-06-24
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -254,10 +254,12 @@ External-Info Handoff Discipline）。
 
 ## §4 Stage → Skill 映射表
 
-> Port from HITL_Prompt STANDARD §5。目标态与 `.claude/skills/` 内 **32 个**
-> mj-agent-* in-tree skills 完全对齐——9 流程编排器（flow family）+ 23 域工具
-> skills（git 9 / doc 6 / runtime 4 / infra 4）。各 skill 详细描述见对应
-> `.claude/skills/<skill-name>/SKILL.md`。
+> Port from HITL_Prompt STANDARD §5。目标态覆盖 `.claude/skills/` 内 **35 个** mj-agent-*
+> in-tree skills——flow family 10（9 流程编排器 + 1 邻接子纪律 flow-diagnose）+ 25 域工具
+> skills（git 9 / doc 6 / runtime 4 / infra 6）。**on-disk 实装计数以
+> `scripts/sdd/check_claude_skill_contracts.py --all` 为准**（ADR-016 设计态目标 32 与实装
+> 存在既有 drift；跨文档计数全量刷新 / 去硬写 = M-FU，tracked #267 + `docs/INDEX.md`
+> §技能清单合计行）。各 skill 详细描述见对应 `.claude/skills/<skill-name>/SKILL.md`。
 
 ### §4.1 流程编排器（mj-agent-flow family，9 个 + 1 邻接子纪律 flow-diagnose）
 
@@ -274,14 +276,14 @@ External-Info Handoff Discipline）。
 | 13/15 Review/CI 处理 | [[../../.claude/skills/mj-agent-flow-review-respond/SKILL\|mj-agent-flow-review-respond]] |
 | 17 Post-merge | [[../../.claude/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]] |
 
-### §4.2 域工具 family（git 9 / doc 6 / runtime 4 / infra 4）
+### §4.2 域工具 family（git 9 / doc 6 / runtime 4 / infra 6）
 
 | Family | 数量 | Stage / 用途 | 代表 skill |
 |---|---|---|---|
 | **git** | 9 | 1 Issue / 2 Branch / 12 Commit / 13 Push / 14 PR / 15 Review-others-PR / 16 Merge-check / 17 Delete / 17 Sync | `/mj-agent-git-issue` `/mj-agent-git-branch` `/mj-agent-git-commit` `/mj-agent-git-push` `/mj-agent-git-pr` `/mj-agent-git-review-pr` `/mj-agent-git-check-merge` `/mj-agent-git-delete` `/mj-agent-git-sync` |
 | **doc** | 6 | 4 sub Plan / 6 Author / 11 sub Validate / 8 sub Sync / 15 sub Review / archive Migrate | `/mj-agent-doc-plan` `/mj-agent-doc-author` `/mj-agent-doc-validate` `/mj-agent-doc-sync` `/mj-agent-doc-review` `/mj-agent-doc-migrate` |
 | **runtime** | 4 | 8 (B-flavor) sub；**propose → 拍板 → apply** | `/mj-agent-runtime-skill-doc-improve` `/mj-agent-runtime-prompt-version-bump` `/mj-agent-runtime-biz-catalog-sync` `/mj-agent-runtime-eval-baseline` |
-| **infra** | 4 | 8 (C-flavor) / 10 sub | `/mj-agent-infra-env-setup` `/mj-agent-infra-studio-probe` `/mj-agent-infra-docker-compose` `/mj-agent-infra-storage-stack` |
+| **infra** | 6 | 8 (C-flavor) / 10 sub / env teardown / LLM endpoint probe | `/mj-agent-infra-env-setup` `/mj-agent-infra-env-teardown` `/mj-agent-infra-studio-probe` `/mj-agent-infra-docker-compose` `/mj-agent-infra-storage-stack` `/mj-agent-infra-llm-endpoint-probe` |
 
 > **Runtime family 约束（v1.3 / ADR-034）**：所有 `mj-agent-runtime-*` 先做
 > **分析 + propose diff + impact 反扫**（列出影响清单），**但落盘前必须 Owner 拍板**——
