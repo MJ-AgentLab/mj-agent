@@ -149,7 +149,7 @@ Active doc-governance now lives in the kernel:
 - **Commits** — `<type>(<scope>): <summary>` (feat/fix/perf/refactor/test/docs/infra);
   scopes from `src/mj_agent/` modules. STANDARD:
   `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`.
-- **In-tree skills** — ~34 active across 5 families (flow/git/doc/runtime/infra);
+- **In-tree skills** — active across 5 families (flow/git/doc/runtime/infra);
   namespace `/mj-agent-<group>-<verb>`; auto-discover (no registration). `runtime-*` are
   read-only-by-design (propose diffs; never write `src/mj_agent/{skills,prompts,agent,tools}`).
   Stage→skill map: `sdd/workflows/execution-loop.md`.

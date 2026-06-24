@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-06-11
+updated: 2026-06-24
 state: draft
 track: shared
 ---
@@ -68,7 +68,7 @@ track: shared
 | [[decisions/ADR-012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架 |
 | [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 13 字段 schema 独立 |
 | [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地 |
-| [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow 9 / git 9 / doc 6 / runtime 4 / infra 4 = 32）+ lifecycle (P0/P1/P2 + sunset 规则) |
+| [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow / git / doc / runtime / infra）+ lifecycle (P0/P1/P2 + sunset 规则) |
 | [[decisions/ADR-020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；零维护 archive 引用校验 |
 | [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Agent_Side v1.2 §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；mj-agent 原生 |
 | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] (PR-Γ；ADR-025 拆分) | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
@@ -252,7 +252,7 @@ track: shared
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
 
-合计：flow **10**（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 4（ADR-016 设计态目标 32；**on-disk 实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——设计态计数与实装存在既有 drift，全量刷新 = M-FU）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：on-disk **35** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 6（ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
