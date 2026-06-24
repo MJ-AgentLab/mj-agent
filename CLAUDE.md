@@ -47,7 +47,7 @@ CLI (`server/cli.py`: `mj-agent serve|check`). Runtime:
 `create_agent(model, tools, system_prompt, middleware)`.
 
 - `agent.py` — `make_graph()` is the `langgraph.json` entry; lazy `make_llm()` so
-  import never needs `ARK_API_KEY`. `_ACTIVE_SKILLS` (3 MVP skills) +
+  import never needs `ARK_API_KEY`. `_ACTIVE_SKILLS` (active skill set — names/count live in the `agent.py` tuple, not cached here) +
   `_build_system_prompt()` concatenates `prompts/system.md` + skill bodies.
 - `tools/__init__.py:ALL_TOOLS` — `find_biz_context` → `list_biz_tables` →
   `describe_biz_table` → `execute_sql` (default LLM order). SQL chain:

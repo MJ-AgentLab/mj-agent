@@ -5,7 +5,7 @@ state: active
 version: 1.0
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-06-23
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -136,6 +136,10 @@ related_decisions:
    - **Living**（"当前规则"语境）→ 重指 kernel home（doc 治理→`policies/documentation`；归档治理→本 policy）。
    - **Frozen**（ADR / ASSESSMENT 里"事故/决策时规则状态"语境）→ pin 到 archive 副本的
      `_vX.Y` 路径，措辞作 immutable artifact 保留。
+   - **必须覆盖项目根 5 文件**（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` /
+     `CLAUDE.md`）：它们 gate-light（§2.6 豁免 A1-A3），G14/G15 自动化扫描的根目录文件仅 `CLAUDE.md`
+     （§5.2 扫描范围），其余 4 个的 living 引用**只能靠本步人工 grep 兜底**。M6 三轨归档时 `GLOSSARY.md`
+     即因漏入本步 sweep 而留下指向 `docs/rule/` 的悬空链接——故此处显式点名。
 4. **manifest + 墓碑**：在 `archive/rule/` 写 `archive.yml`（§3 五必填）+ `TOMBSTONE.md`（人读的
    迁移说明）。
 5. **索引重建**：跑 `scripts/sdd/generate_archive_index.py` 刷 `archive/INDEX.md`；同步

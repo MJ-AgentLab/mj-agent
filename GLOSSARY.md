@@ -2,7 +2,7 @@
 
 > 本文档定义 mj-agent 项目中使用的术语、缩写及项目特定概念。
 > **每个定义仅描述术语在 mj-agent 项目中的含义，不作通用百科解释。**
-> **最后更新**：2026-05-18 | **维护**：任何人引入新术语时均可更新（[docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) v2.2）
+> **最后更新**：2026-06-23 | **维护**：任何人引入新术语时均可更新（治理见 [policies/documentation.md](policies/documentation.md)）
 > **职能边界**：本表是**全项目术语索引**；专题深度词典在 [`docs/glossary/<topic>.md`](docs/glossary/)（如 `upstream_business_warehouse.md`）。条目中如有专题深度补充，会 link 到对应专题词典。
 
 ---
@@ -17,17 +17,17 @@
 
 ### Active path stability（活跃路径稳定原则）
 
-**定义**：[Meta_Framework v2.2](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) §4.4 引入的规则：active canonical 文件名**默认不带** `_vX.Y` 后缀；版本只在 frontmatter `version` 字段。例外仅"多 active 主版本并存"。Legacy 归档反向**必带**版本后缀。drop-suffix rename 视为 rule application，非 §5.9 trigger #4。
+**定义**：[policies/archive.md](policies/archive.md) 的 active canonical 路径稳定原则：文件名**默认不带** `_vX.Y` 后缀；版本只在 frontmatter `version` 字段。例外仅"多 active 主版本并存"。Legacy 归档反向**必带**版本后缀。drop-suffix rename 视为 rule application，非归档触发"拆分/合并/改名"。
 **相关术语**：Canonical / archive ceremony / Stable path
 
 ### ADR / Architecture Decision Record
 
-**定义**：架构决策记录；记录为什么做某决策及其取代关系。mj-agent ADR 位于 `docs/adr/[ADR]_NNN_*.md`；frontmatter `decision: accepted | superseded | rejected`。Cross-repo decoupling 后 9 个继承自上游的 ADR 已 archive 至 `archive/decisions/superseded/`（M5-PR3b 由 `docs/archive/adr/` 平移）。
+**定义**：架构决策记录；记录为什么做某决策及其取代关系。mj-agent ADR 位于 `decisions/ADR-NNN_*.md`；frontmatter `decision: accepted | superseded | rejected`。Cross-repo decoupling 后 9 个继承自上游的 ADR 已 archive 至 `archive/decisions/superseded/`（M5-PR3b 由 `docs/archive/adr/` 平移）。
 **相关术语**：Canonical / Document Type Tags / supersedes
 
 ### Agent Side（Track B）
 
-**定义**：三轨道治理中的「智能体侧」轨道；治理 `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md` 两类 in-source canonical + agent-facing CONTRACT / EVAL。主 STANDARD：[Agent_Side v1.1](docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md)。失败模式**沉默**（错误业务输出）。
+**定义**：三轨道治理中的「智能体侧」轨道；治理 `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md` 两类 in-source canonical + agent-facing CONTRACT / EVAL。主治理：[sdd/adapters/runtime-skill.md](sdd/adapters/runtime-skill.md)（SKILL body）+ [sdd/adapters/prompt.md](sdd/adapters/prompt.md)（PROMPT version）。失败模式**沉默**（错误业务输出）。
 **相关术语**：Track / Code Side / Engineering-workflow / SKILL
 
 ### analyst（PostgreSQL role）
@@ -55,7 +55,7 @@
 
 ### Canonical 文档
 
-**定义**：[Meta_Framework v2.2](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) §2.2 中的「权威层」；路径在 `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/{skills,prompts}/**` + `.claude/skills/**` + `.claude/settings.json` + `.mcp.json`。受强治理；frontmatter 必填；A1-A14 PR 门禁适用。
+**定义**：[policies/documentation.md](policies/documentation.md) 定义的「权威层」；路径在 `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/{skills,prompts}/**` + `.claude/skills/**` + `.claude/settings.json` + `.mcp.json`。受强治理；frontmatter 必填；A1-A14 PR 门禁适用。
 **相关术语**：Working 文档 / Legacy 文档 / Frontmatter / Track
 
 ### Chainlit
@@ -65,7 +65,7 @@
 
 ### CLAUDE.md
 
-**定义**：项目根 markdown 之一；定位为 AI 高频上下文缓存。**非信息源**，是从各 canonical STANDARD / 关键 GUIDE 摘录的副本，目的是提升 AI 单上下文窗口的信息密度。同步策略见 [Meta v2.2 §6.4](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) 4 类 allowlist。
+**定义**：项目根 markdown 之一；定位为 AI 高频上下文缓存。**非信息源**，是从各 canonical STANDARD / 关键 GUIDE 摘录的副本，目的是提升 AI 单上下文窗口的信息密度。同步策略见 [policies/documentation.md](policies/documentation.md)（CLAUDE.md sync allowlist）。
 **相关术语**：Project root markdown / A6 / Meta_Framework
 
 ### Commit type
@@ -75,7 +75,7 @@
 
 ### Code Side（Track A）
 
-**定义**：三轨道治理中的「代码侧」轨道；治理 GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code 8 类 canonical。主 STANDARD：[Code_Side v1.1](docs/rule/[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework.md)。失败模式**响亮**（compile / test / deploy break）。
+**定义**：三轨道治理中的「代码侧」轨道；治理 GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code 8 类 canonical。主治理：[policies/documentation.md](policies/documentation.md)。失败模式**响亮**（compile / test / deploy break）。
 **相关术语**：Track / Agent Side / Engineering-workflow
 
 ---
@@ -102,7 +102,7 @@
 
 ### Engineering-workflow（Track C）
 
-**定义**：三轨道治理中的「工程编排侧」轨道；治理 `.claude/skills/mj-agent-*/SKILL.md` + `.claude/settings.json` + `.mcp.json` + HITL_Prompt + 工程流程 STANDARDs。主 STANDARD：[HITL_Prompt v1.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md)。失败模式**流程漂移**（HITL 跳过 / 错 skill / settings 退化）。
+**定义**：三轨道治理中的「工程编排侧」轨道；治理 `.claude/skills/mj-agent-*/SKILL.md` + `.claude/settings.json` + `.mcp.json` + HITL_Prompt + 工程流程 STANDARDs。主治理：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)。失败模式**流程漂移**（HITL 跳过 / 错 skill / settings 退化）。
 **相关术语**：Track / Code Side / Agent Side / HITL gates
 
 ---
@@ -116,7 +116,7 @@
 
 ### Frontmatter
 
-**定义**：受治理 markdown 文件开头的 YAML 元数据块。canonical 必填 `type / domain / summary / owner / created / updated / state`；带 `version` 类（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）还需 `version`；agent track SKILL 用 13 字段 schema；engineering-workflow `.claude/skills/` 用 ADR-013 native 2 字段。项目根 5 文件**不要求** frontmatter（[Meta v2.2 §2.6](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md)）。
+**定义**：受治理 markdown 文件开头的 YAML 元数据块。canonical 必填 `type / domain / summary / owner / created / updated / state`；带 `version` 类（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）还需 `version`；agent track SKILL 用 13 字段 schema；engineering-workflow `.claude/skills/` 用 ADR-013 native 2 字段。项目根 5 文件**不要求** frontmatter（[policies/documentation.md](policies/documentation.md)）。
 **相关术语**：Canonical / track / Project root markdown
 
 ---
@@ -125,7 +125,7 @@
 
 ### Guardrail（L1 regex）
 
-**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。任何放宽是必停 HITL 项（[HITL_Prompt §3.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md)）。
+**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。任何放宽是必停 HITL 项（[policies/ai-agent.md](policies/ai-agent.md) §4）。
 **相关术语**：Data boundary / Precheck / SQL execute
 
 ### G1 / G2（PreToolUse hook 规则）
@@ -144,7 +144,7 @@
 
 ### HITL gates（5 / 7 / 9 / 11 / 13）
 
-**定义**：[HITL_Prompt v1.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) §1 17-stage 闭环中**强制暂停等人**的 5 个 stage：5 Plan confirm / 7 SPEC + ADR confirm / 9 Scope Drift / 11 AI Self-review / 13 Push。其他 stage 按 §3.1 通用规则 + 4 项 mj-agent 专属规则按需 HITL。
+**定义**：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md) 17-stage 闭环中**强制暂停等人**的 5 个 stage：5 Plan confirm / 7 SPEC + ADR confirm / 9 Scope Drift / 11 AI Self-review / 13 Push。其他 stage 按通用规则 + mj-agent 专属规则按需 HITL（[policies/ai-agent.md](policies/ai-agent.md) §4）。
 **相关术语**：HITL_Prompt / Engineering-workflow
 
 ---
@@ -153,7 +153,7 @@
 
 ### in-source canonical
 
-**定义**：位于 `src/mj_agent/` 但属于 canonical 治理范围的 markdown 文件；当前 5 个（`skills/biz-domain-context/SKILL.md` + `skills/qcm-analysis/SKILL.md` + `skills/safe-sql-analysis/SKILL.md` + `prompts/system.md` + `biz_catalog/qcm_catalog.yaml`）。由 Python loader 剥 frontmatter 后喂给 LLM。修改是 [HITL_Prompt §3.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) 4 项专属必停项之一。
+**定义**：位于 `src/mj_agent/` 但属于 canonical 治理范围的 markdown 文件：`skills/**/SKILL.md`（active 名单 = `agent.py:_ACTIVE_SKILLS` 单一真值源）+ `prompts/system.md` + `biz_catalog/qcm_catalog.yaml`（数量/名单不在此硬写，避免漂移）。由 Python loader 剥 frontmatter 后喂给 LLM。修改是 [policies/ai-agent.md](policies/ai-agent.md) §4 必停项之一。
 **相关术语**：Canonical / Frontmatter strip / SKILL / Track B
 
 ### INDEX.md
@@ -229,12 +229,12 @@
 
 ### PROMPT version
 
-**定义**：`src/mj_agent/prompts/*.md` 的 frontmatter `version` 字段；每次正文实质变更必 bump（[Agent_Side §3.2](docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md)）；`state: active` 时需 `eval_references` 非空（Phase 2 起强制）。修改是 [HITL_Prompt §3.1](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md) 必停项。
+**定义**：`src/mj_agent/prompts/*.md` 的 frontmatter `version` 字段；每次正文实质变更必 bump（[sdd/adapters/prompt.md](sdd/adapters/prompt.md)）；`state: active` 时需 `eval_references` 非空（Phase 2 起强制）。修改是 [policies/ai-agent.md](policies/ai-agent.md) §4 必停项。
 **相关术语**：in-source canonical / EVAL / Frontmatter strip
 
 ### Project root markdown
 
-**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [Meta v2.2 §2.6](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
+**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
 **相关术语**：Canonical / Frontmatter / track
 
 ---
@@ -243,7 +243,7 @@
 
 ### QCM catalog (qcm_catalog.yaml)
 
-**定义**：`src/mj_agent/biz_catalog/qcm_catalog.yaml`；静态镜像上游业务系统数据字典 STANDARD §2-§4（metric / period / dimension / 同环比列 / 信号表 / 维表 join key）。由 `find_biz_context` 召回；漂移检测见 [HITL_Prompt §4.4](docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md)（mj-agent 专属必停项）。
+**定义**：`src/mj_agent/biz_catalog/qcm_catalog.yaml`；静态镜像上游业务系统数据字典 STANDARD §2-§4（metric / period / dimension / 同环比列 / 信号表 / 维表 join key）。由 `find_biz_context` 召回；漂移检测见 [policies/ai-agent.md](policies/ai-agent.md) §4（mj-agent 专属必停项）。
 **相关术语**：find_biz_context / biz domain / Mirror
 
 ---
@@ -257,7 +257,7 @@
 
 ### Runtime skill（Track B in-source）
 
-**定义**：`src/mj_agent/skills/<name>/SKILL.md`；运行时直接进 LLM 上下文驱动业务回答。13 字段 schema + 五段式 body（[Agent_Side §2](docs/rule/[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework.md)）。当前 3 个 active：`biz-domain-context` / `qcm-analysis` / `safe-sql-analysis`。
+**定义**：`src/mj_agent/skills/<name>/SKILL.md`；运行时直接进 LLM 上下文驱动业务回答。13 字段 schema + 五段式 body（[sdd/adapters/runtime-skill.md](sdd/adapters/runtime-skill.md)）。active 名单与数量以 `agent.py:_ACTIVE_SKILLS` 为单一真值源（不在此硬写，避免漂移）。
 **相关术语**：SKILL / Workflow skill / Marketplace plugin SKILL / Three-source SKILL distinction
 
 ---
@@ -271,7 +271,7 @@
 
 ### Stable path（active canonical）
 
-**定义**：[Meta v2.2 §4.4](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) 引入的命名规则；active canonical 文件名**默认不带** `_vX.Y` 后缀。例外仅"多 active 主版本并存"。legacy 反向必带后缀。
+**定义**：[policies/archive.md](policies/archive.md) 的 active canonical 路径稳定命名规则；active canonical 文件名**默认不带** `_vX.Y` 后缀。例外仅"多 active 主版本并存"。legacy 反向必带后缀。
 **相关术语**：Active path stability / Archive ceremony
 
 ### setup-env.ps1 / setup-mcp-secrets.ps1（PowerShell 脚本）
@@ -290,7 +290,7 @@
 
 ### track（frontmatter 字段）
 
-**定义**：[Meta v2.2 §4.3.1](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) 引入的 4 值 enum 字段：`code` / `agent` / `engineering-workflow` / `shared`。决定 reviewer + PR 门禁子集 + CLAUDE.md sync 段位。`scripts/check_frontmatter.py` 强制枚举值。项目根 markdown 不适用 track（§2.6 + §4.3.1 决策树第 0 条）。
+**定义**：[policies/documentation.md](policies/documentation.md) 的 4 值 enum 字段：`code` / `agent` / `engineering-workflow` / `shared`。决定 reviewer + PR 门禁子集 + CLAUDE.md sync 段位。`scripts/check_frontmatter.py` 强制枚举值。项目根 markdown 不适用 track（§2.6 + §4.3.1 决策树第 0 条）。
 **相关术语**：Track A / Track B / Track C / Frontmatter
 
 ### Three-source SKILL distinction
@@ -332,7 +332,7 @@
 
 ### Wikilink（[[...]] 链接）
 
-**定义**：Obsidian 内链格式 `[[文档名|显示文本]]` 或 `[[#章节]]`；GitHub Web **不解析** `[[...]]` 会原样显示文本。mj-agent 文档允许混用 wikilink（canonical 内引）+ 相对链接（INDEX / README / PR description）；[Meta v2.2 §6.3](docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) + [GitHub_Markdown §5.4](docs/rule/[STANDARD]_GitHub_Markdown.md) 定义边界。A4 PR 门禁检查 wikilink 目标存在。
+**定义**：Obsidian 内链格式 `[[文档名|显示文本]]` 或 `[[#章节]]`；GitHub Web **不解析** `[[...]]` 会原样显示文本。mj-agent 文档允许混用 wikilink（canonical 内引）+ 相对链接（INDEX / README / PR description）；[policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §5.4](docs/rule/[STANDARD]_GitHub_Markdown.md) 定义边界。A4 PR 门禁检查 wikilink 目标存在。
 **相关术语**：A4 / Markdown link / Frozen vs Living 引用
 
 ### Worktree（git worktree）
