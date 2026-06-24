@@ -227,7 +227,7 @@ mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）
 ## 贡献指南
 
 - 提交 PR 前请阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)（分支策略 / commit 规范 / PR 流程 / Code Review 标准）
-- 文档贡献请按 [docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md](./docs/rule/[STANDARD]_MJ_Agent_Documentation_Meta_Framework.md) v2.2 三轨制治理（code / agent / engineering-workflow / shared）
+- 文档贡献请按 [policies/documentation.md](./policies/documentation.md) 的三轨制治理（code / agent / engineering-workflow / shared）
 - 术语澄清查 [GLOSSARY.md](./GLOSSARY.md)
 
 ## 项目结构（Phase 0）
