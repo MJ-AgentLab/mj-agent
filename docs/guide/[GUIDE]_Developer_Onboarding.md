@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-06-07
+updated: 2026-06-24
 state: draft
 version: v0.2
 track: code
@@ -194,7 +194,7 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 >   驱动 data agent 业务回答（biz-domain-context / qcm-analysis / safe-sql-analysis 等）；
 >   13 字段 schema + 五段式 body；由 `load_skill()` Python loader 加载剥 frontmatter
 > - **Track C 工程 skill**：`.claude/skills/mj-agent-<group>-<verb>/SKILL.md` —— 开发流程
->   编排（17-stage HITL 闭环；32 个，5 family：flow / git / doc / runtime / infra）；
+>   编排（17-stage HITL 闭环；5 family：flow / git / doc / runtime / infra）；
 >   ADR-013 native 2 字段 schema；由 Claude Code 主进程发现 + slash command 触发
 >
 > 二者**同名同形不同义**，必须严格区分；混淆会导致施加错误约束 / 套错 schema。

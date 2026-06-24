@@ -5,7 +5,7 @@ state: draft
 version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-22
+updated: 2026-06-24
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -22,8 +22,9 @@ ai_visibility: source-of-truth
 **Included** — Claude Code Skill adapter 治理：
 
 - `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` — per ADR-016 namespace pattern
-- 5 families 当前实测 ~34 SKILL（flow / git / doc / runtime / infra；Phase M6 新增 evidence
-  family 4 SKILL → 36 终态）
+- 5 families（flow / git / doc / runtime / infra）；实测 SKILL 计数以
+  `scripts/sdd/check_claude_skill_contracts.py --all` 为准（现 on-disk 35；Phase M6 规划新增
+  evidence family 4 SKILL）
 - Claude Code 主 process 加载（不入 `mj_agent` Python runtime；不走 `load_skill`）
 - ADR-013 2-field native schema（`name` + `description` 仅 2 字段；**不**用 13-field
   Agent_Side schema）
