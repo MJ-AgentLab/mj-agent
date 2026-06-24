@@ -62,6 +62,15 @@ class TestCleanTarget:
         # GFM table cells escape the wikilink pipe as ``\|``.
         assert clean_target(r"decisions/ADR-034\|ADR-034", "wiki") == "decisions/ADR-034"
 
+    def test_placeholder_without_path_content_skipped(self) -> None:
+        # Illustrative ``[[...]]`` / ``[](...)`` syntax examples carry no
+        # resolvable filename — and ``...`` resolves to the repo root on
+        # Windows (trailing-dot strip) but not Linux, so skipping is required
+        # for cross-platform parity.
+        assert clean_target("...", "wiki") is None
+        assert clean_target("...", "md") is None
+        assert clean_target("..", "md") is None
+
 
 class TestTargetResolves:
     def test_existing_relative_path(self, tmp_path: Path) -> None:
@@ -123,6 +132,11 @@ class TestScanLinks:
         result = scan_links(tmp_path, Path("CHANGELOG.md"), "[[decisions/ADR-999|gone]]")
         assert len(result) == 1
         assert result[0][2] == "wiki"
+
+    def test_syntax_example_heading_not_flagged(self, tmp_path: Path) -> None:
+        # GLOSSARY.md's ``### Wikilink（[[...]] 链接）`` heading is illustrative,
+        # not a real link (regression: the blocking flip surfaced this).
+        assert scan_links(tmp_path, Path("GLOSSARY.md"), "### Wikilink（[[...]] 链接）") == []
 
 
 class TestIterContentLines:
