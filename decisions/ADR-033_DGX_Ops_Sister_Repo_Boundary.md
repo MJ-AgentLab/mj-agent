@@ -4,7 +4,7 @@ domain: OPS
 summary: DGX-Spark serving/ops 由独立姊妹仓 MJ-AgentLab/dgx-mlops 治理；mj-agent 是唯一 DGX consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费 OpenAI-compat endpoint；跨仓 cross-ref 总数 ≤5（mj-agent 自设预算）
 owner: 项目负责人
 created: 2026-06-11
-updated: 2026-06-11
+updated: 2026-06-29
 state: active
 decision: accepted
 track: shared
@@ -36,11 +36,16 @@ mj-agent 侧既有决策已确立纯消费侧立场：
 1. **DGX serving / ops 归姊妹仓**：DGX-Spark 的 LLM serving 与运维（驱动 / 容器 / 模型部署 / 监控 / 评测底座）由独立姊妹仓 **`MJ-AgentLab/dgx-mlops`** 治理；mj-agent 仓不承载任何 DGX serving/ops 资产。
 2. **mj-agent 是唯一 DGX consumer**（当前阶段）：消费路径唯一——经 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] provider 抽象（`LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL` + `LLM_MODEL_ID` 覆写；默认 `LLM_MODEL_ID` 是 Ark 云 id，切换时必须覆写）。
 3. **DGX 不部署 mj-agent**：重申 ADR-026 正文 2026-05-09 决策句；`Profile` enum 维持 `dev|test|prod` 不扩 dgx——DGX 是 LLM-endpoint switch，不是 deploy target。
-4. **跨仓反耦合预算**：dgx-mlops ↔ mj-agent 文档 cross-ref 总数 **≤ 5**（**mj-agent 自设约束**，非上游文档要求；防双仓互相渗透、保持各自可独立演进）；mj-agent 仓不存放任何 dgx-mlops 侧 secrets / runner 凭证；mj-agent 不替 dgx-mlops 执行任何 M/D-phase。
+4. **跨仓反耦合预算**：dgx-mlops ↔ mj-agent 文档 cross-ref 总数 **≤ 5**（**mj-agent 自设约束**，非上游文档要求；防双仓互相渗透、保持各自可独立演进）（**计数口径**：仅计双仓 decision/capability 文档间的真实 cross-ref 指针；不计自动生成的 INDEX 行 / CHANGELOG 历史条目 / 运维 SKILL 提及。）；mj-agent 仓不存放任何 dgx-mlops 侧 secrets / runner 凭证；mj-agent 不替 dgx-mlops 执行任何 M/D-phase。
 
-## Cross-ref 槽位（T-1 填实）
+## Cross-ref 槽位（T-1 已填实 2026-06-29）
 
-dgx-mlops `capabilities/mj-agent/llm-provider-bridge/` contract ID 集合：**pending dgx-mlops M2**——bridge contract draft 产生实 ID 后，由 T-1 documentation PR 填实本槽位，并在 ADR-027 增 cross-ref 段（标 "pending dgx-mlops Phase 2 integration"）。
+dgx-mlops `capabilities/mj-agent/llm-provider-bridge/` contract ID 集合：
+- **PRIMARY（mj-agent 绑定）**：`CTR-AGENTOUT-001`（输出 schema）+ `CTR-BRIDGE-001`（跨仓 API 契约）
+- **informational（追溯，不绑定）**：`CTR-VLLM-001`（vLLM served-model）+ `CTR-HEALTH-002`（`/health` 200）
+
+cross-ref 状态 = **pending dgx-mlops Phase 2 integration**（[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]
+§Cross-ref 段；真实 e2e（T-5）跑通后转 active）。
 
 ## 跟踪锚点（T-1 / T-2 / T-5）
 
@@ -68,7 +73,7 @@ dgx-mlops `capabilities/mj-agent/llm-provider-bridge/` contract ID 集合：**pe
 ## References
 
 - [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]] — DGX 算力节点定位决策句来源；Profile enum 设计
-- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — 唯一消费路径实现（`make_llm()` factory；T-1 将增 cross-ref 段）
+- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — 唯一消费路径实现（`make_llm()` factory；T-1 已增 cross-ref 段，见 §Cross-ref）
 - [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — DGX SSH 运维通道（与 LLM 消费正交）
 - [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR（ADR-026/027 拆分来源）
 - `MJ-AgentLab/dgx-mlops`（姊妹仓）— `capabilities/mj-agent/llm-provider-bridge/` 消费方契约（pending M2）
