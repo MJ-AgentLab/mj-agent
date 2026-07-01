@@ -4,7 +4,7 @@ domain: AGENT
 summary: src/mj_agent/llm.py make_llm() 抽象为 provider 分支 factory（ark + local-openai-compat），支持 DGX-Spark vLLM/SGLang/Ollama 等 OpenAI-compatible local endpoint；Profile enum 不扩 dgx（DGX 不部署 mj-agent）
 owner: 项目负责人
 created: 2026-05-11
-updated: 2026-06-11
+updated: 2026-06-29
 state: active
 decision: accepted
 track: code
@@ -96,6 +96,22 @@ tags:
 - **B. 引入 LangChain 的 `ChatOpenAI` + `ChatVolcengine` 自动路由**：拒绝。LangChain 的 provider 集成层已经做这件事，但本仓 `llm.py` 已直接用 `langchain_openai.ChatOpenAI` + Ark base_url override；factory 分支比框架级路由更轻量、可观测
 - **C. 在 `Profile` enum 加 dgx**：用户决策 1 否决；详见 §Context 决策 1
 - **D. 等 mj-agent K8s 化后用 service mesh 路由**：拒绝。Phase 1-2 阶段 K8s 不在范围；本 ADR 解决 Phase 1 实际需求
+
+## Cross-ref — dgx-mlops provider contracts（T-1；pending dgx-mlops Phase 2 integration）
+
+本 ADR 的 `local-openai-compat` provider 分支，其 DGX-Spark 侧 provider 落地由姊妹仓
+`MJ-AgentLab/dgx-mlops` `capabilities/mj-agent/llm-provider-bridge/` 治理（见
+[[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary|ADR-033]]）。mj-agent 作为唯一 consumer，
+**绑定**下列 dgx-mlops 契约 ID：
+
+| dgx-mlops contract | 角色 | binding? |
+|---|---|---|
+| `CTR-AGENTOUT-001`（agent.output.schema.json） | consumer 解析的 OpenAI-compat 输出 schema（`object==chat.completion` / `tool_calls` / `usage`） | **PRIMARY（binding）** |
+| `CTR-BRIDGE-001`（cross-capability.contract.md） | 跨仓 API 契约 + model-id `${LLM_MODEL_ID}` 参数化 + HITL-CROSS 治理 | **PRIMARY（binding）** |
+| `CTR-VLLM-001` / `CTR-HEALTH-002` | provider-internal realization（vLLM served-model 行为 / `/health` 200）；consumer 无需直接绑定 | informational（追溯） |
+
+- **cross-ref 状态 = pending dgx-mlops Phase 2 integration**：真实 e2e（[[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary|ADR-033]] §跟踪锚点 T-5）跑通后转 active。
+- 对上述 binding 契约的任何跨仓变更走 **HITL-CROSS**（双仓 owner 双签 + 双侧 PR），per ADR-033 §Decision 4（跨仓反耦合预算）+ dgx-mlops `REQ-BRIDGE-002`。
 
 ## References
 
