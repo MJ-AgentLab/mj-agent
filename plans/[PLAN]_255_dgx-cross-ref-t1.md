@@ -4,7 +4,8 @@ summary: T-1 跨仓 cross-ref 采纳——ADR-027 增 dgx-mlops provider-contrac
 owner: 项目负责人
 created: 2026-06-29
 updated: 2026-07-01
-state: active
+completed: 2026-07-01
+state: completed
 track: shared
 ---
 
