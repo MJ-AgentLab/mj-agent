@@ -4,7 +4,8 @@ summary: T-5 真实 e2e 采纳——provider 切 DGX（.env 纯配置）跑通 m
 owner: 项目负责人
 created: 2026-07-02
 updated: 2026-07-03
-state: active
+completed: 2026-07-03
+state: completed
 track: shared
 ---
 
@@ -79,12 +80,12 @@ track: shared
 ### Task 9 — issue #255 关联
 
 - [x] PR body `Refs #255`（不 Closes——T-5 勾选后是否关单 owner 定）。
-- [ ] merge 后勾 `[x] T-5` + comment（本 PR # + dgx 分支 + 预算 3/5）。
+- [x] merge 后勾 `[x] T-5` + comment（PR #274 merge `3b8924e` + dgx 分支 + 预算 3/5；2026-07-03 已落）。
 
 ### Task 10 — PR（HITL-CROSS 半边，先合）
 
 - [x] commit + push + PR `--base develop`（HITL-CROSS body）。
-- [ ] owner 拍板合并（owner-only，先合）→ **merge hash 交 dgx-mlops Slice-E2E PR**。
+- [x] owner 拍板合并（owner-only，先合；merge `3b8924e` 2026-07-03）→ **merge hash 已交 dgx-mlops Slice-E2E PR**。
 
 ## Verification / AC（汇总）
 
@@ -95,7 +96,7 @@ track: shared
 - [x] AC5 consumer evidence 落地（redacted）
 - [x] AC6 预算 3/5 ≤5
 - [x] AC7 gates PASS（状态三处一致 = dgx 侧后置核）
-- [ ] AC8 PR 先合（前置 S1-S4+S1a 全 PASS 已达成），merge hash 交 dgx-mlops
+- [x] AC8 PR 先合（前置 S1-S4+S1a 全 PASS 已达成；PR #274 merge `3b8924e`），merge hash 交 dgx-mlops
 - [x] AC9 零 src / 5 必停面 / contract 正文改动
 - [x] AC10 plan 落盘随 PR（本文件）
 
