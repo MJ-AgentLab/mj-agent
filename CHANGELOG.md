@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+### Changed — T-5 DGX 真实 e2e 采纳（ADR-027 active）
+
+- **`decisions/ADR-027_LLM_Provider_Abstraction.md`（`docs`，branch `documentation/dgx-e2e-t5`）**：§Cross-ref 状态 `pending dgx-mlops Phase 2 integration` → `active`（2026-07-03 真实 e2e 跑通：`make_graph()` + metric 问题经 DGX vLLM `nemotron-3-super` 端到端，≥1 纯 + ≥1 tool-calling completion，dgx-mlops 侧 S1-S4 + S1a 断言全 PASS）；§Cross-ref 标题同批去 pending 字样（自洽）。
+- **`decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary.md`**：§Cross-ref 槽位状态同步 `active` + §跟踪锚点 T-2/T-5 行标 done（T-2 = 零 drift 核对 @ dgx-mlops `72933bb`，#255 comment）。
+- **`capabilities/data-agent/llm-provider/evidence/runtime/2026-07-03_dgx_e2e.md`**：consumer 侧 e2e evidence（真实 runtime 路径 + tool-calling 捕获；SSH 隧道拓扑如实记录；burst 429 诚实 defer）。闭 dgx-mlops M7 Phase-2 出口①②③⑤ 的 mj-agent 半边（HITL-CROSS 双签，本 PR 先合取 hash）。配套 `plans/[PLAN]_255_dgx-e2e-t5.md` 落盘。Refs #255
+
 ### Changed — T-1 dgx-mlops cross-ref 采纳（ADR-027 + ADR-033）
 
 - **`decisions/ADR-027_LLM_Provider_Abstraction.md`（`docs`，branch `documentation/dgx-cross-ref-t1`）**：增「Cross-ref — dgx-mlops provider contracts」段，绑定 `CTR-AGENTOUT-001` + `CTR-BRIDGE-001`（PRIMARY），状态 pending dgx-mlops Phase 2 integration。

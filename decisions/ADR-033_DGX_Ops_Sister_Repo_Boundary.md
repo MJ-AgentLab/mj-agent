@@ -4,7 +4,7 @@ domain: OPS
 summary: DGX-Spark serving/ops 由独立姊妹仓 MJ-AgentLab/dgx-mlops 治理；mj-agent 是唯一 DGX consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费 OpenAI-compat endpoint；跨仓 cross-ref 总数 ≤5（mj-agent 自设预算）
 owner: 项目负责人
 created: 2026-06-11
-updated: 2026-06-29
+updated: 2026-07-03
 state: active
 decision: accepted
 track: shared
@@ -44,16 +44,16 @@ dgx-mlops `capabilities/mj-agent/llm-provider-bridge/` contract ID 集合：
 - **PRIMARY（mj-agent 绑定）**：`CTR-AGENTOUT-001`（输出 schema）+ `CTR-BRIDGE-001`（跨仓 API 契约）
 - **informational（追溯，不绑定）**：`CTR-VLLM-001`（vLLM served-model）+ `CTR-HEALTH-002`（`/health` 200）
 
-cross-ref 状态 = **pending dgx-mlops Phase 2 integration**（[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]
-§Cross-ref 段；真实 e2e（T-5）跑通后转 active）。
+cross-ref 状态 = **active**（2026-07-03；[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]
+§Cross-ref 段；真实 e2e（T-5）已跑通，dgx-mlops `ADR-023-m7-phase2-e2e` / 分支 `feature/m7-phase2-e2e-closure`）。
 
 ## 跟踪锚点（T-1 / T-2 / T-5）
 
 | 锚点 | 触发条件 | mj-agent 侧动作 | 形态 |
 |---|---|---|---|
 | **T-1** | dgx-mlops M2c（bridge contract draft 产生实 ID） | ADR-027 增 cross-ref 段 + 本 ADR 槽位填实 | documentation PR |
-| **T-2** | dgx-mlops M4 末（中段同步） | 双方核对 cross-ref ID 一致性；无 drift 零改动，有 drift 走 documentation PR | 核对 +（条件）PR |
-| **T-5** | dgx-mlops Phase 2 M7（真实 e2e 跑通） | cross-ref 状态 pending → active；是否在 `tests/integration` 加 e2e 标记用例由当批 HITL 决定 | 跨仓集成 +（条件）PR |
+| **T-2** | dgx-mlops M4 末（中段同步） | 双方核对 cross-ref ID 一致性；无 drift 零改动，有 drift 走 documentation PR | 核对 +（条件）PR — ✅ done 2026-07-03（#255 comment；零 drift @ dgx-mlops `72933bb`） |
+| **T-5** | dgx-mlops Phase 2 M7（真实 e2e 跑通） | cross-ref 状态 pending → active；是否在 `tests/integration` 加 e2e 标记用例由当批 HITL 决定 | 跨仓集成 +（条件）PR — ✅ done 2026-07-03 PR #274（e2e 标记用例：本批 HITL 决定不加，见 PR body） |
 
 > T-3（dgx-mlops D7 readiness assessment 双签）与 T-4（model-id 选定后 `.env` 切换演练）为跨仓 HITL / 运维动作，无本仓 PR 面；全量定义见项目负责人 vault 执行计划 `[PLAN]_mj-agent_DGX_Consumer_Side_Execution.md` v1.1 §2。
 
