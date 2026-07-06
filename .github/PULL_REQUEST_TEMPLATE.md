@@ -53,7 +53,7 @@
 
 ## AI Self-Check Checklist（per `policies/ai-agent.md` §4 + §6）
 
-- [ ] Codex 参与情况: **NONE / 描述贡献**（per ADR-035 声明纪律；技术使能未接入 → 当下恒 NONE；non-NONE 须 HITL）
+- [ ] Codex 参与情况: **NONE / 描述贡献**（per ADR-035；standalone Codex 已开 → 可 non-NONE；non-NONE 须 Owner 拍板）
 - [ ] HITL scenario hit: **NONE / 列出**（per `policies/ai-agent.md` §4 12 项场景）
 - [ ] BDD/TDD impact: **NONE / 列出**（per blueprint §11.6 #11）
 - [ ] Subagent dispatched: **NONE / 列出**（per `policies/ai-agent.md` §2 A3）

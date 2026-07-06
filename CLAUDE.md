@@ -5,13 +5,15 @@ Guidance for Claude Code. **Detail lives in the SDD kernel (`policies/` + `sdd/`
 
 ## Codex Status
 
-Codex is an **authorized full development participant** (per ADR-035) — the former "read-only /
-NOT in dev workflow" boundary is retired. Authority is at parity with Claude Code (edits / commits /
-migrations / command runs) and therefore **constraints are at parity** (same HITL 必停 + data
-boundary; ADR-006/009/000 unchanged). **Technical enablement is deferred**: Codex is not yet wired
-in (no plugin / MCP / permission), so **Claude Code remains the sole *active* implementer** and each
-task still declares `Codex invocation: NONE` (now "not invoked", not "forbidden"). Full boundary +
-enablement prerequisite: `AGENTS.md` + `policies/ai-agent.md` §1 + `decisions/ADR-035`.
+Codex is an **authorized full development participant** (per ADR-035 + 2026-07-06 amendment) — the
+former "read-only / NOT in dev workflow" boundary is retired. As a **standalone agent (path A)**,
+Codex may run commands + do dev work now, governed by `AGENTS.md` (its operating contract) + its own
+"Full access" permission — it runs under **its own harness**, so mj-agent's `ask`-gates /
+protected-path prompts do **not** bind it; the 5 必停 + data boundary (ADR-006/009/000 unchanged) are
+**self-enforced via AGENTS.md prose**. Still deferred: **(B) Claude Code invoking Codex** as a
+sub-tool (the `codex:` plugin — needs `.claude/` wiring); (B) does not limit (A). Each task declares
+Codex participation (`NONE` or its contribution). Full contract: `AGENTS.md` +
+`policies/ai-agent.md` §1 + `decisions/ADR-035`.
 
 ## Project
 

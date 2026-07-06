@@ -2,7 +2,7 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-07-06
@@ -18,30 +18,31 @@ ai_visibility: source-of-truth
 
 ## §1 Codex 参与策略层（native；最高优先级）
 
-**当前 mj-agent 项目授权 Codex 作为完整开发参与者与 Claude Code 协作开发（per ADR-035）；技术
-使能延后，使能前 Claude Code 仍是唯一 active implementer.**
+**当前 mj-agent 项目授权 Codex 作为完整开发参与者（per ADR-035 + 2026-07-06 amendment）。standalone
+Codex（路径 A）已开——由 `AGENTS.md`（其 operating contract）+ Codex 自身权限治理，可运行命令 + 做
+开发；仅 (B) Claude Code 调用 Codex 插件这条路径的技术 wiring 延后.**
 
 | 原则 | 含义 |
 |---|---|
 | 实施来源 | 文件修改、代码实现、测试运行、目录迁移、文档落地、验证总结可由 Claude Code 或 Codex 完成（Codex 使能后）；两者同属实施 agent. |
 | 授权对等 → 约束对等 | Codex 与 Claude Code 同一授权类；相应**同样受** HITL 必停（§4 canonical 10-enum）+ 数据边界（ADR-006 / ADR-009 / ADR-000）约束；授权不放宽任何安全面. |
 | 决策单点 | Owner 仍是唯一决策者（HITL 拍板）；实施可双 agent，决策与验收单点不变；每 PR 声明由哪个 agent 实施 + git authorship 记溯源. |
-| 使能延后 + 硬前置 | 本层仅反转书面政策；技术使能（`.claude/plugins.json` 插件 + `.claude/settings.json` 权限 + MCP / runtime wiring）是独立 opt-in，以「先定义 Codex 如何 honor 5 必停面 + HITL gates + 数据边界」为硬前置（`ask` 门 / protected-path prompt 是 Claude Code harness 专属，不自动约束他 harness）. |
+| 两类使能须区分 | **(A) standalone Codex** 由 `AGENTS.md` + Codex 自身权限治理，**已开**——Codex 在自身 harness 下跑，mj-agent `ask` 门 / protected-path prompt / L1·L1b 代码级 guardrail **不约束它** → 5 必停 + 数据边界靠 `AGENTS.md` **self-enforced prose**（Codex 自守）enforce. **(B) Claude Code 调用 Codex 插件**（`.claude/plugins.json` + `.claude/settings.json` + MCP wiring）仍延后为独立 opt-in；(B) 延后不限制 (A). |
 | 边界文件 | 详 `AGENTS.md`（Roster + Codex 参与契约 + 使能前置）+ `CLAUDE.md` §Codex Status + `decisions/ADR-035`. |
 
 **问责模型（原「非参与」四条 rationale 的重述）**：
 
 1. **Single point of accountability** — 决策 + 验收单点在 Owner（HITL 拍板）；实施可双 agent，
    溯源靠 per-PR 声明 + git authorship.
-2. **Tool execution surface 受控** — 两实施 agent 共用同一 permission model + 数据边界；Codex
-   使能后在等价 guardrail 下运行.
+2. **Tool execution surface 受控** — 两实施 agent 共用同一数据边界；Codex 在自身 harness 下靠
+   `AGENTS.md` self-enforced prose 自守（非 mj-agent 技术门）.
 3. **4 项 in-source 专属必停**（`sql-guardrail-relax` / `prompt-version-or-body-change` /
-   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）仍 HITL
-   enforce；Codex 使能硬前置要求其被同样拦.
+   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）仍 Owner-HITL 门；
+   Codex 按 `AGENTS.md` self-enforced 边界自守（编辑前须 Owner 拍板）.
 4. **CLAUDE.md HITL 规则** 按 Claude Code 读写契约校准 → Codex 用自己的校准契约（`AGENTS.md`）.
 
-每次任务输出末尾须**声明 Codex 参与情况**（`Codex invocation: NONE` 或描述其具体贡献）；因技术
-使能延后，当下仍恒为 `NONE`（语义由「Codex 被禁」变为「本次 Codex 未参与」）.
+每次任务输出末尾须**声明 Codex 参与情况**（`Codex invocation: NONE` 或描述其具体贡献）；standalone
+Codex 已开后该声明可为 non-NONE（描述 Codex 贡献）.
 
 ## §2 Subagent Split 准则（A3 — Anthropic 大型代码库最佳实践；native）
 
