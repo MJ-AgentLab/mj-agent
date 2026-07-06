@@ -234,7 +234,7 @@
 
 ### Project root markdown
 
-**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
+**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`（外加 `AGENTS.md`——AI agent 指令契约，同为根操作文件例外，per ADR-035）。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
 **相关术语**：Canonical / Frontmatter / track
 
 ---

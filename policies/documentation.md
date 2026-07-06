@@ -142,6 +142,13 @@ CONTRACT（agent-facing tool）。
 不强制类型 body 骨架、不计入 A1-A3 PR 门禁。**但仍受**：A4 wikilink 完整性、A6 CLAUDE.md sync
 （§7 allowlist 触发时同步）、GitHub_Markdown §14 项目根特例。与 §3 path-to-track 决策树第 0 条衔接。
 
+**AI-agent 指令契约例外（`AGENTS.md`）**：`AGENTS.md` 是项目根的 **AI agent 指令契约**（Codex 的
+operating contract；per ADR-035）——与上述 5 个「项目元信息」文件**并列于 canonical 治理之外，但属
+不同类别**。同样处理：**不写 frontmatter**（Codex 直读该文件，frontmatter 会污染其指令语义）、
+**A1-A3 不适用**、**A4 wikilink 完整性 + A6 CLAUDE.md sync 仍适用**（其 §Codex Status 内容与
+`CLAUDE.md` §Codex Status 同步）、GitHub_Markdown §14 语法特例同样覆盖；下文代偿纪律亦适用。归档
+stale-ref sweep（[[policies/archive|policies/archive]] §1）须一并覆盖。
+
 > **代偿纪律（gate-light ≠ 免责）**：项目根 5 文件豁免 A1-A3、缺自动化卫生门兜底，故**不得复制易变派生事实**
 > ——如 active 技能数/名单（真值在 `agent.py:_ACTIVE_SKILLS`）、工具数、middleware 数等。这类事实**一律指向
 > 单一真值源**（代码 / 对应 kernel policy），不在根文件硬写数字或枚举，避免无 sync 门时的 code→doc 漂移复发。
