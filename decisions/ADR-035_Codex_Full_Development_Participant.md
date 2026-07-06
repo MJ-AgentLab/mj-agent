@@ -1,7 +1,7 @@
 ---
 type: adr
 domain: WORKFLOW
-summary: Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑 / 提交 / 迁移，受同一 HITL 必停 + 数据边界约束）；本 ADR 仅反转书面政策，技术使能（插件 + 权限 wiring）延后为独立 opt-in，硬前置 = 先定义 Codex 如何 honor 5 必停面 + HITL gates；使能前 Claude Code 仍是唯一 active implementer；数据边界 ADR-006/009/000 不变；revise ADR-031 Phase M0 写入 AGENTS.md + ai-agent §1 的「Codex 非参与」native 内容
+summary: Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑 / 提交 / 迁移，受同一 HITL 必停 + 数据边界约束）；本 ADR 仅反转书面政策，技术使能（插件 + 权限 wiring）延后为独立 opt-in，硬前置 = 先定义 Codex 如何 honor 5 必停面 + HITL gates；使能前 Claude Code 仍是唯一 active implementer；数据边界 ADR-006/009/000 不变；revise ADR-031 Phase M0 写入 AGENTS.md + ai-agent §1 的「Codex 非参与」native 内容；2026-07-06 amendment 澄清 (A) standalone Codex（AGENTS.md 治理，已开）vs (B) Claude-Code-调用-Codex 插件（仍延后），(A) enforcement = AGENTS.md 自守 prose
 owner: ranzuozhou
 created: 2026-07-06
 updated: 2026-07-06
@@ -43,6 +43,10 @@ CLAUDE.md 更新 + Owner HITL 拍板`。本 ADR 即该流程要求的决策锚�
 无 codex 权限）。故仅反转书面政策不会让 Codex 真的能运行命令；实际技术使能是独立、additive 的动作。
 
 ## Decision
+
+> **⚠ 本 ADR 文末有 Amendment (2026-07-06)** — 澄清下列 Decision 2/3 的「技术使能延后 → Codex 不能
+> 运行」framing：只对路径 (B)（Claude Code 调用 Codex 插件）成立；(A) standalone Codex 由 `AGENTS.md`
+> 治理、**已开放**。
 
 1. **Codex 升为完整开发参与者**：Codex 由「只读外部评审 / 非参与」升为**完整开发参与者**——可
    运行命令（tests / builds / git / docker）、编辑 / 新建 / 删除文件、commit / push、迁移、改
@@ -122,4 +126,35 @@ CLAUDE.md 更新 + Owner HITL 拍板`。本 ADR 即该流程要求的决策锚�
 - [[../AGENTS|AGENTS]] — Roster + Codex 参与契约（本 ADR 起由禁令清单改写）+ §Future evolution
 - [[../policies/ai-agent|policies/ai-agent]] §1（Codex 参与策略层）/ §4（HITL 10-enum，Codex 同样
   受约束）/ §7（pre-flight，去「只读」限定）
-- `.claude/plugins.json` / `.claude/settings.json` / `.mcp.json` — 技术使能延后目标（本 ADR 不改）
+- `.claude/plugins.json` / `.claude/settings.json` / `.mcp.json` — 路径 (B)（Claude Code 调用 Codex 插件）技术使能延后目标（本 ADR 不改）
+
+## Amendment (2026-07-06) — 澄清两类使能；standalone Codex（路径 A）已开
+
+**触发**：ADR-035 落地（PR #277 merged `cc936bd`）后，standalone Codex app 在 mj-agent develop 下
+仍拒绝运行命令，理由是「AGENTS 禁止 Codex 运行任何命令」——它读的是 pre-merge 旧 AGENTS.md（stale
+env）。诊断进一步发现：即便同步到新 AGENTS.md，本 ADR 原 Decision 2/3 的「技术使能延后 → Codex
+cannot actually run」措辞被写进了 `AGENTS.md`（**Codex 自己的 instruction file**），会让 Codex 继续
+拒绝——**audience 错配**。
+
+**澄清（修正 Decision 2/3 的 framing）**：原文把两类不同的「Codex 使能」混为一谈：
+
+- **(A) standalone Codex app** 在本仓作为独立 agent 运行——**只**由 `AGENTS.md`（其 operating
+  contract）+ Codex 自身「Full access」权限治理，**不依赖** mj-agent `.claude/` 任何 wiring。
+- **(B) Claude Code 调用 Codex** 作为 sub-tool（`codex:` 插件）——才需要 `.claude/plugins.json` +
+  `.claude/settings.json` + MCP wiring。
+
+原 Decision 2「技术使能延后」**只对 (B) 成立**。对 (A)，`AGENTS.md` **就是**使能本身——无需 mj-agent
+侧 wiring。故本 amendment：**(A) standalone Codex 即刻开放**（Owner 拍板，2026-07-06）；(B) 仍延后，
+且 (B) 延后不限制 (A)。
+
+**enforcement 现实（承接 Decision 4）**：(A) 下 Codex 在**自身 harness** 运行，mj-agent
+`.claude/settings.json` `ask` 门 / protected-path prompt / L1·L1b 代码级 guardrail **不约束它**。故
+(A) 的 5 必停 + 数据边界 enforcement = **`AGENTS.md` 的 self-enforced prose（Codex 自守）**——
+Decision 4 的「先定义 Codex 如何 honor」在 (A) 场景即「把 AGENTS.md 自守边界写强写清」，已随本
+amendment 落地（`AGENTS.md` §Self-enforced boundaries）。**残余风险 Owner 已知并接受**：prose-
+obedience 非技术强制；Codex 若不守，无 mj-agent 侧硬门兜底（数据边界仅 DB 级 GRANT / L4 对直连仍
+生效，L1/L1b tool-chain 级可被绕）。
+
+**落点**：`AGENTS.md`（顶部 NOTE + §Codex participation 全面开放 + §Self-enforced boundaries 强化 +
+§两类使能区分）、`CLAUDE.md §Codex Status`、`policies/ai-agent.md §1` 同步。数据边界 ADR-006/009/000
+仍**不变**（本 amendment 改「(A) 是否开」，非数据规则）。
