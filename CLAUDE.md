@@ -123,7 +123,7 @@ Active doc-governance now lives in the kernel:
 
 - `policies/documentation.md` — 12-type taxonomy + `track` field + path-to-track tree +
   **PR gates A1-A6 + OB1-OB5** + frontmatter schema + per-type body depth + **CLAUDE.md
-  sync-allowlist (§7)** + 项目根 5-file 例外 (§2.6).
+  sync-allowlist (§7)** + 项目根 5-file + `AGENTS.md` 例外 (§2.6).
 - `policies/archive.md` — triggers / active-path-stability / `archive.yml` / ceremony /
   ai_visibility / retention. `sdd/lifecycle.md` — 9/4/5-state (capability / working-doc / canonical).
 - `sdd/workflows/execution-loop.md` — 17-stage HITL loop (gates 5/7/9/11/13) + §7 post-merge.
@@ -135,7 +135,7 @@ Active doc-governance now lives in the kernel:
   EVAL spec (active). Markdown: `docs/rule/[STANDARD]_GitHub_Markdown.md`; onboarding:
   `docs/guide/[GUIDE]_Developer_Onboarding.md`.
 - **跨项目借鉴边界**: borrow only external problem-framing; concrete schemes are mj-agent-native (attribution → glossary).
-- **项目根 5 文件**（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md；不入 canonical 治理；A1-A3 不适用，A4/A6 适用）.
+- **项目根 5 文件**（README/CONTRIBUTING/CHANGELOG/GLOSSARY/CLAUDE.md）+ **AGENTS.md**（AI agent 指令契约，per ADR-035）；均不入 canonical 治理；A1-A3 不适用，A4/A6 适用（§2.6）.
 
 ## Three-source SKILL distinction (两类 skill 严格区分 — 施加约束前先分类)
 

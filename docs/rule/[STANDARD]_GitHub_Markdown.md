@@ -1,12 +1,12 @@
 ---
 type: standard
 domain: SYS
-summary: 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则 + §14 项目根 README 与 Markdown 特例（v1.1），与 Meta_Framework v2.2 §4 字段语义互补
+summary: 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则 + §14 项目根 README 与 Markdown 特例（v1.2：纳入 AGENTS.md 根例外），与 Meta_Framework v2.2 §4 字段语义互补
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-05-18
+updated: 2026-07-06
 state: active
-version: v1.1
+version: v1.2
 track: code
 tags:
   - standard
@@ -20,10 +20,10 @@ aliases:
 
 # mj-agent GitHub-Flavored Markdown 编写规范
 
-> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md` 5 个具名 markdown（见 §14 项目根特例 + [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6）。
+> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md` 5 个具名 markdown + `AGENTS.md`（AI agent 指令契约，per ADR-035）（见 §14 项目根特例 + [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6）。
 > **目标受众**：开发 / 文档撰写者 / AI Agent
-> **版本**：v1.1（minor bump：§14 新增项目根 README 与 Markdown 特例；原 §14 参考改 §15；in-place sustained stable path，per ADR-011 §5.9 反例边界「§3 加新类目属字段补充」类比，不触发 archive ceremony）
-> **最后更新**：2026-05-18
+> **版本**：v1.2（minor：§适用范围 + §14 纳入 `AGENTS.md`（AI-agent 指令契约）根例外，per ADR-035；in-place per ADR-011 §5.9，不触发 archive ceremony）｜v1.1（§14 新增项目根 README 与 Markdown 特例；原 §14 参考改 §15）
+> **最后更新**：2026-07-06
 > **与 Meta_Framework v2.2 的关系**：本标准管 **语法 / 排版**（怎么写合法的 Markdown 与 YAML）；[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta_Framework v2.2]] §4 管 **字段语义**（哪些字段必填、取值约束）。两篇在各自对应章节互引。
 
 ---
@@ -576,7 +576,8 @@ description: >
 
 ## 14 项目根 README 与 Markdown 特例
 
-> 项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`）
+> 项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`；
+> 外加 `AGENTS.md` AI-agent 指令契约，per ADR-035）
 > 是访问者第一接触点；GitHub 自动渲染到仓库主页。本节补充 §1-§13 之外的特例规则。
 > Cross-ref：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（5 文件具名职责表 + 治理例外条款）。
 
@@ -617,7 +618,7 @@ CLAUDE.md 已大量使用 ` ```text ` 围栏的 ASCII 架构图；项目根 READ
 
 per [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6 例外条款：
 
-- 项目根 5 文件**不强制 frontmatter**（A2 frontmatter schema 校验不适用）
+- 项目根 5 文件 + `AGENTS.md`**不强制 frontmatter**（A2 frontmatter schema 校验不适用）
 - 不强制 GUIDE / STANDARD 等 canonical 类型 body 骨架（无 TL;DR / Prerequisites / 目录 等段名约束）
 - 不计入 A1-A3 PR 门禁校验
 - **仍受**：A4 wikilink 完整性（`[[...]]` 形式）+ A6 CLAUDE.md sync 检查

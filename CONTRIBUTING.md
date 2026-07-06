@@ -199,7 +199,7 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 
 ### 项目根 5 文件例外
 
-项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。详见 [policies/documentation.md §2.6](policies/documentation.md)。
+项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。`AGENTS.md`（AI agent 指令契约）同为根操作文件例外，同样处理（per ADR-035）。详见 [policies/documentation.md §2.6](policies/documentation.md)。
 
 ### 新文档默认值
 
