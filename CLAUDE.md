@@ -5,10 +5,13 @@ Guidance for Claude Code. **Detail lives in the SDD kernel (`policies/` + `sdd/`
 
 ## Codex Status
 
-Codex is **NOT** in the dev workflow — read-only external review only (advisory). All
-implementation (edits / tests / migrations / docs / verification) is Claude Code's; never
-delegate execution to Codex. Each task output declares `Codex invocation: NONE`. Full
-boundary: `AGENTS.md` + `policies/ai-agent.md` §1.
+Codex is an **authorized full development participant** (per ADR-035) — the former "read-only /
+NOT in dev workflow" boundary is retired. Authority is at parity with Claude Code (edits / commits /
+migrations / command runs) and therefore **constraints are at parity** (same HITL 必停 + data
+boundary; ADR-006/009/000 unchanged). **Technical enablement is deferred**: Codex is not yet wired
+in (no plugin / MCP / permission), so **Claude Code remains the sole *active* implementer** and each
+task still declares `Codex invocation: NONE` (now "not invoked", not "forbidden"). Full boundary +
+enablement prerequisite: `AGENTS.md` + `policies/ai-agent.md` §1 + `decisions/ADR-035`.
 
 ## Project
 
@@ -124,7 +127,7 @@ Active doc-governance now lives in the kernel:
 - `sdd/workflows/execution-loop.md` — 17-stage HITL loop (gates 5/7/9/11/13) + §7 post-merge.
   `sdd/adapters/{runtime-skill,prompt,contract,claude-code-skill}.md` — **A7-A12** + loader
   frontmatter-strip contract.
-- `policies/ai-agent.md` §4 — HITL 10-enum + Codex boundary + **A14**; `policies/ci-gates.md`
+- `policies/ai-agent.md` §1 — Codex 参与策略 · §4 — HITL 10-enum + **A14**; `policies/ci-gates.md`
   §5.1 — **A13**. `policies/git-branching.md` + `policies/release.md` — branch / G1·G2 /
   PR-template / SemVer (M6 X6; how-to in `docs/infrastructure/git/`). `decisions/ADR-024` —
   EVAL spec (active). Markdown: `docs/rule/[STANDARD]_GitHub_Markdown.md`; onboarding:

@@ -2,41 +2,46 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-20
+updated: 2026-07-06
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
 
 # Policy: AI Agent Boundaries
 
-> Phase M0 — 4 段 native 内容 ✓（§Codex 非参与 / §Subagent Split A3 / §Symbol-first Search A5 /
+> Phase M0 — 4 段 native 内容 ✓（§Codex 参与 [ADR-035 起；原 §Codex 非参与] / §Subagent Split A3 / §Symbol-first Search A5 /
 > §HITL Required Scenarios）.
 > 其余段（§Read/Write boundary / §Read priority / §Output requirements）在 Phase M2 内容填充.
 
-## §1 Codex 非参与策略层（native；最高优先级）
+## §1 Codex 参与策略层（native；最高优先级）
 
-**当前 mj-agent 项目不采用 Codex 与 Claude Code 协作开发.**
+**当前 mj-agent 项目授权 Codex 作为完整开发参与者与 Claude Code 协作开发（per ADR-035）；技术
+使能延后，使能前 Claude Code 仍是唯一 active implementer.**
 
 | 原则 | 含义 |
 |---|---|
-| 实施单一来源 | 所有文件修改、代码实现、测试运行、目录迁移、文档落地、验证总结均由 Claude Code 完成. |
-| Codex 只读 | Codex 仅作只读外部评审工具；不修改仓库；不执行任务；不调用 commit / push / migration. |
-| 不可委派 | Claude Code 不得把执行任务委派 / 转发 / 暗示给 Codex；不在文档中以"Codex 可以协助 X"等措辞预留协作面. |
-| 边界文件 | 详 `AGENTS.md`（顶部红 NOTE）+ `CLAUDE.md` §Codex Status. |
+| 实施来源 | 文件修改、代码实现、测试运行、目录迁移、文档落地、验证总结可由 Claude Code 或 Codex 完成（Codex 使能后）；两者同属实施 agent. |
+| 授权对等 → 约束对等 | Codex 与 Claude Code 同一授权类；相应**同样受** HITL 必停（§4 canonical 10-enum）+ 数据边界（ADR-006 / ADR-009 / ADR-000）约束；授权不放宽任何安全面. |
+| 决策单点 | Owner 仍是唯一决策者（HITL 拍板）；实施可双 agent，决策与验收单点不变；每 PR 声明由哪个 agent 实施 + git authorship 记溯源. |
+| 使能延后 + 硬前置 | 本层仅反转书面政策；技术使能（`.claude/plugins.json` 插件 + `.claude/settings.json` 权限 + MCP / runtime wiring）是独立 opt-in，以「先定义 Codex 如何 honor 5 必停面 + HITL gates + 数据边界」为硬前置（`ask` 门 / protected-path prompt 是 Claude Code harness 专属，不自动约束他 harness）. |
+| 边界文件 | 详 `AGENTS.md`（Roster + Codex 参与契约 + 使能前置）+ `CLAUDE.md` §Codex Status + `decisions/ADR-035`. |
 
-**Why this boundary**：
+**问责模型（原「非参与」四条 rationale 的重述）**：
 
-1. **Single point of accountability** — Claude Code session continuity 保稳定上下文.
-2. **Tool execution surface 受控** — 一个 agent 的 permission model 易审计.
+1. **Single point of accountability** — 决策 + 验收单点在 Owner（HITL 拍板）；实施可双 agent，
+   溯源靠 per-PR 声明 + git authorship.
+2. **Tool execution surface 受控** — 两实施 agent 共用同一 permission model + 数据边界；Codex
+   使能后在等价 guardrail 下运行.
 3. **4 项 in-source 专属必停**（`sql-guardrail-relax` / `prompt-version-or-body-change` /
-   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）只能由
-   单一 decision-maker enforce.
-4. **CLAUDE.md HITL 规则** 是按 Claude Code 读写契约校准的；其他 agent 解释可能漂移.
+   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）仍 HITL
+   enforce；Codex 使能硬前置要求其被同样拦.
+4. **CLAUDE.md HITL 规则** 按 Claude Code 读写契约校准 → Codex 用自己的校准契约（`AGENTS.md`）.
 
-每次任务输出末尾必须显式声明 `Codex invocation: NONE`，即使本次显然无 Codex 触发也声明.
+每次任务输出末尾须**声明 Codex 参与情况**（`Codex invocation: NONE` 或描述其具体贡献）；因技术
+使能延后，当下仍恒为 `NONE`（语义由「Codex 被禁」变为「本次 Codex 未参与」）.
 
 ## §2 Subagent Split 准则（A3 — Anthropic 大型代码库最佳实践；native）
 
@@ -134,7 +139,7 @@ verified against the running system before any toggle, commit, anchor flip, or
 downstream outline authoring that depends on the claim. **Spec brief / plan body /
 commit message body is NOT ground truth; only running-system observation is.**
 
-适用范围: 所有 AI agent 行动 (Claude Code / 任何 sub-agent / Codex 只读评审若用),
+适用范围: 所有 AI agent 行动 (Claude Code / 任何 sub-agent / Codex 若使能),
 覆盖 M-FU plan 决策 / Stage 边界 transition / `ci.yml continue-on-error` flip /
 freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contract amend.
 

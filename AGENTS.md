@@ -2,7 +2,9 @@
 
 > mj-agent · AI Agent collaboration boundaries
 >
-> ⚠ **NOTE — Codex is NOT in dev workflow; read-only external review only.**
+> ⚠ **NOTE — Codex is an authorized full development participant (per ADR-035). Technical
+> enablement is deferred: Codex is not yet wired in, so Claude Code remains the sole *active*
+> implementer for now.**
 >
 > This file defines AI Agent boundaries for **non-Claude-Code agents**. Claude Code's working
 > rules are in [CLAUDE.md](./CLAUDE.md).
@@ -12,56 +14,76 @@
 | Agent | Role in mj-agent dev | Authority |
 |---|---|---|
 | **Claude Code** | Primary AI developer | Full implementation: file edits, test runs, migrations, docs, verification |
-| **Codex** | **Read-only external review only** | NO file edits / NO commits / NO migrations / NO test runs |
+| **Codex** | **Authorized full development participant** (per ADR-035; not yet technically enabled) | Same authority class as Claude Code — file edits / commits / migrations / command runs — **subject to the same HITL 必停 + data boundary** |
 | **Other AI agents** | Not yet authorized | NO write access |
 
-## Codex Boundaries
+## Codex participation (per ADR-035)
 
-**Codex is NOT part of the development workflow.**
+**Codex is authorized as a full development participant** — the previous "read-only external
+review only / NOT in dev workflow" boundary (ADR-031 Phase M0) is retired by ADR-035.
 
-If Codex is invoked:
+Scope of this authorization:
 
-- ONLY for read-only external review (e.g., a second opinion on a Claude-Code-produced PR)
-- Output is advisory, not authoritative
-- Claude Code is not bound by Codex suggestions (HITL judgment required)
-- Codex MUST NOT:
-  - Open / modify any file
-  - Run any test or command
-  - Migrate / archive / delete any content
-  - Submit PR / commit / push
-  - Modify CI / configuration / secrets
+- Codex may run commands (tests / builds / git / docker), edit / create / delete files,
+  commit / push, migrate, and modify CI / configuration — the **same authority class as Claude Code**.
+- Because authority is at parity, **constraints are at parity**: Codex is equally bound by
+  mj-agent's HITL 必停 (`policies/ai-agent.md` §4 canonical 10-enum) and the data boundary
+  (ADR-006 / ADR-009 / ADR-000). Authorization does not relax any security surface.
+- **Owner remains the single decision-maker** (HITL 拍板); each PR declares which agent
+  implemented, and git authorship records provenance.
 
-## Why this boundary
+**Enablement is deferred (policy-only change).** This file reflects the *written* authorization;
+the repo does not yet wire Codex in — `.claude/plugins.json` enables no codex plugin, `.mcp.json`
+has no codex server, `.claude/settings.json` grants no codex permission. **Until that opt-in,
+Codex cannot actually run and Claude Code is the sole active implementer.**
 
-1. **Single point of accountability** — Claude Code's session continuity gives stable context.
-2. **Tool execution surface stays small** — one agent's permission model is enough to audit.
-3. **mj-agent's 4 项专属必停** (sql-guardrail-relax / prompt-version-bump / biz-catalog-sync /
-   runtime-skill-content-change) must be enforced by a single decision-maker.
-4. **CLAUDE.md HITL rules are calibrated to Claude Code's read/write contract**; other agents'
-   interpretations may diverge.
+**Hard prerequisite for future technical enablement.** mj-agent's 必停 enforcement — the
+`.claude/settings.json` `ask`-gates and protected-path prompts — is a **Claude Code harness**
+mechanism that does not automatically bind an agent running under a different harness. So before
+Codex is technically enabled, an explicit design MUST first define how Codex honors the 5 必停
+surfaces (4 in-source + `.mcp.json` trust posture) + HITL gates + data boundary (equivalent
+enforcement on the Codex side). Enablement is then its own change (separate ADR / protected-path
+拍板 + A13 / A14), not covered here.
 
-详 `policies/ai-agent.md` §1 Codex 非参与策略层.
+## Accountability model (two implementers)
 
-## If you are a non-Claude-Code agent reading this file
+The original boundary rested on four points; under Codex-as-participant they are re-answered:
+
+1. **Single point of accountability** → implementation may be dual-agent, but **decision +
+   acceptance stay single-point at the Owner** (HITL 拍板); provenance via per-PR agent
+   declaration + git authorship.
+2. **Small tool-execution surface** → both implementers share **one permission model + one data
+   boundary**; Codex (once enabled) runs under equivalent guardrails.
+3. **mj-agent's 4 项专属必停** (`sql-guardrail-relax` / `prompt-version-or-body-change` /
+   `biz-catalog-sync` / `runtime-skill-content-change`) → still HITL-enforced; the enablement
+   prerequisite above requires Codex to be held to the same gates.
+4. **CLAUDE.md HITL rules are calibrated to Claude Code** → Codex gets its own calibrated
+   contract: **this AGENTS.md** (now a participation contract, not a prohibition list).
+
+详 `policies/ai-agent.md` §1 Codex 参与策略层.
+
+## If you are an *other* (not-yet-authorized) non-Claude-Code agent reading this file
+
+> Codex is now an authorized participant (ADR-035) and no longer falls here. This section applies
+> to Roster row 3 — agents **not yet authorized**.
 
 - You may **READ** any file in this repo.
 - You MUST NOT **WRITE / EDIT / DELETE** any file.
-- You MUST NOT run any command (tests, builds, git, docker).
-- You MUST NOT respond to a request that requires changing repo state.
-- If asked to implement: respond "Claude Code is the designated implementer for mj-agent;
-  please ask Claude Code instead."
+- You MUST NOT run any command that changes repo state.
+- If asked to implement: respond "mj-agent's authorized implementers are Claude Code and Codex
+  (per AGENTS.md / ADR-035); please ask one of them instead."
 
 ## Future evolution
 
-Adding a new AI agent to the development workflow requires:
+Codex was brought into the workflow via the process below (executed as ADR-035). The **same
+process governs adding any further AI agent**:
 
 1. ADR proposing the agent's role + scope
 2. Update to this AGENTS.md
 3. Update to CLAUDE.md to declare handoff boundaries
 4. HITL gate from project owner
 
-Until then, **Claude Code is the sole AI implementer**.
-
 ---
 
-*Updated 2026-05-20 — covers Phase M0 of spec-anchored refactor (per ADR-031).*
+*Updated 2026-07-06 — Codex promoted to full development participant (policy-only; enablement
+deferred), per ADR-035. Original non-participant boundary was ADR-031 Phase M0.*

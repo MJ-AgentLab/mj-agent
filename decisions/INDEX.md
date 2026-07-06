@@ -43,6 +43,7 @@ ai_visibility: source-of-truth
 | [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | proposed (draft) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
 | [ADR-033_DGX_Ops_Sister_Repo_Boundary.md](./ADR-033_DGX_Ops_Sister_Repo_Boundary.md) | OPS | accepted (active) | DGX serving/ops 归独立姊妹仓 dgx-mlops；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算） |
 | [ADR-034_HITL_Propose_Decide_Apply_Model.md](./ADR-034_HITL_Propose_Decide_Apply_Model.md) | WORKFLOW | accepted (active) | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（.claude/** / .mcp.json）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff；仅交互模式成立（auto classifier 硬拦放宽类）。supersede ADR-015 §决策点 4 残留 |
+| [ADR-035_Codex_Full_Development_Participant.md](./ADR-035_Codex_Full_Development_Participant.md) | WORKFLOW | accepted (active) | Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑/提交/迁移，受同一 HITL 必停 + 数据边界）；本 ADR 仅反转书面政策，技术使能（插件 + 权限 wiring）延后为独立 opt-in，硬前置 = 先定义 Codex 如何 honor 5 必停 + HITL；使能前 Claude Code 仍唯一 active implementer；数据边界 ADR-006/009/000 不变；revise ADR-031 Phase M0 native 内容 |
 
 ## Deprecated / Superseded ADRs
 
@@ -56,4 +57,4 @@ ai_visibility: source-of-truth
 
 ---
 
-> *现 23 个 ADR 手工收录（22 前收录 + ADR-034）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
+> *现 24 个 ADR 手工收录（23 前收录 + ADR-035）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.

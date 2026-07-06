@@ -10,7 +10,7 @@ LangGraph 1.1.8 构建。Python 3.13、使用 [`uv`](https://github.com/astral-s
 > - **[capabilities/](./capabilities/)** — Capability Package（Phase M1 起填充 5 pilot；当前仅 INDEX 占位）.
 > - **[policies/](./policies/)** — Business Policy（9 native 文件）.
 > - **[decisions/](./decisions/)** — ADR 新址（Phase M5 整体平移自 `docs/adr/`；当前仅 ADR-031 draft + INDEX 占位）.
-> - **[AGENTS.md](./AGENTS.md)** — Codex 边界声明（Codex NOT in dev workflow / read-only review only）.
+> - **[AGENTS.md](./AGENTS.md)** — Codex 参与契约（Codex 授权为完整开发参与者 / 技术使能延后；per ADR-035）.
 > - **[GLOSSARY.md](./GLOSSARY.md)** — 全仓领域术语表.
 
 ## Clone
