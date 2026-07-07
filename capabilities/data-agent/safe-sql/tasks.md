@@ -112,16 +112,19 @@ updated: 2026-05-20
 - **Linked REQ**：REQ-006
 - **Contract changed?**：no (frozen anchor; ADR-029)
 - **HITL trigger**：modification to `tool_errors.py` requires HITL (changes agent error surface; affects all SQL tools)
-- **Status**：done (M1 contract); existing tests cover `_convert()` directly; TBD-M3 (full @wrap_tool_call integration test)
+- **Status**：done (M1 contract + #288 wrap/graph 集成回归，2026-07-07)。原 TBD-M3 三项由
+  issue #288 修复落地（sync-only middleware 使 Chainlit/Studio async 链每次工具调用炸
+  `NotImplementedError`）；smoke 占位改为 unit 级 fake-model graph 测试（无需 creds，CI 默认跑）
 - **TDD test_list**：
   - `tests/unit/test_tool_error_middleware.py::TestValueErrorConversion::test_precheck_rejection_becomes_tool_message` (existing)
   - `tests/unit/test_tool_error_middleware.py::TestValueErrorConversion::test_guardrail_rejection_preserves_message` (existing)
   - `tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_timeout_message_passed_through` (existing)
   - `tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_generic_db_error` (existing)
   - `tests/unit/test_tool_error_middleware.py::TestUnexpectedExceptionFallback::test_other_exceptions_become_messages` (existing; parametrized: TypeError, KeyError)
-  - **TBD-M3** `tests/unit/test_middleware_wrap_integration.py::test_handle_sync_wrap_tool_call` — verify decorated wrapper actually intercepts at `@wrap_tool_call` integration level
-  - **TBD-M3** `tests/unit/test_middleware_wrap_integration.py::test_ahandle_async_wrap_tool_call` — same for async variant
-  - **TBD-M3** `tests/smoke/test_chainlit_astream_middleware.py::test_async_middleware_used_in_astream_path` — confirm `make_graph` async path actually invokes `ahandle_sql_tool_errors`
+  - `tests/unit/test_tool_error_middleware.py::TestSyncWrapToolCall::{test_value_error_converted,test_runtime_error_converted,test_success_passthrough}` (#288 — wrap 层 sync 集成)
+  - `tests/unit/test_tool_error_middleware.py::TestAsyncAwrapToolCall::{test_value_error_converted,test_runtime_error_converted,test_success_passthrough}` (#288 — wrap 层 async 集成；全仓首批 async 测试)
+  - `tests/unit/test_tool_error_middleware.py::TestBothHooksOverridden::{test_sync_hook_overridden,test_async_hook_overridden}` (#288 — 注册实例双 hook pin)
+  - `tests/unit/test_agent_async_tool_path.py::{test_ainvoke_tool_error_converted_not_raised,test_invoke_tool_error_converted_not_raised}` (#288 — graph 级 fake-model E2E，复现事故路径)
 
 ## In-Progress
 

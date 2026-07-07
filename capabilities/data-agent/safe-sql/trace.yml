@@ -161,9 +161,14 @@ links:
       - tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_timeout_message_passed_through
       - tests/unit/test_tool_error_middleware.py::TestRuntimeErrorConversion::test_generic_db_error
       - tests/unit/test_tool_error_middleware.py::TestUnexpectedExceptionFallback::test_other_exceptions_become_messages
-      # wrap_tool_call integration + Chainlit astream smoke placeholders dropped:
-      # sync/async wrap path covered by the bdd binding + 5 unit conversions above;
-      # full integration/smoke harness → Phase-2 (EVAL).
+      # (#288, 2026-07-07) wrap-layer + graph-layer integration landed as unit
+      # tests (fake tool-calling model; no creds; CI default-selected) — the
+      # former "dropped placeholders" gap proved real and froze Chainlit:
+      - tests/unit/test_tool_error_middleware.py::TestSyncWrapToolCall
+      - tests/unit/test_tool_error_middleware.py::TestAsyncAwrapToolCall
+      - tests/unit/test_tool_error_middleware.py::TestBothHooksOverridden
+      - tests/unit/test_agent_async_tool_path.py::test_ainvoke_tool_error_converted_not_raised
+      - tests/unit/test_agent_async_tool_path.py::test_invoke_tool_error_converted_not_raised
     tasks:
       - tasks.md#T-007
     prs:

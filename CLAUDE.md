@@ -57,8 +57,9 @@ CLI (`server/cli.py`: `mj-agent serve|check`). Runtime:
 - `tools/__init__.py:ALL_TOOLS` — `find_biz_context` → `list_biz_tables` →
   `describe_biz_table` → `execute_sql` (default LLM order). SQL chain:
   `tools/{biz_context,sql/introspect,sql/guardrail,sql/precheck,sql/execute}.py`.
-- `middleware/tool_errors.py` — `@wrap_tool_call` turns SQL ValueError/RuntimeError
-  into a `ToolMessage` so the LLM self-corrects (ADR-029).
+- `middleware/tool_errors.py` — `SQLToolErrorMiddleware`（single middleware, BOTH
+  `wrap_tool_call` + `awrap_tool_call` hooks — never split; ADR-029 amendment #288）
+  turns SQL ValueError/RuntimeError into a `ToolMessage` so the LLM self-corrects.
 - `memory/checkpointer.py` — AsyncPostgresSaver on the dedicated `mj-agent-postgres`
   container. `integrations/mj_system_db.py` — read-only psycopg pool. `llm.py` —
   `make_llm()` provider factory. `config.py` — pydantic-settings over `.env`.

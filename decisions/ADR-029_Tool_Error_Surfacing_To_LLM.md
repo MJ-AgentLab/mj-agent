@@ -1,10 +1,10 @@
 ---
 type: adr
 domain: AGENT
-summary: SQL 工具异常（ValueError/RuntimeError）通过 langchain.agents.middleware.@wrap_tool_call 中间件转换为 ToolMessage，使 LLM 能读到失败原因并自纠正；工具函数本身保留 raise 行为，保留 tests/smoke + tests/unit 现有契约
+summary: SQL 工具异常（ValueError/RuntimeError）通过单个 SQLToolErrorMiddleware（wrap_tool_call + awrap_tool_call 双 hook；2026-07-07 amendment 取代原 @wrap_tool_call 装饰器形态）转换为 ToolMessage，使 LLM 能读到失败原因并自纠正；工具函数本身保留 raise 行为，保留 tests/smoke + tests/unit 现有契约
 owner: 项目负责人
 created: 2026-05-12
-updated: 2026-05-12
+updated: 2026-07-07
 state: active
 decision: accepted
 track: code
@@ -50,9 +50,13 @@ def handle_sql_tool_errors(request, handler):
         return _convert(request, exc)  # → ToolMessage(content="工具...", tool_call_id=...)
 ```
 
-同模块同时提供 async 变体 `ahandle_sql_tool_errors`，覆盖 Chainlit `agraph.astream` 路径（参 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L3 async bugfix 同源约束）。
+~~同模块同时提供 async 变体 `ahandle_sql_tool_errors`，覆盖 Chainlit `agraph.astream` 路径（参 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L3 async bugfix 同源约束）。~~
 
-`make_graph()` 在 `create_agent` kwargs 中追加 `middleware=[handle_sql_tool_errors]`（sync 和 async 均挂载——LangChain `wrap_tool_call` 装饰器内部按 handler 协程性自动派发）。
+~~`make_graph()` 在 `create_agent` kwargs 中追加 `middleware=[handle_sql_tool_errors]`（sync 和 async 均挂载——LangChain `wrap_tool_call` 装饰器内部按 handler 协程性自动派发）。~~
+
+> **❌ 上两段的机制断言错误，已由 2026-07-07 Amendment（issue #288）更正**：装饰器不会
+> "自动派发"；`ahandle_sql_tool_errors` 是独立 middleware 对象且从未注册。实际形态见下方
+> Amendment——单个 `SQLToolErrorMiddleware` 类同时 override 双 hook。
 
 ### 错误消息约定
 
@@ -102,6 +106,49 @@ def handle_sql_tool_errors(request, handler):
 未采纳原因：
 - 与 LangChain 1.x 推荐路径（"Tool error handling has been relocated to middleware"）相反
 - 对 LangChain 1.3+ 不向前兼容
+
+## Amendment（2026-07-07 — issue #288：async 链断裂事故）
+
+**事故**：Chainlit serve（`graph.astream`，async）下任何带工具调用的问题永久转圈。
+checkpointer 库 `checkpoint_writes` `__error__` 通道记录：
+`NotImplementedError('Asynchronous implementation of awrap_tool_call is not available...')`。
+LangGraph Studio 同为 async 入口，同样中招；smoke 测试全走 sync `invoke()`，CI 从未覆盖。
+
+**原文两处断言证伪**（langchain 1.2.15 源码 `agents/factory.py:878-911` +
+`agents/middleware/types.py` base class）：
+
+1. `@wrap_tool_call` 装饰器**不会**"按 handler 协程性自动派发"——它按被装饰函数的协程性
+   生成**单侧** middleware（sync 函数 → 只有 `wrap_tool_call`；async 函数 → 只有
+   `awrap_tool_call`）。`ahandle_sql_tool_errors` 因此是**第二个独立 middleware 对象**，
+   且从未被注册进 `make_graph()`（死代码）。
+2. factory 把 override 任一侧 hook 的 middleware **同时**纳入 sync/async 两条工具链；
+   未 override 侧落到 base class 直接 `raise NotImplementedError`。推论：**把两个单侧
+   实例一起注册也不行**——各自在对侧模式炸掉。
+
+**修正后的机制**（本 amendment 起为本 ADR 的权威实现形态）：
+
+```python
+class SQLToolErrorMiddleware(AgentMiddleware):
+    def wrap_tool_call(self, request, handler):        # sync: invoke / stream
+        try: return handler(request)
+        except (ValueError, RuntimeError) as exc: return _convert(request, exc)
+
+    async def awrap_tool_call(self, request, handler): # async: ainvoke / astream
+        try: return await handler(request)
+        except (ValueError, RuntimeError) as exc: return _convert(request, exc)
+
+handle_sql_tool_errors = SQLToolErrorMiddleware()      # 单实例，双链共用
+```
+
+错误消息约定、`_convert` 语义、"工具函数保留 raise 行为"契约均不变；变的只是
+middleware 的**装配形态**：单类双 hook，注册处 `middleware=[handle_sql_tool_errors]`
+不变。**不变式**：该 middleware 必须同时 override 双 hook——由
+`tests/unit/test_tool_error_middleware.py::TestBothHooksOverridden` +
+`tests/unit/test_agent_async_tool_path.py`（graph 级 fake-model async E2E）常驻回归。
+
+同事故次生加固（`ui.py`）：`on_message` 对 `astream` 加异常兜底写回前端（杜绝无声转圈）；
+空回复 fallback 改 `await graph.aget_state()`（AsyncPostgresSaver 的同步 `get_state`
+在事件循环主线程必 raise）。
 
 ## References
 

@@ -155,10 +155,12 @@ Upstream (reference contract):                              ──── REQ-004
    queries with old column names. Is this desired? Document expected drift cycle
    (catalog sync via `mj-agent-runtime-biz-catalog-sync` skill).
 
-4. **Async middleware coverage** — `ahandle_sql_tool_errors` exists but `agent.py
-   make_graph()` only wires the sync variant. ADR-029 §4 says async variant is for
-   Chainlit; need M3 verification that astream path actually goes through async
-   middleware (or add wiring).
+4. **Async middleware coverage** — **RESOLVED (#288, 2026-07-07)**。该缺口实际成灾：
+   sync-only middleware 被 langchain factory 同时纳入 async 链，Chainlit/Studio 下每次
+   工具调用在 tools 节点炸 `NotImplementedError`（前端永久转圈）。修复 = 单
+   `SQLToolErrorMiddleware` 同时 override `wrap_tool_call` + `awrap_tool_call`
+   （两个单侧实例并注册也不行——对侧模式各自炸）；async 路径由
+   `tests/unit/test_agent_async_tool_path.py` 常驻回归。ADR-029 见 2026-07-07 amendment。
 
 > Phase M2 will fill in adapter-side §BDD Rules + §TDD Rules per
 > `sdd/adapters/{python,langchain-agent,bdd-tdd}.md`.
