@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from mj_agent.config import Settings
 from mj_agent.tools.analysis import estimate_tokens
 from mj_agent.tools.analysis.token_estimator import DEFAULT_TOKEN_BUDGET
 
@@ -59,3 +60,39 @@ def test_compact_serialization() -> None:
     r = estimate_tokens(rows)
     # Single small row should be << 50 tokens; verifies separators=(',',':')
     assert r["token_count"] < 50
+
+
+def test_default_model_id_resolves_from_settings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Bugfix #285: omitting model_id resolves to the deployment model.
+
+    A hardcoded vendor default would leak into the LLM tool schema and get
+    misread as the agent's own identity.
+    """
+    import mj_agent.tools.analysis.token_estimator as te_mod
+
+    monkeypatch.setattr(
+        te_mod, "settings", Settings(_env_file=None, llm_model_id="test-model-xyz")
+    )
+    r = estimate_tokens([{"a": 1}])
+    assert r["model_id"] == "test-model-xyz"
+
+
+def test_none_model_id_resolves_from_settings(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explicit None (e.g. the LLM passes null) also resolves to settings."""
+    import mj_agent.tools.analysis.token_estimator as te_mod
+
+    monkeypatch.setattr(
+        te_mod, "settings", Settings(_env_file=None, llm_model_id="test-model-xyz")
+    )
+    r = estimate_tokens([{"a": 1}], model_id=None)
+    assert r["model_id"] == "test-model-xyz"
+
+
+def test_explicit_model_id_still_honored() -> None:
+    """An explicit model_id argument is used and echoed as-is."""
+    r = estimate_tokens([{"a": 1}], model_id="gpt-4o")
+    assert r["model_id"] == "gpt-4o"

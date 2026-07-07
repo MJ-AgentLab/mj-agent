@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from mj_agent.agent import _ACTIVE_SKILLS, _build_system_prompt
+from mj_agent.config import Settings
 from mj_agent.skills import load_skill, load_skill_meta
 
 _PHASE1_SUB_E_SKILLS = (
@@ -63,3 +64,35 @@ def test_system_prompt_band_ordering() -> None:
     assert idx["monthly-report"] < idx["safe-sql-analysis"]
     # Execute / optimize 后段
     assert idx["safe-sql-analysis"] < idx["query-optimization"]
+
+
+def test_system_prompt_contains_runtime_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Bugfix #285: the agent must know its deployment provider + model id.
+
+    Without this the only model-name string in LLM context is whatever leaks
+    through tool schemas, and the agent misreports its own identity.
+    """
+    import mj_agent.agent as agent_mod
+
+    monkeypatch.setattr(
+        agent_mod,
+        "settings",
+        Settings(
+            _env_file=None,
+            llm_provider="local-openai-compat",
+            llm_model_id="test-model-xyz",
+        ),
+    )
+    prompt = _build_system_prompt()
+    assert "# Runtime" in prompt
+    assert "local-openai-compat" in prompt
+    assert "test-model-xyz" in prompt
+
+
+def test_runtime_identity_placement() -> None:
+    """Runtime section sits between base identity and the skill block."""
+    prompt = _build_system_prompt()
+    assert prompt.index("# Identity") < prompt.index("# Runtime")
+    assert prompt.index("# Runtime") < prompt.index("# Skill: biz-schema-exploration")
