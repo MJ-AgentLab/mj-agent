@@ -91,44 +91,53 @@ modules:
     freeze_anchor: src/mj_agent/middleware/tool_errors.py
     adr: ADR-029
     exports:
+      - name: SQLToolErrorMiddleware
+        signature: "class SQLToolErrorMiddleware(AgentMiddleware) — wrap_tool_call (sync) + awrap_tool_call (async) in ONE middleware"
+        public: true
+        async: both
+        anchor: tool_errors.py:71-92
+        note: >-
+          Issue #288 invariant: a single middleware MUST override both hooks.
+          langchain's factory routes a middleware overriding either hook into
+          BOTH the sync and async tool chains; a one-sided middleware raises
+          NotImplementedError on the other side (this froze Chainlit on every
+          tool call). Do NOT split back into two @wrap_tool_call functions.
       - name: handle_sql_tool_errors
-        signature: "@wrap_tool_call def handle_sql_tool_errors(request, handler) -> Any"
+        signature: "handle_sql_tool_errors = SQLToolErrorMiddleware()  # module-level singleton"
         public: true
-        async: false
-        anchor: tool_errors.py:58-67
-      - name: ahandle_sql_tool_errors
-        signature: "@wrap_tool_call def ahandle_sql_tool_errors(request, handler) -> Any"
-        public: true
-        async: true
-        anchor: tool_errors.py:70-86
-        note: "type: ignore[call-overload] on the wrap_tool_call decorator due to upstream typing limitation"
+        async: both
+        anchor: tool_errors.py:95
     constants:
       - name: _VALIDATION_PREFIX
         value: "工具调用未通过校验"
         contract: "stable string; asserted by test_tool_error_middleware.py"
-        anchor: tool_errors.py:32
+        anchor: tool_errors.py:43
       - name: _EXECUTION_PREFIX
         value: "工具执行失败"
         contract: stable
-        anchor: tool_errors.py:33
+        anchor: tool_errors.py:44
       - name: _RETRY_HINT
         value: "请根据错误信息调整 SQL 或工具参数后重试。"
         contract: stable
-        anchor: tool_errors.py:34
+        anchor: tool_errors.py:45
     behavior:
       - catches: "(ValueError, RuntimeError)"
         action: "return ToolMessage(content=<formatted>, tool_call_id=request.tool_call['id'])"
-        anchor: tool_errors.py:66, 85
+        anchor: tool_errors.py:79-82, 89-92
       - catches: "Exception (other)"
         action: "return ToolMessage with '工具执行失败（意外异常 <Type>）：<msg>' content"
-        anchor: tool_errors.py:52-54
+        anchor: tool_errors.py:63-66
       - direct_callers: "unit / smoke tests still see raw exception — middleware only intercepts agent's tool-call path"
-        anchor: tool_errors.py:17-19 (doc comment)
+        anchor: tool_errors.py:25-28 (doc comment)
     wiring:
       module: src.mj_agent.agent
       function: make_graph
       kwarg: "middleware=[handle_sql_tool_errors]"
-      note: "sync variant wired; ahandle_sql_tool_errors integration with astream path — TBD M3 verification"
+      note: >-
+        Single instance serves both chains (sync invoke/stream + async
+        ainvoke/astream). Async path verified by
+        tests/unit/test_agent_async_tool_path.py (issue #288 regression;
+        closes the former "TBD M3 verification" gap).
 
 # Public symbol non-actions (explicit; reverse-engineered from doc comments)
 non_actions:

@@ -139,15 +139,19 @@ attempt these on retry)：
 
 ### Symptom: graph hangs / Chainlit frontend hangs after tool call
 
-**Diagnostic**：potential middleware regression (ADR-029). REQ-006 contract says
-`handle_sql_tool_errors` (sync) and `ahandle_sql_tool_errors` (async) catch
-ValueError/RuntimeError and return ToolMessage instead of re-raising.
+**Diagnostic**：potential middleware regression (ADR-029 + #288). REQ-006 contract
+says `SQLToolErrorMiddleware` (single instance `handle_sql_tool_errors`, BOTH
+`wrap_tool_call` + `awrap_tool_call` hooks) catches ValueError/RuntimeError and
+returns ToolMessage instead of re-raising. Known incident #288: a sync-only hook
+made every Chainlit tool call die in the tools node with `NotImplementedError`
+(spinner forever); evidence lives in the checkpointer DB `checkpoint_writes`
+`__error__` channel for the stuck thread.
 
 **Resolution**：
 
 - Verify `make_graph()` in `agent.py` has `middleware=[handle_sql_tool_errors]`
-- If using Chainlit (`graph.astream` path) → verify async variant wiring (TBD-M3
-  per design.md §5 Q4)
+- Verify the instance overrides both hooks — `tests/unit/test_tool_error_middleware.py::TestBothHooksOverridden`
+- Async chain E2E — `tests/unit/test_agent_async_tool_path.py`
 - Check `tests/unit/test_tool_error_middleware.py` passes locally
 
 ### Symptom: catalog drift breaking REQ-002 `require_time_range`
@@ -358,10 +362,12 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
   `TestRuntimeErrorConversion` (timeout passthrough + generic DB error) +
   `TestUnexpectedExceptionFallback` (其他 exceptions 转 ToolMessage) = 5
   cases 覆盖核心转换路径。
-- **升级触发条件**: M3 integration tests 实装
-  (`test_middleware_wrap_integration.py` 验 sync + async wrap_tool_call) +
-  smoke test 实装（`test_chainlit_astream_middleware.py` 验 astream 路径）。
-- **预计时间**: M3 EOL（per TBD-M3 markers；与 S1/S2 同 batch）。
+- **升级触发条件**: ~~M3 integration tests 实装~~ **已闭（#288, 2026-07-07）**：
+  wrap 层 sync+async 集成测试落
+  `tests/unit/test_tool_error_middleware.py::{TestSyncWrapToolCall,TestAsyncAwrapToolCall,TestBothHooksOverridden}`，
+  graph 级 astream/ainvoke 路径落 `tests/unit/test_agent_async_tool_path.py`
+  （fake tool-calling model，无需 creds，进 CI default-selected）。
+- **预计时间**: ~~M3 EOL~~ 已随 #288 落地。
 
 ---
 

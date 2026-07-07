@@ -25,8 +25,9 @@ ai_visibility: source-of-truth
   （system prompt + 3 SKILL 拼接）/ `_ACTIVE_SKILLS` 列表（runtime SKILL 静态全量加载）
 - `src/mj_agent/tools/__init__.py` — `ALL_TOOLS` 注册顺序（system prompt tool-call order hint
   的 reference）
-- `src/mj_agent/middleware/**/*.py` — middleware 链（ADR-029 `handle_sql_tool_errors` sync +
-  `ahandle_sql_tool_errors` async variants；`@wrap_tool_call` decorator pattern）
+- `src/mj_agent/middleware/**/*.py` — middleware 链（ADR-029 + #288 amendment：单
+  `SQLToolErrorMiddleware` 同时 override `wrap_tool_call`/`awrap_tool_call` 双 hook，
+  单例 `handle_sql_tool_errors`；禁止拆回单侧 `@wrap_tool_call` decorator 形态）
 - `src/mj_agent/memory/checkpointer.py` — `AsyncPostgresSaver` 实例化 + DSN + schema 配置
 - Tool 调用流转契约：`find_biz_context` → `list_biz_tables` / `describe_biz_table` →
   `execute_sql`（LLM 按 system prompt 的 hint 顺序，非硬代码强制）

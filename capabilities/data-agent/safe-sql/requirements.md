@@ -181,16 +181,21 @@ updated: 2026-05-20
 
 **Acceptance**：
 
-- `handle_sql_tool_errors(request, handler)` — sync wrapper; decorated with `@wrap_tool_call`
-- `ahandle_sql_tool_errors(request, handler)` — async wrapper; same decorator (`# type: ignore[call-overload]`)
-- Both catch `(ValueError, RuntimeError)` from inner tool call
-- Both return `ToolMessage(content=<formatted>, tool_call_id=request.tool_call["id"])`
+- `SQLToolErrorMiddleware(AgentMiddleware)` — ONE middleware overriding BOTH
+  `wrap_tool_call` (sync) and `awrap_tool_call` (async); `handle_sql_tool_errors`
+  is its module-level singleton. Must never be split back into two one-sided
+  `@wrap_tool_call` functions: langchain's factory routes an either-hook
+  middleware into both chains, so the missing side raises `NotImplementedError`
+  (issue #288 — froze Chainlit on every tool call)
+- Both hooks catch `(ValueError, RuntimeError)` from inner tool call
+- Both hooks return `ToolMessage(content=<formatted>, tool_call_id=request.tool_call["id"])`
 - Content prefixes (stable contract strings):
   - `ValueError` → `"工具调用未通过校验 ..."` + `_RETRY_HINT`
   - `RuntimeError` → `"工具执行失败 ..."` + `_RETRY_HINT`
   - Other exception types → `"工具执行失败（意外异常 <Type>）：..."` + `_RETRY_HINT`
 - Direct callers (unit / smoke tests, internal code) still see raw exception — middleware only intercepts agent's tool-call path
-- Wired in `agent.py:make_graph()` as `middleware=[handle_sql_tool_errors]` (sync variant; async TBD-M3 variant integration)
+- Wired in `agent.py:make_graph()` as `middleware=[handle_sql_tool_errors]` — the single
+  instance serves both chains; async path pinned by `tests/unit/test_agent_async_tool_path.py` (#288)
 
 **BDD Examples**：
 

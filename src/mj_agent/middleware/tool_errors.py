@@ -12,13 +12,22 @@ graph and converts those exceptions into ``ToolMessage`` content the LLM
 sees as normal tool output. The LLM is then expected to revise its SQL
 (add a time predicate, narrow the query, etc.) and retry.
 
+``SQLToolErrorMiddleware`` implements BOTH ``wrap_tool_call`` (sync
+``invoke``/``stream``) and ``awrap_tool_call`` (async ``ainvoke``/``astream``
+— the Chainlit / LangGraph Studio path). This must stay a single middleware
+with both hooks: langchain's factory routes any middleware that overrides
+either hook into *both* the sync and async chains, so a one-sided middleware
+raises ``NotImplementedError`` on the other side (issue #288 — a sync-only
+hook froze the Chainlit UI on every tool call; the ``@wrap_tool_call``
+decorator can only ever produce a one-sided middleware).
+
 Direct callers of the tool functions (unit / smoke tests, internal code)
 still observe the raw exception — the middleware intercepts only the
 agent's tool-call path, preserving the existing test contract documented
 in ``tests/smoke/test_agent_smoke.py``.
 
-See ADR-029 for the policy rationale and ADR-006 §L1/§L1b for where the
-errors originate.
+See ADR-029 (incl. the 2026-07-07 amendment) for the policy rationale and
+ADR-006 §L1/§L1b for where the errors originate.
 """
 
 from __future__ import annotations
@@ -26,8 +35,9 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import Any
 
-from langchain.agents.middleware import wrap_tool_call
+from langchain.agents.middleware import AgentMiddleware, ToolCallRequest
 from langchain_core.messages import ToolMessage
+from langgraph.types import Command
 
 _VALIDATION_PREFIX = "工具调用未通过校验"
 _EXECUTION_PREFIX = "工具执行失败"
@@ -55,32 +65,28 @@ def _convert(request: Any, exc: BaseException) -> ToolMessage:
     return ToolMessage(content=content, tool_call_id=request.tool_call["id"])
 
 
-@wrap_tool_call
-def handle_sql_tool_errors(
-    request: Any,
-    handler: Callable[[Any], Any],
-) -> Any:
-    """Sync wrapper — convert ValueError/RuntimeError to ToolMessage."""
-    try:
-        return handler(request)
-    except (ValueError, RuntimeError) as exc:
-        return _convert(request, exc)
+class SQLToolErrorMiddleware(AgentMiddleware):
+    """Convert ValueError/RuntimeError to ToolMessage on both tool chains."""
+
+    def wrap_tool_call(
+        self,
+        request: ToolCallRequest,
+        handler: Callable[[ToolCallRequest], ToolMessage | Command[Any]],
+    ) -> ToolMessage | Command[Any]:
+        try:
+            return handler(request)
+        except (ValueError, RuntimeError) as exc:
+            return _convert(request, exc)
+
+    async def awrap_tool_call(
+        self,
+        request: ToolCallRequest,
+        handler: Callable[[ToolCallRequest], Awaitable[ToolMessage | Command[Any]]],
+    ) -> ToolMessage | Command[Any]:
+        try:
+            return await handler(request)
+        except (ValueError, RuntimeError) as exc:
+            return _convert(request, exc)
 
 
-@wrap_tool_call  # type: ignore[call-overload]
-async def ahandle_sql_tool_errors(
-    request: Any,
-    handler: Callable[[Any], Awaitable[Any]],
-) -> Any:
-    """Async wrapper — same semantics for ``agraph.astream`` / Chainlit.
-
-    ``wrap_tool_call`` overloads only type-cover sync handlers; the
-    decorator's runtime impl branches on ``iscoroutinefunction`` and
-    installs this as ``awrap_tool_call`` on the resulting middleware.
-    The ``type: ignore`` mirrors the same pattern langchain uses
-    internally (``types.py:2015``).
-    """
-    try:
-        return await handler(request)
-    except (ValueError, RuntimeError) as exc:
-        return _convert(request, exc)
+handle_sql_tool_errors = SQLToolErrorMiddleware()

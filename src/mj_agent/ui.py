@@ -23,6 +23,7 @@ imports + register handlers at module level — no graph build until
 from __future__ import annotations
 
 import asyncio
+import logging
 import os
 import sys
 import uuid
@@ -34,6 +35,8 @@ from langchain_core.messages import AIMessage, AIMessageChunk
 from mj_agent.agent import make_graph
 from mj_agent.config import settings
 from mj_agent.memory import open_checkpointer
+
+logger = logging.getLogger(__name__)
 
 
 def _apply_windows_event_loop_policy() -> None:
@@ -165,38 +168,48 @@ async def on_message(message: cl.Message) -> None:
     reply = cl.Message(content="")
     await reply.send()
 
-    async for stream_mode, chunk in graph.astream(
-        {"messages": [{"role": "user", "content": message.content}]},
-        config=config,
-        stream_mode=["messages", "updates"],
-    ):
-        if stream_mode == "messages":
-            msg_chunk, _meta = chunk
-            if isinstance(msg_chunk, AIMessageChunk) and msg_chunk.content:
-                token = msg_chunk.content
-                if isinstance(token, list):
-                    token = "".join(part.get("text", "") for part in token if isinstance(part, dict))
-                if token:
-                    await reply.stream_token(str(token))
-        elif stream_mode == "updates":
-            for node, payload in (chunk or {}).items():
-                tool_msgs = (payload or {}).get("messages") or []
-                for tm in tool_msgs:
-                    name = getattr(tm, "name", None)
-                    if name:
-                        await cl.Message(
-                            content=f"🔧 tool `{name}`",
-                            author="tools",
-                            parent_id=reply.id,
-                        ).send()
-                    await _surface_artifact(tm, parent_id=reply.id)
-                del node
+    try:
+        async for stream_mode, chunk in graph.astream(
+            {"messages": [{"role": "user", "content": message.content}]},
+            config=config,
+            stream_mode=["messages", "updates"],
+        ):
+            if stream_mode == "messages":
+                msg_chunk, _meta = chunk
+                if isinstance(msg_chunk, AIMessageChunk) and msg_chunk.content:
+                    token = msg_chunk.content
+                    if isinstance(token, list):
+                        token = "".join(part.get("text", "") for part in token if isinstance(part, dict))
+                    if token:
+                        await reply.stream_token(str(token))
+            elif stream_mode == "updates":
+                for node, payload in (chunk or {}).items():
+                    tool_msgs = (payload or {}).get("messages") or []
+                    for tm in tool_msgs:
+                        name = getattr(tm, "name", None)
+                        if name:
+                            await cl.Message(
+                                content=f"🔧 tool `{name}`",
+                                author="tools",
+                                parent_id=reply.id,
+                            ).send()
+                        await _surface_artifact(tm, parent_id=reply.id)
+                    del node
+    except Exception as exc:
+        # Without this the already-sent empty placeholder spins forever and
+        # the failure is invisible to the user (issue #288 symptom).
+        logger.exception("graph.astream failed for thread %s", thread_id)
+        reply.content = f"⚠️ 处理请求时发生内部错误：{type(exc).__name__}: {exc}"
+        await reply.update()
+        return
 
     if not reply.content:
         # Graph returned without streaming any AI tokens (e.g. tool-only
         # turn that ended without a final assistant message); fetch the
-        # latest state and surface its last AI message.
-        snapshot = graph.get_state(config)
+        # latest state and surface its last AI message. Must be the async
+        # API: the sync get_state would raise on AsyncPostgresSaver when
+        # called from the event-loop thread.
+        snapshot = await graph.aget_state(config)
         last = next(
             (m for m in reversed(snapshot.values.get("messages", [])) if isinstance(m, AIMessage)),
             None,
