@@ -12,11 +12,11 @@ updated: 2026-05-20
 
 > Phase M1 baseline. 2 REQs @risk:medium. Per ADR-028 + ADR-030.
 
-## REQ-001 — 13-server inventory + trust posture declaration
+## REQ-001 — 14-server inventory + trust posture declaration
 
 **Priority**：medium
 
-**Statement**：`.mcp.json` SHALL declare 13 server entries with trust posture + credential mode per entry; any modification SHALL trigger A14 PR gate declaration block in PR body per the template in `contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block` (former MCP STANDARD §4, archived M6 X5).
+**Statement**：`.mcp.json` SHALL declare 14 server entries with trust posture + credential mode per entry; any modification SHALL trigger A14 PR gate declaration block in PR body per the template in `contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block` (former MCP STANDARD §4, archived M6 X5).
 
 **Rationale**：
 
@@ -24,23 +24,23 @@ updated: 2026-05-20
 
 1. Third-party MCP could exfiltrate via tool calls
 2. Community MCP may be unmaintained
-3. Wrapped first-party (10/13 pg entries) requires baseline integrity check
+3. Wrapped first-party (10/14 pg entries) requires baseline integrity check
 4. Quarterly audit (§6 of MCP STANDARD) re-evaluates trust posture as upstream MCP servers evolve
 
 **Acceptance**：
 
-13 server entries by category:
+14 server entries by category:
 
 | Category | Count | Notes |
 |---|---|---|
 | first-party (Anthropic) | 1 | github |
-| third-party | 2 | serena (LSP), ssh-manager |
+| third-party | 3 | serena (LSP), ssh-manager, playwright |
 | first-party wrapper | 10 | pg-server wrapper around community pg MCP (5 mj-agent memory + 5 mj-system biz; DEV/TEST-LAN/TEST-WAN/PROD-LAN/PROD-WAN matrix) |
 
 Per-entry attributes (each entry MUST have these declarable):
 
 - `name`: server identifier (per .mcp.json key)
-- `type`: stdio / sse / http (currently all 13 are stdio)
+- `type`: stdio / sse / http (currently all 14 are stdio)
 - `trust_posture`: first-party / third-party / first-party-wrapper / community
 - `credential_mode`: none / OAuth / API key via env / wrapped script + env URL
 - `wrapper_script`: path (for first-party-wrapper) OR null
@@ -59,11 +59,11 @@ Quarterly audit (per §6 of MCP STANDARD; out of scope for this REQ but referenc
 
 **BDD Examples**：
 
-- **Given** the PR body declares `.mcp.json` changed (added a 14th server)
+- **Given** the PR body declares `.mcp.json` changed (added a new server)
 - **When** CI reviewer parses the PR
 - **Then** the body MUST contain the per-server posture declaration block matching the §4 template; PR lacking the block fails A14 gate review
 
-**Trace**：REQ-001 → `contracts/mcp-server.contract.yml` (13-entry inventory) + `contracts/governance.contract.yml` (A14 gate logic) + `behavior.feature` Scenario 1 + **TBD-M3** `tests/contract/test_mcp_inventory.py`
+**Trace**：REQ-001 → `contracts/mcp-server.contract.yml` (14-entry inventory) + `contracts/governance.contract.yml` (A14 gate logic) + `behavior.feature` Scenario 1 + **TBD-M3** `tests/contract/test_mcp_inventory.py`
 
 ---
 

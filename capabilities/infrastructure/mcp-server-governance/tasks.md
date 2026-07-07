@@ -18,7 +18,7 @@ updated: 2026-05-20
 - **Phase**：M1 / **Priority**：critical (meta) / **Linked REQ**：N/A
 - **Status**：in-progress
 
-### T-002 — REQ-001 13-server inventory + A14 PR gate declaration
+### T-002 — REQ-001 14-server inventory + A14 PR gate declaration
 - **Phase**：M1 (contract; informational) / M2 (CI warning) / M3 (CI blocking)
 - **Priority**：medium / **Linked REQ**：REQ-001
 - **Contract changed?**：no

@@ -20,6 +20,7 @@
       "mcp__pg-mj-system-biz-prod-lan__*",
       "mcp__pg-mj-system-biz-prod-wan__*",
       "mcp__ssh-manager__*",
+      "mcp__playwright__*",
       "Skill",
       "Agent"
     ],

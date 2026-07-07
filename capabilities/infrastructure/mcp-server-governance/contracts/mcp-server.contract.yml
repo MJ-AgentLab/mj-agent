@@ -1,6 +1,6 @@
 # capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml
 #
-# Covers REQ-001 (13-server inventory) + REQ-002 (pg wrapper consistency).
+# Covers REQ-001 (14-server inventory) + REQ-002 (pg wrapper consistency).
 
 contract_id: mcp-server
 covers_requirements:
@@ -10,9 +10,9 @@ covers_requirements:
 mcp_inventory_file:
   path: .mcp.json
   freeze_anchor: .mcp.json                        # entire file
-  expected_total_entries: 13
+  expected_total_entries: 14
 
-# 13-server inventory (REQ-001)
+# 14-server inventory (REQ-001)
 servers:
 
   - name: github
@@ -137,6 +137,13 @@ servers:
     aggregated_hosts: 9                            # Cloud / Runner LAN/WAN / Test LAN/WAN / Prod LAN/WAN / DGX LAN/WAN
     purpose: "9 SSH host configs aggregated into one MCP server"
 
+  - name: playwright
+    type: stdio
+    invocation: 'npx @playwright/mcp@latest'
+    trust_posture: third-party                    # Microsoft (microsoft/playwright-mcp)
+    credential_mode: none                         # local browser automation; no creds
+    purpose: "Browser automation for developing + testing the Chainlit web UI (:8000)"
+
 # REQ-002 — Wrapper consistency
 wrapper_script_consistency:
   required_wrapper: ".claude\\scripts\\pg-server-start.cmd"
@@ -189,6 +196,6 @@ hitl_required:
   - wrapper_script_change                         # .claude/scripts/pg-server-* → baseline diff
 
 # TBD Phase M3:
-#   - tests/contract/test_mcp_inventory.py (assert 13 entries; per-entry fields)
+#   - tests/contract/test_mcp_inventory.py (assert 14 entries; per-entry fields)
 #   - tests/contract/test_mcp_pg_wrapper_consistency.py (all 10 pg-* use same wrapper)
 #   - scripts/sdd/check_a14_gate.py (PR body parser; warning M2 / blocking M3)

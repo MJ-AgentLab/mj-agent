@@ -33,7 +33,7 @@
 contract_id: claude-skill
 adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
 covers_requirements:
-  - REQ-001                                         # 13-server inventory + trust posture (operators following SKILL guidance)
+  - REQ-001                                         # 14-server inventory + trust posture (operators following SKILL guidance)
   - REQ-002                                         # wrapper consistency (env-setup SKILL handles MCP secrets bundle directly)
 
 # namespace_pattern: M2 declarative-only; M3 V4 runtime enforce per M3-FU-V4-VALIDATOR-INVESTIGATE
