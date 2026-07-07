@@ -22,7 +22,9 @@ imports + register handlers at module level — no graph build until
 
 from __future__ import annotations
 
+import asyncio
 import os
+import sys
 import uuid
 from typing import Any
 
@@ -32,6 +34,22 @@ from langchain_core.messages import AIMessage, AIMessageChunk
 from mj_agent.agent import make_graph
 from mj_agent.config import settings
 from mj_agent.memory import open_checkpointer
+
+
+def _apply_windows_event_loop_policy() -> None:
+    """Force SelectorEventLoop on Windows (issue #283).
+
+    psycopg's async mode cannot run on Windows' default ProactorEventLoop —
+    every connect raises ``InterfaceError`` and the checkpointer's
+    ``AsyncConnectionPool`` dies with ``PoolTimeout`` in ``on_chat_start``.
+    Must run at import time: chainlit imports this module *before* uvicorn
+    creates the event loop, so the policy set here decides that loop's type.
+    """
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+
+_apply_windows_event_loop_policy()
 
 # Module-level singletons reused across chat sessions in the same process.
 _GRAPH: Any | None = None
