@@ -115,7 +115,7 @@ Upstream (reference contract):                              ──── REQ-004
 - `src/mj_agent/tools/sql/introspect.py:57-146` — GRANT visibility (REQ-004 sut-side)
 - `src/mj_agent/integrations/mj_system_db.py:27-86` — L3 DSN + pool + rollback
 - `src/mj_agent/middleware/tool_errors.py:32-86` — REQ-006 sync + async wrappers
-- `src/mj_agent/prompts/system.md` — frontmatter only (v1.8 / active / deepseek-v3); body NOT touched (prompt-version-bump 必停)
+- `src/mj_agent/prompts/system.md` — frontmatter only (v1.8 / active / multi-provider); body NOT touched (prompt-version-bump 必停)
 
 **Cross-capability dependency (1 ref; R-G7 satisfied)**：
 
