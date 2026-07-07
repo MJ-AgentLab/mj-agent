@@ -3,10 +3,10 @@
 Binds 2 scenarios from
 `capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature`:
 
-- REQ-001 Adding a 14th MCP server triggers A14 PR gate body declaration —
+- REQ-001 Adding a new MCP server triggers A14 PR gate body declaration —
   this is a META gate (PR review process), not a runtime SUT behaviour.
   Binding emits a structural assertion: A14 template section exists in the
-  governance contract, and current .mcp.json has the expected 13 entries.
+  governance contract, and current .mcp.json has the expected 14 entries.
 
 - REQ-002 All 10 pg-* entries reference the same wrapper script — direct
   static check on .mcp.json content (no live MCP server needed).
@@ -40,16 +40,16 @@ _GOVERNANCE_CONTRACT = (
 # -------- Background --------
 
 @given(parsers.re(re.escape(
-    ".mcp.json declares exactly 13 server entries"
+    ".mcp.json declares exactly 14 server entries"
 )))
-def given_13_servers() -> None:
+def given_14_servers() -> None:
     data = json.loads(_MCP_JSON.read_text(encoding="utf-8"))
     n = len(data.get("mcpServers", {}))
-    assert n == 13, f"expected exactly 13 servers in .mcp.json; found {n}"
+    assert n == 14, f"expected exactly 14 servers in .mcp.json; found {n}"
 
 
 @given(parsers.re(re.escape(
-    "10 of those 13 entries are pg-* wrapper-based "
+    "10 of those 14 entries are pg-* wrapper-based "
     "(5 mj-agent memory + 5 mj-system biz)"
 )))
 def given_10_pg_entries() -> None:
@@ -79,7 +79,7 @@ def given_a14_template_exists() -> None:
 # -------- Scenarios --------
 
 
-@scenario(_FEATURE_FILE, "Adding a 14th MCP server triggers A14 PR gate body declaration")
+@scenario(_FEATURE_FILE, "Adding a new MCP server triggers A14 PR gate body declaration")
 def test_req_001_a14_gate_template_exists() -> None:
     pass
 
@@ -93,10 +93,10 @@ def test_req_002_pg_wrapper_consistency() -> None:
 
 
 @given(parsers.re(re.escape(
-    'a PR is submitted that adds a 14th entry to .mcp.json '
+    'a PR is submitted that adds a new entry to .mcp.json '
     '(e.g. a hypothetical "redis-server" MCP)'
 )))
-def given_hypothetical_14th_pr() -> None:
+def given_hypothetical_new_pr() -> None:
     """Descriptive — actual PR review process is human-driven; this BDD
     asserts the governance scaffolding (STANDARD §4 template) is in place
     so a reviewer would have a checklist to follow.

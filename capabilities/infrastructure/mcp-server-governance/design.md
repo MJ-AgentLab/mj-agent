@@ -14,10 +14,10 @@ updated: 2026-05-20
 
 ## §1 Context
 
-Model Context Protocol (MCP) servers are Claude Code's external tool surface. Each MCP server is a process Claude Code can communicate with via stdio / SSE / HTTP. mj-agent's `.mcp.json` declares 13 servers:
+Model Context Protocol (MCP) servers are Claude Code's external tool surface. Each MCP server is a process Claude Code can communicate with via stdio / SSE / HTTP. mj-agent's `.mcp.json` declares 14 servers:
 
 - **1 first-party** (`github`) — Anthropic-published; PAT-based
-- **2 third-party** (`serena` for LSP; `ssh-manager` for 9 SSH hosts)
+- **3 third-party** (`serena` for LSP; `ssh-manager` for 9 SSH hosts; `playwright` for browser automation)
 - **10 first-party-wrapper** (10 pg entries, all routed via `.claude/scripts/pg-server-start.cmd`)
 
 **Threats**：
@@ -37,11 +37,11 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
 
 ## §2 Decision
 
-**13-entry inventory + per-entry trust posture declaration + A14 PR gate + wrapper-script consolidation for pg entries + quarterly audit cycle**.
+**14-entry inventory + per-entry trust posture declaration + A14 PR gate + wrapper-script consolidation for pg entries + quarterly audit cycle**.
 
 | Component | File | Purpose |
 |---|---|---|
-| Inventory | `.mcp.json` | 13 server entries (name + type + args + env) |
+| Inventory | `.mcp.json` | 14 server entries (name + type + args + env) |
 | Wrapper | `.claude/scripts/pg-server-start.cmd` | Cmd wrapper invoking pg-server-wrapper.mjs |
 | JS wrapper | `.claude/scripts/pg-server-wrapper.mjs` | Node-based; URL override from env |
 | Baseline | `docs/_baselines/pg_server_baseline.md` | SOR for wrapper behavior; quarterly diff |
@@ -70,7 +70,7 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
 ## §3 Architecture
 
 ```
-.mcp.json (13 entries)
+.mcp.json (14 entries)
 ├─► github                      [stdio]     first-party        API key env (GITHUB_PERSONAL_ACCESS_TOKEN)
 ├─► serena                      [stdio]     third-party        none (local-only LSP)
 ├─► pg-mj-agent-memory-dev      [stdio] ────► .claude/scripts/pg-server-start.cmd
@@ -83,7 +83,7 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
 ├─► pg-mj-system-biz-test-wan   [stdio] ────►
 ├─► pg-mj-system-biz-prod-lan   [stdio] ────►
 ├─► pg-mj-system-biz-prod-wan   [stdio] ────►
-└─► ssh-manager                 [stdio]     third-party        5 unique passwords via env:
+├─► ssh-manager                 [stdio]     third-party        5 unique passwords via env:
                                                                  MJ_AGENT_SSH_SERVER_CLOUD_PASSWORD
                                                                  MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD
                                                                  MJ_AGENT_SSH_SERVER_TEST_PASSWORD
@@ -91,6 +91,7 @@ Model Context Protocol (MCP) servers are Claude Code's external tool surface. Ea
                                                                  MJ_AGENT_SSH_SERVER_DGX_PASSWORD
                                                                (aggregates 9 SSH hosts: Cloud / Runner LAN/WAN /
                                                                 Test LAN/WAN / Prod LAN/WAN / DGX-Spark LAN/WAN)
+└─► playwright                  [stdio]     third-party        none (browser automation for Chainlit web UI)
 
 A14 PR Gate (Phase M3+ blocking):
   PR body template (per contracts/governance.contract.yml §a14_pr_gate)
@@ -113,7 +114,7 @@ Quarterly Audit (per contracts/governance.contract.yml §quarterly_audit):
 
 | Choice | Pros | Cons | Rationale |
 |---|---|---|---|
-| **A. Single .mcp.json with 13 entries (chosen)** | Single source of truth; easy diff | Long file (~100+ lines) | MCP protocol convention; per-server profiles would be over-engineered |
+| **A. Single .mcp.json with 14 entries (chosen)** | Single source of truth; easy diff | Long file (~100+ lines) | MCP protocol convention; per-server profiles would be over-engineered |
 | B. Per-profile MCP configs | Smaller per-env file | Multiplies maintenance | Rejected — convention is one .mcp.json |
 | **C. Wrapper script consolidation (chosen)** | Centralized config; quarterly diff target | One more layer between Claude Code and pg MCP | Necessary — credential mode + URL override + timeout normalization |
 | D. 10 distinct pg MCP configs | No wrapper layer | 10× maintenance; can't centrally enforce timeout | Rejected |

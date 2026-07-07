@@ -22,10 +22,10 @@ Verify .mcp.json loads correctly:
 ```bash
 # Quick syntax check
 uv run python -c "import json; print('servers:', len(json.load(open('.mcp.json'))['mcpServers']))"
-# Expected: servers: 13
+# Expected: servers: 14
 ```
 
-Per spec.yml summary: 13 servers = 1 first-party GitHub + 1 third-party Serena LSP + 10 wrapped pg + 1 third-party ssh-manager.
+Per spec.yml summary: 14 servers = 1 first-party GitHub + 1 third-party Serena LSP + 10 wrapped pg + 1 third-party ssh-manager + 1 third-party Playwright.
 
 Populate MCP secrets to OS env (one-time per machine per ADR-030):
 
@@ -49,10 +49,10 @@ uv run python -c "
 import json
 data = json.load(open('.mcp.json'))
 servers = data['mcpServers']
-assert len(servers) == 13, f'Expected 13 servers, got {len(servers)}'
+assert len(servers) == 14, f'Expected 14 servers, got {len(servers)}'
 pg_count = sum(1 for k in servers if k.startswith('pg-'))
 assert pg_count == 10, f'Expected 10 pg-* entries, got {pg_count}'
-print('OK: 13 servers (10 pg-*)')
+print('OK: 14 servers (10 pg-*)')
 "
 
 # Wrapper consistency (REQ-002)
@@ -114,7 +114,7 @@ done
 - Re-run `setup-mcp-secrets.ps1`
 - Restart Claude Code
 
-### Symptom: Adding 14th MCP server in PR fails A14 gate
+### Symptom: Adding a new MCP server in PR fails A14 gate
 
 **Diagnostic**：PR body missing the §4 declaration block.
 
@@ -138,7 +138,7 @@ done
 
 ## §4 Related Artifacts
 
-- `contracts/mcp-server.contract.yml` — 13-server inventory + per-entry attributes
+- `contracts/mcp-server.contract.yml` — 14-server inventory + per-entry attributes
 - `contracts/governance.contract.yml` — A14 PR gate + quarterly audit process
 - `contracts/behavior.feature` — 2 Gherkin scenarios
 - ADR-028 — MCP Server Inventory + Governance

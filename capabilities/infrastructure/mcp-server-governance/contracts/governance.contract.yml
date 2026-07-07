@@ -79,7 +79,7 @@ quarterly_audit:
   tasks:
     - id: re_evaluate_trust_posture
       action: |
-        For each of 13 servers, check:
+        For each of 14 servers, check:
         - first-party: still Anthropic-published? (still on Anthropic's MCP server registry)
         - third-party: still maintained? (last commit < 6 months on upstream repo)
         - first-party-wrapper: baseline still aligned with community pg MCP? (diff)

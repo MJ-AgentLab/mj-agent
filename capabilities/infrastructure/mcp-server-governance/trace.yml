@@ -25,11 +25,11 @@ cross_capability_refs:
 
 links:
 
-  - req: REQ-001                                  # 13-server inventory + A14 gate
+  - req: REQ-001                                  # 14-server inventory + A14 gate
     bdd:
       feature: contracts/behavior.feature
       scenarios:
-        - "Adding a 14th MCP server triggers A14 PR gate body declaration"
+        - "Adding a new MCP server triggers A14 PR gate body declaration"
       automation_status: automated                # M3 Stage B pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/mcp-server.contract.yml

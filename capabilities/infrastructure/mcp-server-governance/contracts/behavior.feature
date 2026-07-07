@@ -11,15 +11,15 @@ Feature: MCP Server Inventory + Governance (A14 PR Gate + Wrapper Consistency)
   stays centralized
 
   Background:
-    Given .mcp.json declares exactly 13 server entries
-    And 10 of those 13 entries are pg-* wrapper-based (5 mj-agent memory + 5 mj-system biz)
+    Given .mcp.json declares exactly 14 server entries
+    And 10 of those 14 entries are pg-* wrapper-based (5 mj-agent memory + 5 mj-system biz)
     And the A14 PR gate template lives at `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` (a14_pr_gate.pr_body_required_block)
 
-  # ---------- REQ-001 — 14th server triggers A14 gate ----------
+  # ---------- REQ-001 — new server triggers A14 gate ----------
 
   @REQ-001 @CTR-mcp-server @risk:medium @adapter:claude-code-skill @meta-gate:A14
-  Scenario: Adding a 14th MCP server triggers A14 PR gate body declaration
-    Given a PR is submitted that adds a 14th entry to .mcp.json (e.g. a hypothetical "redis-server" MCP)
+  Scenario: Adding a new MCP server triggers A14 PR gate body declaration
+    Given a PR is submitted that adds a new entry to .mcp.json (e.g. a hypothetical "redis-server" MCP)
     When the reviewer parses the PR body
     Then the body MUST contain a "MCP Server Governance (A14)" block
     And the block lists the new entry with trust_posture + credential_mode + rationale

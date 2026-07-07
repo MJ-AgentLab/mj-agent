@@ -168,6 +168,11 @@
         "SSH_SERVER_DGX_WAN_PORT": "2204",
         "SSH_SERVER_DGX_WAN_DESCRIPTION": "41-DGX-Spark-WAN"
       }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@playwright/mcp@latest"]
     }
   }
 }
