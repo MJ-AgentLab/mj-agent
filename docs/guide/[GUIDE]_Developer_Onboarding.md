@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-06-24
+updated: 2026-07-07
 state: draft
 version: v0.2
 track: code
@@ -326,7 +326,7 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 - [ ] `git -C develop worktree add ../feature/<my-first> -b feature/<my-first> develop` 起首条 PR worktree
 - [ ] `uv sync` 成功（首次约 1-3 分钟）
 - [ ] `.\scripts\setup-env.ps1` 解密 `.env`（或 fallback `cp .env.example .env`）
-- [ ] `uv run mj-agent check` 输出 `db: ok` + `llm provider = ark (endpoint=...)`
+- [ ] `uv run mj-agent check` 输出 `CHECK OK` + `llm provider = ... (endpoint=...)`（默认 = 凭据在 + memory DB ping；**serve 前**深验 async memory/biz/LLM 用 `uv run mj-agent check --live`）
 
 **跑通 hello**（§4 + §7）
 

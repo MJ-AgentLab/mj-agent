@@ -113,8 +113,10 @@ USER appuser
 
 EXPOSE 8000
 
-# Healthcheck reuses `mj-agent check` (probes biz DB + Ark + memory DB; ADR-006
-# / ADR-009 boundaries enforced at the same layers as the running serve).
+# Healthcheck reuses `mj-agent check` (default: credential presence + a sync
+# memory-DB ping — fast + offline-safe). `mj-agent check --live` additionally
+# probes biz DB + LLM + the async memory pool, but is intentionally NOT wired
+# here (would breach the 10s timeout / call the LLM every 30s); see server/cli.py.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 \
     CMD mj-agent check || exit 1
 

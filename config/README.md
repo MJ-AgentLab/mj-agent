@@ -203,7 +203,8 @@ docker exec -i mj-agent-postgres `
 
 # 验
 docker exec mj-agent mj-agent check
-# 期望: ✅ DB OK + ✅ Ark LLM OK
+# 期望: CHECK OK（默认 check = 凭据在 + memory DB ping，含刚重置的 mj_agent_app 登录）
+# 深验 biz DB + LLM + async memory: docker exec mj-agent mj-agent check --live
 ```
 
 ### 场景 B: dev / test — 可以全清（**Level C 破坏性**）

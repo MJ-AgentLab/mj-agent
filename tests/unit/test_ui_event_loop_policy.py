@@ -1,10 +1,13 @@
-"""Regression tests for issue #283 — Windows event-loop policy guard in ``ui.py``.
+"""Regression test for issue #283 — ``ui.py`` import applies the event-loop guard.
 
-psycopg's async mode cannot run on Windows' default ``ProactorEventLoop``;
-the Chainlit entry module must switch the process to
-``WindowsSelectorEventLoopPolicy`` before uvicorn creates its event loop,
-otherwise ``AsyncPostgresSaver``'s pool never opens a single connection and
-``on_chat_start`` dies with ``PoolTimeout`` after 30s.
+psycopg's async mode cannot run on Windows' default ``ProactorEventLoop``; the
+Chainlit entry module must switch the process to ``WindowsSelectorEventLoopPolicy``
+before uvicorn creates its event loop, otherwise ``AsyncPostgresSaver``'s pool
+never opens a single connection and ``on_chat_start`` dies with ``PoolTimeout``.
+
+The guard implementation now lives in ``mj_agent.runtime`` (tested directly in
+``test_runtime_event_loop.py``). This file asserts the load-bearing wiring: that
+merely *importing* ``mj_agent.ui`` still applies the policy at import time.
 """
 
 from __future__ import annotations
@@ -39,27 +42,3 @@ def test_importing_ui_applies_selector_policy_on_windows() -> None:
     assert isinstance(
         asyncio.get_event_loop_policy(), asyncio.WindowsSelectorEventLoopPolicy
     )
-
-
-@pytest.mark.usefixtures("_restore_event_loop_policy")
-def test_policy_guard_switches_proactor_to_selector_on_windows() -> None:
-    if sys.platform != "win32":
-        pytest.skip("Windows-only behaviour")
-    from mj_agent.ui import _apply_windows_event_loop_policy
-
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-    _apply_windows_event_loop_policy()
-    assert isinstance(
-        asyncio.get_event_loop_policy(), asyncio.WindowsSelectorEventLoopPolicy
-    )
-
-
-@pytest.mark.usefixtures("_restore_event_loop_policy")
-def test_policy_guard_is_noop_off_windows() -> None:
-    if sys.platform == "win32":
-        pytest.skip("covers non-Windows platforms")
-    from mj_agent.ui import _apply_windows_event_loop_policy
-
-    before = type(asyncio.get_event_loop_policy())
-    _apply_windows_event_loop_policy()
-    assert type(asyncio.get_event_loop_policy()) is before

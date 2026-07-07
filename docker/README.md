@@ -89,7 +89,8 @@ docker run --rm \
 
 ```bash
 docker run --rm --env-file .env mj-agent:0.1 check
-# 等价于 uv run mj-agent check —— 探活 biz DB + Ark + memory DB
+# 等价于 uv run mj-agent check —— 默认探活: 凭据在 + memory DB ping（快/离线安全）
+# 深验 biz DB + LLM + async memory pool: ... mj-agent:0.1 check --live
 ```
 
 调试 shell：
