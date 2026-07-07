@@ -78,6 +78,17 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Guard (#294): the python base-image minor is LOCKED. pyproject
+    # requires-python >=3.13,<3.14 + UV_PYTHON_PREFERENCE=only-system
+    # mean a 3.14+ base can never satisfy uv.lock — the build dies at
+    # `uv sync` ("No interpreter found for Python ==3.13.*"). Only
+    # same-tag digest bumps may flow; a major/minor jump needs a human
+    # PR that moves requires-python + uv.lock in the same change.
+    ignore:
+      - dependency-name: "python"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
 
   # ── docker-compose service image digests ─────────────────────────
   # Note: Dependabot's `docker-compose` ecosystem watches `image:` lines

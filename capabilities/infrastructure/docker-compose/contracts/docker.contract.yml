@@ -9,15 +9,15 @@ covers_requirements:
 
 dockerfile:
   path: docker/Dockerfile
-  freeze_anchor: docker/Dockerfile (123 lines)
+  freeze_anchor: docker/Dockerfile (126 lines)
 
 base_image:
   builder_stage:
-    image: python:3.14-slim                       # digest-pinned via Dependabot; sic — comment "# tag: 3.13-slim"
-    note: "actual Python = 3.13.13 inside that digest; upstream slim image bundle; comment is authoritative on intent (3.13-slim line)"
-    rationale: "Dependabot maintains digest pin; tag comment documents intent for human reviewers"
+    image: python:3.13-slim                       # digest-pinned; #294 re-pin after Dependabot cross-minor 3.14 bump broke the build
+    note: "actual Python = 3.13.14 inside digest eb43ff1 (verified 2026-07-07); minor is LOCKED by requires-python >=3.13,<3.14 + UV_PYTHON_PREFERENCE=only-system"
+    rationale: "Dependabot may bump the digest ONLY within the 3.13-slim line (semver-major/minor ignore-listed in .github/dependabot.yml per #294); a minor/major jump needs a human PR that also moves requires-python + uv.lock"
   runtime_stage:
-    image: python:3.14-slim                       # same digest
+    image: python:3.13-slim                       # same digest
     note: "same digest as builder; runtime additions: libpq5 + tini"
 
 builder_stage_contract:
