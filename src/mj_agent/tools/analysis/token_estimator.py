@@ -14,6 +14,8 @@ from typing import Any
 
 import tiktoken
 
+from mj_agent.config import settings
+
 # Default budget per ADR-012: 5000 tokens of data per LLM call. The
 # value is exposed via the result envelope so tests / runtime configs
 # can override at the call site.
@@ -38,7 +40,7 @@ def _encoder_for(model_id: str) -> tiktoken.Encoding:
 
 def estimate_tokens(
     rows: list[dict[str, Any]],
-    model_id: str = "deepseek-chat",
+    model_id: str | None = None,
     budget: int = DEFAULT_TOKEN_BUDGET,
 ) -> dict[str, Any]:
     """Estimate the token cost of feeding ``rows`` to the LLM.
@@ -48,8 +50,10 @@ def estimate_tokens(
 
     Args:
         rows: row set, typically ``execute_sql`` output's ``rows`` field.
-        model_id: LLM model id; tiktoken-known names are exact, others
-            fall back to ``cl100k_base`` (close enough for budgeting).
+        model_id: LLM model id used to pick the tokenizer; defaults to the
+            deployment's configured model (``settings.llm_model_id``).
+            tiktoken-known names are exact, others fall back to
+            ``cl100k_base`` (close enough for budgeting).
         budget: max tokens to allow before suggesting compression
             (default ``DEFAULT_TOKEN_BUDGET = 5000``, per ADR-012).
 
@@ -59,16 +63,20 @@ def estimate_tokens(
           - ``budget`` — echoed input
           - ``within_budget`` — bool, True iff token_count <= budget
           - ``row_count``
-          - ``model_id`` echoed (or ``cl100k_base`` if fallback used)
+          - ``model_id`` — the resolved model id actually used (explicit
+            argument, else ``settings.llm_model_id``)
           - ``suggestion`` — string hint for the agent if over budget
             (e.g. "call aggregate(...) or drill_down(...) to compress")
     """
     if budget <= 0:
         raise ValueError(f"budget must be > 0, got {budget}")
 
+    # `or` (not `is None`) so an LLM-passed empty string also falls back.
+    resolved_model_id = model_id or settings.llm_model_id
+
     # Normalize rows to JSON the same way they'd appear in a tool reply.
     payload = json.dumps(rows, ensure_ascii=False, default=str, separators=(",", ":"))
-    enc = _encoder_for(model_id)
+    enc = _encoder_for(resolved_model_id)
     n = len(enc.encode(payload))
 
     suggestion: str | None = None
@@ -85,6 +93,6 @@ def estimate_tokens(
         "budget": budget,
         "within_budget": n <= budget,
         "row_count": len(rows),
-        "model_id": model_id,
+        "model_id": resolved_model_id,
         "suggestion": suggestion,
     }
