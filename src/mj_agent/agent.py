@@ -15,6 +15,7 @@ from typing import Any
 
 from langchain.agents import create_agent
 
+from mj_agent.config import settings
 from mj_agent.llm import make_llm
 from mj_agent.middleware import handle_sql_tool_errors
 from mj_agent.prompts import load_prompt
@@ -59,8 +60,24 @@ def _build_system_prompt() -> str:
     Token-budget watchpoint (plan §5 risk): 8 active skills bring the
     composed prompt close to ~8k tokens. Phase 1.5 / Phase 2 introduces
     a dynamic skill selector (ADR-003 progressive disclosure).
+
+    A ``# Runtime`` section (deployment provider + model id, ~45 tokens)
+    sits between the base identity and the skill block so the agent
+    reports its actual model instead of inferring one from tool-schema
+    defaults (bugfix #285).
     """
-    parts = [load_prompt("system"), *(load_skill(name) for name in _ACTIVE_SKILLS)]
+    runtime = (
+        "# Runtime\n\n"
+        f"You are currently deployed via LLM provider `{settings.llm_provider}` "
+        f"serving model id `{settings.llm_model_id}`. When asked which model "
+        "you are, state this model id. Never infer your own identity from "
+        "tool parameter defaults or training data."
+    )
+    parts = [
+        load_prompt("system"),
+        runtime,
+        *(load_skill(name) for name in _ACTIVE_SKILLS),
+    ]
     return "\n\n".join(parts)
 
 
