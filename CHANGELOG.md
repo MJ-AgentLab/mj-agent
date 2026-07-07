@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Fixed — agent 自我误报模型为 deepseek-chat（模型身份泄漏 + 缺失）（#285）
+
+- **`src/mj_agent/tools/analysis/token_estimator.py` + `src/mj_agent/agent.py`（`fix`，branch `bugfix/285-model-identity-leak`）**：`estimate_tokens` 签名默认值 `model_id="deepseek-chat"` 是 Ark 时代残留——工具为 plain callable，`create_agent` 把签名默认值编入 LLM tool schema，该字符串成为模型上下文中**唯一**具体模型名；DGX 部署（`local-openai-compat` @ `nemotron-3-super`）下用户问"当前使用的模型是什么"时 agent 自我误报 deepseek-chat（端到端复现，模型自证出处；裸模型直连正确自称 Nemotron，排除单纯幻觉）。**修复**：(1) 默认改 `model_id: str | None = None`，调用时解析 `settings.llm_model_id`（`or` 兜底 LLM 传 null/空串），docstring 去厂商模型名（docstring 即 LLM 所见工具描述）；(2) `_build_system_prompt()` 在 base identity 与 skill 块之间注入 `# Runtime` 段（provider + model id，~45 tokens），agent 可如实报告部署模型。评估并否决 `InjectedToolArg` 藏参数方案（引入 langchain_core 依赖破坏 analysis 模块 plain-callable 约定；settings 兜底后误传仅扰动 tokenizer 选择）。**测试** +5 回归用例（默认/None 解析到 settings、显式传参回显、Runtime 段存在 + `# Identity` 与首个 `# Skill:` 之间位置）；e2e 验证 DGX 隧道下回答 `nemotron-3-super`。**延后 follow-up**：#286（`prompts/system.md` frontmatter `model_binding: deepseek-v3` 过期治理元数据——`load_prompt()` 剥离 frontmatter 零运行时影响，provider-agnostic 化 + `prompt.contract.yml` frozen 值同步，必停面单独 PR）。Closes #285
+
 ### Fixed — Windows 本机 Chainlit serve 事件循环不兼容致 checkpointer 池超时（#283）
 
 - **`src/mj_agent/ui.py`（`fix`，branch `bugfix/283-windows-selector-event-loop`）**：psycopg async 模式无法运行在 Windows 默认 `ProactorEventLoop` 上（psycopg 已知限制），`AsyncPostgresSaver` 的 `AsyncConnectionPool` 一条连接都建不起来（每次建连抛 `InterfaceError`），`on_chat_start` 30s 后 `PoolTimeout`，页面发消息无响应。**修复**：`ui.py` 模块导入期新增 `_apply_windows_event_loop_policy()` guard——`sys.platform == "win32"` 时切 `WindowsSelectorEventLoopPolicy`（chainlit 先 import 本模块、uvicorn 后建事件循环，故 import 期设置决定 loop 类型）；非 Windows no-op。Docker（Linux）路径不受影响。**测试** +3 回归用例（win32 导入副作用 / guard 本体 Proactor→Selector / 非 Windows no-op；policy 快照-恢复 fixture 防跨测试泄漏）；Windows 实机端到端验证：真实入口 serve → 浏览器会话建图 → DGX LLM 调用 200 OK。**延后 follow-up**：`mj-agent check` 用同步 psycopg 探不到该缺口（假绿盲区之一，async 探针另行登记）。Closes #283
