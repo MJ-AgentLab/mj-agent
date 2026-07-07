@@ -127,3 +127,165 @@ class TestTableLevelAllowlist:
         sql = "SELECT 1 FROM biz_dwd.anything_at_all"
         ok, _ = is_safe_select(sql, ALLOWED)
         assert ok
+
+
+class TestQuotedIdentifierAllowlist:
+    """#280 — quoted / mixed-quoted identifiers must not bypass the L1 allowlist.
+
+    Regression guard: the original regex extraction (``FROM|JOIN`` + a bare
+    ``[a-zA-Z_]\\w*`` capture) could not see double-quoted schema refs, so
+    ``FROM "biz_ods"."t"`` slipped past L1 and was stopped only by the L4 DB
+    GRANT. Extraction is now AST-based (sqlglot), so out-of-allowlist refs are
+    rejected at L1 regardless of quoting or JOIN shape.
+    """
+
+    PER_SCHEMA = {"biz_dwd": ["dwd_dim_product_interface", "dwd_dim_institution"]}
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            'SELECT 1 FROM "biz_ods"."ods_qvl_ready_signal"',  # fully quoted
+            'SELECT 1 FROM "biz_ods".ods_raw',  # schema quoted only
+            'SELECT 1 FROM biz_ods."ods_raw"',  # table quoted only
+            'SELECT 1 FROM "BiZ_oDs"."x"',  # quoted + case-mixed
+        ],
+    )
+    def test_quoted_disallowed_schema_rejected_at_l1(self, sql: str) -> None:
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "biz_ods" in reason.lower()
+        assert "allowlist" in reason
+
+    @pytest.mark.parametrize("schema", ["biz_ads", "ops_meta"])
+    def test_quoted_other_forbidden_schemas_rejected(self, schema: str) -> None:
+        sql = f'SELECT 1 FROM "{schema}"."some_table"'
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "allowlist" in reason
+
+    def test_quoted_union_leg_rejected(self) -> None:
+        sql = (
+            "SELECT 1 FROM biz_dwd.dwd_dim_institution "
+            'UNION SELECT 1 FROM "biz_ods"."ods_raw"'
+        )
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "biz_ods" in reason.lower()
+
+    def test_quoted_comma_join_leg_rejected(self) -> None:
+        # Comma (cross) join — the forbidden ref is NOT immediately after
+        # FROM/JOIN, so the old regex could never catch it, even unquoted.
+        sql = (
+            "SELECT 1 FROM biz_dwd.dwd_dim_institution a, "
+            '"biz_ods"."ods_raw" b LIMIT 10'
+        )
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "biz_ods" in reason.lower()
+
+    def test_forbidden_ref_in_where_subquery_rejected(self) -> None:
+        # Nested sub-query in WHERE — the AST walk traverses the whole tree,
+        # whereas the old regex only scanned FROM/JOIN-adjacent text.
+        sql = (
+            "SELECT 1 FROM biz_dwd.dwd_dim_institution "
+            'WHERE tenant_code IN (SELECT code FROM "biz_ods"."ods_raw")'
+        )
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "biz_ods" in reason.lower()
+
+    def test_quoted_disallowed_dwd_table_rejected(self) -> None:
+        sql = 'SELECT 1 FROM "biz_dwd"."dwd_qvl_downstream_query"'
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "dwd_qvl_downstream_query" in reason
+        assert "allowlist" in reason
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            'SELECT 1 FROM "biz_dwd"."dwd_dim_institution"',
+            'SELECT institution_name FROM biz_dwd."dwd_dim_institution"',
+            'SELECT 1 FROM "biz_dws"."dws_qcm_qrynum_daily_total"',
+        ],
+    )
+    def test_quoted_allowlisted_refs_still_pass(self, sql: str) -> None:
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert ok, reason
+
+    def test_string_literal_lookalike_not_treated_as_table(self) -> None:
+        # A 'FROM biz_ods.x' substring inside a string literal is data, not a
+        # table reference; the AST extraction correctly ignores it (the old
+        # regex would false-positive reject this).
+        sql = "SELECT 'FROM biz_ods.x' AS note FROM biz_dwd.dwd_dim_institution"
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert ok, reason
+
+
+class TestParseFailureFailClosed:
+    """#280 tail — SQL that sqlglot cannot parse is rejected (fail-closed).
+
+    The schema/table allowlist is a security boundary: when static analysis
+    cannot read the statement we reject rather than degrade to a weaker check.
+    (Contrast the L1b precheck *quality* rules, which fail open because the DB
+    is their ultimate validator.) Without this, valid-but-unparseable
+    PostgreSQL — jsonb ``@?``, ``ORDER BY ... USING <`` — forced the old regex
+    fallback, through which a quoted or comma-joined forbidden ref slipped
+    past L1 again.
+    """
+
+    PER_SCHEMA = {"biz_dwd": ["dwd_dim_product_interface", "dwd_dim_institution"]}
+
+    @pytest.mark.parametrize(
+        "sql",
+        [
+            # jsonb path operator @? — valid PG, unparseable by sqlglot; would
+            # otherwise let the quoted biz_ods ref slip via the regex fallback.
+            "SELECT id FROM \"biz_ods\".\"customers\" WHERE profile @? '$.email'",
+            # comma cross-join hiding an unquoted forbidden ref behind a parse
+            # failure (@?) — the old regex only matched the first FROM table.
+            "SELECT x @? '$.a' FROM biz_dws.dws_qcm_x t1, biz_ods.b t2",
+            # custom sort operator on a quoted forbidden ref — valid PG.
+            'SELECT c FROM "biz_ods"."secret" ORDER BY c USING <',
+        ],
+    )
+    def test_unparseable_sql_rejected(self, sql: str) -> None:
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "could not parse" in reason.lower()
+
+    def test_unparseable_on_allowed_table_also_rejected(self) -> None:
+        # Accepted UX cost of fail-closed: even an allowed-table query is
+        # rejected when it cannot be parsed for validation.
+        sql = "SELECT c FROM biz_dws.dws_qcm_x ORDER BY c USING <"
+        ok, reason = is_safe_select(
+            sql, ALLOWED, allowed_tables_per_schema=self.PER_SCHEMA
+        )
+        assert not ok
+        assert "could not parse" in reason.lower()
+
+    def test_pathological_nesting_never_raises(self) -> None:
+        # Deeply nested parens make sqlglot raise RecursionError; is_safe_select
+        # must catch it and fail closed, not propagate.
+        sql = "SELECT " + "(" * 200 + "1" + ")" * 200 + " FROM biz_dws.t"
+        ok, reason = is_safe_select(sql, ALLOWED)
+        assert not ok
+        assert "could not parse" in reason.lower()

@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-07-07
 ---
 
 # Design: Safe SQL 4-Layer Guardrails
@@ -32,7 +32,7 @@ distinct from human-written SQL.
 
 **Non-threats（out of scope）**：
 
-- Comment-hiding / string-literal-hiding SQL injection (per `guardrail.py:21-25`
+- Comment-hiding / string-literal-hiding SQL injection (per `guardrail.py:27-31`
   doc — would require full parser; sqlglot in L1b mitigates parse-level)
 - Multi-user privilege escalation (single-user `analyst` role; no per-request
   identity)
@@ -44,7 +44,7 @@ distinct from human-written SQL.
 
 | Layer | Mechanism | Source | Owner |
 |---|---|---|---|
-| L1 | regex guardrail (`is_safe_select`) | `tools/sql/guardrail.py` | mj-agent |
+| L1 | regex + AST-allowlist guardrail (`is_safe_select`) | `tools/sql/guardrail.py` | mj-agent |
 | L1b | sqlglot AST precheck (`precheck_sql`) | `tools/sql/precheck.py` | mj-agent |
 | L3 | DSN options on read-only connection | `integrations/mj_system_db.py` | mj-agent |
 | L4 | role-level `statement_timeout` + GRANT | `mj-system:R__analyst_permissions.sql` | **upstream (reference contract)** |
@@ -107,9 +107,9 @@ Upstream (reference contract):                              ──── REQ-004
     - GRANT SELECT ON biz_dws.* + biz_dwd.{2 dim tables} TO analyst
 ```
 
-**Key modules and freeze anchors (Phase M1; not modified)**：
+**Key modules and freeze anchors (Phase M1 baseline; guardrail.py since modified for #280)**：
 
-- `src/mj_agent/tools/sql/guardrail.py:33-103` — L1 regex
+- `src/mj_agent/tools/sql/guardrail.py:42-151` — L1 regex + AST allowlist extraction (`_qualified_refs`; sqlglot-parse-fail → fail-closed; modified for #280)
 - `src/mj_agent/tools/sql/precheck.py:58-159` — L1b AST + helpers
 - `src/mj_agent/tools/sql/execute.py:56-127` — execute_sql pipeline + envelope
 - `src/mj_agent/tools/sql/introspect.py:57-146` — GRANT visibility (REQ-004 sut-side)
