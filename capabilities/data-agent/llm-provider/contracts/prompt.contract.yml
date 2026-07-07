@@ -48,7 +48,7 @@ frontmatter_required:                               # freeze-relevant subset per
 frontmatter_freeze:                                 # explicit frozen values for non-version freeze-relevant
                                                     # subset; string-exact comparison per #1 amended pattern
   state: active
-  model_binding: deepseek-v3
+  model_binding: multi-provider (ADR-027; runtime binding via LLM_PROVIDER + LLM_MODEL_ID)
   token_budget_estimate: 820
 
 variables: []                                       # static body; no template variables
