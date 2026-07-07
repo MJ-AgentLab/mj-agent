@@ -1,19 +1,19 @@
 # capabilities/data-agent/safe-sql/contracts/sql-guardrail.contract.yml
 #
-# Covers REQ-001 (L1 regex) + REQ-002 (L1b sqlglot AST precheck).
+# Covers REQ-001 (L1 regex + AST allowlist) + REQ-002 (L1b sqlglot AST precheck).
 # Phase M1 reverse-engineered from frozen source; Phase M3 contract tests validate.
 #
 # 4 项必停 source files: guardrail.py + precheck.py (sql-guardrail-relax hard stop).
 
 contract_id: sql-guardrail
 covers_requirements:
-  - REQ-001                                       # L1 regex
+  - REQ-001                                       # L1 regex + AST allowlist
   - REQ-002                                       # L1b sqlglot AST precheck
 
-# REQ-001 — L1 regex guardrail
+# REQ-001 — L1 regex + AST-allowlist guardrail
 l1_guardrail:
   module: src.mj_agent.tools.sql.guardrail
-  freeze_anchor: src/mj_agent/tools/sql/guardrail.py:33-103
+  freeze_anchor: src/mj_agent/tools/sql/guardrail.py:42-151
   public_api:
     - name: is_safe_select
       signature: "def is_safe_select(sql: str, allowed_schemas: Iterable[str], allowed_tables_per_schema: Mapping[str, Iterable[str]] | None = None) -> tuple[bool, str]"
@@ -21,7 +21,12 @@ l1_guardrail:
         accept: "(True, '')"
         reject: "(False, <human-readable reason>)"
       raises: []                                  # never raises; caller wraps in ValueError
-  blocked_keywords:                               # _BLOCKED regex (guardrail.py:36-40)
+  allowlist_extraction:                           # schema/table refs fed to the schema + per-table allowlist checks
+    mechanism: "sqlglot AST (exp.Table walk); quoting-agnostic — quoted / mixed-quoted idents, comma joins, UNION legs all seen"
+    anchor: "guardrail.py:53-78 (_qualified_refs)"
+    parse_failure: "fail-closed — sqlglot parse error / RecursionError -> reject (guardrail.py:131-137); the allowlist is a security boundary, so an un-vouchable statement does not proceed"
+    closes: "#280 — quoted identifiers (e.g. FROM \"biz_ods\".\"t\") no longer bypass the schema allowlist at L1; unparseable SQL is rejected rather than trusted"
+  blocked_keywords:                               # _BLOCKED regex (guardrail.py:46-50)
     - INSERT
     - UPDATE
     - DELETE
@@ -39,17 +44,18 @@ l1_guardrail:
     - LOCK
     - CALL
     - "SET SESSION"                               # literal phrase, not just SET
-  must_match_start:                               # _STMT_START regex (guardrail.py:33)
+  must_match_start:                               # _STMT_START regex (guardrail.py:43)
     - "^\\s*SELECT\\b"
     - "^\\s*WITH\\b.*?\\bSELECT\\b"
   rejection_modes:
-    - empty_sql: "guardrail.py:76-77"
-    - multi_statement: "guardrail.py:71-74 (after trailing-; strip; internal ; rejected)"
-    - non_select_start: "guardrail.py:79-80"
-    - blocked_keyword: "guardrail.py:82-83"
-    - schema_not_allowed: "guardrail.py:91-94 (case-insensitive lowercase compare)"
-    - table_not_in_per_schema_allowlist: "guardrail.py:95-101 (when map present; absent → wildcard)"
-  doc_stated_non_goals:                           # guardrail.py:21-25 (frozen — out of scope)
+    - empty_sql: "guardrail.py:108-109"
+    - multi_statement: "guardrail.py:103-106 (after trailing-; strip; internal ; rejected)"
+    - non_select_start: "guardrail.py:111-118"
+    - blocked_keyword: "guardrail.py:120-123"
+    - unparseable_sql: "guardrail.py:131-137 (fail-closed; sqlglot cannot parse -> reject)"
+    - schema_not_allowed: "guardrail.py:141-142 (case-insensitive lowercase compare; AST-extracted refs)"
+    - table_not_in_per_schema_allowlist: "guardrail.py:143-148 (when map present; absent → wildcard; AST-extracted refs)"
+  doc_stated_non_goals:                           # guardrail.py:27-31 (out of scope)
     - comment_scan: "does NOT scan inside SQL comments"
     - string_literal_scan: "does NOT scan inside string literals"
     - cte_alias_shadowing: "does NOT handle CTE alias shadowing"

@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Fixed — L1 guardrail 引号标识符 allowlist 绕过（#280）
+
+- **`src/mj_agent/tools/sql/guardrail.py`（`fix`，branch `bugfix/280-guardrail-quoted-ident`）**：L1 SQL guardrail 用正则（`_QUAL_REF`）抽取 `schema.table` 引用，无法匹配双引号标识符，故 `FROM "biz_ods"."t"` 绕过 schema/表 allowlist、仅靠 L4 DB GRANT 拦截（纵深防御缺口，非活体泄漏——只读 `analyst` 角色 GRANT 权威）。**修复**：正则抽取改为 sqlglot AST（`_qualified_refs`，遍历 `exp.Table`）——引号无关，且额外覆盖逗号 JOIN、UNION 腿、WHERE/CTE 子查询等正则从不可见的位置。sqlglot 解析失败（或病态嵌套 `RecursionError`）时 **fail-closed 拒绝**（而非退化到弱正则）——allowlist 是安全边界，无法静态背书的语句不放行（对比 L1b precheck 的*质量*规则 fail-open）；Owner 拍板 fail-closed（HITL，`sql-guardrail-relax` 必停面）。行为保持：既有 accept/reject 理由串逐字不变，`is_safe_select` 仍不抛（`RecursionError` 现已捕获）；代价=极少数 valid-but-unparseable PostgreSQL（jsonb `@?`、`ORDER BY … USING <`）在 L1 被拒并给清晰 “could not parse … simplify” 理由。**测试** +19 回归用例（引号/混合引号/大小写混合、`biz_ads`/`ops_meta`、UNION/逗号 JOIN/WHERE 子查询腿、引号禁库 dwd 表、字符串字面量伪引用、fail-closed 不可解析 + 病态嵌套）；3-agent 对抗性 review：33 禁库变体全拒、22 合法形态零误拒、无残留绕过。同步 safe-sql capability contracts + design（`sql-guardrail.contract.yml` / `execute-sql.contract.yml` / `design.md`）到 AST/fail-closed 机制 + 刷新行锚。**延后 follow-up**：behavior.feature 新增 allowlist-拒绝 scenario（单测已覆盖）；REQ-001 “L1 regex guardrail” 名 + behavior.feature/runbook.md “regex” 标签协调重命名；spec.yml “14 dangerous keywords” 既存漂移（应 16）；precheck.py `RecursionError` 捕获（现已被 L1 fail-closed 前置拦截，不可达）。Closes #280
+
 ### Changed — T-5 DGX 真实 e2e 采纳（ADR-027 active）
 
 - **`decisions/ADR-027_LLM_Provider_Abstraction.md`（`docs`，branch `documentation/dgx-e2e-t5`）**：§Cross-ref 状态 `pending dgx-mlops Phase 2 integration` → `active`（2026-07-03 真实 e2e 跑通：`make_graph()` + metric 问题经 DGX vLLM `nemotron-3-super` 端到端，≥1 纯 + ≥1 tool-calling completion，dgx-mlops 侧 S1-S4 + S1a 断言全 PASS）；§Cross-ref 标题同批去 pending 字样（自洽）。

@@ -44,7 +44,7 @@ l3_connection:
     rationale: "no dangling tx in pool — every cursor's exit unconditionally rolls back"
   does_not_set:                                   # explicit non-actions; both have rationale
     - param: search_path
-      reason: "schema qualification enforced at L1 (guardrail.py:91)"
+      reason: "schema qualification enforced at L1 (guardrail.py:141)"
       anchor: mj_system_db.py:75-77
     - param: statement_timeout
       reason: "delegated to L4 role-level config; see REQ-004"

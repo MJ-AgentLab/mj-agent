@@ -7,19 +7,26 @@ mj-system contract exposes exactly two ``biz_dwd`` dimension tables).
 
 Defense layering rationale:
   - DB-side GRANTs (L4) remain the authoritative defense.
-  - Phase 2 will upgrade to sqlglot AST-level validation (PR2 of the MVP
-    plan, sharing rule sources with the eval Component Judge).
+  - Schema/table allowlist extraction is sqlglot AST-based (see
+    ``_qualified_refs``), so quoted / mixed-quoted identifiers, comma joins
+    and UNION legs cannot slip a forbidden schema past L1 (#280). Because the
+    allowlist is a security boundary, a statement sqlglot cannot parse is
+    rejected fail-closed — an un-vouchable statement does not proceed (unlike
+    the L1b precheck *quality* rules, which degrade gracefully because the DB
+    is their ultimate validator).
 
 What this layer catches:
   - multi-statement SQL (no `;` chaining)
   - non-SELECT statements
   - dangerous keywords (DML/DDL/DCL/maintenance)
-  - schema references outside the allowlist
+  - schema references outside the allowlist (quoting-agnostic via the AST)
   - table references outside the per-schema allowlist (e.g. biz_dwd
     fact tables that are not the two exposed dimensions)
+  - SQL that cannot be parsed for static validation (fail-closed reject)
 
 What this layer does NOT catch (intentionally, deferred to L3/L4):
-  - dangerous keywords hidden in comments or string literals
+  - dangerous keywords hidden in comments or string literals (the keyword
+    scan is still regex-based)
   - CTE alias shadowing a schema name
   - function calls that return sensitive data
 """
@@ -28,6 +35,9 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable, Mapping
+
+import sqlglot
+from sqlglot import expressions as exp
 
 # Accept either plain SELECT or a WITH ... SELECT pipeline.
 _STMT_START = re.compile(r"^\s*(WITH\b.*?\bSELECT\b|SELECT\b)", re.IGNORECASE | re.DOTALL)
@@ -39,11 +49,33 @@ _BLOCKED = re.compile(
     re.IGNORECASE,
 )
 
-# Matches `FROM schema.table` or `JOIN schema.table` — captures both parts.
-_QUAL_REF = re.compile(
-    r"\b(?:FROM|JOIN)\s+([a-zA-Z_]\w*)\.([a-zA-Z_]\w*)",
-    re.IGNORECASE,
-)
+
+def _qualified_refs(sql: str) -> list[tuple[str, str]] | None:
+    """Return ``(schema, table)`` for every schema-qualified table reference.
+
+    Extraction is AST-based (sqlglot) so that quoted / mixed-quoted
+    identifiers, comma joins, UNION legs, sub-queries and CTE base tables are
+    all seen — quoting-agnostic, closing #280 (the earlier regex silently
+    missed quoted refs, letting ``FROM "biz_ods"."t"`` reach the DB where only
+    the L4 GRANT stopped it). sqlglot normalizes the quoting, so ``table.db`` /
+    ``table.name`` are the plain identifier text regardless of how the analyst
+    wrote them. Unqualified references (``table.db`` empty) are left to the DB /
+    search_path, matching prior behavior.
+
+    Returns ``None`` when sqlglot cannot parse the statement (parse error, or
+    ``RecursionError`` on pathological nesting). The caller treats ``None`` as
+    fail-closed: the allowlist is a security boundary, so a statement that
+    cannot be statically validated is rejected rather than trusted.
+    """
+    try:
+        tree = sqlglot.parse_one(sql, read="postgres")
+    except (sqlglot.errors.SqlglotError, RecursionError):
+        return None
+    if tree is None:
+        return None
+    return [
+        (table.db, table.name) for table in tree.find_all(exp.Table) if table.db
+    ]
 
 
 def is_safe_select(
@@ -96,7 +128,15 @@ def is_safe_select(
         for s, ts in allowed_tables_per_schema.items():
             table_whitelist[s.lower()] = {t.lower() for t in ts}
 
-    for schema, table in _QUAL_REF.findall(stripped):
+    refs = _qualified_refs(stripped)
+    if refs is None:
+        return (
+            False,
+            "could not parse SQL for allowlist validation; "
+            "simplify or rephrase the query",
+        )
+
+    for schema, table in refs:
         s_lower = schema.lower()
         if s_lower not in allowed:
             return False, f"schema '{schema}' is not in the allowlist"
