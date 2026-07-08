@@ -87,25 +87,38 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 
 如缺 → 输出对应 install 指引，**不**自动 install（user 决定）。
 
-### Step 2 — 解密 secrets.enc（注入 .env 的 22 secrets）
+### Step 2 — 解密两个 bundle（app → .env；MCP → OS env）
 
 ```powershell
 # 在 mj-agent 仓 develop/（或任意 worktree）根执行
-.\scripts\setup-env.ps1
+# 2a. App bundle → .env（-LlmProfile 选 LLM 套装：无 DGX 隧道的机器一律 ark）
+.\scripts\setup-env.ps1 -LlmProfile ark
+#     有 DGX 隧道 + Docker Desktop 的机器：.\scripts\setup-env.ps1 -Force -LlmProfile dgx
+
+# 2b. MCP bundle → OS User-level env（同一口令；不写 .env）
+.\.claude\scripts\setup-mcp-secrets.ps1
+#     ⚠ 跑完必须【完全重启】终端 + Claude Code（User env 只对新进程可见）
 ```
 
-脚本会询问团队解密口令（**不**回显 / **不**记录）；脚本内部用 AES-256-CBC + PBKDF2 解密 `config/secrets.enc`，merge **22 个 secret** 到 `.env`（按 `.env.example` §1–§9 分组；脚本运行末尾打印 `[OK] Decrypted N secrets.` 做核对）：
+脚本会询问团队解密口令（**不**回显 / **不**记录）；两 bundle 同口令、同 AES-256-CBC + PBKDF2 算法，注入目标不同（ADR-030）：
 
-| Secret | 来源章节 | 用途 |
+**2a. `secrets.enc` → `.env`（8 app secrets + §2c LLM provider profile）**（脚本末尾打印 `[OK] Decrypted N secrets.` + `LLM profile resolved: <ark|dgx>` 做核对）：
+
+| Key | 来源章节 | 用途 |
 |---|---|---|
 | `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` | §1 | biz pg analyst RO（ADR-006 / ADR-009） |
 | `ARK_API_KEY` | §2 | Volcengine Ark；`LLM_PROVIDER=ark` 必填 |
-| `LLM_BASE_URL` / `LLM_API_KEY` | §2 | `LLM_PROVIDER=local-openai-compat` 必填（DGX-Spark vLLM/SGLang/Ollama；ADR-027 PR-2） |
+| `LLM_API_KEY` | §2b | `LLM_PROVIDER=local-openai-compat` 且端点启用 `--api-key` 时填 |
+| §2c profile 组（`LLM_PROVIDER`/`LLM_BASE_URL`/`LLM_MODEL_ID`/`NO_PROXY`） | §2c | 按 `-LlmProfile` 从 ark/dgx 两套解析**一套**注入（#297；命名空间键不落 .env） |
 | `LANGSMITH_API_KEY` | §3 | LangSmith trace（可选；详见 Developer_Onboarding §7.2） |
-| `MJ_AGENT_MEMORY_PASSWORD` | §5 | mj-agent-postgres `mj_agent_app` role RW（storage-stack PR；postgres-init 用此值建 role） |
-| `MJ_AGENT_REDIS_PASSWORD` | §5b | future use；container ready 但无 client wired |
-| `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD`（**5 个**） | §8 | ssh-manager MCP server（ADR-028 PR-3；9 entries 用 5 unique passwords：lan + wan 同主机共密码） |
-| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL`（**10 个**） | §9 | `.mcp.json` 包装脚本的连接 URL；WAN 必填（FRP 隧道无 fallback）；LAN 可选（有 placeholder） |
+| `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD` | §4 | mj-agent-postgres `mj_agent_app` role RW（postgres-init 用此值建 role） |
+| `MJ_AGENT_PG_SUPERUSER_PASSWORD` | §4b | mj-agent-postgres 容器超管（compose-only；Python 不读） |
+
+**2b. `secrets-mcp.enc` → `HKCU\Environment`（15 MCP secrets；永不入 `.env`）**：
+`MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD` ×5 +
+`MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL` ×10，
+供 `.mcp.json` `${VAR}` 在 claude.exe 启动时解析；诊断用
+`.\.claude\scripts\setup-mcp-secrets.ps1 -Reload`（详见 `config/README.md` §6.4）。
 
 > **失败模式**：
 > - 口令错 → 脚本失败，无残留 .env 改动；让用户重试 / 联系负责人
@@ -114,9 +127,10 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 
 ### Step 3 — `.env` 完整性核对
 
-> **LLM provider 分支**（PR-2 / ADR-027）：mj-agent 现支持两个 LLM provider，secret/config 必填字段不同：
+> **LLM provider 分支**（PR-2 / ADR-027 + #297 profile 机制）：mj-agent 现支持两个 LLM provider，secret/config 必填字段不同：
 > - `LLM_PROVIDER=ark`（默认）→ 必须 `ARK_API_KEY` 非空（或新通用 `LLM_API_KEY`）
-> - `LLM_PROVIDER=local-openai-compat`（DGX-Spark 本地 vLLM/SGLang/Ollama）→ 必须 `LLM_BASE_URL` 非空；`LLM_API_KEY` 可填 `EMPTY`
+> - `LLM_PROVIDER=local-openai-compat`（DGX-Spark 本地 vLLM/SGLang/Ollama）→ 必须 `LLM_BASE_URL` 非空；`LLM_API_KEY` 可填 `EMPTY`；端点经 owner SSH 隧道 + `host.docker.internal:18000`（ADR-027 D.3 Amendment——LAN 直连不通）
+> - provider 切换推荐走 `.\scripts\setup-env.ps1 -Force -LlmProfile <ark|dgx>`（bundle §2c 携带整套值含 `NO_PROXY`；见 config/README.md），不手工拼 .env
 > - 切换到 local-openai-compat 后，**必须**跑 `/mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康
 
 Claude 走 Bash tool（git-bash）：
@@ -142,8 +156,9 @@ for k in "${required[@]}"; do
   fi
 done
 
-# 必填非 secret 字段（参 .env.example）
-for k in MJ_CONFIG_PROFILE POSTGRES_DEV_HOST POSTGRES_DEV_PORT LLM_MODEL_ID LLM_PROVIDER; do
+# 必填非 secret 字段（参 .env.example；NO_PROXY 自 #297 有模板默认，
+# Clash/v2ray 机器缺失会导致 localhost/隧道请求 502/ConnectError）
+for k in MJ_CONFIG_PROFILE POSTGRES_DEV_HOST POSTGRES_DEV_PORT LLM_MODEL_ID LLM_PROVIDER NO_PROXY; do
   grep -qE "^${k}=" .env || echo "⚠️  $k missing in .env (copy from .env.example)"
 done
 ```
@@ -164,7 +179,7 @@ $requiredSecrets | ForEach-Object {
     } else { Write-Host "✅ $_ present" }
 }
 
-@("MJ_CONFIG_PROFILE","POSTGRES_DEV_HOST","POSTGRES_DEV_PORT","LLM_MODEL_ID","LLM_PROVIDER") | ForEach-Object {
+@("MJ_CONFIG_PROFILE","POSTGRES_DEV_HOST","POSTGRES_DEV_PORT","LLM_MODEL_ID","LLM_PROVIDER","NO_PROXY") | ForEach-Object {
     if (-not (Get-Content .env | Select-String "^$_=")) { Write-Warning "$_ missing in .env (copy from .env.example)" }
 }
 ```
@@ -259,9 +274,10 @@ uv run pytest tests/eval
 - ✅ uv 0.4.18
 - ✅ PowerShell 5.1.22000.282
 
-### Decrypt secrets.enc
-- ✅ scripts/setup-env.ps1 完成（22 secrets 已注入 .env）
-- 注入字段：详见 Step 2 表（§1 analyst pg + §2 LLM + §3 LangSmith + §5/§5b storage-stack + §8 SSH×5 + §9 PG URL×10）
+### Decrypt bundles
+- ✅ scripts/setup-env.ps1 完成（8 app secrets 已注入 .env；LLM profile = ark）
+- ✅ .claude/scripts/setup-mcp-secrets.ps1 完成（15 MCP secrets → HKCU；已提示重启终端）
+- 注入字段：详见 Step 2 表（§1 analyst pg + §2/§2b LLM keys + §2c profile 组 + §3 LangSmith + §4/§4b storage-stack；SSH×5 + PG URL×10 走 MCP bundle → OS env）
 
 ### .env Completeness
 - ✅ provider-aware required secrets 全填（LLM_PROVIDER=ark → 含 ARK_API_KEY；=local-openai-compat → 含 LLM_BASE_URL）
