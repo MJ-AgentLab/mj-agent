@@ -21,8 +21,8 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 仓库环境从零到 Studio 首问跑通的赶时间版速查清单
 > **目标受众**：demo / 培训 / hotfix 现场赶时间的开发者；已熟悉 mj-agent 仅作 refresh 的回归者
-> **版本**：v0.1
-> **最后更新**：2026-05-18
+> **版本**：v0.2
+> **最后更新**：2026-07-08
 > **派生自**：mj-agent 原生（参考 mj-system 仓库 `[GUIDE]_Quick_Start_Setup.md` 9 步速查 + Troubleshooting 表的结构与写法；命令与术语均按 mj-agent 自身资产派生）
 > **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../CLAUDE|CLAUDE.md]]
 
@@ -222,3 +222,4 @@ biz_dws 里有哪些日度总量表？
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-05-18 | v0.1 | 初稿（借鉴 mj-system Quick_Start_Setup 9 步结构 + Troubleshooting 表写法；内容按 mj-agent 自身资产派生） |
+| 2026-07-08 | v0.2 | #297 §6 补两 bundle 解密序列（setup-mcp-secrets + 完全重启说明）+ `-LlmProfile` 用法 + 无口令 fallback caveat。补记：#297 时 frontmatter 已 bump v0.2、body 版本行/本表漏跟（#302 追认对齐） |
