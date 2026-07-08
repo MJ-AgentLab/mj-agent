@@ -303,7 +303,7 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | precheck 报 `require_time_range` | SQL 漏写 `stat_date` 谓词 | 加 `WHERE stat_date >= '<日期>'` |
 | `database error: ... statement_timeout` | 60s 超时 | 加聚合 / 缩时间窗 / 减少 JOIN |
 | precheck 报 `no_select_star` | SQL 含 `SELECT *` | 显式列名 |
-| Studio/Chainlit 本地 URL 502 / LLM `httpx.ConnectError`（Clash/v2ray 机器） | 系统代理未排除 localhost / DGX 隧道，请求被塞进代理 | `.env` 确认 `NO_PROXY=localhost,127.0.0.1,::1`（dgx 套含 host.docker.internal）；单次 `curl --noproxy '*'`；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |
+| Studio/Chainlit 本地 URL 502 / LLM 502/`httpx.ConnectError`（Clash/v2ray 机器） | 系统代理未排除 localhost / DGX 隧道 / Ark 域名，请求被塞进代理 | `langgraph dev`/compose 路径：查 `.env` 的 `NO_PROXY`（模板默认已含 `ark.cn-beijing.volces.com`）；**裸跑 `serve`/`check`：`.env` 该行不进程生效（无 dotenv 导出），须 shell/OS env 设 `NO_PROXY`**；单次 `curl --noproxy '*'`；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |
 | Claude Code `/doctor` 报 `Missing environment variables`（MCP） | `setup-mcp-secrets.ps1` 没跑 / 跑完没重启终端（stale env） | `.\.claude\scripts\setup-mcp-secrets.ps1 -Reload` 诊断；重跑 + **完全重启**终端与 Claude；详见 `config/README.md` §6.4 |
 
 ## §8 速查表
