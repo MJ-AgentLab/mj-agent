@@ -69,12 +69,13 @@ skills:                                             # 6 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
-    description_hash: sha256:21bf582db6aca2c9f7a6d18a7e1e98efdd2b2935a6f233fcd7525006a7196b1f
-    # body re-frozen 2026-07-08 (#297): Step 2 "22 secrets into .env" corrected to
-    # ADR-030 2-bundle reality (8 app secrets + §2c LLM profile -> .env; 15 MCP -> HKCU);
-    # -LlmProfile usage + NO_PROXY added to Step 3 required-field checks; Output Format
-    # synced. description untouched (hash above re-verified identical pre/post edit).
-    body_content_hash: sha256:f05b0fbc403b735a0e33c6dd5ae5692ade8e818ca31630b5d356293f3e350651
+    # re-frozen 2026-07-08 (#302): stale "~6-8 app secrets" count in BOTH the
+    # description and body §Overview corrected to "8" (canonical count; consistent
+    # with README §填写指南 SoT). The ~6-8 token is not an A12 trigger term, so the
+    # description-hash change carries no trigger-hit-rate risk. Prior freeze was
+    # #297 (body-only, f05b0fbc / description 21bf582d unchanged then).
+    description_hash: sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745
+    body_content_hash: sha256:e905e0aff0ba75485b3562a3a7746bc0eb2852e27f9f58f31715f5ec758c7cce
     frozen_at: 2026-07-08T00:00:00Z
     body_section_heads:
       - "## Overview"

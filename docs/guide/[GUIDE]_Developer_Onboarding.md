@@ -12,7 +12,7 @@ aliases:
 created: 2026-05-06
 updated: 2026-07-08
 state: draft
-version: v0.3
+version: v0.4
 track: code
 owner: 项目负责人
 ---
@@ -21,7 +21,7 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
-> **版本**：v0.3
+> **版本**：v0.4
 > **最后更新**：2026-07-08
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
@@ -143,7 +143,13 @@ uv sync                                # 装依赖、锁版本
 uv run langgraph dev                   # 启 LangGraph Studio
 ```
 
-`.env` 字段说明在 `.env.example`；secrets 治理流程（两 bundle / 轮换 / cold-reset / `-Reload` 诊断）在 `config/README.md`。
+> **secrets.conf 填写速览**（全表 + 逐字段说明见 [[../../config/README|config/README.md]] §「secrets.conf 填写指南」）：
+> - app secret 8：**必填 5**（analyst×2 / ARK / memory×2；纯 DGX 免 ARK = 4）· **可空 3**（LLM_API_KEY / LANGSMITH / SUPERUSER）
+> - §2c profile 9：**照抄预填 7** · **强制留空 1**（`LLM_PROFILE_ARK__LLM_BASE_URL`，填了→#297 的 404 事故）· **可选 1**（`LLM_PROFILE_DEFAULT`）
+> - MCP 15 键：**对 app 启动零影响**，纯本地可全空，按「要用哪些 MCP 工具」填（SSH 连哪台填哪台 / PG WAN 要用则必填）
+> - ⚠ 填的是 `secrets.conf` 非 `.env`：普通 secret 键留空会**刷空 `.env`**，§2c profile 键留空则跳过（安全）
+
+`.env` 字段说明在 `.env.example`；secrets 治理与**逐字段填写分类**（两 bundle / 填写指南 / 轮换 / cold-reset / `-Reload` 诊断）在 `config/README.md`。
 
 **LLM provider 切换**（ADR-027 / ADR-033）：默认 ark 云；有 DGX 隧道 + Docker Desktop 的机器可
 `.\scripts\setup-env.ps1 -Force -LlmProfile dgx` 切本地端点（bundle §2c 携带整套值，含
@@ -386,3 +392,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-05-18 | v0.1（in-place） | 4 处增强（§0.5 权限清单 / §3.5 仓库结构鸟瞰 / §6.5 G1/G2 hook 防护 / §9 Day-1 打勾清单）+ 关联文档 + §5 文档版本号刷新到 v2.2 / v1.1；借鉴 mj-system Developer_Onboarding 写法，内容按 mj-agent 自身资产派生 |
 | 2026-06-07 | v0.2 | M6 X4：原 `docs/runbook/dev_studio_walkthrough.md` 并入 §7（§7.1 H1-R2 验证矩阵 + §7.2 LangSmith trace 开关 + §7.3 常见诊断）；源 runbook `git rm`，docs/runbook/ 清空；25 处引用 re-point 到本节（含 4 个 infra freeze skill，HITL 授权） |
 | 2026-07-08 | v0.3 | #297 env/config 完整性修齐：§3 补 MCP bundle 步骤（setup-mcp-secrets + 完全重启说明）+ `-LlmProfile` 用法 + LLM provider 切换段（DGX 隧道拓扑 / model-id 覆写）；§0.5 补两 bundle 同口令、GitHub PAT、playwright chromium；§7.3 诊断表补 proxy-502 与 /doctor-MCP 两行；§8 速查表拆 app/MCP 两条解密行。另订正：前次 frontmatter `updated: 2026-07-07` 无对应内容变更（日期漂移，本行起对齐） |
+| 2026-07-08 | v0.4 | #302 secrets 填写指南：§3 命令块后加「secrets.conf 填写速览」摘要卡（app 必填5/可空3 · §2c 照抄7/强制空1/可选1 · MCP 15 按需 · secrets.conf≠.env 铁律）+ 委托句指向 `config/README.md` §「secrets.conf 填写指南」新 SoT 小节（完整逐字段表落 config/README，本 GUIDE 按指针 charter 只留摘要） |

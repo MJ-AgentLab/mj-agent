@@ -30,6 +30,57 @@
 **不共享 mj-system 的 secrets.enc / 团队口令**。变量命名虽与 mj-system 对齐（操作一致性），
 但解密管道完全独立——本 secrets.enc 由 mj-agent 团队自管。
 
+## secrets.conf 填写指南（填 / 不填 / 预留）
+
+首次配置或 cold-reset 时把 `.example` 复制成 `.conf` 填值——本节是每个字段「该不该填」
+的单一真值源（SoT）。**你填的是 `secrets.conf`（→ `encrypt-secrets*.ps1` → `.enc`），不是
+`.env`。** 三条铁律先记住：
+
+> - **普通 secret 键留空 → `setup-env.ps1` 会把 `.env` 对应行刷成空** → 启动崩。所以下表「必填」项必须填真值。
+> - **§2c `LLM_PROFILE_*` 键留空 → 跳过注入**，`.env.example` 默认值保留（安全）。
+> - **MCP 15 键对 app 启动零影响**（ADR-030 业务零依赖）——纯本地开发可全空，按「要用哪些 MCP 工具」决定。
+
+### App bundle `secrets.example`
+
+**§1-§4 的 8 个 app secret（真凭据）**：
+
+| 字段 | 分类 | 说明 |
+|---|---|---|
+| `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` | **必填** | biz 查询 analyst RO；留空 → `check` fail + 刷空 `.env` |
+| `ARK_API_KEY` | **必填**（ark）/ 可空（纯 DGX） | `LLM_PROVIDER=ark` 时缺则 `LLMConfigError` fail-fast |
+| `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD` | **必填** | memory pg RW；postgres-init 建 role；⚠ 留空会刷空 `.env` 的 working placeholder → 启动崩 |
+| `LLM_API_KEY` | 可空（预留） | vLLM 无鉴权时空即可（回落 `EMPTY` sentinel）；端点启用 `--api-key` 才填 |
+| `LANGSMITH_API_KEY` | 可空（预留） | `LANGSMITH_TRACING=false` 时不需要 |
+| `MJ_AGENT_PG_SUPERUSER_PASSWORD` | 可空（预留） | compose `:-local-dev-only-replace` fallback 兜底；空值安全 |
+
+**§2c 的 9 个 LLM provider profile 键（非密钥持久层）**：
+
+| 字段 | 分类 | 说明 |
+|---|---|---|
+| `LLM_PROFILE_DEFAULT` | 可选填 | 填 `ark`/`dgx` 固化机器默认；空则靠 `-LlmProfile` 参数或交互选择 |
+| `LLM_PROFILE_ARK__LLM_PROVIDER` = `ark` | 照抄预填 | profile 固定值 |
+| `LLM_PROFILE_ARK__LLM_BASE_URL` | **强制留空** | 填了 = ark 打到该端点 → `The model ... does not exist` 404 事故（#297） |
+| `LLM_PROFILE_ARK__LLM_MODEL_ID` = `deepseek-v3-2-251201` | 照抄（可微调） | 若你的 key 走接入点授权，改成 `ep-xxxx` |
+| `LLM_PROFILE_ARK__NO_PROXY` = `localhost,...,ark.cn-beijing.volces.com` | 照抄预填 | Clash/v2ray 机器防 502 |
+| `LLM_PROFILE_DGX__LLM_PROVIDER` = `local-openai-compat` | 照抄预填 | — |
+| `LLM_PROFILE_DGX__LLM_BASE_URL` = `http://host.docker.internal:18000/v1` | 照抄（按端点） | 隧道形态；换端点则改 |
+| `LLM_PROFILE_DGX__LLM_MODEL_ID` = `nemotron-3-super` | 照抄（按端点） | 须匹配 `--served-model-name` |
+| `LLM_PROFILE_DGX__NO_PROXY` = `...,host.docker.internal,192.168.0.189,...` | 照抄预填 | 隧道 + Ark 域名一并放行 |
+
+> 小结：app secret **8**（必填 5 / 纯 DGX 4 · 可空 3）+ §2c profile **9**（照抄 7 · 强制留空 1 · 可选 1）。
+
+### MCP bundle `secrets-mcp.example`
+
+15 键全空、**对 app 启动零影响**；按「要连哪些库/主机」决定：
+
+| 字段组 | 分类 | 说明 |
+|---|---|---|
+| `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD` ×5 | 按需 | ssh-manager 连哪台就填哪台；不连的可空 |
+| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,PROD_LAN}_URL` ×6（LAN/DEV） | 按需 | `.mcp.json` 有 host fallback，但密码是占位字面量 → 走 fallback 连不上真库；要用对应 LAN pg MCP 就填 |
+| `MJ_AGENT_PG_{MEMORY,BIZ}_{TEST_WAN,PROD_WAN}_URL` ×4（WAN） | 要用则必填 | `.mcp.json` **无 fallback** → 不填则该 4 个 MCP server 启动失败（FRP 远程访问才需要，纯本地可全空） |
+
+> 纯本地开发者可把 MCP 15 键**全部留空**——app 照常跑，只是 ssh-manager 和远程 pg MCP 工具不可用（`/doctor` 报缺属预期）。
+
 ## 文件清单
 
 | 文件 | 状态 | 用途 |
@@ -194,7 +245,8 @@ Copy-Item config\secrets.enc config\secrets.enc.bak.<date>
 Copy-Item config\secrets.example config\secrets.conf
 notepad config\secrets.conf
 #    照 secrets.example schema，把以下值从你的 .env 复制粘贴进对应行
-#    （这些就是 app bundle 的全部键——MCP 的 SSH / PG URL 不在此，见下方 MCP bundle）：
+#    （每字段该填/留空/照抄见上文「## secrets.conf 填写指南」；MCP 的 SSH / PG URL
+#     不在此，见下方 MCP bundle）：
 #      POSTGRES_ANALYST_USER / POSTGRES_ANALYST_PASSWORD
 #      ARK_API_KEY
 #      LANGSMITH_API_KEY    (可空)
@@ -254,8 +306,9 @@ Remove-Item config\secrets-mcp.enc.bak.<date>
   （OS User-level env 仅对新启动的进程可见）。
 
 **前提条件**：cold reset 两个 bundle 各需一个可用来源——
-- **App bundle**：至少一台机器有可用 `.env`。若连 `.env` 也丢，从源头重拿 **5-8 个** app 值
-  （找 mj-system DBA 拿 analyst 凭据 / Ark 控制台拿 API key / memory pg RW 凭据 / etc.）。
+- **App bundle**：至少一台机器有可用 `.env`。若连 `.env` 也丢，从源头重拿 **8 个 app secret
+  中的必填 5**（analyst 凭据×2 找 mj-system DBA / Ark API key×1 找 Ark 控制台 / memory pg RW×2）；
+  可空 3（LLM_API_KEY / LANGSMITH / SUPERUSER）按上文「填写指南」酌情（详见 `## secrets.conf 填写指南`）。
 - **MCP bundle**：至少一台机器 `HKCU\Environment` 仍持有 MCP 值。若连 OS env 也丢，从源头重拿
   **5 个 SSH 密码**（对应主机管理员）+ **4 个 FRP WAN URL**（隧道 / FRP 配置）；6 个 LAN URL
   有 `.mcp.json` 占位 fallback，可空。
@@ -383,6 +436,7 @@ ADR-025 (PR-1/2/3/4 multi-env+DGX+MCP bundle) 引入 4-file docker-compose
 
 `secrets.example` §2b 已加 `LLM_API_KEY` 占位（可选，vLLM 启用 auth 时启用）；
 §2c 携带 ark/dgx 两套 provider profile（#297，见上文「LLM provider profile 选择」）。
+每字段填/留空/照抄的完整分类见上文「## secrets.conf 填写指南」。
 
 ### 6.2 SSH passwords for ssh-manager MCP（独立命名空间）
 
