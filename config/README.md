@@ -104,6 +104,11 @@ bundle §2c 携带 **ark / dgx 两套**命名空间键（`LLM_PROFILE_ARK__*` /
 
 ## 管理员：新增或轮换密钥
 
+> 两个 bundle 各自独立加密 + 各自的 setup 脚本（ADR-030）。app bundle（`secrets.enc`）
+> 见下；MCP bundle（`secrets-mcp.enc`）的并列流程见本节末。
+
+### App bundle（secrets.enc）
+
 ```powershell
 # 1. 准备明文
 cp config\secrets.example config\secrets.conf
@@ -138,29 +143,65 @@ Remove-Item config\secrets.conf  # 切勿提交
   "本次为新增 key，需 -Force 重跑"**，否则 team 成员只跑无 `-Force` 版本
   会看到 `[DRIFT]` 警告但 `.env` 不会被刷新。
 
+### MCP bundle（secrets-mcp.enc）
+
+MCP 基础设施 secrets（5 SSH + 10 PG URL）走独立 bundle + 独立注入路径（→ `HKCU\Environment`，
+不入 `.env`；详见 §6.4）。加密 / 轮换与 app bundle 并列，但键清单与目标不同：
+
+```powershell
+# 1. 准备明文
+Copy-Item config\secrets-mcp.example config\secrets-mcp.conf
+# 编辑 secrets-mcp.conf 填入新值（或修改既有值）
+
+# 2. 加密（口令与 secrets.enc 相同）
+.\scripts\encrypt-secrets-mcp.ps1
+
+# 3. 提交加密包，删除明文
+git add config\secrets-mcp.enc
+Remove-Item config\secrets-mcp.conf  # 切勿提交
+
+# 4. 通过安全渠道告知团队"MCP bundle 已更新"
+```
+
+新增 MCP key（如新 SSH host / 新 PG URL）时，只登记**两处**（与 app 的三处对照）：
+- `config/secrets-mcp.example` 增加键名（值留空）
+- `.mcp.json` 增加对应 `${VAR}` 引用（在 server config 里消费）
+- **显式不登记** `.env.example` / `src/mj_agent/config.py`——ADR-030 核心红线：MCP 键永不入
+  `.env`，Python runtime 不消费（误登记 config.py 会让 pydantic-settings 把它当成 app 配置）。
+
+**团队动作差异**：无论轮换还是新增，team 成员都重跑
+`.\.claude\scripts\setup-mcp-secrets.ps1`（值变加 `-Force`）**并重启 terminal / IDE / claude**
+（OS User-level env 仅对新启动的进程可见——这是与 app bundle `.env` 流程的关键差异；
+诊断 `.\.claude\scripts\setup-mcp-secrets.ps1 -Reload` 报 SET/MISSING）。
+
 ## 应急：旧加密口令遗失（cold reset）
 
-如果**所有团队成员都不记得 secrets.enc 的加密口令**（或单人开发场景下你
-自己忘了），无法走常规 rotation 路径。但只要至少一台机器上的 `.env`
-还在，就能 cold reset：
+如果**所有团队成员都不记得团队口令**（或单人开发场景下你自己忘了），无法走常规
+rotation 路径。两个 bundle **共享同一团队口令**（ADR-030），所以口令遗失时
+`secrets.enc`（app）与 `secrets-mcp.enc`（MCP）**都要用新口令重建**。前提是至少一台
+机器还留着两类值的来源：**(a)** app 值 = 该机 `.env`；**(b)** MCP 值 = 该机
+`HKCU\Environment`（之前跑过 `setup-mcp-secrets.ps1` 写入的 OS User-level env）。
+
+用同一新口令依次重建两个 bundle（顺序无所谓，但两次输入的口令必须一致）。
+
+### App bundle（secrets.enc）— 值从 `.env` 抄
 
 ```powershell
 # 1. 备份现有 secrets.enc（保险）
 Copy-Item config\secrets.enc config\secrets.enc.bak.<date>
 
-# 2. 从现有 .env 抽 secret 值，新建 secrets.conf
+# 2. 从现有 .env 抽 app secret 值，新建 secrets.conf
 Copy-Item config\secrets.example config\secrets.conf
 notepad config\secrets.conf
-#    照 secrets.example schema，把以下值从你的 .env 复制粘贴进对应行：
+#    照 secrets.example schema，把以下值从你的 .env 复制粘贴进对应行
+#    （这些就是 app bundle 的全部键——MCP 的 SSH / PG URL 不在此，见下方 MCP bundle）：
 #      POSTGRES_ANALYST_USER / POSTGRES_ANALYST_PASSWORD
 #      ARK_API_KEY
 #      LANGSMITH_API_KEY    (可空)
 #      LLM_API_KEY          (可空)
 #      MJ_AGENT_MEMORY_USER / MJ_AGENT_MEMORY_PASSWORD
 #      MJ_AGENT_PG_SUPERUSER_PASSWORD (可空——空则 compose 用占位 fallback)
-#      §2c LLM_PROFILE_* 两套（非密钥；照 secrets.example 填 ark/dgx 值）
-#      MJ_AGENT_SSH_SERVER_*_PASSWORD ×5（你提供）
-#      MJ_AGENT_PG_*_WAN_URL ×4（仅 FRP 用；可空）
+#      §2c LLM_PROFILE_* 两套（非密钥；照 secrets.example 已提交的默认值填 ark/dgx）
 
 # 3. 用新口令加密
 .\scripts\encrypt-secrets.ps1
@@ -171,13 +212,55 @@ notepad config\secrets.conf
 # 5. 清理
 Remove-Item config\secrets.conf
 Remove-Item config\secrets.enc.bak.<date>
-
-# 6. 通过安全渠道通知团队"口令已轮换 + 本次为新增 key（需 -Force 重跑）"
 ```
 
-**前提条件**：至少一台机器有可用 `.env`。如果连 `.env` 也丢失，需要从
-源头重新拿到 8-13 个值（找 mj-system DBA 拿 analyst 凭据 / Ark 控制台
-拿 API key / 对应主机管理员拿 5 SSH 密码 / etc.）后再走步骤 2-6。
+### MCP bundle（secrets-mcp.enc）— 值从 `HKCU\Environment` 读
+
+> ⚠ **切勿**把 MCP 的 SSH / PG URL 键填进上面的 app `secrets.conf`：它们不在
+> `.env.example`，`setup-env.ps1` 会走 append 分支（`scripts/setup-env.ps1` L316）把它们
+> **明文写进 `.env`**，直接违反 ADR-030「MCP secrets 永不入 .env」红线。MCP 键只走本 bundle。
+
+```powershell
+# 1. 备份现有 secrets-mcp.enc（保险）
+Copy-Item config\secrets-mcp.enc config\secrets-mcp.enc.bak.<date>
+
+# 2. 从当前 OS env dump 15 个 MCP 键的现值（-Reload 只报 SET/MISSING、屏蔽值，无法取值；
+#    下面循环按 secrets-mcp.example 的键名逐个读 HKCU\Environment 当前值）：
+Get-Content config\secrets-mcp.example |
+  ForEach-Object { if ($_ -match '^\s*([A-Za-z0-9_]+)\s*=') {
+      $k = $Matches[1]; "$k=$([Environment]::GetEnvironmentVariable($k,'User'))" } }
+
+# 3. 新建 secrets-mcp.conf，粘贴上一步输出（空值保持空——LAN URL 有 .mcp.json fallback）
+Copy-Item config\secrets-mcp.example config\secrets-mcp.conf
+notepad config\secrets-mcp.conf
+
+# 4. 用同一新口令加密（与 app bundle 口令一致）
+.\scripts\encrypt-secrets-mcp.ps1
+
+# 5. 验证（应能解 + 写 OS env）：提示新口令，期望 "15 processed"
+.\.claude\scripts\setup-mcp-secrets.ps1
+
+# 6. 清理
+Remove-Item config\secrets-mcp.conf
+Remove-Item config\secrets-mcp.enc.bak.<date>
+```
+
+### 收尾
+
+通过安全渠道通知团队「团队口令已轮换」。两 bundle 的值未变、只换了口令，team 成员
+用新口令重跑对应 setup 脚本即可（值一致，多为 `[SKIP]`）：
+- **App**：`.\scripts\setup-env.ps1`。
+- **MCP**：`.\.claude\scripts\setup-mcp-secrets.ps1` + **重启 terminal / IDE / claude**
+  （OS User-level env 仅对新启动的进程可见）。
+
+**前提条件**：cold reset 两个 bundle 各需一个可用来源——
+- **App bundle**：至少一台机器有可用 `.env`。若连 `.env` 也丢，从源头重拿 **5-8 个** app 值
+  （找 mj-system DBA 拿 analyst 凭据 / Ark 控制台拿 API key / memory pg RW 凭据 / etc.）。
+- **MCP bundle**：至少一台机器 `HKCU\Environment` 仍持有 MCP 值。若连 OS env 也丢，从源头重拿
+  **5 个 SSH 密码**（对应主机管理员）+ **4 个 FRP WAN URL**（隧道 / FRP 配置）；6 个 LAN URL
+  有 `.mcp.json` 占位 fallback，可空。
+
+补齐来源后，各按对应 bundle 的加密流程执行（填 conf → encrypt → 验证 → 清理）。
 
 ## Memory pg role rename：`mj_agent_memory` → `mj_agent_app`（dev-only 一次性）
 
