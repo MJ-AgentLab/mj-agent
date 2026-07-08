@@ -5,6 +5,30 @@
 
 ## [Unreleased]
 
+### Changed — bidirectional reverse-triggers on 3 frozen peer infra skills（#306）
+
+- **`.claude/skills/mj-agent-infra-{env-teardown,docker-compose,studio-probe}/SKILL.md` +
+  `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml` +
+  `policies/ai-agent.md` + `CHANGELOG.md`（`maintain`，branch
+  `maintain/306-bidirectional-reverse-triggers`）**：#304/PR #305 给新 `app-start` / `-app-stop`
+  只装了**单向** reverse-trigger（新技能 defer 到 3 个 peer，但 peer 不 defer 回来），adversarial
+  self-review finding #5 因 3 peer 是 content-hash **frozen**、改 description 须 re-freeze
+  （`mcp-server-trust-posture-change` HITL）而**有意延后**。今日实测过火：`env-teardown` 的 Level-1
+  `down` 与 `app-stop` 的非破坏容器停机重叠；裸 "起 Studio" 同时触发 `studio-probe` + `app-start`。
+  **改动**：(1) 3 个 peer 的 `description` `Do not use for:` 块各加一条 `app-start`/`app-stop`
+  deferral 从句（house-style 括注 `(use …)`；**body 逐字不动 / 仍单物理行 / 仍 ≥200 字符含
+  `Do not use for:`**）——`env-teardown`→非破坏停机转 `app-stop`；`docker-compose`→有序整机起停转
+  `app-start`/`app-stop`（本技能是它们下委的 up/ps/logs/down 原语）；`studio-probe`→裸启动转
+  `app-start`（本技能是 H1/H2/H3/R1/R2 walkthrough 非 launcher），顺手删陈旧 `in PR-C3` 引用。
+  (2) **re-freeze**（Owner 拍板；`mcp-server-trust-posture-change` HITL）：contract 3 条记录
+  `description_hash` 改（`f27f41f2→013d8ec2` / `77ca5b0c→388b327a` / `815bed2b→d60021f7`）+
+  `frozen_at`→2026-07-08，**`body_content_hash` + `body_section_heads` 逐字不变**；先复现全 8 技能
+  16 hash（**16/16 MATCH**）再录新值，per freeze discipline。(3) 顺修 `policies/ai-agent.md §7`
+  陈旧 infra freeze 计数 `6→8`（连带求和 `10→12`；#304 遗留，`updated`→2026-07-08）。**验证**：
+  post-edit 全 8 技能 16 hash 全复现（3 改 desc / body 不变 / 另 5 不变）、`check_claude_skill_contracts.py`
+  0 WARN、pytest unit+eval + mcp-governance contract PASS、doc-validate clean。**无运行时影响**（改的是
+  trigger 元数据；deferral-only 负触发 → 只降过火不改正当命中率）。Closes #306
+
 ### Added — infra app-lifecycle skills：app-start / app-stop（#304）
 
 - **`.claude/skills/mj-agent-infra-app-start/` + `.claude/skills/mj-agent-infra-app-stop/` + doc-sync（`.claude/skills/SKILL_INDEX.md` / `docs/INDEX.md` / `sdd/workflows/execution-loop.md` / `CLAUDE.md`）+ `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`（`docs`，branch `feature/304-infra-app-lifecycle-skills`）**：原 6 个 infra skill 只管 **capacity**（secrets/containers/storage/endpoints——名词），无 skill owns 操作 app **runtime**（launch/stop——动词）：没有统一起服动作、`uv run mj-agent serve` 无主、停 host-run 进程（`langgraph dev` :2024 / Chainlit）无主（studio-probe 明确拒杀、env-teardown 只拆 Docker）。**改动**：(1) `mj-agent-infra-app-start`——有序 START 编排器（prereq gate via 默认 `mj-agent check`（含一次 memory-pg ping，`memory-unreachable`≠创口，分三类处理）→ storage/stack up（容器栈本步即 `up -d` 全栈，先于 `check --live`）→ `check --live`（Studio in-memory 的 async-memory FAIL 属预期）→ 运行时选择（默认容器栈 / Studio / Chainlit serve）→ launch → `curl --noproxy '*'` 根路径 verify）；slim HITL H1-H4（AskUserQuestion 仅留真选择 + `check --live` FAIL 条件确认，非破坏命令由 harness Bash prompt 当执行拍板 per ADR-034）。(2) `mj-agent-infra-app-stop`——非破坏 STOP（数据全保留），净新能力=停 host 进程（端口 owner tree-kill `taskkill /T /F`，因 `serve` `subprocess.call` spawn 一个 chainlit 子进程，单 PID kill 留孤儿）+ 容器 Level-1 `down`；STOP 节点拒破坏性 `down -v`/`--rmi local` → 转 `env-teardown`（含其自身 H3 hard-confirm），删前 offer pg_dump（仅 dev profile）。命名归 `infra` 家族（匹配 `check_claude_skill_contracts.py` 硬编码 5-family regex → 0 WARN，无需 ADR-016 amendment / validator 改动；原请求的 `ops-*` 被 ADR-016 §Decision 1 有意去掉）。(3) doc-sync（SoT=`check_claude_skill_contracts.py --all`=37）：infra 计数 6→8、execution-loop §4 域工具 skill 数同步。(4) **freeze**（Owner 拍板；`mcp-server-trust-posture-change` HITL）：`claude-skill.contract.yml` +2 条目（documented canonical algo=regex-strip frontmatter + LF-normalize + sha256；先复现 env-teardown + env-setup 记录 hash **4/4 EXACTLY** 再录新值，全 8 skill 现可复现）+ `CLAUDE.md` "Infra freeze skills" 6→8。**验证**：37 PASS / 0 WARN / 0 FAIL、`check_wikilinks` + `check_frontmatter` clean、545 tests（unit+eval+contract）pass、2-agent 对抗 self-review（1 blocker + 4 major 修：`check --live` 顺序 vs storage、H1 误路由到 env-setup、studio-probe handoff 对 Chainlit 不适用、Studio-trigger 与 studio-probe 冲突、`execution-loop` §-ref 号 §3.1→§5）。**延后 follow-up**：3 个 frozen peer skill（env-teardown / docker-compose / studio-probe）的双向 reverse-trigger（编辑其 description 会破 freeze hash + 扩 scope，须单独 PR + re-freeze）；`SKILL_INDEX` §2 Layer 1 flow-diagnose 回填（既有 count-refresh M-FU，不随本 PR 收敛）。Closes #304

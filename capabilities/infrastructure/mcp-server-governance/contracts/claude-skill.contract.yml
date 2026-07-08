@@ -33,6 +33,12 @@
 #   on final post-self-review content via the SAME canonical algo — env-teardown + env-setup recorded
 #   hashes were REPRODUCED EXACTLY (4/4 MATCH) before recording new values. Family now 8 (capacity 6 +
 #   app-lifecycle 2). mcp-server-trust-posture-change HITL: Owner 拍板 (AskUserQuestion freeze) at authoring.
+# - bidirectional reverse-trigger re-freeze (2026-07-08 #306): env-teardown + docker-compose +
+#   studio-probe descriptions gained app-start/app-stop deferral clauses in their "Do not use for:"
+#   blocks (PR #305 finding #5; bodies UNTOUCHED; studio-probe also dropped a stale "in PR-C3" ref).
+#   description_hash changed; body_content_hash + body_section_heads unchanged. All 8 recorded hashes
+#   were REPRODUCED EXACTLY (16/16 MATCH) before recording new values. mcp-server-trust-posture-change
+#   HITL: Owner 拍板.
 
 contract_id: claude-skill
 adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
@@ -91,9 +97,12 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose
-    description_hash: sha256:f27f41f250567b5f8d3681d1bcc9151b0808efab60d84021754bb3b3ab324b08
+    # re-frozen 2026-07-08 (#306): added app-start/app-stop reverse-trigger deferral to the
+    # description "Do not use for:" block (bidirectional boundary; PR #305 finding #5).
+    # Deferral-only (negative trigger) → no positive trigger-hit-rate change; body untouched.
+    description_hash: sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002
     body_content_hash: sha256:a66a9aa49dfb16b8dc9fffc0bab8d404fabfc28054fd3022b4f546a51698c3a2
-    frozen_at: 2026-06-08T00:00:00Z
+    frozen_at: 2026-07-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -138,9 +147,13 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-env-teardown/SKILL.md
     name: mj-agent-infra-env-teardown
-    description_hash: sha256:77ca5b0ca70dcd867846654ebd89bd043c50b150990b6e56a8759e70f78ec2cb
+    # re-frozen 2026-07-08 (#306): added app-stop reverse-trigger deferral to the description
+    # "Do not use for:" block (bidirectional boundary; PR #305 finding #5 — env-teardown Level-1
+    # `down` overlaps app-stop). Deferral-only (negative trigger) → no positive trigger-hit-rate
+    # change; body untouched.
+    description_hash: sha256:388b327abd3b9d833be0977e4d39cd5e5a25d4ef534edfded030da2d207516a1
     body_content_hash: sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a
-    frozen_at: 2026-06-08T00:00:00Z
+    frozen_at: 2026-07-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -193,9 +206,13 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-studio-probe/SKILL.md
     name: mj-agent-infra-studio-probe
-    description_hash: sha256:815bed2b9c94279651758f2259062a890954a0257881c6ef892d6bbb72fdb2fa
+    # re-frozen 2026-07-08 (#306): added app-start reverse-trigger deferral to the description
+    # "Do not use for:" block (bidirectional boundary; PR #305 finding #5 — bare "起 Studio"
+    # over-fires both studio-probe + app-start) + dropped a stale "in PR-C3" ref. Deferral-only
+    # (negative trigger) → no positive trigger-hit-rate change; body untouched.
+    description_hash: sha256:d60021f7fcd2172a9d132df0649c123b1426c072b0eabc5916119815449e1e07
     body_content_hash: sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6
-    frozen_at: 2026-06-08T00:00:00Z
+    frozen_at: 2026-07-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
