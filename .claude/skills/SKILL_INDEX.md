@@ -4,7 +4,7 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-11
+updated: 2026-07-08
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -13,7 +13,9 @@ ai_visibility: source-of-truth
 
 > Phase M0 — RD3=C：物理 namespace（`mj-agent-<group>-<verb>`）**不重命名**；本 INDEX 提供
 > 5-layer 逻辑分层供 AI 快速定位 skill.
-> 当前 active 34 skill；Phase M6 新增 8 skill → 42 终态.
+> active skill 实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为 SoT（当前
+> **37**；本 PR infra 家族 +2 = app-start / app-stop）；§1 逐家 active 列的存量漂移（如 flow-diagnose
+> 未回填 §2 Layer 1）属既有 count-refresh M-FU，不随本 PR 收敛.
 
 ## §1 Physical Namespace（5 family；ADR-016；不重命名）
 
@@ -23,7 +25,7 @@ ai_visibility: source-of-truth
 | git | `mj-agent-git-*` | 9 | 9 |
 | doc | `mj-agent-doc-*` | 6 | 6 |
 | runtime | `mj-agent-runtime-*` | 4 | 4 |
-| infra | `mj-agent-infra-*` | 6 | 10 (Phase 2-3 +4) |
+| infra | `mj-agent-infra-*` | 8 | 12 (Phase 2-3 +4) |
 | evidence | `mj-agent-evidence-*` | 0 | 4 (Phase 6 新增) |
 
 ## §2 Logical Layer（5 层；本 INDEX 提供）
@@ -66,7 +68,7 @@ PR 工作流：起 issue → branch → commit → push → PR → review → me
 | `mj-agent-git-delete` | 17 sub | 删除已合并分支 + worktree |
 | `mj-agent-git-sync` | 17 sub / hotfix | 同步 develop ← main |
 
-### Layer 3: 技术栈校验型（6 + Phase 2-3 +4）— infra + stack
+### Layer 3: 技术栈校验型（8 + Phase 2-3 +4）— infra + stack
 
 Stack 启停 / 探针 / contract 反向校验.
 
@@ -78,6 +80,8 @@ Stack 启停 / 探针 / contract 反向校验.
 | `mj-agent-infra-env-setup` | active | 首次 clone 后 setup-env / setup-mcp-secrets 端到端 |
 | `mj-agent-infra-env-teardown` | active | 3-level safety teardown |
 | `mj-agent-infra-studio-probe` | active | LangGraph Studio 启动 + 1-shot 测试问答 |
+| `mj-agent-infra-app-start` | active | app runtime 有序启动（prereq→storage→check→launch→verify；slim HITL H1-H4） |
+| `mj-agent-infra-app-stop` | active | app runtime 非破坏停止（host tree-kill + Level-1 down；破坏性转 env-teardown） |
 | `mj-agent-stack-docker-contract` | Phase M2-M3 | docker.contract.yml + compose.contract.yml 反向校验 |
 | `mj-agent-stack-compose-config` | Phase M2-M3 | docker compose config 输出 vs runtime.expected.yaml |
 | `mj-agent-stack-prompt-regression` | Phase M2-M3 | system.md / SKILL.md regression eval（ADR-024 联动） |
@@ -112,6 +116,12 @@ PR merge 后写 evidence + 事故复盘 + runtime / security capture.
 
 每 stage 至少 1 个 skill；多数 stage 由多个 skill 协作（如 Stage 8 由 `mj-agent-flow-implement`
 + `mj-agent-runtime-*`（runtime 触发时）+ `mj-agent-doc-sync`（doc 同步）协作完成）.
+
+> **操作型 HITL 节点（infra app-lifecycle）**：`mj-agent-infra-app-start`（Stage 10 sub；H1 redirect
+> env-setup / H2 运行时 choice / H3 `check --live` FAIL conditional / H4 启动模式 choice）+
+> `mj-agent-infra-app-stop`（Stage 17 sub；H1 info / H2 多目标 choice / H3 破坏性边界 STOP 节点转
+> env-teardown）。slim 粒度：AskUserQuestion 仅留给真选择；非破坏命令（`up -d` / `check --live` /
+> launch / `taskkill` / Level-1 `down`）由 harness Bash 权限 prompt 当执行拍板（ADR-034）.
 
 ## §4 Anti-patterns
 

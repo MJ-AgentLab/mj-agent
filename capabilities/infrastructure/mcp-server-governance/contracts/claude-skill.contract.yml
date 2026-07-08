@@ -1,6 +1,6 @@
 # capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
 #
-# Claude Code SKILL contract — freezes 6 .claude/skills/mj-agent-infra-*/SKILL.md
+# Claude Code SKILL contract — freezes 8 .claude/skills/mj-agent-infra-*/SKILL.md
 # in-tree workflow SKILLs (infra family) per sdd/adapters/claude-code-skill.md §Standards.
 #
 # Empirical reality (Stage C batch 2 pre-outline reverify; commit 03f1bc7):
@@ -29,6 +29,10 @@
 #   via the same canonical algorithm after the Step 3b tool-calling smoke enhancement
 #   (3-step -> 4-step; description + body both changed; body_section_heads unchanged;
 #   HITL-authorized per vault [PLAN]_mj-agent_DGX_Consumer_Side_Execution v1.1 §1).
+# - app-lifecycle freeze (2026-07-08 #304): mj-agent-infra-app-start + mj-agent-infra-app-stop frozen
+#   on final post-self-review content via the SAME canonical algo — env-teardown + env-setup recorded
+#   hashes were REPRODUCED EXACTLY (4/4 MATCH) before recording new values. Family now 8 (capacity 6 +
+#   app-lifecycle 2). mcp-server-trust-posture-change HITL: Owner 拍板 (AskUserQuestion freeze) at authoring.
 
 contract_id: claude-skill
 adapter: claude-code-skill                          # per sdd/adapters/claude-code-skill.md
@@ -42,7 +46,48 @@ namespace_pattern: "^mj-agent-infra-[a-z-]+$"
 family: infra                                       # 5-family classification per ADR-016
 schema_compliance: ADR-013-native                   # 2-field (name + description); per claude-code-skill.md §Standards
 
-skills:                                             # 6 SKILLs alphabetical (no _ACTIVE_SKILLS analog for workflow SKILLs)
+skills:                                             # 8 SKILLs alphabetical (no _ACTIVE_SKILLS analog for workflow SKILLs)
+
+  - file: .claude/skills/mj-agent-infra-app-start/SKILL.md
+    name: mj-agent-infra-app-start
+    # initial freeze 2026-07-08 (#304): app runtime START orchestrator (slim HITL H1-H4);
+    # canonical algo, computed on final post-self-review content (env-teardown + env-setup
+    # recorded hashes reproduced exactly first).
+    description_hash: sha256:ac3dcb53efc27c435888c886272594b798ca87f49a6d8573ed7b025f8c7e0c07
+    body_content_hash: sha256:9ab21e612642ee925a9e3340777f3d2c77aadc9f498a904a38ea5828b0786170
+    frozen_at: 2026-07-08T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Workflow"
+      - "## §Runtime Matrix"
+      - "## §HITL 介入场景"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Output Format"
+      - "## App Start Report"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
+
+  - file: .claude/skills/mj-agent-infra-app-stop/SKILL.md
+    name: mj-agent-infra-app-stop
+    # initial freeze 2026-07-08 (#304): app runtime graceful STOP (host tree-kill + Level-1 down);
+    # locks the "never destructive teardown here" safety invariant (STOP-node → env-teardown).
+    description_hash: sha256:2181768f5aefd448aa1b0bd6f65865ab86b887897b85016f7d766ecdae613301
+    body_content_hash: sha256:2ed0c015e41e97aac5e7564b752b2a5d38e371a8c4f7f193b485224c3cff591a
+    frozen_at: 2026-07-08T00:00:00Z
+    body_section_heads:
+      - "## Overview"
+      - "## When to Use"
+      - "## Workflow"
+      - "## §HITL 介入场景"
+      - "## §Troubleshooting"
+      - "## What This Skill DOES NOT DO"
+      - "## Sub-skill / Tool Calls"
+      - "## Reference Files"
+      - "## Anti-patterns"
+      - "## Handoff"
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose

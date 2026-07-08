@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-06-24
+updated: 2026-07-08
 state: draft
 track: shared
 ---
@@ -243,7 +243,7 @@ track: shared
 | `/mj-agent-runtime-biz-catalog-sync` | 8 (B-flavor) sub | **active**（PR-C2） |
 | `/mj-agent-runtime-eval-baseline` | 8 sub / EVAL framework | **active**（PR-D2-skill；framework-independent 设计阶段产物 = 填好的 TEMPLATE_EVAL.md 草稿；Phase 2 EVAL framework 落地由 PR-D2-enforcement 跑 baseline_value 实测） |
 
-### infra family（PR-C3 落地共 4）
+### infra family（on-disk 8：capacity 6 + app-lifecycle 2）
 
 | Skill | Stage | Status |
 |---|---|---|
@@ -251,8 +251,12 @@ track: shared
 | `/mj-agent-infra-studio-probe` | 10 sub Studio H1/H2/H3/R1/R2 | **active**（PR-B3b） |
 | `/mj-agent-infra-docker-compose` | 8 (C-flavor) compose lifecycle | **active**（PR-C3） |
 | `/mj-agent-infra-storage-stack` | 8 (C-flavor) postgres+redis | **active**（PR-C3） |
+| `/mj-agent-infra-env-teardown` | 17 sub / 8 sub 3-level 清理 | **active** |
+| `/mj-agent-infra-llm-endpoint-probe` | 0/8 sub LLM endpoint 4 步探针（ark/DGX） | **active** |
+| `/mj-agent-infra-app-start` | 10 sub app runtime 有序启动（prereq→launch→verify） | **active**（本 PR #304） |
+| `/mj-agent-infra-app-stop` | 17 sub app runtime 非破坏停止（host tree-kill + Level-1 down） | **active**（本 PR #304） |
 
-合计：on-disk **35** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 6（ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
