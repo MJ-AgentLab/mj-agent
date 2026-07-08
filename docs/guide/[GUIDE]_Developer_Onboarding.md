@@ -10,9 +10,9 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-07-07
+updated: 2026-07-08
 state: draft
-version: v0.2
+version: v0.3
 track: code
 owner: 项目负责人
 ---
@@ -21,8 +21,8 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
-> **版本**：v0.2
-> **最后更新**：2026-06-07
+> **版本**：v0.3
+> **最后更新**：2026-07-08
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
 > GUIDE）、[[policies/documentation|documentation policy]]、
@@ -95,7 +95,9 @@ owner: 项目负责人
 | Volcengine Ark API key | LLM 调用（默认 provider） | 团队 Ark 企业账号子 key（合规已确认 ZDR） |
 | analyst PG RO 账号 | biz_dws / biz_dwd 读 | 上游业务系统仓库 `R__analyst_permissions.sql` 已 GRANT；问运维要 `POSTGRES_ANALYST_USER/PASSWORD` |
 | LangSmith API key | trace 调试（可选） | 团队 LangSmith 工作区 invite |
-| 团队 secrets 口令 | `.\scripts\setup-env.ps1` 解密 | 项目负责人发放（口令轮换 2 月一次；详见 [[../../config/README|config/README.md]] §6） |
+| 团队 secrets 口令 | `.\scripts\setup-env.ps1` + `.\.claude\scripts\setup-mcp-secrets.ps1` 解密（两 bundle 同口令） | 项目负责人发放（口令轮换 2 月一次；详见 [[../../config/README|config/README.md]] §6） |
+| GitHub PAT（`GITHUB_PERSONAL_ACCESS_TOKEN`） | Claude Code 的 github MCP server（`.mcp.json` 引用、无 fallback） | 自己的 GitHub 帐号生成 fine-grained PAT，写入 OS User env（不在 mj-agent secrets 治理范围） |
+| Playwright Chromium | Claude Code 的 playwright MCP（浏览器驱动 Chainlit 自测） | 一次性 `npx playwright install chromium` |
 
 补完后回到 §1 顺序往下读。
 
@@ -132,12 +134,21 @@ git -C develop worktree add ../feature/<your-feature> -b feature/<your-feature> 
 ```powershell
 # 在你的 worktree 内
 uv sync                                # 装依赖、锁版本
-.\scripts\setup-env.ps1                # 用团队口令解密 secrets.enc，生成 .env
-                                       # （没团队口令 → cp .env.example .env 手填）
+.\scripts\setup-env.ps1 -LlmProfile ark   # 用团队口令解密 secrets.enc，生成 .env
+                                       # （-LlmProfile 选 LLM 套装：无 DGX 隧道的机器一律 ark；
+                                       #   没团队口令 → cp .env.example .env 手填）
+.\.claude\scripts\setup-mcp-secrets.ps1   # 同一口令解密 secrets-mcp.enc → OS User env
+                                       # （Claude Code 的 .mcp.json ${VAR} 消费；不写 .env）
+# ⚠ setup-mcp-secrets 跑完必须【完全重启】终端 + Claude Code —— User env 只对新进程可见
 uv run langgraph dev                   # 启 LangGraph Studio
 ```
 
-`.env` 字段说明在 `.env.example`；secrets 治理流程在 `config/README.md`。
+`.env` 字段说明在 `.env.example`；secrets 治理流程（两 bundle / 轮换 / cold-reset / `-Reload` 诊断）在 `config/README.md`。
+
+**LLM provider 切换**（ADR-027 / ADR-033）：默认 ark 云；有 DGX 隧道 + Docker Desktop 的机器可
+`.\scripts\setup-env.ps1 -Force -LlmProfile dgx` 切本地端点（bundle §2c 携带整套值，含
+`host.docker.internal:18000` 隧道形态与 `LLM_MODEL_ID` 覆写——默认 model id 是 Ark 云 id，切换必须覆写）。
+切换前跑 `/mj-agent-infra-llm-endpoint-probe` 验端点；隧道拓扑详见根 `README.md` §LLM provider。
 
 **前置自检**（M6 X4 并入；原 dev_studio §1 前置条件）：`uv python list`（需 Python 3.13；缺则 `uv python install 3.13`）· `uv --version`（缺见 <https://docs.astral.sh/uv/>）· `psql ... -c 'SELECT 1'`（biz DB dev profile 可达；不通联系 DBA 或开 SSH tunnel）。analyst 凭据 / Ark key 申领见 §0.5。
 
@@ -292,6 +303,8 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | precheck 报 `require_time_range` | SQL 漏写 `stat_date` 谓词 | 加 `WHERE stat_date >= '<日期>'` |
 | `database error: ... statement_timeout` | 60s 超时 | 加聚合 / 缩时间窗 / 减少 JOIN |
 | precheck 报 `no_select_star` | SQL 含 `SELECT *` | 显式列名 |
+| Studio/Chainlit 本地 URL 502 / LLM `httpx.ConnectError`（Clash/v2ray 机器） | 系统代理未排除 localhost / DGX 隧道，请求被塞进代理 | `.env` 确认 `NO_PROXY=localhost,127.0.0.1,::1`（dgx 套含 host.docker.internal）；单次 `curl --noproxy '*'`；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |
+| Claude Code `/doctor` 报 `Missing environment variables`（MCP） | `setup-mcp-secrets.ps1` 没跑 / 跑完没重启终端（stale env） | `.\.claude\scripts\setup-mcp-secrets.ps1 -Reload` 诊断；重跑 + **完全重启**终端与 Claude；详见 `config/README.md` §6.4 |
 
 ## §8 速查表
 
@@ -304,7 +317,8 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | Lint | `uv run ruff check` |
 | 类型检查 | `uv run mypy src/mj_agent` |
 | 起 worktree | `git -C develop worktree add ../<dir> -b <branch> develop` |
-| 解密 secrets | `.\scripts\setup-env.ps1` |
+| 解密 secrets（app → .env） | `.\scripts\setup-env.ps1 -LlmProfile ark`（DGX 机器用 `dgx`） |
+| 解密 secrets（MCP → OS env） | `.\.claude\scripts\setup-mcp-secrets.ps1`（跑完完全重启终端+Claude） |
 | 文档 INDEX | `docs/INDEX.md` |
 | 双轨道 STANDARD | `docs/rule/[STANDARD]_MJ_Agent_*.md` × 3 |
 | 模板 | `docs/_templates/TEMPLATE_*.md` × 5 |
@@ -371,3 +385,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-05-06 | v0.1 | 初稿（PLAN G PR2 落地） |
 | 2026-05-18 | v0.1（in-place） | 4 处增强（§0.5 权限清单 / §3.5 仓库结构鸟瞰 / §6.5 G1/G2 hook 防护 / §9 Day-1 打勾清单）+ 关联文档 + §5 文档版本号刷新到 v2.2 / v1.1；借鉴 mj-system Developer_Onboarding 写法，内容按 mj-agent 自身资产派生 |
 | 2026-06-07 | v0.2 | M6 X4：原 `docs/runbook/dev_studio_walkthrough.md` 并入 §7（§7.1 H1-R2 验证矩阵 + §7.2 LangSmith trace 开关 + §7.3 常见诊断）；源 runbook `git rm`，docs/runbook/ 清空；25 处引用 re-point 到本节（含 4 个 infra freeze skill，HITL 授权） |
+| 2026-07-08 | v0.3 | #297 env/config 完整性修齐：§3 补 MCP bundle 步骤（setup-mcp-secrets + 完全重启说明）+ `-LlmProfile` 用法 + LLM provider 切换段（DGX 隧道拓扑 / model-id 覆写）；§0.5 补两 bundle 同口令、GitHub PAT、playwright chromium；§7.3 诊断表补 proxy-502 与 /doctor-MCP 两行；§8 速查表拆 app/MCP 两条解密行。另订正：前次 frontmatter `updated: 2026-07-07` 无对应内容变更（日期漂移，本行起对齐） |

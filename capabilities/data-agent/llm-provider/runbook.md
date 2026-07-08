@@ -5,7 +5,7 @@ state: drafting
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-11
+updated: 2026-07-08
 last_verified: 2026-05-20
 ---
 
@@ -29,19 +29,37 @@ ARK_API_KEY=<team key>     # OR set LLM_API_KEY (new generic; preferred)
 
 ### Local-openai-compat (DGX-Spark vLLM/SGLang/Ollama)
 
+Endpoint topology (ADR-027 D.3 Amendment, #297): the DGX serving process
+binds loopback ONLY — LAN-direct `http://192.168.0.189:8000/v1` does NOT
+work (evidence: `evidence/runtime/2026-07-03_dgx_e2e.md`). Consumption goes
+through an owner-run SSH tunnel, bound 0.0.0.0 so Docker containers reach it:
+
+```bash
+ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189
+```
+
 ```dotenv
 LLM_PROVIDER=local-openai-compat
-LLM_BASE_URL=http://192.168.0.189:8000/v1     # required
+LLM_BASE_URL=http://host.docker.internal:18000/v1   # required; one URL for host + container
+                                                     # (Docker Desktop provides the name both
+                                                     #  sides; plain Linux engine: extra_hosts
+                                                     #  host-gateway)
 LLM_API_KEY=<endpoint key OR leave empty for "EMPTY" sentinel>
-LLM_MODEL_ID=<as configured on endpoint>
+LLM_MODEL_ID=<as configured on endpoint>             # default is an Ark cloud id — MUST override
+NO_PROXY=localhost,127.0.0.1,::1,host.docker.internal,192.168.0.189   # Clash/v2ray machines
 ```
+
+Preferred: don't hand-edit — the full set is carried by the secrets bundle
+§2c dgx profile: `.\scripts\setup-env.ps1 -Force -LlmProfile dgx`
+(see `config/README.md` "LLM provider profile 选择"). Machines without the
+tunnel use `-LlmProfile ark`.
 
 Verify before graph build:
 
 ```bash
 uv run mj-agent check
 # Expected on success: "llm provider = ark (endpoint=https://ark.cn-beijing.volces.com/api/v3)"
-# Or: "llm provider = local-openai-compat (endpoint=http://192.168.0.189:8000/v1)"
+# Or: "llm provider = local-openai-compat (endpoint=http://host.docker.internal:18000/v1)"
 ```
 
 Probe endpoint reachability (out-of-scope of this capability; delegated):

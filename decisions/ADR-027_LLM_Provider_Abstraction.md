@@ -4,7 +4,7 @@ domain: AGENT
 summary: src/mj_agent/llm.py make_llm() 抽象为 provider 分支 factory（ark + local-openai-compat），支持 DGX-Spark vLLM/SGLang/Ollama 等 OpenAI-compatible local endpoint；Profile enum 不扩 dgx（DGX 不部署 mj-agent）
 owner: 项目负责人
 created: 2026-05-11
-updated: 2026-07-03
+updated: 2026-07-08
 state: active
 decision: accepted
 track: code
@@ -57,6 +57,24 @@ tags:
 - `effective_llm_*` cached_property fallback 至 `ark_*` 字段
 - 现有 `.env` 不动则 `make_llm()` 行为完全一致
 - 切换路径：`.env` 设 `LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL=http://192.168.0.189:8000/v1` 即可消费 DGX vLLM；无需新写 compose 文件 / 改 `Profile` enum / 重启 mj-agent 容器（dev mode）
+
+#### D.3 Amendment — 端点真实拓扑订正（2026-07-08，#297）
+
+上行切换示例的 `LLM_BASE_URL=http://192.168.0.189:8000/v1`（LAN 直连）**从来不是可用拓扑**：
+DGX 侧 vLLM 只绑 loopback，LAN 直连被拒（consumer evidence
+`capabilities/data-agent/llm-provider/evidence/runtime/2026-07-03_dgx_e2e.md`——当日 e2e 实际
+经 owner 终端 SSH 隧道 + `http://127.0.0.1:18000/v1`）。自 #297 起 canonical 消费形态：
+
+- **隧道**（owner 终端跑；绑 `0.0.0.0` 使 Docker 容器可达）：
+  `ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189`
+- **URL（host 跑法与容器跑法统一）**：`LLM_BASE_URL=http://host.docker.internal:18000/v1`
+  ——Docker Desktop 同时在 host hosts 文件与容器内提供该域名（host 侧可达性 2026-07-08 实测）；
+  纯 Linux docker engine 无此域名，需 `extra_hosts: host-gateway` 替代
+- **代理适配**：Clash/v2ray 机器 `NO_PROXY` 须含
+  `localhost,127.0.0.1,::1,host.docker.internal,192.168.0.189`（httpx 隐式消费）
+- **配置载体**：整套值由 `config/secrets.enc` §2c **dgx profile** 携带，
+  `.\scripts\setup-env.ps1 -Force -LlmProfile dgx` 注入（机制见 `config/README.md`
+  「LLM provider profile 选择」）；无隧道机器用 `-LlmProfile ark`
 
 ### D.4 Endpoint 健康验证
 
