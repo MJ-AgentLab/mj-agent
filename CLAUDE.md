@@ -34,7 +34,7 @@ external problem-framing only; all active governance is mj-agent-native).
 - **Data/agent 必停** (5; `ask`-gated): `src/mj_agent/tools/sql/guardrail.py` (L1) ·
   `tools/sql/precheck.py` (L1b) · `prompts/system.md` · `skills/*/SKILL.md` bodies ·
   `biz_catalog/qcm_catalog.yaml`.
-- **Infra freeze skills** (6): `.claude/skills/mj-agent-infra-*/SKILL.md` —
+- **Infra freeze skills** (8): `.claude/skills/mj-agent-infra-*/SKILL.md` —
   content-hash freeze per `policies/ai-agent.md` §7; record in
   `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`.
 - **Protected paths** (`.claude/**` / `.mcp.json` / `.claude.json`): harness 硬编码——交互模式
