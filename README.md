@@ -75,14 +75,21 @@ powershell -ExecutionPolicy Bypass -File .\mj-agent-clone-bare.ps1 `
 # 1. 安装依赖
 uv sync
 
-# 2. 准备 .env（解密团队密钥注入）
-.\scripts\setup-env.ps1
+# 2. 准备 .env（解密团队密钥注入；-LlmProfile ark|dgx 选 LLM provider 套装，
+#    无 DGX 隧道的机器一律 ark）
+.\scripts\setup-env.ps1 -LlmProfile ark
 # 没有团队口令？向管理员申请，或手工 copy .env.example 并填入本地可用的 ARK_API_KEY（不推荐）
 
-# 3. 启动 LangGraph Studio
+# 3. MCP secrets（Claude Code 的 .mcp.json ${VAR} 消费；写 OS User env，非 .env）
+.\.claude\scripts\setup-mcp-secrets.ps1
+# 跑完必须完全重启终端 + Claude Code（User env 只对新进程可见）
+
+# 4. 启动 LangGraph Studio
 uv run langgraph dev
 #  浏览器打开 Studio 提示的本地 URL，选 "mj_agent" 图
 ```
+
+两个加密 bundle 的完整治理（轮换 / 新增 key / cold-reset / 诊断）见 [config/README.md](./config/README.md)。
 
 ## 常用开发命令
 
@@ -105,7 +112,7 @@ mj-agent 通过 `LLM_PROVIDER` 支持两种 provider（[ADR-027](./decisions/ADR
 | Provider | 端点 | 用途 |
 |---|---|---|
 | `ark`（默认） | `ARK_BASE_URL`（默认 `https://ark.cn-beijing.volces.com/api/v3`） | 公网 Volcengine Ark + DeepSeek V3；合规路径为 Ark 企业协议 + ZDR（已由合规团队确认） |
-| `local-openai-compat` | `LLM_BASE_URL`（必填；e.g. `http://192.168.0.189:8000/v1`） | DGX-Spark 上的 vLLM / SGLang / Ollama / TGI / llama.cpp OpenAI 兼容端点 |
+| `local-openai-compat` | `LLM_BASE_URL`（必填；经隧道 `http://host.docker.internal:18000/v1`，见下） | DGX-Spark 上的 vLLM / SGLang / Ollama / TGI / llama.cpp OpenAI 兼容端点 |
 
 **默认（Ark）`.env` 配置**（`.env.example` 已给好默认值；团队密钥由 `setup-env.ps1` 注入）：
 
@@ -118,14 +125,24 @@ ARK_BASE_URL=https://ark.cn-beijing.volces.com/api/v3
 ARK_API_KEY=<团队方舟 key>
 ```
 
-**切到 DGX（local-openai-compat）`.env` 配置**：
+**切到 DGX（local-openai-compat）`.env` 配置**——推荐直接 `.\scripts\setup-env.ps1 -Force -LlmProfile dgx`（bundle §2c 携带整套值），手工等价形态如下：
 
 ```dotenv
 LLM_PROVIDER=local-openai-compat
-LLM_BASE_URL=http://192.168.0.189:8000/v1
+LLM_BASE_URL=http://host.docker.internal:18000/v1
 LLM_API_KEY=<真实 key>                # TEST/PROD 必填；vLLM 应启用 --api-key。EMPTY 仅限本地隔离 DEV
-LLM_MODEL_ID=<与 vLLM --served-model-name 一致>
+LLM_MODEL_ID=<与 vLLM --served-model-name 一致>   # 默认值是 Ark 云 id，切换必须覆写（ADR-033）
+NO_PROXY=localhost,127.0.0.1,::1,host.docker.internal,192.168.0.189
 ```
+
+**端点拓扑（重要）**：DGX 上的 vLLM 只绑 loopback——LAN 直连 `http://192.168.0.189:8000/v1` **不通**。
+消费必须经 owner 终端跑的 SSH 隧道，且绑 `0.0.0.0` 让容器也进得来：
+
+```bash
+ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189
+```
+
+`host.docker.internal` 由 Docker Desktop 同时提供给 host 与容器（hosts 文件条目）——一个 URL 同时覆盖 `uv run` 与 compose 两种跑法；无 DGX 隧道的机器一律用 `-LlmProfile ark`。
 
 **切换 DGX 前**请跑 `/mj-agent-infra-llm-endpoint-probe` 验证 endpoint（reachability + model id 匹配 + 1-token chat smoke；Ollama 自动 fallback `/api/tags`）。
 

@@ -11,19 +11,37 @@
     (replacing matching keys in .env.example); remaining .env.example
     values are preserved as-is.
 
+    LLM provider profiles (#297): the bundle may carry TWO named §2c
+    sets (LLM_PROFILE_ARK__<KEY> / LLM_PROFILE_DGX__<KEY>) plus an
+    optional LLM_PROFILE_DEFAULT marker. Exactly one set is resolved to
+    the plain keys (LLM_PROVIDER / LLM_BASE_URL / LLM_MODEL_ID /
+    NO_PROXY) at generation time; the namespaced keys never reach .env.
+    Selection precedence: -LlmProfile param > LLM_PROFILE_DEFAULT >
+    the only non-empty set > interactive prompt. Legacy bundles with
+    plain §2c keys (and no namespaced keys) behave exactly as before.
+
     If .env already exists and -Force is not specified, the script
     compares each variable and asks for confirmation before overwriting.
 
 .PARAMETER Force
     Overwrite .env without confirmation even if it already exists
 
+.PARAMETER LlmProfile
+    Which LLM provider profile to resolve from the bundle: ark (cloud;
+    works on any machine) or dgx (local-openai-compat via the owner SSH
+    tunnel; needs Docker Desktop + tunnel bound 0.0.0.0)
+
 .EXAMPLE
     .\scripts\setup-env.ps1
     .\scripts\setup-env.ps1 -Force
+    .\scripts\setup-env.ps1 -Force -LlmProfile dgx
+    .\scripts\setup-env.ps1 -LlmProfile ark
 #>
 
 param(
-    [switch]$Force
+    [switch]$Force,
+    [ValidateSet("ark", "dgx")]
+    [string]$LlmProfile
 )
 
 Set-StrictMode -Version Latest
@@ -123,6 +141,80 @@ try {
     }
 
     Write-Host "[OK] Decrypted $($Secrets.Count) secrets." -ForegroundColor Green
+
+    # ── LLM provider-profile resolution (#297) ────────────────────────
+    # Runs BEFORE the .env comparison so all downstream logic (compare,
+    # drift, injection) only ever sees resolved plain keys.
+    $ProfileNames = @("ark", "dgx")
+    $ProfileSets = @{}
+    foreach ($name in $ProfileNames) {
+        $prefix = "LLM_PROFILE_$($name.ToUpper())__"
+        $set = @{}
+        foreach ($key in @($Secrets.Keys)) {
+            if ($key.StartsWith($prefix)) {
+                $set[$key.Substring($prefix.Length)] = $Secrets[$key]
+            }
+        }
+        if ($set.Count -gt 0) { $ProfileSets[$name] = $set }
+    }
+    # Outer-scope init — StrictMode-safe on the legacy (no-profile) path.
+    $ResolvedLlmProfile = $null
+
+    if ($ProfileSets.Count -eq 0) {
+        # Legacy bundle: plain §2c keys only — original behavior.
+        if ($LlmProfile) {
+            Write-Host "  [WARN] -LlmProfile '$LlmProfile' ignored — bundle has no LLM_PROFILE_* keys (legacy plain-key bundle)." -ForegroundColor Yellow
+        }
+        if ($Secrets.ContainsKey("LLM_PROFILE_DEFAULT")) {
+            # Degenerate: default marker without any profile set — never inject it.
+            [void]$Secrets.Remove("LLM_PROFILE_DEFAULT")
+        }
+    } else {
+        # Mixed bundle (namespaced profiles AND legacy plain keys): profile wins.
+        $profileOwnedKeys = @($ProfileSets.Values | ForEach-Object { $_.Keys } | Sort-Object -Unique)
+        $legacyPlain = @($profileOwnedKeys | Where-Object { $Secrets.ContainsKey($_) })
+        if ($legacyPlain.Count -gt 0) {
+            Write-Host "  [WARN] bundle carries BOTH profile sets and plain keys ($($legacyPlain -join ', ')) — profile values win." -ForegroundColor Yellow
+        }
+
+        # Selection precedence: param > LLM_PROFILE_DEFAULT > only non-empty set > prompt.
+        if ($LlmProfile) {
+            $ResolvedLlmProfile = $LlmProfile
+        } elseif ($Secrets.ContainsKey("LLM_PROFILE_DEFAULT") -and $Secrets["LLM_PROFILE_DEFAULT"].Trim() -ne "") {
+            $ResolvedLlmProfile = $Secrets["LLM_PROFILE_DEFAULT"].Trim().ToLower()
+        }
+        if ($ResolvedLlmProfile -and -not $ProfileSets.ContainsKey($ResolvedLlmProfile)) {
+            Write-Host "  [WARN] LLM profile '$ResolvedLlmProfile' has no keys in the bundle — falling back to selection." -ForegroundColor Yellow
+            $ResolvedLlmProfile = $null
+        }
+        if (-not $ResolvedLlmProfile) {
+            $nonEmpty = @($ProfileSets.Keys | Where-Object {
+                @($ProfileSets[$_].Values | Where-Object { $_ -ne "" }).Count -gt 0
+            })
+            if ($nonEmpty.Count -eq 1) {
+                $ResolvedLlmProfile = $nonEmpty[0]
+            } else {
+                do {
+                    $answer = (Read-Host "Select LLM profile [ark/dgx]").Trim().ToLower()
+                } while ($answer -notin @("ark", "a", "dgx", "d"))
+                $ResolvedLlmProfile = if ($answer -in @("dgx", "d")) { "dgx" } else { "ark" }
+            }
+        }
+
+        # Remap the selected set onto plain keys. Empty values are skipped so
+        # they never stomp a .env.example default with a blank line.
+        foreach ($key in $ProfileSets[$ResolvedLlmProfile].Keys) {
+            $val = $ProfileSets[$ResolvedLlmProfile][$key]
+            if ($val -ne "") { $Secrets[$key] = $val }
+        }
+        # Strip ALL namespaced keys + the default marker — never written to .env.
+        foreach ($key in @($Secrets.Keys)) {
+            if ($key -eq "LLM_PROFILE_DEFAULT" -or $key -match '^LLM_PROFILE_(ARK|DGX)__') {
+                [void]$Secrets.Remove($key)
+            }
+        }
+        Write-Host "[OK] LLM profile resolved: $ResolvedLlmProfile" -ForegroundColor Green
+    }
 
     # ── Existing .env comparison ──────────────────────────────────────
     if ((Test-Path $EnvFile) -and -not $Force) {
@@ -234,6 +326,9 @@ try {
     Write-Host ""
     Write-Host ("=" * 60)
     Write-Host "[Done] .env generated with $injectedCount app secrets injected." -ForegroundColor Cyan
+    if ($ResolvedLlmProfile) {
+        Write-Host "       LLM profile: $ResolvedLlmProfile" -ForegroundColor Cyan
+    }
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor White
     Write-Host "  1. Review .env and adjust POSTGRES_DEV_HOST / MJ_CONFIG_PROFILE if needed" -ForegroundColor White

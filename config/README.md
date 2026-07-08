@@ -2,13 +2,18 @@
 
 本目录承载 mj-agent 运行所需的敏感变量的加密分发与解密注入。**自 ADR-030 起采用 2-bundle 拆分模型**（对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式）：
 
-### App bundle (config/secrets.enc) — 6-8 个应用层 secrets
+### App bundle (config/secrets.enc) — 8 个应用层 secrets + §2c LLM provider profiles
 
 - `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD`（biz pg consumer access；mj-system 颁发的 analyst RO role）
 - `ARK_API_KEY`（Volcengine Ark LLM）
 - `LLM_API_KEY`（可选；`LLM_PROVIDER=local-openai-compat` 且 vLLM 启用 `--api-key` 时填）
 - `LANGSMITH_API_KEY`（observability，可选）
 - `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD`（mj-agent 自家 memory pg 的 RW role；storage-stack PR 加入）
+- `MJ_AGENT_PG_SUPERUSER_PASSWORD`（compose-only；mj-agent-postgres 容器超管，postgres-init + healthcheck 用；#297 加入）
+- **§2c LLM provider profiles**（非密钥持久层；#297）：`LLM_PROFILE_DEFAULT` +
+  `LLM_PROFILE_{ARK,DGX}__{LLM_PROVIDER,LLM_BASE_URL,LLM_MODEL_ID,NO_PROXY}` 两套，
+  生成 `.env` 时由 `setup-env.ps1 -LlmProfile <ark|dgx>` 解析出**一套**落到 plain 键——
+  使 regen 不回滚 provider 切换，同时不把 DGX 机器特例强加给无隧道机器。
 
 注入路径：`secrets.enc → scripts/setup-env.ps1 → .env`（Python runtime / docker compose 消费）。
 
@@ -29,7 +34,7 @@
 
 | 文件 | 状态 | 用途 |
 | --- | --- | --- |
-| `secrets.example` | committed | App bundle 明文 schema（6-8 keys） |
+| `secrets.example` | committed | App bundle 明文 schema（8 secrets + §2c LLM provider profiles） |
 | `secrets.enc` | committed | App bundle AES-256-CBC + PBKDF2 加密包，由 `..\scripts\encrypt-secrets.ps1` 生成 |
 | `secrets.conf` | gitignored | App bundle 解密 / 编辑过程明文中间产物，**永不提交** |
 | `secrets-mcp.example` (ADR-030) | committed | MCP bundle 明文 schema（5 SSH + 10 PG URL = 15 keys） |
@@ -47,8 +52,10 @@
 
 ```powershell
 # Step 1: App bundle -> .env (Python runtime / docker compose 消费)
-.\scripts\setup-env.ps1
+.\scripts\setup-env.ps1 -LlmProfile ark      # 无 DGX 隧道的机器（新人默认）
+# .\scripts\setup-env.ps1 -LlmProfile dgx    # 有 DGX 隧道 + Docker Desktop 的机器
 # 提示输入口令，脚本自动解密 secrets.enc、合并到 .env、清理临时 secrets.conf
+# 省略 -LlmProfile 时按 LLM_PROFILE_DEFAULT（bundle 内）或交互选择
 
 # Step 2: MCP bundle -> OS User-level env (Claude Code 主进程消费 .mcp.json ${VAR})
 .\.claude\scripts\setup-mcp-secrets.ps1
@@ -72,7 +79,24 @@ PowerShell 终端 + Claude Code，才能看到新 OS env 值。
 如果 `setup-env.ps1` 输出 `[DRIFT] .env.example declares N key(s) missing from your .env`，
 说明 `.env.example` 在你上次生成 `.env` 之后新增了 key。按提示加 `-Force` 重跑即可，
 但注意 `-Force` 会从 `.env.example` 模板整体重生 `.env`，你对非 secret key 的本地
-修改（如 `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`）会被重置为模板默认值——重跑后再调一次。
+修改（如 `MJ_CONFIG_PROFILE`）会被重置为模板默认值——重跑后再调一次。LLM provider
+切换**不受此影响**：`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_MODEL_ID` / `NO_PROXY`
+由 bundle 的 §2c profile 携带，regen 时按所选 profile 重新注入（#297）。
+
+### LLM provider profile 选择（#297）
+
+bundle §2c 携带 **ark / dgx 两套**命名空间键（`LLM_PROFILE_ARK__*` /
+`LLM_PROFILE_DGX__*`）+ 可选 `LLM_PROFILE_DEFAULT` 标记；`setup-env.ps1`
+生成 `.env` 时解析出**恰好一套**落到 plain 键，命名空间键永不落 `.env`：
+
+- **选择优先级**：`-LlmProfile` 参数 > bundle 内 `LLM_PROFILE_DEFAULT` >
+  仅一套非空则用之 > 交互提问 `[ark/dgx]`
+- **空值跳过**：所选 profile 内的空值不注入（模板默认值保留）
+- **向后兼容**：老 bundle 只有 plain §2c 键（无 `LLM_PROFILE_*`）→ 行为与
+  #297 前完全一致；新旧混存 → profile 值胜出 + `[WARN]`
+- **dgx 套机器前置**：Docker Desktop（提供 host.docker.internal）+ owner 隧道
+  `ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189`（vLLM 只绑 DGX
+  loopback，LAN 直连不通）；无前置的机器用 `-LlmProfile ark`
 
 注：自 ADR-030 起 `setup-env.ps1` 的 drift 检测**仅覆盖 app keys**（`.env.example`
 所声明的范围）。MCP keys 的 drift 由 `setup-mcp-secrets.ps1 -Reload` 单独负责
@@ -101,7 +125,9 @@ Remove-Item config\secrets.conf  # 切勿提交
 - `.env.example` 增加键名（值留空，注释中写明"由 setup-env.ps1 注入"）
 - `src/mj_agent/config.py` 的 `Settings` 类增加对应字段（仅当 mj-agent
   Python runtime 需要消费该值时；纯 `.mcp.json` 用的 SSH/PG URL 不要
-  登记此处，避免 pydantic-settings 把它们当成 mj-agent 自己的配置）
+  登记此处，避免 pydantic-settings 把它们当成 mj-agent 自己的配置；
+  **compose-only 键同理豁免**——如 `MJ_AGENT_PG_SUPERUSER_PASSWORD` 仅被
+  `docker/compose.yaml` `${...}` 替换消费，只登记前两处）
 
 **轮换 vs 新增 key 的团队动作差异**：
 - **轮换**（key 不变，值变）：team 成员只需重跑 `.\scripts\setup-env.ps1`，
@@ -131,6 +157,8 @@ notepad config\secrets.conf
 #      LANGSMITH_API_KEY    (可空)
 #      LLM_API_KEY          (可空)
 #      MJ_AGENT_MEMORY_USER / MJ_AGENT_MEMORY_PASSWORD
+#      MJ_AGENT_PG_SUPERUSER_PASSWORD (可空——空则 compose 用占位 fallback)
+#      §2c LLM_PROFILE_* 两套（非密钥；照 secrets.example 填 ark/dgx 值）
 #      MJ_AGENT_SSH_SERVER_*_PASSWORD ×5（你提供）
 #      MJ_AGENT_PG_*_WAN_URL ×4（仅 FRP 用；可空）
 
@@ -148,7 +176,7 @@ Remove-Item config\secrets.enc.bak.<date>
 ```
 
 **前提条件**：至少一台机器有可用 `.env`。如果连 `.env` 也丢失，需要从
-源头重新拿到 7-12 个值（找 mj-system DBA 拿 analyst 凭据 / Ark 控制台
+源头重新拿到 8-13 个值（找 mj-system DBA 拿 analyst 凭据 / Ark 控制台
 拿 API key / 对应主机管理员拿 5 SSH 密码 / etc.）后再走步骤 2-6。
 
 ## Memory pg role rename：`mj_agent_memory` → `mj_agent_app`（dev-only 一次性）
@@ -195,10 +223,12 @@ ALTER ROLE mj_agent_memory RENAME TO mj_agent_app;
 
 ```powershell
 # 从 .env 读 password，用 stdin pipe 注入避免 shell history 留痕
-$pwd = (Get-Content .env | Select-String '^MJ_AGENT_MEMORY_PASSWORD=' -Raw) `
-       -replace '^MJ_AGENT_MEMORY_PASSWORD=',''
+# 注意变量名：$pwd 是 PowerShell 只读自动变量（$PWD），赋值会直接报错——用 $memPwd。
+# （Select-String 的 -Raw 是 PS7+ 参数；.Line 写法兼容 5.1/7。）
+$memPwd = ((Get-Content .env | Select-String '^MJ_AGENT_MEMORY_PASSWORD=').Line `
+       -replace '^MJ_AGENT_MEMORY_PASSWORD=','')
 docker exec -i mj-agent-postgres `
-    psql -U postgres -c "ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '$pwd';"
+    psql -U postgres -c "ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '$memPwd';"
 # 期望: ALTER ROLE
 
 # 验
@@ -266,9 +296,10 @@ ADR-025 (PR-1/2/3/4 multi-env+DGX+MCP bundle) 引入 4-file docker-compose
 | Provider | 必填 secret | 备注 |
 |---|---|---|
 | `ark`（默认） | `ARK_API_KEY` | 现有 Ark + DeepSeek V3；既有流程不变 |
-| `local-openai-compat` | `LLM_BASE_URL`（必）+ `LLM_API_KEY`（可选；vLLM 启用 `--api-key` 时填） | DGX-Spark 192.168.0.189 vLLM/SGLang/Ollama 消费侧；LLM serving 部署责任另议 |
+| `local-openai-compat` | `LLM_BASE_URL`（必）+ `LLM_API_KEY`（可选；vLLM 启用 `--api-key` 时填） | DGX-Spark vLLM/SGLang/Ollama 消费侧；**端点只绑 DGX loopback，须经 owner 隧道 + `host.docker.internal:18000`（见 §2c profile）**；LLM serving 部署责任另议 |
 
-`secrets.example` §2b 已加 `LLM_API_KEY` 占位（可选，vLLM 启用 auth 时启用）。
+`secrets.example` §2b 已加 `LLM_API_KEY` 占位（可选，vLLM 启用 auth 时启用）；
+§2c 携带 ark/dgx 两套 provider profile（#297，见上文「LLM provider profile 选择」）。
 
 ### 6.2 SSH passwords for ssh-manager MCP（独立命名空间）
 
@@ -327,7 +358,7 @@ config/secrets-mcp.enc  -[.claude/scripts/setup-mcp-secrets.ps1]-> HKCU\Environm
 
 ```powershell
 # 首次（或每次 secrets 轮转 / 首次 clone 后）：
-.\scripts\setup-env.ps1                            # 解密 secrets.enc → .env (~6-8 app secrets)
+.\scripts\setup-env.ps1 -LlmProfile ark            # 解密 secrets.enc → .env (8 app secrets + LLM profile)
 .\.claude\scripts\setup-mcp-secrets.ps1            # 解密 secrets-mcp.enc → OS env (15 MCP secrets)
 # 重启 terminal / IDE / claude
 
@@ -405,4 +436,7 @@ ADR-030 前的旧路径：`secrets.enc → setup-env.ps1 → .env → setup-mcp-
 3. （可选）跑 `.\scripts\setup-env.ps1 -Force` 重生 `.env`，去掉残留的 15 个 MCP
    keys（不重生也无害，业务不读那些 keys）
 
-详见 `.\scripts\migrate-secrets-bundle-split.ps1`（团队管理员一次性迁移工具）。
+> 当年的团队管理员一次性迁移工具 `scripts/migrate-secrets-bundle-split.ps1`
+> 已随 #297 移除——其内置键清单早于 §2c profile schema（含已裁撤的
+> `MJ_AGENT_REDIS_PASSWORD`、缺 §2c 键），如今重跑会产出与现行 schema
+> 不一致的 bundle。迁移已完成（commit `b555af9`），工具使命终结。

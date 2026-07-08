@@ -10,9 +10,9 @@ aliases:
   - mj-agent Quick Start
   - mj-agent 5 分钟启动
 created: 2026-05-18
-updated: 2026-05-18
+updated: 2026-07-08
 state: draft
-version: v0.1
+version: v0.2
 track: code
 owner: 项目负责人
 ---
@@ -125,11 +125,16 @@ uv sync                  # 装依赖 + 锁版本（首次约 1-3 分钟）
 uv run python -c "import mj_agent; print('ok')"   # 期望：ok
 ```
 
-## §6 Step 6 — 解密 secrets / 准备 .env
+## §6 Step 6 — 解密 secrets / 准备 .env + OS env（两 bundle）
 
 ```powershell
-.\scripts\setup-env.ps1
+# App bundle → .env（-LlmProfile 选 LLM 套装：无 DGX 隧道的机器一律 ark）
+.\scripts\setup-env.ps1 -LlmProfile ark
 # 提示输入团队口令 → 自动解密 config/secrets.enc 注入 .env
+
+# MCP bundle → OS User env（Claude Code 的 .mcp.json ${VAR} 消费；同一口令）
+.\.claude\scripts\setup-mcp-secrets.ps1
+# ⚠ 跑完必须【完全重启】终端 + Claude Code（User env 只对新进程可见）
 ```
 
 无团队口令的 fallback：
@@ -137,6 +142,7 @@ uv run python -c "import mj_agent; print('ok')"   # 期望：ok
 ```bash
 cp .env.example .env
 # 编辑 .env 手工填 ARK_API_KEY + POSTGRES_ANALYST_USER / PASSWORD（向项目负责人申请）
+# 此路径没有 MCP secrets——Claude Code 的 ssh-manager / WAN pg MCP 起不来（app 本体不受影响）
 ```
 
 ## §7 Step 7 — mj-agent check 验 DB + LLM 凭据

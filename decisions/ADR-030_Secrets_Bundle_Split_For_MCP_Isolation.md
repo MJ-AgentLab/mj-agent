@@ -4,7 +4,7 @@ domain: OPS
 summary: 把 MCP 基础设施 secrets（5 SSH + 10 PG URL）从 config/secrets.enc 拆出到独立的 config/secrets-mcp.enc，解密后直接写 OS env，永不入 .env；对齐 mj-system v2.3 secrets-sys-ops.enc 范式
 owner: 项目负责人
 created: 2026-05-12
-updated: 2026-05-12
+updated: 2026-07-08
 state: active
 decision: accepted
 track: engineering-workflow
@@ -94,6 +94,20 @@ mj-system 的 MCP secrets 不经 `.env` 中转，直接进 OS env。
 | `python-dotenv` + `os.getenv` 散落 | `pydantic-settings` 集中 `Settings` 类 | mj-agent 演进先行，不退化 |
 | compose `environment: ${VAR}` 隐式注入 | compose `env_file: ../../.env` 显式注入 | 显式更利于"compose 在 `infra/docker/` 子目录"场景的可读性 |
 | 3 份独立 `.enc`（app + git + ops）| 2 份独立 `.enc`（app + MCP）| mj-agent 无 `mj-sys-git` 风格的独立 GitHub workflow secret；GitHub PAT 借用外部 OS env，不入 mj-agent 治理域 |
+
+## Amendment（2026-07-08，#297）
+
+1. **D.4 一次性迁移脚本已删除**：`scripts/migrate-secrets-bundle-split.ps1` 使命完成
+   （迁移落地于 commit `b555af9`），且其内置键清单已与现行 schema 漂移（含已裁撤的
+   `MJ_AGENT_REDIS_PASSWORD`、缺 §2c 键）——重跑会产出不一致 bundle。按 §Consequences
+   「中性」条预告的 cleanup 路径移除。
+2. **D.1 计数与 app bundle 范围更新**：app bundle 现为 **8 个 secrets**（原 §1-§4 七项
+   + `MJ_AGENT_PG_SUPERUSER_PASSWORD`，compose-only）**+ §2c LLM provider profiles**
+   （`LLM_PROFILE_DEFAULT` + `LLM_PROFILE_{ARK,DGX}__*` 两套非密钥持久键）。
+3. **§2c provider-profile 机制**：`setup-env.ps1` 增 `-LlmProfile ark|dgx` 参数，生成
+   `.env` 时从 bundle 两套 profile 中解析**一套**落 plain 键（命名空间键永不入 `.env`；
+   老 bundle plain 键向后兼容）。动机与机制详见 `config/README.md`「LLM provider
+   profile 选择」+ issue #297。D.2 注入路径表其余行为不变。
 
 ## Consequences
 

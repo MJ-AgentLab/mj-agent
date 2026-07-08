@@ -70,8 +70,12 @@ skills:                                             # 6 SKILLs alphabetical (no 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
     description_hash: sha256:21bf582db6aca2c9f7a6d18a7e1e98efdd2b2935a6f233fcd7525006a7196b1f
-    body_content_hash: sha256:d0391d599b1f43576686f7034fd8771b9a5102ca95cfa67fe95f5ff2f5193371
-    frozen_at: 2026-06-08T00:00:00Z
+    # body re-frozen 2026-07-08 (#297): Step 2 "22 secrets into .env" corrected to
+    # ADR-030 2-bundle reality (8 app secrets + §2c LLM profile -> .env; 15 MCP -> HKCU);
+    # -LlmProfile usage + NO_PROXY added to Step 3 required-field checks; Output Format
+    # synced. description untouched (hash above re-verified identical pre/post edit).
+    body_content_hash: sha256:f05b0fbc403b735a0e33c6dd5ae5692ade8e818ca31630b5d356293f3e350651
+    frozen_at: 2026-07-08T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
