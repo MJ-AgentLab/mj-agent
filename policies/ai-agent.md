@@ -5,7 +5,7 @@ state: draft
 version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-07-06
+updated: 2026-07-08
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -150,7 +150,7 @@ freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contrac
 - Committing a declared contract `state` flip (`draft → active` / `active → deprecated`)
   — `declared-contract-change`
 - Releasing / refreshing freeze anchor `content_hash` or `frozen_at` on any of the
-  10 必停 surfaces (4 `src/mj_agent/` in-source + 6 `.claude/skills/mj-agent-infra-*`)
+  12 必停 surfaces (4 `src/mj_agent/` in-source + 8 `.claude/skills/mj-agent-infra-*`)
   — `runtime-skill-content-change` / `prompt-version-or-body-change` /
   `mcp-server-trust-posture-change`
 - Closing a M-FU plan as `state: completed`
