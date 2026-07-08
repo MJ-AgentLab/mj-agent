@@ -223,10 +223,12 @@ ALTER ROLE mj_agent_memory RENAME TO mj_agent_app;
 
 ```powershell
 # 从 .env 读 password，用 stdin pipe 注入避免 shell history 留痕
-$pwd = (Get-Content .env | Select-String '^MJ_AGENT_MEMORY_PASSWORD=' -Raw) `
-       -replace '^MJ_AGENT_MEMORY_PASSWORD=',''
+# 注意变量名：$pwd 是 PowerShell 只读自动变量（$PWD），赋值会直接报错——用 $memPwd。
+# （Select-String 的 -Raw 是 PS7+ 参数；.Line 写法兼容 5.1/7。）
+$memPwd = ((Get-Content .env | Select-String '^MJ_AGENT_MEMORY_PASSWORD=').Line `
+       -replace '^MJ_AGENT_MEMORY_PASSWORD=','')
 docker exec -i mj-agent-postgres `
-    psql -U postgres -c "ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '$pwd';"
+    psql -U postgres -c "ALTER ROLE mj_agent_app WITH LOGIN PASSWORD '$memPwd';"
 # 期望: ALTER ROLE
 
 # 验
