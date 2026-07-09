@@ -15,6 +15,8 @@ track: shared
 > 作者：Zack + Claude
 > 配套文档：`docs/evals-design.md`、`evaluation/judges/*.md`、`evaluation/datasets/seed/`
 
+> **ADR 编号口径注（2026-07-09）**：本 roadmap 中的 ADR-012 / 013 / 014（Aggregate-first / Generative UI dataRef / Customer Anonymization）为 **v1.6 规划态本地编号**（产品特性，尚未落地）。本仓**权威 ADR 命名空间以 `decisions/` 为准**——该处 012/013/014 已被治理类 ADR（Two-Track / Plugin-SKILL-Schema / Tri-Track）native 占用，序列已至 ADR-035。上述产品特性若落地将取下一个 native 空号，不沿用此处编号。跨仓重编号协调 issue #9 已 close（obsolete）。
+
 **v1.6 更新说明**：
 
 基于对"客户业务数据"性质的澄清（**无 PII，B2B 场景，公司内部使用，不对外输出**），对数据安全架构做系统性补充：

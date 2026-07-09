@@ -175,6 +175,7 @@ Plugin 命名：`mj-agent-agent-doc` 与 `mj-agent-code-doc` 形成对仗；与 
   - line 465-466（实现位置注释）
   - line 1333-1335（ADR 索引表）
   - line 1347 / 1350 / 1351（实现产物表）
+  - **编号协调后续（2026-07-09）**：跨仓重编号追踪 issue #9 已 close（obsolete）——v1.6 roadmap 的 ADR-012/013/014 **不再执行重编号**；`decisions/` 已 native 占满该号段（序列至 ADR-035），产品特性若落地取下一个 native 空号。上列受影响行号仅存历史参考。（历史决策不改：当时确已接受用 ADR-012 并承担重编号成本。）
 - 关联现有 PLAN：
   - [[../../plans/[PLAN]_E_Phase0_Docs_Governance_Verification|PLAN E]]（v1.1 出厂验证；本 ADR 在 PLAN E 全绿后才进入 Phase 0.5 promote）
   - [[../../plans/[PLAN]_C_Smoke_Expansion_and_ADR_Backfill|PLAN C]]（ADR backfill 应同步增补 `track` 字段）
