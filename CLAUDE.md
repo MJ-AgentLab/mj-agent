@@ -156,8 +156,9 @@ Active doc-governance now lives in the kernel:
   scopes from `src/mj_agent/` modules. STANDARD:
   `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`.
 - **In-tree skills** — active across 5 families (flow/git/doc/runtime/infra);
-  namespace `/mj-agent-<group>-<verb>`; auto-discover (no registration). `runtime-*` are
-  read-only-by-design (propose diffs; never write `src/mj_agent/{skills,prompts,agent,tools}`).
+  namespace `/mj-agent-<group>-<verb>`; auto-discover (no registration). `runtime-*` follow
+  propose→拍板→apply (ADR-034): propose diff → stop at `OWNER_APPROVAL_REQUIRED` → apply via
+  `ask` gate; never write `src/mj_agent/{skills,prompts,agent,tools}` without 拍板.
   Stage→skill map: `sdd/workflows/execution-loop.md`.
 - **Templates** — `docs/_templates/TEMPLATE_*.md`; copy, don't improvise frontmatter.
 - **ADRs** — active in `decisions/` (M5-PR3a); 9 superseded in `archive/decisions/superseded/`.

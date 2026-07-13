@@ -94,9 +94,9 @@ Stack 启停 / 探针 / contract 反向校验.
 
 | Skill | 触发场景 |
 |---|---|
-| `mj-agent-runtime-skill-doc-improve` | 提议 `src/mj_agent/skills/*/SKILL.md` body 修改 diff（**read-only**） |
-| `mj-agent-runtime-prompt-version-bump` | 提议 `system.md` version bump diff（**read-only**） |
-| `mj-agent-runtime-biz-catalog-sync` | 提议 `qcm_catalog.yaml` 同步上游 DB（**read-only**） |
+| `mj-agent-runtime-skill-doc-improve` | 提议 `src/mj_agent/skills/*/SKILL.md` body 修改 diff（propose→拍板→apply） |
+| `mj-agent-runtime-prompt-version-bump` | 提议 `system.md` version bump diff（propose→拍板→apply） |
+| `mj-agent-runtime-biz-catalog-sync` | 提议 `qcm_catalog.yaml` 同步上游 DB（propose→拍板→apply） |
 | `mj-agent-runtime-eval-baseline` | 跑 EVAL framework baseline 测试（Phase 2 EVAL framework 落地后启用） |
 
 ### Layer 5: 证据型（Phase 6 新增 4）— evidence
@@ -126,8 +126,9 @@ PR merge 后写 evidence + 事故复盘 + runtime / security capture.
 ## §4 Anti-patterns
 
 - ❌ 不要直接读 SKILL.md body — 用 `Skill` 工具 invocation（per Claude Code skill 系统）
-- ❌ 不要在 `runtime-*` skill 内绕过 read-only 约束直接 Edit `src/mj_agent/skills/`、
-  `prompts/`、`agent.py`、`tools/`、`biz_catalog/`（详 `policies/data-boundary.md` §3）
+- ❌ 不要在 `runtime-*` skill 内未经 `OWNER_APPROVAL_REQUIRED` 拍板直接 Edit
+  `src/mj_agent/skills/`、`prompts/`、`agent.py`、`tools/`、`biz_catalog/`（ADR-034
+  propose→拍板→apply；详 `policies/data-boundary.md` §3）
 - ❌ 不要混用 in-tree skill schema 与 in-source skill schema — 13-field `sdd/adapters/runtime-skill` vs 2-field
   ADR-013 native（详 `sdd/constitution.md` §3.3）
 

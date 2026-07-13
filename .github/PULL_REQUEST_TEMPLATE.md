@@ -54,23 +54,22 @@
 ## AI Self-Check Checklist（per `policies/ai-agent.md` §4 + §6）
 
 - [ ] Codex 参与情况: **NONE / 描述贡献**（per ADR-035；standalone Codex 已开 → 可 non-NONE；non-NONE 须 Owner 拍板）
-- [ ] HITL scenario hit: **NONE / 列出**（per `policies/ai-agent.md` §4 12 项场景）
+- [ ] HITL scenario hit: **NONE / 列出**（per `policies/ai-agent.md` §4 canonical 10-enum）
 - [ ] BDD/TDD impact: **NONE / 列出**（per blueprint §11.6 #11）
 - [ ] Subagent dispatched: **NONE / 列出**（per `policies/ai-agent.md` §2 A3）
 
-## HITL Trigger Inventory（4 项专属必停 + cross-cap + DB / Docker prod / secrets）
+## HITL Trigger Inventory（canonical 10-enum，与 `policies/ai-agent.md` §4 一一对应）
 
 - [ ] sql-guardrail-relax（`src/mj_agent/tools/sql/{guardrail,precheck}.py`）
 - [ ] runtime-skill-content-change（`src/mj_agent/skills/*/SKILL.md` body）
-- [ ] prompt-version-bump（`src/mj_agent/prompts/system.md`）
+- [ ] prompt-version-or-body-change（`src/mj_agent/prompts/system.md` version 或 body）
 - [ ] biz-catalog-sync（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）
-- [ ] cross-capability contract change
-- [ ] DB migration（mj_agent_memory schema）
-- [ ] secrets / 权限 / GRANT 变更
-- [ ] CI blocking gate 启用 / 关闭
-- [ ] 大规模目录迁移（≥10 文件）
-- [ ] `docker/compose.prod.yml` 变更
-- [ ] `.mcp.json` 新增 server（A14 trigger）
+- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode；A14）
+- [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
+- [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
+- [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml`）
+- [ ] ci-blocking-gate-toggle（`ci.yml` continue-on-error flip）
+- [ ] bulk-content-purge-or-migration（≥10 文件删除/迁移 或 archive ceremony）
 
 ## Verification Plan
 

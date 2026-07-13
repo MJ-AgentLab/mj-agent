@@ -213,7 +213,7 @@ mj-agent 专属新增（4 项硬必停）：
 2. **风险等级**：Intake risk-level = `Low`（task-type ∈ `{bugfix, documentation}`）。
 3. **Affected areas 不触发 §3.1 mj-agent 专属 4 项必停**：
    - `src/mj_agent/skills/**/SKILL.md` body（runtime-skill-content-change）
-   - `src/mj_agent/prompts/system.md` body（prompt-version-bump）
+   - `src/mj_agent/prompts/system.md` body（prompt-version-or-body-change）
    - `src/mj_agent/biz_catalog/qcm_catalog.yaml`（biz-catalog-sync）
    - `src/mj_agent/tools/sql/{guardrail,precheck}.py`（sql-guardrail-relax）
 4. **不涉及** `.env` / `.env.example` / `infra/docker/` / CI workflow /

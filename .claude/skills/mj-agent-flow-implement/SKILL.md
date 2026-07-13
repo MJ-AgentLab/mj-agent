@@ -235,14 +235,14 @@ handoff 输出：
 
 | Sub-skill | Source | When | Manual equivalent if unavailable |
 |---|---|---|---|
-| `superpowers:test-driven-development` | user-global `~/.claude/` | Step 3a 严格节奏 | Rule 6 manual: write test → run → see red → minimal impl → refactor |
-| `superpowers:systematic-debugging` | user-global | Step 3b 结构化 frame | Rule 7 manual: hypothesis → test → narrow → root cause |
-| `superpowers:verification-before-completion` | user-global | Step 4 pre-completion check | Rule 8 manual: list commands, run them now, capture fresh output |
-| `superpowers:executing-plans` / `subagent-driven-development` | user-global | Step 2 → confirmed plan with bite-sized steps | Manual: walk through plan step by step, applying Step 3a/3b/3c/4 to each |
+| `superpowers:test-driven-development` | 外部插件（可选） | Step 3a 严格节奏 | Rule 6 manual: write test → run → see red → minimal impl → refactor |
+| `superpowers:systematic-debugging` | 外部插件（可选） | Step 3b 结构化 frame | Rule 7 manual: hypothesis → test → narrow → root cause |
+| `superpowers:verification-before-completion` | 外部插件（可选） | Step 4 pre-completion check | Rule 8 manual: list commands, run them now, capture fresh output |
+| `superpowers:executing-plans` / `subagent-driven-development` | 外部插件（可选） | Step 2 → confirmed plan with bite-sized steps | Manual: walk through plan step by step, applying Step 3a/3b/3c/4 to each |
 | `mj-agent-runtime-skill-doc-improve`（PR-C2） | in-tree | B 风味 SKILL.md body 改动前 propose diff | 直接 Edit 但 §3.1 必停 HITL |
 | `mj-agent-runtime-prompt-version-bump`（PR-C2） | in-tree | B 风味 system.md `version` bump propose | 直接 Edit 但 §3.1 必停 HITL |
 
-> **Why optional superpowers**：user-global 插件，非每个贡献者都装。本 skill Step 3a/3b/3c/4 散文设计为 standalone 工作。
+> **Why optional superpowers**：外部可选插件，非每个贡献者/每个 agent harness 都有。本 skill Step 3a/3b/3c/4 散文设计为 standalone 工作。
 
 ## Domain Companion Skills
 
@@ -286,7 +286,6 @@ handoff 输出：
 - `.claude/skills/mj-agent-flow-verify/SKILL.md`（PR-B3 落地，Stage 10 hand-off）
 - `.claude/skills/mj-agent-flow-self-review/SKILL.md`（PR-B3 落地，Stage 11 successor）
 - `.claude/skills/mj-agent-flow-plan/SKILL.md`（Stage 4 predecessor）
-- `~/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/{test-driven-development,systematic-debugging,verification-before-completion,executing-plans}/SKILL.md`（optional sub-call sources）
 
 ## Anti-patterns
 

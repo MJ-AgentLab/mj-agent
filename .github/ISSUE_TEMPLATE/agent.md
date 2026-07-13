@@ -35,10 +35,10 @@ assignees: []
 
 - [ ] `src/mj_agent/tools/sql/{guardrail,precheck}.py` 修改？→ **sql-guardrail-relax** HITL
 - [ ] `src/mj_agent/skills/*/SKILL.md` body 修改？→ **runtime-skill-content-change** HITL
-- [ ] `src/mj_agent/prompts/system.md` version + body 修改？→ **prompt-version-bump** HITL
+- [ ] `src/mj_agent/prompts/system.md` version + body 修改？→ **prompt-version-or-body-change** HITL
 - [ ] `src/mj_agent/biz_catalog/qcm_catalog.yaml` 修改？→ **biz-catalog-sync** HITL
 
-→ 任一勾选必须走 read-only `mj-agent-runtime-*` skill 提议 diff，**不直接 Edit**.
+→ 任一勾选必须走 `mj-agent-runtime-*` skill 提议 diff，停在 `OWNER_APPROVAL_REQUIRED`；拍板后由 skill 经 `ask` 门落盘，**不未经拍板直接 Edit**.
 
 ## HITL Trigger Check
 
