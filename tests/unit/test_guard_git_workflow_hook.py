@@ -55,6 +55,8 @@ BLOCKED_COMMANDS = [
     "git -C ../elsewhere checkout -b feature/x",
     "git checkout main -b feature/x",
     "cd sub && git checkout -b feature/x",
+    # #317 regression: G1 must still fire when the command mixes in non-ASCII
+    'git checkout -b feature/x && echo "中文"',
 ]
 
 ALLOWED_COMMANDS = [
@@ -65,6 +67,11 @@ ALLOWED_COMMANDS = [
     # false-positive guards: G1 tokens inside another subcommand / non-git segment
     'git commit -m "docs: mention checkout -b in guide"',
     "echo git checkout -b nope",
+    # #317 regression: non-ASCII payloads must parse as UTF-8 regardless of the
+    # host console codepage (CP936 on Chinese Windows mis-decoded them and the
+    # fail-closed guard then mis-blocked every such command)
+    'git commit -m "docs: 中文提交说明"',
+    "echo 中文 && git status",
 ]
 
 
