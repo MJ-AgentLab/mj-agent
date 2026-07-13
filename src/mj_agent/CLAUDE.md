@@ -4,6 +4,10 @@
 > Claude Code works in this subdirectory.
 > See root `CLAUDE.md` for repo-wide map, HITL scenarios, and Codex Status.
 
+@AGENTS.md
+
+> ↑ 同层工具中立约束（binds Claude Code + Codex；per dual-agent-compat v5 P1）。
+
 ## 4 项专属必停文件路径（最高优先级；详 `policies/data-boundary.md` §3）
 
 | Hard Stop | 路径 | 触发动作 |

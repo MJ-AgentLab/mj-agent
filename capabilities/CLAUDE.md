@@ -4,6 +4,10 @@
 > after root CLAUDE.md when Claude Code works in this subdirectory.
 > See root `CLAUDE.md` for repo-wide map + `sdd/constitution.md` for 三柱原则.
 
+@AGENTS.md
+
+> ↑ 同层工具中立约束（binds Claude Code + Codex；per dual-agent-compat v5 P1）。
+
 ## 12-Artifact 套件检查清单（per `mj-agent-refactored-structure.md` §4.5）
 
 每 active capability **必有**：

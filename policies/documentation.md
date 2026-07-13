@@ -142,12 +142,16 @@ CONTRACT（agent-facing tool）。
 不强制类型 body 骨架、不计入 A1-A3 PR 门禁。**但仍受**：A4 wikilink 完整性、A6 CLAUDE.md sync
 （§7 allowlist 触发时同步）、GitHub_Markdown §14 项目根特例。与 §3 path-to-track 决策树第 0 条衔接。
 
-**AI-agent 指令契约例外（`AGENTS.md`）**：`AGENTS.md` 是项目根的 **AI agent 指令契约**（Codex 的
-operating contract；per ADR-035）——与上述 5 个「项目元信息」文件**并列于 canonical 治理之外，但属
-不同类别**。同样处理：**不写 frontmatter**（Codex 直读该文件，frontmatter 会污染其指令语义）、
-**A1-A3 不适用**、**A4 wikilink 完整性 + A6 CLAUDE.md sync 仍适用**（其 §Codex Status 内容与
-`CLAUDE.md` §Codex Status 同步）、GitHub_Markdown §14 语法特例同样覆盖；下文代偿纪律亦适用。归档
-stale-ref sweep（[[policies/archive|policies/archive]] §1）须一并覆盖。
+**AI-agent 指令契约例外（`AGENTS.md`，根 + 4 嵌套）**：`AGENTS.md` 是 **AI agent 指令契约**（所有
+authorized agent 的 tool-neutral operating contract；per ADR-035）——与上述 5 个「项目元信息」文件
+**并列于 canonical 治理之外，但属不同类别**。自 dual-agent-compat v5 P1（#320 / ADR-036）起共 **5
+件**：根 `AGENTS.md` + 4 嵌套（`capabilities/` / `docker/` / `src/mj_agent/` / `tests/`），嵌套件
+与根件同待遇。统一处理：**不写 frontmatter**（Codex 直读该文件，frontmatter 会污染其指令语义）、
+**A1-A3 不适用**、**A4 wikilink 完整性 + A6 CLAUDE.md sync 仍适用**（根件 §Codex Status 内容与
+`CLAUDE.md` §Codex Status 同步；各层 `CLAUDE.md` 以 `@AGENTS.md` 导入同层规则、不复制正文）、
+GitHub_Markdown §14 语法特例同样覆盖；下文代偿纪律亦适用。归档 stale-ref sweep
+（[[policies/archive|policies/archive]] §1）须一并覆盖全部 5 件；存在性与 `CLAUDE.md` 引用关系由
+`scripts/sdd/check_development_agent.py`（V8）机器校验。
 
 > **代偿纪律（gate-light ≠ 免责）**：项目根 5 文件豁免 A1-A3、缺自动化卫生门兜底，故**不得复制易变派生事实**
 > ——如 active 技能数/名单（真值在 `agent.py:_ACTIVE_SKILLS`）、工具数、middleware 数等。这类事实**一律指向
@@ -192,8 +196,9 @@ track: code | agent | engineering-workflow | shared
 
 ## §4 Review Cadence（A6 — Anthropic 大型代码库最佳实践；native）
 
-CLAUDE.md（root + 4 subdir）+ `.claudeignore` + `.claude/settings.json` +
-`.claude/plugins.json` + `.claude/hooks/` **每 3-6 月或新 Claude 模型发布后强制审计**.
+CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外条款）+ `.claudeignore` +
+`.claude/settings.json` + `.claude/plugins.json` + `.claude/hooks/` **每 3-6 月或新 Claude 模型发布
+后强制审计**.
 
 | 触发 | 频率 | 责任人 | 检查项 |
 |---|---|---|---|

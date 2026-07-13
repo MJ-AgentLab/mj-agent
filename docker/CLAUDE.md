@@ -5,6 +5,10 @@
 > this file is now `docker/CLAUDE.md`.
 > See root `CLAUDE.md` + `policies/docker-runtime.md` for prod red lines.
 
+@AGENTS.md
+
+> ↑ 同层工具中立约束（binds Claude Code + Codex；per dual-agent-compat v5 P1）。
+
 ## Compose Quirk（必须显式 `--env-file .env`）
 
 `docker compose` CLI looks for `.env` in the **project directory** = directory of the first
