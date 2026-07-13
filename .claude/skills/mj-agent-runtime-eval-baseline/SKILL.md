@@ -17,7 +17,7 @@ description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-i
 - §4.15 Rule 11：merge 后自动开 EVAL backlog ticket，但"开单"不等于"已设计"——本 skill 把 ticket 转化为可 review 的 EVAL 草稿
 - Phase 2 EVAL framework 选型（pytest-based vs 独立 runner / judge model 选什么 / run frequency）尚未决议；**本 skill 框架无关**：只产生 TEMPLATE_EVAL.md 文档草稿，框架决议落地后由 PR-D2-enforcement 跑实际测试
 
-**hard constraint**: 本 skill 先产生 proposed EVAL document（基于 TEMPLATE_EVAL.md 8 段填空版）+ HITL Questions for Domain Expert + Prompt Engineer review，**Owner 拍板后由本 skill 直接 Write 到 `docs/evaluation/`**；但**不** run pytest tests/eval（不跑实际 EVAL；Phase 2 framework）、**不**改任何 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml；走 sibling runtime-* skill）。
+**hard constraint**: 本 skill 先产生 proposed EVAL document（基于 TEMPLATE_EVAL.md 8 段填空版）+ HITL Questions for Domain Expert + Prompt Engineer review，**落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点，拍板后由本 skill 直接 Write 到 `docs/evaluation/`**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion——`docs/evaluation/` 非必停面、无 settings `ask` 门二次批准，Codex 载体 = AGENTS.md 自守 prose 停点）；但**不** run pytest tests/eval（不跑实际 EVAL；Phase 2 framework）、**不**改任何 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml；走 sibling runtime-* skill）。
 
 ## When to Use
 
@@ -268,7 +268,7 @@ judges: [<Step 5 选定 list>]
 
 ## Step 9: Output Proposed EVAL Document + HITL
 
-输出 proposed EVAL document + impact + HITL Questions，**等 Owner 拍板**（AskUserQuestion）：
+输出 proposed EVAL document + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Claude Code 载体：AskUserQuestion）：
 
 - **Accept** → 本 skill **直接 Write 到 `docs/evaluation/<filename>.md` 落盘** → 同步 update target frontmatter `eval_references` field（用 /mj-agent-runtime-skill-doc-improve 或 /mj-agent-runtime-prompt-version-bump 的 propose→拍板→apply 路径改 src/）
 - **Refine** → 回 Step 4-6 调整
