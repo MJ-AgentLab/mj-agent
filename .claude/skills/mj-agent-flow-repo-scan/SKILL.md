@@ -105,14 +105,24 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 |---|---|---|---|
 | 6.2 | **mj-agent 7 模块** | agent.py / llm.py / prompts/ / skills/ / tools/{sql,biz_context} / memory / integrations / config / server / ui | Glob `src/mj_agent/**`, Read |
 | 6.3 | **API 与 Studio** | LangGraph Studio (langgraph.json) / Chainlit `src/mj_agent/ui.py` / CLI `src/mj_agent/server/cli.py` (typer) | Read |
-| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / find_biz_context 真实返回 / biz_dws + biz_dwd allowlist | mcp postgres-* / Read qcm_catalog |
-| 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | mcp postgres |
+| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / find_biz_context 真实返回 / biz_dws + biz_dwd allowlist | 4-tool 链（见下方载体）/ Read qcm_catalog |
+| 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | biz 侧：4-tool 链；memory 侧：mcp pg-mj-agent-memory-*（自有 checkpointer 库，非 biz 边界对象） |
 | 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `compose.yaml` / `langgraph.json` / DEV/TEST/PROD profile | Read |
 | 6.7 | ~~n8n~~ | **跳过**——mj-agent 不用 n8n（与 mj-system 差异） | — |
 | 6.8 | **测试与验证** | 5 类 pytest（unit/eval/integration/smoke/contract）+ ruff + mypy strict + python -m compileall | Glob `tests/**` |
 | 6.9 | **文档治理** | docs/{rule,adr,assessments,_templates,infrastructure,guide,runbook,issues,design,evaluation,contracts}/ + INDEX.md + CLAUDE.md + CHANGELOG.md | Glob `docs/**` + Read |
 
-> **§6.4 硬规则**：涉及业务字段时 **必须** 读真实列名（`find_biz_context` 返回 / mcp postgres `\d+`）。**不**得仅凭"qcm_xxx 看起来像 numeric"推断。
+> **§6.4 硬规则**：涉及业务字段时 **必须** 读真实列名（`find_biz_context` 返回 / `describe_biz_table` 真实列）。**不**得仅凭"qcm_xxx 看起来像 numeric"推断。**不**得绕过 4-tool 链用 raw PostgreSQL / postgres MCP / 任何 DB 客户端直读 biz 数据（v5 §5.1 数据边界；对 Claude Code 与 Codex 同等生效）。
+
+**4-tool 链可执行载体**（§6.4 / §6.5 biz 侧；任一工具通用，需 `.env` 就绪）：
+
+```bash
+uv run python -c "from mj_agent.tools.biz_context import find_biz_context; print(find_biz_context('<业务词>'))"
+uv run python -c "from mj_agent.tools.sql.introspect import list_biz_tables; print(list_biz_tables())"
+uv run python -c "from mj_agent.tools.sql.introspect import describe_biz_table; print(describe_biz_table('<table>'))"
+```
+
+> **env-guard**：4-tool 链目标库由 worktree `.env` biz DSN / `MJ_CONFIG_PROFILE` 决定——先确认非 prod 再做 `execute_sql` 采样（指向 prod 时仅 describe 不采样）；兜底 = analyst RO role + L1/L1b guardrail + statement_timeout=60s。
 >
 > **§6.5 硬规则**：mj-agent 是 biz pg 只读消费者；任何 schema 修改需求必须返到 mj-system 上游开 Issue（mj-agent 侧不能 V__/R__ migration）。
 >
@@ -236,7 +246,8 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | Code (mj-agent 7 modules) |  |  |
 | API / Studio / Chainlit |  |  |
 | Data Source (biz_catalog) |  |  |
-| Database (biz pg consumer / mj-agent-postgres) |  |  |
+| Database — biz pg consumer（4-tool 链） |  |  |
+| Database — mj-agent-postgres memory（mcp pg-mj-agent-memory-*） |  |  |
 | Config / Secrets |  |  |
 | Tests / CI |  |  |
 | Docs |  |  |
@@ -288,7 +299,8 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | Glob / Grep | Step 3 8-dim + Step 4 反向 grep |
 | Read | Step 1 anchors / Step 3 真实数据流 / Step 4 SPEC review |
 | `python scripts/diff_biz_schema.py` | Step 4 biz_catalog drift |
-| mcp postgres-* | Step 3 §6.4 真实表结构（**不**在 prod 跑） |
+| Bash `uv run python -c "..."` 起 4-tool 链 | Step 3 §6.4/§6.5 biz 真实表/列（`describe_biz_table`；env-guard——`.env` biz DSN 指向 prod 时仅 describe 不采样） |
+| mcp pg-mj-agent-memory-* | Step 3 §6.5 memory checkpointer 侧（自有库，非 biz 边界对象） |
 
 用户确认 Repo Scan Result 后**由用户决定**调用：
 

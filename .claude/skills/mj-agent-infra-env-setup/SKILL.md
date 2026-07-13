@@ -46,7 +46,7 @@ description: This skill should be used when the user asks to set up the .env fil
 |---|---|---|
 | Step 1 prereq check | Claude or User | 只读探测；Claude 走 Bash tool 时见 §"Bash tool 调用 PowerShell" |
 | **Step 2 decrypt** | **User only** | `Read-Host -AsSecureString` 需 TTY；Claude 的 Bash tool 无 TTY 无法供口令；harness `!` 前缀走 bash 也无法供 SecureString |
-| Step 3 .env 完整性 | Claude or User | 只读 grep；Claude 走 Bash tool 时见 §"Bash tool 调用 PowerShell" |
+| Step 3 .env 完整性 | Claude or User | 经 `scripts/check_env_keys.ps1`（脱敏：只回键名 + PRESENT/EMPTY/MISSING，永不回值）；Agent **不**得直接 grep / `Get-Content` 解析 `.env` |
 | Step 4 `uv sync` | Claude or User | 非交互 |
 | Step 5 healthcheck | Claude or User | 非交互 |
 
@@ -58,12 +58,10 @@ description: This skill should be used when the user asks to set up the .env fil
 
 ### Bash tool 调用 PowerShell（Step 1 / Step 3 only）
 
-Claude 的 Bash tool 在 Windows 上是 **git-bash**，不是 PowerShell。所有 `Get-Content / Select-String / $PSVersionTable / Write-Warning` 等 PS cmdlet 在 Bash tool 下直跑必然 `command not found`。两种处理：
+Claude 的 Bash tool 在 Windows 上是 **git-bash**，不是 PowerShell。`$PSVersionTable / Write-Warning` 等 PS cmdlet 在 Bash tool 下直跑必然 `command not found`。处理：
 
-- **A（推荐）**：`powershell.exe -NoProfile -Command 'SCRIPT'` — 必须**单引号**包住 SCRIPT（双引号会让 bash 提前展开 `$var`）
-- **B（备选）**：用 bash 等价物（`grep -E`、`test -f`、`cut -d= -f2` 等）
-
-下面 Step 1/3 的代码块同时给 user-terminal（PowerShell）与 Claude-bash-tool 两种写法。
+- **A（推荐）**：`powershell.exe -NoProfile -Command 'SCRIPT'` 或 `powershell.exe -NoProfile -File <script.ps1>` — `-Command` 时必须**单引号**包住 SCRIPT（双引号会让 bash 提前展开 `$var`）
+- **B（secrets 边界）**：涉及 `.env` 的核对一律走 `scripts/check_env_keys.ps1`（脱敏输出）；Agent **不**用 bash 等价物（`grep` / `cut`）直接解析 `.env`（v5 §5.2）
 
 ## Workflow
 
@@ -133,56 +131,17 @@ powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'     # 单引号�
 > - provider 切换推荐走 `.\scripts\setup-env.ps1 -Force -LlmProfile <ark|dgx>`（bundle §2c 携带整套值含 `NO_PROXY`；见 config/README.md），不手工拼 .env
 > - 切换到 local-openai-compat 后，**必须**跑 `/mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康
 
-Claude 走 Bash tool（git-bash）：
+任一执行者（Claude Bash tool / Codex / user 终端）统一走脱敏脚本：
 
 ```bash
-# Provider 检测
-provider=$(grep -E '^LLM_PROVIDER=' .env | head -1 | cut -d= -f2)
-provider=${provider:-ark}
-echo "LLM_PROVIDER=$provider"
-
-# Provider-aware required keys
-case "$provider" in
-  ark)                  required=("POSTGRES_ANALYST_USER" "POSTGRES_ANALYST_PASSWORD" "ARK_API_KEY") ;;
-  local-openai-compat)  required=("POSTGRES_ANALYST_USER" "POSTGRES_ANALYST_PASSWORD" "LLM_BASE_URL") ;;
-esac
-
-for k in "${required[@]}"; do
-  v=$(grep -E "^${k}=" .env | head -1 | cut -d= -f2)
-  if [ -z "$v" ] || [ "$v" = '""' ]; then
-    echo "⚠️  $k is empty (required for LLM_PROVIDER=$provider)"
-  else
-    echo "✅ $k present"
-  fi
-done
-
-# 必填非 secret 字段（参 .env.example；NO_PROXY 自 #297 有模板默认，
-# Clash/v2ray 机器缺失会导致 localhost/隧道请求 502/ConnectError）
-for k in MJ_CONFIG_PROFILE POSTGRES_DEV_HOST POSTGRES_DEV_PORT LLM_MODEL_ID LLM_PROVIDER NO_PROXY; do
-  grep -qE "^${k}=" .env || echo "⚠️  $k missing in .env (copy from .env.example)"
-done
+powershell.exe -NoProfile -File scripts/check_env_keys.ps1
+# pwsh 亦可：pwsh -NoProfile -File scripts/check_env_keys.ps1
+# 输出：INFO LLM_PROVIDER resolved: <ark|local-openai-compat>
+#      PRESENT / EMPTY / MISSING <key>（逐键，一行一个）
+# exit 0 = 全 PRESENT；exit 1 = 存在 EMPTY / MISSING
 ```
 
-User 终端（PowerShell）等价：
-
-```powershell
-$provider = (Get-Content .env | Select-String "^LLM_PROVIDER=").Line -replace "^LLM_PROVIDER=",""
-if (-not $provider) { $provider = "ark" }
-
-$requiredSecrets = @("POSTGRES_ANALYST_USER","POSTGRES_ANALYST_PASSWORD")
-if ($provider -eq "ark") { $requiredSecrets += "ARK_API_KEY" }
-elseif ($provider -eq "local-openai-compat") { $requiredSecrets += "LLM_BASE_URL" }
-
-$requiredSecrets | ForEach-Object {
-    if ((Get-Content .env | Select-String "^$_=" | Select-Object -First 1) -match '=$|=\s*$|=""$') {
-        Write-Warning "$_ is empty in .env (required for LLM_PROVIDER=$provider)"
-    } else { Write-Host "✅ $_ present" }
-}
-
-@("MJ_CONFIG_PROFILE","POSTGRES_DEV_HOST","POSTGRES_DEV_PORT","LLM_MODEL_ID","LLM_PROVIDER","NO_PROXY") | ForEach-Object {
-    if (-not (Get-Content .env | Select-String "^$_=")) { Write-Warning "$_ missing in .env (copy from .env.example)" }
-}
-```
+脚本内部读 `.env` 并判定 provider-aware required secrets（ark → `ARK_API_KEY`；local-openai-compat → `LLM_BASE_URL`；两者都要 `POSTGRES_ANALYST_USER/PASSWORD`）+ 必填非 secret 字段（`MJ_CONFIG_PROFILE` / `POSTGRES_DEV_HOST` / `POSTGRES_DEV_PORT` / `LLM_MODEL_ID` / `LLM_PROVIDER` / `NO_PROXY`——NO_PROXY 自 #297 有模板默认，Clash/v2ray 机器缺失会导致 localhost/隧道请求 502/ConnectError）。**只输出键名与状态，永不回显值**——Agent 不得自行 grep / `Select-String` 解析 `.env`（v5 §5.2 secrets 边界）。
 
 如缺非 secret 字段（`MJ_CONFIG_PROFILE` / `POSTGRES_DEV_HOST` / `LLM_MODEL_ID` / `LLM_PROVIDER` 等）→ user 手动从 `.env.example` 拷贝填写（**不**自动改 .env；secret 字段 + 配置字段拼装策略由 user 控制）。
 
@@ -250,7 +209,7 @@ uv run pytest tests/eval
 |---|---|---|
 | Bash `uv python list` / `uv --version` / `powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'` | Claude or User | Step 1 prereq |
 | **User 终端** `.\scripts\setup-env.ps1`（**不**通过 Claude Bash tool；TTY required） | **User only** | Step 2 解密注入 |
-| Bash `grep -E '^KEY=' .env` 或 `powershell.exe -NoProfile -Command 'Get-Content .env \| Select-String ...'` | Claude or User | Step 3 .env 完整性 |
+| Bash `powershell.exe -NoProfile -File scripts/check_env_keys.ps1`（脱敏：只回键名+状态，永不回值） | Claude or User | Step 3 .env 完整性 |
 | Bash `uv sync` / `uv lock` | Claude or User | Step 4 依赖 |
 | Bash `uv run mj-agent check` | Claude or User | Step 5 健康探针 |
 | Bash `uv run ruff` / `mypy` / `pytest` | Claude or User | Step 5 验证 |
@@ -263,6 +222,7 @@ uv run pytest tests/eval
 - **不要** 自动 install Python / uv / PowerShell（user 决定）
 - **不要** 跳过 Step 5 healthcheck（缺验证可能 .env 字段错但脚本无报）
 - **不要** 在 `.env.example` 加非 ASCII 内容（python-dotenv UTF-8 编码失败；详见 CLAUDE.md）
+- **不要** 让 Agent 直接 grep / `Get-Content` 解析 `.env`（一律走 `scripts/check_env_keys.ps1` 脱敏输出；v5 §5.2 secrets 边界）
 
 ## Output Format
 
@@ -279,11 +239,11 @@ uv run pytest tests/eval
 - ✅ .claude/scripts/setup-mcp-secrets.ps1 完成（15 MCP secrets → HKCU；已提示重启终端）
 - 注入字段：详见 Step 2 表（§1 analyst pg + §2/§2b LLM keys + §2c profile 组 + §3 LangSmith + §4/§4b storage-stack；SSH×5 + PG URL×10 走 MCP bundle → OS env）
 
-### .env Completeness
-- ✅ provider-aware required secrets 全填（LLM_PROVIDER=ark → 含 ARK_API_KEY；=local-openai-compat → 含 LLM_BASE_URL）
-- ⚠️ MJ_CONFIG_PROFILE 缺 — 请从 .env.example 拷贝填 dev/test/prod
-- ⚠️ POSTGRES_DEV_HOST 缺 — 请从 .env.example 拷贝填具体 host
-- ✅ LLM_MODEL_ID = ep-XXXX
+### .env Completeness（scripts/check_env_keys.ps1 脱敏输出）
+- ✅ provider-aware required secrets 全 PRESENT（LLM_PROVIDER=ark → 含 ARK_API_KEY；=local-openai-compat → 含 LLM_BASE_URL）
+- ⚠️ MISSING MJ_CONFIG_PROFILE — 请从 .env.example 拷贝填 dev/test/prod
+- ⚠️ MISSING POSTGRES_DEV_HOST — 请从 .env.example 拷贝填具体 host
+- ✅ PRESENT LLM_MODEL_ID
 
 ### uv sync
 - ✅ Dependencies synced (87 packages, 0 conflicts)
