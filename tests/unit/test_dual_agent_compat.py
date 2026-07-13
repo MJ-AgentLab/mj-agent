@@ -83,6 +83,54 @@ CASES += [
     ),
 ]
 
+# PR-3 (plan §4 8l-8p): canonical 10-enum / count / read-only narrative convergence.
+CASES += [
+    (
+        ".github/PULL_REQUEST_TEMPLATE.md",
+        ["12 项场景"],
+        [
+            "prompt-version-or-body-change",
+            "declared-contract-change",
+            "mcp-server-trust-posture-change",
+            "secrets-grants-or-prod-config",
+            "bulk-content-purge-or-migration",
+        ],
+    ),
+    (
+        "docs/guide/[GUIDE]_MJ_Agent_SPEC_Authoring.md",
+        ["12 项通用必停"],
+        ["canonical 10", "prompt-version-or-body-change"],
+    ),
+    (
+        "policies/claude-code-skill.md",
+        ["read-only by design", "deny-list 三重保险"],
+        ["OWNER_APPROVAL_REQUIRED"],
+    ),
+    ("CLAUDE.md", ["read-only-by-design"], ["ADR-034"]),
+    ("docs/INDEX.md", ["read-only by design"], []),
+    (
+        "sdd/adapters/claude-code-skill.md",
+        ["read_only_by_design", "on-disk 35"],
+        ["owner_approval_required"],
+    ),
+    (
+        ".github/ISSUE_TEMPLATE/agent.md",
+        ["read-only `mj-agent-runtime-*`"],
+        ["OWNER_APPROVAL_REQUIRED", "prompt-version-or-body-change"],
+    ),
+    (
+        ".claude/skills/SKILL_INDEX.md",
+        ["绕过 read-only 约束", "（**read-only**）"],
+        [],
+    ),
+    (".github/workflows/ci.yml", ["34P/0W/0F"], []),
+    (
+        ".claude/skills/mj-agent-flow-implement/SKILL.md",
+        ["superpowers/5.1.0", "user-global"],
+        [],
+    ),
+]
+
 CASE_IDS = [path.rsplit("/", 2)[-2] if "skills" in path else Path(path).stem for path, _, _ in CASES]
 
 
