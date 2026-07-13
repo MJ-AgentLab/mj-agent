@@ -8,15 +8,17 @@
 > run under your own harness, so those boundaries hold only by you obeying this file, not by the
 > Claude Code permission harness.**
 >
-> This file defines AI Agent boundaries for **non-Claude-Code agents**. Claude Code's working
-> rules are in [CLAUDE.md](./CLAUDE.md).
+> This file is the **tool-neutral collaboration contract for all AI agents** working in this repo
+> (Claude Code, Codex, and any future agent). Claude Code additionally loads
+> [CLAUDE.md](./CLAUDE.md) — its harness-specific working notes; both derive from the same project
+> kernel (`sdd/` + `policies/` + `capabilities/`) and neither overrides it.
 
 ## Roster
 
 | Agent | Role in mj-agent dev | Authority |
 |---|---|---|
-| **Claude Code** | Primary AI developer | Full implementation: file edits, test runs, migrations, docs, verification |
-| **Codex** | **Authorized full development participant** (per ADR-035) | Same authority class as Claude Code — run commands, edit / create / delete files, commit / push, migrate — **and MUST self-honor the 必停 + data boundary below** |
+| **Claude Code** | Full-responsibility AI developer（双工具对等，no fixed primacy） | Full implementation: file edits, test runs, migrations, docs, verification — 必停 enforced by its own harness (`ask`-gates / hooks) |
+| **Codex** | **Full-responsibility AI developer**（双工具对等；authorized per ADR-035） | Same authority class as Claude Code — run commands, edit / create / delete files, commit / push, migrate — **and MUST self-honor the 必停 + data boundary below** |
 | **Other AI agents** | Not yet authorized | NO write access |
 
 ## Codex participation (per ADR-035)
@@ -29,9 +31,11 @@ configuration — the same authority class as Claude Code.**
 ### Self-enforced boundaries (READ THIS — it is the only guardrail on you)
 
 You (Codex) run under **your own** harness. mj-agent's technical 必停 enforcement —
-`.claude/settings.json` `ask`-gates and protected-path prompts — is a **Claude Code** mechanism and
-does **NOT** bind you. So these boundaries hold only by **you obeying this file**. Treat them as hard
-rules:
+`.claude/settings.json` `ask`-gates and protected-path prompts — is a **Claude Code harness**
+mechanism and does **NOT** bind you. The **stop points themselves are tool-neutral**
+(`OWNER_APPROVAL_REQUIRED`, per `policies/ai-agent.md` §4 canonical enums + dual-agent-compat plan
+v5 §5.3): only the carrier differs — Claude Code stops via harness prompts, you stop by obeying
+this file. Treat them as hard rules:
 
 1. **Data boundary (ADR-006 / ADR-009 / ADR-000) — never bypass it.** All business-warehouse (biz)
    data access MUST go through the agent tool-chain (`find_biz_context → list_biz_tables →
@@ -46,10 +50,15 @@ rules:
    `src/mj_agent/skills/*/SKILL.md` bodies, or `src/mj_agent/biz_catalog/qcm_catalog.yaml` without
    explicit Owner sign-off (per `policies/ai-agent.md` §4 canonical 10-enum). Same for `.mcp.json`
    trust posture, `.claude/**`, `config/secrets*.enc` / GRANT SQL, and `docker/compose.prod.yml`.
-4. **Commit / push / PR / merge — Owner HITL 拍板 required.** You may prepare changes and run
-   verification freely, but treat commit, push, PR creation, and merge as gated actions needing the
-   Owner's go-ahead (same as Claude Code, per ADR-034).
-5. **Parity of authority = parity of constraint.** Being authorized relaxes no security surface.
+4. **Commit / push / PR / merge — `OWNER_APPROVAL_REQUIRED` (Owner HITL 拍板).** You may prepare
+   changes and run verification freely, but treat commit, push, PR creation, and merge as gated
+   actions needing the Owner's go-ahead (same as Claude Code, per ADR-034).
+5. **Git workflow discipline (G1/G2) binds you too.** New branches ONLY via
+   `git worktree add ../<branch-name> -b <branch-name>` — never `git checkout -b` / `git switch -c`
+   (G1); `gh pr create` must carry an explicit `--base` (non-hotfix → develop, hotfix → main) (G2).
+   Claude Code has these enforced by a fail-closed PreToolUse hook; you self-enforce them (per
+   `policies/git-branching.md`).
+6. **Parity of authority = parity of constraint.** Being authorized relaxes no security surface.
    When in doubt, stop and ask the Owner.
 
 **Owner remains the single decision-maker** (HITL 拍板); each PR declares which agent implemented,
@@ -76,8 +85,10 @@ The original boundary rested on four points; under Codex-as-participant they are
 3. **mj-agent's 4 项专属必停** (`sql-guardrail-relax` / `prompt-version-or-body-change` /
    `biz-catalog-sync` / `runtime-skill-content-change`) → still Owner-HITL-gated; you must not touch
    them without sign-off.
-4. **CLAUDE.md HITL rules are calibrated to Claude Code** → your calibrated contract is **this
-   AGENTS.md** (a participation contract with self-enforced boundaries, not a prohibition list).
+4. **Rules live once in the project kernel** (`sdd/` + `policies/` + `capabilities/`) →
+   CLAUDE.md and this AGENTS.md are per-tool **entry adapters** over that single source; this file
+   is your entry point (a participation contract with self-enforced boundaries, not a second rule
+   source, per dual-agent-compat plan v5).
 
 详 `policies/ai-agent.md` §1 Codex 参与策略层.
 
@@ -108,3 +119,7 @@ governs adding any further AI agent**:
 dev work now, subject to the self-enforced boundaries above (per ADR-035 + amendment). Only the
 Claude-Code-invokes-Codex plugin path (B) remains deferred. Original non-participant boundary was
 ADR-031 Phase M0.*
+
+*Updated 2026-07-13 — dual-agent-compat v5 P0 (#313): de-primaried wording (full-responsibility
+peers), tool-neutral `OWNER_APPROVAL_REQUIRED` stop points, and G1/G2 Git workflow discipline made
+explicit for self-enforcing agents.*

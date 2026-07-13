@@ -16,7 +16,7 @@ description: This skill walks through proposing diffs + version bump for mj-agen
 - ADR-006 SQL guardrail 4 层中 L2 semantics 由 system.md + SKILL.md 共同实现
 - version bump 必同步 eval_references；Phase D 起强制（A8 PROMPT EVAL coupling）
 
-**hard constraint**: 本 skill **先 propose diff + version 升级建议 + impact + 数据边界 sanity check，落盘前必须 Owner 拍板**（AskUserQuestion + `ask` 权限 prompt）；拍板后由本 skill 直接 Edit `src/mj_agent/prompts/system.md` 落盘——数据边界 sanity check 任一 fail 即 STOP，不放宽 ADR-000/006/009。
+**hard constraint**: 本 skill **先 propose diff + version 升级建议 + impact + 数据边界 sanity check，落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion + settings `ask` 权限 prompt，Codex 载体 = AGENTS.md 自守 prose 停点 + 可审计批准记录）；拍板后由本 skill 直接 Edit `src/mj_agent/prompts/system.md` 落盘——数据边界 sanity check 任一 fail 即 STOP，不放宽 ADR-000/006/009。
 
 ## When to Use
 
@@ -211,7 +211,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 
 ## Step 7: Output（HITL pause）
 
-输出 proposed diff + 数据边界 sanity check + impact + HITL Questions，**等 Owner 拍板**（AskUserQuestion）：
+输出 proposed diff + 数据边界 sanity check + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Claude Code 载体：AskUserQuestion）：
 
 - **Accept** → 本 skill 经 settings.json `ask` 权限门**直接 Edit `src/mj_agent/prompts/system.md` 落盘**（Owner 在 `ask` prompt 二次批准）→ /mj-agent-flow-self-review Stage 11
 - **Refine** → 回 Step 5

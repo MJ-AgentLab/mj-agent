@@ -234,7 +234,7 @@ track: shared
 | `/mj-agent-doc-review` | 15 sub PR-scope 评审 | **active**（PR-C1） |
 | `/mj-agent-doc-migrate` | archive workflow | **active**（PR-C1） |
 
-### runtime family（PR-C2 落地 3 P1 + PR-D2-skill 1 P2；**全部 read-only by design**）
+### runtime family（PR-C2 落地 3 P1 + PR-D2-skill 1 P2；**全部 propose→拍板→apply（ADR-034）**）
 
 | Skill | Stage | Status |
 |---|---|---|
@@ -256,7 +256,7 @@ track: shared
 | `/mj-agent-infra-app-start` | 10 sub app runtime 有序启动（prereq→launch→verify） | **active**（本 PR #304） |
 | `/mj-agent-infra-app-stop` | 17 sub app runtime 非破坏停止（host tree-kill + Level-1 down） | **active**（本 PR #304） |
 
-合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 read-only by design；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 propose→拍板→apply（ADR-034）；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 

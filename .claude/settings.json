@@ -2,7 +2,12 @@
   "skillListingBudgetFraction": 0.04,
   "permissions": {
     "allow": [
-      "Bash",
+      "Bash(git *)",
+      "Bash(gh *)",
+      "Bash(uv *)",
+      "Bash(python *)",
+      "Bash(rg *)",
+      "Bash(ls *)",
       "Edit",
       "Read",
       "Write",

@@ -30,13 +30,15 @@ ai_visibility: source-of-truth
 
 > TBD: Phase M2 — `mj-agent-<group>-<verb>` 5 family 模式.
 
-## §4 Runtime Family Read-Only by Design
+## §4 Runtime Family Propose→拍板→Apply（ADR-034）
 
-`.claude/skills/mj-agent-runtime-*` 4 个 skill **必须 read-only by design** — 提议 diff，不
-直接写 `src/mj_agent/skills/`、`prompts/`、`agent.py`、`tools/`、`biz_catalog/`.
+`.claude/skills/mj-agent-runtime-*` 4 个 skill 遵循 **propose→拍板→apply**：先提议 diff +
+impact，停在工具中立 `OWNER_APPROVAL_REQUIRED` 停点；Owner 拍板后由 skill 直接落盘（Claude Code
+载体 = AskUserQuestion + settings `ask` 权限门；Codex 载体 = AGENTS.md 自守 prose）。未经拍板
+不写 `src/mj_agent/skills/`、`prompts/`、`agent.py`、`tools/`、`biz_catalog/`.
 
 执行机制：A12 description quality gate + SKILL.md ## Anti-patterns 段 + `.claude/settings.json`
-deny-list 三重保险（详 `policies/data-boundary.md` §3）.
+`ask` 逐写拍板门三重保险（ADR-034 deny→ask；详 `policies/data-boundary.md` §3）.
 
 ## §5 A12-A14 PR Gate Self-Check Checklist
 

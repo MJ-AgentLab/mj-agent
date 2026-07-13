@@ -206,18 +206,18 @@ SPEC Delta:
 
 ## §6 与 §3.1 必停规则的关系
 
-[[policies/ai-agent|ai-agent policy]] §4 列 12 项通用必停 + 4 项 mj-agent 专属必停。下表标注哪些任务类型自动触发哪些必停项：
+[[policies/ai-agent|ai-agent policy]] §4 现为 **canonical 10-enum**（4 项 in-source 必停打头 + 6 项工程面；无「通用/专属」双轨编号——执行期通用暂停清单另见 [[sdd/workflows/execution-loop|execution-loop]] §3.1，两套分类并存不混编号）。下表标注哪些任务类型自动触发哪些 canonical enum：
 
-| 任务类型 | 自动触发的 ai-agent §4 必停项 |
+| 任务类型 | 自动触发的 ai-agent §4 canonical enum |
 |---|---|
-| #1 Python 应用代码 | 通用 1-12（按 PR 实际触及） |
-| #2 SQL guardrail | **mj-agent 专属 13**（sql-guardrail-relax 永远必停）+ 通用 3 / 4 / 7 |
-| #3 In-source canonical | **mj-agent 专属 10 / 11 / 12**（runtime-skill-content-change / prompt-version-bump / biz-catalog-sync 永远必停） |
-| #4 Docker compose + storage stack | 通用 5 / 6 / 8（secret / 生产配置 / 不可逆操作） |
-| #5 CI/CD + scripts | 通用 6 / 9（生产配置 / 新依赖） |
-| #6 Config / secrets / deps | 通用 5 / 9（secret / 新依赖）+ 视情况 mj-agent 专属 12（如改 biz_catalog 相关 var） |
-| #7 Engineering-workflow infra | 通用 7（公共 API 行为变化）；A12-A14 PR 门禁阻塞 |
-| #8 文档治理 | 一般无 ai-agent §4 必停触发；除非改 framework STANDARD（触 A6 CLAUDE.md 同步） |
+| #1 Python 应用代码 | 多数无 §4 enum（执行期暂停走 execution-loop §3.1）；触 `capabilities/*/contracts/*` → declared-contract-change |
+| #2 SQL guardrail | **sql-guardrail-relax**（永远必停） |
+| #3 In-source canonical | **runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync**（永远必停） |
+| #4 Docker compose + storage stack | secrets-grants-or-prod-config（`docker/compose.prod.yml`）/ database-migration（mj_agent_memory schema） |
+| #5 CI/CD + scripts | ci-blocking-gate-toggle（gate blocking flip 时） |
+| #6 Config / secrets / deps | secrets-grants-or-prod-config（secret / GRANT / prod 配置）；新依赖属 execution-loop §3.1 执行期暂停，非 §4 enum |
+| #7 Engineering-workflow infra | mcp-server-trust-posture-change（`.mcp.json` 面）；A12-A14 PR 门禁阻塞 |
+| #8 文档治理 | bulk-content-purge-or-migration（≥10 文件迁移/归档）；其余一般无 §4 enum（framework STANDARD 触 A6 CLAUDE.md 同步） |
 
 **SPEC §1 Context 必须显式标注本 SPEC 触发的 ai-agent §4 必停项**，让 reviewer 一眼判定 HITL 强度。
 

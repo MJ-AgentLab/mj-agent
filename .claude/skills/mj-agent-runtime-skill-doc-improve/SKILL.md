@@ -16,7 +16,7 @@ description: This skill analyzes mj-agent in-source SKILL.md body content (src/m
 - 必须 Domain Expert + Prompt Engineer review，不能仅 SWE
 - 自动化 Edit 难以校验语义正确（与代码不同，文档语义无 type checker）
 
-**hard constraint**: 本 skill **先 propose diff + impact analysis，落盘前必须 Owner 拍板**（AskUserQuestion + `ask` 权限 prompt）；拍板后由本 skill 直接 Edit `src/mj_agent/skills/**` 落盘——不跳过 impact 分析、不未经拍板就写。
+**hard constraint**: 本 skill **先 propose diff + impact analysis，落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion + settings `ask` 权限 prompt，Codex 载体 = AGENTS.md 自守 prose 停点 + 可审计批准记录）；拍板后由本 skill 直接 Edit `src/mj_agent/skills/**` 落盘——不跳过 impact 分析、不未经拍板就写。
 
 ## When to Use
 
@@ -182,7 +182,7 @@ per execution-loop §3.3 7-段格式：
 
 ## Step 6: Output Proposed Diff + HITL
 
-输出 proposed diff + impact + HITL Questions，**等 Owner 拍板**（AskUserQuestion）：
+输出 proposed diff + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Claude Code 载体：AskUserQuestion）：
 
 - **Accept** → 本 skill 经 settings.json `ask` 权限门**直接 Edit `src/mj_agent/skills/<name>/SKILL.md` 落盘**（Owner 在 `ask` prompt 二次批准）→ /mj-agent-flow-self-review 接 Stage 11
 - **Refine** → 回 Step 4 调整

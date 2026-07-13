@@ -16,7 +16,7 @@ description: This skill detects + reports drift between mj-agent biz catalog mir
 - B 风味（in-source canonical 边缘）改动；触 §3.1 必停 12 + §4.7 Rule 9
 - Stage 8 sub by `/mj-agent-flow-implement`（C 风味或 B 风味边缘）
 
-**hard constraint**: 本 skill **先 propose diff + impact analysis + 依赖反扫，落盘前必须 Owner 拍板**（AskUserQuestion + `ask` 权限 prompt）；拍板后由本 skill 直接 Edit `src/mj_agent/biz_catalog/qcm_catalog.yaml` 落盘——catalog 是 mj-system 上游镜像，不加上游不存在的 entry。
+**hard constraint**: 本 skill **先 propose diff + impact analysis + 依赖反扫，落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion + settings `ask` 权限 prompt，Codex 载体 = AGENTS.md 自守 prose 停点 + 可审计批准记录）；拍板后由本 skill 直接 Edit `src/mj_agent/biz_catalog/qcm_catalog.yaml` 落盘——catalog 是 mj-system 上游镜像，不加上游不存在的 entry。
 
 ## When to Use
 
@@ -191,7 +191,7 @@ per execution-loop §3.3 7-段格式：
 
 ## Step 6: Output（HITL pause）
 
-输出 proposed diff + 反扫 + impact + HITL Questions，**等 Owner 拍板**（AskUserQuestion）：
+输出 proposed diff + 反扫 + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Claude Code 载体：AskUserQuestion）：
 
 - **Accept** → 本 skill 经 settings.json `ask` 权限门**直接 Edit `qcm_catalog.yaml` 落盘**（Owner 在 `ask` prompt 二次批准）+ /mj-agent-runtime-skill-doc-improve 同步 SKILL.md（如适用）→ /mj-agent-flow-self-review Stage 11
 - **Refine** → 回 Step 4

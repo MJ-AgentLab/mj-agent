@@ -23,8 +23,8 @@ ai_visibility: source-of-truth
 
 - `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` — per ADR-016 namespace pattern
 - 5 families（flow / git / doc / runtime / infra）；实测 SKILL 计数以
-  `scripts/sdd/check_claude_skill_contracts.py --all` 为准（现 on-disk 35；Phase M6 规划新增
-  evidence family 4 SKILL）
+  `scripts/sdd/check_claude_skill_contracts.py --all` 为准（现 on-disk 37；evidence family
+  4 SKILL 属 Phase-2 规划未落地）
 - Claude Code 主 process 加载（不入 `mj_agent` Python runtime；不走 `load_skill`）
 - ADR-013 2-field native schema（`name` + `description` 仅 2 字段；**不**用 13-field
   Agent_Side schema）
@@ -103,8 +103,9 @@ M2 Stage C 新增 1 contract：
 - `sections_required[]` — body 必含 `## Overview` + `## Workflow`（其他 sections 如
   `## Anti-patterns` / `## Handoff` 灵活，不强制）
 - `family` — 5 family 之一（`flow` / `git` / `doc` / `runtime` / `infra`）per ADR-016
-- `read_only_by_design: bool` — `runtime` family 必须 `true`（mj-agent-runtime-* skill 不修改
-  `src/mj_agent/{skills,prompts,agent.py,tools}/`）
+- `owner_approval_required: bool` — `runtime` family 必须 `true`（mj-agent-runtime-* skill
+  落盘前必须过工具中立 `OWNER_APPROVAL_REQUIRED` 停点，ADR-034 propose→拍板→apply；未经拍板
+  不写 `src/mj_agent/{skills,prompts,agent.py,tools}/`）
 
 **Per-SKILL freeze 字段**（M2 新 contract 用）：
 
@@ -184,8 +185,8 @@ resolution status + 必要时 contract refactor.
 
 - `mj-agent-git-commit` / `mj-agent-git-push` — 写 git 状态；误触发风险高
 - `mj-agent-infra-env-teardown` — destructive infra 操作；3-level safety 必 BDD 覆盖
-- `mj-agent-runtime-*` family 4 SKILL — read-only by design，但若 BDD 不覆盖可能漂移成"sneak
-  write"
+- `mj-agent-runtime-*` family 4 SKILL — 拍板前 propose-only（`owner_approval_required`），但若
+  BDD 不覆盖可能漂移成"sneak write"（未经拍板直写）
 
 **示例 `.feature` scenario fragment**：
 
@@ -205,7 +206,7 @@ Scenario: mj-agent-git-push refuses to run on protected branches
 **Contract-test-first 限于 schema layer**：
 
 - `claude-skill.contract.yml` 的 `skills[].name` / `namespace_pattern` / `family` /
-  `read_only_by_design` 字段变更 → 必先有 failing test（M3 起）
+  `owner_approval_required` 字段变更 → 必先有 failing test（M3 起）
 - SKILL `description` ≥ 200 chars + 含 `Do not use for:` block → script 自动校验
 - Trigger fidelity（`description` 是否真能让 Claude 在正确时机调用）走 **manual HITL** —
   script 看不出意图
