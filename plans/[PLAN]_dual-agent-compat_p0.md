@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 P0 执行计划（issue #313）——四组安全冲
 owner: ranzuozhou
 created: 2026-07-13
 updated: 2026-07-13
-state: active
+completed: 2026-07-13
+state: completed
 track: shared
 ---
 

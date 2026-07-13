@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 首个执行切片（P0）的 Stage 0 Intake 落盘�
 owner: ranzuozhou
 created: 2026-07-13
 updated: 2026-07-13
-state: active
+completed: 2026-07-13
+state: completed
 track: shared
 ---
 
