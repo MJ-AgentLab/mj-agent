@@ -53,6 +53,36 @@ CASES: list[tuple[str, list[str], list[str]]] = [
     ),
 ]
 
+# PR-2 (plan §4 8i/8j): tool-neutral OWNER_APPROVAL_REQUIRED stop point in the
+# runtime family + dual-tool AGENTS.md (v5 §5.3 tool-agnostic HITL & Git guard).
+CASES += [
+    (
+        ".claude/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+        [],
+        ["OWNER_APPROVAL_REQUIRED"],
+    ),
+    (
+        ".claude/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+        [],
+        ["OWNER_APPROVAL_REQUIRED"],
+    ),
+    (
+        ".claude/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+        [],
+        ["OWNER_APPROVAL_REQUIRED"],
+    ),
+    (
+        ".claude/skills/mj-agent-runtime-eval-baseline/SKILL.md",
+        [],
+        ["OWNER_APPROVAL_REQUIRED"],
+    ),
+    (
+        "AGENTS.md",
+        ["Primary AI developer", "non-Claude-Code agents"],
+        ["OWNER_APPROVAL_REQUIRED", "git worktree add"],
+    ),
+]
+
 CASE_IDS = [path.rsplit("/", 2)[-2] if "skills" in path else Path(path).stem for path, _, _ in CASES]
 
 
