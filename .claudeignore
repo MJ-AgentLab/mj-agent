@@ -58,3 +58,8 @@ Thumbs.db
 # src/mj_agent/tools/sql/
 # src/mj_agent/prompts/
 # src/mj_agent/skills/
+
+# Generated projection artifacts (dual-agent-compat v5 S0; D-012 — generator-owned,
+# committed but never hand-edited; F9 emergency switch = clear projections + regenerate).
+# Skill discovery is unaffected; byte-identical projection is the real dual-discovery guard.
+.agents/
