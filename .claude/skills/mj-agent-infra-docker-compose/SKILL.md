@@ -101,13 +101,10 @@ docker network ls --filter name=mj-system-backend-network
 docker ps --filter name=mj-system-postgres --format "table {{.Names}}\t{{.Status}}"
 # 期望：mj-system-postgres / Up X (healthy)
 
-# 2. .env 已配置（含 4 secrets）
-Test-Path .env
-@("POSTGRES_ANALYST_USER","POSTGRES_ANALYST_PASSWORD","ARK_API_KEY") | ForEach-Object {
-    if (-not (Get-Content .env | Select-String "^$_=" -Quiet)) {
-        Write-Warning "$_ missing in .env — run /mj-agent-infra-env-setup first"
-    }
-}
+# 2. .env 已配置（required keys 核对走脱敏脚本：只回键名+状态，永不回值；
+#    Agent 不得直接解析 .env —— v5 §5.2 secrets 边界）
+powershell.exe -NoProfile -File scripts/check_env_keys.ps1
+# exit 1（存在 EMPTY / MISSING）→ 先跑 /mj-agent-infra-env-setup
 
 # 3. host ports 8001 / 5433 / 6379 不被占用
 netstat -ano | findstr "8001 5433 6379"
@@ -261,7 +258,7 @@ docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c "\dt"
 ### Pre-check
 - ✅ mj-system biz pg running
 - ✅ mj-system-backend-network exists
-- ✅ .env 4 secrets present
+- ✅ scripts/check_env_keys.ps1 — required keys 全 PRESENT（脱敏输出）
 - ✅ host ports 8001/5433/6379 free
 
 ### Result

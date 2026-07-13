@@ -97,12 +97,14 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-docker-compose/SKILL.md
     name: mj-agent-infra-docker-compose
-    # re-frozen 2026-07-08 (#306): added app-start/app-stop reverse-trigger deferral to the
-    # description "Do not use for:" block (bidirectional boundary; PR #305 finding #5).
-    # Deferral-only (negative trigger) → no positive trigger-hit-rate change; body untouched.
+    # re-frozen 2026-07-13 (#313 P0 dual-agent-compat): Step 1 pre-check #2 agent-side
+    # .env parsing replaced by sanitized scripts/check_env_keys.ps1 (v5 §5.2 secrets
+    # boundary); compose --env-file .env untouched (docker-process injection, not an
+    # agent read). Body-only; description + section heads unchanged. Prior freeze #306
+    # (description-only, body a66a9aa4 unchanged then).
     description_hash: sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002
-    body_content_hash: sha256:a66a9aa49dfb16b8dc9fffc0bab8d404fabfc28054fd3022b4f546a51698c3a2
-    frozen_at: 2026-07-08T00:00:00Z
+    body_content_hash: sha256:3c68d460960e8f406068f19df16d9a7bb807f9f892019ea2d801f5fce716929f
+    frozen_at: 2026-07-13T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"
@@ -123,14 +125,15 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
-    # re-frozen 2026-07-08 (#302): stale "~6-8 app secrets" count in BOTH the
-    # description and body §Overview corrected to "8" (canonical count; consistent
-    # with README §填写指南 SoT). The ~6-8 token is not an A12 trigger term, so the
-    # description-hash change carries no trigger-hit-rate risk. Prior freeze was
-    # #297 (body-only, f05b0fbc / description 21bf582d unchanged then).
+    # re-frozen 2026-07-13 (#313 P0 dual-agent-compat): Step 3 agent-side .env
+    # parsing (bash grep/cut + PS Get-Content dual blocks) replaced by sanitized
+    # scripts/check_env_keys.ps1 (key names + PRESENT/EMPTY/MISSING only, values
+    # never echoed; v5 §5.2 secrets boundary); execution-boundary table + tool
+    # table + Output Format aligned. Body-only; description + section heads
+    # unchanged. Prior freeze #302 (description+body, e905e0af).
     description_hash: sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745
-    body_content_hash: sha256:e905e0aff0ba75485b3562a3a7746bc0eb2852e27f9f58f31715f5ec758c7cce
-    frozen_at: 2026-07-08T00:00:00Z
+    body_content_hash: sha256:37ebae50b47398a0e5b597c9c1d5481efdbefcca1104e8035c7b6a7a7fb17c97
+    frozen_at: 2026-07-13T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
@@ -168,9 +171,16 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
     name: mj-agent-infra-llm-endpoint-probe
+    # re-frozen 2026-07-13 (#313 P0 dual-agent-compat): Steps 0-3b agent-side .env
+    # reads + $env LLM_API_KEY curl assembly replaced by sanitized
+    # scripts/probe_llm_endpoint.ps1 (script reads .env internally, reports
+    # STEPn PASS/FAIL/WARN + set|EMPTY only; v5 §5.2 secrets boundary). Judgment
+    # tables/troubleshooting retained as script-output interpretation. Body-only;
+    # description + section heads unchanged (fenced "## LLM Endpoint Probe Report"
+    # pseudo-head retained). Prior freeze 2026-06-11 (DGX PR-A, 8b79ed76).
     description_hash: sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff
-    body_content_hash: sha256:8b79ed76f62b3930841aaea18e22e9416a63488a5e2601bbf55e54099a070a60
-    frozen_at: 2026-06-11T00:00:00Z
+    body_content_hash: sha256:5e53851599a3e3dc623028e3d02be2c1a72272562c24e28a2ad2be5898d09531
+    frozen_at: 2026-07-13T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## When to Use"

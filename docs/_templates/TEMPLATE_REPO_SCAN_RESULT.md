@@ -55,7 +55,8 @@ owner: 项目负责人
 | Code (mj-agent 7 模块) | `git diff --name-only` 涉及 `src/mj_agent/{agent,llm,tools,memory,integrations,config,server,ui}/` | <主要改动模块> |
 | API / Studio / Chainlit | `langgraph.json` / `src/mj_agent/ui.py` / `src/mj_agent/server/cli.py` 是否涉及 | <interface 变化> |
 | Data Source (biz_catalog) | `qcm_catalog.yaml` diff / `find_biz_context` 真实返回 | <镜像漂移 = §3.1 必停 12> |
-| Database (上游业务系统 biz pg consumer / mj-agent-postgres) | mcp postgres-* / 连接配置 | <红线 ADR-006/009 检查> |
+| Database — 上游业务系统 biz pg consumer | 4-tool 链（`find_biz_context` / `list_biz_tables` / `describe_biz_table`）/ 连接配置 | <红线 ADR-006/009 检查；禁 raw PG 直读> |
+| Database — mj-agent-postgres memory | mcp pg-mj-agent-memory-* / compose exec psql | <自有 checkpointer 库，非 biz 边界对象> |
 | Config / Secrets | `.env.example` / `secrets.enc` / `.mcp.json` 一致性 | <新增 var / 漂移> |
 | Tests / CI | `tests/{unit,eval,integration,smoke,contract}/` + `.github/workflows/` | <覆盖度 / 失败> |
 | Docs | `docs/**/*.md` + `INDEX.md` + `CLAUDE.md` + `CHANGELOG.md` | <反向扫描命中 / 同步需求> |

@@ -36,41 +36,27 @@ DGX-Spark (192.168.0.189) is the team's local LLM compute node — vLLM / SGLang
 
 ## Workflow
 
-### Step 0: Pre-check
+### 执行：脱敏脚本探针（Step 0-3b 一次跑全）
+
+任一执行者（Claude Bash tool / Codex / user 终端）统一调用：
 
 ```powershell
-# 1. .env 含 LLM_PROVIDER + LLM_BASE_URL
-Get-Content .env | Select-String "^LLM_PROVIDER=" -Quiet
-Get-Content .env | Select-String "^LLM_BASE_URL=" -Quiet
-
-# 2. LLM_PROVIDER 设为 local-openai-compat
-Get-Content .env | Select-String "^LLM_PROVIDER=local-openai-compat"
-# 若返 ark → 提示: "本 skill 不适用 ark provider，无需 endpoint 探活"
-
-# 3. LLM_BASE_URL 非空
-$baseUrl = (Get-Content .env | Select-String "^LLM_BASE_URL=").Line -replace "^LLM_BASE_URL=",""
-if (-not $baseUrl) {
-    Write-Warning "LLM_BASE_URL is empty — set it first (e.g. http://192.168.0.189:8000/v1)"
-}
+powershell.exe -NoProfile -File scripts/probe_llm_endpoint.ps1
+# pwsh 亦可：pwsh -NoProfile -File scripts/probe_llm_endpoint.ps1
+# 输出：STEPn PASS|FAIL|WARN|NOT-APPLICABLE 逐行 + VERDICT 收尾
+# exit 0 = 全 pass（或 provider=ark 不适用）；3 = tool-calling 警告；2 = 配置缺失；1 = 探针失败
 ```
 
-如缺 → STOP；指示用户 `/mj-agent-infra-env-setup` 或手填 `.env` 后再跑本 skill。
+脚本内部读 `.env`（`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_MODEL_ID` / `LLM_API_KEY`）并组装请求；对调用方只输出键名、`set|EMPTY` 状态、每步判定与截断响应片段——**凭据值永不回显**。Agent 不得自行读取 `.env` / 进程环境组装 curl 请求（v5 §5.2 secrets 边界）。以下 Step 0-3b 小节解释脚本各步判定与排障动作。
 
-### Step 1: Endpoint Reachability + /v1/models
+### Step 0: Pre-check（脚本 STEP0 行）
 
-```powershell
-# vLLM / SGLang / TGI / llama.cpp 走 OpenAI-compatible /v1/models
-curl -fsS -m 5 "$($baseUrl)/models" 2>&1
-# 期望返 JSON：{"object":"list","data":[{"id":"<model-id>",...}]}
+- `STEP0 NOT-APPLICABLE` → `LLM_PROVIDER=ark`，无需 endpoint 探活（`mj-agent check` 已覆盖）
+- `STEP0 FAIL LLM_BASE_URL/LLM_MODEL_ID EMPTY/MISSING` → STOP；先 `/mj-agent-infra-env-setup` 或手填 `.env` 后重跑
 
-# Ollama 走 /api/tags（OpenAI-compatible 模式下）
-# 如 LLM_BASE_URL 含 ":11434/v1" 字样推断为 Ollama，fallback 探 /api/tags
-$baseHost = $baseUrl -replace "/v1$",""
-if ($baseUrl -match ":11434") {
-    curl -fsS -m 5 "$baseHost/api/tags" 2>&1
-    # 期望返 JSON：{"models":[{"name":"<model>:tag",...}]}
-}
-```
+### Step 1: Endpoint Reachability + /v1/models（脚本 STEP1 行）
+
+脚本探 `GET $LLM_BASE_URL/models`（vLLM / SGLang / TGI / llama.cpp 的 OpenAI-compatible 路径）；`LLM_BASE_URL` 含 `:11434` 时自动 fallback 到 Ollama `/api/tags`。
 
 判定：
 
@@ -82,33 +68,17 @@ if ($baseUrl -match ":11434") {
 | 401 | 需 API key | LLM_API_KEY 必填（vLLM 用 `--api-key` 启动时） |
 | timeout | 网络 / DGX 主机 down | LAN 探：`Test-NetConnection 192.168.0.189 -Port 8000` |
 
-### Step 2: Model ID Match
+### Step 2: Model ID Match（脚本 STEP2 行）
 
-```powershell
-# 从 /v1/models 响应提取 model id 列表，比对 LLM_MODEL_ID
-$modelId = (Get-Content .env | Select-String "^LLM_MODEL_ID=").Line -replace "^LLM_MODEL_ID=",""
+脚本从 `/models` 响应提取 model id 列表比对 `LLM_MODEL_ID`：命中 → 模型已加载 + id 匹配；无匹配 → `STEP2 FAIL` 并列出 endpoint 实际加载的所有 model ids（建议 `.env` 改 `LLM_MODEL_ID` 或 serving 侧改 `--model`）。
 
-curl -fsS -m 5 "$($baseUrl)/models" | ConvertFrom-Json | \
-    Select-Object -ExpandProperty data | \
-    Where-Object { $_.id -eq $modelId }
-# 命中 → 模型已加载 + id 匹配
-# 无匹配 → 列出 endpoint 实际加载的所有 model ids；建议 .env 改 LLM_MODEL_ID 或 vLLM 启动时改 --model
-```
+### Step 3: 1-Token Chat Completion Smoke（脚本 STEP3 行）
 
-### Step 3: 1-Token Chat Completion Smoke
+脚本发最小 chat 调用（1 token max；**不带 extra_body**——vLLM/SGLang/Ollama 不支持 Ark thinking 参数）。失败模式：
 
-```powershell
-# 最小 chat 调用：1 token max；不带 extra_body（vLLM/SGLang/Ollama 不支持 Ark thinking 参数）
-curl -fsS -m 30 "$($baseUrl)/chat/completions" `
-    -H "Content-Type: application/json" `
-    -H "Authorization: Bearer $env:LLM_API_KEY" `
-    -d "{`"model`":`"$modelId`",`"messages`":[{`"role`":`"user`",`"content`":`"hi`"}],`"max_tokens`":1}"
-# 期望：{"id":"...","choices":[{"message":{"content":"..."},...}],...}
-# 失败模式：
-#   - 400 invalid params → 检查 model id / messages 结构
-#   - 422 → vLLM/SGLang 严格 schema；可能 max_tokens 字段名差异（应 max_tokens 不是 max_completion_tokens）
-#   - 500 → vLLM 模型加载失败 / OOM；查 vLLM 容器日志
-```
+- 400 invalid params → 检查 model id / messages 结构
+- 422 → vLLM/SGLang 严格 schema；可能 max_tokens 字段名差异（应 `max_tokens` 不是 `max_completion_tokens`）
+- 500 → vLLM 模型加载失败 / OOM；查 vLLM 容器日志
 
 判定：
 
@@ -121,46 +91,15 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 mj-agent runtime 把 `ALL_TOOLS` 全量绑定进 `create_agent`（清单见 `src/mj_agent/tools/__init__.py`）——endpoint 只过 Step 3 chat 而无 tool-calling 时，graph 实际不可用。本步用最小 tools 数组验证 tool-calling 能力。
 
-主路径用**默认 auto tool choice**（贴 `create_agent` 生产路径）+ prompt 强引导 + 低 temperature：
+脚本主路径用**默认 auto tool choice**（贴 `create_agent` 生产路径）+ prompt 强引导 + 低 temperature：单 function schema（`get_current_time`，含 required 参数 `timezone`——零参工具 `arguments="{}"` 信号弱）；max_tokens 给足 tool-call JSON（128，非 Step 3 的 1-token 风格）；**不带 extra_body**。
 
-```powershell
-# 单 function schema 且 ≥1 个 required 参数（零参工具 arguments="{}" 信号弱）；
-# max_tokens 给足 tool-call JSON（64-128，非 Step 3 的 1-token 风格）；不带 extra_body
-$toolSmokeBody = @"
-{
-  "model": "$modelId",
-  "messages": [{"role": "user", "content": "现在 Asia/Shanghai 时区几点？必须调用所提供的工具回答，不要直接作答。"}],
-  "tools": [{
-    "type": "function",
-    "function": {
-      "name": "get_current_time",
-      "description": "Get the current time in a given IANA timezone",
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "timezone": {"type": "string", "description": "IANA timezone name, e.g. Asia/Shanghai"}
-        },
-        "required": ["timezone"]
-      }
-    }
-  }],
-  "temperature": 0.1,
-  "max_tokens": 128
-}
-"@
-curl -fsS -m 30 "$($baseUrl)/chat/completions" `
-    -H "Content-Type: application/json" `
-    -H "Authorization: Bearer $env:LLM_API_KEY" `
-    -d $toolSmokeBody
-```
-
-断言（全部成立才记 ✅）：
+断言（全部成立才记 ✅，脚本 `STEP3B PASS`）：
 
 - `choices[0].finish_reason == "tool_calls"`
 - `choices[0].message.tool_calls[0].function.name` 是合法工具名（本例 `get_current_time`）
 - `choices[0].message.tool_calls[0].function.arguments` 可 JSON 解析且含 required 参数（`timezone`）
 
-**判别重试**：auto 路径无 tool_call 时，同 payload 追加 `"tool_choice": {"type": "function", "function": {"name": "get_current_time"}}` 补发**一次**（named/guided decoding 不依赖 `--enable-auto-tool-choice`，可区分 parser 缺失与模型能力缺失）：
+**判别重试**：auto 路径无 tool_call 时，脚本自动同 payload 追加 `"tool_choice": {"type": "function", "function": {"name": "get_current_time"}}` 补发**一次**（named/guided decoding 不依赖 `--enable-auto-tool-choice`，可区分 parser 缺失与模型能力缺失）：
 
 | auto | named | 判定 | 输出 |
 |---|---|---|---|
@@ -236,10 +175,8 @@ curl -fsS -m 30 "$($baseUrl)/chat/completions" `
 
 | Tool | 用途 |
 |---|---|
-| Bash `curl -fsS` | Step 1/2/3/3b endpoint 探针 |
-| Bash `Test-NetConnection` | Step 1 端口连通性 |
-| Bash `ConvertFrom-Json` | Step 2 model id 提取 |
-| Read `.env` | Step 0 配置读取 |
+| Bash `powershell.exe -NoProfile -File scripts/probe_llm_endpoint.ps1` | Step 0-3b 全量探针（脚本内部读 `.env` + 组装请求；对外只回脱敏诊断） |
+| Bash `powershell.exe -NoProfile -Command 'Test-NetConnection ...'` | Step 1 FAIL 后的端口连通性排障 |
 
 ## Reference Files
 
