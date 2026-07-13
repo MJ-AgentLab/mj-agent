@@ -50,7 +50,15 @@ function Deny-G2 {
 }
 
 try {
-    $raw = [Console]::In.ReadToEnd()
+    # #317: read stdin as UTF-8 explicitly. [Console]::In follows the inherited
+    # console codepage (CP936 on Chinese Windows), which mis-decodes the UTF-8
+    # hook payload and made the fail-closed guard mis-block every command
+    # containing non-ASCII text. Claude Code always emits UTF-8 JSON.
+    $reader = New-Object System.IO.StreamReader(
+        [Console]::OpenStandardInput(),
+        (New-Object System.Text.UTF8Encoding($false))
+    )
+    $raw = $reader.ReadToEnd()
     if ([string]::IsNullOrWhiteSpace($raw)) { Deny-Payload 'empty stdin' }
 
     $payload = $null
