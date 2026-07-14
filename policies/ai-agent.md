@@ -91,7 +91,7 @@ of truth），LSP 仅作交互式辅助.
 | `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；propose+拍板+apply via `mj-agent-runtime-skill-doc-improve` |
 | `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
-| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
+| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode；**D-017 扩展邻接面（ADR-036）**：派生 `.codex/config.toml`、`.agents/**`、`scripts/sdd/agents_sync.py`、manifest `sdd/development-agent.yml` 的 `mcp` / `codex.posture` 段 | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
 | `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
 | `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
 | `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000 | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger |
@@ -110,7 +110,9 @@ of truth），LSP 仅作交互式辅助.
 > **Enforce 机制（ADR-034；拍板即落盘）**：本 enum 触发 = **AI 提议 + Owner 拍板 + AI
 > 落盘**，不再要求 Owner 手动转写。前 4 项 in-source 专属必停由 `.claude/settings.json`
 > `ask` 列表逐写拍板门 enforce（原 `deny` 物理硬锁已解除）；`mcp-server-trust-posture-change`
-> 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce。两类
+> 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce；其 **D-017
+> 扩展邻接面**（`.codex/**` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture`
+> 段）非 harness 保护路径，由 Owner 拍板纪律 + V8/V9 gate + merge review 兜底（ADR-036）。两类
 > 落盘后均由 **merge review（A13 settings allowlist / A14 .mcp.json trust posture）兜底**。
 > **仅交互模式成立**——`auto` / `bypass` 模式下放宽类改动被 classifier 硬拦，须切交互模式
 > （详 §9 + `sdd/workflows/execution-loop.md §3.0`）。

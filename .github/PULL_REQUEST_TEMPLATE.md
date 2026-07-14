@@ -64,7 +64,7 @@
 - [ ] runtime-skill-content-change（`src/mj_agent/skills/*/SKILL.md` body）
 - [ ] prompt-version-or-body-change（`src/mj_agent/prompts/system.md` version 或 body）
 - [ ] biz-catalog-sync（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）
-- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode；A14）
+- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode + 派生 `.codex/config.toml` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture` 段；A14 / D-017）
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
 - [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml`）
