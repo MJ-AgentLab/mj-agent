@@ -5,7 +5,7 @@ state: active
 version: 1.0
 owner: ranzuozhou
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-14
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -33,7 +33,9 @@ ai_visibility: source-of-truth
 - 各 skill 的语义正文（canonical 在 `.claude/skills/*/SKILL.md`，由 claude-code-skill adapter 治理）
 - in-source runtime canonical（→ runtime-skill / prompt adapters）
 - `.mcp.json` 本体（A14 保护面；本 adapter 只消费其 server 清单事实）
-- `agents_sync.py` 生成器与 `.agents/` / `.codex/config.toml` 产物（S1/S2 落地；D-011 唯一豁免）
+- `.codex/config.toml` 产物与 MCP emitter B（S2 落地，3 spike 硬前置；D-011 唯一豁免的第二面）
+- 投影产物的语义正文（`.agents/skills/**` 是 `agents_sync.py` 生成的字节同一副本——S1 已落地，
+  治理契约见根 `AGENTS.md`「Generated projections」节；本 adapter 只登记其 gate 与 CLI 契约）
 
 ## §Behavior Matrix（同一停点，per-tool 载体）
 
@@ -79,19 +81,35 @@ ai_visibility: source-of-truth
 - **lock 一致性**：`.agents.lock.json` ↔ 产物 `body_sha256`（LF 归一 canonical 算法，复用
   `scripts/sdd/_common/frontmatter.py`）；两者均缺 = pass，仅一方存在 = FAIL。
 
+> **V10 规则声明锚（S1 #326）**：以下由 `scripts/sdd/agents_sync.py --check` 机器校验
+> （regenerate-and-diff；一切内容比较 LF 归一——`.md` 未 eol-pin、Windows/ubuntu 检出 EOL 不同）。
+
+- **产物 ↔ 源一致**：`.agents/skills/<name>/SKILL.md` 与 `.claude/skills/<name>/SKILL.md`
+  LF 归一后相等（手改产物或改源未重跑 `sync` 均红，文案给规定动作 per D-012）。
+- **README ↔ 固定模板一致**；**lock ↔ 重算值一致**（排序单行条目）；`.agents/` 树内不得有
+  期望集之外的文件/目录（与 V9 reconcile 互补：V9 对账目录集，V10 对账内容与杂散文件）。
+- **生成器 CLI 契约**：`sync`（幂等全量再生成 + 孤儿清理）XOR `--check`（只读）XOR
+  `--adopt <name>`（显式反灌 + 自动 realign；Owner HITL 适用于源写入）；退出码 0/1/2；
+  `doctor` 属 S3。生成期零 env 解析、零网络（fork/clean-clone 不假红）。
+
 ## §CI Gate
 
 | Gate | 脚本 | 阻塞模式（真值） |
 |---|---|---|
 | V8 | `scripts/sdd/check_development_agent.py --all --fail-on error` | **warning**（P1 首发 `continue-on-error: true`；P4 观察期满 + Owner 批准后按 `ci-blocking-gate-toggle` 流程翻转） |
 | V9 | `scripts/sdd/check_agents_projection.py --all` | **warning**（同上；S2 起 MCP 产物面 day-1 blocking per D-016，届时另立执行记录） |
+| V10 | `scripts/sdd/agents_sync.py --check` | **warning**（S1 首发 #326；skills 面沿 warning→blocking 惯例 per D-016，转正属 S3/P4）。真值注记：`test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（V8/V9 钉线同族先例） |
 
 单测：`tests/unit/test_sdd_development_agent.py`（含双发现 canary：on-disk `.claude/skills/`
-目录数 ≟ manifest 计数）。注册：[[../gates|sdd/gates.md]] §2。
+目录数 ≟ manifest 计数）+ `tests/unit/test_agents_sync.py`（幂等 / drift 三态 / reconcile 负向 /
+跨 EOL golden / `--adopt` / V9 集成 / 真实树钉线）。注册：[[../gates|sdd/gates.md]] §2。
 
 ## §Current Implementation Status
 
 - P1+S0（#320）：manifest + V8/V9 checker + 单测 + canary 落地；CI warning 首发。
-- S1（未落地）：`agents_sync.py` + 🟢 首批投影 + `.agents.lock.json` + drift gate。
+- S1（#326）：白名单定案全 5（闭包收口，V9 0E/0W）+ `agents_sync.py`（sync/--check/--adopt）+
+  🟢 首批 5 投影 + `.agents.lock.json` + `.agents/README.md` + drift gate V10 warning 首发 +
+  根 AGENTS.md「Generated projections」契约条。Codex 实机发现验证依赖 Owner trust（D-015），
+  post-merge 配合执行。
 - S2（未落地；3 spike 硬前置）：emitter B（`.codex/config.toml`）+ MCP 产物 gate day-1 blocking。
 - S3（未落地）：doctor（trust 只读 + `-Reload` 集成 + canary 迁入）+ skills gate blocking 转正。

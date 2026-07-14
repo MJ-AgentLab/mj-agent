@@ -59,6 +59,7 @@ ai_visibility: source-of-truth
 | V7 Runtime-Skill | `scripts/sdd/check_runtime_skill_contracts.py` | runtime-skill.contract.yml | blocking@ci |
 | V8 Development-Agent | `scripts/sdd/check_development_agent.py --fail-on error` | development-agent.yml（manifest；`sdd/adapters/development-agent.md`） | warning@ci（P1 首发 per D-009；P4 观察期满 + Owner 批准后按 `ci-blocking-gate-toggle` 翻转）|
 | V9 Agents-Projection | `scripts/sdd/check_agents_projection.py` | development-agent.yml `projection` 域（`.agents/` + `.agents.lock.json`；产物属 S1+） | warning@ci（同 V8；S2 起 MCP 产物面 day-1 blocking per D-016，届时另立执行记录）|
+| V10 Agents-Sync-Drift | `scripts/sdd/agents_sync.py --check` | 生成产物 ↔ 源/模板/lock 一致性（`.agents/skills/` + `.agents/README.md` + `.agents.lock.json`；LF 归一比较，D-012 regenerate-and-diff） | warning@ci（S1 首发 #326 per D-016 skills 面惯例；blocking 转正属 S3/P4，届时按 `ci-blocking-gate-toggle` 另立执行记录）。**真值注记**：`tests/unit/test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（与 V8/V9 真实树钉线同族先例；gate step 本身保持 warning 姿态）|
 | docker-bdd-scenario-check | `check_bdd_scenario_trace.py --scope docker` | docker behavior.feature | covered-by(G19)（CI 跑 `--scope full` 全集；docker 子集为其真子集）|
 | docker-tdd-contract-test | `check_tdd_refactor_contract.py`（未建）| docker contract change | deferred(M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER)（与 G27/G28 同执行体家族）|
 

@@ -282,16 +282,24 @@ jobs:
 
       # ===== End of completion-audit PR2 G3/G7/G25 block =====
 
-      # ===== dual-agent-compat P1+S0 — V8/V9 manifest + projection gates (#320) =====
-      # Both land in WARNING mode (continue-on-error: true) per D-009 (warning-first);
+      # ===== dual-agent-compat — V8/V9/V10 manifest + projection gates (#320, #326) =====
+      # All land in WARNING mode (continue-on-error: true) per D-009 (warning-first);
       # blocking flips are separate ci-blocking-gate-toggle HITL actions
-      # (policies/ai-agent.md §4). The checkers themselves run at --fail-on error
-      # (plan §10); step output is the SoT for counts.
+      # (policies/ai-agent.md §4). V8/V9 run at --fail-on error (plan §10); V10 is
+      # `agents_sync.py --check` (no --fail-on parameter; exit 1 on any drift).
+      # Step output is the SoT for counts. NOTE: real-tree pins in tests/unit
+      # (test_real_tree_* / test_real_tree_projection_in_sync) make the same
+      # invariants effectively enforced by the blocking Tests step — declared in
+      # sdd/gates.md §2 (V8/V9/V10 rows share this property by design).
       # V8: manifest schema/enums/required coverage + AGENTS.md x5 entry relations +
       #     canonical-10 drift guard + stats-from-manifest. Baseline 0E/0W.
       # V9: projection closure (Handoff out-edges; warning at S0 empty state) +
       #     full reconcile + lock consistency. Baseline 0E/0W (S1 closure closed:
       #     full-5 whitelist, 4 out-edges neutralized to kernel stage pointers, #326).
+      # V10: agents_sync drift gate (regenerate-and-diff; LF-normalized comparisons) —
+      #     generated .agents/** + .agents.lock.json must match sources/template/lock
+      #     (D-012: artifacts are generator-owned; hand edits and source edits without
+      #     re-running `agents_sync.py sync` both go red). Baseline clean (S1, #326).
       - name: 'V8 dual-agent manifest (warning at landing; P1 first mount; 0E/0W)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_development_agent.py --all --fail-on error
@@ -300,7 +308,11 @@ jobs:
         continue-on-error: true
         run: uv run python scripts/sdd/check_agents_projection.py --all
 
-      # ===== End of dual-agent-compat P1+S0 V8/V9 block =====
+      - name: 'V10 agents_sync drift (warning at landing; S1 first mount; clean)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/agents_sync.py --check
+
+      # ===== End of dual-agent-compat V8/V9/V10 block =====
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
