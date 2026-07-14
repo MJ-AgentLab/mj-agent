@@ -37,24 +37,41 @@ constraints live at:
 
 Same layering rule as this file: nested files point to the kernel, they do not restate it.
 
-## Generated projections (`.agents/`) — never hand-edit
+## Generated projections (`.agents/` + `.codex/config.toml`) — never hand-edit
 
-`.agents/skills/**`, `.agents/README.md` and the repo-root `.agents.lock.json` are **generated
-artifacts** owned 100% by `scripts/sdd/agents_sync.py` (per ADR-036 D-011/D-012/D-014): byte-identical
-projections of the whitelisted `.claude/skills/<name>/SKILL.md` sources (whitelist SoT = manifest
-`sdd/development-agent.yml` `projection: project` entries). They are committed so Codex discovers
-the skills natively under `.agents/skills` after `git pull`; projected copies do NOT count toward
+`.agents/skills/**`, `.agents/README.md`, the repo-root `.agents.lock.json` **and the repo-level
+`.codex/config.toml`** are **generated artifacts** owned 100% by `scripts/sdd/agents_sync.py`
+(per ADR-036 D-011/D-012/D-013/D-014): byte-identical projections of the whitelisted
+`.claude/skills/<name>/SKILL.md` sources (whitelist SoT = manifest `sdd/development-agent.yml`
+`projection: project` entries), plus — since S2 (#330) — a Codex MCP config derived from
+`.mcp.json` filtered by the manifest `mcp` per-server tiers (github / playwright / serena only;
+`pg-mj-system-biz-*` + `ssh-manager` are PERMANENTLY excluded, ADR-006/009 data boundary) with
+`codex.posture` transcribed. They are committed so Codex discovers skills under `.agents/skills`
+and MCP servers via `.codex/config.toml` after `git pull`; projected copies do NOT count toward
 the 37-skill SoT. Rules — they bind BOTH tools:
 
-- **Never hand-edit** anything under `.agents/` or `.agents.lock.json`.
-- Change path = edit the SOURCE skill (its own gates apply) → run
+- **Never hand-edit** anything under `.agents/`, `.agents.lock.json`, or `.codex/config.toml`.
+- Change path (skills) = edit the SOURCE skill (its own gates apply) → run
   `python scripts/sdd/agents_sync.py sync` → commit source + artifacts + lock together.
+- Change path (MCP) = edit the SOURCE through its own gate — `.mcp.json` is an A14 hard-stop
+  surface; the manifest `mcp` / `codex.posture` sections are protected-adjacent (D-017 Owner
+  approval) — then run `sync` and commit `.codex/config.toml` + lock together. Secrets are
+  referenced BY NAME only (`env_vars` whitelists; Codex sanitizes MCP child env and inherits
+  the named variables) — a literal credential in this file is always a defect (G7 scans it).
 - Reverse-feeding an artifact edit into the source goes ONLY through
-  `python scripts/sdd/agents_sync.py --adopt <name>` (Owner HITL applies to the source write).
+  `python scripts/sdd/agents_sync.py --adopt <name>` (Owner HITL applies to the source write);
+  there is NO adopt path for `.codex/config.toml` (fully derived).
 - Merge conflict on generated files: merge the source, re-run `sync` to overwrite the artifacts —
   never 3-way-merge artifacts by hand.
-- Drift gate: CI runs `agents_sync.py --check` (V10, warning-first per D-016) plus V9
-  (`check_agents_projection.py`) closure / reconcile / lock rules.
+- Drift gates: CI runs `agents_sync.py --check --surface skills` (V10, warning-first per D-016)
+  and `agents_sync.py --check --surface mcp` (**V11, BLOCKING day-1 per D-016**; Owner execution
+  record #330) plus V9 (`check_agents_projection.py`) closure / reconcile / lock / codex-config
+  (PJ04x, incl. PJ044 never-tier leak) rules.
+- Codex consumption semantics (spike-verified 2026-07-14, #330): project-level `.codex/config.toml`
+  loads only in **trusted** projects; trust matches the exact project root or an in-repo ancestor
+  entry (the bare-container entry covers all worktrees on the reference machine). Trust stays a
+  per-engineer manual `~/.codex/config.toml` `[projects]` step (D-015 — no repo script may write
+  it); edit that file with the Codex Desktop app closed (the app rewrites it while running).
 - Semantic caveat for Codex: the Claude harness `ask`-gates / protected-path prompts / PreToolUse
   hooks referenced inside projected skill bodies are NOT present under your harness — those stop
   points are AGENTS.md self-enforced duties (see "Self-enforced boundaries" below).
@@ -170,3 +187,9 @@ same same-layer constraints; sibling `CLAUDE.md` files import them via `@AGENTS.
 `.agents/skills/**` + `.agents.lock.json` are `agents_sync.py`-owned artifacts (first batch: 5
 whitelisted skills); never hand-edit, change the source and re-run `sync`, reverse-feed only via
 `--adopt` (Owner HITL). Drift gate V10 mounted warning-first.*
+
+*Updated 2026-07-14 — dual-agent-compat v5 S2 (#330): extended the "Generated projections"
+contract to `.codex/config.toml` (emitter B; 3 spikes PASS + Owner 进拍板): github / playwright /
+serena(--context codex) projected from `.mcp.json` by manifest mcp tiers, secrets BY NAME via
+`env_vars`, biz×5 + ssh-manager permanently excluded. MCP drift gate V11 mounted BLOCKING day-1
+(D-016; ci-blocking-gate-toggle record in #330); V10 narrowed to --surface skills.*

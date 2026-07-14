@@ -1,8 +1,9 @@
 # GENERATED — do not edit anything under `.agents/`
 
-Every file in this tree plus the repo-root `.agents.lock.json` is a **generated
-artifact** owned 100% by `scripts/sdd/agents_sync.py` (dual-agent-compat v5,
-ADR-036 D-011/D-012/D-014). `.agents/skills/<name>/SKILL.md` is a byte-identical
+Every file in this tree plus the repo-root `.agents.lock.json` and the generated
+`.codex/config.toml` (emitter B, S2 #330) is a **generated artifact** owned 100%
+by `scripts/sdd/agents_sync.py` (dual-agent-compat v5, ADR-036
+D-011/D-012/D-013/D-014). `.agents/skills/<name>/SKILL.md` is a byte-identical
 projection of `.claude/skills/<name>/SKILL.md` for every manifest capability with
 `projection: project` (`sdd/development-agent.yml` is the whitelist SoT). Codex
 discovers these skills natively under `.agents/skills`; projected copies do NOT

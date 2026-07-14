@@ -1,26 +1,41 @@
-"""agents_sync.py — scoped projection generator, emitter A: skills (dual-agent-compat v5 S1).
+"""agents_sync.py — scoped projection generator, emitters A+B (dual-agent-compat v5).
 
 Contract: plans/[PLAN]_dual-agent-compat.md §8 (generator terms) + D-011 (scoped, two
-surfaces only — this module covers `.agents/skills/`; the `.codex/config.toml` emitter B
-is S2, spike-gated) + D-012 (artifacts committed, generator-owned, never hand-edited)
-+ D-014 (whitelist SoT = manifest `projection: project` entries).
-Drift gate: CI mounts `--check` warning-first (V10 in sdd/gates.md §2, per D-016).
+surfaces only — emitter A covers `.agents/skills/` [S1 #326]; emitter B covers
+`.codex/config.toml` [S2 #330, 3-spike-gated, all PASS + Owner 进拍板 2026-07-14])
++ D-012 (artifacts committed, generator-owned, never hand-edited) + D-014 (skills
+whitelist SoT = manifest `projection: project`) + D-013 (mcp per-server tiers SoT =
+manifest `mcp` section; biz x5 + ssh-manager permanently `never`).
+Drift gates: V10 skills surface warning-first; V11 mcp surface BLOCKING day-1 per
+D-016 (sdd/gates.md §2; Owner execution record in #330).
+
+Emitter B derivation (pure syntactic): `[mcp_servers.<name>]` entries for every
+manifest mcp `projection_policy: project` server, definition taken from `.mcp.json`
+(A14 hard-stop source, human-maintained, read-only here); the arg pair
+`--context claude-code` is rewritten to `--context codex` (manifest serena transform);
+source `env` values MUST be pure `${VAR}` references and become an `env_vars`
+name-whitelist (spike 1: Codex sanitizes MCP child env; `env_vars` inherits by NAME —
+no literal secret ever enters the artifact, fail-closed otherwise); posture keys are
+transcribed from manifest `codex.posture` (D-017).
 
 Modes (exactly one; `doctor` is S3 — not implemented here):
   sync            Regenerate `.agents/skills/<name>/SKILL.md` (raw-byte copy of the
                   whitelisted `.claude/skills/<name>/SKILL.md` sources), the directory
-                  README (`.agents/README.md`, fixed template), and `.agents.lock.json`
-                  (name -> `sha256:<body_sha256>` over LF-normalized artifact text —
-                  byte-compatible with V9 `check_agents_projection.check_lock`).
-                  Full reconcile: anything under `.agents/` outside the expected file
-                  set is deleted (orphan projections, stray files). Idempotent.
-  --check         Read-only drift check. All content comparisons are LF-normalized
-                  (F10: `.md` is not eol-pinned in .gitattributes, so Windows checkouts
-                  are CRLF while ubuntu CI checkouts are LF). Exit 1 on any drift, with
-                  the prescribed action printed once.
+                  README (`.agents/README.md`, fixed template), `.codex/config.toml`
+                  (emitter B), and `.agents.lock.json` (key -> `sha256:<body_sha256>`
+                  over LF-normalized artifact text — byte-compatible with V9
+                  `check_agents_projection.check_lock`; the mcp artifact uses the
+                  reserved path-shaped key `.codex/config.toml`). Full reconcile on
+                  both trees. Idempotent.
+  --check         Read-only drift check (optionally scoped via --surface
+                  skills|mcp|all, default all). All content comparisons are
+                  LF-normalized (F10). Exit 1 on any drift, with the prescribed
+                  action printed once.
   --adopt NAME    Explicit reverse-feed (D-012): copy the artifact bytes back over the
                   source SKILL.md (the source's own gates / Owner HITL apply to that
-                  write), then run the sync routine so lock + README realign.
+                  write), then run the sync routine so lock + README realign. There is
+                  NO adopt path for `.codex/config.toml` (fully derived, no single
+                  source file).
 
 Generation is a pure syntactic transformation: zero env parsing, zero network, zero
 secrets — safe on forks and clean clones (plan §8).
@@ -33,9 +48,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import sys
 from pathlib import Path
+from typing import Any
 
 _SCRIPT_NAME = "agents_sync.py"
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -44,7 +61,10 @@ if str(_REPO_ROOT) not in sys.path:
 
 from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
 from scripts.sdd.check_agents_projection import (  # noqa: E402
+    CODEX_CONFIG_RELPATH,
+    CODEX_LOCK_KEY,
     FatalCheckError,
+    load_mcp_projection,
     load_project_set,
 )
 
@@ -52,13 +72,44 @@ SOURCE_DIR = Path(".claude/skills")
 AGENTS_DIR = Path(".agents")
 SKILLS_DIR = AGENTS_DIR / "skills"
 LOCK_RELPATH = Path(".agents.lock.json")
+CODEX_DIR = Path(".codex")
+MCP_JSON_RELPATH = Path(".mcp.json")
+
+# Emitter B rendering rules (S2 #330). Source `.mcp.json` server fields the emitter
+# understands; anything else is an Owner decision, not a silent projection.
+_ALLOWED_SERVER_FIELDS = {"type", "command", "args", "env"}
+# Pure by-name reference form — the ONLY env value shape that may be projected
+# (becomes an `env_vars` whitelist entry; `${VAR:-default}` carries literals, refuse).
+_ENV_REF = re.compile(r"^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$")
+# args are projected verbatim, so they must carry NO substitution syntax at all:
+# Codex does not interpolate `${VAR}` (a pure ref silently breaks the server) and
+# `${VAR:-default}` defaults embed literals (e.g. credential URLs) — both refuse.
+_ARG_USERINFO = re.compile(r"://[^/\s:@]+:[^@\s]+@")
+# Arg-pair rewrite (manifest serena `transform` note): Codex consumes its own context.
+_CONTEXT_ARG = "--context"
+_CONTEXT_TRANSFORM = {"claude-code": "codex"}
+_POSTURE_KEYS = ("approval_policy", "sandbox_mode", "project_doc_max_bytes")
+
+CODEX_CONFIG_HEADER = """\
+# GENERATED -- do not edit this file. Owned 100% by scripts/sdd/agents_sync.py
+# (emitter B; dual-agent-compat v5 S2 #330, ADR-036 D-011/D-012).
+# Derived from .mcp.json (A14 hard-stop source, human-maintained) filtered by the
+# manifest `mcp` per-server tiers (D-013) + `codex.posture` (D-017) in
+# sdd/development-agent.yml. Secrets are referenced BY NAME via `env_vars`
+# (Codex TOML has no ${VAR} interpolation; Codex sanitizes MCP child env and
+# `env_vars` inherits the named variables from the parent environment) --
+# literal credentials must never appear here (G7 scans this file; V11 blocks drift).
+# To change: edit the SOURCE through its own gate, then run
+# `python scripts/sdd/agents_sync.py sync` and commit config + .agents.lock.json.
+"""
 
 README_TEMPLATE = """\
 # GENERATED — do not edit anything under `.agents/`
 
-Every file in this tree plus the repo-root `.agents.lock.json` is a **generated
-artifact** owned 100% by `scripts/sdd/agents_sync.py` (dual-agent-compat v5,
-ADR-036 D-011/D-012/D-014). `.agents/skills/<name>/SKILL.md` is a byte-identical
+Every file in this tree plus the repo-root `.agents.lock.json` and the generated
+`.codex/config.toml` (emitter B, S2 #330) is a **generated artifact** owned 100%
+by `scripts/sdd/agents_sync.py` (dual-agent-compat v5, ADR-036
+D-011/D-012/D-013/D-014). `.agents/skills/<name>/SKILL.md` is a byte-identical
 projection of `.claude/skills/<name>/SKILL.md` for every manifest capability with
 `projection: project` (`sdd/development-agent.yml` is the whitelist SoT). Codex
 discovers these skills natively under `.agents/skills`; projected copies do NOT
@@ -93,6 +144,15 @@ PRESCRIBED_ACTION = (
     " overwrite the artifacts - do not 3-way-merge artifacts."
 )
 
+PRESCRIBED_ACTION_MCP = (
+    "For .codex/config.toml (emitter B): the SOURCES are .mcp.json (A14 hard-stop"
+    " surface, human-maintained) and the manifest `mcp` / `codex.posture` sections"
+    " (protected-adjacent, D-017 Owner approval). Change the source through its own"
+    " gate, then run `python scripts/sdd/agents_sync.py sync` and commit"
+    " .codex/config.toml + .agents.lock.json together. Never hand-edit it; there is"
+    " no --adopt path (fully derived)."
+)
+
 
 def _lf(text: str) -> str:
     return text.replace("\r\n", "\n")
@@ -113,7 +173,131 @@ def _expected_lock(repo_root: Path, project: set[str]) -> dict[str, str]:
         artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
         if artifact.is_file():
             lock[name] = _lock_hash(artifact.read_text(encoding="utf-8"))
+    config = repo_root / CODEX_CONFIG_RELPATH
+    if config.is_file():
+        # Reserved path-shaped key (Owner 拍板 2026-07-14); TOML has no frontmatter,
+        # so body_sha256 degenerates to a whole-text hash — same recipe as V9 PJ043.
+        lock[CODEX_LOCK_KEY] = _lock_hash(config.read_text(encoding="utf-8"))
     return lock
+
+
+def _load_mcp_json(repo_root: Path) -> dict[str, Any]:
+    """Read `.mcp.json` server definitions (source side; strictly read-only here)."""
+    path = repo_root / MCP_JSON_RELPATH
+    if not path.is_file():
+        raise FatalCheckError(".mcp.json not found (emitter B source)")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise FatalCheckError(f".mcp.json unreadable: {exc}") from exc
+    servers = data.get("mcpServers")
+    if not isinstance(servers, dict):
+        raise FatalCheckError(".mcp.json must contain an 'mcpServers' mapping")
+    return servers
+
+
+def _toml_str(value: str) -> str:
+    # JSON string escaping is a valid TOML basic-string subset for our charset
+    # (both escape backslash/quote the same way; \\uXXXX is valid TOML).
+    return json.dumps(value, ensure_ascii=True)
+
+
+def _transform_args(args: list[str]) -> list[str]:
+    out = list(args)
+    for i, arg in enumerate(out[:-1]):
+        if arg == _CONTEXT_ARG and out[i + 1] in _CONTEXT_TRANSFORM:
+            out[i + 1] = _CONTEXT_TRANSFORM[out[i + 1]]
+    return out
+
+
+def _render_codex_config(
+    mcp_project: dict[str, dict[str, Any]],
+    posture: dict[str, Any] | None,
+    mcp_json_servers: dict[str, Any],
+) -> str:
+    """Render `.codex/config.toml` text (LF, ASCII, deterministic). Fail-closed on
+    anything the emitter does not positively understand."""
+    if not isinstance(posture, dict):
+        raise FatalCheckError(
+            "manifest codex.posture section required to render .codex/config.toml"
+        )
+    lines = CODEX_CONFIG_HEADER.rstrip("\n").split("\n")
+    lines.append("")
+    for key in _POSTURE_KEYS:
+        value = posture.get(key)
+        if isinstance(value, bool) or value is None:
+            raise FatalCheckError(f"codex.posture.{key} missing or invalid")
+        if isinstance(value, int):
+            lines.append(f"{key} = {value}")
+        elif isinstance(value, str):
+            lines.append(f"{key} = {_toml_str(value)}")
+        else:
+            raise FatalCheckError(f"codex.posture.{key} must be a string or integer")
+
+    for name in sorted(mcp_project):
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", name):
+            raise FatalCheckError(f"mcp server name {name!r} is not a bare TOML key")
+        defn = mcp_json_servers.get(name)
+        if not isinstance(defn, dict):
+            raise FatalCheckError(
+                f"project-tier mcp server '{name}' missing from .mcp.json"
+            )
+        unknown = sorted(set(defn) - _ALLOWED_SERVER_FIELDS)
+        if unknown:
+            raise FatalCheckError(
+                f"server '{name}' has field(s) the emitter does not understand:"
+                f" {', '.join(unknown)} (fail-closed; needs an Owner decision)"
+            )
+        if defn.get("type", "stdio") != "stdio":
+            raise FatalCheckError(
+                f"server '{name}' has type {defn.get('type')!r} — only stdio servers"
+                " are projectable (fail-closed; needs an Owner decision)"
+            )
+        command = defn.get("command")
+        if not isinstance(command, str) or not command:
+            raise FatalCheckError(f"server '{name}' needs a non-empty string 'command'")
+        args = defn.get("args", [])
+        if not isinstance(args, list) or not all(isinstance(a, str) for a in args):
+            raise FatalCheckError(f"server '{name}' 'args' must be a list of strings")
+        for arg in args:
+            if "${" in arg:
+                raise FatalCheckError(
+                    f"server '{name}' has a substitution expression in args — Codex"
+                    " does not interpolate ${VAR} (and ${VAR:-default} embeds"
+                    " literals); args must be projectable verbatim (fail-closed)"
+                )
+            if _ARG_USERINFO.search(arg):
+                raise FatalCheckError(
+                    f"server '{name}' has a URL userinfo credential shape in args"
+                    " — literal credentials are never projected (fail-closed)"
+                )
+        env = defn.get("env", {})
+        if not isinstance(env, dict):
+            raise FatalCheckError(f"server '{name}' 'env' must be a mapping")
+        env_names: list[str] = []
+        for env_key in sorted(env):
+            env_val = env[env_key]
+            match = _ENV_REF.match(env_val) if isinstance(env_val, str) else None
+            if match is None:
+                raise FatalCheckError(
+                    f"server '{name}' env '{env_key}' is not a pure ${{VAR}} reference"
+                    " -- literal values are never projected (fail-closed; secrets go"
+                    " by NAME via env_vars)"
+                )
+            env_names.append(match.group(1))
+        # The context rewrite is gated on the manifest per-server `transform` field
+        # (D-013 SoT) — servers without it are projected with untouched args.
+        if mcp_project[name].get("transform"):
+            args = _transform_args(args)
+        lines.append("")
+        lines.append(f"[mcp_servers.{name}]")
+        lines.append(f"command = {_toml_str(command)}")
+        rendered_args = ", ".join(_toml_str(a) for a in args)
+        lines.append(f"args = [{rendered_args}]")
+        if env_names:
+            rendered_env = ", ".join(_toml_str(n) for n in sorted(set(env_names)))
+            lines.append(f"env_vars = [{rendered_env}]")
+    return "\n".join(lines) + "\n"
 
 
 def _lock_text(lock: dict[str, str]) -> str:
@@ -142,8 +326,17 @@ def _expected_files(project: set[str]) -> set[Path]:
 
 
 def do_sync(repo_root: Path, project: set[str]) -> list[str]:
-    """Regenerate artifacts + README + lock; full reconcile. Returns change log."""
+    """Regenerate artifacts + README + config.toml + lock; full reconcile.
+
+    Every fail-able derivation (source presence, mcp load, emitter B render) runs
+    BEFORE the first write, so a FatalCheckError can never leave a half-updated
+    tree with a stale lock (review finding #330-3). Returns change log.
+    """
     _require_sources(repo_root, project)
+    mcp_project, posture, _never = load_mcp_projection(repo_root)
+    rendered: str | None = None
+    if mcp_project:
+        rendered = _render_codex_config(mcp_project, posture, _load_mcp_json(repo_root))
     changes: list[str] = []
 
     # Full reconcile FIRST: delete anything under .agents/ outside the expected set,
@@ -178,6 +371,31 @@ def do_sync(repo_root: Path, project: set[str]) -> list[str]:
         readme.write_text(README_TEMPLATE, encoding="utf-8", newline="\n")
         changes.append(f"write {AGENTS_DIR.as_posix()}/README.md")
 
+    # Emitter B: .codex/config.toml (S2 #330; rendered up top, before any write).
+    # Reconcile the .codex/ tree first, then write; an empty mcp project tier
+    # means the whole tree goes.
+    config_path = repo_root / CODEX_CONFIG_RELPATH
+    codex_dir = repo_root / CODEX_DIR
+    if rendered is not None:
+        if codex_dir.is_dir():
+            for path in sorted(codex_dir.rglob("*"), reverse=True):
+                if not path.exists():
+                    continue
+                rel = path.relative_to(repo_root)
+                if path.is_file() and rel != CODEX_CONFIG_RELPATH:
+                    path.unlink()
+                    changes.append(f"remove {rel.as_posix()}")
+                elif path.is_dir():
+                    shutil.rmtree(path)
+                    changes.append(f"remove {rel.as_posix()}/")
+        if not config_path.is_file() or _read_lf(config_path) != rendered:
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+            config_path.write_text(rendered, encoding="utf-8", newline="\n")
+            changes.append(f"write {CODEX_CONFIG_RELPATH.as_posix()}")
+    elif codex_dir.exists():
+        shutil.rmtree(codex_dir)
+        changes.append(f"remove {CODEX_DIR.as_posix()}/")
+
     lock_path = repo_root / LOCK_RELPATH
     lock_text = _lock_text(_expected_lock(repo_root, project))
     if not lock_path.is_file() or _read_lf(lock_path) != lock_text:
@@ -187,47 +405,115 @@ def do_sync(repo_root: Path, project: set[str]) -> list[str]:
     return changes
 
 
-def do_check(repo_root: Path, project: set[str]) -> list[str]:
-    """Read-only drift check (LF-normalized). Returns drift messages."""
-    _require_sources(repo_root, project)
+def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[str]:
+    """Read-only drift check (LF-normalized). Returns drift messages.
+
+    `surface` scopes the check: "skills" (V10 warning gate), "mcp" (V11 blocking
+    gate), or "all" (local one-shot). The shared lock file is checked per-key under
+    a scoped surface so mcp drift never reddens the skills step and vice versa.
+    """
     drift: list[str] = []
+    check_skills = surface in ("skills", "all")
+    check_mcp = surface in ("mcp", "all")
 
-    for name in sorted(project):
-        artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
-        if not artifact.is_file():
-            drift.append(f"missing artifact: {SKILLS_DIR.as_posix()}/{name}/SKILL.md")
-            continue
-        if _read_lf(artifact) != _read_lf(_source_path(repo_root, name)):
-            drift.append(
-                f"artifact != source for '{name}' (hand-edited artifact OR source"
-                " edited without re-running sync)"
+    if check_skills:
+        _require_sources(repo_root, project)
+        for name in sorted(project):
+            artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
+            if not artifact.is_file():
+                drift.append(f"missing artifact: {SKILLS_DIR.as_posix()}/{name}/SKILL.md")
+                continue
+            if _read_lf(artifact) != _read_lf(_source_path(repo_root, name)):
+                drift.append(
+                    f"artifact != source for '{name}' (hand-edited artifact OR source"
+                    " edited without re-running sync)"
+                )
+
+        readme = repo_root / AGENTS_DIR / "README.md"
+        if not readme.is_file():
+            drift.append(f"missing {AGENTS_DIR.as_posix()}/README.md")
+        elif _read_lf(readme) != README_TEMPLATE:
+            drift.append(f"{AGENTS_DIR.as_posix()}/README.md differs from the fixed template")
+
+        expected = _expected_files(project)
+        expected_dirs = {p.parent for p in expected} | {AGENTS_DIR, SKILLS_DIR}
+        agents_root = repo_root / AGENTS_DIR
+        if agents_root.is_dir():
+            for path in sorted(agents_root.rglob("*")):
+                rel = path.relative_to(repo_root)
+                if path.is_file() and rel not in expected:
+                    drift.append(f"unexpected file: {rel.as_posix()} (full reconcile)")
+                elif path.is_dir() and rel not in expected_dirs:
+                    drift.append(f"unexpected directory: {rel.as_posix()}/ (full reconcile)")
+
+    mcp_project, posture, _never = load_mcp_projection(repo_root)
+    config_path = repo_root / CODEX_CONFIG_RELPATH
+    if check_mcp:
+        codex_dir = repo_root / CODEX_DIR
+        if mcp_project:
+            rendered = _render_codex_config(
+                mcp_project, posture, _load_mcp_json(repo_root)
             )
-
-    readme = repo_root / AGENTS_DIR / "README.md"
-    if not readme.is_file():
-        drift.append(f"missing {AGENTS_DIR.as_posix()}/README.md")
-    elif _read_lf(readme) != README_TEMPLATE:
-        drift.append(f"{AGENTS_DIR.as_posix()}/README.md differs from the fixed template")
-
-    expected = _expected_files(project)
-    expected_dirs = {p.parent for p in expected} | {AGENTS_DIR, SKILLS_DIR}
-    agents_root = repo_root / AGENTS_DIR
-    if agents_root.is_dir():
-        for path in sorted(agents_root.rglob("*")):
-            rel = path.relative_to(repo_root)
-            if path.is_file() and rel not in expected:
-                drift.append(f"unexpected file: {rel.as_posix()} (full reconcile)")
-            elif path.is_dir() and rel not in expected_dirs:
-                drift.append(f"unexpected directory: {rel.as_posix()}/ (full reconcile)")
+            if not config_path.is_file():
+                drift.append(f"missing {CODEX_CONFIG_RELPATH.as_posix()} (run sync)")
+            elif _read_lf(config_path) != rendered:
+                drift.append(
+                    f"{CODEX_CONFIG_RELPATH.as_posix()} != rendered from .mcp.json +"
+                    " manifest (hand-edited artifact OR source changed without"
+                    " re-running sync)"
+                )
+        elif codex_dir.exists():
+            drift.append(
+                f"unexpected {CODEX_DIR.as_posix()}/ tree (manifest mcp project tier"
+                " is empty; full reconcile)"
+            )
+        if codex_dir.is_dir():
+            for path in sorted(codex_dir.rglob("*")):
+                rel = path.relative_to(repo_root)
+                if path.is_file() and rel != CODEX_CONFIG_RELPATH:
+                    drift.append(f"unexpected file: {rel.as_posix()} (full reconcile)")
+                elif path.is_dir():
+                    drift.append(f"unexpected directory: {rel.as_posix()}/ (full reconcile)")
 
     lock_path = repo_root / LOCK_RELPATH
     if not lock_path.is_file():
         drift.append(f"missing {LOCK_RELPATH.as_posix()}")
-    elif _read_lf(lock_path) != _lock_text(_expected_lock(repo_root, project)):
-        drift.append(
-            f"{LOCK_RELPATH.as_posix()} out of date (lock is regenerated by sync,"
-            " one sorted entry per line)"
-        )
+    elif surface == "all":
+        if _read_lf(lock_path) != _lock_text(_expected_lock(repo_root, project)):
+            drift.append(
+                f"{LOCK_RELPATH.as_posix()} out of date (lock is regenerated by sync,"
+                " one sorted entry per line)"
+            )
+    else:
+        try:
+            lock: dict[str, Any] = json.loads(lock_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            drift.append(f"{LOCK_RELPATH.as_posix()} unreadable (regenerate via sync)")
+            lock = {}
+        if surface == "skills":
+            for name in sorted(project):
+                artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
+                if not artifact.is_file():
+                    continue  # missing artifact already reported above
+                if lock.get(name) != _lock_hash(artifact.read_text(encoding="utf-8")):
+                    drift.append(f"lock entry out of date for '{name}'")
+            # Orphan keys (neither a whitelisted skill nor the reserved mcp key)
+            # belong to the skills surface so they cannot escape both scoped gates
+            # (review finding #330-4; V9 PJ034 + the all-surface check back this up).
+            for name in sorted(set(lock) - project - {CODEX_LOCK_KEY}):
+                drift.append(f"unknown lock entry '{name}' (regenerate via sync)")
+        else:  # mcp
+            if config_path.is_file():
+                expected_hash = _lock_hash(config_path.read_text(encoding="utf-8"))
+                if lock.get(CODEX_LOCK_KEY) != expected_hash:
+                    drift.append(
+                        f"lock reserved key '{CODEX_LOCK_KEY}' missing or out of date"
+                    )
+            elif CODEX_LOCK_KEY in lock:
+                drift.append(
+                    f"stale lock reserved key '{CODEX_LOCK_KEY}'"
+                    f" ({CODEX_CONFIG_RELPATH.as_posix()} absent)"
+                )
 
     return drift
 
@@ -258,22 +544,30 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog=_SCRIPT_NAME,
         description=(
-            "Scoped projection generator, emitter A: .claude/skills whitelist ->"
-            " .agents/skills byte-identical artifacts + .agents.lock.json"
-            " (plan §8, D-011/D-012/D-014; `doctor` lands at S3)"
+            "Scoped projection generator, emitters A+B: .claude/skills whitelist ->"
+            " .agents/skills artifacts; .mcp.json x manifest mcp tiers ->"
+            " .codex/config.toml; + .agents.lock.json"
+            " (plan §8, D-011/D-012/D-013/D-014; `doctor` lands at S3)"
         ),
     )
     parser.add_argument(
         "command", nargs="?", choices=["sync"],
-        help="regenerate artifacts + README + lock (full reconcile; idempotent)",
+        help="regenerate artifacts + README + config.toml + lock (full reconcile;"
+             " idempotent; always both surfaces)",
     )
     parser.add_argument(
         "--check", action="store_true",
         help="read-only drift check (LF-normalized); exit 1 on drift",
     )
     parser.add_argument(
+        "--surface", choices=["skills", "mcp", "all"], default="all",
+        help="scope --check to one projection surface (V10=skills warning,"
+             " V11=mcp blocking); default: all",
+    )
+    parser.add_argument(
         "--adopt", metavar="SKILL",
-        help="explicit reverse-feed: artifact -> source, then realign (Owner HITL applies)",
+        help="explicit reverse-feed: artifact -> source, then realign (Owner HITL"
+             " applies; skills surface only)",
     )
     args = parser.parse_args(argv)
     root = repo_root if repo_root is not None else _REPO_ROOT
@@ -286,17 +580,33 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
             file=sys.stderr,
         )
         return 2
+    if args.surface != "all" and not args.check:
+        parser.print_usage(sys.stderr)
+        print(f"{_SCRIPT_NAME}: --surface only applies to --check", file=sys.stderr)
+        return 2
 
     try:
         project, _ = load_project_set(root)
         if args.check:
-            drift = do_check(root, project)
+            drift = do_check(root, project, surface=args.surface)
             for line in drift:
                 print(f"[DRIFT] {line}")
             if drift:
-                print(PRESCRIBED_ACTION)
+                # A scoped surface always prints its own remediation line; "all"
+                # prints the skills line plus the mcp line when mcp drift is present
+                # (review finding #330-7: never exit 1 without a prescribed action).
+                if args.surface in ("skills", "all"):
+                    print(PRESCRIBED_ACTION)
+                if args.surface == "mcp" or (
+                    args.surface == "all"
+                    and any(".codex" in line for line in drift)
+                ):
+                    print(PRESCRIBED_ACTION_MCP)
                 return 1
-            print(f"OK: projection in sync ({len(project)} skills, lock consistent)")
+            print(
+                f"OK: projection in sync (surface={args.surface}, {len(project)}"
+                " skills, lock consistent)"
+            )
             return 0
         if args.adopt is not None:
             changes = do_adopt(root, project, args.adopt)

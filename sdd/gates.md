@@ -5,7 +5,7 @@ state: active
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-20
+updated: 2026-07-14
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -58,8 +58,9 @@ ai_visibility: source-of-truth
 | V6 Runtime-Expected | `scripts/sdd/check_runtime_expected.py` | runtime.expected.yaml | warning@ci（SKELETON BY DESIGN；full probe → Phase-2）|
 | V7 Runtime-Skill | `scripts/sdd/check_runtime_skill_contracts.py` | runtime-skill.contract.yml | blocking@ci |
 | V8 Development-Agent | `scripts/sdd/check_development_agent.py --fail-on error` | development-agent.yml（manifest；`sdd/adapters/development-agent.md`） | warning@ci（P1 首发 per D-009；P4 观察期满 + Owner 批准后按 `ci-blocking-gate-toggle` 翻转）|
-| V9 Agents-Projection | `scripts/sdd/check_agents_projection.py` | development-agent.yml `projection` 域（`.agents/` + `.agents.lock.json`；产物属 S1+） | warning@ci（同 V8；S2 起 MCP 产物面 day-1 blocking per D-016，届时另立执行记录）|
-| V10 Agents-Sync-Drift | `scripts/sdd/agents_sync.py --check` | 生成产物 ↔ 源/模板/lock 一致性（`.agents/skills/` + `.agents/README.md` + `.agents.lock.json`；LF 归一比较，D-012 regenerate-and-diff） | warning@ci（S1 首发 #326 per D-016 skills 面惯例；blocking 转正属 S3/P4，届时按 `ci-blocking-gate-toggle` 另立执行记录）。**真值注记**：`tests/unit/test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（与 V8/V9 真实树钉线同族先例；gate step 本身保持 warning 姿态）|
+| V9 Agents-Projection | `scripts/sdd/check_agents_projection.py` | development-agent.yml `projection` 域（`.agents/` + `.agents.lock.json` + S2 #330 起 `.codex/config.toml` PJ04x：键配对/server reconcile/保留键 hash/PJ044 never 档泄漏） | warning@ci（同 V8；MCP 产物面 day-1 blocking 由 V11 独立承载 per D-016，执行记录 #330）|
+| V10 Agents-Sync-Drift | `scripts/sdd/agents_sync.py --check --surface skills` | 生成产物 ↔ 源/模板/lock 一致性（skills 面：`.agents/skills/` + `.agents/README.md` + lock 技能键；LF 归一比较，D-012 regenerate-and-diff；S2 #330 起 CI 调用收窄 `--surface skills`，本地裸 `--check` 仍双面全查） | warning@ci（S1 首发 #326 per D-016 skills 面惯例；blocking 转正属 S3/P4，届时按 `ci-blocking-gate-toggle` 另立执行记录）。**真值注记**：`tests/unit/test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（与 V8/V9 真实树钉线同族先例；gate step 本身保持 warning 姿态）|
+| V11 Codex-MCP-Projection | `scripts/sdd/agents_sync.py --check --surface mcp` | emitter B 产物 ↔ 源一致性（`.codex/config.toml` ↔ `.mcp.json` × manifest `mcp` 三档 + `codex.posture` 转写 + lock 保留键；生成/校验零 env 解析，fork/无 secrets 不假红） | **blocking@ci（day-1 per D-016，不设 warning 观察期；`ci-blocking-gate-toggle` Owner 执行记录 = issue #330 comment 2026-07-14）**。真值注记：`test_real_tree_mcp_projection_in_sync` 真实树钉线双保险（同族）|
 | docker-bdd-scenario-check | `check_bdd_scenario_trace.py --scope docker` | docker behavior.feature | covered-by(G19)（CI 跑 `--scope full` 全集；docker 子集为其真子集）|
 | docker-tdd-contract-test | `check_tdd_refactor_contract.py`（未建）| docker contract change | deferred(M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER)（与 G27/G28 同执行体家族）|
 

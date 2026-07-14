@@ -26,14 +26,15 @@ ai_visibility: source-of-truth
   `projection` 三档（D-014 白名单 SoT）+ `mcp` per-server 三档（D-013）+ `codex.posture` 手写段
 - 双工具行为矩阵（同一 canonical 停点的 per-tool 载体，见 §Behavior Matrix）
 - 根 + 4 嵌套 `AGENTS.md` 与同层 `CLAUDE.md` `@AGENTS.md` 引用关系（V8 校验面）
-- 投影域结构规则（引用闭包 / reconcile / lock；V9 校验面；产物本体属 S1+）
+- 投影域结构规则（引用闭包 / reconcile / lock + S2 #330 起 codex-config PJ04x；V9 校验面）
+- `.codex/config.toml` 生成产物与 MCP emitter B 的 gate/CLI 契约（S2 #330 落地：3 spikes 全 PASS +
+  Owner 进拍板 2026-07-14；语义治理契约见根 `AGENTS.md`「Generated projections」节）
 
 **Excluded**：
 
 - 各 skill 的语义正文（canonical 在 `.claude/skills/*/SKILL.md`，由 claude-code-skill adapter 治理）
 - in-source runtime canonical（→ runtime-skill / prompt adapters）
 - `.mcp.json` 本体（A14 保护面；本 adapter 只消费其 server 清单事实）
-- `.codex/config.toml` 产物与 MCP emitter B（S2 落地，3 spike 硬前置；D-011 唯一豁免的第二面）
 - 投影产物的语义正文（`.agents/skills/**` 是 `agents_sync.py` 生成的字节同一副本——S1 已落地，
   治理契约见根 `AGENTS.md`「Generated projections」节；本 adapter 只登记其 gate 与 CLI 契约）
 
@@ -97,8 +98,9 @@ ai_visibility: source-of-truth
 | Gate | 脚本 | 阻塞模式（真值） |
 |---|---|---|
 | V8 | `scripts/sdd/check_development_agent.py --all --fail-on error` | **warning**（P1 首发 `continue-on-error: true`；P4 观察期满 + Owner 批准后按 `ci-blocking-gate-toggle` 流程翻转） |
-| V9 | `scripts/sdd/check_agents_projection.py --all` | **warning**（同上；S2 起 MCP 产物面 day-1 blocking per D-016，届时另立执行记录） |
-| V10 | `scripts/sdd/agents_sync.py --check` | **warning**（S1 首发 #326；skills 面沿 warning→blocking 惯例 per D-016，转正属 S3/P4）。真值注记：`test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（V8/V9 钉线同族先例） |
+| V9 | `scripts/sdd/check_agents_projection.py --all` | **warning**（同上；MCP 产物面 day-1 blocking 由 V11 独立承载 per D-016，执行记录 #330） |
+| V10 | `scripts/sdd/agents_sync.py --check --surface skills` | **warning**（S1 首发 #326；skills 面沿 warning→blocking 惯例 per D-016，转正属 S3/P4；S2 #330 起 CI 调用收窄 skills 面）。真值注记：`test_agents_sync.py` 真实树钉线令同一不变量经 blocking Tests step 事实硬约束（V8/V9 钉线同族先例） |
+| V11 | `scripts/sdd/agents_sync.py --check --surface mcp` | **blocking（day-1 per D-016，不设 warning 观察期；`ci-blocking-gate-toggle` Owner 执行记录 = #330 comment 2026-07-14）**。真值注记：`test_real_tree_mcp_projection_in_sync` 钉线双保险 |
 
 单测：`tests/unit/test_sdd_development_agent.py`（含双发现 canary：on-disk `.claude/skills/`
 目录数 ≟ manifest 计数）+ `tests/unit/test_agents_sync.py`（幂等 / drift 三态 / reconcile 负向 /
@@ -111,5 +113,8 @@ ai_visibility: source-of-truth
   🟢 首批 5 投影 + `.agents.lock.json` + `.agents/README.md` + drift gate V10 warning 首发 +
   根 AGENTS.md「Generated projections」契约条。Codex 实机发现验证依赖 Owner trust（D-015），
   post-merge 配合执行。
-- S2（未落地；3 spike 硬前置）：emitter B（`.codex/config.toml`）+ MCP 产物 gate day-1 blocking。
+- S2（#330）：3 spikes 全 PASS（env_vars 按名透传 / trusted 仓级实载 / worktree 发现语义）→
+  emitter B（`.codex/config.toml`：github/playwright/serena+`--context codex` 三 project 档 +
+  `env_vars` 按名 + posture 转写）+ lock 保留键 `.codex/config.toml` + V9 PJ040-PJ045 +
+  MCP gate V11 day-1 blocking + G7 内容扫描扩展。spike 证据：vault + #330 comment。
 - S3（未落地）：doctor（trust 只读 + `-Reload` 集成 + canary 迁入）+ skills gate blocking 转正。

@@ -9,7 +9,7 @@ wording: what must never enter git or the image is the **decrypted artifacts**
 ciphertext bundles are *intentionally committed* (ADR-030 2-bundle pipeline);
 flagging them would be wrong.
 
-Three checks:
+Four checks:
 
 (1) tracked-files (FAIL): `git ls-files` must not contain `.env` / `.env.*`
     (except `.env.example`) / `config/secrets*.conf` / `*.pem` / `*.key`.
@@ -22,9 +22,17 @@ Three checks:
     gate). Root `.dockerignore` landed owner-approved 2026-06-11
     (completion-audit follow-up). Note: `docker/.dockerignore` is ineffective
     for `context: ../` builds — dockerignore applies at the context root only.
+(4) .codex/config.toml content (FAIL; S2 #330 scan-domain extension): the
+    generated Codex MCP projection may reference secrets BY NAME only
+    (`env_vars` whitelists). Any `[mcp_servers.*.env]` table (the emitter never
+    writes one — its presence means a hand edit / literal injection), any URL
+    userinfo password (`://user:pass@`), or any `password/token/secret/api_key=`
+    literal inside a string value FAILs. File absent == PASS (pre-S2 / fork
+    state); the first line of defense is the V11 blocking drift gate — this
+    content scan is defense in depth.
 
 WARNING mode (`continue-on-error: true` in ci.yml); expected baseline
-3P/0W/0F since the owner-approved root .dockerignore (was 2P/1W at PR2
+4P/0W/0F (was 3P/0W/0F before the S2 #330 codex-config check; 2P/1W at PR2
 landing). Blocking flip is a separate `ci-blocking-gate-toggle` HITL action.
 """
 
@@ -33,6 +41,7 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path, PurePosixPath
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -48,6 +57,12 @@ _REQUIRED_GITIGNORE_PINS = (".env", "config/secrets.conf", "config/secrets-mcp.c
 _SECRET_CONF_PATTERN = re.compile(r"^config/secrets[^/]*\.conf$")
 _COPY_CONFIG_PATTERN = re.compile(r"^\s*COPY\s+(--[\w=]+\s+)*config/", re.MULTILINE)
 _CONTEXT_REPO_ROOT_PATTERN = re.compile(r"^\s*context:\s*(\.\./?|\.\.)\s*$", re.MULTILINE)
+# Check (4) — .codex/config.toml literal-credential shapes (S2 #330). No leading
+# \b on the keyword group: the repo's real env-key names are PREFIXED shapes like
+# SSH_SERVER_*_PASSWORD / GITHUB_..._TOKEN and `_` is a word character, so a word
+# boundary would never match them (review finding #330-1).
+_URL_USERINFO_PATTERN = re.compile(r"://[^/\s:@]+:[^@\s]+@")
+_LITERAL_CRED_PATTERN = re.compile(r"(?i)(password|token|secret|api_key)\s*=\s*\S")
 
 
 def _is_decrypted_artifact(tracked_path: str) -> bool:
@@ -170,6 +185,78 @@ def _check_build_context(
     return summary
 
 
+def _iter_strings(node: object) -> list[str]:
+    """All string values inside a parsed TOML structure (depth-first)."""
+    out: list[str] = []
+    if isinstance(node, str):
+        out.append(node)
+    elif isinstance(node, dict):
+        for value in node.values():
+            out.extend(_iter_strings(value))
+    elif isinstance(node, list):
+        for value in node:
+            out.extend(_iter_strings(value))
+    return out
+
+
+def _check_codex_config(config_text: str | None) -> Summary:
+    """Check (4): .codex/config.toml carries no literal credentials (FAIL).
+
+    The emitter (agents_sync.py emitter B) references secrets BY NAME via
+    `env_vars`; it never writes an `env` table. Defense in depth behind the V11
+    blocking drift gate.
+    """
+    summary = Summary()
+    if config_text is None:
+        summary.add(
+            Severity.PASS,
+            ".codex/config.toml absent — nothing to scan (pre-S2 / fork state)",
+        )
+        return summary
+    try:
+        parsed = tomllib.loads(config_text.replace("\r\n", "\n"))
+    except tomllib.TOMLDecodeError as exc:
+        summary.add(
+            Severity.WARN,
+            f".codex/config.toml is not valid TOML ({exc}) — content scan skipped"
+            " (the V11 blocking drift gate rejects any deviation from the generator)",
+        )
+        return summary
+
+    findings: list[str] = []
+    servers = parsed.get("mcp_servers")
+    if isinstance(servers, dict):
+        for name, node in servers.items():
+            if isinstance(node, dict) and "env" in node:
+                findings.append(
+                    f"mcp_servers.{name} has an `env` table — the emitter never writes"
+                    " one; literal credential risk (secrets go BY NAME via env_vars)"
+                )
+    # NEVER echo flagged value content — the checker must not become the leak
+    # (review finding #330-2). Report shape + length only.
+    for text in _iter_strings(parsed):
+        if _URL_USERINFO_PATTERN.search(text):
+            findings.append(
+                f"URL userinfo password shape in a string value (length {len(text)};"
+                " content not echoed)"
+            )
+        elif _LITERAL_CRED_PATTERN.search(text):
+            findings.append(
+                f"literal credential assignment shape in a string value (length"
+                f" {len(text)}; content not echoed)"
+            )
+    for finding in findings:
+        summary.add(Severity.FAIL, f".codex/config.toml: {finding}")
+    if not findings:
+        server_count = len(servers) if isinstance(servers, dict) else 0
+        summary.add(
+            Severity.PASS,
+            f".codex/config.toml clean ({server_count} servers; env-var NAME references"
+            " only, no env tables, no literal-credential shapes)",
+        )
+    return summary
+
+
 def _git_tracked_files(repo_root: Path) -> list[str] | None:
     """`git ls-files` at repo_root; None on subprocess failure."""
     try:
@@ -231,6 +318,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     aggregate.merge(context_summary)
     context_summary.print_messages()
+
+    codex_summary = _check_codex_config(
+        _read_text_or_none(repo_root / ".codex" / "config.toml")
+    )
+    aggregate.merge(codex_summary)
+    codex_summary.print_messages()
 
     print(
         f"{_SCRIPT_NAME}: "

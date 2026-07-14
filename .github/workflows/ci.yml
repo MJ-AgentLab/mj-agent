@@ -272,7 +272,7 @@ jobs:
         continue-on-error: true
         run: uv run python scripts/sdd/check_contracts.py --all
 
-      - name: 'G7 secret exposure (warning; 3P/0W/0F post owner-approved root .dockerignore; completion-audit PR2 + follow-up)'
+      - name: 'G7 secret exposure (warning; 4P/0W/0F since S2 #330 codex-config check; completion-audit PR2 + follow-up)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_secret_exposure.py --all
 
@@ -282,37 +282,48 @@ jobs:
 
       # ===== End of completion-audit PR2 G3/G7/G25 block =====
 
-      # ===== dual-agent-compat — V8/V9/V10 manifest + projection gates (#320, #326) =====
-      # All land in WARNING mode (continue-on-error: true) per D-009 (warning-first);
-      # blocking flips are separate ci-blocking-gate-toggle HITL actions
-      # (policies/ai-agent.md §4). V8/V9 run at --fail-on error (plan §10); V10 is
-      # `agents_sync.py --check` (no --fail-on parameter; exit 1 on any drift).
+      # ===== dual-agent-compat — V8/V9/V10/V11 manifest + projection gates (#320, #326, #330) =====
+      # V8/V9/V10 run in WARNING mode (continue-on-error: true) per D-009 (warning-first);
+      # their blocking flips are separate ci-blocking-gate-toggle HITL actions
+      # (policies/ai-agent.md §4). V11 is the one deliberate exception: the MCP
+      # projection surface is BLOCKING from day 1 per D-016 — Owner ci-blocking-gate-toggle
+      # execution record in #330 (2026-07-14). V8/V9 run at --fail-on error (plan §10);
+      # V10/V11 are `agents_sync.py --check` per surface (no --fail-on; exit 1 on drift).
       # Step output is the SoT for counts. NOTE: real-tree pins in tests/unit
-      # (test_real_tree_* / test_real_tree_projection_in_sync) make the same
-      # invariants effectively enforced by the blocking Tests step — declared in
-      # sdd/gates.md §2 (V8/V9/V10 rows share this property by design).
+      # (test_real_tree_* / test_real_tree_projection_in_sync /
+      # test_real_tree_mcp_projection_in_sync) make the same invariants effectively
+      # enforced by the blocking Tests step — declared in sdd/gates.md §2
+      # (V8/V9/V10/V11 rows share this property by design).
       # V8: manifest schema/enums/required coverage + AGENTS.md x5 entry relations +
       #     canonical-10 drift guard + stats-from-manifest. Baseline 0E/0W.
       # V9: projection closure (Handoff out-edges; warning at S0 empty state) +
-      #     full reconcile + lock consistency. Baseline 0E/0W (S1 closure closed:
-      #     full-5 whitelist, 4 out-edges neutralized to kernel stage pointers, #326).
-      # V10: agents_sync drift gate (regenerate-and-diff; LF-normalized comparisons) —
-      #     generated .agents/** + .agents.lock.json must match sources/template/lock
+      #     full reconcile + lock consistency (skills PJ0xx + codex-config PJ04x incl.
+      #     PJ044 never-tier leak). Baseline 0E/0W (S1 closure closed #326; S2 mcp
+      #     surface landed #330).
+      # V10: agents_sync SKILLS drift gate (regenerate-and-diff; LF-normalized) —
+      #     generated .agents/** + skill lock entries must match sources/template
       #     (D-012: artifacts are generator-owned; hand edits and source edits without
       #     re-running `agents_sync.py sync` both go red). Baseline clean (S1, #326).
+      # V11: agents_sync MCP drift gate (--surface mcp) — generated .codex/config.toml
+      #     + reserved lock key must match .mcp.json x manifest mcp tiers + codex.posture
+      #     (emitter B, S2 #330). Zero env/secret parsing at generation and check time,
+      #     so forks / no-secrets environments cannot false-red.
       - name: 'V8 dual-agent manifest (warning at landing; P1 first mount; 0E/0W)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_development_agent.py --all --fail-on error
 
-      - name: 'V9 agents projection (warning at landing; S1 closure closed; 0E/0W)'
+      - name: 'V9 agents projection (warning at landing; S1 closure closed; S2 PJ04x; 0E/0W)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_agents_projection.py --all
 
-      - name: 'V10 agents_sync drift (warning at landing; S1 first mount; clean)'
+      - name: 'V10 agents_sync skills drift (warning; surface=skills since S2 #330; clean)'
         continue-on-error: true
-        run: uv run python scripts/sdd/agents_sync.py --check
+        run: uv run python scripts/sdd/agents_sync.py --check --surface skills
 
-      # ===== End of dual-agent-compat V8/V9/V10 block =====
+      - name: 'V11 codex MCP projection drift (BLOCKING day-1 per D-016; Owner record #330)'
+        run: uv run python scripts/sdd/agents_sync.py --check --surface mcp
+
+      # ===== End of dual-agent-compat V8/V9/V10/V11 block =====
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
