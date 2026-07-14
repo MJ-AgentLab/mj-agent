@@ -59,7 +59,9 @@ Thumbs.db
 # src/mj_agent/prompts/
 # src/mj_agent/skills/
 
-# Generated projection artifacts (dual-agent-compat v5 S0; D-012 — generator-owned,
+# Generated projection artifacts (dual-agent-compat v5 S0/S2; D-012 — generator-owned,
 # committed but never hand-edited; F9 emergency switch = clear projections + regenerate).
 # Skill discovery is unaffected; byte-identical projection is the real dual-discovery guard.
+# .codex/ holds the generated Codex MCP config (emitter B, S2 #330) — same family.
 .agents/
+.codex/

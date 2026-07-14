@@ -13,7 +13,15 @@ Rules (S0 empty-state MUST NOT false-fail; artifacts land in S1/S2):
    set exactly; extra or missing entries FAIL. `.agents/` absent == vacuous pass.
 3. Lock consistency — `.agents.lock.json` maps projected skill name -> body sha256
    (LF-normalized, frontmatter-stripped; canonical `_common.frontmatter.body_sha256`).
-   Both absent == pass; exactly one present == FAIL; hash mismatch == FAIL.
+   Both absent == pass; exactly one present == FAIL; hash mismatch == FAIL. The single
+   non-skill key allowed is the S2 reserved path key `.codex/config.toml` (see rule 4).
+4. Codex MCP projection (S2 #330, PJ04x) — `.codex/config.toml` pairs with the reserved
+   lock key (exactly one present == FAIL); its `[mcp_servers.*]` names must equal the
+   manifest `mcp` project-tier set (never-tier names are a dedicated data-boundary
+   violation, PJ044); reserved-key hash must match the on-disk file (LF-normalized
+   `body_sha256`; a TOML file has no frontmatter so this is a whole-text hash). Both
+   file and reserved key absent == vacuous pass (pre-S2 / fork empty state — drift
+   enforcement lives in `agents_sync.py --check --surface mcp`, V11 blocking).
 
 Exit codes: 0 / 1 / 2 as in check_development_agent.py.
 `main(argv=None, repo_root=None)` — repo_root injectable for tests (#217 pattern).
@@ -27,6 +35,7 @@ import json
 import re
 import subprocess
 import sys
+import tomllib
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -43,6 +52,12 @@ from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
 MANIFEST_RELPATH = Path("sdd/development-agent.yml")
 JSON_SCHEMA_VERSION = 1
 KNOWN_MANIFEST_SCHEMA_VERSIONS = {1}
+
+# S2 MCP projection surface (#330): the generated Codex config artifact and its
+# reserved key inside .agents.lock.json (path-shaped -- cannot collide with skill
+# names, Owner 拍板 2026-07-14).
+CODEX_CONFIG_RELPATH = Path(".codex/config.toml")
+CODEX_LOCK_KEY = ".codex/config.toml"
 
 WATCHED_PREFIXES = (
     "sdd/development-agent.yml",
@@ -75,8 +90,7 @@ def _v(code: str, severity: str, cap: str, path: str, message: str) -> Violation
     return Violation(code=code, severity=severity, capability_id=cap, path=path, message=message)
 
 
-def load_project_set(repo_root: Path) -> tuple[set[str], set[str]]:
-    """Return (project set, all skill ids) from the manifest."""
+def _load_manifest(repo_root: Path) -> dict[str, Any]:
     path = repo_root / MANIFEST_RELPATH
     if not path.is_file():
         raise FatalCheckError(f"manifest not found: {MANIFEST_RELPATH}")
@@ -88,6 +102,12 @@ def load_project_set(repo_root: Path) -> tuple[set[str], set[str]]:
         raise FatalCheckError("manifest top level must be a mapping")
     if data.get("schema_version") not in KNOWN_MANIFEST_SCHEMA_VERSIONS:
         raise FatalCheckError(f"unknown schema_version {data.get('schema_version')!r}")
+    return data
+
+
+def load_project_set(repo_root: Path) -> tuple[set[str], set[str]]:
+    """Return (project set, all skill ids) from the manifest."""
+    data = _load_manifest(repo_root)
     caps = data.get("capabilities") or []
     all_ids = {str(c.get("id")) for c in caps if isinstance(c, dict)}
     project = {
@@ -96,6 +116,31 @@ def load_project_set(repo_root: Path) -> tuple[set[str], set[str]]:
         if isinstance(c, dict) and c.get("projection") == "project"
     }
     return project, all_ids
+
+
+def load_mcp_projection(
+    repo_root: Path,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any] | None, set[str]]:
+    """Return (project-tier mcp servers, codex.posture or None, never-tier names).
+
+    Tolerant of a missing/malformed `mcp` section (V8 owns that schema, DA070+):
+    it degrades to an empty projection so V9/V10 stay meaningful on partial trees.
+    """
+    data = _load_manifest(repo_root)
+    mcp = data.get("mcp")
+    servers = mcp.get("servers") if isinstance(mcp, dict) else None
+    project_servers: dict[str, dict[str, Any]] = {}
+    never_names: set[str] = set()
+    if isinstance(servers, dict):
+        for name, node in servers.items():
+            policy = node.get("projection_policy") if isinstance(node, dict) else None
+            if policy == "project":
+                project_servers[str(name)] = node if isinstance(node, dict) else {}
+            elif policy == "never":
+                never_names.add(str(name))
+    codex = data.get("codex")
+    posture = codex.get("posture") if isinstance(codex, dict) else None
+    return project_servers, posture if isinstance(posture, dict) else None, never_names
 
 
 def _handoff_refs(skill_text: str) -> set[str]:
@@ -211,20 +256,113 @@ def check_lock(repo_root: Path, project: set[str]) -> list[Violation]:
                    "lock hash mismatch — regenerate via agents_sync (do not hand-edit"
                    " generated artifacts, D-012)")
             )
-    for name in sorted(set(lock) - project):
+    for name in sorted(set(lock) - project - {CODEX_LOCK_KEY}):
         out.append(
             _v("PJ034", "error", name, ".agents.lock.json",
-               "lock entry has no manifest 'projection: project' capability")
+               "lock entry has no manifest 'projection: project' capability"
+               " (the only reserved non-skill key is '.codex/config.toml')")
         )
+    return out
+
+
+def check_codex_config(
+    repo_root: Path,
+    mcp_project: dict[str, dict[str, Any]],
+    never_names: set[str],
+) -> list[Violation]:
+    """S2 MCP projection surface (PJ040-PJ045). Vacuous pass when both the config
+    file and the reserved lock key are absent (pre-S2 / fork empty state)."""
+    out: list[Violation] = []
+    config_path = repo_root / CODEX_CONFIG_RELPATH
+    lock_path = repo_root / ".agents.lock.json"
+    lock: dict[str, Any] = {}
+    if lock_path.is_file():
+        try:
+            lock = json.loads(lock_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            lock = {}  # PJ031 already reported by check_lock
+    has_key = CODEX_LOCK_KEY in lock
+
+    if not config_path.is_file() and not has_key:
+        return out  # empty state — drift enforcement is V11 (agents_sync --surface mcp)
+
+    if config_path.is_file() != has_key:
+        present, absent = (
+            (str(CODEX_CONFIG_RELPATH), f"lock key '{CODEX_LOCK_KEY}'")
+            if config_path.is_file()
+            else (f"lock key '{CODEX_LOCK_KEY}'", str(CODEX_CONFIG_RELPATH))
+        )
+        out.append(
+            _v("PJ042", "error", "", ".codex/config.toml",
+               f"'{present}' exists but '{absent}' does not — config and reserved lock"
+               f" key must land together (D-012)")
+        )
+
+    if not config_path.is_file():
+        return out
+
+    text = config_path.read_text(encoding="utf-8")
+    try:
+        parsed = tomllib.loads(text.replace("\r\n", "\n"))
+    except tomllib.TOMLDecodeError as exc:
+        out.append(
+            _v("PJ041", "error", "", ".codex/config.toml",
+               f"config.toml is not valid TOML: {exc}")
+        )
+        return out
+
+    servers = parsed.get("mcp_servers")
+    on_disk = set(servers) if isinstance(servers, dict) else set()
+    for leaked in sorted(on_disk & never_names):
+        out.append(
+            _v("PJ044", "error", leaked, ".codex/config.toml",
+               "never-tier server projected to Codex — data boundary / prod surface"
+               " (D-013; ADR-006/009)")
+        )
+    expected = set(mcp_project)
+    for extra in sorted(on_disk - expected - never_names):
+        out.append(
+            _v("PJ040", "error", extra, ".codex/config.toml",
+               "server has no manifest mcp 'projection_policy: project' entry"
+               " (full reconcile — extra server)")
+        )
+    for missing in sorted(expected - on_disk):
+        out.append(
+            _v("PJ040", "error", missing, ".codex/config.toml",
+               "manifest mcp project-tier server missing from config.toml"
+               " (full reconcile — run agents_sync sync)")
+        )
+
+    if has_key:
+        actual = body_sha256(text.replace("\r\n", "\n"))
+        if str(lock[CODEX_LOCK_KEY]).removeprefix("sha256:") != actual:
+            out.append(
+                _v("PJ043", "error", "", ".codex/config.toml",
+                   "reserved lock key hash mismatch — regenerate via agents_sync"
+                   " (do not hand-edit generated artifacts, D-012)")
+            )
+
+    codex_dir = repo_root / ".codex"
+    if codex_dir.is_dir():
+        for path in sorted(codex_dir.rglob("*")):
+            rel = path.relative_to(repo_root)
+            if path.is_file() and rel != CODEX_CONFIG_RELPATH:
+                out.append(
+                    _v("PJ045", "error", "", rel.as_posix(),
+                       "unexpected file under .codex/ (full reconcile — only the"
+                       " generated config.toml may exist)")
+                )
     return out
 
 
 def run_checks(repo_root: Path) -> list[Violation]:
     project, all_ids = load_project_set(repo_root)
+    mcp_project, _posture, never_names = load_mcp_projection(repo_root)
     violations: list[Violation] = []
     violations += check_closure(repo_root, project, all_ids)
     violations += check_reconcile(repo_root, project)
     violations += check_lock(repo_root, project)
+    violations += check_codex_config(repo_root, mcp_project, never_names)
     return violations
 
 

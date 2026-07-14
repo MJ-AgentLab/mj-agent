@@ -1,13 +1,16 @@
-"""Unit tests for G7 secret exposure validator (completion-audit PR2).
+"""Unit tests for G7 secret exposure validator (completion-audit PR2 + S2 #330).
 
-All three checks are exercised via DI-injected inputs (file lists / text) —
+All four checks are exercised via DI-injected inputs (file lists / text) —
 no real `git ls-files` or filesystem reads, mirroring the G24 N-1 DI pattern.
+Check (4) covers the generated .codex/config.toml content scan (env tables,
+URL userinfo shapes, PREFIXED credential-key assignments, no-echo discipline).
 """
 
 from __future__ import annotations
 
 from scripts.sdd.check_secret_exposure import (
     _check_build_context,
+    _check_codex_config,
     _check_gitignore_pins,
     _check_tracked_files,
 )
@@ -102,3 +105,58 @@ class TestBuildContext:
         )
         assert summary.warn_count == 0
         assert summary.pass_count == 1
+
+
+
+_CLEAN_CODEX_TOML = """# GENERATED header
+approval_policy = "on-request"
+
+[mcp_servers.github]
+command = "cmd"
+args = ["/c", "npx", "-y", "@modelcontextprotocol/server-github"]
+env_vars = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
+"""
+
+
+class TestCodexConfig:
+    """Check (4): .codex/config.toml literal-credential scan (S2 #330)."""
+
+    def test_absent_file_passes(self) -> None:
+        summary = _check_codex_config(None)
+        assert summary.fail_count == 0
+        assert summary.pass_count == 1
+
+    def test_clean_generated_shape_passes(self) -> None:
+        summary = _check_codex_config(_CLEAN_CODEX_TOML)
+        assert summary.fail_count == 0
+        assert summary.pass_count == 1
+
+    def test_env_table_fails(self) -> None:
+        toml = _CLEAN_CODEX_TOML + '\n[mcp_servers.github.env]\nX = "y"\n'
+        summary = _check_codex_config(toml)
+        assert summary.fail_count == 1
+
+    def test_url_userinfo_fails_without_echoing_value(self) -> None:
+        secret = "postgresql://analyst:hunter2@db:5432/x"
+        toml = _CLEAN_CODEX_TOML + f'\n[mcp_servers.pg]\ncommand = "{secret}"\n'
+        summary = _check_codex_config(toml)
+        assert summary.fail_count == 1
+        joined = " ".join(summary.messages)
+        assert "hunter2" not in joined  # no-echo discipline (#330-2)
+
+    def test_prefixed_credential_key_fails(self) -> None:
+        """Repo-real prefixed shapes (SSH_SERVER_*_PASSWORD=...) must match --
+        a leading word boundary would never fire after `_` (#330-1)."""
+        toml = _CLEAN_CODEX_TOML + (
+            '\n[mcp_servers.ssh]\ncommand = "cmd"\n'
+            'args = ["SSH_SERVER_CLOUD_PASSWORD=hunter2"]\n'
+        )
+        summary = _check_codex_config(toml)
+        assert summary.fail_count == 1
+        joined = " ".join(summary.messages)
+        assert "hunter2" not in joined
+
+    def test_invalid_toml_warns(self) -> None:
+        summary = _check_codex_config("not = [valid\n")
+        assert summary.warn_count == 1
+        assert summary.fail_count == 0

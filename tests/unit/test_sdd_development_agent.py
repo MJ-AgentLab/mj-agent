@@ -72,6 +72,7 @@ def make_repo(
     extra_skills: tuple[str, ...] = (),
     skill_index_count: int | None = None,
     mcp_servers: dict[str, Any] | None = None,
+    mcp_json_servers: dict[str, Any] | None = None,
     posture: dict[str, Any] | None = None,
     skill_bodies: dict[str, str] | None = None,
 ) -> Path:
@@ -105,10 +106,12 @@ def make_repo(
     )
 
     servers = mcp_servers if mcp_servers is not None else {"github": {"projection_policy": "project"}}
-    _write(
-        tmp_path / ".mcp.json",
-        json.dumps({"mcpServers": {name: {"command": "x"} for name in servers}}),
+    live_servers = (
+        mcp_json_servers
+        if mcp_json_servers is not None
+        else {name: {"command": "x"} for name in servers}
     )
+    _write(tmp_path / ".mcp.json", json.dumps({"mcpServers": live_servers}))
 
     manifest: dict[str, Any] = {
         "schema_version": schema_version,
