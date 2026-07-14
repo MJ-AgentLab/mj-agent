@@ -37,6 +37,28 @@ constraints live at:
 
 Same layering rule as this file: nested files point to the kernel, they do not restate it.
 
+## Generated projections (`.agents/`) — never hand-edit
+
+`.agents/skills/**`, `.agents/README.md` and the repo-root `.agents.lock.json` are **generated
+artifacts** owned 100% by `scripts/sdd/agents_sync.py` (per ADR-036 D-011/D-012/D-014): byte-identical
+projections of the whitelisted `.claude/skills/<name>/SKILL.md` sources (whitelist SoT = manifest
+`sdd/development-agent.yml` `projection: project` entries). They are committed so Codex discovers
+the skills natively under `.agents/skills` after `git pull`; projected copies do NOT count toward
+the 37-skill SoT. Rules — they bind BOTH tools:
+
+- **Never hand-edit** anything under `.agents/` or `.agents.lock.json`.
+- Change path = edit the SOURCE skill (its own gates apply) → run
+  `python scripts/sdd/agents_sync.py sync` → commit source + artifacts + lock together.
+- Reverse-feeding an artifact edit into the source goes ONLY through
+  `python scripts/sdd/agents_sync.py --adopt <name>` (Owner HITL applies to the source write).
+- Merge conflict on generated files: merge the source, re-run `sync` to overwrite the artifacts —
+  never 3-way-merge artifacts by hand.
+- Drift gate: CI runs `agents_sync.py --check` (V10, warning-first per D-016) plus V9
+  (`check_agents_projection.py`) closure / reconcile / lock rules.
+- Semantic caveat for Codex: the Claude harness `ask`-gates / protected-path prompts / PreToolUse
+  hooks referenced inside projected skill bodies are NOT present under your harness — those stop
+  points are AGENTS.md self-enforced duties (see "Self-enforced boundaries" below).
+
 ## Codex participation (per ADR-035)
 
 **Codex is authorized as a full development participant.** The previous "read-only external review
@@ -143,3 +165,8 @@ explicit for self-enforcing agents.*
 *Updated 2026-07-13 — dual-agent-compat v5 P1 (#320): added the nested AGENTS.md map — 4 subdir
 entry adapters (`capabilities/` / `docker/` / `src/mj_agent/` / `tests/`) so both tools see the
 same same-layer constraints; sibling `CLAUDE.md` files import them via `@AGENTS.md`.*
+
+*Updated 2026-07-14 — dual-agent-compat v5 S1 (#326): added the "Generated projections" contract —
+`.agents/skills/**` + `.agents.lock.json` are `agents_sync.py`-owned artifacts (first batch: 5
+whitelisted skills); never hand-edit, change the source and re-run `sync`, reverse-feed only via
+`--adopt` (Owner HITL). Drift gate V10 mounted warning-first.*

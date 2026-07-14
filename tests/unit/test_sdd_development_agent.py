@@ -129,8 +129,9 @@ def test_real_tree_v8_all_passes() -> None:
     assert v8_main(["--all"], repo_root=REPO_ROOT) == 0
 
 
-def test_real_tree_v9_empty_state_no_false_red() -> None:
-    """S0 empty state (.agents/ + lock absent) must exit 0 at --fail-on error."""
+def test_real_tree_v9_no_false_red() -> None:
+    """Real tree exits 0 at --fail-on error (S0: empty state; S1+ #326: committed
+    artifacts + closed closure — PJ011 runs at error severity once .agents/ exists)."""
     assert v9_main(["--all"], repo_root=REPO_ROOT) == 0
 
 
