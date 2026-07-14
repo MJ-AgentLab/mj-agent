@@ -3,8 +3,9 @@ type: plan
 summary: 双工具兼容 v5 P1+S0 执行计划（issue #320）——薄适配骨架（manifest/checker/嵌套 AGENTS.md）+ 投影基建（projection 字段/投影 checker/canary/.claudeignore）+ ADR-036，stacked 3-PR 链；含 Stage 3 repo-scan 4 项设计裁定与 7 项 Owner 拍板记录
 owner: ranzuozhou
 created: 2026-07-13
-updated: 2026-07-13
-state: active
+updated: 2026-07-14
+completed: 2026-07-14
+state: completed
 track: shared
 ---
 

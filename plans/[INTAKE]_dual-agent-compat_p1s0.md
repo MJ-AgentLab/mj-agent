@@ -3,8 +3,9 @@ type: intake
 summary: 双工具兼容 v5 第二执行切片（P1+S0）的 Stage 0 Intake 落盘——maintain/High/stacked 3-PR 链；7 项 Owner 拍板记录（Stage 0 四项 + Stage 5 三项）；对应 issue #320（总锚 #312）
 owner: ranzuozhou
 created: 2026-07-13
-updated: 2026-07-13
-state: active
+updated: 2026-07-14
+completed: 2026-07-14
+state: completed
 track: shared
 ---
 
