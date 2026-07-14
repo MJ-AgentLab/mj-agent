@@ -1,0 +1,730 @@
+# sdd/development-agent.yml — dual-agent capability manifest (machine-readable SoT)
+#
+# Contract: plans/[PLAN]_dual-agent-compat.md §9 (fields/enums) + §4.4 (projection tiers)
+#   + D-013 (mcp per-server tiers) + D-014 (skills projection whitelist SoT).
+# Validated by: scripts/sdd/check_development_agent.py (V8) +
+#   scripts/sdd/check_agents_projection.py (V9); tests in
+#   tests/unit/test_sdd_development_agent.py.
+# Layering (program plan §7): this file is the DERIVED-INVENTORY layer — it records
+#   coverage/approval/evidence for both tools but never redefines policy; canonical rules
+#   live in sdd/ + policies/ + capability contracts.
+# Change discipline: the `mcp` and `codex.posture` sections are protected-adjacent
+#   surfaces (program plan §17 / D-017; anchor `mcp-server-trust-posture-change`) —
+#   OWNER_APPROVAL_REQUIRED before modifying them.
+# Forbidden by contract: `owner_agent` or any tool-specific fixed-duty field (§9).
+
+schema_version: 1
+snapshot: "2026-07-13"
+owners:
+  - ranzuozhou
+
+# --- capabilities: 37 in-tree skills (groups: doc/flow/git/infra/runtime) ------------
+# required: true == the 18-item end-to-end loop set (Owner 拍板 2026-07-13:
+#   flow x10 + git x7 [branch/commit/push/pr/sync/delete/issue] + doc-validate).
+# projection: project | after-neutralization | never  (initial tiers per §4.4:
+#   green 5 / yellow 21 / red 11; final S1 whitelist decided by closure checker).
+
+capabilities:
+  # ---- doc family (6) ----
+  - id: mj-agent-doc-author
+    group: doc
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-doc-author/SKILL.md
+
+  - id: mj-agent-doc-migrate
+    group: doc
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-doc-migrate/SKILL.md
+
+  - id: mj-agent-doc-plan
+    group: doc
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-doc-plan/SKILL.md
+
+  - id: mj-agent-doc-review
+    group: doc
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-doc-review/SKILL.md
+
+  - id: mj-agent-doc-sync
+    group: doc
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-doc-sync/SKILL.md
+
+  - id: mj-agent-doc-validate
+    group: doc
+    required: true
+    projection: never   # script-ci equivalent: both tools run the repo validators directly
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [script, ci]
+    codex:
+      support_mode: script-ci
+      approval: {mode: none, gates: []}
+      enforcement: [script, ci]
+    evidence:
+      - .claude/skills/mj-agent-doc-validate/SKILL.md
+      - scripts/check_frontmatter.py
+      - scripts/check_wikilinks.py
+
+  # ---- flow family (10) ----
+  - id: mj-agent-flow-diagnose
+    group: flow
+    required: true
+    projection: project   # green tier: zero Claude-specific primitives (§15 recount)
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-flow-diagnose/SKILL.md
+
+  - id: mj-agent-flow-intake
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-intake/SKILL.md
+
+  - id: mj-agent-flow-plan
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-plan/SKILL.md
+
+  - id: mj-agent-flow-implement
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-implement/SKILL.md
+
+  - id: mj-agent-flow-repo-scan
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-repo-scan/SKILL.md
+
+  - id: mj-agent-flow-verify
+    group: flow
+    required: true
+    projection: never   # script-ci equivalent: Level A command matrix runs identically
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [script, ci]
+    codex:
+      support_mode: script-ci
+      approval: {mode: none, gates: []}
+      enforcement: [script, ci]
+    evidence:
+      - .claude/skills/mj-agent-flow-verify/SKILL.md
+      - .github/workflows/ci.yml
+
+  - id: mj-agent-flow-scope-drift
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-scope-drift/SKILL.md
+
+  - id: mj-agent-flow-self-review
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-self-review/SKILL.md
+
+  - id: mj-agent-flow-review-respond
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-review-respond/SKILL.md
+
+  - id: mj-agent-flow-post-merge
+    group: flow
+    required: true
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-flow-post-merge/SKILL.md
+
+  # ---- git family (9) ----
+  - id: mj-agent-git-branch
+    group: git
+    required: true
+    projection: after-neutralization   # PreToolUse hook semantics absent on Codex; AGENTS.md prose covers (G1)
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [native-permission]   # fail-closed PreToolUse hook (G1)
+    codex:
+      support_mode: manual               # G1 worktree discipline self-enforced via AGENTS.md
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-branch/SKILL.md
+      - .claude/scripts/guard-git-workflow.ps1
+      - tests/unit/test_guard_git_workflow_hook.py
+
+  - id: mj-agent-git-check-merge
+    group: git
+    required: false
+    projection: after-neutralization   # yellow: pending Handoff-closure with whitelist (§4.4)
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-check-merge/SKILL.md
+
+  - id: mj-agent-git-commit
+    group: git
+    required: true
+    projection: project
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: git commit execution
+            stop_before: commit
+            evidence_required: explicit-owner-message
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: git commit execution
+            stop_before: commit
+            evidence_required: explicit-owner-message
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-commit/SKILL.md
+      - AGENTS.md
+
+  - id: mj-agent-git-delete
+    group: git
+    required: true
+    projection: project
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-delete/SKILL.md
+
+  - id: mj-agent-git-issue
+    group: git
+    required: true
+    projection: never   # gh CLI equivalent on both sides (§4.4 red tier rationale)
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-issue/SKILL.md
+
+  - id: mj-agent-git-pr
+    group: git
+    required: true
+    projection: after-neutralization   # PreToolUse hook (G2 --base) absent on Codex; AGENTS.md prose covers
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: gh pr create execution
+            stop_before: pr-create
+            evidence_required: explicit-owner-message
+      enforcement: [native-permission]   # fail-closed PreToolUse hook (G2)
+    codex:
+      support_mode: manual
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: gh pr create execution
+            stop_before: pr-create
+            evidence_required: explicit-owner-message
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-pr/SKILL.md
+      - .claude/scripts/guard-git-workflow.ps1
+      - tests/unit/test_guard_git_workflow_hook.py
+
+  - id: mj-agent-git-push
+    group: git
+    required: true
+    projection: project
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: git push execution
+            stop_before: push
+            evidence_required: explicit-owner-message
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: agents-git-owner-gate
+            trigger: git push execution
+            stop_before: push
+            evidence_required: explicit-owner-message
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-push/SKILL.md
+      - AGENTS.md
+
+  - id: mj-agent-git-review-pr
+    group: git
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-git-review-pr/SKILL.md
+
+  - id: mj-agent-git-sync
+    group: git
+    required: true
+    projection: project
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-git-sync/SKILL.md
+
+  # ---- infra family (8; content-hash frozen per claude-skill.contract.yml; red tier:
+  #      projected copies would sit outside the freeze anchor == "unfrozen frozen content") ----
+  - id: mj-agent-infra-app-start
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-app-start/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-app-stop
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-app-stop/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-docker-compose
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-docker-compose/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-env-setup
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-env-setup/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-env-teardown
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-env-teardown/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-llm-endpoint-probe
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-storage-stack
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-storage-stack/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  - id: mj-agent-infra-studio-probe
+    group: infra
+    required: false
+    projection: never
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    codex:
+      support_mode: manual
+      approval: {mode: none, gates: []}
+      enforcement: [manual]
+    evidence:
+      - .claude/skills/mj-agent-infra-studio-probe/SKILL.md
+      - capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml
+
+  # ---- runtime family (4; the propose→approve→apply family per ADR-034) ----
+  - id: mj-agent-runtime-biz-catalog-sync
+    group: runtime
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: biz-catalog-sync
+            trigger: src/mj_agent/biz_catalog/qcm_catalog.yaml write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [native-permission]   # settings ask gate
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: biz-catalog-sync
+            trigger: src/mj_agent/biz_catalog/qcm_catalog.yaml write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [adapter, manual]
+    evidence:
+      - .claude/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md
+      - policies/ai-agent.md
+
+  - id: mj-agent-runtime-eval-baseline
+    group: runtime
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval: {mode: none, gates: []}   # its AskUserQuestion is procedural, not an Owner gate
+      enforcement: [manual]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval: {mode: none, gates: []}
+      enforcement: [adapter]
+    evidence:
+      - .claude/skills/mj-agent-runtime-eval-baseline/SKILL.md
+
+  - id: mj-agent-runtime-prompt-version-bump
+    group: runtime
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: prompt-version-or-body-change
+            trigger: src/mj_agent/prompts/system.md body or version write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [native-permission]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: prompt-version-or-body-change
+            trigger: src/mj_agent/prompts/system.md body or version write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [adapter, manual]
+    evidence:
+      - .claude/skills/mj-agent-runtime-prompt-version-bump/SKILL.md
+      - policies/ai-agent.md
+
+  - id: mj-agent-runtime-skill-doc-improve
+    group: runtime
+    required: false
+    projection: after-neutralization
+    claude:
+      support_mode: native
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: runtime-skill-content-change
+            trigger: src/mj_agent/skills/*/SKILL.md body write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [native-permission]
+    codex:
+      support_mode: adapter-backed
+      adapter_ref: sdd/adapters/development-agent.md
+      approval:
+        mode: owner-hitl
+        gates:
+          - policy_ref: runtime-skill-content-change
+            trigger: src/mj_agent/skills/*/SKILL.md body write
+            stop_before: write
+            evidence_required: explicit-owner-message
+      enforcement: [adapter, manual]
+    evidence:
+      - .claude/skills/mj-agent-runtime-skill-doc-improve/SKILL.md
+      - policies/ai-agent.md
+
+# --- mcp: per-server projection tiers (D-013; default never) --------------------------
+# PROTECTED-ADJACENT (D-017 anchor: mcp-server-trust-posture-change) — Owner 拍板 required
+# before changing any tier below. biz x5 + ssh-manager are PERMANENTLY never (ADR-006/009
+# data boundary + prod surface; program plan §13 non-goals).
+mcp:
+  default_projection_policy: never
+  servers:
+    github: {projection_policy: project}
+    playwright: {projection_policy: project}
+    serena:
+      projection_policy: project
+      transform: "emitter B (S2) rewrites args '--context claude-code' -> Codex context"
+    pg-mj-agent-memory-dev: {projection_policy: project-with-adr}
+    pg-mj-agent-memory-test-lan: {projection_policy: project-with-adr}
+    pg-mj-agent-memory-test-wan: {projection_policy: project-with-adr}
+    pg-mj-agent-memory-prod-lan: {projection_policy: project-with-adr}
+    pg-mj-agent-memory-prod-wan: {projection_policy: project-with-adr}
+    pg-mj-system-biz-dev: {projection_policy: never}
+    pg-mj-system-biz-test-lan: {projection_policy: never}
+    pg-mj-system-biz-test-wan: {projection_policy: never}
+    pg-mj-system-biz-prod-lan: {projection_policy: never}
+    pg-mj-system-biz-prod-wan: {projection_policy: never}
+    ssh-manager: {projection_policy: never}
+
+# --- codex.posture: handwritten; transcribed into .codex/config.toml by emitter (S2) --
+# PROTECTED-ADJACENT (D-017) — Owner 拍板 required before modifying.
+# Initial values Owner-approved 2026-07-13 (Stage 5 拍板 #7); re-confirmed at PR-2 review.
+codex:
+  posture:
+    approval_policy: on-request
+    sandbox_mode: workspace-write
+    project_doc_max_bytes: 65536
