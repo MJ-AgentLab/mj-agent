@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 S2 执行计划（issue #330）——MCP 面：3 spi
 owner: ranzuozhou
 created: 2026-07-14
 updated: 2026-07-14
-state: active
+completed: 2026-07-14
+state: completed
 track: shared
 ---
 
