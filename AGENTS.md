@@ -21,6 +21,22 @@
 | **Codex** | **Full-responsibility AI developer**（双工具对等；authorized per ADR-035） | Same authority class as Claude Code — run commands, edit / create / delete files, commit / push, migrate — **and MUST self-honor the 必停 + data boundary below** |
 | **Other AI agents** | Not yet authorized | NO write access |
 
+## Nested AGENTS.md map (same-layer local constraints)
+
+Codex discovers `AGENTS.md` hierarchically (repo root → cwd); Claude Code sees the same files
+via each sibling `CLAUDE.md`'s `@AGENTS.md` import (per dual-agent-compat plan v5 P1). Local
+constraints live at:
+
+- `capabilities/AGENTS.md` — capability catalog: contract schema obligations / frozen-contract
+  surfaces / archive-reference bans
+- `docker/AGENTS.md` — container security boundary: prod-compose hard stop, `--env-file`
+  carrier semantics, teardown safety
+- `src/mj_agent/AGENTS.md` — runtime code: the 4 mj-agent-specific hard-stop surfaces + data
+  boundary + loading contracts
+- `tests/AGENTS.md` — test bands / fixtures / external-dependency and skip conventions
+
+Same layering rule as this file: nested files point to the kernel, they do not restate it.
+
 ## Codex participation (per ADR-035)
 
 **Codex is authorized as a full development participant.** The previous "read-only external review
@@ -123,3 +139,7 @@ ADR-031 Phase M0.*
 *Updated 2026-07-13 — dual-agent-compat v5 P0 (#313): de-primaried wording (full-responsibility
 peers), tool-neutral `OWNER_APPROVAL_REQUIRED` stop points, and G1/G2 Git workflow discipline made
 explicit for self-enforcing agents.*
+
+*Updated 2026-07-13 — dual-agent-compat v5 P1 (#320): added the nested AGENTS.md map — 4 subdir
+entry adapters (`capabilities/` / `docker/` / `src/mj_agent/` / `tests/`) so both tools see the
+same same-layer constraints; sibling `CLAUDE.md` files import them via `@AGENTS.md`.*

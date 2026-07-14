@@ -4,6 +4,10 @@
 > See root `CLAUDE.md` for repo-wide map + `sdd/adapters/bdd-tdd.md` for cross-cutting BDD/TDD
 > rules.
 
+@AGENTS.md
+
+> ↑ 同层工具中立约束（binds Claude Code + Codex；per dual-agent-compat v5 P1）。
+
 ## 11 子目录矩阵（Phase 1-3 落地；Phase M0 当前仅 ≤5 子目录）
 
 | 子目录 | 用途 | 标记 / 默认 select |

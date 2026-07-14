@@ -3,6 +3,11 @@
 Guidance for Claude Code. **Detail lives in the SDD kernel (`policies/` + `sdd/`) +
 `docs/INDEX.md`; this file is the high-frequency cache — 指针, not source-of-truth.**
 
+@AGENTS.md
+
+> ↑ 工具中立协作契约（同层导入，不复制正文；per dual-agent-compat v5 P1）。嵌套局部约束在
+> `capabilities/` `docker/` `src/mj_agent/` `tests/` 各自 `AGENTS.md`，由同层 `CLAUDE.md` 同款导入。
+
 ## Codex Status
 
 Codex is an **authorized full development participant** (per ADR-035 + 2026-07-06 amendment) — the
