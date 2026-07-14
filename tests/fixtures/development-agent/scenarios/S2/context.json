@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S2",
+  "task_type": "feature",
+  "fixture_base": "fixture-base/S2",
+  "initial_changed_paths": [],
+  "input_patch_role": null,
+  "simulated": {
+    "branch": "feature/s2-fixture-feature",
+    "pr": null,
+    "issue": null,
+    "plan_state": null
+  }
+}

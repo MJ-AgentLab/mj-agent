@@ -1,0 +1,16 @@
+# S1 structured expectations — program plan §12 row S1 (fixed at authoring time;
+# never generated at runtime). Fixture changes and checker/schema changes must be
+# reviewed in the same PR (§12).
+scenario_id: S1
+stage_path: [3, 8, 10]
+risk: Low
+canonical_hitl: []
+procedural_gates: []
+pr_base: develop
+verification:
+  - uv run python scripts/check_frontmatter.py
+  - uv run python scripts/check_wikilinks.py
+allowed_changed_paths:
+  - docs/_fixture_link.md
+comparator: exact-patch-lf
+remote_actions: []

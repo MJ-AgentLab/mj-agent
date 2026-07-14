@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S4",
+  "task_type": "feature",
+  "fixture_base": "fixture-base/S4",
+  "initial_changed_paths": [],
+  "input_patch_role": null,
+  "simulated": {
+    "branch": "feature/s4-fixture-system-prompt",
+    "pr": null,
+    "issue": null,
+    "plan_state": null
+  }
+}

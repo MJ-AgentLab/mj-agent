@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S5",
+  "task_type": "maintain",
+  "fixture_base": "fixture-base/S5",
+  "initial_changed_paths": [],
+  "input_patch_role": null,
+  "simulated": {
+    "branch": "maintain/s5-fixture-gate-flip",
+    "pr": null,
+    "issue": null,
+    "plan_state": null
+  }
+}

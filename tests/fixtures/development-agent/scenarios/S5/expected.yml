@@ -1,0 +1,15 @@
+# S5 structured expectations — program plan §12 row S5 (fixed at authoring time).
+# The `<fixture-base>` placeholder stays literal in the reported command string;
+# the runner substitutes context.json `fixture_base` only when EXECUTING it.
+scenario_id: S5
+stage_path: [0, 3, 4, 5]
+risk: High
+canonical_hitl:
+  - ci-blocking-gate-toggle
+procedural_gates: [5]
+pr_base: develop
+verification:
+  - uv run python scripts/sdd/check_development_agent.py --changed-from <fixture-base> --json --fail-on error
+allowed_changed_paths: []
+comparator: no-write-and-classification-exact
+remote_actions: []

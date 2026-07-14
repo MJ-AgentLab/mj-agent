@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S3",
+  "task_type": "bugfix",
+  "fixture_base": "fixture-base/S3",
+  "initial_changed_paths": ["tests/unit/test_find_biz_context.py"],
+  "input_patch_role": "pre-applied",
+  "simulated": {
+    "branch": "bugfix/s3-fixture-blank-question",
+    "pr": null,
+    "issue": null,
+    "plan_state": null
+  }
+}

@@ -1,0 +1,18 @@
+# Fixture-owned CI workflow (S5 only). Self-contained so the scenario's premise
+# (a warning gate with continue-on-error: true) never drifts with the real
+# develop ci.yml. Overlaid into the S5 fixture clone by the runner.
+name: fixture-ci
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 'Fixture drift gate (WARNING; continue-on-error)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/fixture_gate_placeholder.py --check
