@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第三执行切片（S1 skills 投影首批）的 St
 owner: ranzuozhou
 created: 2026-07-14
 updated: 2026-07-14
-state: active
+completed: 2026-07-14
+state: completed
 track: shared
 ---
 
