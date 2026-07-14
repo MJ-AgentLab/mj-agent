@@ -1,0 +1,20 @@
+diff --git a/tests/unit/test_find_biz_context.py b/tests/unit/test_find_biz_context.py
+index 7016565..9e3c5f7 100644
+--- a/tests/unit/test_find_biz_context.py
++++ b/tests/unit/test_find_biz_context.py
+@@ -89,3 +89,15 @@ def test_forbidden_access_surfaced() -> None:
+     forbidden = ctx["forbidden_access"]
+     assert "biz_ods" in forbidden["schemas"]
+     assert "ops_ods" in forbidden["schemas"]
++
++
++def test_blank_question_rejected_at_tool_boundary() -> None:
++    """S3 fixture seed: the tool wrapper must reject blank questions with
++    ValueError so SQLToolErrorMiddleware can surface a self-correcting
++    ToolMessage instead of a silent default-catalog answer."""
++    import pytest
++
++    from mj_agent.tools.biz_context import find_biz_context as tool_find_biz_context
++
++    with pytest.raises(ValueError, match="question"):
++        tool_find_biz_context("   ")

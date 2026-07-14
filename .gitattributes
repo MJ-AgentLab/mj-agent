@@ -16,3 +16,6 @@ Dockerfile text eol=lf
 *.yaml text eol=lf
 *.toml text eol=lf
 *.json text eol=lf
+
+# Fixture patches (dual-agent-compat P2): byte-exact apply/compare requires LF.
+*.patch text eol=lf

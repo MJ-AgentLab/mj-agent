@@ -1,0 +1,48 @@
+{
+  "scenario_id": "S6",
+  "stage_path": [17],
+  "risk": "Low",
+  "canonical_hitl": [],
+  "procedural_gates": [],
+  "pr_base": null,
+  "verification": [
+    "uv run pytest tests/unit/test_sdd_development_agent.py -q -k S6"
+  ],
+  "changed_paths": [],
+  "remote_actions": [],
+  "report": {
+    "actions": [
+      {
+        "type": "remove-worktree",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "simulated-environment",
+        "note": "free text is not compared by report-schema-exact"
+      },
+      {
+        "type": "delete-local-branch",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "simulated-environment"
+      },
+      {
+        "type": "delete-remote-branch",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "remote-actions-forbidden"
+      },
+      {
+        "type": "close-issue",
+        "target": "#899",
+        "executed": false,
+        "reason": "remote-actions-forbidden"
+      },
+      {
+        "type": "flip-plan-state",
+        "target": "plans/[PLAN]_s6_fixture.md",
+        "executed": false,
+        "reason": "simulated-environment"
+      }
+    ]
+  }
+}

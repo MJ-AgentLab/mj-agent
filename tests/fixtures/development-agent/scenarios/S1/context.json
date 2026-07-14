@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S1",
+  "task_type": "documentation",
+  "fixture_base": "fixture-base/S1",
+  "initial_changed_paths": [],
+  "input_patch_role": "expected-diff",
+  "simulated": {
+    "branch": "documentation/s1-fixture-wikilink",
+    "pr": null,
+    "issue": null,
+    "plan_state": null
+  }
+}

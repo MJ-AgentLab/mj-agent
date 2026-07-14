@@ -1,0 +1,24 @@
+{
+  "scenario_id": "S6",
+  "task_type": "maintain",
+  "fixture_base": "fixture-base/S6",
+  "initial_changed_paths": [],
+  "input_patch_role": null,
+  "simulated": {
+    "branch": "maintain/900-s6-fixture-closed",
+    "pr": {
+      "number": 900,
+      "state": "merged",
+      "base": "develop",
+      "merge_sha": "0000000000000000000000000000000000000900"
+    },
+    "issue": {
+      "number": 899,
+      "state": "open"
+    },
+    "plan_state": {
+      "path": "plans/[PLAN]_s6_fixture.md",
+      "state": "active"
+    }
+  }
+}

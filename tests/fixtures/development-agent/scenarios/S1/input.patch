@@ -1,0 +1,11 @@
+diff --git a/docs/_fixture_link.md b/docs/_fixture_link.md
+index 929af14..cb0ac85 100644
+--- a/docs/_fixture_link.md
++++ b/docs/_fixture_link.md
+@@ -14,5 +14,5 @@ This document exists only inside the S1 fixture temp repository. It carries
+ exactly one broken wikilink (a misspelled glossary stem) that the task request
+ asks to repair. Everything else in this file must stay byte-identical.
+ 
+-- Upstream glossary: [[upstream_busines_warehouse|上游业务仓术语表]]
++- Upstream glossary: [[upstream_business_warehouse|上游业务仓术语表]]
+ - Program plan: [[[PLAN]_dual-agent-compat|dual-agent-compat v5]]

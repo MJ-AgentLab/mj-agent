@@ -1,0 +1,29 @@
+# S3 structured expectations — program plan §12 row S3 (fixed at authoring time).
+# stage_path has no 4/5: the small-change Plan exemption (execution-loop §3.2
+# four-condition AND) is recorded exactly by their absence.
+scenario_id: S3
+stage_path: [0, 3, 8, 10, 11]
+risk: Low
+canonical_hitl: []
+procedural_gates: [11]
+pr_base: develop
+verification:
+  - uv run pytest tests/unit/test_find_biz_context.py -q
+  - uv run ruff check
+  - uv run mypy src/mj_agent
+red_green_node: uv run pytest tests/unit/test_find_biz_context.py -q
+allowed_changed_paths:
+  - src/mj_agent/tools/biz_context.py
+  - tests/unit/test_find_biz_context.py
+comparator: red-green-and-path-scope
+remote_actions: []
+# Defend the red-green premise: the fix must change the target module, and the
+# seeded failing test must survive intact (green must come from a real fix, not
+# from gutting the assertion — even though the seeded file is in allowed paths).
+required_changed_paths:
+  - src/mj_agent/tools/biz_context.py
+pinned_content:
+  - path: tests/unit/test_find_biz_context.py
+    must_contain:
+      - "def test_blank_question_rejected_at_tool_boundary"
+      - 'pytest.raises(ValueError, match="question")'
