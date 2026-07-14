@@ -150,11 +150,11 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 - **不要** 在 push 前忘记跑 Level A 验证（Stage 10）—— `uv run ruff check` + `uv run mypy src/mj_agent` 失败 push 后 CI 会红
 - **不要** 用 `git push --force` 不加 `--force-with-lease`（覆盖他人修改风险）
 
-## Handoff to mj-agent-git-pr
+## Handoff
 
 ```
 推送完成
-下一步：使用 `/mj-agent-git-pr` 创建 Pull Request。
+下一步：创建 Pull Request（`gh pr create` 显式 `--base`，per policies/git-branching.md G2）。
   已验证项：commit format ✓、type/branch ✓、CHANGELOG ✓、dual push ✓
   待执行项：选 PR template、填 PR body、--body-file 创建 PR
 ```

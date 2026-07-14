@@ -152,5 +152,5 @@ git push origin --delete documentation/phase-b3a-flow-completion
 下一步：
 - 如本任务还未结束 → 回到 develop / 其他 worktree 继续
 - 如 hotfix 已合并 → /mj-agent-git-sync（main → develop 回同步）
-- 进下一任务 → /mj-agent-flow-intake 起首
+- 进下一任务 → 从 Stage 0 任务受理（sdd/workflows/execution-loop.md §4 映射表）起首
 ```

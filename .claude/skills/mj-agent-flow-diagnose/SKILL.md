@@ -114,11 +114,11 @@ digraph diagnose {
 | mj-agent-flow-verify | 10 | 验证命令矩阵 | "本地验证" / "跑测试" / "Level A/B" |
 | mj-agent-flow-self-review | 11 | 11 项自检清单 | "声称完成前" / "self-review" |
 
-## Handoff to mj-agent-flow-verify
+## Handoff
 
 ```
 诊断闭环（红信号转绿 + 回归测试绿）。下一步：
-- /mj-agent-flow-verify（Stage 10）跑完整验证矩阵确认无回归
-- 结构性预防项 → /mj-agent-flow-plan 立 follow-up
+- 进 Stage 10 本地验证（sdd/workflows/execution-loop.md §5 验证矩阵）跑完整验证确认无回归
+- 结构性预防项 → Stage 4 计划环节（execution-loop §4 映射表）立 follow-up
 - 修复 commit → /mj-agent-git-commit
 ```
