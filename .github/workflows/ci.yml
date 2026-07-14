@@ -290,12 +290,13 @@ jobs:
       # V8: manifest schema/enums/required coverage + AGENTS.md x5 entry relations +
       #     canonical-10 drift guard + stats-from-manifest. Baseline 0E/0W.
       # V9: projection closure (Handoff out-edges; warning at S0 empty state) +
-      #     full reconcile + lock consistency. Baseline 0E/4W (S1 whitelist signals).
+      #     full reconcile + lock consistency. Baseline 0E/0W (S1 closure closed:
+      #     full-5 whitelist, 4 out-edges neutralized to kernel stage pointers, #326).
       - name: 'V8 dual-agent manifest (warning at landing; P1 first mount; 0E/0W)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_development_agent.py --all --fail-on error
 
-      - name: 'V9 agents projection (warning at landing; S0 empty-state clean; 0E/4W closure signals)'
+      - name: 'V9 agents projection (warning at landing; S1 closure closed; 0E/0W)'
         continue-on-error: true
         run: uv run python scripts/sdd/check_agents_projection.py --all
 
