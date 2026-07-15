@@ -246,6 +246,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-scope-drift/SKILL.md
+      - sdd/adapters/development-agent.md   # Behavior Matrix 覆盖 Stage-9 停点（无专属 fixture）
+      - evidence/development-agent-p3/SUMMARY.md   # P3 #337：据实推理覆盖论证
 
   - id: mj-agent-flow-self-review
     group: flow
@@ -262,6 +264,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-self-review/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # Stage-11 由 S2(gates[5,11])/S3(gates[11]) 双工具实跑传递覆盖
+      - evidence/development-agent-p3/SUMMARY.md   # P3 #337：第二批收口确认
 
   - id: mj-agent-flow-review-respond
     group: flow
@@ -278,6 +282,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-review-respond/SKILL.md
+      - sdd/adapters/development-agent.md   # Behavior Matrix 覆盖 Stage-15 停点（无专属 fixture）
+      - evidence/development-agent-p3/SUMMARY.md   # P3 #337：据实推理覆盖论证
 
   - id: mj-agent-flow-post-merge
     group: flow
@@ -294,6 +300,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-post-merge/SKILL.md
+      - tests/fixtures/development-agent/scenarios/S6/expected.yml   # 专属 fixture（Stage-17 report-schema-exact）
+      - evidence/development-agent-p3/SUMMARY.md   # P3 #337：S6 双工具实跑 4/4 PASS
 
   # ---- git family (9) ----
   - id: mj-agent-git-branch

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S6",
+  "tool": "codex",
+  "run": 1,
+  "fixtures_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\337-p3-second-batch\\tests\\fixtures\\development-agent\\scenarios",
+  "source": "D:/workspace/10-software-project/projects/mj-agent/.bare",
+  "source_ref": "develop",
+  "source_sha": "4ebd92e1073c6c44b0e1ebcc364a35769489d477",
+  "fixture_base": "fixture-base/S6",
+  "base_sha": "4ebd92e1073c6c44b0e1ebcc364a35769489d477",
+  "work_branch": "maintain/900-s6-fixture-closed",
+  "overlay_files": [],
+  "input_patch_role": null,
+  "red_exit": null,
+  "pre_snapshot": "8b39e91eca2ee9d935de5101d9b5bda19ec7a848bf5d173627e839abaf1f047d",
+  "synced": true
+}

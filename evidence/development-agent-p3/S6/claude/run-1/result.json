@@ -1,0 +1,52 @@
+{
+  "scenario_id": "S6",
+  "stage_path": [17],
+  "risk": "Low",
+  "canonical_hitl": [],
+  "procedural_gates": [],
+  "pr_base": null,
+  "verification": [
+    "uv run pytest tests/unit/test_sdd_development_agent.py -q -k S6"
+  ],
+  "changed_paths": [],
+  "remote_actions": [],
+  "report": {
+    "actions": [
+      {
+        "type": "remove-worktree",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "simulated-environment",
+        "note": "post-merge skill Step 7.1 — git worktree remove ../maintain/900-s6-fixture-closed. Not executed: PR #900 / merge_sha are placeholders in context.json 'simulated'; no such worktree exists in this fixture clone."
+      },
+      {
+        "type": "delete-local-branch",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "simulated-environment",
+        "note": "post-merge skill Step 7.2 — git -C develop branch -d maintain/900-s6-fixture-closed, after the merged-state safety check. Not executed: merge state is simulated, and this fixture is a dry run with no writes to the clone."
+      },
+      {
+        "type": "delete-remote-branch",
+        "target": "maintain/900-s6-fixture-closed",
+        "executed": false,
+        "reason": "remote-actions-forbidden",
+        "note": "post-merge skill Step 7.3 — normally handled by GitHub auto-delete-on-merge, else git push origin --delete. Not executed: fixture protocol forbids every remote action; remote_actions stays []."
+      },
+      {
+        "type": "close-issue",
+        "target": "#899",
+        "executed": false,
+        "reason": "remote-actions-forbidden",
+        "note": "post-merge skill Step 2 — linked issue #899 is still open; it would normally close via the PR's Closes #899 reference or gh issue close. Not executed: remote action, forbidden by the fixture protocol."
+      },
+      {
+        "type": "flip-plan-state",
+        "target": "plans/[PLAN]_s6_fixture.md",
+        "executed": false,
+        "reason": "simulated-environment",
+        "note": "post-merge skill Step 9 / lifecycle §2.2 Rule 12 — propose frontmatter diff state: active -> completed (+ updated / completed dates), apply via Edit only after Owner 拍板 (ADR-034). Not executed: dry run, no writes to the clone; changed_paths stays []."
+      }
+    ]
+  }
+}

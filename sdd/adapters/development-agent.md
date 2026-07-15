@@ -117,4 +117,13 @@ ai_visibility: source-of-truth
   emitter B（`.codex/config.toml`：github/playwright/serena+`--context codex` 三 project 档 +
   `env_vars` 按名 + posture 转写）+ lock 保留键 `.codex/config.toml` + V9 PJ040-PJ045 +
   MCP gate V11 day-1 blocking + G7 内容扫描扩展。spike 证据：vault + #330 comment。
+- P3（#337）：第二批四 flow skills（scope-drift/self-review/review-respond/post-merge）manifest
+  `evidence` 收口 + S6（flow-post-merge，`report-schema-exact`）双工具 clean-clone 实跑
+  Claude ×2 + Codex ×2 **4/4 PASS**（复用冻结 P2 harness，零改动）+ **剩余 A/B/C 映射确认**：
+  全 37 项 `projection` 三档已 = program plan §4.4 终态 🟢5/🟡21/🔴11——🔴11
+  （`doc-validate`/`flow-verify` script-ci 等价 · `git-issue` gh CLI 等价 · 8 冻结 `infra-*`）为
+  「已有普通脚本/文档/CI 等价通道的便利型技能，不强制迁移」；🟡21 各自前置未闭前不投；P3 无新增
+  强制迁移，S1 已投 🟢5 不变。诚实覆盖：post-merge←S6 专属 fixture / self-review←S2·S3 传递 /
+  scope-drift(9)·review-respond(15)←本 §Behavior Matrix 推理覆盖（无专属 fixture，不伪造）。
+  证据 `evidence/development-agent-p3/SUMMARY.md`；达成 §11.1 P3→P4 晋级门（S1–S6 两工具各 2×）。
 - S3（未落地）：doctor（trust 只读 + `-Reload` 集成 + canary 迁入）+ skills gate blocking 转正。
