@@ -3,8 +3,9 @@ type: plan
 summary: dual-agent-compat v5 P2 执行计划——首批六 flow skills 双工具 fixture 端到端：S1–S6 fixture 面 + Python runner + 5 comparator + 单测（PR-1），双工具 S1–S5 各连续 2× 实跑证据 + manifest evidence（PR-2），state flip（PR-3）；issue #333（总锚 #312）
 owner: ranzuozhou
 created: 2026-07-14
-updated: 2026-07-14
-state: active
+updated: 2026-07-15
+completed: 2026-07-15
+state: completed
 track: shared
 ---
 
