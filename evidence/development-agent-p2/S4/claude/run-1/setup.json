@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S4",
+  "tool": "claude",
+  "run": 1,
+  "fixtures_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\333-p2-evidence\\tests\\fixtures\\development-agent\\scenarios",
+  "source": "D:/workspace/10-software-project/projects/mj-agent/.bare",
+  "source_ref": "develop",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "fixture_base": "fixture-base/S4",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "work_branch": "feature/s4-fixture-system-prompt",
+  "overlay_files": [],
+  "input_patch_role": null,
+  "red_exit": null,
+  "pre_snapshot": "8e70a78cbbcbe6a1aa9e5e7bc11f1bf2abfe25c46acefbff7b2e19e2257a6bf8",
+  "synced": true
+}

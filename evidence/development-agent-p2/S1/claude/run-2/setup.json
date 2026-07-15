@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S1",
+  "tool": "claude",
+  "run": 2,
+  "fixtures_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\333-p2-evidence\\tests\\fixtures\\development-agent\\scenarios",
+  "source": "D:/workspace/10-software-project/projects/mj-agent/.bare",
+  "source_ref": "develop",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "fixture_base": "fixture-base/S1",
+  "base_sha": "d51f2e581febde914d2388ce05831656dfdc4b37",
+  "work_branch": "documentation/s1-fixture-wikilink",
+  "overlay_files": [
+    "docs/_fixture_link.md"
+  ],
+  "input_patch_role": "expected-diff",
+  "red_exit": null,
+  "pre_snapshot": "8b1a0a7124dfa71bd26f913a83b8d830979383a049292889eadd7b8a73baab0a",
+  "synced": true
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S3",
+  "tool": "claude",
+  "run": 1,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run pytest tests/unit/test_find_biz_context.py -q": 0,
+    "uv run ruff check": 0,
+    "uv run mypy src/mj_agent": 0
+  },
+  "recomputed_changed_paths": [
+    "src/mj_agent/tools/biz_context.py",
+    "tests/unit/test_find_biz_context.py"
+  ],
+  "pre_snapshot": "ba09610905c12e9520a5812596efda93261fe08f8dda3e13aaed94e17a7956cb",
+  "post_snapshot": "a832528782d485c6084d767985d5b984eb8b22180a1cb886ce915197a9327f88",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}

@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S4",
+  "stage_path": [0, 3, 4, 5, 6, 7],
+  "risk": "High",
+  "canonical_hitl": ["prompt-version-or-body-change"],
+  "procedural_gates": [5, 7],
+  "pr_base": "develop",
+  "verification": [
+    "uv run python scripts/sdd/check_prompt_contracts.py --all"
+  ],
+  "changed_paths": [],
+  "remote_actions": []
+}

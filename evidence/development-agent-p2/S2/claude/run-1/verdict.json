@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S2",
+  "tool": "claude",
+  "run": 1,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run ruff check": 0,
+    "uv run mypy src/mj_agent": 0,
+    "uv run pytest tests/unit/test_fixture_feature.py -q": 0
+  },
+  "recomputed_changed_paths": [
+    "src/mj_agent/_fixture_feature.py",
+    "tests/unit/test_fixture_feature.py"
+  ],
+  "pre_snapshot": "8e70a78cbbcbe6a1aa9e5e7bc11f1bf2abfe25c46acefbff7b2e19e2257a6bf8",
+  "post_snapshot": "0f4372ff676c57876473b2f08b6eb78bd485c3f32f56c99c1edc802d01fab0f6",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}

@@ -1,0 +1,18 @@
+{
+  "scenario_id": "S3",
+  "stage_path": [0, 3, 8, 10, 11],
+  "risk": "Low",
+  "canonical_hitl": [],
+  "procedural_gates": [11],
+  "pr_base": "develop",
+  "verification": [
+    "uv run pytest tests/unit/test_find_biz_context.py -q",
+    "uv run ruff check",
+    "uv run mypy src/mj_agent"
+  ],
+  "changed_paths": [
+    "src/mj_agent/tools/biz_context.py",
+    "tests/unit/test_find_biz_context.py"
+  ],
+  "remote_actions": []
+}

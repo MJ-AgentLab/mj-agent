@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S5",
+  "tool": "claude",
+  "run": 2,
+  "fixtures_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\333-p2-evidence\\tests\\fixtures\\development-agent\\scenarios",
+  "source": "D:/workspace/10-software-project/projects/mj-agent/.bare",
+  "source_ref": "develop",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "fixture_base": "fixture-base/S5",
+  "base_sha": "1bd764bc23714b59c6cb8a12b7e8ff2f2bf80cc7",
+  "work_branch": "maintain/s5-fixture-gate-flip",
+  "overlay_files": [
+    ".github/workflows/ci.yml"
+  ],
+  "input_patch_role": null,
+  "red_exit": null,
+  "pre_snapshot": "6724879b7379748e31d9ba346099933cfda33e4b32285101cc975b366b8125f5",
+  "synced": true
+}
