@@ -3,8 +3,9 @@ type: intake
 summary: 双工具兼容 v5 第五执行切片（P2 首批六 flow skills fixture 端到端）的 Stage 0 Intake 落盘——maintain/Medium/2码PR+1flip；7 项 Owner 拍板记录（runner 载体 / result.json 产出 / Codex 执行形态 / clean-clone 隔离 / PR 拆分 / S6 范围 / 推进方式）；对应 issue #333（总锚 #312）
 owner: ranzuozhou
 created: 2026-07-14
-updated: 2026-07-14
-state: active
+updated: 2026-07-15
+completed: 2026-07-15
+state: completed
 track: shared
 ---
 

@@ -271,11 +271,19 @@ track: shared
 - 补齐根及四个局部 `AGENTS.md`，让两种工具看到同层约束。
 - CI 先以 warning 运行，收集误报、漏报和跨平台证据。
 
-### P2：首批六个 skills
+### P2：首批六个 skills ✅（完成 2026-07-15）
 
 - 首批范围：`flow-diagnose`、`flow-intake`、`flow-repo-scan`。
 - 首批范围：`flow-plan`、`flow-implement`、`flow-verify`。
 - 目标是打通诊断到验证的最小端到端闭环。
+- 执行 issue：#333（PR-1 #334 fixture harness = 场景 S1-S6 + runner + comparator + 单测；
+  PR-2 #335 双工具 clean-clone 20/20 证据 + comparator 精化）均 merged（develop @ `3797e38`）；
+  详见 [[[PLAN]_dual-agent-compat_p2|P2 执行计划]]。**满足 §11.1 P2→P3 晋级门**：首批六项均非
+  `unsupported`；S1-S5 在 Claude 与 Codex Windows 干净 clone 各连续 2× PASS（20/20，单一冻结版本）；
+  安全关键字段跨工具零差异，非门控 bookkeeping 差异（stage_path/risk）均解释为正当 agent latitude。
+  两项 Owner 会话内拍板：classification-exact §12-scoped 到 S4/S5（Option A，反转初版全场景基线）；
+  S4/S5 只门安全关键子集（canonical_hitl + pr_base + risk + stopped-before-8）。S6（flow-post-merge）
+  留 P3 双跑。
 
 ### P3：第二批四个 skills 与剩余映射
 
