@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第六执行切片（P3 第二批四 flow skills + S
 owner: ranzuozhou
 created: 2026-07-15
 updated: 2026-07-15
-state: active
+completed: 2026-07-15
+state: completed
 track: shared
 ---
 
