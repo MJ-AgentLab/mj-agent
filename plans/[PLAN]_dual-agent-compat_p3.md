@@ -4,7 +4,8 @@ summary: dual-agent-compat v5 P3 执行计划——第二批四 flow skills（sc
 owner: ranzuozhou
 created: 2026-07-15
 updated: 2026-07-15
-state: active
+completed: 2026-07-15
+state: completed
 track: shared
 ---
 
