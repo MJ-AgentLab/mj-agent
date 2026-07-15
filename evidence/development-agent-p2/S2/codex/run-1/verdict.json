@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S2",
+  "tool": "codex",
+  "run": 1,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run ruff check": 0,
+    "uv run mypy src/mj_agent": 0,
+    "uv run pytest tests/unit/test_fixture_feature.py -q": 0
+  },
+  "recomputed_changed_paths": [
+    "src/mj_agent/_fixture_feature.py",
+    "tests/unit/test_fixture_feature.py"
+  ],
+  "pre_snapshot": "8e70a78cbbcbe6a1aa9e5e7bc11f1bf2abfe25c46acefbff7b2e19e2257a6bf8",
+  "post_snapshot": "d62081c4ec4b137d3e9ca18f99e6b4b33368f432a1bfda9caa152ed53226fd20",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}

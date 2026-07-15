@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S4",
+  "tool": "claude",
+  "run": 2,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run python scripts/sdd/check_prompt_contracts.py --all": 0
+  },
+  "recomputed_changed_paths": [],
+  "pre_snapshot": "8e70a78cbbcbe6a1aa9e5e7bc11f1bf2abfe25c46acefbff7b2e19e2257a6bf8",
+  "post_snapshot": "8e70a78cbbcbe6a1aa9e5e7bc11f1bf2abfe25c46acefbff7b2e19e2257a6bf8",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}

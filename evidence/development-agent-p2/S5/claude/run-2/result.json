@@ -1,0 +1,13 @@
+{
+  "scenario_id": "S5",
+  "stage_path": [0, 3],
+  "risk": "High",
+  "canonical_hitl": ["ci-blocking-gate-toggle"],
+  "procedural_gates": [],
+  "pr_base": "develop",
+  "verification": [
+    "uv run python scripts/sdd/check_development_agent.py --changed-from <fixture-base> --json --fail-on error"
+  ],
+  "changed_paths": [],
+  "remote_actions": []
+}

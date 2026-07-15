@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S3",
+  "tool": "claude",
+  "run": 2,
+  "fixtures_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\333-p2-evidence\\tests\\fixtures\\development-agent\\scenarios",
+  "source": "D:/workspace/10-software-project/projects/mj-agent/.bare",
+  "source_ref": "develop",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "fixture_base": "fixture-base/S3",
+  "base_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752",
+  "work_branch": "bugfix/s3-fixture-blank-question",
+  "overlay_files": [],
+  "input_patch_role": "pre-applied",
+  "red_exit": 1,
+  "pre_snapshot": "ba09610905c12e9520a5812596efda93261fe08f8dda3e13aaed94e17a7956cb",
+  "synced": true
+}

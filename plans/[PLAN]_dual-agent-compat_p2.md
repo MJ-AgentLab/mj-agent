@@ -79,11 +79,18 @@ DA031 / fixture-base 确定性）。
   非零否则 setup FAIL）；no-write 场景记 pre-run 快照；渲染 prompt.md = request.md +
   运行时附录（CLONE_PATH/RESULT_PATH 注入；模板在 runner 内版本化——期望值零运行时
   生成，注入的只是路径）
-- verify：result.json schema 校验 → **classification-exact**（Gate 5 定案 2：全场景
-  基线——stage_path/risk/canonical_hitl/procedural_gates/pr_base/verification 与
-  expected.yml 精确相等，命令集合排序字符串数组比较）→ 场景 comparator 行为检查 →
-  changed_paths/退出码/快照由 runner 独立重算，agent 自报与重算不一致即 FAIL →
-  verdict.json（exit 0/1）
+- verify：result.json schema 校验 → **普遍基线**（schema + changed_paths 自报交叉核验
+  + remote_actions 相等；agent 自报与 runner 独立重算不一致即 FAIL）→ 场景 comparator
+  行为检查 → verdict.json（exit 0/1）
+  - **classification-exact 口径修订（PR-2，2026-07-14；Owner 拍板 Option A，反转 Gate 5
+    定案 2）**：§12 将 classification-exact 仅定义为 `no-write-and-classification-exact`
+    比较器的一部分（**只门 S4/S5**——必停 enum + stop-before-8 是这两场景的被测核心）。
+    原定案 2「全场景基线」经首轮双工具实跑证伪：Claude 与 Codex 对 S1 均合理纳入
+    Stage 11 自检（`stage_path=[3,8,10,11]`），且对 `pr_base` 语义有正当分歧——普遍
+    exact 相等下无单一期望值能同时过两工具。故 S1/S2/S3 只走各自行为比较器
+    （patch / checks / red-green），其 stage_path/risk/pr_base 等入 result.json 并在
+    evidence SUMMARY 做跨工具比对（§11.1「无未解释差异」），正当分歧给解释而非硬判失败；
+    `pr_base` 语义在 request.md 协议段厘清（按分支类型 G2 填，即使未真正建 PR）。
 - **5 comparator 语义**（§12 L326-331 逐字实现，纯函数模块）：
   - exact-patch-lf = git diff（fixture_base..工作区，固定 flags）LF 归一字节比对
     input.patch

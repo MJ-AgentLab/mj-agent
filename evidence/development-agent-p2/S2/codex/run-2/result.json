@@ -1,0 +1,29 @@
+{
+  "scenario_id": "S2",
+  "stage_path": [
+    0,
+    3,
+    4,
+    5,
+    8,
+    10,
+    11
+  ],
+  "risk": "Medium",
+  "canonical_hitl": [],
+  "procedural_gates": [
+    5,
+    11
+  ],
+  "pr_base": "develop",
+  "verification": [
+    "uv run ruff check",
+    "uv run mypy src/mj_agent",
+    "uv run pytest tests/unit/test_fixture_feature.py -q"
+  ],
+  "changed_paths": [
+    "src/mj_agent/_fixture_feature.py",
+    "tests/unit/test_fixture_feature.py"
+  ],
+  "remote_actions": []
+}

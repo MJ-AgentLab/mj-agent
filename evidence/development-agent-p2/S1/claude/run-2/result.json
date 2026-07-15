@@ -1,0 +1,14 @@
+{
+  "scenario_id": "S1",
+  "stage_path": [3, 8, 9, 10, 11],
+  "risk": "Low",
+  "canonical_hitl": [],
+  "procedural_gates": [9, 11],
+  "pr_base": "develop",
+  "verification": [
+    "uv run python scripts/check_frontmatter.py",
+    "uv run python scripts/check_wikilinks.py"
+  ],
+  "changed_paths": ["docs/_fixture_link.md"],
+  "remote_actions": []
+}

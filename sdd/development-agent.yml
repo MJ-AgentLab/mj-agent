@@ -138,6 +138,8 @@ capabilities:
       enforcement: [manual]
     evidence:
       - .claude/skills/mj-agent-flow-diagnose/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S3/expected.yml   # bugfix / root-cause
 
   - id: mj-agent-flow-intake
     group: flow
@@ -154,6 +156,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-intake/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S4/expected.yml   # Stage-0 classification + 必停 stop
 
   - id: mj-agent-flow-plan
     group: flow
@@ -170,6 +174,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-plan/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S2/expected.yml   # plan gate (Stage 4/5)
 
   - id: mj-agent-flow-implement
     group: flow
@@ -186,6 +192,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-implement/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S2/expected.yml   # implementation (Stage 8)
 
   - id: mj-agent-flow-repo-scan
     group: flow
@@ -202,6 +210,8 @@ capabilities:
       enforcement: [adapter]
     evidence:
       - .claude/skills/mj-agent-flow-repo-scan/SKILL.md
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S1/expected.yml   # Stage-3 fact-check (all scenarios traverse it)
 
   - id: mj-agent-flow-verify
     group: flow
@@ -218,6 +228,8 @@ capabilities:
     evidence:
       - .claude/skills/mj-agent-flow-verify/SKILL.md
       - .github/workflows/ci.yml
+      - evidence/development-agent-p2/SUMMARY.md   # P2 dual-tool run evidence (#333)
+      - tests/fixtures/development-agent/scenarios/S1/expected.yml   # Stage-10 verification commands
 
   - id: mj-agent-flow-scope-drift
     group: flow

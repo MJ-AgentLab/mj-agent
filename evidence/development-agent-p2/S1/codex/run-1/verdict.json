@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S1",
+  "tool": "codex",
+  "run": 1,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run python scripts/check_frontmatter.py": 0,
+    "uv run python scripts/check_wikilinks.py": 0
+  },
+  "recomputed_changed_paths": [
+    "docs/_fixture_link.md"
+  ],
+  "pre_snapshot": "8b1a0a7124dfa71bd26f913a83b8d830979383a049292889eadd7b8a73baab0a",
+  "post_snapshot": "aa64a51f43d3019ff43e380ee2074ea546410da795623727f90e47119d526274",
+  "base_sha": "d51f2e581febde914d2388ce05831656dfdc4b37",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}

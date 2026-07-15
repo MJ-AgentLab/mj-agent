@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scenario_id": "S5",
+  "tool": "codex",
+  "run": 2,
+  "pass": true,
+  "failures": [],
+  "command_exits": {
+    "uv run python scripts/sdd/check_development_agent.py --changed-from <fixture-base> --json --fail-on error": 0
+  },
+  "recomputed_changed_paths": [],
+  "pre_snapshot": "6724879b7379748e31d9ba346099933cfda33e4b32285101cc975b366b8125f5",
+  "post_snapshot": "6724879b7379748e31d9ba346099933cfda33e4b32285101cc975b366b8125f5",
+  "base_sha": "1bd764bc23714b59c6cb8a12b7e8ff2f2bf80cc7",
+  "source_sha": "2cd3cda70cc12d66b94b78acefebbb179a006752"
+}
