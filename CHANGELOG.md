@@ -5,6 +5,39 @@
 
 ## [Unreleased]
 
+### Changed — settings biz allow prod 面收窄（#312 递延议题 4 = A′，#344）
+
+- **`.claude/settings.json` `permissions.allow` 删 2 条 biz prod 通配（`maintain`，branch
+  `maintain/344-settings-biz-allow-narrow`；vault `[ASSESSMENT]_settings-biz-allow-narrowing-2026-07-14.md`
+  = S2 #330 AC10 产物；总锚 #312）**：**动机**：`mcp__pg-mj-system-biz-prod-{lan,wan}__query` 直连
+  **绕开 L1/L1b**（ADR-006 四层中 L1 regex 单句/SELECT-only + L1b sqlglot `no_select_star` /
+  `require_time_range` / `require_limit` 只在 agent 4-tool 链内生效）；L3
+  （`default_transaction_read_only`）+ L4（analyst GRANT + `statement_timeout=60s`）仍兜底 → **写被挡**，
+  但 SELECT 无 guardrail/precheck 约束。prod 面「免 prompt 自动放行」与「prod 面必停」姿态不一致。
+  **改动**：删 `permissions.allow` 的 `mcp__pg-mj-system-biz-prod-lan__*` + `mcp__pg-mj-system-biz-prod-wan__*`
+  两行 → allow **26 → 24**，biz 子集 **5 → 3**（保留 `dev` / `test-lan` / `test-wan`）。
+  **效果的诚实边界**：`.claude/settings.local.json` `enabledMcpjsonServers` 仍启用全部 14 server、
+  `.mcp.json` 14 条定义不动 —— **不是断连**，只是把自动放行变成弹 prompt（= 拍板载体），
+  **且仅交互模式成立**（`auto`/`bypass` 下 `ask`/allow 语义不同）。**亦非零影响**：实测本机
+  transcripts（精确 tool_use pattern），`mcp__pg-mj-system-biz-prod-lan__query` **曾被实际调用**
+  （`prod-wan` = 0）→ 该类调用此后会新增 prompt，此即本次意图。**配套**：新增
+  `plans/[PLAN]_dual-agent-compat_settings-narrow.md` §4 为**保留的 dev/test×3 定退出判据四要素**
+  （锚点 = 本 PR merge commit；窗口 = 至 **2026-Q4** A6 审计产出（≈ 2026-10-01，观察期 ≈ 2.5 月），
+  **复用 `evidence/ai-context-audit/SCHEMA.md` §3 既有季度节律，不新设时钟**——初版锚 Q3 系错误前提
+  （Q3 实为 2026-07-01 到期、今已逾期 ~15 日，见 `2026-Q2.md:145`；且 `M-FU-AI-AUDIT-2026-Q3` 提醒
+  **从未注册**），锚 Q3 会令判据零观察即触发 → Owner 前提更正后重确认改锚 Q4，逾期 Q3 审计改任基线
+  快照记录者；指标 = transcripts 真实 tool_use 调用
+  计数 + 仓内不变量「无 `.py` 读 settings.json」；判定口径 = 零调用→默认提 PR 删三条 / 有调用→逐条记用途后
+  Owner 在「维持通配 vs 收窄 per-tool 子集」间拍板）+ `plans/[INTAKE]_dual-agent-compat_settings-narrow.md`。
+  **不动**：`mcp__ssh-manager__*`（`:27` 单条通配，覆盖含 `ssh_execute_sudo`/`ssh_db_import`/`ssh_deploy`
+  写面 —— 整体推 #312「ssh-manager wrapper」议题一次拍板，per #341 INTAKE §7 拍板项 6 + vault §四）；
+  `.mcp.json`（A14）；manifest `mcp`/`codex.posture`（D-017）；4 必停面；任何 gate 姿态。
+  **验证**：四 gate 全绿且**对本 diff 不可见**——仓内无任何 `.py` 读 `.claude/settings.json`
+  （`grep -rln "settings\.json" scripts/ .github/ tests/ --include=*.py` = 0）；
+  `check_development_agent.py:67-74` 命中 biz 名（含本次删除的 prod-lan/prod-wan，`:71-72`）系
+  `MCP_FORCED_NEVER` 常量（biz×5 + ssh-manager 全在此常量内，属 `.mcp.json` never-tier 校验面），
+  **同名不同面**。A13 合并审查适用（allowlist diff）；`ci-blocking-gate-toggle` 不适用。
+
 ### Changed — bidirectional reverse-triggers on 3 frozen peer infra skills（#306）
 
 - **`.claude/skills/mj-agent-infra-{env-teardown,docker-compose,studio-probe}/SKILL.md` +
