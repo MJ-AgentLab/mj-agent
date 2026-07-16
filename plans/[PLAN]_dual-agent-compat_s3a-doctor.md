@@ -5,7 +5,8 @@ summary: dual-agent-compat v5 S3a 执行计划——scripts/sdd/agents_sync.py �
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 version: 1.0
 track: shared
 related_adrs:
