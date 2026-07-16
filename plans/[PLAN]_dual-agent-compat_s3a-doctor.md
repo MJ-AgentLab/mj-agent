@@ -151,14 +151,23 @@ doctor 是机器感知的**唯一例外**；`sync`/`--check`/`--adopt` 保持零
 - **D-015 供应链洞**（doctor 写 trust）：mitigate = 只读构造 + AC-3 写零文件断言 + 代码评审（F3）。
 - **secret 回显**：mitigate = `-Reload` 掩码 + 只报存在性 + doctor 不自解密（不碰 `.enc`）。
 - **跨平台**：mitigate = `platform.system()` 分支 + 非 Windows env=N/A + 缺 config/脚本优雅降级。
-- **Anti-goal**：不碰 protected path / `.mcp.json`（A14）/ manifest（D-017）/ 任何 gate 姿态；不删既有测试。
+- **Anti-goal**：不碰 `.mcp.json`（A14）/ manifest / emitter B 投影逻辑（D-017 语义面）/ 任何 gate 姿态；
+  不删既有测试。（注：编辑 `agents_sync.py` **本身**在 `mcp-server-trust-posture-change` D-017 surface
+  anchor 内——见 §10；本切片只加只读 `doctor`，不动投影/posture。）
 - **CI 污染**：mitigate = doctor 永不进 `ci.yml`；机器面 import 仅在 `do_doctor` 路径生效。
 
 ## 10 Owner Gates
 
 - **锚 / 范围 / canary 三拍板**已过（[[[INTAKE]_dual-agent-compat_s3a-doctor|INTAKE]] §7）。
 - commit / push / PR 创建 / merge = `OWNER_APPROVAL_REQUIRED`（逐一交 Owner）。
-- **无** §3.1 专属必停触发；**无** A14 / D-017（doctor 只读 `.mcp.json`/manifest，不改）；无 `.env`/secrets 写。
+- **无** §3.1 专属 4 必停触发（不动 skills/system.md/qcm_catalog/SQL guardrail）；**无** A14（`.mcp.json` 不改）；无 `.env`/secrets 写。
+- **D-017 触发（更正 2026-07-16；原本节误标「无 D-017」）**：`scripts/sdd/agents_sync.py` 在
+  `mcp-server-trust-posture-change` surface anchor 内（上游 plan L521/L543 ·
+  [[decisions/ADR-036_Dual_Agent_Thin_Adapter_And_Projection|ADR-036]] D-017 · `policies/ai-agent.md` §4 L94），
+  故**编辑本文件即必停面**。本切片仅加**只读 `doctor` 诊断**，不改 emitter B / MCP 投影 / trust posture /
+  `codex.posture` 段——非语义 trust 变更、纯 surface-match。由 Owner 切片拍板（锚 C + 范围 + commit/push/PR
+  授权）满足 D-017 Owner HITL；**动作面未扩，属 correctness 更正非决策反转**（承
+  [[feedback_wrong_premise_voids_decision|错误前提纪律]] + #347 判例）。
 
 ## 11 Next Step
 
