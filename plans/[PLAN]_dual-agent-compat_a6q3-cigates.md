@@ -5,7 +5,8 @@ summary: 双工具兼容 v5 第十执行切片实施计划——F(policies/ci-ga
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 version: 1.0
 track: shared
 related_adrs:
