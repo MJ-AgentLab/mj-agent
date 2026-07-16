@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-04
+updated: 2026-07-16
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -35,7 +35,7 @@ ai_visibility: source-of-truth
 
 | 触发 | 频率 | 责任人 | 检查项 |
 |---|---|---|---|
-| 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
+| 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 + `permissions.ask` 拍板门列表（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]，两者共同构成 §5 边界） / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
 | MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` 13 server trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`） |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
@@ -64,14 +64,23 @@ ai_visibility: source-of-truth
 
 | 文件 | 范围 | 含义 |
 |---|---|---|
-| `.claude/settings.json` | 团队共享（commit） | `permissions.deny` 红线（4 项必停文件 + secrets.enc + `Bash(rm -rf:*)`）+ `enabledPlugins` + hooks 配置 |
-| `.claude/settings.local.json` | 个人（gitignore） | `permissions.allow` 白名单（个人偏好的 Bash 命令豁免）+ 个人偏好 |
+| `.claude/settings.json` | 团队共享（commit） | **三档 permission 全在此**：`deny` 红线（AI 取不到的 secret 面 —— `.env` / `config/secrets*.enc` + 不可逆 `Bash` 破坏面）+ `ask` 拍板门（5 项必停面，逐写 HITL）+ `allow` 白名单（scoped 工具/命令面）；另含 `enabledPlugins` + hooks 配置 |
+| `.claude/settings.local.json` | 个人（gitignore） | 个人偏好覆写（如个人 Bash 豁免）；**不是 `allow` 的归属地** —— 团队 `allow` 面在 `settings.json` |
+
+> **`deny` vs `ask` —— 勿混（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]，2026-06-20）**：
+> 5 项必停面（`tools/sql/{guardrail,precheck}.py` / `prompts/system.md` /
+> `skills/**/SKILL.md` / `biz_catalog/qcm_catalog.yaml`）**曾**以 `deny` 物理硬锁承载；
+> ADR-034 把 HITL 模型由「AI 出草案 → Owner 手动落盘」改为「AI 提议 → Owner 拍板 → AI 落盘」，
+> 该 5 面随之 **`deny` → `ask`**（逐写拍板门，`allow` 不可抑制）。故本表「红线」= **`deny` ∪ `ask`
+> 两档合起来**的边界，而 `deny` 档今日**不含**任何必停文件 —— 它只保留 AI 永不该取到的
+> secret 面 + 不可逆破坏面。`ask` 仅在**交互模式**成立（`auto`/`bypass` 下放宽类改动由
+> classifier 硬拦）。
 
 ### §5.1 A13 — `.claude/settings.json` PR 阻塞条件（engineering-workflow track）
 
-> 上文 §4 Review Cadence + 本节 §5 边界表把 `permissions.deny` 红线 + 季度审计
+> 上文 §4 Review Cadence + 本节 §5 边界表把 `permissions.deny` ∪ `permissions.ask` 边界 + 季度审计
 > 框定为 **审计** cadence；本子节把 A13 升格为 **PR 阻塞 ruleset** —— 任一 PR 触动
-> `.claude/settings.json` 时 reviewer 必须按以下 3 条逐项核对，任一不满足即阻塞合并。
+> `.claude/settings.json` 时 reviewer 必须按下表**逐条**核对，任一不满足即阻塞合并。
 > 源：Meta_Framework STANDARD §7.7 A13；决策依据
 > [[../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace
 > 配置分离，settings.json 属项目级 in-tree）+
@@ -79,17 +88,18 @@ ai_visibility: source-of-truth
 > 配置漂移监控）。Phase C `[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0` 落地后本节迁为
 > cross-ref。
 
-任一 PR 变更 `.claude/settings.json` 时，下列 3 条为 **阻塞条件**（A13；与 §4 季度审计
-红线列表同源但语义不同 —— 审计是周期性巡检，本节是逐 PR 的 hard gate）：
+任一 PR 变更 `.claude/settings.json` 时，下表**每一条**均为 **阻塞条件**（A13；与 §4 季度审计
+边界列表同源但语义不同 —— 审计是周期性巡检，本节是逐 PR 的 hard gate）：
 
 | # | 阻塞条件 | 判定 | 不满足后果 |
 |---|---|---|---|
 | (a) | `permissions.allow` **不出现裸 `Bash`**（无 sub-pattern 限定） | 必须用 scoped 形式（如 `Bash(uv run *)` / `Bash(git status:*)`）；裸 `Bash` = 无界 shell 授权 | 阻塞合并；要求改 scoped pattern |
-| (b) | `permissions.deny` **必须携带 secret pattern 兜底** | 含 `.env` / `secrets.enc` / API-key glob（如 `Read(./.env)` / `Edit(./.env)` / `Write(./.env)` / `Read(**/secrets*.enc)`）；与 §5 边界表「红线（4 项必停文件 + secrets.enc）」一致 | 阻塞合并；缺失即补齐 deny 条目 |
+| (b) | `permissions.deny` **必须携带 secret pattern 兜底** | 含 `.env` / `secrets.enc` / API-key glob（如 `Read(./.env)` / `Edit(./.env)` / `Write(./.env)` / `Read(**/secrets*.enc)`）；与 §5 边界表 `deny` 档定义一致 | 阻塞合并；缺失即补齐 deny 条目 |
 | (c) | `enabledPlugins` **增删需 PR body 描述用途与来源** | 任何 `enabledPlugins` add/remove 必须在 PR body 给出 justification（用途 + 来源 + trust posture） | 阻塞合并；要求补 PR body 说明 |
+| (d) | 5 项必停面**不得脱离 `ask` 档**（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]） | 任一必停面被移出 `permissions.ask`、或被 `allow` 条目覆盖 = 拍板门失效 | 阻塞合并；要求恢复 `ask` 条目 |
 
 **与 §4 关系**：§4 季度 / model-release 审计是 cadence 巡检（catch 漂移）；§5.1 是 PR-time
-hard gate（catch 引入）。两者共用同一 `permissions.deny` 红线定义，避免双源漂移。
+hard gate（catch 引入）。两者共用同一 `deny` ∪ `ask` 边界定义（§5 表 + 其下注），避免双源漂移。
 
 **Cross-ref**：`.claude/skills/` 新建目录的准入规则（A13 的姊妹门，针对 skill 目录而非
 settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新目录准入规则」；
