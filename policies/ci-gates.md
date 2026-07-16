@@ -43,6 +43,23 @@ ai_visibility: source-of-truth
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md`（与 `policies/documentation.md`
 §Review Cadence 同周期，并入同一 evidence file）.
 
+### §4.1 「Gate 启用前」行与既有 warning 观察期的关系（2026-07-15 Owner 拍板，#341）
+
+当某 gate 已在 CI 以 **warning 姿态**跑过一个**明文观察期**（如 dual-agent-compat 的 V8/V9/V10，
+见 `plans/[PLAN]_dual-agent-compat.md` §11.2），上表「Gate 启用前」行的适用方式 =
+**吸收时序、保留产物**：
+
+- **时序被吸收**：warning 观察期（≥14 自然日、连续、跑真实流量）是本行 1 周 dry-run 的**真超集**
+  → **不再另跑**一周 dry-run，不因此推迟翻转。
+- **产物保留**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md` 仍须产出，记 **violation 数量 +
+  影响范围**。它同时充当观察期「20 次连续 CI 成功 / 零 waiver / 零未关闭 warning」的可核验计数
+  工件（口径见 plan §11.2(3)）；blocking 翻转拍板以它为依据。
+
+**既有豁免**：`.codex/config.toml` MCP 投影 gate（V11）于 2026-07-14 **day-1 blocking** 落地，
+**未走**本行的 1 周 dry-run —— 属 dual-agent-compat D-016「信任面不设观察期」的**明确豁免**而非
+疏漏；Owner `ci-blocking-gate-toggle` 执行记录 = issue #330 comment（2026-07-14）。无明文观察期
+的 gate 不享此豁免，本行照常适用。
+
 ## §5 Settings 边界（B2 团队 vs 个人）
 
 | 文件 | 范围 | 含义 |
