@@ -4,7 +4,8 @@ summary: dual-agent-compat v5 settings biz allow 收窄执行计划（#312 递�
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 

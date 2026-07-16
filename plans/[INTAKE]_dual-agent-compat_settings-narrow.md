@@ -1,10 +1,11 @@
 ---
 type: intake
-summary: 双工具兼容 v5 第九执行切片（#312 递延议题 4 实施 = settings biz allow prod 面收窄 A′ + 保留项退出判据；议题 3 = pg 凭据 default 单一真相仅备料）的 Stage 0 Intake 落盘——maintain/Medium/1 PR；2 项 Owner 拍板（锚 = A′+pg-default 评估 / 保留项判据一并定）+ brief 三处失真更正（§5）；对应 issue #344（总锚 #312）
+summary: 双工具兼容 v5 第九执行切片（#312 递延议题 4 实施 = settings biz allow prod 面收窄 A′ + 保留项退出判据；议题 3 = pg 凭据 default 单一真相仅备料）的 Stage 0 Intake 落盘——maintain/Medium/1 PR（#345 `07e1be6`）；3 项 Owner 拍板（锚 = A′+pg-default 评估 / 保留项判据一并定 / 判据窗口 Q3→Q4 前提更正后重确认，§7.2）+ brief 三处失真更正（§3）；对应 issue #344（总锚 #312）
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 
