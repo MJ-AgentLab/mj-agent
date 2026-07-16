@@ -4,7 +4,8 @@ summary: dual-agent-compat v5 P4 门定义硬化执行计划——修 5 处已�
 owner: ranzuozhou
 created: 2026-07-15
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 

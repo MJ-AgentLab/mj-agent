@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第八执行切片（P4 门定义硬化——修 5 �
 owner: ranzuozhou
 created: 2026-07-15
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 
