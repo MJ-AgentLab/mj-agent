@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第十执行切片（#312 P4 等待期填充）的 S
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 
