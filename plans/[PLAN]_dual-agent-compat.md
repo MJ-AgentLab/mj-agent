@@ -3,7 +3,7 @@ type: plan
 summary: 双工具全职责兼容方案 v5（Owner 2026-07-13 拍板）仓内 port——项目内 Kernel + 薄 adapter + manifest + checker + scoped 投影生成器（agents_sync）；P0-P4 主轨道 + S0-S3 投影轨道；总锚 #312
 owner: ranzuozhou
 created: 2026-07-13
-updated: 2026-07-13
+updated: 2026-07-15
 state: active
 track: shared
 ---
@@ -242,7 +242,7 @@ track: shared
 - `python scripts/sdd/check_development_agent.py --all`：检查全量 manifest、引用和统计。
 - `python scripts/sdd/check_development_agent.py --changed-from <ref>`：以 `merge-base(<ref>, HEAD)` 为基准检查增量影响面；ref 不存在时按 CLI 使用错误退出。
 - `--json` 是可与任一范围参数组合的输出修饰符；JSON stdout 不得混入非结构化诊断文本。
-- `--fail-on error|warning` 是 CI 阈值参数，默认 `error`；P1-P3 使用 `--fail-on error`，P4 经 Owner 批准后改为 `--fail-on warning`。
+- `--fail-on error|warning` 是 CI 阈值参数，默认 `error`；P1-P3 使用 `--fail-on error`，P4 经 Owner 批准后改为 `--fail-on warning`。**注（#341）**：该参数是**阈值轴**，只决定哪些 severity 令**脚本**非零退出；它**不**决定 gate 是否阻断 job——那是 **blocking 轴**（`continue-on-error`）。P4 的翻转两轴都做，**仅改本参数不产生 blocking**；完整口径见 §11.2。本节所述 CLI 契约适用于两个 checker 脚本（`check_development_agent.py` = V8、`check_agents_projection.py` = V9），**不**适用于 `agents_sync.py`（V10/V11，无该旗标）。
 - JSON 顶层固定为 `schema_version`、`mode`、`base`、`violations`、`summary`；每条 violation 包含 `code`、`severity`、`capability_id`、`path`、`message`。
 - `severity` 只允许 `error`、`warning`、`info`；`error` 永远达到阈值，`warning` 仅在 `--fail-on warning` 时达到阈值，`info` 永不阻断。
 - `error` 用于 schema/enum 非法、required unsupported、canonical 引用失效以及数据/secrets/HITL 边界冲突；`warning` 用于统计漂移、非必需证据缺失和尚在观察期的 parity 差异；`info` 只报告可选便利能力。
@@ -321,9 +321,100 @@ track: shared
 - P1→P2：manifest/checker 单测全绿，所有 `required` 能力都有 Claude/Codex 条目，CI 以 `--fail-on error` 运行且无 error。
 - P2→P3：首批六项均非 `unsupported`；S1-S5 在 Claude 与 Codex 的 Windows 干净 clone 中各连续通过 2 次，结构化结果无未解释差异。
 - P3→P4 观察期：第二批四项完成；S1-S6 两工具各连续通过 2 次，Linux CI checker 同期全绿，所有 safety/HITL 差异为零。
-- P4 blocking 资格：观察期同时满足至少 14 个自然日和 20 次连续 CI 成功；无 waiver、无已确认误报、无未关闭 warning；随后由 Owner 批准把 CI 参数从 `--fail-on error` 改为 `--fail-on warning`。
+- P4 blocking 资格：观察期同时满足至少 14 个自然日和 20 次连续 CI 成功；无 waiver、无已确认误报、无未关闭 warning；随后由 Owner **逐 gate** 批准翻转（`ci-blocking-gate-toggle`）。**翻转是双轴动作，判定口径（起点锚 / 20-CI 度量 / 与 `policies/ci-gates.md` §4 的关系）全部见 §11.2**（2026-07-15 Owner 拍板，#341）。
 - （v5）S1→S2：golden-file 双平台稳定 + reconcile 负向用例（孤儿清理 / 多出文件 FAIL）通过 + Codex 实机发现验证。
 - （v5）S2 硬前置：三 spike 全 pass；**MCP 产物 gate 不设 warning 观察期**（day-1 blocking，D-016）；skills gate 转正仍按 P4 惯例走观察期。
+
+### 11.2 P4 blocking 门判定口径（2026-07-15 Owner 拍板，#341）
+
+§11.1 的「P4 blocking 资格」原表述按字面**无法裁定**（起点锚与 20-CI 度量未定义），**且其规定的
+动作不产生 blocking**。以下四条为其可执行口径，均经 Owner 逐项拍板（issue #341）。本节只补全
+定义，**不放宽任何判据**——14 日 / 20 次连续 CI / 零 waiver 三条原样保留。
+
+#### （1）翻转动作 = 双轴分离
+
+CI gate 的「是否阻断」由**两个正交轴**决定；§11.1 原文与 D-009 曾将两者混为一谈：
+
+| 轴 | 参数 | 语义 | 适用 |
+|---|---|---|---|
+| **blocking 轴** | `continue-on-error: true → false` | 非零退出**是否 fail job** | V8 / V9 / V10 |
+| **阈值轴** | `--fail-on error → warning` | 哪些 severity 令**脚本**非零退出 | V8 / V9（两 checker 脚本均有该旗标，`default="error"`）；**V10 / V11 无此轴** |
+
+**关键**：**仅改阈值轴不产生 blocking**。V8 现同时带 `continue-on-error: true` 与
+`--fail-on error`（`.github/workflows/ci.yml:311-313`）——改成 `--fail-on warning` 后，
+`continue-on-error: true` 仍吞掉脚本的非零退出，V8 依旧非 blocking。
+
+**两轴的适用面按脚本划分，不按 gate 划分**（易错点，2026-07-15 核实）：
+
+- `check_development_agent.py`（V8）与 `check_agents_projection.py`（V9）的 argparse **均**定义
+  `--fail-on {error,warning}` 且 `default="error"`（分别见 `check_development_agent.py:550` 与
+  `check_agents_projection.py:396`）→ **两者都有阈值轴**。差别只在调用：V8 在 CI **显式**传
+  `--fail-on error`（与默认同值，冗余但显式），**V9 不传、靠 argparse 默认生效** —— 故
+  `ci.yml:290` 注释「V8/V9 run at `--fail-on error`」**是准确的**，勿据「CI 命令行里没有该旗标」
+  误判 V9 无阈值轴。V9 的阈值轴翻转须**新增**旗标到 CI 调用（而非改现有值）。
+- `agents_sync.py`（V10 / V11）**确无 `--fail-on` 旗标**（CLI 仅 `--check` / `--surface`；
+  `ci.yml:291` 注释自陈「V10/V11 are `agents_sync.py --check` per surface (no --fail-on; exit 1
+  on drift)」）→ **只有 blocking 轴**。§11.1 原表述对其完全不适用。
+
+P4 的翻转**两轴都做**：
+
+- **blocking 轴**：V8 / V9 / V10 各自 `continue-on-error: true → false`，**每 gate 独立**
+  `ci-blocking-gate-toggle` 拍板 + 执行记录（per `policies/ai-agent.md` §4）。
+- **阈值轴**：V8 = 改现有旗标值 `--fail-on error → warning`；V9 = **新增** `--fail-on warning`
+  （现无显式旗标，靠 `default="error"`）。各自作为该 gate 那次拍板内的伴随参数。V10 无此轴。
+
+V11 不适用：day-1 blocking，既无 `continue-on-error` 键也无 `--fail-on`（per D-016；Owner
+`ci-blocking-gate-toggle` 执行记录 = issue #330 comment 2026-07-14）。
+
+#### （2）观察期起点锚 = 各 gate 的 CI 首挂 commit
+
+时钟属于 **gate**（钉的是「该 gate 在 warning 模式下跑了多久而无误报」），**不属于 P 轨道里程碑**。
+
+| Gate | CI 首挂 commit | 日期（+0800） | PR |
+|---|---|---|---|
+| V8 / V9 | `42037bd` | 2026-07-14 09:28 | #320 |
+| V10 | `36d185d` | 2026-07-14 11:39 | #326 |
+| V11 | `b8f43d3` | 2026-07-14 17:08 | #330（day-1 blocking，不适用） |
+
+**批量翻转受最年轻 gate 约束**。V8/V9/V10 同日首挂 → 绑定时钟 = **2026-07-14**，
+**最早资格 = 2026-07-28**。
+
+> 附注：本轮三 gate 同日首挂，「最年轻」与「最早」口径同解，故本规则此刻代价为零；规则仍按
+> **gate** 计，以约束将来新挂的 gate（届时两口径将分叉）。
+
+> **核验命令陷阱**：V10 的 step **名称**在 S2 #330 变更过（收窄为 `--surface skills`），用 step
+> **名**做 pickaxe 会误指 `b8f43d3`(#330)。须用 **run 命令片段**：
+> `git log --oneline --reverse -S "agents_sync.py --check" -- .github/workflows/ci.yml`。
+> 同理，用**脚本文件**首次提交（`git log -- scripts/sdd/agents_sync.py`）亦非正确判据——脚本可
+> 先于 CI step 落地；本表锚点以 **ci.yml 内 step 的首次出现**为准（二者本轮恰为同一 commit）。
+
+#### （3）「20 次连续 CI 成功」度量口径
+
+- **计数域**：`ci.yml` 的全部 run（任意分支），**按 head SHA 去重**——同一 commit 的 `push` +
+  `pull_request` 一对只计一次。
+- **计数条件**：该 run 中**被观察 gate 的 step 输出 clean**（step output 是 SoT，per `ci.yml:292`）。
+- **streak 重置**：**仅**因被观察 gate 的 step 非 clean 而重置；无关 job 失败 / flake **不重置**，
+  但须在审计产物（见 (4)）中登记。
+- **度量命令**（其输出即翻转拍板时的证据工件）：
+
+```bash
+gh run list --workflow ci.yml --limit 100 \
+  --json conclusion,createdAt,headSha,event,databaseId
+# 按 headSha 去重后，自 (2) 的锚点日期起逐 run 核被观察 gate 的 step 输出
+```
+
+#### （4）与 `policies/ci-gates.md` §4 的关系 = 吸收时序、保留产物
+
+`policies/ci-gates.md` §4:41 要求「gate blocking 切换前 1 周 DRI dry-run（violation 数 + 影响
+范围）」。与本门的关系：
+
+- **时序被吸收**——本门的 14 日 warning 窗口是 1 周 dry-run 的**真超集**（连续、跑真实流量、
+  更长）；**不再另跑**一周 dry-run。
+- **产物保留**——`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md` 仍须产出，记 violation 数 +
+  影响范围。它正是 (3) 所需的**可核验计数工件**；翻转拍板以它为依据。
+
+V11 的 day-1 blocking（#330）**未走**该 1 周 dry-run，属 D-016「信任面不设观察期」的**明确
+豁免**，非疏漏（见 §18 D-016 补记）。
 
 ## 12. 验收标准
 
@@ -441,14 +532,14 @@ rg -l -g 'SKILL.md' 'PreToolUse' .claude/skills
 - D-006：Path B 定义为"Claude Code 通过插件调用 Codex"，明确排除在本计划范围与验收之外；未来启用必须另立 ADR。
 - D-007：biz 只读、禁止直连、禁止 secrets 读取的边界不变。
 - D-008：Git 写操作继续采用 Owner HITL，不设置默认放行。
-- D-009：CI 先以 `--fail-on error` 观察；只有满足 §11.1 的 14 日、20 次 CI、零 waiver/误报/未关闭 warning 条件并获 Owner 批准，才改为 `--fail-on warning`。
+- D-009：CI 先以 warning 姿态观察（`continue-on-error: true`；V8/V9 另以 `--fail-on error` 设脚本阈值——V8 显式传参，V9 靠 argparse `default="error"`）；只有满足 §11.1 的 14 日、20 次 CI、零 waiver/误报/未关闭 warning 条件并获 Owner 批准，才**逐 gate** 翻转。**（2026-07-15 #341 修订）翻转是双轴动作**：blocking 轴 `continue-on-error: true→false`（V8/V9/V10）+ 阈值轴 `--fail-on error→warning`（V8 改现有旗标值 / V9 新增旗标；**V10/V11 无此轴**——`agents_sync.py` 无该旗标）——**仅改阈值轴不产生 blocking**。原表述「改为 `--fail-on warning`」只描述了阈值轴，据其字面执行完 P4 全部 gate 仍非 blocking；完整口径（翻转双轴 / 起点锚 / 20-CI 度量 / 与 `policies/ci-gates.md` §4 的关系）见 §11.2。
 - D-010：canonical 审批口径保持 10 项，派生文档不得另增编号。
 - D-011（v5）：引入 scoped 投影生成器 `agents_sync`（仅 `.agents/skills/` 与 `.codex/config.toml` 两面），作为 §8"不引入全量配置生成器"的唯一豁免；扩面须重新拍板。第三方同步器（Ruler / rulesync / dallay-agentsync 等）拒绝采用（SoT 心智反转 + 治理集成缺位 + 维护风险）。
 - D-012（v5）：投影产物 commit 入仓；"一键"语义前移作者侧（`sync`），合并侧 `git pull` 即同步；产物不可手改，反灌走 `--adopt` + 对应 HITL。
 - D-013（v5）：MCP 投影按 per-server 三档（`project` / `project-with-adr` / `never`，默认 `never`）：首批 `project` = github / playwright / serena(transform)；memory×5 = `project-with-adr`（独立拍板后落地）；**biz×5 + ssh-manager = `never`**（ADR-006/009 数据边界执行）。
 - D-014（v5）：skills 投影白名单由 manifest `projection` 字段驱动（初始 🟢5 / 🟡21 / 🔴11，§4.4）；8 个冻结 infra 技能首版排除；引用闭包为投影硬前置；投影副本不计入 37 计数 SoT。
 - D-015（v5）：doctor 只读不写 trust（红线）；Codex trust = 每工程师 × 每 worktree 一次的人工步骤，如实入 onboarding。
-- D-016（v5）：drift gate 姿态——skills 面沿 warning→blocking 惯例；**MCP 面 day-1 blocking**（信任面不设观察期）；两个 blocking 决定在本 v5 拍板，落地时按 `ci-blocking-gate-toggle` 流程留执行记录。
+- D-016（v5）：drift gate 姿态——skills 面沿 warning→blocking 惯例；**MCP 面 day-1 blocking**（信任面不设观察期）；两个 blocking 决定在本 v5 拍板，落地时按 `ci-blocking-gate-toggle` 流程留执行记录。**（2026-07-15 #341 补记）** MCP 面的"不设观察期"同时构成对 `policies/ci-gates.md` §4:41「gate blocking 切换前 1 周 DRI dry-run」的**明确豁免**——V11 day-1 blocking 未走该 dry-run 属既定决策而非疏漏，执行记录 = issue #330 comment（2026-07-14）。skills 面（V8/V9/V10）的翻转不享此豁免，仍受 §11.2 全部四条口径约束。
 - D-017（v5）：canonical 10-enum 数量不变（D-010 重申）；扩 `mcp-server-trust-posture-change` surface anchor 覆盖派生 `.codex/config.toml`、`agents_sync.py` 与 manifest `mcp` / `codex.posture` 段。
 
 ## 19. 自验清单
