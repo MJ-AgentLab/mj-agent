@@ -89,9 +89,11 @@ ai_visibility: source-of-truth
   LF 归一后相等（手改产物或改源未重跑 `sync` 均红，文案给规定动作 per D-012）。
 - **README ↔ 固定模板一致**；**lock ↔ 重算值一致**（排序单行条目）；`.agents/` 树内不得有
   期望集之外的文件/目录（与 V9 reconcile 互补：V9 对账目录集，V10 对账内容与杂散文件）。
-- **生成器 CLI 契约**：`sync`（幂等全量再生成 + 孤儿清理）XOR `--check`（只读）XOR
-  `--adopt <name>`（显式反灌 + 自动 realign；Owner HITL 适用于源写入）；退出码 0/1/2；
-  `doctor` 属 S3。生成期零 env 解析、零网络（fork/clean-clone 不假红）。
+- **生成器 CLI 契约**：`sync`（幂等全量再生成 + 孤儿清理）XOR `doctor`（S3a #350；只读
+  per-machine trust/env/canary 报告，warning-only，永不进 CI，写零文件 per D-015）XOR
+  `--check`（只读）XOR `--adopt <name>`（显式反灌 + 自动 realign；Owner HITL 适用于源写入）；
+  退出码 0/1/2。`sync`/`--check`/`--adopt` 生成期零 env 解析、零网络（fork/clean-clone 不假红）；
+  `doctor` 是机器感知例外（读 trust/env，从不进 CI）。
 
 ## §CI Gate
 
@@ -126,4 +128,10 @@ ai_visibility: source-of-truth
   强制迁移，S1 已投 🟢5 不变。诚实覆盖：post-merge←S6 专属 fixture / self-review←S2·S3 传递 /
   scope-drift(9)·review-respond(15)←本 §Behavior Matrix 推理覆盖（无专属 fixture，不伪造）。
   证据 `evidence/development-agent-p3/SUMMARY.md`；达成 §11.1 P3→P4 晋级门（S1–S6 两工具各 2×）。
-- S3（未落地）：doctor（trust 只读 + `-Reload` 集成 + canary 迁入）+ skills gate blocking 转正。
+- S3a（#350）：`agents_sync.py doctor` 只读落地——Codex trust 只读报告（`~/.codex/config.toml`
+  `[projects]`，精确/仓内祖先匹配，D-015 绝不写）+ HKCU env 核对（`setup-mcp-secrets.ps1 -Reload`，
+  值掩码）+ 双发现 canary 只读报告；warning-only，永不进 CI。既有 canary unit test **保留**（Owner
+  拍板：doctor 报告是增补面，非「迁入」删测——doctor 不在 CI，删测会把 CI-blocking 双向 set-equality
+  降级为 dev-machine warning）。
+- S3 余项（未落地，与 P4 对齐）：skills gate（V10）blocking 转正 + 两项独立拍板议题
+  （memory×5 promotion / ssh-manager wrapper）。

@@ -18,7 +18,7 @@ name-whitelist (spike 1: Codex sanitizes MCP child env; `env_vars` inherits by N
 no literal secret ever enters the artifact, fail-closed otherwise); posture keys are
 transcribed from manifest `codex.posture` (D-017).
 
-Modes (exactly one; `doctor` is S3 — not implemented here):
+Modes (exactly one):
   sync            Regenerate `.agents/skills/<name>/SKILL.md` (raw-byte copy of the
                   whitelisted `.claude/skills/<name>/SKILL.md` sources), the directory
                   README (`.agents/README.md`, fixed template), `.codex/config.toml`
@@ -27,6 +27,12 @@ Modes (exactly one; `doctor` is S3 — not implemented here):
                   `check_agents_projection.check_lock`; the mcp artifact uses the
                   reserved path-shaped key `.codex/config.toml`). Full reconcile on
                   both trees. Idempotent.
+  doctor          Read-only per-machine health report (S3a) -- Codex trust posture
+                  (`~/.codex/config.toml` `[projects]`), HKCU MCP-secret env presence
+                  (`setup-mcp-secrets.ps1 -Reload`, values masked), and the
+                  on-disk-skills == manifest capability canary. Writes NOTHING
+                  (D-015 red line: doctor never authors user-level Codex trust);
+                  warning-only; NEVER runs in CI (env/machine-aware exception).
   --check         Read-only drift check (optionally scoped via --surface
                   skills|mcp|all, default all). All content comparisons are
                   LF-normalized (F10). Exit 1 on any drift, with the prescribed
@@ -37,8 +43,9 @@ Modes (exactly one; `doctor` is S3 — not implemented here):
                   NO adopt path for `.codex/config.toml` (fully derived, no single
                   source file).
 
-Generation is a pure syntactic transformation: zero env parsing, zero network, zero
-secrets — safe on forks and clean clones (plan §8).
+Generation (`sync` / `--check` / `--adopt`) is a pure syntactic transformation: zero
+env parsing, zero network, zero secrets — safe on forks and clean clones (plan §8).
+`doctor` is the deliberate machine-aware exception (reads trust/env; never in CI).
 Exit codes: 0 clean/success; 1 drift; 2 usage error / manifest or source unreadable.
 `main(argv=None, repo_root=None)` — repo_root injectable for tests (#217 pattern).
 ASCII-only output (#318 lesson: Windows consoles may not be UTF-8).
@@ -48,9 +55,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import re
 import shutil
+import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -540,6 +550,143 @@ def do_adopt(repo_root: Path, project: set[str], name: str) -> list[str]:
     return changes
 
 
+# --------------------------------------------------------------------------- doctor
+# `doctor` is the machine-aware exception to the CI-pure contract above: it reads
+# per-machine state (Codex trust, HKCU MCP-secret env, skill/manifest canary) and
+# NEVER runs in CI. It writes nothing (D-015). Warning-only: warnings are printed but
+# never change the exit code (0 = report produced; 2 only on a fatal unreadable
+# manifest, via load_project_set -> FatalCheckError).
+
+
+def _norm_path(p: str) -> str:
+    r"""Normalize a path string for trust-entry comparison: strip the Windows `\\?\`
+    extended-length prefix, unify separators, drop a trailing slash, and casefold
+    (Codex `[projects]` keys are Windows-case-insensitive and appear with mixed
+    drive-letter case + backslashes)."""
+    p = p.strip()
+    if p.startswith("\\\\?\\"):
+        p = p[4:]
+    return p.replace("\\", "/").rstrip("/").casefold()
+
+
+def _doctor_trust(repo_root: Path, home: Path) -> list[str]:
+    out = ["", "TRUST (Codex ~/.codex/config.toml [projects]; read-only, D-015):"]
+    config = home / ".codex" / "config.toml"
+    if not config.is_file():
+        out.append(f"  [WARN] no {config} -- current root is UNTRUSTED to Codex")
+        out.append(
+            "         (Codex trust is a manual per-engineer x per-worktree step;"
+            " see onboarding -- doctor never writes it)"
+        )
+        return out
+    try:
+        data = tomllib.loads(config.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        # UnicodeDecodeError: a hand-edited config saved in a non-UTF-8 codepage
+        # (plausible on a Chinese-locale Windows box) must degrade to [WARN], not
+        # crash -- mirroring the lenient decode in _doctor_env.
+        out.append(f"  [WARN] {config} unreadable: {exc}")
+        return out
+    projects = data.get("projects")
+    trusted = {
+        _norm_path(key)
+        for key, val in (projects.items() if isinstance(projects, dict) else ())
+        if isinstance(val, dict) and val.get("trust_level") == "trusted"
+    }
+    # Codex matches the exact project root OR an in-repo ancestor entry (the container
+    # entry covers every worktree; S2 spike 3). Report the first ancestor that matches.
+    match = next(
+        (anc for anc in (repo_root, *repo_root.parents)
+         if _norm_path(str(anc)) in trusted),
+        None,
+    )
+    if match is not None:
+        out.append(f"  [PASS] current root is TRUSTED via [projects] entry: {match}")
+    else:
+        out.append(f"  [WARN] {repo_root} is UNTRUSTED (no matching [projects] entry)")
+    return out
+
+
+def _doctor_env(repo_root: Path, system: str) -> list[str]:
+    out = ["", "ENV (HKCU MCP-secret vars; setup-mcp-secrets.ps1 -Reload; presence only):"]
+    if system != "Windows":
+        out.append(f"  [N/A] non-Windows ({system or 'unknown'}); HKCU env is Windows-only")
+        return out
+    script = repo_root / ".claude" / "scripts" / "setup-mcp-secrets.ps1"
+    if shutil.which("powershell") is None or not script.is_file():
+        out.append("  [N/A] powershell or setup-mcp-secrets.ps1 unavailable")
+        return out
+    try:
+        # Capture BYTES, not text: PowerShell console output is not reliably UTF-8
+        # (Windows codepage), so text=True's reader thread would crash on invalid
+        # continuation bytes and leave stdout=None. Decode leniently below; the
+        # status markers ([SET]/[MISSING]/[Done]) are ASCII regardless of codepage,
+        # and the whole report is ASCII-coerced downstream anyway.
+        proc = subprocess.run(
+            ["powershell", "-NoProfile", "-File", str(script), "-Reload"],
+            cwd=str(repo_root),
+            capture_output=True,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        out.append(f"  [WARN] -Reload did not run: {exc}")
+        return out
+    # Report PRESENCE ONLY. setup-mcp-secrets.ps1 -Reload prints a first-4-chars mask
+    # ([SET] key = abcd****), which for a password is a partial secret. Keep only the
+    # [SET]/[MISSING]/[Done]/[Reload] status lines and strip every value fragment, so
+    # doctor never echoes any part of a secret (plan AC: presence only, no secret echo).
+    text = proc.stdout.decode("utf-8", "replace") if proc.stdout else ""
+    status: list[str] = []
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line.startswith("["):
+            continue  # drop banner / openssl-path / separator noise
+        if line.startswith("[SET]") and " = " in line:
+            line = line.split(" = ", 1)[0].rstrip()  # drop "= <first-4-chars>****"
+        status.append(f"  {line}")
+    out += status if status else ["  [WARN] -Reload produced no status lines"]
+    return out
+
+
+def _doctor_canary(repo_root: Path) -> list[str]:
+    out = ["", "CANARY (on-disk .claude/skills == manifest capabilities):"]
+    _, all_ids = load_project_set(repo_root)  # FatalCheckError -> exit 2 if unreadable
+    on_disk = {p.parent.name for p in (repo_root / SOURCE_DIR).glob("*/SKILL.md")}
+    if all_ids == on_disk:
+        out.append(f"  [PASS] {len(all_ids)} skills match manifest")
+        return out
+    missing = sorted(all_ids - on_disk)
+    extra = sorted(on_disk - all_ids)
+    out.append(f"  [WARN] drift: manifest={len(all_ids)} on-disk={len(on_disk)}")
+    if missing:
+        out.append(f"         in manifest but not on disk: {', '.join(missing)}")
+    if extra:
+        out.append(f"         on disk but not in manifest: {', '.join(extra)}")
+    out.append(
+        "         (the CI-enforced canary unit test guards this; re-run sync or"
+        " fix the manifest)"
+    )
+    return out
+
+
+def do_doctor(
+    repo_root: Path,
+    *,
+    home: Path | None = None,
+    system: str | None = None,
+) -> list[str]:
+    """Read-only per-machine health report (trust / HKCU env / canary). Writes nothing
+    (D-015). `home` / `system` are injectable for tests. Output is coerced to ASCII
+    (#318: Windows consoles may not be UTF-8)."""
+    home = home if home is not None else Path.home()
+    system = system if system is not None else platform.system()
+    lines = ["agents_sync doctor -- read-only per-machine checks (never runs in CI)"]
+    lines += _doctor_trust(repo_root, home)
+    lines += _doctor_env(repo_root, system)
+    lines += _doctor_canary(repo_root)
+    return [ln.encode("ascii", "replace").decode("ascii") for ln in lines]
+
+
 def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog=_SCRIPT_NAME,
@@ -547,13 +694,14 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
             "Scoped projection generator, emitters A+B: .claude/skills whitelist ->"
             " .agents/skills artifacts; .mcp.json x manifest mcp tiers ->"
             " .codex/config.toml; + .agents.lock.json"
-            " (plan §8, D-011/D-012/D-013/D-014; `doctor` lands at S3)"
+            " (plan §8, D-011/D-012/D-013/D-014/D-015)"
         ),
     )
     parser.add_argument(
-        "command", nargs="?", choices=["sync"],
-        help="regenerate artifacts + README + config.toml + lock (full reconcile;"
-             " idempotent; always both surfaces)",
+        "command", nargs="?", choices=["sync", "doctor"],
+        help="sync: regenerate artifacts + README + config.toml + lock (full"
+             " reconcile; idempotent). doctor: read-only per-machine trust/env/canary"
+             " report (S3a; never in CI; writes nothing, D-015)",
     )
     parser.add_argument(
         "--check", action="store_true",
@@ -572,11 +720,17 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
     args = parser.parse_args(argv)
     root = repo_root if repo_root is not None else _REPO_ROOT
 
-    modes = [args.command == "sync", args.check, args.adopt is not None]
+    modes = [
+        args.command == "sync",
+        args.command == "doctor",
+        args.check,
+        args.adopt is not None,
+    ]
     if sum(modes) != 1:
         parser.print_usage(sys.stderr)
         print(
-            f"{_SCRIPT_NAME}: exactly one mode required: `sync` XOR --check XOR --adopt",
+            f"{_SCRIPT_NAME}: exactly one mode required:"
+            " `sync` XOR `doctor` XOR --check XOR --adopt",
             file=sys.stderr,
         )
         return 2
@@ -586,6 +740,10 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
         return 2
 
     try:
+        if args.command == "doctor":
+            for line in do_doctor(root):
+                print(line)
+            return 0
         project, _ = load_project_set(root)
         if args.check:
             drift = do_check(root, project, surface=args.surface)
