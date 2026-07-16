@@ -21,6 +21,8 @@ from typing import Any
 import yaml
 from scripts.sdd import fixture_comparators as fc
 from scripts.sdd._common.frontmatter import body_sha256
+from scripts.sdd.agents_sync import do_doctor
+from scripts.sdd.agents_sync import main as agents_sync_main
 from scripts.sdd.check_agents_projection import main as v9_main
 from scripts.sdd.check_development_agent import CANONICAL_HITL_10
 from scripts.sdd.check_development_agent import main as v8_main
@@ -1171,3 +1173,183 @@ def test_fixture_runner_setup_cleans_up_on_failure(tmp_path: Path) -> None:
     )
     assert rc == 2
     assert not (runs / "claude-S1-run1").exists()  # orphan removed, retryable
+
+
+# ------------------------------------------------------------------ doctor (S3a)
+
+
+def _snapshot(root: Path) -> dict[str, bytes]:
+    return {
+        str(p.relative_to(root)): p.read_bytes()
+        for p in sorted(root.rglob("*"))
+        if p.is_file()
+    }
+
+
+def _codex_config(home: Path, body: str) -> None:
+    _write(home / ".codex" / "config.toml", body)
+
+
+def test_doctor_writes_nothing(tmp_path: Path) -> None:
+    """D-015 red line: doctor is read-only — no file under the repo or ~/.codex may
+    be created, modified, or deleted."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    _codex_config(home, f"[projects.'{root}']\ntrust_level = \"trusted\"\n")
+    before_repo, before_home = _snapshot(root), _snapshot(home)
+    do_doctor(root, home=home, system="Linux")
+    assert _snapshot(root) == before_repo
+    assert _snapshot(home) == before_home
+
+
+def test_doctor_output_is_ascii_with_three_sections(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    _codex_config(home, f"[projects.'{root}']\ntrust_level = \"trusted\"\n")
+    report = "\n".join(do_doctor(root, home=home, system="Linux"))
+    assert report.isascii()  # AC-4: ASCII-only (#318)
+    assert "TRUST" in report and "ENV" in report and "CANARY" in report
+    assert "[N/A]" in report  # non-Windows -> HKCU env check is N/A
+
+
+def test_doctor_trust_exact_and_case_insensitive(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    # A case variant of the same path must still match (Windows keys are
+    # case-insensitive; config keys appear with mixed drive-letter case).
+    _codex_config(home, f"[projects.'{str(root).upper()}']\ntrust_level = \"trusted\"\n")
+    report = "\n".join(do_doctor(root, home=home, system="Linux"))
+    assert "TRUSTED" in report and "[PASS]" in report
+
+
+def test_doctor_trust_via_ancestor(tmp_path: Path) -> None:
+    """S2 spike 3: an in-repo ancestor (container) entry grants trust to a worktree."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    _codex_config(home, f"[projects.'{root.parent}']\ntrust_level = \"trusted\"\n")
+    report = "\n".join(do_doctor(root, home=home, system="Linux"))
+    assert "TRUSTED" in report
+
+
+def test_doctor_untrusted_no_matching_entry(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    _codex_config(home, "[projects.'/some/other/path']\ntrust_level = \"trusted\"\n")
+    report = "\n".join(do_doctor(root, home=home, system="Linux"))
+    assert "UNTRUSTED" in report
+
+
+def test_doctor_missing_config_reports_untrusted(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    report = "\n".join(do_doctor(root, home=tmp_path / "empty-home", system="Linux"))
+    assert "UNTRUSTED" in report and "config.toml" in report
+
+
+def test_doctor_canary_pass_when_aligned(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a"), cap("mj-agent-b")])
+    report = "\n".join(do_doctor(root, home=tmp_path / "home", system="Linux"))
+    assert "CANARY" in report and "2 skills match manifest" in report
+
+
+def test_doctor_canary_warns_on_drift(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")], extra_skills=("ghost",))
+    report = "\n".join(do_doctor(root, home=tmp_path / "home", system="Linux"))
+    assert "[WARN]" in report and "ghost" in report  # on disk, not in manifest
+
+
+def test_doctor_mode_is_exclusive(tmp_path: Path) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    assert agents_sync_main(["doctor", "--check"], repo_root=root) == 2
+    assert agents_sync_main(["doctor", "--surface", "skills"], repo_root=root) == 2
+
+
+def test_doctor_main_dispatch_exit_0(tmp_path: Path, monkeypatch: Any) -> None:
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    monkeypatch.setattr("scripts.sdd.agents_sync.platform.system", lambda: "Linux")
+    monkeypatch.setenv("HOME", str(tmp_path / "empty-home"))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path / "empty-home"))
+    assert agents_sync_main(["doctor"], repo_root=root) == 0
+
+
+def test_doctor_env_tolerates_non_utf8_powershell_output(
+    tmp_path: Path, monkeypatch: Any
+) -> None:
+    """Regression: PowerShell -Reload console output is not reliably UTF-8; the env
+    branch must not crash on invalid continuation bytes (caught on a real Windows run,
+    2026-07-16). subprocess.run is mocked so this runs on any platform / CI."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    _write(root / ".claude" / "scripts" / "setup-mcp-secrets.ps1", "# stub\n")
+    monkeypatch.setattr("scripts.sdd.agents_sync.shutil.which", lambda _name: "powershell")
+
+    class _Proc:
+        # First-4-chars-of-a-password mask + \xff\xfe invalid UTF-8 continuation bytes
+        # (mimics real Windows codepage output; -Reload leaks the value prefix).
+        stdout = b"[SET]     SSH_PASSWORD = Ming\xff\xfe****\n[MISSING] FOO\n"
+        stderr = b""
+        returncode = 0
+
+    monkeypatch.setattr("scripts.sdd.agents_sync.subprocess.run", lambda *a, **k: _Proc())
+    report = "\n".join(do_doctor(root, home=tmp_path / "home", system="Windows"))
+    assert report.isascii()  # no crash; coerced to ASCII despite bad bytes
+    assert "[SET]" in report and "SSH_PASSWORD" in report and "[MISSING]" in report
+    assert "Ming" not in report  # presence only: masked value fragment stripped
+    assert "SSH_PASSWORD =" not in report  # no value echoed after the key
+
+
+def test_doctor_trust_tolerates_non_utf8_config(tmp_path: Path) -> None:
+    """Regression: a hand-edited ~/.codex/config.toml saved in a non-UTF-8 codepage
+    must degrade to [WARN], not crash _doctor_trust (mirrors the ENV branch; caught by
+    5-lens review 2026-07-16)."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    codex = tmp_path / "home" / ".codex"
+    codex.mkdir(parents=True)
+    (codex / "config.toml").write_bytes(b"[projects]\n# \xff\xfe garbage\n")
+    report = "\n".join(do_doctor(root, home=tmp_path / "home", system="Linux"))
+    assert report.isascii()  # no crash, coerced to ASCII
+    assert "unreadable" in report  # degraded to WARN
+
+
+def test_doctor_writes_nothing_when_config_absent(tmp_path: Path) -> None:
+    """D-015: with NO ~/.codex/config.toml, doctor must not CREATE it (the exact
+    supply-chain hole plan §9 calls out — the dangerous direction the present-config
+    no-write test does not exercise)."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    home = tmp_path / "empty-home"
+    home.mkdir()
+    before = _snapshot(home)
+    do_doctor(root, home=home, system="Linux")
+    assert _snapshot(home) == before
+    assert not (home / ".codex").exists()  # no trust dir/file created
+
+
+def test_doctor_coerces_non_ascii_to_ascii(tmp_path: Path) -> None:
+    """AC-4 (#318): non-ASCII that survives to output must be ASCII-coerced. A non-ASCII
+    repo path reaches the UNTRUSTED WARN line; without the coercion this would fail."""
+    root = make_repo(tmp_path / "repo-café", [cap("mj-agent-a")])
+    home = tmp_path / "home"
+    # A present-but-non-matching config routes repo_root into the "UNTRUSTED (no
+    # matching entry)" WARN line, so the non-ASCII path reaches output.
+    _codex_config(home, "[projects.'/nonmatching']\ntrust_level = \"trusted\"\n")
+    report = "\n".join(do_doctor(root, home=home, system="Linux"))
+    assert report.isascii()  # coercion turned the non-ASCII path char into '?'
+    assert "é" not in report  # U+00E9 (e-acute) absent -> coercion happened
+
+
+def test_doctor_canary_warns_missing_direction(tmp_path: Path) -> None:
+    """Canary drift where the manifest lists a capability with no on-disk SKILL.md
+    (the 'missing' direction; the 'extra' direction is covered separately)."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a"), cap("phantom")])
+    (root / ".claude" / "skills" / "phantom" / "SKILL.md").unlink()
+    report = "\n".join(do_doctor(root, home=tmp_path / "home", system="Linux"))
+    assert "[WARN]" in report and "in manifest but not on disk" in report
+    assert "phantom" in report
+
+
+def test_doctor_fatal_manifest_exits_2(tmp_path: Path, monkeypatch: Any) -> None:
+    """Exit-code contract: an unreadable manifest is fatal -> exit 2 (not 0)."""
+    root = make_repo(tmp_path / "repo", [cap("mj-agent-a")])
+    (root / "sdd" / "development-agent.yml").unlink()
+    monkeypatch.setattr("scripts.sdd.agents_sync.platform.system", lambda: "Linux")
+    monkeypatch.setenv("HOME", str(tmp_path / "empty-home"))
+    monkeypatch.setenv("USERPROFILE", str(tmp_path / "empty-home"))
+    assert agents_sync_main(["doctor"], repo_root=root) == 2
