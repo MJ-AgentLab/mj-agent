@@ -5,6 +5,41 @@
 
 ## [Unreleased]
 
+### Changed — ci-gates ADR-034 同步 + 补跑逾期 2026-Q3 A6 审计（#312 P4 等待期切片，#347）
+
+- **`policies/ci-gates.md` 同步 ADR-034 `deny→ask`（`documentation`，branch
+  `documentation/347-a6q3-cigates-sync`；总锚 #312）**：ADR-034（2026-06-20）把 5 项必停面由
+  `permissions.deny` 物理硬锁改为 `permissions.ask` 逐写拍板门，但本文件未同步 —— `:67` 仍称
+  settings.json = 「`deny` 红线（4 项必停文件 + secrets.enc）」、`:68` 把 `allow` 归
+  `settings.local.json`（实况 settings.json 持 **24** 条 allow）、`:88`（**A13 PR 阻塞条件 b**）
+  引用该失效定义、`:38`（**A6 季度审计自身的 scope 条款**）只列 `deny` 未提 `ask`。**改动**：§5
+  边界表两行改「`deny` ∪ `ask` 两档合起来的边界」+ 加 ADR-034 释义注；A13(b) 去失效引用 + 新增
+  **(d)**「5 项必停面不得脱离 `ask` 档」；§4:38 审计项加 `permissions.ask`；连带 3 处硬编码计数
+  （「3 条」等）去数字化；`version` 0.2→0.3。
+- **补跑逾期的 2026-Q3 A6 审计（`evidence/ai-context-audit/2026-Q3.md`，write-once）**：Q3 到期
+  2026-07-01，实执 2026-07-16（**逾期 ~15 日** < SCHEMA §3 的 30 日 MUST-gap 门槛，gap 自愿留痕）。
+  **头条发现**：8 个冻结 infra skill **8/8 drift-clean vs contract**（6 面 vs Q2 漂移全由已记录的
+  再冻结解释，`frozen_at` 均晚于 Q2）—— 冻结治理成立。**面集 15→23**（Owner 拍板 D1 = ask 门所护的
+  **markdown/AI-context 面**：5 CLAUDE.md + 9 runtime SKILL.md + system.md + 8 infra；`ask` 档另 3 个
+  **非-markdown** 必停面〔`guardrail.py`/`precheck.py`/`qcm_catalog.yaml`〕由各自 contract/必停门监控、
+  不入本 hash 审计）；8 新面无 Q2 基线 → baseline-only。
+  **实证 A6 提醒机制静默失效**：`M-FU-AI-AUDIT-2026-Q3` 从未注册（`ls plans/` 无该文件），讽刺点 =
+  SCHEMA 选 M-FU 提醒而非 CI cron 正为规避「silent lapse」，结果 M-FU 自身以同样方式失效。
+  记 **#344 保留项判据的 E1/E2 锚点**（窗口锚 = #345 merge `07e1be6`；E1 精确 tool_use pattern = **2**、
+  对照裸名 grep = **1136** ≈ 568× 假阳；E2 = `settings.json:22-24` 三条 biz allow）。
+- **`evidence/ai-context-audit/SCHEMA.md` §2.1 改推导规则（Owner 拍板 D3）**：本次病因 =
+  「15-surface / 6 infra / 3 runtime」硬编码常量无 gate 盯而静默过期（#304 加两冻结 infra skill 时
+  无人回改）。改为**从执行面机械推导**（必停轨 = `ask` glob 命中 ∪ contract 冻结 infra；CLAUDE.md 轨 =
+  `git ls-files`），数量降为观测值；§3/§4 硬编码去数字化 + 标历史条款。
+- **补注册 `plans/[PLAN]_m-fu-ai-audit-2026-Q3.md`（completed）+ `-Q4.md`（active）**：Q3 =
+  逾期补注册 + 闭合；Q4 = 前瞻提醒，兼 **#344 保留项退出判据的关闭者**（2026-Q4 复测 E1/E2 作
+  `biz_devtest_allow_used` 二值判定）。**残余风险**（Owner 已明示接受）：Q4 提醒若亦失效则 #344
+  判据永不触发。
+- **诚实边界**：本切片**零** `src/` / config / CI gate 姿态变更；改的是**描述** CI gate 的文档，
+  非 gate 本身（无 `ci-blocking-gate-toggle`）。**方向 = 修正/收敛**，非 permission widening →
+  agent 可 commit。**P4 本体不在本切片**——实测 V10 腿 14/20（绑定腿）+ 日历腿 2026-07-28 未到，
+  §11.1 AND → 今日结构性出局。配套 `plans/[INTAKE]/[PLAN]_dual-agent-compat_a6q3-cigates.md`。
+
 ### Changed — settings biz allow prod 面收窄（#312 递延议题 4 = A′，#344）
 
 - **`.claude/settings.json` `permissions.allow` 删 2 条 biz prod 通配（`maintain`，branch
