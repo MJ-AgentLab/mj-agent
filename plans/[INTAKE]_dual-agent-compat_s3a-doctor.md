@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第十一执行切片（#312 S3 收口的 doctor 只
 owner: ranzuozhou
 created: 2026-07-16
 updated: 2026-07-16
-state: active
+completed: 2026-07-16
+state: completed
 track: shared
 ---
 
