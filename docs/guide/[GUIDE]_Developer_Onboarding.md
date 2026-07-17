@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-07-08
+updated: 2026-07-17
 state: draft
 version: v0.4
 track: code
@@ -140,6 +140,8 @@ uv sync                                # 装依赖、锁版本
 .\.claude\scripts\setup-mcp-secrets.ps1   # 同一口令解密 secrets-mcp.enc → OS User env
                                        # （Claude Code 的 .mcp.json ${VAR} 消费；不写 .env）
 # ⚠ setup-mcp-secrets 跑完必须【完全重启】终端 + Claude Code —— User env 只对新进程可见
+# ⚠ pg-* MCP servers 从【具名 env 变量】解析连接串（无内嵌 default，per #353/议题 3）——
+#   没跑 setup-mcp-secrets → server 显式失败（exit 3），不再静默连 localhost 兜底
 uv run langgraph dev                   # 启 LangGraph Studio
 ```
 
@@ -393,3 +395,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-06-07 | v0.2 | M6 X4：原 `docs/runbook/dev_studio_walkthrough.md` 并入 §7（§7.1 H1-R2 验证矩阵 + §7.2 LangSmith trace 开关 + §7.3 常见诊断）；源 runbook `git rm`，docs/runbook/ 清空；25 处引用 re-point 到本节（含 4 个 infra freeze skill，HITL 授权） |
 | 2026-07-08 | v0.3 | #297 env/config 完整性修齐：§3 补 MCP bundle 步骤（setup-mcp-secrets + 完全重启说明）+ `-LlmProfile` 用法 + LLM provider 切换段（DGX 隧道拓扑 / model-id 覆写）；§0.5 补两 bundle 同口令、GitHub PAT、playwright chromium；§7.3 诊断表补 proxy-502 与 /doctor-MCP 两行；§8 速查表拆 app/MCP 两条解密行。另订正：前次 frontmatter `updated: 2026-07-07` 无对应内容变更（日期漂移，本行起对齐） |
 | 2026-07-08 | v0.4 | #302 secrets 填写指南：§3 命令块后加「secrets.conf 填写速览」摘要卡（app 必填5/可空3 · §2c 照抄7/强制空1/可选1 · MCP 15 按需 · secrets.conf≠.env 铁律）+ 委托句指向 `config/README.md` §「secrets.conf 填写指南」新 SoT 小节（完整逐字段表落 config/README，本 GUIDE 按指针 charter 只留摘要） |
+| 2026-07-17 | v0.5 | #353（议题 3 pg 凭据单一真相）：§3 命令块加 pg-* MCP server 具名 env 解析说明——连接串从具名变量解析、无内嵌 default、未设即显式失败（exit 3），单一真相 = secrets-mcp.enc→HKCU env |
