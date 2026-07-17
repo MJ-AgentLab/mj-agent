@@ -5,7 +5,8 @@ summary: dual-agent-compat v5 pg-credential 单一真相 + memory×5 Codex 投�
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-17
-state: active
+completed: 2026-07-17
+state: completed
 version: 1.0
 track: shared
 related_adrs:
