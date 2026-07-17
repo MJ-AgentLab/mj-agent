@@ -5,6 +5,22 @@
 
 ## [Unreleased]
 
+### Changed — ssh-manager settings allow 收窄（#312 独立拍板议题 2，#356）
+
+- **`.claude/settings.json` `permissions.allow` 删 `mcp__ssh-manager__*` 单条通配（`maintain`,
+  branch `maintain/356-ssh-manager-allow-narrow`；vault `[ASSESSMENT]_settings-biz-allow-narrowing-2026-07-14.md`
+  §四 框定 ssh 最终形态；总锚 #312）**：**动机**：该通配令 ssh-manager 全部 **37 工具**（24 为写/状态面，
+  含 `ssh_execute_sudo` / `ssh_deploy` / `ssh_db_import` 等 root/部署/DB 写入，且 ssh **无 biz 的 ADR-006
+  L3/L4 DB 侧兜底**）在会话内**免 prompt 自动放行**，`deny`/`ask` 无兜底 —— 是比 #344 已收窄的 biz-prod
+  **更宽**的面（无下游 floor）。**改动（Gate 5 Owner 拍板口径 A = 全删）**：删该行 → allow **24 → 23**；
+  ssh-manager 全部工具由自动放行 → 弹 prompt（= 拍板载体），与 #344 biz-prod 处置逐字同构。**诚实边界**：
+  `.mcp.json` server def + `settings.local.json` `enabledMcpjsonServers` 不动 —— **不是断连**，ssh-manager
+  仍可**显式批准后**调用；**且仅交互模式完全成立**（`bypass` 下无 deny 兜底、全放行——Owner 已在 A/C 权衡中
+  知悉并选 A）。**零自动依赖**：全仓无 skill/script/src 调用任何 ssh-manager 工具（唯一**调用面/功能**引用 =
+  `mj-agent-infra-app-start/SKILL.md` 的否定引用；`ssh-manager` 名另现于 `never`-tier 投影治理元数据
+  〔manifest / check 脚本〕，非工具调用），收窄不破坏任何自动化流程。**配套**：新增
+  `plans/[INTAKE]/[PLAN]_dual-agent-compat_ssh-manager.md`（含 37 工具面分类 + 零调用证据 + A/B/C 分析）。
+
 ### Changed — ci-gates ADR-034 同步 + 补跑逾期 2026-Q3 A6 审计（#312 P4 等待期切片，#347）
 
 - **`policies/ci-gates.md` 同步 ADR-034 `deny→ask`（`documentation`，branch
