@@ -4,7 +4,8 @@ summary: 双工具兼容 v5 第十二执行切片（#312 议题 3 pg-credential 
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-17
-state: active
+completed: 2026-07-17
+state: completed
 track: shared
 ---
 
