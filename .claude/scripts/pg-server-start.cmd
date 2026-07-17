@@ -16,7 +16,20 @@ REM   Instead we use fs.existsSync to scan npm_config_cache/_npx/
 REM   for the directory containing node_modules/pg — this uses only
 REM   Node.js built-in modules (fs, path) which are always available.
 REM
-REM Usage: pg-server-start.cmd <postgresql-connection-url>
+REM Usage: pg-server-start.cmd <connection-env-var-NAME>
+REM   The single positional arg is the NAME of an environment variable
+REM   (e.g. MJ_AGENT_PG_MEMORY_DEV_URL); the connection URL is resolved from that
+REM   variable's value. There is NO inline default -- an unset variable is an explicit
+REM   failure (never silently connect to a fallback). Single source of truth =
+REM   secrets-mcp.enc -> HKCU env (Claude: .mcp.json `env`; Codex: `env_vars`).
+REM   URLs SHOULD be percent-encoded per RFC 3986 (reserved password chars %-encoded).
+REM   See #353 / dual-agent-compat item 3 (pg-credential single source of truth).
+
+REM Fail fast: require the connection variable NAME before running npx discovery.
+if "%~1"=="" (
+  echo [pg-server] ERROR: missing connection variable name argument ^(e.g. MJ_AGENT_PG_MEMORY_DEV_URL^) 1>&2
+  exit /b 2
+)
 
 :DISCOVER
 REM Step 1: Install package (if needed) and discover node_modules path
@@ -60,7 +73,20 @@ if defined CACHE_BROKEN (
     goto :DISCOVER
 )
 
-REM Step 3: Launch the ESM wrapper with resolved NODE_PATH
-REM   %~dp0 resolves to this script's directory (<repo>/.claude/scripts/)
-REM   %* forwards all arguments (connection URL) to the wrapper
-node "%~dp0pg-server-wrapper.mjs" %*
+REM Step 3: Resolve the connection URL from the variable NAME (arg %1) and launch.
+REM   Nest a disabledelayedexpansion scope so a literal bang char in a password is never
+REM   consumed during resolution -- UNCONDITIONALLY (independent of the caller's /V:ON|OFF
+REM   state; verified by #353 Spike 1d). NODE_PATH + parent env (MJ_AGENT_PG_*_URL, set by
+REM   Claude .mcp.json `env` / Codex `env_vars`) are inherited into the nested scope.
+setlocal disabledelayedexpansion
+set "PG_CONN_NAME=%~1"
+call set "PG_CONN_URL=%%%PG_CONN_NAME%%%"
+if not defined PG_CONN_URL (
+  echo [pg-server] ERROR: connection env var %PG_CONN_NAME% is not set 1>&2
+  echo [pg-server] FIX: set it via .claude\scripts\setup-mcp-secrets.ps1 -Reload, or .mcp.json env 1>&2
+  exit /b 3
+)
+
+REM Step 4: Launch the ESM wrapper with resolved NODE_PATH + resolved URL as argv[2]
+REM   (unchanged wrapper / server-postgres contract; %~dp0 = this script's directory).
+node "%~dp0pg-server-wrapper.mjs" "%PG_CONN_URL%"

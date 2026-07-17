@@ -720,6 +720,10 @@ capabilities:
 # PROTECTED-ADJACENT (D-017 anchor: mcp-server-trust-posture-change) — Owner 拍板 required
 # before changing any tier below. biz x5 + ssh-manager are PERMANENTLY never (ADR-006/009
 # data boundary + prod surface; program plan §13 non-goals).
+# memory x5 landed at `project` per ADR-037 (#353, dual-agent-compat 议题 1): memory is
+# mj-agent's own store (separate DB + creds, mj_agent_memory_user != analyst); checkpoints
+# DO hold biz-derived query rows, but reading them can't reach biz tables / bypass L1/L1b
+# (5-lens corrected; see ADR-037). Secrets by-name via env_vars; no literal credential.
 mcp:
   default_projection_policy: never
   servers:
@@ -728,11 +732,11 @@ mcp:
     serena:
       projection_policy: project
       transform: "emitter B (S2) rewrites args '--context claude-code' -> Codex context"
-    pg-mj-agent-memory-dev: {projection_policy: project-with-adr}
-    pg-mj-agent-memory-test-lan: {projection_policy: project-with-adr}
-    pg-mj-agent-memory-test-wan: {projection_policy: project-with-adr}
-    pg-mj-agent-memory-prod-lan: {projection_policy: project-with-adr}
-    pg-mj-agent-memory-prod-wan: {projection_policy: project-with-adr}
+    pg-mj-agent-memory-dev: {projection_policy: project}
+    pg-mj-agent-memory-test-lan: {projection_policy: project}
+    pg-mj-agent-memory-test-wan: {projection_policy: project}
+    pg-mj-agent-memory-prod-lan: {projection_policy: project}
+    pg-mj-agent-memory-prod-wan: {projection_policy: project}
     pg-mj-system-biz-dev: {projection_policy: never}
     pg-mj-system-biz-test-lan: {projection_policy: never}
     pg-mj-system-biz-test-wan: {projection_policy: never}

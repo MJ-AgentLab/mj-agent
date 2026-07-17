@@ -18,6 +18,31 @@ command = "cmd"
 args = ["/c", "npx", "-y", "@modelcontextprotocol/server-github"]
 env_vars = ["GITHUB_PERSONAL_ACCESS_TOKEN"]
 
+[mcp_servers.pg-mj-agent-memory-dev]
+command = "cmd"
+args = ["/c", ".claude\\scripts\\pg-server-start.cmd", "MJ_AGENT_PG_MEMORY_DEV_URL"]
+env_vars = ["MJ_AGENT_PG_MEMORY_DEV_URL"]
+
+[mcp_servers.pg-mj-agent-memory-prod-lan]
+command = "cmd"
+args = ["/c", ".claude\\scripts\\pg-server-start.cmd", "MJ_AGENT_PG_MEMORY_PROD_LAN_URL"]
+env_vars = ["MJ_AGENT_PG_MEMORY_PROD_LAN_URL"]
+
+[mcp_servers.pg-mj-agent-memory-prod-wan]
+command = "cmd"
+args = ["/c", ".claude\\scripts\\pg-server-start.cmd", "MJ_AGENT_PG_MEMORY_PROD_WAN_URL"]
+env_vars = ["MJ_AGENT_PG_MEMORY_PROD_WAN_URL"]
+
+[mcp_servers.pg-mj-agent-memory-test-lan]
+command = "cmd"
+args = ["/c", ".claude\\scripts\\pg-server-start.cmd", "MJ_AGENT_PG_MEMORY_TEST_LAN_URL"]
+env_vars = ["MJ_AGENT_PG_MEMORY_TEST_LAN_URL"]
+
+[mcp_servers.pg-mj-agent-memory-test-wan]
+command = "cmd"
+args = ["/c", ".claude\\scripts\\pg-server-start.cmd", "MJ_AGENT_PG_MEMORY_TEST_WAN_URL"]
+env_vars = ["MJ_AGENT_PG_MEMORY_TEST_WAN_URL"]
+
 [mcp_servers.playwright]
 command = "cmd"
 args = ["/c", "npx", "-y", "@playwright/mcp@latest"]
