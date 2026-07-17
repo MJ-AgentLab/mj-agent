@@ -22,7 +22,6 @@
       "mcp__pg-mj-system-biz-dev__*",
       "mcp__pg-mj-system-biz-test-lan__*",
       "mcp__pg-mj-system-biz-test-wan__*",
-      "mcp__ssh-manager__*",
       "mcp__playwright__*",
       "Skill",
       "Agent"
