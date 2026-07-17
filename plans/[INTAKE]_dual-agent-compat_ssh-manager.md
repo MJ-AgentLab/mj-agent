@@ -1,10 +1,11 @@
 ---
 type: intake
-summary: 双工具兼容 v5 第十执行切片（#312 独立拍板议题 2 = ssh-manager settings allow 收窄）的 Stage 0 Intake 落盘——maintain/Medium/预计 1 PR；收窄 .claude/settings.json 单条 mcp__ssh-manager__* allow 通配（覆盖 37 工具含 ssh_execute_sudo/ssh_deploy/ssh_db_import 等写面，deny 无兜底）；「wrapper 方案」经 Owner 拍板读作 settings allow-list 收窄（非自建 proxy）；收窄口径（A 全删 / B 子集白名单 / C 全删+deny-floor）留 Gate 5 拍板；对应 issue #356（总锚 #312）
+summary: 双工具兼容 v5 第十执行切片（#312 独立拍板议题 2 = ssh-manager settings allow 收窄）的 Stage 0 Intake 落盘——maintain/Medium/预计 1 PR；收窄 .claude/settings.json 单条 mcp__ssh-manager__* allow 通配（覆盖 37 工具含 ssh_execute_sudo/ssh_deploy/ssh_db_import 等写面，deny 无兜底）；「wrapper 方案」经 Owner 拍板读作 settings allow-list 收窄（非自建 proxy）；收窄口径 Gate 5 拍板 = A 全删（allow 24→23）；对应 issue #356（PR #357 merged `c446a93`，总锚 #312）
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-17
-state: active
+completed: 2026-07-17
+state: completed
 track: shared
 ---
 

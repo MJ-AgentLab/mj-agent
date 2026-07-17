@@ -1,10 +1,11 @@
 ---
 type: plan
-summary: dual-agent-compat v5 ssh-manager settings allow 收窄执行计划（#312 独立拍板议题 2）——收窄 .claude/settings.json 单条 mcp__ssh-manager__* allow 通配（覆盖 37 工具，含 ssh_execute_sudo/ssh_deploy/ssh_db_import 等 24 写面，deny 无兜底）；含全工具面分类（13 read / 24 write）+ 零自动调用证据 + 三收窄口径分析（A 全删→prompt / B 子集白名单 / C 全删+destructive deny-floor）+ 推荐；收窄口径 Gate 5 拍板；1 PR（#356 maintain/356-ssh-manager-allow-narrow）；不改 ci.yml、不翻 gate 姿态、不动 .mcp.json/manifest/4 必停面；总锚 #312
+summary: dual-agent-compat v5 ssh-manager settings allow 收窄执行计划（#312 独立拍板议题 2）——收窄 .claude/settings.json 单条 mcp__ssh-manager__* allow 通配（覆盖 37 工具，含 ssh_execute_sudo/ssh_deploy/ssh_db_import 等 24 写面，deny 无兜底）；含全工具面分类（13 read / 24 write）+ 零自动调用证据 + 三收窄口径分析（A 全删→prompt / B 子集白名单 / C 全删+destructive deny-floor）+ 推荐；Gate 5 拍板 = A 全删（allow 24→23）；1 PR（#356 maintain/356-ssh-manager-allow-narrow，PR #357 merged `c446a93`）；不改 ci.yml、不翻 gate 姿态、不动 .mcp.json/manifest/4 必停面；总锚 #312
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-17
-state: active
+completed: 2026-07-17
+state: completed
 track: shared
 ---
 
