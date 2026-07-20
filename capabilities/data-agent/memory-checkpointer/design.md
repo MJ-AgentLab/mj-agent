@@ -54,9 +54,10 @@ graph.astream() ──► langgraph internal ──► RedactingAsyncPostgresSav
 
 Planned modules (build slice #365 AC3-6):
 
-- `src/mj_agent/memory/digest.py` — pure deterministic per-column aggregation (`{non_null, distinct,
-  min, max}`), microsecond-scale, unit-testable, **no LLM call** (an LLM summary would re-egress biz
-  rows + be non-deterministic).
+- `src/mj_agent/memory/digest.py` — pure deterministic per-column **count** aggregation
+  (`{non_null, distinct}` counts only — `min`/`max` are excluded because they would be verbatim biz
+  cell values, which REQ-001 forbids), microsecond-scale, unit-testable, **no LLM call** (an LLM
+  summary would re-egress biz rows + be non-deterministic).
 - `src/mj_agent/memory/redaction.py` — `RedactingAsyncPostgresSaver(AsyncPostgresSaver)` overriding
   **both** `aput` and `aput_writes`; identifies `execute_sql` ToolMessages by `name == "execute_sql"`
   AND a JSON-envelope shape guard (`executed_sql` + `rows` + `row_count`); emits `model_copy` clones

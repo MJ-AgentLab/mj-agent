@@ -32,7 +32,7 @@ updated: 2026-07-20
 - **Contract changed?**：no
 - **HITL trigger**：N
 - **Status**：todo
-- Pure deterministic per-column aggregation (`{non_null, distinct, min, max}`); no LLM call; handle
+- Pure deterministic per-column aggregation (`{non_null, distinct}`); no LLM call; handle
   Decimal/datetime/date cell types deterministically.
 - **TDD test_list**：
   - `tests/unit/test_memory_digest.py::test_digest_per_column_aggregates`

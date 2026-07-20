@@ -99,6 +99,11 @@ class Settings(BaseSettings):
     mj_agent_memory_user: str = ""
     mj_agent_memory_password: SecretStr = SecretStr("")
     mj_agent_memory_pool_max: int = 10
+    # At-rest desensitization (capability data-agent.memory-checkpointer; ADR-038): when True,
+    # execute_sql biz rows are replaced by a per-column count digest at checkpoint-persist time
+    # (live conversation untouched). Opt-in until the container canary/smoke validate it (#365
+    # build slice); the default-on flip is a follow-up.
+    mj_agent_memory_redact_biz_rows: bool = False
 
     # Redis: container is provisioned in the storage stack but no Python
     # client is wired yet. Settings are declared so future code (session
