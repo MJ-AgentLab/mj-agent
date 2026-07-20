@@ -24,6 +24,7 @@ ai_visibility: source-of-truth
 | [data-agent.llm-provider](./data-agent/llm-provider/spec.yml) | LLM Provider Abstraction (ark + local-openai-compat) | data-agent | drafting | active | 2026-05-20 | python, tdd-bdd |
 | [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | drafting | active | 2026-05-20 | docker-container, tdd-bdd |
 | [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | claude-code-skill, tdd-bdd |
+| [data-agent.memory-checkpointer](./data-agent/memory-checkpointer/spec.yml) | Memory Checkpoint At-Rest Desensitization | data-agent | planned | active | 2026-07-20 | python, tdd-bdd |
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

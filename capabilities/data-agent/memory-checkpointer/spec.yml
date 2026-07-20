@@ -1,0 +1,80 @@
+# capabilities/data-agent/memory-checkpointer/spec.yml
+#
+# Phase-2 capability spec (ADR-038). Owning issue #365 (AC2).
+# Reserved-by-name slot (issue templates + Spec-Anchored refactor completion assessment)
+# now materialized at lifecycle_state: planned — spec/design/contracts/tasks done; the
+# implementation (memory/digest.py + wrapping saver + tests) + BDD automation + evidence +
+# active-flip land in the build slice (#365 AC3-6).
+#
+# NOT a 4-必停 surface: the redaction hook lives entirely in src/mj_agent/memory/, which
+# src/mj_agent/AGENTS.md calls "a separate capability" — distinct from the biz boundary.
+
+id: data-agent.memory-checkpointer
+name: Memory Checkpoint At-Rest Desensitization
+domain: data-agent
+lifecycle_state: planned             # spec+design+contracts+tasks done; build = #365 AC3-6
+archive_state: active
+adapter_coverage:
+  - python                           # (planned) memory/digest.py + wrapping saver over AsyncPostgresSaver
+  - tdd-bdd
+last_verified: 2026-07-20
+owner: ranzuozhou
+created: 2026-07-20
+updated: 2026-07-20
+summary: >
+  At-rest data minimization of the memory checkpointer: the AsyncPostgresSaver persists the
+  full LangGraph message state — including execute_sql ToolMessages whose envelope carries
+  verbatim biz cell values (rows) — into the independent mj_agent_memory Postgres DB. ADR-037
+  named this residual as the driver for Phase-2 checkpoint 摘要/脱敏; ADR-038 decided the
+  direction (mechanism B): at persist time, replace the execute_sql rows with a deterministic
+  per-column digest and keep executed_sql for recoverable-by-refetch, leaving the live
+  in-process conversation untouched. This capability is a defense-in-depth hardening of an
+  already-Owner-accepted, reversible residual (not a new critical exposure) — hence medium
+  priority. Implementation deferred to #365 AC3-6.
+
+requirements:
+  - id: REQ-001
+    statement: "Persisted checkpoints SHALL NOT contain verbatim biz cell values from execute_sql results; the ToolMessage rows payload is replaced at persist time by a deterministic per-column digest (e.g. per column {non_null, distinct, min, max})"
+    rationale: "At-rest data minimization — the memory DB otherwise holds a second copy of already-guardrail-approved biz rows (readable by Codex post-ADR-037). Digest removes the verbatim cell values while preserving analytic shape. Medium: failure leaves the ADR-037-accepted residual in place, not a new exposure."
+    priority: medium
+    bdd:
+      examples:
+        - "Given a thread whose history contains an execute_sql ToolMessage with N biz rows / When the checkpoint is persisted to mj_agent_memory / Then the stored ToolMessage content contains a per-column digest and rows_redacted:true, and no verbatim cell value from the original rows"
+
+  - id: REQ-002
+    statement: "Redaction SHALL occur only on the persistence path (checkpoint write), leaving the live in-process message state byte-identical; what the LLM reads within an active turn is unchanged"
+    rationale: "Live-context fidelity — mechanism B is at-persist, not at-tool-emission (ADR-038 Ruling 2). The saver hands super() redacted CLONES; it never mutates the live BaseMessage objects. Medium: a regression would degrade at-rest minimization or live fidelity, both recoverable."
+    priority: medium
+    bdd:
+      examples:
+        - "Given an active graph run in one process / When a superstep persists a checkpoint / Then the in-memory messages channel still carries the original verbatim rows and same-session follow-up analysis is unaffected"
+
+  - id: REQ-003
+    statement: "The persisted digest SHALL retain executed_sql verbatim so a cold cross-process resume can re-fetch full rows by re-running the guardrail-approved query (recoverable-by-refetch)"
+    rationale: "Resume-fidelity mitigation — the loss is recoverable rather than permanent (ADR-038). Caveat: relative-time / 'latest' queries may drift on re-fetch; documented, not a defect. Medium."
+    priority: medium
+    bdd:
+      examples:
+        - "Given a cold-resumed thread whose execute_sql rows were digested at rest / When the resumed agent needs a specific row value / Then executed_sql is present in the stored envelope so the query can be re-run through the guardrail chain"
+
+  - id: REQ-004
+    statement: "Redaction SHALL be applied on ALL checkpoint write paths (both aput and aput_writes) so no path leaks verbatim biz rows; a canary test SHALL assert the persisted bytes carry no cell value on either path"
+    rationale: "Both-hooks-or-it-leaks completeness (same class as ADR-029 #288 sync/async middleware footgun) — overriding only one path leaks rows through the other. Medium: leak-through leaves the accepted residual on one path, not a new exposure, but the canary is mandatory to prevent silent regression."
+    priority: medium
+    bdd:
+      examples:
+        - "Given the redacting saver is installed / When a checkpoint is written via aput AND when pending writes are flushed via aput_writes / Then neither checkpoint_blobs nor checkpoint_writes contains a verbatim biz cell value"
+
+related_decisions:
+  - decisions/ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md   # direction (Ruling 1/2, mechanism B)
+  - decisions/ADR-037_Memory_PG_MCP_Projection_To_Codex.md           # driver (the residual, now Codex-readable)
+  - decisions/ADR-006_Fail_Safe_Reads.md                             # unchanged data boundary (memory ≠ biz path)
+
+cross_capability_refs:
+  - target: data-agent.tool-chain
+    reason: "REQ-001 targets the execute_sql result envelope (executed_sql / columns / rows / business_summary); the redacting saver identifies execute_sql ToolMessages by name + JSON-envelope shape. execute_sql is owned by the tool-chain capability (Phase 2+)"
+    surface: src/mj_agent/tools/sql/execute.py (envelope) + src/mj_agent/memory/checkpointer.py:88 (saver hook)
+    direction: inbound                # we depend on the execute_sql envelope shape
+
+# Deferred to #365 AC3-6 (build slice): contracts/behavior.feature + trace.yml + evidence/ +
+# lifecycle_state: planned → implementing → verifying → active (G8 evidence gate activates at active).
