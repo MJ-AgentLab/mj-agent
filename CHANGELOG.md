@@ -5,6 +5,26 @@
 
 ## [Unreleased]
 
+### Added — A6 durability gate：evidence/ai-context-audit 专属 schema validator（#359 / #347 §三.2）
+
+- **新增 `scripts/check_ai_context_audit.py`（`maintain`, branch `maintain/359-a6-durability-gate`；
+  #347 §三.2 / `evidence/ai-context-audit/SCHEMA.md` §2.1 披露的 durability 缺口 follow-up；**非** #312
+  tracker 行）**：**动机**：`evidence/ai-context-audit/` 的季度 A6 审计快照用 SCHEMA §2 **自有** schema
+  （`type: ai-context-audit` + `cycle`/`auditor`/`scope`/`findings_summary`/`content_hash_snapshot`，**非**
+  canonical base 7 字段），且该目录在 `check_frontmatter.py` `SCAN_ROOTS` **之外** → 无 CI gate 校验其 §2
+  schema；A6 提醒机制已实证会静默失效（`M-FU-AI-AUDIT-2026-Q3` 从未注册）→ 结构性 gate 是正解；SCHEMA §2.1
+  durability 边界本就自陈「应加一支专属 §2 validator」。**改动（Gate 5 拍板 = Option 2 + investigation-(a) +
+  blocking）**：新 validator 校 `ai-context-audit` §2 frontmatter schema（结构）+ `--derive` 子命令**机器化**
+  §2.1 面集推导（供下期 auditor 现场生成面集，消除人肉写死风险 = #304→Q2-15-stale 病因）；`ci.yml` 新增
+  **blocking** gate step（Q2/Q3 已合规；**`ci-blocking-gate-toggle`**——Owner 2026-07-20 显式 waive
+  `policies/ci-gates.md` §4:41「blocking 前 1 周 dry-run」〔非 D-016 信任面豁免〕，执行记录随 PR/#359，类比 V11 #330）；
+  `SCHEMA.md` §2.1 durability 注更新为「gate 已存在」；
+  38 单测（schema 正/负向 + tmp_path git-init 派生 + 真实树钉线）。**有意非目标**（**time-varying**——是**下期
+  审计**要检的 drift，非 gate 违规）：**不重算** hash 值 / **不校** key 路径当前存在 / **不做 blocking 派生
+  匹配**（面集 Q2=15→Q3=23 随仓变，blocking 会 false-fail 并强制每次改动重跑季度审计，违 §1 A6
+  quarterly-not-cron 设计）。`ai-context-investigation` 类跳过（SCHEMA §2 未正式定义，正式化另立 follow-up）。
+  **配套**：`plans/[INTAKE]/[PLAN]_dual-agent-compat_a6-durability.md`。
+
 ### Changed — ssh-manager settings allow 收窄（#312 独立拍板议题 2，#356）
 
 - **`.claude/settings.json` `permissions.allow` 删 `mcp__ssh-manager__*` 单条通配（`maintain`,

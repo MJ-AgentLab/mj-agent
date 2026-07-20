@@ -72,11 +72,18 @@ content_hash_snapshot:          # 双轨基线 (必停轨 + CLAUDE.md 轨); 面�
   即 body hash）。
 - **落地纪律**：审计者须**先复现上一 cycle 的若干既有 hash** 证明算法实现正确，再算新面
   （否则实现 bug 会被误报成 drift）。
-- **诚实边界（durability）**：本推导规则**降低**了常量腐坏风险（面集从执行面推导，非人肉写死），
-  但**未消除**——`evidence/` 在 `scripts/check_frontmatter.py` 的 `SCAN_ROOTS` **之外**，故
-  **无 CI gate 强制**执行本推导或校验 entry 的 `content_hash_snapshot`。它依赖审计者每 cycle
-  **现场跑推导**（同 A6 选 manual+M-FU 提醒而非 CI cron 的权衡；提醒机制本身仍可能失效，见
-  `2026-Q3.md` F7）。若将来硬化，应加一支 `evidence/ai-context-audit/` 专属 §2 validator。
+- **诚实边界（durability）—— schema 校验缺口已闭（#359 / #347 §三.2 follow-up）**：本推导规则**降低**
+  了常量腐坏风险（面集从执行面推导，非人肉写死）。`evidence/ai-context-audit/` 虽仍在
+  `scripts/check_frontmatter.py` 的 `SCAN_ROOTS` **之外**，但已有**专属 validator**
+  `scripts/check_ai_context_audit.py`（CI blocking gate）强制校验每个 `ai-context-audit` entry 的 §2
+  frontmatter schema（`type`/`cycle` YYYY-QN/`auditor`/`scope`/`findings_summary`/`content_hash_snapshot`
+  结构）。**派生规则已机器化**为该脚本 `--derive` 子命令（供审计者现场生成面集，消除人肉写死风险 =
+  本节开头所述 #304→Q2-15-stale 病因）。
+  - **validator 有意不做的**（**time-varying**——是**下期审计**要检的 drift，非 gate 违规）：**不重算**
+    `content_hash_snapshot` 的 hash 值、**不校** key 路径在当前仓存在、**不做 blocking 派生匹配**。面集随仓
+    变（Q2=15→Q3=23），blocking 匹配会 false-fail 并强制每次改动重跑季度审计，违 §1 A6「manual+M-FU 而非
+    CI cron」设计。故审计者每 cycle 仍须**现场跑 `--derive`** 并按 §2.1 核实（提醒机制本身仍可能失效，见
+    `2026-Q3.md` F7）——本 gate 保证**结构**合规，不替代季度**内容**核验。
 
 **推导即得的当期观测值**（记录用，非规范）：2026-Q2 = 15 面；2026-Q3 = **23 面**
 （必停 markdown 轨 18 = 9 runtime `SKILL.md` + `system.md` + 8 infra；CLAUDE.md 轨 5）。
