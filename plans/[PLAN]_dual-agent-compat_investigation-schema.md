@@ -1,10 +1,11 @@
 ---
 type: plan
-summary: investigation-type schema 正式化执行计划（a2 #2-9 / A6 follow-up Intake §9-1）——在 evidence/ai-context-audit/SCHEMA.md §2 正式定义 ai-context-investigation frontmatter schema（required: type/investigation/auditor/scope/findings_summary；optional: subtype/phase/date/related_episodes/parent_artifacts/schema_extension_request；不需 content_hash_snapshot——与 audit 的关键结构差异）+ 扩 scripts/check_ai_context_audit.py（新 validate_investigation_entry + find_cycle_entries→find_entries 三分〔cycle/investigation/other〕、按 filename YYYY-MM-DD_*.md 选中 investigation、docstring 更新）+ 单测（加 investigation 用例、改 2 个编码旧 skip 行为的测试）+ CHANGELOG；两既存 investigation 文件 green day-one；D2 = same blocking gate coverage-expansion（无 continue-on-error flip、无 ci.yml edit；§三.1 治理裁定记录）；1 PR（#362 maintain/362-investigation-schema）
+summary: investigation-type schema 正式化执行计划（a2 #2-9 / A6 follow-up Intake §9-1）——在 evidence/ai-context-audit/SCHEMA.md §2 正式定义 ai-context-investigation frontmatter schema（required: type/investigation/auditor/scope/findings_summary；optional: subtype/phase/date/related_episodes/parent_artifacts/schema_extension_request；不需 content_hash_snapshot——与 audit 的关键结构差异）+ 扩 scripts/check_ai_context_audit.py（新 validate_investigation_entry + find_cycle_entries→find_entries 三分〔cycle/investigation/other〕、按 filename YYYY-MM-DD_*.md 选中 investigation、docstring 更新）+ 单测（加 investigation 用例、改 2 个编码旧 skip 行为的测试）+ CHANGELOG；两既存 investigation 文件 green day-one；D2 = same blocking gate coverage-expansion（无 continue-on-error flip、无 ci.yml edit；§三.1 治理裁定记录）；1 PR（#362 maintain/362-investigation-schema，PR #363 merged b95013e，2026-07-20）
 owner: ranzuozhou
 created: 2026-07-20
 updated: 2026-07-20
-state: active
+completed: 2026-07-20
+state: completed
 track: shared
 ---
 

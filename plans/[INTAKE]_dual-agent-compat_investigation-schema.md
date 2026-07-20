@@ -1,10 +1,11 @@
 ---
 type: intake
-summary: investigation-type schema 正式化切片（a2 finding #2-9 / #347 §三.2 A6 follow-up 的 Intake §9-1）的 Stage 0 Intake 落盘——maintain/Medium/预计 1 PR；在 evidence/ai-context-audit/SCHEMA.md §2 正式定义 ai-context-investigation frontmatter schema + 扩 scripts/check_ai_context_audit.py 按 filename（YYYY-MM-DD_*.md）选中并校验 investigation 条目；两既存 investigation 文件（05-22 a2/a3）green day-one；Gate 5 拍板 D1=formalize+validate、D2=same blocking gate day-one（coverage-expansion of already-blocking gate，无 continue-on-error flip、无 ci.yml edit；§三.1 carry-forward：不自判 ci-blocking-gate-toggle/§4:41 N/A，Owner 选项即显式治理裁定，PR 记录类比 V11 #330 / A6 #360）；对应 issue #362；非 #312 tracker 行，是 #359 / #347 §三.2 的 follow-up
+summary: investigation-type schema 正式化切片（a2 finding #2-9 / #347 §三.2 A6 follow-up 的 Intake §9-1）的 Stage 0 Intake 落盘——maintain/Medium/预计 1 PR；在 evidence/ai-context-audit/SCHEMA.md §2 正式定义 ai-context-investigation frontmatter schema + 扩 scripts/check_ai_context_audit.py 按 filename（YYYY-MM-DD_*.md）选中并校验 investigation 条目；两既存 investigation 文件（05-22 a2/a3）green day-one；Gate 5 拍板 D1=formalize+validate、D2=same blocking gate day-one（coverage-expansion of already-blocking gate，无 continue-on-error flip、无 ci.yml edit；§三.1 carry-forward：不自判 ci-blocking-gate-toggle/§4:41 N/A，Owner 选项即显式治理裁定，PR 记录类比 V11 #330 / A6 #360）；对应 issue #362；非 #312 tracker 行，是 #359 / #347 §三.2 的 follow-up（PR #363 merged b95013e，2026-07-20）
 owner: ranzuozhou
 created: 2026-07-20
 updated: 2026-07-20
-state: active
+completed: 2026-07-20
+state: completed
 track: shared
 ---
 
