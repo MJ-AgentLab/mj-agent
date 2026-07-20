@@ -71,6 +71,23 @@ jobs:
           MJ_AGENT_A4_STRICT: "1"
         run: uv run python scripts/check_wikilinks.py
 
+      - name: A6 audit schema (evidence/ai-context-audit)
+        # Durability gate (#359 / #347 §三.2): the evidence/ai-context-audit/
+        # quarterly A6 audit snapshots use SCHEMA.md §2's own frontmatter schema
+        # (type: ai-context-audit + cycle/auditor/scope/findings_summary/
+        # content_hash_snapshot) and live OUTSIDE check_frontmatter.py SCAN_ROOTS,
+        # so this dedicated validator enforces the §2 schema. BLOCKING day-1 — the
+        # ci-gates.md §4:41 "1-week dry-run before blocking" is explicitly WAIVED by
+        # the Owner (2026-07-20; Q2/Q3 already compliant + structural-only checks +
+        # tiny controlled corpus + zero drift risk). This is NOT the D-016 信任面
+        # exemption (that is MCP-projection-only); it is an ad-hoc ci-blocking-gate-
+        # toggle waiver whose execution record lives in PR / issue #359 (analogous
+        # to V11 day-1 blocking #330). Validates STRUCTURE only — does NOT recompute
+        # hashes or match the time-varying §2.1 face-set (that drift is what the
+        # NEXT quarterly audit detects; the derivation is a `--derive` authoring
+        # aid, not a gate). See scripts/check_ai_context_audit.py.
+        run: uv run python scripts/check_ai_context_audit.py
+
       - name: No cross-repo refs (forward guard)
         # Forward guard after 2026-05 cross-repo decoupling cleanup. Scans
         # docs/**/*.md + CLAUDE.md + README.md for forbidden `mj-system` /
