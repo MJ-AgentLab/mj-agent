@@ -1,13 +1,15 @@
-"""Unit tests for ``scripts/check_ai_context_audit.py`` (A6 durability gate, #359).
+"""Unit tests for ``scripts/check_ai_context_audit.py`` (A6 durability gate, #359;
+ai-context-investigation schema added #362).
 
-Schema-validation tests exercise ``validate_audit_entry()`` on plain dicts (pure — no
-filesystem). ``run()`` / ``check()`` / ``find_cycle_entries()`` tests use ``tmp_path``
-fixtures (git-init where the §2.1 derivation needs ``git ls-files``), never against the
-real tree — so building scratch dirs cannot flip a real-tree precondition (per the
-structure-move lesson). ``TestRun`` covers the gate's core promise (exit 1 on a schema
-violation), the investigation-skip decision, BOM non-evasion, and the parse-error branch.
-A real-tree pin confirms the committed Q2/Q3 entries pass and ``derive_face_set`` is
-well-formed (structural invariants, not an exact count — the face-set is time-varying).
+Schema-validation tests exercise ``validate_audit_entry()`` /
+``validate_investigation_entry()`` on plain dicts (pure — no filesystem). ``run()`` /
+``check()`` / ``find_entries()`` tests use ``tmp_path`` fixtures (git-init where the §2.1
+derivation needs ``git ls-files``), never against the real tree — so building scratch dirs
+cannot flip a real-tree precondition (per the structure-move lesson). ``TestRun`` covers the
+gate's core promise (exit 1 on a schema violation) for BOTH entry types, BOM non-evasion,
+and the parse-error branch. A real-tree pin confirms the committed Q2/Q3 audit + a2/a3
+investigation entries pass and ``derive_face_set`` is well-formed (structural invariants,
+not an exact count — the face-set is time-varying).
 """
 from __future__ import annotations
 
@@ -21,9 +23,10 @@ from scripts.check_ai_context_audit import (
     _frozen_infra,
     check,
     derive_face_set,
-    find_cycle_entries,
+    find_entries,
     run,
     validate_audit_entry,
+    validate_investigation_entry,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -53,6 +56,28 @@ def _valid_meta() -> dict:
             "CLAUDE.md": "998d8d13c4b5ad9a",
             "src/mj_agent/prompts/system.md": "994d4a2d7fd3677f",
         },
+    }
+
+
+VALID_INVESTIGATION_MD = (
+    "---\n"
+    "type: ai-context-investigation\n"
+    "investigation: test-investigation-slug\n"
+    'auditor: "ai-agent (test)"\n'
+    "scope:\n"
+    "  - some-scope\n"
+    'findings_summary: "found things"\n'
+    "---\nbody\n"
+)
+
+
+def _valid_investigation_meta() -> dict:
+    return {
+        "type": "ai-context-investigation",
+        "investigation": "a2-test-slug",
+        "auditor": "ai-agent (test)",
+        "scope": ["body-sha256-utility", "hash-algorithm-governance"],
+        "findings_summary": "surfaced 2 latent issues; defer M5+",
     }
 
 
@@ -154,20 +179,119 @@ class TestValidateAuditEntry:
         assert any("hex" in msg for msg in validate_audit_entry(meta))
 
 
-class TestFindCycleEntries:
-    def test_splits_cycle_vs_other(self, tmp_path: Path) -> None:
+class TestValidateInvestigationEntry:
+    def test_valid_passes(self) -> None:
+        assert validate_investigation_entry(_valid_investigation_meta()) == []
+
+    def test_valid_with_optionals_passes(self) -> None:
+        meta = _valid_investigation_meta()
+        meta.update(
+            {
+                "subtype": "readiness-eval",
+                "phase": "M4-Stage-A-unit-A-2",
+                "date": "2026-05-22",
+                "related_episodes": ["#2-1 first", "#2-9 schema amendment"],
+                "parent_artifacts": ["A-1 brief §0"],
+                "schema_extension_request": True,
+            }
+        )
+        assert validate_investigation_entry(meta) == []
+
+    def test_no_content_hash_snapshot_required(self) -> None:
+        # Key structural difference vs audit: investigations are not hash snapshots.
+        meta = _valid_investigation_meta()
+        assert "content_hash_snapshot" not in meta
+        assert validate_investigation_entry(meta) == []
+
+    @pytest.mark.parametrize(
+        "field", ["type", "investigation", "auditor", "scope", "findings_summary"]
+    )
+    def test_missing_required_field(self, field: str) -> None:
+        meta = _valid_investigation_meta()
+        del meta[field]
+        violations = validate_investigation_entry(meta)
+        assert any(field in msg for msg in violations), violations
+
+    def test_wrong_type(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["type"] = "ai-context-audit"
+        assert any("type must be" in msg for msg in validate_investigation_entry(meta))
+
+    def test_empty_investigation(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["investigation"] = "   "
+        assert any("investigation must be" in msg for msg in validate_investigation_entry(meta))
+
+    def test_investigation_non_str(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["investigation"] = 123
+        assert any("investigation must be" in msg for msg in validate_investigation_entry(meta))
+
+    def test_empty_auditor(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["auditor"] = ""
+        assert any("auditor" in msg for msg in validate_investigation_entry(meta))
+
+    def test_empty_scope(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["scope"] = []
+        assert any("scope must be" in msg for msg in validate_investigation_entry(meta))
+
+    def test_scope_not_list(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["scope"] = "some-scope"
+        assert any("scope must be" in msg for msg in validate_investigation_entry(meta))
+
+    def test_empty_findings_summary(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["findings_summary"] = "   "
+        assert any("findings_summary" in msg for msg in validate_investigation_entry(meta))
+
+    def test_bad_related_episodes(self) -> None:
+        # Optional list field is validated only when present.
+        meta = _valid_investigation_meta()
+        meta["related_episodes"] = "not-a-list"
+        assert any(
+            "related_episodes must be" in msg for msg in validate_investigation_entry(meta)
+        )
+
+    def test_bad_parent_artifacts(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["parent_artifacts"] = ["ok", "  "]
+        assert any(
+            "parent_artifacts must be" in msg for msg in validate_investigation_entry(meta)
+        )
+
+    def test_empty_subtype(self) -> None:
+        meta = _valid_investigation_meta()
+        meta["subtype"] = ""
+        assert any("subtype must be" in msg for msg in validate_investigation_entry(meta))
+
+
+class TestFindEntries:
+    def test_splits_cycle_investigation_other(self, tmp_path: Path) -> None:
         _write(tmp_path, "evidence/ai-context-audit/2026-Q2.md", VALID_AUDIT_MD)
         _write(tmp_path, "evidence/ai-context-audit/2026-Q3.md", VALID_AUDIT_MD)
-        _write(tmp_path, "evidence/ai-context-audit/2026-05-22_a2-investigation.md", "---\ntype: x\n---\n")
+        _write(
+            tmp_path,
+            "evidence/ai-context-audit/2026-05-22_a2-investigation.md",
+            VALID_INVESTIGATION_MD,
+        )
+        _write(
+            tmp_path,
+            "evidence/ai-context-audit/2026-05-22_a3-readiness-eval.md",
+            VALID_INVESTIGATION_MD,
+        )
         _write(tmp_path, "evidence/ai-context-audit/SCHEMA.md", "# Schema\nno frontmatter")
-        cycle, other = find_cycle_entries(tmp_path)
+        cycle, investigation, other = find_entries(tmp_path)
         assert Path("evidence/ai-context-audit/2026-Q2.md") in cycle
         assert Path("evidence/ai-context-audit/2026-Q3.md") in cycle
-        assert Path("evidence/ai-context-audit/2026-05-22_a2-investigation.md") in other
+        assert Path("evidence/ai-context-audit/2026-05-22_a2-investigation.md") in investigation
+        assert Path("evidence/ai-context-audit/2026-05-22_a3-readiness-eval.md") in investigation
         assert Path("evidence/ai-context-audit/SCHEMA.md") in other
 
     def test_absent_dir(self, tmp_path: Path) -> None:
-        assert find_cycle_entries(tmp_path) == ([], [])
+        assert find_entries(tmp_path) == ([], [], [])
 
 
 class TestRun:
@@ -205,15 +329,31 @@ class TestRun:
         path.write_bytes(b"\xef\xbb\xbf---\ntype: ai-context-audit\ncycle: 2026-Q4\n---\nbody")
         assert run(tmp_path) == 1  # missing auditor/scope/findings_summary/content_hash_snapshot
 
-    def test_non_cycle_files_not_validated(self, tmp_path: Path) -> None:
+    def test_wellformed_investigation_passes(self, tmp_path: Path) -> None:
         _write(tmp_path, "evidence/ai-context-audit/2026-Q2.md", VALID_AUDIT_MD)
-        # An investigation file that WOULD fail §2 validation, but is not a cycle file.
         _write(
             tmp_path,
             "evidence/ai-context-audit/2026-05-22_a2-investigation.md",
-            "---\ntype: ai-context-investigation\n---\nx",
+            VALID_INVESTIGATION_MD,
         )
         assert run(tmp_path) == 0
+
+    def test_malformed_investigation_fails(self, tmp_path: Path) -> None:
+        # An investigation FILENAME with a bare `type` (missing investigation/auditor/
+        # scope/findings_summary) must now be FAILED — #362 supersedes the old skip.
+        rel = Path("evidence/ai-context-audit/2026-05-22_a2-investigation.md")
+        _write(tmp_path, str(rel), "---\ntype: ai-context-investigation\n---\nbody")
+        assert run(tmp_path) == 1
+        assert check(tmp_path)[rel]
+
+    def test_schema_and_non_entry_md_still_skipped(self, tmp_path: Path) -> None:
+        # SCHEMA.md is neither a cycle (YYYY-QN.md) nor investigation (YYYY-MM-DD_*.md)
+        # filename → reported as skipped, never validated.
+        _write(tmp_path, "evidence/ai-context-audit/2026-Q2.md", VALID_AUDIT_MD)
+        _write(tmp_path, "evidence/ai-context-audit/SCHEMA.md", "# Schema\nno frontmatter")
+        assert run(tmp_path) == 0
+        _cycle, _investigation, other = find_entries(tmp_path)
+        assert Path("evidence/ai-context-audit/SCHEMA.md") in other
 
     def test_parse_error_branch(self, tmp_path: Path) -> None:
         _write(tmp_path, "evidence/ai-context-audit/2026-Q2.md", "---\ntype: [unclosed\n---\nx")
@@ -292,9 +432,10 @@ class TestDeriveFaceSet:
 
 
 class TestRealTree:
-    def test_committed_cycle_entries_pass(self) -> None:
-        cycle, _other = find_cycle_entries(REPO_ROOT)
+    def test_committed_entries_pass(self) -> None:
+        cycle, investigation, _other = find_entries(REPO_ROOT)
         assert len(cycle) >= 2  # 2026-Q2 + 2026-Q3
+        assert len(investigation) >= 2  # 2026-05-22 a2 + a3 (green day-one, #362)
         assert check(REPO_ROOT) == {}
 
     def test_derive_structural_invariants(self) -> None:

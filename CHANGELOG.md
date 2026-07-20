@@ -5,6 +5,29 @@
 
 ## [Unreleased]
 
+### Added — investigation-type schema 正式化：SCHEMA §2.2 + validator 扩展（#362 / a2 #2-9）
+
+- **`evidence/ai-context-audit/SCHEMA.md` §2.2 正式定义 `ai-context-investigation` frontmatter schema +
+  `scripts/check_ai_context_audit.py` 扩展校验之（`maintain`, branch `maintain/362-investigation-schema`；
+  A6 durability gate #359 / #347 §三.2 的登记 follow-up〔该 slice Intake §9-1〕；**非** #312 tracker 行）**：
+  **动机**：`evidence/ai-context-audit/` 含两类条目——`ai-context-audit` 季度 cycle（`YYYY-QN.md`）+
+  `ai-context-investigation` ad-hoc 调查（`YYYY-MM-DD_*.md`，现存 05-22 a2/a3 ×2）；A6 gate 初版**只校 audit**
+  （plan §5.2 Option (a)，拒 Option (c)「撑大切片」并登记 follow-up），SCHEMA §2 从未定义 investigation 类
+  → validator 按 filename 天然跳过（诚实临时态）；a2 finding **#2-9** + `schema_extension_request: true`
+  提请正式化。**改动（Gate 5 拍板 = D1 formalize+validate + D2 same-blocking-gate day-one）**：
+  ① SCHEMA §2 泛化标题为「Entry Frontmatter Schemas」+ 新增 **§2.2** 定义 investigation schema（required 5 =
+  `type`/`investigation`/`auditor`/`scope`/`findings_summary`；optional `subtype`/`related_episodes`/
+  `parent_artifacts` 仅在出现时校；`phase`/`date`/`schema_extension_request` 文档化不受约束；**不携
+  `content_hash_snapshot`** = 与 audit 的关键结构差异，故 §2.1 面集推导不适用）；② validator
+  `find_cycle_entries`→`find_entries` 三分（cycle/investigation/other，filename-based：
+  investigation=`YYYY-MM-DD_*.md`）+ 新增 `validate_investigation_entry`，`check`/`run` 校两类；两既存
+  investigation 文件 **green day-one**。**治理（承 §三.1）**：coverage-expansion of an **already-blocking**
+  gate（**无** `continue-on-error` flip、**无** `ci.yml` edit）——**不**自判 `ci-blocking-gate-toggle` /
+  ci-gates §4:41 为 N/A；Owner 2026-07-20 D2 显式裁定 = 视作既有 blocking gate 的 coverage 扩展（语料 2 文件
+  均 green、structural-only，类比 A6 #360 / V11 #330）。**有意非目标**（同 A6）：不重算 hash / 不校 key 路径 /
+  不做 blocking 派生匹配。单测扩至 65（新增 investigation schema 正/负向 + `find_entries` 三分 + 真实树 a2/a3
+  green 钉线；audit 侧全绿无回归）。**配套**：`plans/[INTAKE]/[PLAN]_dual-agent-compat_investigation-schema.md`。
+
 ### Added — A6 durability gate：evidence/ai-context-audit 专属 schema validator（#359 / #347 §三.2）
 
 - **新增 `scripts/check_ai_context_audit.py`（`maintain`, branch `maintain/359-a6-durability-gate`；

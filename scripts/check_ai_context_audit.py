@@ -1,20 +1,26 @@
-"""Validate ``evidence/ai-context-audit/`` quarterly A6 audit entries against SCHEMA.md §2.
+"""Validate ``evidence/ai-context-audit/`` A6 audit + investigation entries against SCHEMA.md §2.
 
 Closes the durability gap disclosed in ``evidence/ai-context-audit/SCHEMA.md`` §2.1
 (registered as #347 §三.2): the ``evidence/ai-context-audit/`` directory is OUTSIDE
 ``scripts/check_frontmatter.py``'s ``SCAN_ROOTS``, so nothing CI-enforces the §2
-frontmatter schema of the quarterly A6 audit snapshots. Those entries use SCHEMA §2's
-own schema (``type: ai-context-audit`` + ``cycle`` / ``auditor`` / ``scope`` /
-``findings_summary`` / ``content_hash_snapshot``), NOT the canonical base schema
+frontmatter schema of the A6 snapshots. Those entries use SCHEMA §2's own schema
+(``type: ai-context-audit`` + ``cycle`` / ``auditor`` / ``scope`` / ``findings_summary`` /
+``content_hash_snapshot``), NOT the canonical base schema
 (``summary``/``owner``/``created``/``updated``/``state``/``track``), so they cannot be
 folded into ``check_frontmatter.py`` — hence this dedicated §2 validator, exactly what
 SCHEMA §2.1 prescribes ("若将来硬化，应加一支 evidence/ai-context-audit/ 专属 §2 validator").
 
-Cycle entries are selected by the ``<cycle>.md`` FILENAME convention (SCHEMA §1/§3:
-``YYYY-QN.md``), NOT by the ``type`` field's value — so a real cycle entry that omits or
-mistypes ``type`` (or carries a UTF-8 BOM) is still validated and FAILED, rather than
-silently skipped. Non-cycle ``.md`` (``SCHEMA.md``, ``*-investigation.md``) are reported
-as skipped, honoring the Gate-5 investigation-(a) decision (validate ai-context-audit only).
+Two entry TYPES are validated, each selected by a FILENAME convention (SCHEMA §1/§3 + §2.2),
+NOT by the ``type`` field's value — so a real entry that omits or mistypes ``type`` (or
+carries a UTF-8 BOM) is still validated and FAILED, rather than silently skipped:
+
+- ``ai-context-audit`` quarterly cycles — ``YYYY-QN.md`` (e.g. ``2026-Q3.md``); SCHEMA §2.
+- ``ai-context-investigation`` ad-hoc investigations — ``YYYY-MM-DD_*.md`` (e.g.
+  ``2026-05-22_a2-investigation.md``); SCHEMA §2.2 (added #362, resolving a2 finding #2-9
+  and superseding the A6 Gate-5 investigation-(a) "audit-only" skip).
+
+Any other scanned ``.md`` (e.g. ``SCHEMA.md``) is reported as skipped, never validated;
+non-``.md`` files (``.gitkeep``) are not scanned at all.
 
 Deliberate NON-goals (these are the drift the NEXT quarterly audit detects, not gate
 violations — see SCHEMA §2.1 durability boundary + §1 quarterly-not-cron design):
@@ -44,6 +50,7 @@ import json
 import re
 import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -59,9 +66,12 @@ FROZEN_CONTRACT = Path(
 SETTINGS = Path(".claude/settings.json")
 
 AUDIT_TYPE = "ai-context-audit"
+INVESTIGATION_TYPE = "ai-context-investigation"
 CYCLE_RE = re.compile(r"^\d{4}-Q[1-4]$")
 # Cycle-entry filename convention (SCHEMA §1/§3): YYYY-QN.md.
 CYCLE_FILE_RE = re.compile(r"^\d{4}-Q[1-4]\.md$")
+# Investigation-entry filename convention (SCHEMA §2.2): YYYY-MM-DD_<slug>.md.
+INVESTIGATION_FILE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}_.+\.md$")
 # content_hash_snapshot values: lowercase sha256, 16-char truncated (current entries)
 # or full 64-char. Canonical algo is lowercase hex (SCHEMA §2.1).
 HEX_RE = re.compile(r"^([0-9a-f]{16}|[0-9a-f]{64})$")
@@ -76,6 +86,25 @@ REQUIRED_AUDIT_FIELDS: tuple[str, ...] = (
     "findings_summary",
     "content_hash_snapshot",
 )
+# Investigation entries use `investigation` (a slug) in place of `cycle`, and — being
+# narrative reports, not hash snapshots — deliberately do NOT require content_hash_snapshot.
+REQUIRED_INVESTIGATION_FIELDS: tuple[str, ...] = (
+    "type",
+    "investigation",
+    "auditor",
+    "scope",
+    "findings_summary",
+)
+
+
+def _is_nonempty_str(val: Any) -> bool:
+    """True iff ``val`` is a non-blank string."""
+    return isinstance(val, str) and bool(val.strip())
+
+
+def _is_nonempty_str_list(val: Any) -> bool:
+    """True iff ``val`` is a non-empty list of non-blank strings."""
+    return isinstance(val, list) and len(val) > 0 and all(_is_nonempty_str(s) for s in val)
 
 
 def validate_audit_entry(meta: dict[str, Any]) -> list[str]:
@@ -99,24 +128,14 @@ def validate_audit_entry(meta: dict[str, Any]) -> list[str]:
         if not (isinstance(cycle, str) and CYCLE_RE.match(cycle)):
             violations.append(f"cycle={cycle!r} not YYYY-QN (e.g. 2026-Q2)")
 
-    if "auditor" in meta:
-        auditor = meta["auditor"]
-        if not (isinstance(auditor, str) and auditor.strip()):
-            violations.append("auditor must be a non-empty string")
+    if "auditor" in meta and not _is_nonempty_str(meta["auditor"]):
+        violations.append("auditor must be a non-empty string")
 
-    if "scope" in meta:
-        scope = meta["scope"]
-        if not (
-            isinstance(scope, list)
-            and len(scope) > 0
-            and all(isinstance(s, str) and s.strip() for s in scope)
-        ):
-            violations.append("scope must be a non-empty list of non-empty strings")
+    if "scope" in meta and not _is_nonempty_str_list(meta["scope"]):
+        violations.append("scope must be a non-empty list of non-empty strings")
 
-    if "findings_summary" in meta:
-        summary = meta["findings_summary"]
-        if not (isinstance(summary, str) and summary.strip()):
-            violations.append("findings_summary must be a non-empty string")
+    if "findings_summary" in meta and not _is_nonempty_str(meta["findings_summary"]):
+        violations.append("findings_summary must be a non-empty string")
 
     if "content_hash_snapshot" in meta:
         snapshot = meta["content_hash_snapshot"]
@@ -141,6 +160,48 @@ def validate_audit_entry(meta: dict[str, Any]) -> list[str]:
     return violations
 
 
+def validate_investigation_entry(meta: dict[str, Any]) -> list[str]:
+    """Return violation messages for one ai-context-investigation entry (empty = passes).
+
+    Validates the SCHEMA.md §2.2 schema (structure). Required: ``type`` / ``investigation``
+    / ``auditor`` / ``scope`` / ``findings_summary``. Optional fields (``subtype`` /
+    ``related_episodes`` / ``parent_artifacts``) are validated only when present;
+    ``phase`` / ``date`` (a YAML date) / ``schema_extension_request`` (a bool) are
+    unconstrained. Unlike audit entries, investigations carry NO ``content_hash_snapshot``
+    (they are narrative reports, not hash snapshots) and use ``investigation`` (a slug) in
+    place of ``cycle``.
+    """
+    violations: list[str] = []
+
+    for field in REQUIRED_INVESTIGATION_FIELDS:
+        if field not in meta:
+            violations.append(f"missing required field `{field}`")
+
+    if meta.get("type") != INVESTIGATION_TYPE:
+        violations.append(f"type must be {INVESTIGATION_TYPE!r} (got {meta.get('type')!r})")
+
+    if "investigation" in meta and not _is_nonempty_str(meta["investigation"]):
+        violations.append("investigation must be a non-empty string")
+
+    if "auditor" in meta and not _is_nonempty_str(meta["auditor"]):
+        violations.append("auditor must be a non-empty string")
+
+    if "scope" in meta and not _is_nonempty_str_list(meta["scope"]):
+        violations.append("scope must be a non-empty list of non-empty strings")
+
+    if "findings_summary" in meta and not _is_nonempty_str(meta["findings_summary"]):
+        violations.append("findings_summary must be a non-empty string")
+
+    if "subtype" in meta and not _is_nonempty_str(meta["subtype"]):
+        violations.append("subtype must be a non-empty string")
+
+    for list_field in ("related_episodes", "parent_artifacts"):
+        if list_field in meta and not _is_nonempty_str_list(meta[list_field]):
+            violations.append(f"{list_field} must be a non-empty list of non-empty strings")
+
+    return violations
+
+
 def _load_meta(path: Path) -> dict[str, Any]:
     """BOM-tolerant frontmatter metadata load (Windows editors may emit a UTF-8 BOM,
     which a plain utf-8 read leaves as a U+FEFF prefix that hides the leading ``---``)."""
@@ -148,51 +209,68 @@ def _load_meta(path: Path) -> dict[str, Any]:
     return frontmatter.loads(text).metadata
 
 
-def find_cycle_entries(repo_root: Path) -> tuple[list[Path], list[Path]]:
-    """Return ``(cycle_entries, other_md)`` split by the ``<cycle>.md`` filename
-    convention (SCHEMA §1/§3). Filename-based selection (not ``type``-based) ensures a
-    real cycle entry with a missing/mistyped ``type`` — or a UTF-8 BOM — is still
-    validated (and failed), while investigation / SCHEMA files (non-cycle names) are
-    reported as skipped.
+def find_entries(repo_root: Path) -> tuple[list[Path], list[Path], list[Path]]:
+    """Return ``(cycle, investigation, other)`` split by FILENAME convention (SCHEMA §1/§3
+    + §2.2): ``YYYY-QN.md`` → cycle, ``YYYY-MM-DD_*.md`` → investigation, any other scanned
+    ``.md`` (e.g. ``SCHEMA.md``) → other. Only ``*.md`` is scanned, so non-``.md`` files
+    (``.gitkeep``) never appear. Filename-based selection (not ``type``-based) ensures a real
+    entry with a missing/mistyped ``type`` — or a UTF-8 BOM — is still validated (and failed),
+    rather than silently skipped.
     """
     audit_dir = repo_root / AUDIT_DIR
     cycle: list[Path] = []
+    investigation: list[Path] = []
     other: list[Path] = []
     if not audit_dir.exists():
-        return cycle, other
+        return cycle, investigation, other
     for md in sorted(audit_dir.glob("*.md")):
         rel = md.relative_to(repo_root)
-        (cycle if CYCLE_FILE_RE.match(md.name) else other).append(rel)
-    return cycle, other
+        if CYCLE_FILE_RE.match(md.name):
+            cycle.append(rel)
+        elif INVESTIGATION_FILE_RE.match(md.name):
+            investigation.append(rel)
+        else:
+            other.append(rel)
+    return cycle, investigation, other
 
 
 def check(repo_root: Path) -> dict[Path, list[str]]:
-    """Return ``{rel: violations}`` for every cycle entry with §2 schema violations."""
-    cycle, _other = find_cycle_entries(repo_root)
+    """Return ``{rel: violations}`` for every cycle / investigation entry with schema
+    violations (cycle → §2 audit schema, investigation → §2.2 investigation schema)."""
+    cycle, investigation, _other = find_entries(repo_root)
+    validators: list[tuple[Path, Callable[[dict[str, Any]], list[str]]]] = [
+        (rel, validate_audit_entry) for rel in cycle
+    ]
+    validators += [(rel, validate_investigation_entry) for rel in investigation]
     bad: dict[Path, list[str]] = {}
-    for rel in cycle:
+    for rel, validator in validators:
         try:
             meta = _load_meta(repo_root / rel)
         except Exception as exc:  # noqa: BLE001 — yaml errors are user-facing
             bad[rel] = [f"frontmatter parse error: {exc}"]
             continue
-        violations = validate_audit_entry(meta)
+        violations = validator(meta)
         if violations:
             bad[rel] = violations
     return bad
 
 
 def run(repo_root: Path) -> int:
-    """Validate all cycle entries; print a report; return exit code (0 ok / 1 violations)."""
-    cycle, other = find_cycle_entries(repo_root)
+    """Validate all cycle + investigation entries; print a report; return exit code
+    (0 ok / 1 violations)."""
+    cycle, investigation, other = find_entries(repo_root)
     for rel in other:
-        print(f"skip (not a <cycle>.md entry): {rel}")
+        print(f"skip (not a cycle or investigation entry): {rel}")
     bad = check(repo_root)
+    total = len(cycle) + len(investigation)
     if not bad:
-        print(f"OK: {len(cycle)} cycle audit entries pass SCHEMA §2 schema check")
+        print(
+            f"OK: {len(cycle)} cycle + {len(investigation)} investigation entries "
+            f"pass SCHEMA §2 schema check"
+        )
         return 0
     print(
-        f"FAIL: {len(bad)} of {len(cycle)} cycle audit entries have schema violations\n",
+        f"FAIL: {len(bad)} of {total} entries have schema violations\n",
         file=sys.stderr,
     )
     for rel, violations in sorted(bad.items()):
@@ -200,7 +278,7 @@ def run(repo_root: Path) -> int:
         for violation in violations:
             print(f"    - {violation}", file=sys.stderr)
     print(
-        "\nFix per evidence/ai-context-audit/SCHEMA.md §2 (ai-context-audit frontmatter schema).",
+        "\nFix per evidence/ai-context-audit/SCHEMA.md §2 / §2.2 (frontmatter schema).",
         file=sys.stderr,
     )
     return 1
@@ -268,7 +346,8 @@ def derive_face_set(repo_root: Path) -> list[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate evidence/ai-context-audit/ ai-context-audit entries (SCHEMA §2)."
+        description="Validate evidence/ai-context-audit/ audit + investigation entries "
+        "(SCHEMA §2 / §2.2)."
     )
     parser.add_argument(
         "--derive",
