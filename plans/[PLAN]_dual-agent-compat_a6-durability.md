@@ -1,10 +1,11 @@
 ---
 type: plan
-summary: A6 durability gate 执行计划（#347 §三.2 / SCHEMA.md §2.1 durability 缺口）——新建 scripts/check_ai_context_audit.py 校验 evidence/ai-context-audit/ 的 ai-context-audit §2 frontmatter schema（type/cycle/auditor/scope/findings_summary/content_hash_snapshot；content_hash_snapshot 只校结构非重算 hash——重算=下期审计要检的 drift）+ CI step + SCHEMA §2.1 durability 注更新 + 单测；面集==§2.1 推导 time-varying（当前=23=Q3）→ blocking 派生门拒（违 A6 quarterly-not-cron 设计），至多 --derive helper（Option 2）；scope（1 schema-only / 2 +derive-helper / 3 blocking〔拒〕）+ investigation 处置 + CI posture（blocking/warning）Gate 5 拍板；1 PR（#359 maintain/359-a6-durability-gate）
+summary: A6 durability gate 执行计划（#347 §三.2 / SCHEMA.md §2.1 durability 缺口）——新建 scripts/check_ai_context_audit.py 校验 evidence/ai-context-audit/ 的 ai-context-audit §2 frontmatter schema（type/cycle/auditor/scope/findings_summary/content_hash_snapshot；content_hash_snapshot 只校结构非重算 hash——重算=下期审计要检的 drift）+ CI step + SCHEMA §2.1 durability 注更新 + 单测；面集==§2.1 推导 time-varying（当前=23=Q3）→ blocking 派生门拒（违 A6 quarterly-not-cron 设计），至多 --derive helper（Option 2）；scope Gate 5 拍板 = Option 2 + investigation-(a) + blocking day-1（§4:41 dry-run Owner 显式 waive）；1 PR（#359 maintain/359-a6-durability-gate，PR #360 merged 0a2078b）
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-20
-state: active
+completed: 2026-07-20
+state: completed
 track: shared
 ---
 

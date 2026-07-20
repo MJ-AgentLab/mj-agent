@@ -1,10 +1,11 @@
 ---
 type: intake
-summary: A6 durability gate 切片（#347 §三.2 / SCHEMA.md §2.1 披露的 durability 缺口）的 Stage 0 Intake 落盘——maintain/Low-Medium/预计 1 PR；给 evidence/ai-context-audit/ 加专属 frontmatter-schema validator（scripts/check_ai_context_audit.py）+ CI step，因审计条目用 SCHEMA §2 自有 schema（type=ai-context-audit + cycle/auditor/scope/findings_summary/content_hash_snapshot、非 canonical base）→ 无法靠 SCAN_ROOTS 扩展；「面集==§2.1 推导」time-varying（Q2=15→Q3=23）→ 不做 blocking 门；scope（Option 1 schema-only / 2 +derive-helper / 3 blocking〔拒〕）+ CI posture Gate 5 拍板；对应 issue #359（非 #312 tracker 行，#347 follow-up）
+summary: A6 durability gate 切片（#347 §三.2 / SCHEMA.md §2.1 披露的 durability 缺口）的 Stage 0 Intake 落盘——maintain/Low-Medium/预计 1 PR；给 evidence/ai-context-audit/ 加专属 frontmatter-schema validator（scripts/check_ai_context_audit.py）+ CI step，因审计条目用 SCHEMA §2 自有 schema（type=ai-context-audit + cycle/auditor/scope/findings_summary/content_hash_snapshot、非 canonical base）→ 无法靠 SCAN_ROOTS 扩展；「面集==§2.1 推导」time-varying（Q2=15→Q3=23）→ 不做 blocking 门；scope Gate 5 拍板 = Option 2（schema + --derive helper）+ investigation-(a) + blocking day-1（§4:41 dry-run Owner 显式 waive，2026-07-20，5-lens 更正后重确认）；对应 issue #359（PR #360 merged 0a2078b；非 #312 tracker 行，#347 follow-up）
 owner: ranzuozhou
 created: 2026-07-17
 updated: 2026-07-20
-state: active
+completed: 2026-07-20
+state: completed
 track: shared
 ---
 
