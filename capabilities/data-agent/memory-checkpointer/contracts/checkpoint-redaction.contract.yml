@@ -1,0 +1,82 @@
+# capabilities/data-agent/memory-checkpointer/contracts/checkpoint-redaction.contract.yml
+#
+# Behavioral (invariant) contract for the at-rest checkpoint redaction. Domain-specific — NOT a
+# python/prompt/claude-skill/docker/runtime-skill contract, so it declares WHAT the persist path
+# must guarantee, not concrete code symbols (the implementation modules are planned, #365 AC3-6).
+# Named non-"python" on purpose so the V1 python-contract validator does not bind unwritten modules.
+#
+# NOT a 4-必停 surface (memory/ is a separate capability per src/mj_agent/AGENTS.md).
+
+contract_id: checkpoint-redaction
+covers_requirements:
+  - REQ-001            # at-rest minimization (digest replaces rows)
+  - REQ-002            # persist-time only; live untouched
+  - REQ-003            # recoverable-by-refetch (retain executed_sql)
+  - REQ-004            # both aput + aput_writes covered
+
+# Redaction target: the execute_sql result envelope as emitted by the tool-chain (Phase 2+).
+# Referenced by shape, not frozen (envelope owned by data-agent.tool-chain / execute.py).
+redaction_target:
+  message_selector:
+    type: ToolMessage
+    name: execute_sql
+    envelope_shape_guard:            # JSON content must parse to a mapping containing all of:
+      - executed_sql
+      - rows
+      - row_count
+    skips:
+      - "error-path ToolMessages (content is a plain string; json.loads fails)"
+      - "chart/excel envelopes (carry file_path/kind, no rows)"
+  fields_removed:
+    - rows                           # verbatim biz cell VALUES — the only field carrying real values
+  fields_retained_verbatim:
+    - executed_sql                   # REQ-003 refetch key
+    - columns
+    - row_count
+    - truncated
+    - statement_timeout_hit
+    - business_summary
+    - precheck_warnings
+  fields_added:
+    - key: row_digest
+      semantics: "deterministic per-column aggregate, e.g. {non_null, distinct, min, max}; pure local compute, no LLM call"
+    - key: rows_redacted
+      semantics: "bool true marker on a redacted envelope"
+
+# Invariants the persist path MUST uphold (verified by the build-slice tests + canary).
+invariants:
+  - id: INV-1
+    covers: REQ-001
+    statement: "A persisted execute_sql ToolMessage contains row_digest + rows_redacted:true and NO verbatim value from the original rows list."
+  - id: INV-2
+    covers: [REQ-001, REQ-003]
+    statement: "executed_sql is retained verbatim in every redacted envelope so the query is re-runnable through the guardrail chain."
+  - id: INV-3
+    covers: REQ-002
+    statement: "Redaction operates on CLONES handed to super(); the live in-memory messages channel is never mutated (same-session fidelity preserved)."
+  - id: INV-4
+    covers: REQ-004
+    statement: "Both aput (checkpoint_blobs) and aput_writes (checkpoint_writes) redact; a canary asserts neither on-disk path carries a verbatim biz cell value."
+
+# Non-actions — explicitly out of this contract's guarantee surface.
+non_actions:
+  - "Does NOT redact biz values echoed in the assistant NL answer (AIMessage)."
+  - "Does NOT add TTL / retention / eviction (mechanism C; separate)."
+  - "Does NOT encrypt (mechanism D; rejected in ADR-038)."
+  - "Does NOT change execute_sql tool behavior or what the live LLM sees this turn."
+  - "Does NOT relax any data boundary (ADR-006/009/000) or touch the 4 in-source hard-stop surfaces."
+
+# Planned implementation surface (built in #365 AC3-6; declared descriptively, not frozen here).
+planned_modules:
+  - target: src/mj_agent/memory/digest.py
+    role: "pure deterministic per-column aggregation (no LLM call)"
+  - target: src/mj_agent/memory/redaction.py
+    role: "RedactingAsyncPostgresSaver overriding aput + aput_writes"
+  - target: src/mj_agent/memory/checkpointer.py
+    role: "constructor swap at :88 (feature-flagged)"
+
+related_decisions:
+  - decisions/ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md
+
+hitl_required:
+  - none               # memory/ is not a 4-必停 surface; ordinary PR review (ADR-034 commit/PR gates still apply)
