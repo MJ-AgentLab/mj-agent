@@ -45,6 +45,8 @@ ai_visibility: source-of-truth
 | [ADR-034_HITL_Propose_Decide_Apply_Model.md](./ADR-034_HITL_Propose_Decide_Apply_Model.md) | WORKFLOW | accepted (active) | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（.claude/** / .mcp.json）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff；仅交互模式成立（auto classifier 硬拦放宽类）。supersede ADR-015 §决策点 4 残留 |
 | [ADR-035_Codex_Full_Development_Participant.md](./ADR-035_Codex_Full_Development_Participant.md) | WORKFLOW | accepted (active) | Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑/提交/迁移，受同一 HITL 必停 + 数据边界）；revise ADR-031 Phase M0 native 内容；数据边界 ADR-006/009/000 不变。**2026-07-06 amendment**：澄清两类使能——(A) standalone Codex（AGENTS.md 治理）已开、(B) Claude-Code-调用-Codex 插件仍延后；(A) 的 5 必停/数据边界 = AGENTS.md self-enforced prose（Codex 自守，mj-agent 技术门不约束）|
 | [ADR-036_Dual_Agent_Thin_Adapter_And_Projection.md](./ADR-036_Dual_Agent_Thin_Adapter_And_Projection.md) | WORKFLOW | accepted (active) | 收录 dual-agent-compat v5 决策集 D-001~D-017：项目内 Kernel + 薄 adapter + manifest（sdd/development-agent.yml）+ V8/V9 checker + scoped 投影生成器 agents_sync（唯一豁免，仅 .agents/skills/ 与 .codex/config.toml）；产物入仓不可手改（--adopt 反灌）；MCP per-server 三档且 biz×5 + ssh-manager 永不投影；D-017 扩 A14 anchor 至派生面；canonical 10-enum 不变 |
+| [ADR-037_Memory_PG_MCP_Projection_To_Codex.md](./ADR-037_Memory_PG_MCP_Projection_To_Codex.md) | WORKFLOW | accepted (active) | 授权把 mj-agent 自有 memory PostgreSQL MCP servers（pg-mj-agent-memory-*×5）投影进 Codex（`project-with-adr`→`project`，dual-agent-compat 议题 1）；memory 独立库 + 独立凭据、checkpoint 确含 biz 派生行但读它无法触达 biz 表 / 绕 L1/L1b；凭据经 env_vars 按名、零字面入仓（G7/PJ044）；biz×5 + ssh-manager 永 never；可逆（翻回 + re-sync） |
+| [ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md](./ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md) | DATA | accepted (active) | memory checkpoint 中 execute_sql 逐字 biz 派生行的 at-rest 脱敏方向（ADR-037 后继）；Owner 两裁定 = Ruling 1 store-at-rest 最小化（ADR-037 投影维持）+ Ruling 2 机制 B（persist-time 确定性 per-column 摘要 + 留 executed_sql、可选叠 C TTL）；不放宽 ADR-006/009/000 数据边界；实现递延 #365 |
 
 ## Deprecated / Superseded ADRs
 
@@ -58,4 +60,4 @@ ai_visibility: source-of-truth
 
 ---
 
-> *现 25 个 ADR 手工收录（23 前收录 + ADR-035/036）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
+> *现 27 个 ADR 手工收录（23 前收录 + ADR-035/036/037/038）.* Phase M5+ 平移收尾时本 INDEX 转为自动生成.
