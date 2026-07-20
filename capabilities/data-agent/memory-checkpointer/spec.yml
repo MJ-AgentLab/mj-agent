@@ -34,7 +34,7 @@ summary: >
 
 requirements:
   - id: REQ-001
-    statement: "Persisted checkpoints SHALL NOT contain verbatim biz cell values from execute_sql results; the ToolMessage rows payload is replaced at persist time by a deterministic per-column digest (e.g. per column {non_null, distinct, min, max})"
+    statement: "Persisted checkpoints SHALL NOT contain verbatim biz cell values from execute_sql results; the ToolMessage rows payload is replaced at persist time by a deterministic per-column digest (e.g. per column {non_null, distinct})"
     rationale: "At-rest data minimization — the memory DB otherwise holds a second copy of already-guardrail-approved biz rows (readable by Codex post-ADR-037). Digest removes the verbatim cell values while preserving analytic shape. Medium: failure leaves the ADR-037-accepted residual in place, not a new exposure."
     priority: medium
     bdd:

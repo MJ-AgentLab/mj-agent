@@ -20,7 +20,7 @@ updated: 2026-07-20
 
 **Statement**：Persisted checkpoints SHALL NOT contain verbatim biz cell values from
 `execute_sql` results. At persist time the ToolMessage `rows` payload is replaced by a
-deterministic per-column digest (e.g. per column `{non_null, distinct, min, max}`), and the
+deterministic per-column digest (e.g. per column `{non_null, distinct}`), and the
 envelope is marked `rows_redacted: true`, while `columns` / `row_count` / `business_summary` /
 `executed_sql` are retained.
 

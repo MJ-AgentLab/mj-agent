@@ -41,6 +41,7 @@ from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
 
 from mj_agent import config as _cfg
+from mj_agent.memory.redaction import RedactingAsyncPostgresSaver
 
 
 def memory_conn_string() -> str:
@@ -85,6 +86,10 @@ async def open_checkpointer() -> AsyncIterator[AsyncPostgresSaver]:
         open=False,
     )
     async with pool:
-        saver = AsyncPostgresSaver(pool)
+        saver: AsyncPostgresSaver
+        if _cfg.settings.mj_agent_memory_redact_biz_rows:
+            saver = RedactingAsyncPostgresSaver(pool)
+        else:
+            saver = AsyncPostgresSaver(pool)
         await saver.setup()
         yield saver

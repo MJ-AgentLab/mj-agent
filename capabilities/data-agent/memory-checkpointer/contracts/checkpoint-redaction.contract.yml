@@ -39,7 +39,7 @@ redaction_target:
     - precheck_warnings
   fields_added:
     - key: row_digest
-      semantics: "deterministic per-column aggregate, e.g. {non_null, distinct, min, max}; pure local compute, no LLM call"
+      semantics: "deterministic per-column aggregate, e.g. {non_null, distinct}; pure local compute, no LLM call"
     - key: rows_redacted
       semantics: "bool true marker on a redacted envelope"
 
