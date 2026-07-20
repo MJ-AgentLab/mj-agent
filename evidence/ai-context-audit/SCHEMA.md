@@ -14,7 +14,12 @@ a write-once `<cycle>.md` entry per quarter; future cycles diff against prior
 to surface drift. Complements `policies/ai-agent.md §7` (per-action pre-flight)
 by establishing periodic baselines that §7 can reference as ground truth.
 
-## §2 Audit Entry Frontmatter Schema (canonical)
+## §2 Entry Frontmatter Schemas (canonical)
+
+本目录含**两类**条目，均由 `scripts/check_ai_context_audit.py` CI 校验（**filename-based** 选中，
+非按 `type` 值 → 漏/错 `type` 或带 BOM 的真条目仍被 FAIL 非静默跳过）：**`ai-context-audit`** 季度
+cycle（`YYYY-QN.md`；schema = 本节 §2 主体 + §2.1）· **`ai-context-investigation`** ad-hoc 调查
+（`YYYY-MM-DD_*.md`；schema = **§2.2**，#362 落地 resolving a2 finding #2-9）。以下 §2 主体定义 **audit** 类。
 
 Each `<cycle>.md` entry under this directory MUST begin with:
 
@@ -91,6 +96,52 @@ content_hash_snapshot:          # 双轨基线 (必停轨 + CLAUDE.md 轨); 面�
 > **面集变动的处置**：新增面**无上期基线** → 本期记 `baseline-only`，drift 判定从**下**期起；
 > 路径重命名（如 `infra/docker/CLAUDE.md` → `docker/CLAUDE.md`）→ 在 entry 内显式标注新旧
 > 对应，hash 照常比对。
+
+## §2.2 Investigation Entry Frontmatter Schema (`ai-context-investigation`)
+
+> **落地 #362**（resolving `2026-05-22_a2-investigation.md` finding **#2-9** +
+> `schema_extension_request: true`）。A6 gate（#359）初版**只校 audit**（Gate-5 investigation-(a)
+> skip）；本节正式定义 investigation 类型，`check_ai_context_audit.py` validator 现予强制。
+> investigation 条目是 **ad-hoc**（非季度）：read-only 的 cross-finding 调查报告，任一 phase 皆可产出，
+> 命名 `YYYY-MM-DD_<slug>.md`。
+
+每个 `YYYY-MM-DD_<slug>.md` 条目 MUST 以如下 frontmatter 开头：
+
+```yaml
+---
+type: ai-context-investigation
+investigation: <slug>            # 本次调查 slug（类比 audit 的 cycle）; e.g. a2-body-sha256-v4-mode-b-joint
+auditor: <human-or-agent-id>     # 同 §2（人名 OR "ai-agent (<model> via <client>; HITL-supervised by <human>)"）
+scope:                           # 本次调查覆盖的面/主题（≥1）
+  - <scope-item>
+findings_summary: <one-line>     # 主要发现一行
+# —— 以下均 optional ——
+subtype: <slug>                  # e.g. readiness-eval（细分调查类型）
+phase: <phase-id>                # e.g. M4-Stage-A-unit-A-2
+date: YYYY-MM-DD                 # 调查日期（filename 已编码；冗余留痕）
+related_episodes:                # 关联 episode 列表
+  - "<episode>"
+parent_artifacts:                # 上游工件列表
+  - "<artifact>"
+schema_extension_request: true   # 若本调查提请 SCHEMA amendment
+---
+```
+
+**Required**（5）：`type`（== `ai-context-investigation`）· `investigation`（非空 slug）·
+`auditor`（非空 str）· `scope`（非空 list of 非空 str）· `findings_summary`（非空 str）。
+
+**Optional**（**仅在出现时**校验）：`subtype`（非空 str）· `related_episodes` /
+`parent_artifacts`（非空 list of 非空 str）。`phase` / `date` / `schema_extension_request`
+文档化但**不**受 validator 约束（`date` 由 YAML 解析为 date 对象，filename 已编码日期）。
+
+**与 §2（audit）的关键结构差异**：investigation 用 `investigation` slug 取代 `cycle`，且
+**不携带 `content_hash_snapshot`**（它是叙事报告，非 hash 快照）——故 §2.1 的面集推导规则
+**不适用**于 investigation 条目（investigation 不进 `--derive` 面集）。
+
+> **filename-based 选中（同 §2 纪律）**：validator 按 `YYYY-MM-DD_*.md` 文件名选中 investigation
+> 条目（非按 `type` 值）——漏/错 `type` 或带 UTF-8 BOM 的真 investigation 条目仍被 **FAIL** 非静默跳过。
+> 既非 cycle 亦非 investigation 的**已扫描 `.md`**（如 `SCHEMA.md`）→ 报 skip、不校验；仅 `*.md`
+> 被扫描，故非 `.md` 文件（`.gitkeep`）根本不进扫描。
 
 ## §3 Cadence + Reminder Mechanism
 
