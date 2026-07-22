@@ -1,10 +1,9 @@
 # capabilities/data-agent/memory-checkpointer/spec.yml
 #
-# Phase-2 capability spec (ADR-038). Owning issue #365 (AC2).
-# Reserved-by-name slot (issue templates + Spec-Anchored refactor completion assessment)
-# now materialized at lifecycle_state: planned — spec/design/contracts/tasks done; the
-# implementation (memory/digest.py + wrapping saver + tests) + BDD automation + evidence +
-# active-flip land in the build slice (#365 AC3-6).
+# Phase-2 capability spec (ADR-038). Owning issue #365.
+# Materialized and shipped: spec/design/contracts/tasks (#365 AC2) + memory/digest.py +
+# RedactingAsyncPostgresSaver + unit tests (#365 AC3) + both-paths on-disk canary + smoke
+# round-trip + BDD automation + evidence + active-flip (#365 AC4-6, this slice).
 #
 # NOT a 4-必停 surface: the redaction hook lives entirely in src/mj_agent/memory/, which
 # src/mj_agent/AGENTS.md calls "a separate capability" — distinct from the biz boundary.
@@ -12,12 +11,12 @@
 id: data-agent.memory-checkpointer
 name: Memory Checkpoint At-Rest Desensitization
 domain: data-agent
-lifecycle_state: planned             # spec+design+contracts+tasks done; build = #365 AC3-6
+lifecycle_state: active              # #365 AC4-6: canary/smoke PASS + BDD + evidence + active-flip
 archive_state: active
 adapter_coverage:
-  - python                           # (planned) memory/digest.py + wrapping saver over AsyncPostgresSaver
+  - python                           # memory/digest.py + RedactingAsyncPostgresSaver over AsyncPostgresSaver
   - tdd-bdd
-last_verified: 2026-07-20
+last_verified: 2026-07-22
 owner: ranzuozhou
 created: 2026-07-20
 updated: 2026-07-20
@@ -30,7 +29,8 @@ summary: >
   per-column digest and keep executed_sql for recoverable-by-refetch, leaving the live
   in-process conversation untouched. This capability is a defense-in-depth hardening of an
   already-Owner-accepted, reversible residual (not a new critical exposure) — hence medium
-  priority. Implementation deferred to #365 AC3-6.
+  priority. Shipped via #365 AC3-6 (digest + RedactingAsyncPostgresSaver + both-paths canary +
+  smoke round-trip + BDD); default-on since the AC4-6 activation.
 
 requirements:
   - id: REQ-001
@@ -76,5 +76,7 @@ cross_capability_refs:
     surface: src/mj_agent/tools/sql/execute.py (envelope) + src/mj_agent/memory/checkpointer.py:88 (saver hook)
     direction: inbound                # we depend on the execute_sql envelope shape
 
-# Deferred to #365 AC3-6 (build slice): contracts/behavior.feature + trace.yml + evidence/ +
-# lifecycle_state: planned → implementing → verifying → active (G8 evidence gate activates at active).
+# Landed in #365 AC4-6 (activation build slice): contracts/behavior.feature (4 @risk:medium
+# scenarios) + trace.yml (schema v1.2) + evidence/verification/ + lifecycle_state → active
+# (G8 evidence gate now satisfied). Adapter automation: 3 offline BDD scenarios (REQ-001/002/003)
+# + REQ-004 both-paths canary (tests/smoke, container-gated).

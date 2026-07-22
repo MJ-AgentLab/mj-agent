@@ -101,9 +101,10 @@ class Settings(BaseSettings):
     mj_agent_memory_pool_max: int = 10
     # At-rest desensitization (capability data-agent.memory-checkpointer; ADR-038): when True,
     # execute_sql biz rows are replaced by a per-column count digest at checkpoint-persist time
-    # (live conversation untouched). Opt-in until the container canary/smoke validate it (#365
-    # build slice); the default-on flip is a follow-up.
-    mj_agent_memory_redact_biz_rows: bool = False
+    # (live conversation untouched — REQ-002). Default-on since #365 AC4-6 (the both-paths on-disk
+    # canary + smoke round-trip validated it against mj-agent-postgres). Set
+    # MJ_AGENT_MEMORY_REDACT_BIZ_ROWS=false to opt out (reversible, config-only; no data migration).
+    mj_agent_memory_redact_biz_rows: bool = True
 
     # Redis: container is provisioned in the storage stack but no Python
     # client is wired yet. Settings are declared so future code (session

@@ -9,8 +9,9 @@ leaks footgun, same class as ADR-029 #288). Redaction operates on **clones** han
 ``super()``; the live in-memory message objects are never mutated (REQ-002), so what the LLM
 reads within an active turn is unchanged — only the bytes written to Postgres differ.
 
-Wired in ``checkpointer.py`` behind ``settings.mj_agent_memory_redact_biz_rows`` (opt-in until
-the container canary/smoke validate it; #365 build slice).
+Wired in ``checkpointer.py`` behind ``settings.mj_agent_memory_redact_biz_rows`` (default-on
+since #365 AC4-6, after the both-paths on-disk canary + smoke round-trip validated it; set
+``MJ_AGENT_MEMORY_REDACT_BIZ_ROWS=false`` to opt out).
 """
 
 from __future__ import annotations
