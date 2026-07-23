@@ -38,17 +38,12 @@ def _restore_event_loop_policy():
         asyncio.set_event_loop_policy(previous)
 
 
-def test_check_live_all_creds_absent_skips_all_probes(monkeypatch) -> None:
-    for key in (
-        "POSTGRES_ANALYST_USER",
-        "POSTGRES_ANALYST_PASSWORD",
-        "MJ_AGENT_MEMORY_USER",
-        "MJ_AGENT_MEMORY_PASSWORD",
-        "ARK_API_KEY",
-        "LLM_API_KEY",
-    ):
-        monkeypatch.delenv(key, raising=False)
-    monkeypatch.setattr(cfg, "settings", Settings(_env_file=None))
+def test_check_live_all_creds_absent_skips_all_probes(monkeypatch, isolated_settings) -> None:
+    # ``isolated_settings`` (tests/unit/conftest.py) wipes the whole credential
+    # surface — deleting only a subset here left ``LLM_PROVIDER`` / ``LLM_BASE_URL``
+    # leaking from the dev ``.env`` (loaded into os.environ by the root conftest),
+    # so the LLM probe attempted a real connection (FAIL) instead of SKIP (#298).
+    monkeypatch.setattr(cfg, "settings", isolated_settings)
 
     result = runner.invoke(app, ["check", "--live"])
 
