@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-11
+updated: 2026-07-23
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -39,8 +39,8 @@ ai_visibility: source-of-truth
 | [ADR-028_MCP_Server_Inventory_And_Governance.md](./ADR-028_MCP_Server_Inventory_And_Governance.md) | WORKFLOW | accepted (active) | 引入 .mcp.json 13 servers + 新建 MCP_Server_Governance STANDARD |
 | [ADR-029_Tool_Error_Surfacing_To_LLM.md](./ADR-029_Tool_Error_Surfacing_To_LLM.md) | AGENT | accepted (active) | SQL 工具异常通过 @wrap_tool_call 中间件转换为 ToolMessage，使 LLM 自纠正而非 graph 崩溃 |
 | [ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md](./ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) | OPS | accepted (active) | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL）拆出到独立的 config/secrets-mcp.enc |
-| [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | proposed (draft) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
-| [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | proposed (draft) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
+| [ADR-031_Spec_Anchored_Refactor.md](./ADR-031_Spec_Anchored_Refactor.md) | SYS | accepted (active) | mj-agent Maximum Spec-Anchored Refactor — Phase M0-M6 路线图 + 10 RD 矩阵 + 7 adapter 启用清单 |
+| [ADR-032_Claude_Skill_Schema_Monitoring.md](./ADR-032_Claude_Skill_Schema_Monitoring.md) | WORKFLOW | accepted (active) | 为 .claude/skills/ ADR-013 native 2-field schema 建立 3-layer monitoring regime |
 | [ADR-033_DGX_Ops_Sister_Repo_Boundary.md](./ADR-033_DGX_Ops_Sister_Repo_Boundary.md) | OPS | accepted (active) | DGX serving/ops 归独立姊妹仓 dgx-mlops；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算） |
 | [ADR-034_HITL_Propose_Decide_Apply_Model.md](./ADR-034_HITL_Propose_Decide_Apply_Model.md) | WORKFLOW | accepted (active) | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（.claude/** / .mcp.json）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff；仅交互模式成立（auto classifier 硬拦放宽类）。supersede ADR-015 §决策点 4 残留 |
 | [ADR-035_Codex_Full_Development_Participant.md](./ADR-035_Codex_Full_Development_Participant.md) | WORKFLOW | accepted (active) | Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑/提交/迁移，受同一 HITL 必停 + 数据边界）；revise ADR-031 Phase M0 native 内容；数据边界 ADR-006/009/000 不变。**2026-07-06 amendment**：澄清两类使能——(A) standalone Codex（AGENTS.md 治理）已开、(B) Claude-Code-调用-Codex 插件仍延后；(A) 的 5 必停/数据边界 = AGENTS.md self-enforced prose（Codex 自守，mj-agent 技术门不约束）|

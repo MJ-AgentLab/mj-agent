@@ -4,9 +4,9 @@ domain: WORKFLOW
 summary: establish 3-layer monitoring regime for ongoing `.claude/skills/` ADR-013 native 2-field schema compliance — validator gate (V4; M3 warning / M4 blocking) + PR template A12 prompt + 季度 A6 audit; reframes original M3-FU-CLAUDE-SKILL-ADR scope from "fix existing 34/34 markdown-body-only deviation" (premise empirically false per 03f1bc7 reverify) to "prevent future deviation"
 owner: ranzuozhou
 created: 2026-05-22
-updated: 2026-05-22
-state: draft
-decision: proposed
+updated: 2026-07-23
+state: active
+decision: accepted
 track: engineering-workflow
 tags:
   - adr
@@ -154,6 +154,6 @@ SKILL effectiveness without human review.
 
 - Date: 2026-05-22
 - Authors: ranzuozhou (HITL-supervised); ai-agent (claude-opus-4-7 via claude-code) drafted
-- Promote draft → accepted: at next HITL Gate-3 review after Layer 1 promotion to blocking
-  (M4 work; tracked via M3-FU-V4-SKILLS-COMPLETE landing + V4 ci.yml `continue-on-error: false`
-  flip)
+- Promoted draft → accepted **2026-07-23** (#372): Layer 1 (V4) is blocking — the `ci.yml` V4 step
+  (`check_claude_skill_contracts.py --all`) carries no `continue-on-error` (M3-FU-V4-SKILLS-COMPLETE
+  landed); Owner ratify at HITL Gate.
