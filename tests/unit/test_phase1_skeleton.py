@@ -90,23 +90,18 @@ def test_cli_help_smoke() -> None:
     assert "check" in result.output
 
 
-def test_cli_check_reports_missing_env(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+def test_cli_check_reports_missing_env(monkeypatch, isolated_settings) -> None:  # type: ignore[no-untyped-def]
     """`mj-agent check` exits non-zero with explicit reasons when creds absent.
 
-    Uses ``Settings(_env_file=None)`` to opt out of `.env` discovery —
-    pydantic-settings would otherwise re-load `.env` from disk during the
-    fresh ``Settings()`` instantiation, leaking developer-local values
-    past the ``monkeypatch.delenv`` calls and masking the
-    ``"... not set"`` failure messages this test asserts on.
+    Uses the ``isolated_settings`` fixture (``tests/unit/conftest.py``) so the
+    whole credential surface is wiped before ``Settings`` is built. Opting out
+    of the ``.env`` *file* alone is not enough: the root conftest loads a real
+    ``.env`` into ``os.environ``, and a stray ``LLM_API_KEY`` there would keep
+    ``effective_llm_api_key`` non-empty and mask the ``"ARK_API_KEY not set"``
+    line this test asserts on (issue #298).
     """
-    for k in (
-        "POSTGRES_ANALYST_USER",
-        "ARK_API_KEY",
-        "MJ_AGENT_MEMORY_USER",
-    ):
-        monkeypatch.delenv(k, raising=False)
     import mj_agent.config as cfg
-    monkeypatch.setattr(cfg, "settings", Settings(_env_file=None))
+    monkeypatch.setattr(cfg, "settings", isolated_settings)
 
     runner = CliRunner()
     result = runner.invoke(app, ["check"])
