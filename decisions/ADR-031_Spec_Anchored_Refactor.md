@@ -3,12 +3,12 @@ type: adr
 adr_id: ADR-031
 slug: spec-anchored-refactor
 summary: mj-agent Maximum Spec-Anchored Refactor (Phase M0-M6) — restructure the tri-track STANDARD + 20 active ADR + ~100 docs governance corpus into the SDD Kernel + Capability Package + Business Policy three-pillar architecture, landing machine-readable contracts + capability lifecycle + CI gates.
-state: draft
-decision: proposed
-version: 0.1
+state: active
+decision: accepted
+version: 1.0
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-07-23
 domain: SYS
 track: shared
 ai_visibility: source-of-truth
@@ -20,9 +20,8 @@ superseded_by: []
 
 ## §1 Status
 
-**state**：`draft`
-**decision**：`proposed`（Phase M0 末由 `proposed` → Phase M1 末 `accepted`；per RD7=B 延迟
-promote）.
+**state**：`active`
+**decision**：`accepted`（promoted 2026-07-23，per §9 HITL Gate — Phase M1 末 promote 条件已达成：Spec-Anchored Refactor M0-M6 全部完成、#245 闭幕 2026-06-08；Owner ratify #372。历史：Phase M0 起草为 `draft`/`proposed`，per RD7=B 延迟 promote 至 Phase M1 末）.
 
 ## §2 Context
 
@@ -143,7 +142,7 @@ ETL）.
 ## §9 HITL Triggers in this ADR
 
 - Phase M0 启动前：用户确认 10 RD 决策（已完成；详 §4）
-- Phase M1 末：ADR-031 状态 `draft → accepted` promote → HITL Gate
+- Phase M1 末：ADR-031 状态 `draft → accepted` promote → HITL Gate ✅ **done 2026-07-23**（#372；Phase M1 末条件 = M0-M6 完成 #245）
 - Phase M3 / M5 / M6：每 phase 启动前用户审蓝图 phase scope（避免漂移）
 - 4 项专属必停 / cross-capability / archive ceremony / blocking gate 切换：全程 HITL
 
@@ -157,4 +156,4 @@ ETL）.
 
 ---
 
-> *Phase M0 — `state: draft` / `decision: proposed`.* Promote `accepted` 在 Phase M1 末.
+> *Promoted 2026-07-23 — `state: active` / `decision: accepted`* (per §9 HITL Gate；Phase M1 末 promote 条件达成——M0-M6 完成、#245 闭幕；Owner ratify #372). *历史：Phase M0 起草为 `draft` / `proposed`.*
