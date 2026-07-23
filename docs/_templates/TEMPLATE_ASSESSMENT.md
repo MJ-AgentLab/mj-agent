@@ -210,7 +210,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 | 层 | 优化前 | 优化后 | 说明 |
 |---|---|---|---|
-| L1 regex（单语句 / SELECT-only / schema + biz_dwd allowlist）| <规则集> | <规则集> | <加 / 删 / 调 何条> |
+| L1 hybrid（regex 单语句 / SELECT-only + sqlglot AST schema + biz_dwd allowlist）| <规则集> | <规则集> | <加 / 删 / 调 何条> |
 | L1b sqlglot AST precheck（no_select_star / require_time_range / require_limit advisory）| <规则集> | <规则集> | <说明> |
 | L2 semantics（SKILL.md + qcm_catalog.yaml）| <现状> | <现状> | <说明> |
 | L3 connection（read-only / lock_timeout / idle_in_transaction_session_timeout）| <值> | <值> | <说明> |
