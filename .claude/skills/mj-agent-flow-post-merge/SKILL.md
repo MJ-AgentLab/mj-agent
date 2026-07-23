@@ -185,6 +185,17 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 - 当前 worktree（如 develop）需 pull 最新 develop（含本 PR commit）
 - 如 hotfix → main 合并后还要 sync 回 develop（mj-agent-git-sync 自动检测）
+- **gitee 镜像 ff-push（非 hotfix 合并必做，#381）**：`/mj-agent-git-sync` 的**自更新模式不 `pushall`**（其 SKILL.md「自更新」段：`main/develop/工作分支自更新 → 不 pushall`）——但 GitHub 合并只推 **origin/develop**，`gitee/develop` 会滞后，而 **CI 拉 gitee**。故 develop 自更新到本 PR commit 后须显式把镜像 ff 到 gitee：
+
+  ```bash
+  # 在 develop worktree 内，git-sync 自更新完成后（本地 develop 已 == origin/develop）
+  git fetch gitee
+  GITEE_GAP=$(git rev-list --count gitee/develop..origin/develop 2>/dev/null || echo 0)
+  # GITEE_GAP > 0 → gitee 落后 → ff-push 追平（origin 已由 GitHub 合并推进，此处只补 gitee）
+  git push gitee develop        # 非 --force：仅 fast-forward；若 gitee/develop 已分叉会被拒（此时人工介入）
+  ```
+
+  - hotfix → main 合并：**不**在此重复——`/mj-agent-git-sync` 的 hotfix 回同步段已 `pushall`（含 gitee）。
 
 > **⚠ Worktree-safe sync（#185 F-8 lesson;M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX）**：develop sync 必须是**工作树内**操作（`/mj-agent-git-sync` Step 4 `git merge origin/develop`，或 `git pull --ff-only`）——**切勿**用 bare-repo `git update-ref` 直接改 HEAD 指针，那只更新 ref 不更新工作树文件，会留下 stale 文件（#185 曾因此残留 13 个 stale 文件，事后 `git reset --hard HEAD` 救回）。若发现工作树与 HEAD 不一致，用 `git reset --hard HEAD` 对齐。
 
@@ -313,6 +324,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 ### Develop Sync（→ /mj-agent-git-sync）
 - ☐ `cd ../develop && git pull origin develop --ff-only`
+- ☐ **gitee 镜像 ff-push（非 hotfix 必做，#381）**：`git fetch gitee && git push gitee develop`（origin 已由 GitHub 合并推进，只补滞后的 gitee；CI 拉 gitee）
 
 ### Plan Lifecycle Update（per lifecycle §2）
 - ⏸ skipped — PR 无关联 working plan
