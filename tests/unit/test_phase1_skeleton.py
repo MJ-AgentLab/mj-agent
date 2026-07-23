@@ -22,16 +22,20 @@ def test_settings_has_phase1_fields() -> None:
     assert hasattr(s, "chainlit_port")
 
 
-def test_settings_default_memory_db_name() -> None:
-    s = Settings(_env_file=None)
-    assert s.mj_agent_memory_db == "mj_agent_memory"
-    assert s.mj_agent_memory_pool_max >= 1
+def test_settings_default_memory_db_name(isolated_settings: Settings) -> None:
+    # ``isolated_settings`` (tests/unit/conftest.py) wipes the whole env surface
+    # before building Settings, so these default assertions stay hermetic even on
+    # a dev machine whose ``.env`` / shell sets ``MJ_AGENT_MEMORY_DB`` (issue #298
+    # follow-up: ``Settings(_env_file=None)`` opts out of the ``.env`` *file* but
+    # still reads ``os.environ``).
+    assert isolated_settings.mj_agent_memory_db == "mj_agent_memory"
+    assert isolated_settings.mj_agent_memory_pool_max >= 1
 
 
-def test_settings_default_chainlit_bind() -> None:
-    s = Settings(_env_file=None)
-    assert s.chainlit_host == "127.0.0.1"
-    assert s.chainlit_port == 8000
+def test_settings_default_chainlit_bind(isolated_settings: Settings) -> None:
+    # Hermetic via ``isolated_settings`` for the same reason (issue #298 follow-up).
+    assert isolated_settings.chainlit_host == "127.0.0.1"
+    assert isolated_settings.chainlit_port == 8000
 
 
 def test_memory_conn_string_assembly(monkeypatch) -> None:  # type: ignore[no-untyped-def]
