@@ -5,6 +5,24 @@
 
 ## [Unreleased]
 
+### Added — memory checkpoint at-rest 脱敏 default-on + capability 升 active（#365 AC4-6；ADR-038）
+
+- **`data-agent.memory-checkpointer` capability 升 `active` + `MJ_AGENT_MEMORY_REDACT_BIZ_ROWS`
+  默认开（`feature/365-redaction-activation`；owning issue #365；承 #366 ADR-038 / #367 spec /
+  #368 build-core）**：**行为变更（用户/运维可见）**——checkpoint 持久化时，`execute_sql`
+  ToolMessage 的逐字 biz `rows` 现**默认**被替换为确定性 per-column 计数摘要（`{non_null, distinct}`），
+  保留 `executed_sql` 供 recoverable-by-refetch；**活跃对话（in-process message state）字节不变**
+  （REQ-002），LLM 当轮所读不受影响——仅写入 `mj_agent_memory` 的字节改变，关闭 ADR-037 记录的
+  「checkpoint 明文存 biz 派生行」at-rest 残留暴露面。**回退**：`.env` 置
+  `MJ_AGENT_MEMORY_REDACT_BIZ_ROWS=false`（可逆、纯配置、无数据迁移；forward-only——升级前既存
+  checkpoint 不回溯脱敏）。**验证**：新增 `tests/smoke/test_memory_redaction_canary.py`——直接读原始
+  `checkpoint_blobs`（`aput`）**与** `checkpoint_writes`（`aput_writes`）BYTEA，断言两条 on-disk 路径
+  均无逐字 cell 值（both-hooks-or-it-leaks，同 ADR-029 #288 类）+ 冒烟 round-trip 断言冷恢复读回为
+  digested + 保留 `executed_sql`；含 negative-control（stock saver 两路径均泄漏 → 证 canary 真能抓漏）。
+  capability 12-artifact 补齐：`contracts/behavior.feature`（4 @risk:medium scenarios，REQ-001/002/003
+  offline pytest-bdd 自动化、REQ-004 both-paths 走容器 canary）+ `trace.yml`（schema v1.2）+
+  `runbook.md` + `evidence/verification/`；`lifecycle_state: planned → active`（G8 evidence gate 满足）。
+
 ### Added — investigation-type schema 正式化：SCHEMA §2.2 + validator 扩展（#362 / a2 #2-9）
 
 - **`evidence/ai-context-audit/SCHEMA.md` §2.2 正式定义 `ai-context-investigation` frontmatter schema +

@@ -32,8 +32,10 @@ regression leaves the ADR-037-accepted, reversible residual in place — not a n
 **Acceptance**：Stored `execute_sql` ToolMessage content carries a per-column digest + `rows_redacted:true`;
 no verbatim value from the original `rows` survives in `checkpoint_blobs` / `checkpoint_writes`.
 
-**Trace**：REQ-001 → `contracts/checkpoint-redaction.contract.yml` (INV-1/INV-2) → (build slice)
-`contracts/behavior.feature` + `tests/unit/test_memory_digest.py`.
+**Trace**：REQ-001 → `contracts/checkpoint-redaction.contract.yml` (INV-1/INV-2) →
+`contracts/behavior.feature` (scenario "Persisting an execute_sql ToolMessage replaces biz rows…") →
+`tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_001_rows_replaced_by_digest`
++ `tests/unit/test_memory_digest.py` + `tests/unit/test_memory_redaction.py::test_execute_sql_rows_replaced_by_digest`.
 
 ## REQ-002 — Persist-time only; live conversation untouched
 
@@ -49,8 +51,10 @@ lets the store be minimized without degrading same-session multi-turn analysis. 
 **Acceptance**：After a persist superstep, the in-memory `messages` channel still carries the
 original verbatim `rows`; only the bytes written to Postgres differ.
 
-**Trace**：REQ-002 → `contracts/checkpoint-redaction.contract.yml` (INV-3) → (build slice)
-`tests/unit/test_memory_digest.py::test_live_message_unmutated`.
+**Trace**：REQ-002 → `contracts/checkpoint-redaction.contract.yml` (INV-3) →
+`contracts/behavior.feature` (scenario "Redaction clones the message…") →
+`tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_002_live_state_untouched`
++ `tests/unit/test_memory_redaction.py::{test_redact_value_list_clones_only_execute_sql, test_redact_checkpoint_live_state_untouched}`.
 
 ## REQ-003 — Recoverable-by-refetch (retain executed_sql)
 
@@ -65,7 +69,10 @@ relative-time / "latest" queries may drift on re-fetch — documented, not a def
 **Acceptance**：A digested `execute_sql` envelope still contains `executed_sql`; re-running it
 through the tool-chain yields rows (subject to the drift caveat).
 
-**Trace**：REQ-003 → `contracts/checkpoint-redaction.contract.yml` (INV-2).
+**Trace**：REQ-003 → `contracts/checkpoint-redaction.contract.yml` (INV-2) →
+`contracts/behavior.feature` (scenario "The digested envelope retains executed_sql…") →
+`tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_003_retains_executed_sql`
++ `tests/smoke/test_memory_redaction_canary.py::test_smoke_round_trip_digested_on_resume`.
 
 ## REQ-004 — All write paths covered (both-hooks-or-it-leaks)
 
@@ -83,8 +90,9 @@ langgraph upgrade that moves serialization.
 **Acceptance**：A canary test writes via `aput` and flushes pending writes via `aput_writes`, then
 asserts neither `checkpoint_blobs` nor `checkpoint_writes` contains a verbatim biz cell value.
 
-**Trace**：REQ-004 → `contracts/checkpoint-redaction.contract.yml` (INV-4) → (build slice)
-`tests/unit/test_memory_redaction_canary.py`.
+**Trace**：REQ-004 → `contracts/checkpoint-redaction.contract.yml` (INV-4) →
+`contracts/behavior.feature` (scenario "Both on-disk write paths carry no verbatim biz cell value") →
+`tests/smoke/test_memory_redaction_canary.py::{test_aput_path_no_verbatim_value, test_aput_writes_path_no_verbatim_value, test_plain_saver_leaks_on_both_paths}`.
 
 ## Non-goals (see design.md §4)
 

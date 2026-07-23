@@ -1,0 +1,112 @@
+# capabilities/data-agent/memory-checkpointer/trace.yml
+#
+# REQ → BDD → CONTRACT → TEST → TASK → PR → EVIDENCE traceability (schema v1.2).
+# Validated by scripts/sdd/check_traceability.py (G2/G5). Landed with the #365 AC4-6
+# activation build slice (behavior.feature + trace.yml + evidence + lifecycle_state → active).
+#
+# All 4 REQs are @risk:medium (the residual is an Owner-accepted, reversible copy of
+# already-guardrail-approved biz rows — not a new exposure), so G21/G22 (which filter
+# @risk:critical|high) skip this capability; only G19 (per-scenario @REQ + @CTR tags) applies.
+
+capability: data-agent.memory-checkpointer
+generated: 2026-07-22
+schema_version: "1.2"
+
+# Cross-capability references (R-G7: total ≤ 5 ✓)
+cross_capability_refs:
+  - target: data-agent.tool-chain
+    direction: inbound                           # we depend on the execute_sql envelope shape
+    surface: src/mj_agent/tools/sql/execute.py (execute_sql envelope) + src/mj_agent/memory/redaction.py (shape guard)
+    rationale: "REQ-001 targets the execute_sql result envelope (executed_sql / columns / rows / row_count); the redacting saver identifies execute_sql ToolMessages by name + JSON-envelope shape. The envelope is owned by data-agent.tool-chain (Phase 2+); a key rename there would require re-checking the shape guard."
+
+links:
+
+  - req: REQ-001                                 # at-rest minimization (digest replaces rows)
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest"
+      automation_status: automated               # pytest-bdd offline binding (pure transform); green in CI (tests/bdd blocking)
+    contracts:
+      - contracts/checkpoint-redaction.contract.yml   # INV-1 / INV-2
+    tests:
+      - tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_001_rows_replaced_by_digest
+      - tests/unit/test_memory_redaction.py::test_execute_sql_rows_replaced_by_digest
+      - tests/unit/test_memory_digest.py::test_digest_per_column_counts
+      - tests/unit/test_memory_digest.py::test_digest_contains_no_verbatim_cell_value
+      - tests/unit/test_memory_digest.py::test_digest_is_deterministic
+      - tests/unit/test_memory_redact_flag.py::test_redact_biz_rows_field_default_is_on          # default-on flip (config.py)
+      - tests/smoke/test_memory_redaction_canary.py::test_open_checkpointer_routing_honors_flag  # flag→saver routing (checkpointer.py)
+    tasks:
+      - tasks.md#T-002
+      - tasks.md#T-003
+    prs:
+      - "#365 (AC3 digest + AC4-6 activation build slice)"
+    evidence:
+      - evidence/verification/2026-07-22_canary_smoke_pass.md
+
+  - req: REQ-002                                 # persist-time only; live untouched
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Redaction clones the message so the live in-process state is untouched"
+      automation_status: automated               # pytest-bdd offline binding; green in CI
+    contracts:
+      - contracts/checkpoint-redaction.contract.yml   # INV-3
+    tests:
+      - tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_002_live_state_untouched
+      - tests/unit/test_memory_redaction.py::test_redact_value_list_clones_only_execute_sql
+      - tests/unit/test_memory_redaction.py::test_redact_checkpoint_live_state_untouched
+      - tests/unit/test_memory_redaction.py::test_redact_value_list_unchanged_preserves_identity
+    tasks:
+      - tasks.md#T-003
+    prs:
+      - "#365 (AC3 digest + AC4-6 activation build slice)"
+    evidence:
+      - evidence/verification/2026-07-22_canary_smoke_pass.md
+
+  - req: REQ-003                                 # recoverable-by-refetch (retain executed_sql)
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "The digested envelope retains executed_sql for recoverable-by-refetch"
+      automation_status: automated               # pytest-bdd offline binding; green in CI
+    contracts:
+      - contracts/checkpoint-redaction.contract.yml   # INV-2
+    tests:
+      - tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_003_retains_executed_sql
+      - tests/unit/test_memory_redaction.py::test_execute_sql_rows_replaced_by_digest
+      - tests/smoke/test_memory_redaction_canary.py::test_smoke_round_trip_digested_on_resume
+    tasks:
+      - tasks.md#T-004
+    prs:
+      - "#365 (AC3 digest + AC4-6 activation build slice)"
+    evidence:
+      - evidence/verification/2026-07-22_canary_smoke_pass.md
+
+  - req: REQ-004                                 # both aput + aput_writes covered
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Both on-disk write paths carry no verbatim biz cell value"
+      automation_status: unautomated             # container canary (mj-agent-postgres), not pytest-bdd; covered by -m smoke (skip-clean in CI). @risk:medium ⇒ G22 skips (no runbook justification required).
+    contracts:
+      - contracts/checkpoint-redaction.contract.yml   # INV-4
+    tests:
+      - tests/smoke/test_memory_redaction_canary.py::test_aput_path_no_verbatim_value
+      - tests/smoke/test_memory_redaction_canary.py::test_aput_writes_path_no_verbatim_value
+      - tests/smoke/test_memory_redaction_canary.py::test_plain_saver_leaks_on_both_paths
+    tasks:
+      - tasks.md#T-004
+    prs:
+      - "#365 (AC3 digest + AC4-6 activation build slice)"
+    evidence:
+      - evidence/verification/2026-07-22_canary_smoke_pass.md
+
+# Summary stats (manual; Phase M2+ auto by generate_index.py):
+# - 4 REQs (all @risk:medium)
+# - 4 BDD scenarios (all medium; R-G17 critical ≤ 5 ✓ — 0 critical)
+# - bdd automation_status: 3 automated (REQ-001/002/003 offline pytest-bdd) / 1 unautomated
+#   (REQ-004 both-paths canary → -m smoke, container-gated)
+# - 1 contract file (checkpoint-redaction.contract.yml behavioral + behavior.feature; R-G3 ≤ 5 ✓)
+# - 1 cross-capability ref (→ data-agent.tool-chain inbound; R-G7 ≤ 5 ✓)

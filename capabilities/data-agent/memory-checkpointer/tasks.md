@@ -1,18 +1,19 @@
 ---
 type: capability-tasks
 capability: data-agent.memory-checkpointer
-state: drafting
-version: 0.1
+state: active
+version: 1.0
 owner: ranzuozhou
 created: 2026-07-20
-updated: 2026-07-20
+updated: 2026-07-22
 ---
 
 # Tasks: Memory Checkpoint At-Rest Desensitization
 
-> Build plan for the implementation slice (#365 AC3-6). This capability is at `lifecycle_state:
-> planned`; the tasks below carry it planned → implementing → verifying → active. behavior.feature
-> + trace.yml + evidence/ land with these tasks (they are not required at `planned`).
+> Build plan for the implementation slice (#365 AC3-6). **Complete** — the capability is now at
+> `lifecycle_state: active`. T-001..T-003 landed in the #365 build-core PR (#368); T-004 (both-paths
+> canary + smoke round-trip) and T-005 (behavior.feature + trace.yml + evidence + active-flip)
+> landed in the #365 AC4-6 activation slice.
 
 ## Backlog
 
@@ -21,7 +22,7 @@ updated: 2026-07-20
 - **Phase**：build / **Priority**：medium / **Linked REQ**：REQ-004
 - **Contract changed?**：no
 - **HITL trigger**：N
-- **Status**：todo
+- **Status**：done
 - Verify against the installed langgraph wheel: the `aput` / `aput_writes` write paths, the
   `_dump_blobs` / `_dump_writes` → serde contract, and that the default `JsonPlusSerializer`
   msgpack-encodes the `messages` channel. Confirm the two override points before writing code.
@@ -31,7 +32,7 @@ updated: 2026-07-20
 - **Phase**：build / **Priority**：medium / **Linked REQ**：REQ-001
 - **Contract changed?**：no
 - **HITL trigger**：N
-- **Status**：todo
+- **Status**：done
 - Pure deterministic per-column aggregation (`{non_null, distinct}`); no LLM call; handle
   Decimal/datetime/date cell types deterministically.
 - **TDD test_list**：
@@ -44,7 +45,7 @@ updated: 2026-07-20
 - **Phase**：build / **Priority**：medium / **Linked REQ**：REQ-001, REQ-002, REQ-004
 - **Contract changed?**：yes (checkpoint-redaction.contract.yml INV-1..INV-4 become live)
 - **HITL trigger**：N (memory/ non-必停; commit/PR gates per ADR-034 still apply)
-- **Status**：todo
+- **Status**：done
 - Subclass `AsyncPostgresSaver`; override BOTH `aput` and `aput_writes`; select `execute_sql`
   ToolMessages by `name` + envelope-shape guard; emit `model_copy` clones (never mutate live);
   swap constructor at `checkpointer.py:88` behind a feature flag.
@@ -58,7 +59,7 @@ updated: 2026-07-20
 - **Phase**：build / **Priority**：medium / **Linked REQ**：REQ-004
 - **Contract changed?**：no
 - **HITL trigger**：N
-- **Status**：todo
+- **Status**：done
 - Canary asserting the persisted bytes carry no verbatim cell value on BOTH `aput` (checkpoint_blobs)
   AND `aput_writes` (checkpoint_writes) — the both-hooks-or-it-leaks guard (ADR-029 #288 class). Plus a
   smoke round-trip against the `mj-agent-postgres` container (conftest-skipped without creds).
@@ -71,7 +72,7 @@ updated: 2026-07-20
 - **Phase**：build / **Priority**：medium / **Linked REQ**：REQ-001..REQ-004
 - **Contract changed?**：no
 - **HITL trigger**：N
-- **Status**：todo
+- **Status**：done
 - Add `contracts/behavior.feature` (scenarios tagged @REQ + @CTR-checkpoint-redaction), `trace.yml`
   (schema v1.2, `automation_status: automated` once tests are green), write `evidence/` (G8 activates
   at `active`), then flip `spec.yml lifecycle_state: planned → implementing → verifying → active`.
@@ -84,7 +85,12 @@ updated: 2026-07-20
 ## Done
 
 - Spec slice (#365 AC2): spec.yml + requirements.md + design.md + contracts/checkpoint-redaction.contract.yml
-  + tasks.md authored at `lifecycle_state: planned` (this PR).
+  + tasks.md authored at `lifecycle_state: planned` (PR #367).
+- Build-core slice (#365 AC3): T-001 (langgraph 4.0.2 wheel verify) + T-002 (memory/digest.py + unit
+  tests) + T-003 (RedactingAsyncPostgresSaver override aput + aput_writes; feature-flag) (PR #368).
+- Activation slice (#365 AC4-6, this PR): T-004 (both-paths on-disk canary + smoke round-trip against
+  mj-agent-postgres; negative control) + T-005 (contracts/behavior.feature 4 @risk:medium scenarios +
+  trace.yml v1.2 + evidence/verification/ + runbook.md + lifecycle_state → active + default-on flip).
 
 ## Anti-Backlog (explicitly not doing here)
 
