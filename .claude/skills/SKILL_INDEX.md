@@ -4,7 +4,7 @@ state: active
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-07-08
+updated: 2026-07-23
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -14,14 +14,13 @@ ai_visibility: source-of-truth
 > Phase M0 — RD3=C：物理 namespace（`mj-agent-<group>-<verb>`）**不重命名**；本 INDEX 提供
 > 5-layer 逻辑分层供 AI 快速定位 skill.
 > active skill 实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为 SoT（当前
-> **37**；本 PR infra 家族 +2 = app-start / app-stop）；§1 逐家 active 列的存量漂移（如 flow-diagnose
-> 未回填 §2 Layer 1）属既有 count-refresh M-FU，不随本 PR 收敛.
+> **37**）；§1 逐家 active 列已与 §2 逻辑层对齐（flow-diagnose 回填 §2 Layer 1，#307）.
 
 ## §1 Physical Namespace（5 family；ADR-016；不重命名）
 
 | Family | Prefix | Count（active） | Total（M6 末） |
 |---|---|---|---|
-| flow | `mj-agent-flow-*` | 9 | 9 |
+| flow | `mj-agent-flow-*` | 10 | 10 |
 | git | `mj-agent-git-*` | 9 | 9 |
 | doc | `mj-agent-doc-*` | 6 | 6 |
 | runtime | `mj-agent-runtime-*` | 4 | 4 |
@@ -30,7 +29,7 @@ ai_visibility: source-of-truth
 
 ## §2 Logical Layer（5 层；本 INDEX 提供）
 
-### Layer 1: SDD 编排型（15）— flow + doc
+### Layer 1: SDD 编排型（16）— flow + doc
 
 任务触发时识别 stage / 拆分 capability scope / 撰写 plan / 验证 / self-review.
 
@@ -40,6 +39,7 @@ ai_visibility: source-of-truth
 | `mj-agent-flow-repo-scan` | 3 Repo Scan | 任务开始前扫描仓库结构产出 RepoScanResult |
 | `mj-agent-flow-plan` | 4 Plan | 撰写 / 更新 PR 级 plan 文件并对齐 capability spec |
 | `mj-agent-flow-implement` | 8 Implementation | 落地 Stage 8 实施（A 代码 / B in-source canonical / C infra） |
+| `mj-agent-flow-diagnose` | 8/10 邻接 | 硬 bug / 性能回归 / flaky 的纪律化诊断（红信号先行）；由 flow-implement Step 3b 委派 |
 | `mj-agent-flow-verify` | 10 Verification | 跑测试 + contract / runtime 验证 |
 | `mj-agent-flow-self-review` | 11 Self-review | 提交前自检 diff + plan-vs-diff 漂移 |
 | `mj-agent-flow-scope-drift` | 9 Scope Drift | 检测 PR scope 偏离 plan 时触发 HITL |
