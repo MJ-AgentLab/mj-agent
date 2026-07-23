@@ -1,8 +1,8 @@
 # capabilities/data-agent/safe-sql/contracts/behavior.feature
 #
 # Gherkin BDD scenarios for safe-sql capability (Phase M1 baseline).
-# 4 @risk:critical (REQ-001..004) + 2 @risk:high (REQ-005 / REQ-006) = 6 scenarios.
-# critical_count ≤ 5 (R-G17 satisfied).
+# 5 @risk:critical (REQ-001 ×2 + REQ-002..004) + 2 @risk:high (REQ-005 / REQ-006) = 7 scenarios.
+# critical_count = 5 (R-G17 ceiling reached; ≤ 5 still satisfied — last critical slot).
 # step definitions: Phase M3 will land in tests/bdd/data_agent/safe_sql/steps/.
 
 @adapter:python @adapter:langchain-agent
@@ -20,7 +20,7 @@ Feature: Safe SQL 4-Layer Guardrails
     And qcm_catalog.yaml periods.*.time_column includes "data_date" and "month"
     # ↑ pinned time columns per HITL Q5: pin in feature Background to avoid catalog drift breaking scenarios
 
-  # ---------- REQ-001 — L1 regex guardrail (critical) ----------
+  # ---------- REQ-001 — L1 hybrid guardrail: blocked-keyword path (critical) ----------
 
   @REQ-001 @CTR-sql-guardrail @risk:critical @adapter:python
   Scenario: L1 regex guardrail rejects blocked-keyword statement before DB contact
@@ -30,12 +30,22 @@ Feature: Safe SQL 4-Layer Guardrails
     And the message contains the blocked keyword name "DROP"
     And the database is not contacted (readonly_cursor never opens)
 
+  # ---------- REQ-001 — L1 hybrid guardrail: AST allowlist path (critical) ----------
+
+  @REQ-001 @CTR-sql-guardrail @risk:critical @adapter:python
+  Scenario: L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact
+    Given the user-generated SQL references an out-of-allowlist schema with quoted identifiers
+    When the agent invokes execute_sql with that statement
+    Then execute_sql raises ValueError whose message starts with "SQL rejected by guardrail:"
+    And the message contains "biz_ods"
+    And the database is not contacted (readonly_cursor never opens)
+
   # ---------- REQ-002 — L1b sqlglot AST precheck (critical) ----------
 
   @REQ-002 @CTR-sql-guardrail @risk:critical @adapter:python
   Scenario: L1b precheck rejects biz_dws fact-table query missing time-column predicate
     Given the user-generated SQL is "SELECT day_qrynum FROM biz_dws.dws_qcm_qrynum_daily_total LIMIT 10"
-    And the SQL passes the L1 regex guardrail (SELECT-only, allowlisted schema)
+    And the SQL passes the L1 hybrid guardrail (SELECT-only, allowlisted schema)
     When precheck_sql parses the SQL via sqlglot
     Then PrecheckResult.errors contains a string starting with "require_time_range:"
     And execute_sql raises ValueError whose message starts with "SQL rejected by precheck:"

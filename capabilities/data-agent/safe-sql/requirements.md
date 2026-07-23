@@ -14,17 +14,17 @@ updated: 2026-05-20
 > REQ-005 (high; execute_sql envelope) + REQ-006 (high; middleware per ADR-029).
 > All critical / high REQs have `bdd.examples[]` per Agent_Side §7.1 A8.
 
-## REQ-001 — L1 regex guardrail
+## REQ-001 — L1 hybrid guardrail
 
 **Priority**：critical
 
-**Statement**：L1 regex guardrail enforces SELECT-only + schema/table allowlist + blocks 14 dangerous keywords.
+**Statement**：L1 hybrid guardrail (regex keyword scan + AST allowlist) enforces SELECT-only + schema/table allowlist + blocks 16 dangerous keywords + SET SESSION.
 
 **Rationale**：Defense layer 1 of 4 (per ADR-006). Prevents SQL injection and write operations at the agent boundary before any DB contact.
 
 **Acceptance**：
 
-- `is_safe_select(sql, allowed_schemas, allowed_tables_per_schema)` returns `(False, reason)` for any SQL containing blocked keywords (INSERT / UPDATE / DELETE / DROP / TRUNCATE / ALTER / GRANT / REVOKE / CREATE / COPY / VACUUM / REINDEX / CLUSTER / ANALYZE / LOCK / CALL / SET SESSION) — 14 keywords + SET SESSION
+- `is_safe_select(sql, allowed_schemas, allowed_tables_per_schema)` returns `(False, reason)` for any SQL containing blocked keywords (INSERT / UPDATE / DELETE / DROP / TRUNCATE / ALTER / GRANT / REVOKE / CREATE / COPY / VACUUM / REINDEX / CLUSTER / ANALYZE / LOCK / CALL / SET SESSION) — 16 keywords + SET SESSION
 - Multi-statement (internal `;`) rejected after trailing-semicolon strip
 - Empty SQL rejected
 - Non-SELECT / non-WITH...SELECT start rejected

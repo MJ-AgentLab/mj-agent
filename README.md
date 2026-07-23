@@ -150,7 +150,7 @@ ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189
 - `ark` 缺 `ARK_API_KEY`（或 `LLM_API_KEY`）→ `LLMConfigError`
 - `local-openai-compat` 缺 `LLM_BASE_URL` → `LLMConfigError`
 
-**数据边界不放宽**：即使 LLM 在内网 DGX，仍走相同 4 层可见性（L1 regex guardrail + L1b sqlglot precheck + L2 SKILL semantics + L3 read-only connection + L4 GRANT），不因"本地模型"把大批明细直接塞给 LLM。
+**数据边界不放宽**：即使 LLM 在内网 DGX，仍走相同 4 层可见性（L1 hybrid guardrail + L1b sqlglot precheck + L2 SKILL semantics + L3 read-only connection + L4 GRANT），不因"本地模型"把大批明细直接塞给 LLM。
 
 ## Testing
 
@@ -179,7 +179,7 @@ LangGraph Studio / Chainlit / CLI
    Skills（in-source canonical）     Tools
    ├─ biz-domain-context             ├─ find_biz_context
    ├─ qcm-analysis                   ├─ list_biz_tables / describe_biz_table
-   └─ safe-sql-analysis              └─ execute_sql  ──► L1 regex → L1b sqlglot → L3 RO conn → biz_dws / biz_dwd
+   └─ safe-sql-analysis              └─ execute_sql  ──► L1 hybrid → L1b sqlglot → L3 RO conn → biz_dws / biz_dwd
 ```
 
 完整架构图（Memory / CLI / Storage stack）见 [CLAUDE.md §Architecture](./CLAUDE.md)。

@@ -46,7 +46,7 @@
 
 ### biz_dws / biz_dwd（schemas）
 
-**定义**：mj-agent 可访问的两个上游 schema。`biz_dws` 全表 SELECT 可见；`biz_dwd` 仅 2 张白名单维度表可见。L1 regex guardrail + L1b sqlglot precheck + L4 GRANT 三层强制。
+**定义**：mj-agent 可访问的两个上游 schema。`biz_dws` 全表 SELECT 可见；`biz_dwd` 仅 2 张白名单维度表可见。L1 hybrid guardrail + L1b sqlglot precheck + L4 GRANT 三层强制。
 **相关术语**：biz domain / Data boundary / Guardrail
 
 ---
@@ -85,7 +85,7 @@
 ### Data boundary（L1-L4）
 
 **定义**：mj-agent 访问 biz domain 的 4 层防御机制（[ADR-006](decisions/ADR-006_Fail_Safe_Reads.md)）：
-- L1 regex guardrail（`tools/sql/guardrail.py`）：single-statement + SELECT-only + schema/table 白名单
+- L1 hybrid guardrail（`tools/sql/guardrail.py`）：regex single-statement + SELECT-only + sqlglot AST schema/table 白名单
 - L1b sqlglot AST precheck（`tools/sql/precheck.py`）：`no_select_star` / `require_time_range` / `require_limit`
 - L2 SKILL semantics（`skills/*/SKILL.md` + `qcm_catalog.yaml`）
 - L3 read-only connection（`integrations/mj_system_db.py`）+ L4 GRANT
@@ -123,9 +123,9 @@
 
 ## G
 
-### Guardrail（L1 regex）
+### Guardrail（L1 hybrid）
 
-**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。任何放宽是必停 HITL 项（[policies/ai-agent.md](policies/ai-agent.md) §4）。
+**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + blocked-keyword，用 sqlglot AST 强制 schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。任何放宽是必停 HITL 项（[policies/ai-agent.md](policies/ai-agent.md) §4）。
 **相关术语**：Data boundary / Precheck / SQL execute
 
 ### G1 / G2（PreToolUse hook 规则）

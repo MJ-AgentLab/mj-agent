@@ -47,7 +47,7 @@ credential / network egress；secrets 在 `config/secrets.enc` 内分键存放�
 
 LLM **不直接握 SQL**，所有数据访问经 `src/mj_agent/tools/sql/{guardrail,precheck,execute}.py`：
 
-- L1 guardrail.py — regex allowlist + SELECT-only + schema + biz_dwd table allowlist
+- L1 guardrail.py — regex 单句 / SELECT-only / blocked-keyword + sqlglot AST schema + biz_dwd table allowlist
 - L1b precheck.py — sqlglot AST（no_select_star / require_time_range / require_limit advisory）
 - L2 SKILL.md semantics — 可见表清单（in-source canonical）
 - L3 connection.py — `default_transaction_read_only=on` + `lock_timeout=5s` +

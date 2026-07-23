@@ -30,15 +30,15 @@ ai_visibility: source-of-truth
 
 | Capability | REQ count | Risk distribution | Contracts | BDD scenarios | Cross-cap refs |
 |---|---|---|---|---|---|
-| data-agent.safe-sql | 6 | 4 critical + 2 high | 4 (3 .yml + 1 .feature) | 6 (4 critical + 2 high) | 1 (biz-catalog) + 1 reference_contract (mj-system) |
+| data-agent.safe-sql | 6 | 4 critical + 2 high | 4 (3 .yml + 1 .feature) | 7 (5 critical + 2 high) | 1 (biz-catalog) + 1 reference_contract (mj-system) |
 | data-agent.biz-catalog | 3 | 3 high | 3 (2 .yml + 1 .feature) | 3 high | 2 (safe-sql inbound + tool-chain outbound) |
 | data-agent.llm-provider | 3 | 3 high | 3 (2 .yml + 1 .feature) | 3 high | 2 (docker-compose outbound + mcp-governance outbound) |
 | infrastructure.docker-compose | 3 | 3 high | 4 (3 .yml + 1 .feature) | 3 high | 2 (llm-provider inbound + mcp-governance outbound) |
 | infrastructure.mcp-server-governance | 2 | 2 medium | 3 (2 .yml + 1 .feature) | 2 medium | 2 (docker-compose inbound + llm-provider outbound) |
-| **Total (5 pilot)** | **17** | **4 critical + 11 high + 2 medium** | **17 files** | **17 scenarios** | **9 cross-cap + 1 reference_contract** |
+| **Total (5 pilot)** | **17** | **4 critical + 11 high + 2 medium** | **17 files** | **18 scenarios** | **9 cross-cap + 1 reference_contract** |
 
 **R-G3 budget check**：5 pilot × ≤ 5 contracts = ≤ 25 cap; actual 17. ✓
-**R-G17 budget check**：critical scenarios per capability ≤ 5; max is 4 (safe-sql). ✓
+**R-G17 budget check**：critical scenarios per capability ≤ 5; max is 5 (safe-sql, at cap). ✓
 **R-G7 budget check**：cross-cap refs per capability ≤ 5; max is 2. ✓
 
 ## Deprecated / Frozen Capabilities

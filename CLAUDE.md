@@ -75,7 +75,7 @@ CLI (`server/cli.py`: `mj-agent serve|check`). Runtime:
 
 | Layer | Mechanism | Location |
 | --- | --- | --- |
-| L1 | regex: single-stmt, SELECT-only, schema + biz_dwd allowlist | `tools/sql/guardrail.py` |
+| L1 | hybrid: regex single-stmt/SELECT-only/blocked-keyword + sqlglot-AST schema + biz_dwd allowlist | `tools/sql/guardrail.py` |
 | L1b | sqlglot AST: `no_select_star` / `require_time_range` / `require_limit` | `tools/sql/precheck.py` |
 | L2 | visible tables in SKILL.md + `qcm_catalog.yaml` | `skills/*/SKILL.md` |
 | L3 | `default_transaction_read_only` + lock/idle timeouts | `integrations/mj_system_db.py` |
