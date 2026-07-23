@@ -5,7 +5,7 @@ decorator required; LangChain 1.x introspects these signatures directly.
 
 The execution path is layered:
 
-  1. L1 regex guardrail (``guardrail.is_safe_select``) — blocks DML/DDL,
+  1. L1 hybrid guardrail (``guardrail.is_safe_select``) — blocks DML/DDL,
      multi-statement, schema/table allowlist breaches.
   2. L2 sqlglot precheck (``precheck.precheck_sql``) — Component-Judge-
      aligned static rules: no_select_star, require_time_range, advisory

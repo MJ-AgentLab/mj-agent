@@ -147,7 +147,7 @@ resolved-at: YYYY-MM-DDTHH:MM
 
 | 边界层 | 是否触发 | 详情 |
 |---|---|---|
-| ADR-006 L1 regex guardrail | <是 / 否> | <如是：什么 SQL 绕过> |
+| ADR-006 L1 hybrid guardrail | <是 / 否> | <如是：什么 SQL 绕过> |
 | ADR-006 L1b sqlglot AST precheck | <是 / 否> | <如是：什么 AST 检查失效> |
 | ADR-006 L2 semantics（SKILL.md / qcm_catalog）| <是 / 否> | <如是：哪个 SKILL 提示了错误业务语义> |
 | ADR-006 L3 connection（read-only / lock_timeout / idle_in_transaction_session_timeout）| <是 / 否> | <如是：什么连接配置失效> |
@@ -163,7 +163,7 @@ resolved-at: YYYY-MM-DDTHH:MM
 
 ### §8.3 加固方案
 
-- <修 4 层 guardrail 哪一层；如 L1 regex 加新 pattern / L1b precheck 新规则 / L4 GRANT 收紧>
+- <修 4 层 guardrail 哪一层；如 L1 hybrid 加新 pattern / L1b precheck 新规则 / L4 GRANT 收紧>
 - <加 ADR / SPEC 防止再发>
 
 ---

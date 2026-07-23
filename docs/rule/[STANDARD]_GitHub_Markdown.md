@@ -389,7 +389,7 @@ GitHub 原生渲染 ` ```mermaid ` 围栏块。官方文档：<https://mermaid.j
 ```mermaid
 flowchart LR
     User[分析师] --> Agent[mj-agent]
-    Agent --> Guardrail[L1 regex]
+    Agent --> Guardrail[L1 hybrid]
     Guardrail --> DB[(biz_dws<br>biz_dwd)]
 ```
 ~~~

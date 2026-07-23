@@ -96,7 +96,7 @@ system.md 典型段：
 | **Identity** | mj-agent 内部工具定位；不是公共服务 |
 | **Data boundary principles** | ADR-000 P1（最小必要出网）/ P2（通道隔离）/ P3（工具中介） |
 | **Tools at disposal** | catalog group（find_biz_context / list_biz_tables / describe_biz_table）+ SQL group（execute_sql）+ 默认调用顺序 |
-| **execute_sql guardrails** | L1 regex 单语句 / SELECT-only / schema allowlist；L1b AST precheck（require_time_range / no_select_star / require_limit advisory）；statement_timeout 60s 中文友好提示 |
+| **execute_sql guardrails** | L1 hybrid（regex 单语句 / SELECT-only + sqlglot AST schema allowlist）；L1b AST precheck（require_time_range / no_select_star / require_limit advisory）；statement_timeout 60s 中文友好提示 |
 | **Result envelope** | executed_sql / columns / rows / row_count / truncated / statement_timeout_hit / business_summary / precheck_warnings |
 | **Hard rules** | 不可访问 biz_ods（ADR-009）；不导出无界数据（ADR-000 P1）；biz_dwd 仅白名单 |
 | **Soft rules / Style guidance** | 中文回答 / 业务摘要附同环比解读 / 反询场景识别 |
