@@ -363,3 +363,98 @@ jobs:
         # CI runs without DB creds → tests skip cleanly; locally with .env
         # provisioned the same command exercises the contract.
         run: uv run pytest tests/contract -m contract
+
+  # ===== #296 docker-build gate (warning-first; blocking flip = separate ci-blocking-gate-toggle) =====
+  # Incident #294: a Dependabot base-image minor bump broke `docker build` and went
+  # undetected for 8 weeks because no CI job actually builds the image (V5 docker
+  # contracts only LINT the Dockerfile/compose; smoke is local-only). This job builds
+  # docker/Dockerfile so an unbuildable image fails in the PR — the second layer after
+  # the .github/dependabot.yml python semver-major/minor ignore-list (first layer).
+  #
+  # Posture: WARNING (job-level continue-on-error: true) — lands non-blocking per repo
+  # precedent (V8/V9/V10, G14/G15) + policies/ci-gates.md §4.1. A future blocking flip is
+  # a separate ci-blocking-gate-toggle HITL action (policies/ai-agent.md §4) once an
+  # observation window + evidence/ai-context-audit record exist. Registry: sdd/gates.md
+  # §2 `docker-image-build` row.
+  #
+  # Scope (docker build inputs): the job always starts (ci.yml runs on every PR/push) but
+  # only BUILDS when a build-relevant path changed — the Dockerfile's actual inputs:
+  # docker/**, .dockerignore (the `.` build-context filter), pyproject.toml + uv.lock (dep
+  # set), README.md (COPYd in the builder stage), and this workflow file (so gate edits
+  # re-validate the build). src/ is intentionally OUT of scope (backstopped by the ci job's
+  # compileall/ruff/mypy/pytest) per the #296 trigger-scope decision. Mirrors the changed-
+  # files convention in scripts/sdd/check_tdd_test_list.py (git diff of the PR / push range).
+  # The interpolated values (base/before/head SHAs) are git object ids, not attacker-
+  # controlled text — no ${{ }} shell-injection surface.
+  #
+  # Fail-OPEN: a build-reliability gate must never SKIP on uncertainty. When the diff base
+  # is missing/unresolvable (new branch, first push all-zeros, or a force-pushed/orphaned
+  # base that fetch-depth:0 can't reach), the gate builds unconditionally rather than
+  # silently skipping. PR diffs use three-dot (merge-base) so a PR is scoped to its own
+  # changes, not base-side commits that landed after the branch point.
+  #
+  # apt mirror: passes --build-arg APT_MIRROR_URL=deb.debian.org. The Dockerfile defaults
+  # to the tuna mirror (mainland build reliability); GitHub-hosted runners reach
+  # deb.debian.org (Fastly) reliably, so CI pins it to avoid tuna-from-abroad flakiness
+  # (false reds). The gate tests Dockerfile BUILDABILITY, not mirror reachability.
+  docker-build:
+    name: docker-build (warning)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        # fetch-depth: 0 so the changed-files diff below can resolve the base commit.
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Detect build-relevant changes
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          if [ -z "$base" ]; then
+            # push event — no pull_request payload
+            base="${{ github.event.before }}"
+            head="${GITHUB_SHA}"
+          fi
+          # Fail OPEN when the diff base is missing/unresolvable: all-zeros (new branch /
+          # first push) OR an object fetch-depth:0 can't reach (force-pushed / orphaned
+          # base). Never SKIP on uncertainty — this is a build-reliability gate.
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "${base}^{commit}" 2>/dev/null \
+             || ! git cat-file -e "${head}^{commit}" 2>/dev/null; then
+            echo "Diff base unresolvable (new branch / force-push / missing object) — building unconditionally."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Three-dot (merge-base) scopes to the PR's OWN changes. No `|| true`: both
+          # objects are verified present above, so a diff failure is a real error →
+          # fail OPEN (build) rather than mask it into a silent skip.
+          echo "Diff range: ${base}...${head}"
+          if ! changed="$(git diff --name-only "${base}...${head}")"; then
+            echo "git diff failed unexpectedly — building unconditionally."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf 'Changed files:\n%s\n' "$changed"
+          if printf '%s\n' "$changed" | grep -Eq '^(docker/|\.dockerignore$|pyproject\.toml$|uv\.lock$|README\.md$|\.github/workflows/ci\.yml$)'; then
+            echo "Build-relevant path changed — running docker build."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No build-relevant change — skipping build."
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build image (no push)
+        if: steps.detect.outputs.relevant == 'true'
+        # No --push / registry: a successful build is the entire signal. deb.debian.org
+        # apt mirror for reliable GitHub-runner connectivity (see block comment above).
+        run: |
+          docker build \
+            -f docker/Dockerfile \
+            --build-arg APT_MIRROR_URL=deb.debian.org \
+            --tag "mj-agent:ci-${GITHUB_SHA}" \
+            .
