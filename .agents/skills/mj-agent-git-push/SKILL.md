@@ -7,7 +7,7 @@ description: This skill should be used when the user asks to push code, run pre-
 
 ## Overview
 
-8 步 pre-push checklist + 双推（Gitee first, GitHub second）执行 for mj-agent。CI Runner 默认从 Gitee 拉镜像（与 mj-system 一致策略），因此两个 remote 必须都收到 push。
+8 步 pre-push checklist + 双推（Gitee first, GitHub second）执行 for mj-agent。gitee 是 GitHub 的**被动冗余镜像**：当前 CI 跑在 GitHub-hosted runner（`actions/checkout` 拉 **origin**），**不读 gitee**——保持双推是为镜像一致 +「未来无法直连 GitHub 时改从 gitee 拉」（per [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]] §6.5），因此两个 remote 必须都收到 push。
 
 > **前置技能**：`/mj-agent-git-commit` 已在提交阶段验证 commit message 格式 + type/branch 纪律。本技能 Step 1-2 是二次确认。
 
@@ -92,7 +92,7 @@ git push -u gitee <branch> && git push -u origin <branch>
 git pushall
 ```
 
-**顺序强制**：Gitee first, GitHub second——CI Runner 默认从 Gitee 拉。
+**顺序强制**：Gitee first, GitHub second——保持 gitee 冗余镜像一致的既有约定（当前 CI 不读 gitee，见 Overview）。
 
 ## Worktree Validation
 
@@ -145,7 +145,7 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 ## Anti-patterns
 
 - **不要** force-push 到 `main` / `develop`（H7 硬性阻断）
-- **不要** 跳过 Gitee push（CI Runner 拉不到代码会跑失败）
+- **不要** 跳过 Gitee push（gitee 冗余镜像会与 origin 失配；当前 CI 虽不读 gitee，仍须保持一致——见 Overview）
 - **不要** 在 bare repo 根 push（会失败；必须 cd 进 worktree）
 - **不要** 在 push 前忘记跑 Level A 验证（Stage 10）—— `uv run ruff check` + `uv run mypy src/mj_agent` 失败 push 后 CI 会红
 - **不要** 用 `git push --force` 不加 `--force-with-lease`（覆盖他人修改风险）
