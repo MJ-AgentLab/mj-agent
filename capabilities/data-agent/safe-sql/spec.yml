@@ -20,7 +20,7 @@ owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-06-03
 summary: >
-  mj-agent core safety mainline — 4-layer SQL defense (L1 regex guardrail / L1b
+  mj-agent core safety mainline — 4-layer SQL defense (L1 hybrid guardrail / L1b
   sqlglot AST precheck / L3 read-only connection / L4 statement_timeout + GRANT
   reference contract) plus execute_sql envelope schema (REQ-005) and the
   handle_sql_tool_errors middleware (REQ-006; ADR-029). Existing unit tests cover
@@ -29,7 +29,7 @@ summary: >
 
 requirements:
   - id: REQ-001
-    statement: "L1 regex guardrail enforces SELECT-only + schema/table allowlist + blocks 14 dangerous keywords"
+    statement: "L1 hybrid guardrail (regex keyword scan + AST allowlist) enforces SELECT-only + schema/table allowlist + blocks 16 dangerous keywords + SET SESSION"
     rationale: "Defense layer 1 of 4 — prevents SQL injection / write ops at the agent boundary (per ADR-006)"
     priority: critical
     bdd:

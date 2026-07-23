@@ -165,7 +165,7 @@ Chainlit 暴露在 host:**8001**；mj-agent-postgres host:**5433**；mj-agent-re
 
 | 层 | 容器中位置 |
 |---|---|
-| L1 guardrail | 镜像里的 `tools/sql/guardrail.py` (regex) |
+| L1 guardrail | 镜像里的 `tools/sql/guardrail.py` (regex 关键字 + sqlglot AST allowlist) |
 | L1b precheck | 镜像里的 `tools/sql/precheck.py` (sqlglot AST) |
 | L2 SKILL semantics | 镜像里的 `skills/*/SKILL.md` + `biz_catalog/qcm_catalog.yaml` |
 | L3 connection | `default_transaction_read_only=on` + `lock_timeout=5s` (`integrations/mj_system_db.py`) |

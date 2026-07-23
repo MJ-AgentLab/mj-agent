@@ -368,7 +368,7 @@ GUARDRAIL / OPS / INTEGRATION / WORKFLOW / ...`。`engineering-workflow` track �
 | **类 1 — 全局高频标准** | trio（Meta / Code_Side / Agent_Side）+ HITL_Prompt + Commit_Message + GitHub_Markdown + 跨轨元规则 ADR（如 011 / 012 / 013 / 014 / 017 / 018） |
 | **类 2 — 高频运行信息** | 入口命令矩阵（`uv run mj-agent serve` / `check` / `langgraph dev`）+ 端口规则（8000 Chainlit / 2024 LangGraph Studio）+ 关键环境变量（`ARK_API_KEY` / `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`） |
 | **类 3 — 项目目录入口** | `docs/INDEX.md` + 核心运行时模块位置（`src/mj_agent/{agent,llm,config}.py` + `tools/` / `skills/` / `prompts/`） |
-| **类 4 — runtime 语义（mj-agent 特化）** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（regex guardrail / sqlglot precheck / SKILL semantics / read-only conn + GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI） |
+| **类 4 — runtime 语义（mj-agent 特化）** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（hybrid guardrail / sqlglot precheck / SKILL semantics / read-only conn + GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI） |
 
 > **类 4 理由**：CLAUDE.md 中 LLM provider + Data boundary + HITL gates 三块占比 ~40%，是 mj-agent
 > native 内容；显式列入避免 reviewer 在「这条规则改是否要 sync CLAUDE.md」上反复判断。

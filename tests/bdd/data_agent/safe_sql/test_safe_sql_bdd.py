@@ -1,10 +1,11 @@
 """BDD step definitions for data-agent.safe-sql capability.
 
-Binds all 6 scenarios from
+Binds all 7 scenarios from
 `capabilities/data-agent/safe-sql/contracts/behavior.feature`:
 
 B-1 (offline):
-- REQ-001: L1 regex guardrail rejection
+- REQ-001: L1 regex guardrail rejection (blocked-keyword path)
+- REQ-001: L1 allowlist rejection — quoted out-of-allowlist schema (AST path, #280)
 - REQ-002: L1b precheck rejection
 - REQ-006: handle_sql_tool_errors middleware ToolMessage conversion
 
@@ -38,6 +39,11 @@ _FEATURE_FILE = "../../../../capabilities/data-agent/safe-sql/contracts/behavior
 
 @scenario(_FEATURE_FILE, "L1 regex guardrail rejects blocked-keyword statement before DB contact")
 def test_req_001_l1_guardrail() -> None:
+    pass
+
+
+@scenario(_FEATURE_FILE, "L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact")
+def test_req_001_l1_allowlist_quoting_agnostic() -> None:
     pass
 
 
@@ -75,6 +81,18 @@ def test_req_005_envelope_schema(live_db: None) -> None:  # noqa: ARG001 — fix
 @given(parsers.parse('the user-generated SQL is "{sql}"'), target_fixture="sql_input")
 def given_sql_input(sql: str) -> str:
     return sql
+
+
+@given(
+    "the user-generated SQL references an out-of-allowlist schema with quoted identifiers",
+    target_fixture="sql_input",
+)
+def given_quoted_out_of_allowlist_sql() -> str:
+    # Double-quoted identifiers can't ride the parametrized `the user-generated SQL
+    # is "{sql}"` step (embedded quotes break parsers.parse's trailing-quote anchor),
+    # so this out-of-allowlist ref is supplied via a no-arg Given. SUT semantics are
+    # proven by tests/unit/test_guardrail.py::TestQuotedIdentifierAllowlist (#280).
+    return 'SELECT 1 FROM "biz_ods"."ods_raw"'
 
 
 def _call_execute_sql_capture_exception(sql: str) -> BaseException:
@@ -130,7 +148,7 @@ def then_db_not_contacted() -> None:
 # -------- REQ-002 step defs --------
 
 
-@given("the SQL passes the L1 regex guardrail (SELECT-only, allowlisted schema)")
+@given("the SQL passes the L1 hybrid guardrail (SELECT-only, allowlisted schema)")
 def given_l1_passes(sql_input: str) -> None:
     """Asserted as part of the When step (precheck only runs after L1 passes)."""
     from mj_agent.config import settings

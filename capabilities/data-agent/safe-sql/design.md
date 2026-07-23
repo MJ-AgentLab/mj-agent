@@ -162,5 +162,14 @@ Upstream (reference contract):                              ──── REQ-004
    （两个单侧实例并注册也不行——对侧模式各自炸）；async 路径由
    `tests/unit/test_agent_async_tool_path.py` 常驻回归。ADR-029 见 2026-07-07 amendment。
 
+5. **`precheck.py` `RecursionError` branch not independently caught (deferred, #282 item 4;
+   no code change)** — `precheck_sql` catches only `sqlglot.errors.ParseError`, whereas L1
+   `guardrail._qualified_refs` catches `(SqlglotError, RecursionError)` and fail-closes.
+   Because L1 (`is_safe_select`) runs before L1b in the `execute_sql` pipeline, any
+   pathological-nesting SQL that would raise `RecursionError` is already fail-closed-rejected
+   at L1 and never reaches `precheck_sql`; the uncaught branch is therefore unreachable in
+   practice. Left uncaught by design — no `precheck.py` edit (`sql-guardrail-relax` 必停);
+   re-evaluate only if the L1/L1b ordering changes.
+
 > Phase M2 will fill in adapter-side §BDD Rules + §TDD Rules per
 > `sdd/adapters/{python,langchain-agent,bdd-tdd}.md`.

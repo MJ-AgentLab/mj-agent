@@ -80,7 +80,7 @@ uv run pytest tests/contract -m contract -q
 
 ### Symptom: `ValueError: SQL rejected by guardrail: ...`
 
-**Diagnostic**：L1 regex caught a write keyword / disallowed schema / multi-statement /
+**Diagnostic**：L1 hybrid guardrail caught a write keyword / disallowed schema / multi-statement /
 non-SELECT / empty SQL / out-of-allowlist biz_dwd table.
 
 **Resolution**：
@@ -276,6 +276,19 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
   folder 建好。
 - **预计时间**: M3 EOL（per `plans/mj-agent-roadmap-v1.6.md` § Phase M3 BDD
   集中实装节奏）。
+
+### G22/G21 Justification: L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact
+
+> **Status: automated at landing (#282)** — pytest-bdd binding green in CI (tests/bdd blocking); no unautomated interval. Block retained as G21 fallback source.
+
+- **REQ**: REQ-001 / **Risk**: critical / **Adapter**: python
+- **原因**: 新增 scenario 补齐 R-G17 最后一个 critical 槽（4→5），覆盖 #280 AST 化 allowlist
+  的 quoting-agnostic 拒绝路径（区别于既有 blocked-keyword regex scenario）。
+- **替代验证手段**: `tests/unit/test_guardrail.py::TestQuotedIdentifierAllowlist`（fully /
+  schema-only / table-only / case-mixed quoted + UNION / comma-join legs）+
+  `::TestParseFailureFailClosed`（不可解析 fail-closed）已覆盖等效 SUT 语义。
+- **升级触发条件**: N/A（已自动化；BDD binding 随本 PR 落地）。
+- **预计时间**: 已随 #282 落地。
 
 ### G22/G21 Justification: L1b precheck rejects biz_dws fact-table query missing time-column predicate
 

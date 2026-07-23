@@ -21,17 +21,19 @@ cross_capability_refs:
 
 links:
 
-  - req: REQ-001                                 # L1 regex guardrail
+  - req: REQ-001                                 # L1 hybrid guardrail
     bdd:
       feature: contracts/behavior.feature
       scenarios:
         - "L1 regex guardrail rejects blocked-keyword statement before DB contact"
+        - "L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact"
       automation_status: automated               # M3 Stage B-1 pytest-bdd binding; green in CI (tests/bdd blocking)
     contracts:
       - contracts/sql-guardrail.contract.yml      # §l1_guardrail
       - contracts/python.contract.yml             # src.mj_agent.tools.sql.guardrail module
     tests:
       - tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_guardrail
+      - tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_allowlist_quoting_agnostic
       - tests/unit/test_guardrail.py::TestAccepted::test_simple_select
       - tests/unit/test_guardrail.py::TestAccepted::test_with_clause
       - tests/unit/test_guardrail.py::TestAccepted::test_join_across_allowed_schemas
@@ -178,9 +180,9 @@ links:
 
 # Summary stats (manual at M1; Phase M2+ auto by generate_index.py):
 # - 6 REQs (4 critical + 2 high)
-# - 6 BDD scenarios (4 @risk:critical + 2 @risk:high; R-G17 critical ≤ 5 ✓)
+# - 7 BDD scenarios (5 @risk:critical + 2 @risk:high; R-G17 critical ≤ 5 ✓ — at cap)
 # - bdd automation_status: 5 automated (REQ-003/005 live_db env-gated) / 1 unautomated (REQ-004)
 # - 4 contract files (sql-guardrail.yml + execute-sql.yml + python.yml + behavior.feature; R-G3 ≤ 5 ✓)
 # - 1 cross-capability ref (→ data-agent.biz-catalog; R-G7 ≤ 5 ✓)
 # - 1 reference contract (→ mj-system R__analyst_permissions.sql)
-# - 31 real test entries (5 bdd bindings + unit/contract suites + 7 new unit tests); 0 TBD placeholders
+# - 32 real test entries (6 bdd bindings + unit/contract suites + 7 new unit tests); 0 TBD placeholders

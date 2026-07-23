@@ -32,7 +32,7 @@ updated: 2026-05-20
   - contracts ≤ 5 files
   - cross_capability_refs ≤ 5
 
-### T-002 — REQ-001 L1 regex guardrail (contract reverse-engineering)
+### T-002 — REQ-001 L1 hybrid guardrail (contract reverse-engineering)
 
 - **Phase**：M1
 - **Priority**：critical
@@ -51,6 +51,9 @@ updated: 2026-05-20
   - `tests/unit/test_guardrail.py::TestRejected::test_disallowed_schema` (existing; biz_ods rejected)
   - `tests/unit/test_guardrail.py::TestRejected::test_empty_sql` (existing)
   - `tests/unit/test_guardrail.py::TestTableLevelAllowlist::*` (existing; 6 cases on per-schema allowlist)
+  - `tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_allowlist_quoting_agnostic` (new #282; BDD binding for the AST-allowlist quoting-agnostic rejection scenario)
+  - `tests/unit/test_guardrail.py::TestQuotedIdentifierAllowlist` (existing #280; quoted / mixed-quoted out-of-allowlist schema rejected at L1)
+  - `tests/unit/test_guardrail.py::TestParseFailureFailClosed` (existing #280; unparseable SQL fail-closed reject)
 
 ### T-003 — REQ-002 L1b sqlglot AST precheck (contract reverse-engineering)
 
