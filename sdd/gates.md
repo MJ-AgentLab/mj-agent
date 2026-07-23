@@ -2,10 +2,10 @@
 type: sdd-kernel
 artifact: gates
 state: active
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-07-14
+updated: 2026-07-23
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -63,6 +63,7 @@ ai_visibility: source-of-truth
 | V11 Codex-MCP-Projection | `scripts/sdd/agents_sync.py --check --surface mcp` | emitter B 产物 ↔ 源一致性（`.codex/config.toml` ↔ `.mcp.json` × manifest `mcp` 三档 + `codex.posture` 转写 + lock 保留键；生成/校验零 env 解析，fork/无 secrets 不假红） | **blocking@ci（day-1 per D-016，不设 warning 观察期；`ci-blocking-gate-toggle` Owner 执行记录 = issue #330 comment 2026-07-14；CI 首挂锚 `b8f43d3` 2026-07-14 17:08 +0800 #330）**。**豁免注记**：day-1 blocking 未走 `policies/ci-gates.md` §4:41 的「切换前 1 周 DRI dry-run」，属 D-016「信任面不设观察期」的**明确豁免**而非疏漏（plan §11.2(4) + §18 D-016 补记）。翻转机制不适用（既无 `continue-on-error` 键也无 `--fail-on`）。真值注记：`test_real_tree_mcp_projection_in_sync` 真实树钉线双保险（同族）|
 | docker-bdd-scenario-check | `check_bdd_scenario_trace.py --scope docker` | docker behavior.feature | covered-by(G19)（CI 跑 `--scope full` 全集；docker 子集为其真子集）|
 | docker-tdd-contract-test | `check_tdd_refactor_contract.py`（未建）| docker contract change | deferred(M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER)（与 G27/G28 同执行体家族）|
+| docker-image-build | `docker build -f docker/Dockerfile`（ci.yml `docker-build` job；非 G/V spec-gate，属 CI infra 构建门，同 Tests/Contract 步）| Dockerfile 实际可构建（#294 防复发第二层；V5 只 lint 不 build）| warning@ci（#296 首发 warning-first per `policies/ci-gates.md` §4.1；path-scoped 到 Dockerfile 构建输入面〔`docker/` + `.dockerignore` + `pyproject.toml`/`uv.lock` + `README.md` + `ci.yml`；`src/` 有意排除，由 ci job compileall/ruff/mypy/pytest 兜底〕，diff base 不可解时 fail-open 构建 + job-level `continue-on-error: true`；blocking flip 另走 `ci-blocking-gate-toggle` + evidence/ai-context-audit 记录）|
 
 ## §3 BDD/TDD Gate（G19-G28）
 
@@ -123,6 +124,8 @@ Scenarios — Canonical 10-Enum` 的 in-source 子集（前 4 行）：
 
 ---
 
+> *v0.3（2026-07-23）：#296 — §2 新增 `docker-image-build` 行（CI 实际 build docker/Dockerfile；
+> #294 防复发第二层；warning-first per §4.1，blocking flip 另走 ci-blocking-gate-toggle）。*
 > *v0.2（2026-06-10）：completion-audit PR2 truth-up — 阻塞模式真值化 + G3/G7/G25 实装登记 +
 > G26 withdrawn + G27/G28 deferred。详细 gate 例外处理见 `policies/ci-gates.md`。
 > 历史：v0.1 Phase M0 skeleton（state: draft）。*

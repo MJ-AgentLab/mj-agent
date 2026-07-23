@@ -77,6 +77,13 @@ docker compose --env-file .env -f docker/compose.yaml ps
   against `docker/Dockerfile` + 4 compose YAML; sub-flags `--bdd --tdd --compose-config`
   exercised
 - **V6 runtime expected** — warning (SKELETON BY DESIGN; Phase M4 full probe impl)
+- **docker-image-build** — warning (#296; `docker-build` job actually runs
+  `docker build -f docker/Dockerfile` so an unbuildable image fails the PR — #294
+  防复发第二层; V5 只 lint 不 build). Path-scoped 到 Dockerfile 构建输入面（`docker/**` +
+  `.dockerignore` + `pyproject.toml` + `uv.lock` + `README.md` + `ci.yml`；`src/` 有意排除，
+  由 ci job compileall/ruff/mypy/pytest 兜底），diff base 不可解时 fail-open 构建; CI 用
+  `--build-arg APT_MIRROR_URL=deb.debian.org`. Blocking flip 另走 `ci-blocking-gate-toggle`.
+  Registry: `sdd/gates.md` §2 `docker-image-build` 行.
 - Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
 
 ## Anti-patterns
