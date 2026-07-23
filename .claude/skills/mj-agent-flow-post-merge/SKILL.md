@@ -185,14 +185,11 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 - 当前 worktree（如 develop）需 pull 最新 develop（含本 PR commit）
 - 如 hotfix → main 合并后还要 sync 回 develop（mj-agent-git-sync 自动检测）
-- **gitee 镜像 ff-push（非 hotfix 合并必做，#381）**：`/mj-agent-git-sync` 的**自更新模式不 `pushall`**（其 SKILL.md「自更新」段：`main/develop/工作分支自更新 → 不 pushall`）——但 GitHub 合并只推 **origin/develop**，`gitee/develop` 会滞后，而 **CI 拉 gitee**。故 develop 自更新到本 PR commit 后须显式把镜像 ff 到 gitee：
+- **gitee 镜像 ff-sync（非 hotfix 合并必做，#381/#383）**：GitHub 合并只推 **origin/develop**，`gitee/develop` 会滞后（`/mj-agent-git-sync` 的自更新模式也不 `pushall`）。gitee 是**被动冗余镜像**——当前 CI 跑在 GitHub-hosted runner + `actions/checkout` 拉 **origin**，**不读 gitee**；保持镜像一致是为冗余 + 「未来无法直连 GitHub 时改从 gitee 拉」（per `Git_Push_Workflow` GUIDE §6.5），**不是**因为当前 CI 依赖它。故 develop 自更新到本 PR commit 后跑守卫脚本把镜像 ff 到 gitee（#383 起，取代手动 `git push`）：
 
   ```bash
-  # 在 develop worktree 内，git-sync 自更新完成后（本地 develop 已 == origin/develop）
-  git fetch gitee
-  GITEE_GAP=$(git rev-list --count gitee/develop..origin/develop 2>/dev/null || echo 0)
-  # GITEE_GAP > 0 → gitee 落后 → ff-push 追平（origin 已由 GitHub 合并推进，此处只补 gitee）
-  git push gitee develop        # 非 --force：仅 fast-forward；若 gitee/develop 已分叉会被拒（此时人工介入）
+  # 从任意 worktree 均可跑；脚本自 fetch origin+gitee：已同步 → no-op(exit 0)；落后 → 仅 fast-forward；分叉 → 拒(exit 3)
+  pwsh scripts/sync-gitee-mirror.ps1        # 默认 -Branch develop -Remote gitee -Source origin
   ```
 
   - hotfix → main 合并：**不**在此重复——`/mj-agent-git-sync` 的 hotfix 回同步段已 `pushall`（含 gitee）。
@@ -324,7 +321,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 ### Develop Sync（→ /mj-agent-git-sync）
 - ☐ `cd ../develop && git pull origin develop --ff-only`
-- ☐ **gitee 镜像 ff-push（非 hotfix 必做，#381）**：`git fetch gitee && git push gitee develop`（origin 已由 GitHub 合并推进，只补滞后的 gitee；CI 拉 gitee）
+- ☐ **gitee 镜像 ff-sync（非 hotfix 必做，#381/#383）**：`pwsh scripts/sync-gitee-mirror.ps1`（守卫脚本：已同步 no-op / 仅 ff / 分叉拒；gitee 是被动冗余镜像，当前 CI 不读它）
 
 ### Plan Lifecycle Update（per lifecycle §2）
 - ⏸ skipped — PR 无关联 working plan

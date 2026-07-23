@@ -3,6 +3,6 @@
   "mj-agent-flow-diagnose": "sha256:698b6451a8366776d3091d7a601a8dba66dcf42fe931b0509a59b8f4ac6bb0a8",
   "mj-agent-git-commit": "sha256:c7fccee1212235548c7002f7b3e388536f9331709b5942f5b82ca3a22e78c196",
   "mj-agent-git-delete": "sha256:47d491cd5cadaf1f102f913c5a59da87e80fb110d48ca2aba12bb7d2ce40ee05",
-  "mj-agent-git-push": "sha256:5fb9a847ea8dc24b2cb5cb26300bcb8fe2f613d14dfcad94c041843c8b63ca88",
+  "mj-agent-git-push": "sha256:412f28ea801020f303aa397c915a56b24ad4c2e5640e3933a867d79ce388d902",
   "mj-agent-git-sync": "sha256:8e1686ffd7a32a7335fe728918bf991371622bc300c0b035693a5bc121bfd459"
 }
