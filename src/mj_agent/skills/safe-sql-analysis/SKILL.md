@@ -4,7 +4,7 @@ domain: SKILL
 summary: SQL 撰写守则与执行 envelope：时间谓词必填、SELECT * 禁用、LIMIT 策略、失败修正回路
 owner: 项目负责人
 created: 2026-05-06
-updated: 2026-05-12
+updated: 2026-07-24
 state: active
 version: v0.2
 track: agent
@@ -24,7 +24,7 @@ related_skills:
 
 ## Purpose
 
-SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 正则 guardrail → L2 sqlglot AST
+SQL 在 mj-agent 是穿越四层防线的最后一公里：L1 hybrid guardrail（regex 关键字扫描 + AST allowlist） → L2 sqlglot AST
 预校验 → L3 read-only 连接 → L4 DB GRANT。本 skill 教 agent **怎样写一条不会被拦
 下的 SQL**，并给出执行后的 envelope 解读规范与失败时的修正回路。
 
