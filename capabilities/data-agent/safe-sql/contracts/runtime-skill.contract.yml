@@ -37,8 +37,8 @@ skills:
       - "## Common patterns"
       - "## Anti-patterns"
       - "## Related"
-    content_hash: sha256:749ed640fbcce91b0ccc553aa0e5135aec1b02fa3b53f9e8fe3979c3ce77136e
-    frozen_at: 2026-05-21T00:00:00Z
+    content_hash: sha256:dd3bb85c9f271c156cf77f33a7c412287bf70248fceeaad1cf1b455f01b639b6
+    frozen_at: 2026-07-24T00:00:00Z
     variables: []                                   # static body; no template variables
     triggers_visible: []                            # SKILL frontmatter has no `triggers_visible` field
                                                     # (activation block is non-canonical mirror; not covered here)
