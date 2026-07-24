@@ -1,0 +1,71 @@
+# capabilities/data-agent/memory-checkpointer/contracts/checkpoint-retention.contract.yml
+#
+# Behavioral (invariant) contract for mechanism C — opt-in TTL/retention eviction of stale
+# checkpoint threads (ADR-038 optional stack-on; REQ-005; #386). Domain-specific — NOT a
+# python/prompt/claude-skill/docker/runtime-skill contract, so it declares WHAT the eviction path
+# must guarantee, not concrete code symbols. Named non-"python" on purpose so the V1 python-contract
+# validator does not bind these modules as a frozen surface.
+#
+# NOT a 4-必停 surface (memory/ is a separate capability per src/mj_agent/AGENTS.md), but the
+# operation is a destructive DELETE — the invariants below (default-off, dry-run, strict age, all
+# three tables) are the guardrails on that.
+
+contract_id: checkpoint-retention
+covers_requirements:
+  - REQ-005            # opt-in TTL eviction of stale threads
+
+# Eviction target: whole checkpoint threads (not individual messages). Age is derived from the
+# uuid6 checkpoint_id — no schema change, no created_at column.
+eviction_target:
+  unit: thread                       # per-thread; langgraph adelete_thread removes all 3 tables
+  age_source:
+    field: checkpoint_id
+    encoding: uuid6                  # langgraph time-ordered v6 id; 60-bit 100ns Gregorian timestamp
+    newest_per_thread: "MAX(checkpoint_id) — uuid6 string form sorts lexicographically by time"
+  deletes_from:                      # via langgraph AsyncPostgresSaver.adelete_thread
+    - checkpoints
+    - checkpoint_blobs
+    - checkpoint_writes
+  trigger:
+    command: "mj-agent memory-evict [--older-than DAYS] [--dry-run]"
+    scheduler: "none in-app — wire into external cron / Task Scheduler (runbook §6)"
+    config: "MJ_AGENT_MEMORY_TTL_DAYS (0 = disabled, default); --older-than overrides per run"
+
+# Invariants the eviction path MUST uphold (verified by tests/unit/test_memory_retention.py offline
+# + tests/smoke/test_memory_retention_smoke.py against mj-agent-postgres).
+invariants:
+  - id: INV-R1
+    covers: REQ-005
+    statement: "A thread is evicted iff its newest checkpoint is STRICTLY older than now - TTL; a thread aged exactly at the cutoff, or with any fresher checkpoint, is retained."
+  - id: INV-R2
+    covers: REQ-005
+    statement: "--dry-run reports the stale threads but deletes nothing (evicted == 0; rows remain on disk)."
+  - id: INV-R3
+    covers: REQ-005
+    statement: "Eviction is opt-in: with TTL <= 0 (MJ_AGENT_MEMORY_TTL_DAYS=0 and no --older-than) or memory credentials absent, the command is a clean no-op that exits 0 and deletes nothing. It never auto-runs (no in-app scheduler)."
+  - id: INV-R4
+    covers: REQ-005
+    statement: "A real (non-dry-run) eviction removes the stale thread's rows from ALL THREE tables (checkpoints, checkpoint_blobs, checkpoint_writes) via adelete_thread — no orphaned blobs/writes."
+
+# Non-actions — explicitly out of this contract's guarantee surface.
+non_actions:
+  - "Does NOT redact / minimize the CONTENT of any message (that is mechanism B, checkpoint-redaction.contract.yml); C only bounds lifetime by deleting whole stale threads."
+  - "Does NOT prune individual checkpoints within a still-active thread (per-thread granularity only)."
+  - "Does NOT run automatically / on a schedule — no in-app scheduler; external cron only."
+  - "Does NOT backfill or bound backups; effective window = MIN(TTL, backup-retention), and no backup pipeline exists today (design.md §6)."
+  - "Does NOT relax any data boundary (ADR-006/009/000) or touch the 4 in-source hard-stop surfaces; the memory DB is never a biz-table path."
+
+# Implementation surface (built in #386; declared descriptively, not frozen here).
+modules:
+  - target: src/mj_agent/memory/retention.py
+    role: "pure uuid6->epoch extraction + stale-thread selection + evict via adelete_thread"
+  - target: src/mj_agent/server/cli.py
+    role: "mj-agent memory-evict command (opt-in gate + --dry-run)"
+  - target: src/mj_agent/config.py
+    role: "MJ_AGENT_MEMORY_TTL_DAYS setting (default 0 = disabled)"
+
+related_decisions:
+  - decisions/ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md
+
+hitl_required:
+  - none               # memory/ is not a 4-必停 surface; ordinary PR review (ADR-034 commit/PR gates still apply)

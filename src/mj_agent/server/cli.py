@@ -1,12 +1,15 @@
 """``mj-agent`` CLI — typer-based wrapper around the runtime entrypoints.
 
-Two commands so far (Phase 1 sub 1.A):
+Commands (Phase 1 sub 1.A + follow-ups):
 
   - ``mj-agent serve``  — launch the Chainlit UI on the configured host/port
   - ``mj-agent check``  — health probe. Default: credential presence + a sync
     memory-DB ping + env drift (fast, offline-safe; the Docker ``HEALTHCHECK``).
     ``--live`` additionally exercises the async checkpointer path (issue #283),
     connects to the biz DB, and does a 1-token LLM round-trip.
+  - ``mj-agent memory-evict`` — TTL/retention eviction of stale checkpoint threads
+    (mechanism C; ADR-038). Opt-in + irreversible; ``--dry-run`` first. Wire into
+    external cron (mj-agent has no in-app scheduler).
 
 Each command is intentionally thin; the heavy lifting lives in the
 modules it imports lazily (so ``mj-agent --help`` works without a live
@@ -312,6 +315,75 @@ def check(
         f"  llm provider = {settings.llm_provider} "
         f"(endpoint={settings.effective_llm_base_url})"
     )
+
+
+@app.command("memory-evict")
+def memory_evict(
+    older_than: int | None = typer.Option(
+        None,
+        "--older-than",
+        help=(
+            "TTL in days; overrides MJ_AGENT_MEMORY_TTL_DAYS. Threads whose newest checkpoint "
+            "is older than this are deleted."
+        ),
+    ),
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Report stale threads without deleting anything."
+    ),
+) -> None:
+    """Evict memory checkpoint threads older than the TTL (mechanism C; ADR-038).
+
+    OPT-IN: does nothing unless a positive TTL is set (``MJ_AGENT_MEMORY_TTL_DAYS`` or
+    ``--older-than``). Deletion is IRREVERSIBLE — drops the thread's checkpoints + blobs +
+    writes; run ``--dry-run`` first. mj-agent has no in-app scheduler: wire this into external
+    cron / Task Scheduler for periodic retention (see the capability runbook).
+
+    Exit 0 on success, on opt-out (TTL <= 0), and on absent memory credentials (SKIP).
+    """
+    import time
+
+    from mj_agent.config import settings
+
+    ttl_days = older_than if older_than is not None else settings.mj_agent_memory_ttl_days
+    if ttl_days <= 0:
+        typer.echo(
+            "[memory-evict] TTL is not a positive number of days "
+            "(MJ_AGENT_MEMORY_TTL_DAYS=0 by default; --older-than overrides) — nothing to do "
+            "(opt-in). Pass a positive --older-than or set MJ_AGENT_MEMORY_TTL_DAYS to enable."
+        )
+        return
+    if not (
+        settings.mj_agent_memory_user
+        and settings.mj_agent_memory_password.get_secret_value()
+    ):
+        typer.echo("[memory-evict] SKIP: memory DB credentials absent.", err=True)
+        return
+
+    from mj_agent.memory import open_checkpointer
+    from mj_agent.memory.retention import EvictionResult, evict_stale_threads
+    from mj_agent.runtime import run_async
+
+    async def _run() -> EvictionResult:
+        async with open_checkpointer() as saver:
+            return await evict_stale_threads(
+                saver,
+                older_than_seconds=ttl_days * 86400,
+                now_epoch=time.time(),
+                dry_run=dry_run,
+            )
+
+    result = run_async(_run())
+    if dry_run:
+        typer.echo(
+            f"[memory-evict] DRY-RUN: scanned {result.scanned_threads} thread(s); "
+            f"{len(result.stale_thread_ids)} older than {ttl_days}d would be evicted "
+            "(nothing deleted)."
+        )
+    else:
+        typer.echo(
+            f"[memory-evict] scanned {result.scanned_threads} thread(s); "
+            f"evicted {result.evicted} older than {ttl_days}d."
+        )
 
 
 def main() -> None:

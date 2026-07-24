@@ -105,6 +105,13 @@ class Settings(BaseSettings):
     # canary + smoke round-trip validated it against mj-agent-postgres). Set
     # MJ_AGENT_MEMORY_REDACT_BIZ_ROWS=false to opt out (reversible, config-only; no data migration).
     mj_agent_memory_redact_biz_rows: bool = True
+    # TTL/retention eviction (capability data-agent.memory-checkpointer; ADR-038 mechanism C).
+    # OPT-IN + irreversible: 0 disables (default). A positive N means `mj-agent memory-evict` deletes
+    # whole checkpoint threads whose newest activity is older than N days (mechanism B's digest is
+    # forward-only and does not cover answer-side biz values — this bounds their at-rest lifetime).
+    # Default-off because eviction is a hard DELETE, unlike the non-destructive redaction above.
+    # There is no in-app scheduler; wire `mj-agent memory-evict` into external cron (see runbook).
+    mj_agent_memory_ttl_days: int = 0
 
     # Redis: container is provisioned in the storage stack but no Python
     # client is wired yet. Settings are declared so future code (session

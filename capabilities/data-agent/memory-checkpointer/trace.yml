@@ -2,14 +2,15 @@
 #
 # REQ → BDD → CONTRACT → TEST → TASK → PR → EVIDENCE traceability (schema v1.2).
 # Validated by scripts/sdd/check_traceability.py (G2/G5). Landed with the #365 AC4-6
-# activation build slice (behavior.feature + trace.yml + evidence + lifecycle_state → active).
+# activation build slice; extended #386 with REQ-005 (mechanism C — opt-in TTL eviction).
 #
-# All 4 REQs are @risk:medium (the residual is an Owner-accepted, reversible copy of
-# already-guardrail-approved biz rows — not a new exposure), so G21/G22 (which filter
-# @risk:critical|high) skip this capability; only G19 (per-scenario @REQ + @CTR tags) applies.
+# All 5 REQs are @risk:medium (the residual is an Owner-accepted, reversible copy of
+# already-guardrail-approved biz rows — not a new exposure; TTL eviction is opt-in + dry-run-guarded),
+# so G21/G22 (which filter @risk:critical|high) skip this capability; only G19 (per-scenario @REQ +
+# @CTR tags) applies.
 
 capability: data-agent.memory-checkpointer
-generated: 2026-07-22
+generated: 2026-07-23
 schema_version: "1.2"
 
 # Cross-capability references (R-G7: total ≤ 5 ✓)
@@ -103,10 +104,35 @@ links:
     evidence:
       - evidence/verification/2026-07-22_canary_smoke_pass.md
 
+  - req: REQ-005                                 # opt-in TTL eviction of stale threads (mechanism C)
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios:
+        - "Evicting stale threads removes only threads older than the TTL"
+        - "A dry run reports stale threads without deleting"
+      automation_status: unautomated             # eviction is a real DELETE (mj-agent-postgres) → tests/smoke; offline age/dry-run logic is unit-tested (CI-run). @risk:medium ⇒ G22 skips.
+    contracts:
+      - contracts/checkpoint-retention.contract.yml   # INV-R1 / INV-R2 / INV-R3 / INV-R4
+    tests:
+      - tests/unit/test_memory_retention.py::test_epoch_matches_langgraph_uuid6_time
+      - tests/unit/test_memory_retention.py::test_evict_deletes_only_stale_threads
+      - tests/unit/test_memory_retention.py::test_dry_run_deletes_nothing
+      - tests/unit/test_memory_retention.py::test_stale_boundary_is_strict
+      - tests/smoke/test_memory_retention_smoke.py::test_evict_removes_only_stale_threads
+      - tests/smoke/test_memory_retention_smoke.py::test_dry_run_reports_but_deletes_nothing
+    tasks:
+      - tasks.md#T-006
+      - tasks.md#T-007
+    prs:
+      - "#386 (mechanism C — TTL eviction)"
+    evidence:
+      - evidence/verification/2026-07-23_ttl_eviction.md
+
 # Summary stats (manual; Phase M2+ auto by generate_index.py):
-# - 4 REQs (all @risk:medium)
-# - 4 BDD scenarios (all medium; R-G17 critical ≤ 5 ✓ — 0 critical)
-# - bdd automation_status: 3 automated (REQ-001/002/003 offline pytest-bdd) / 1 unautomated
-#   (REQ-004 both-paths canary → -m smoke, container-gated)
-# - 1 contract file (checkpoint-redaction.contract.yml behavioral + behavior.feature; R-G3 ≤ 5 ✓)
+# - 5 REQs (all @risk:medium)
+# - 6 BDD scenarios (all medium; R-G17 critical ≤ 5 ✓ — 0 critical)
+# - bdd automation_status: 3 automated (REQ-001/002/003 offline pytest-bdd) / 3 unautomated
+#   (REQ-004 both-paths canary + REQ-005 TTL eviction ×2 → -m smoke, container-gated; REQ-005 offline
+#   age/dry-run logic additionally unit-tested in tests/unit/test_memory_retention.py)
+# - 2 contract files (checkpoint-redaction + checkpoint-retention, both behavioral + behavior.feature; R-G3 ≤ 5 ✓)
 # - 1 cross-capability ref (→ data-agent.tool-chain inbound; R-G7 ≤ 5 ✓)

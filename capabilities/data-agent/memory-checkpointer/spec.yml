@@ -1,11 +1,13 @@
 # capabilities/data-agent/memory-checkpointer/spec.yml
 #
-# Phase-2 capability spec (ADR-038). Owning issue #365.
+# Phase-2 capability spec (ADR-038). Owning issue #365 (mechanism B); #386 (mechanism C).
 # Materialized and shipped: spec/design/contracts/tasks (#365 AC2) + memory/digest.py +
 # RedactingAsyncPostgresSaver + unit tests (#365 AC3) + both-paths on-disk canary + smoke
-# round-trip + BDD automation + evidence + active-flip (#365 AC4-6, this slice).
+# round-trip + BDD automation + evidence + active-flip (#365 AC4-6).
+# Extended (#386): mechanism C — opt-in TTL eviction (memory/retention.py + `mj-agent memory-evict`
+# CLI + REQ-005 + checkpoint-retention.contract.yml), the ADR-038 optional stack-on on top of B.
 #
-# NOT a 4-必停 surface: the redaction hook lives entirely in src/mj_agent/memory/, which
+# NOT a 4-必停 surface: the redaction + retention hooks live entirely in src/mj_agent/memory/, which
 # src/mj_agent/AGENTS.md calls "a separate capability" — distinct from the biz boundary.
 
 id: data-agent.memory-checkpointer
@@ -19,7 +21,7 @@ adapter_coverage:
 last_verified: 2026-07-22
 owner: ranzuozhou
 created: 2026-07-20
-updated: 2026-07-20
+updated: 2026-07-23
 summary: >
   At-rest data minimization of the memory checkpointer: the AsyncPostgresSaver persists the
   full LangGraph message state — including execute_sql ToolMessages whose envelope carries
@@ -30,7 +32,12 @@ summary: >
   in-process conversation untouched. This capability is a defense-in-depth hardening of an
   already-Owner-accepted, reversible residual (not a new critical exposure) — hence medium
   priority. Shipped via #365 AC3-6 (digest + RedactingAsyncPostgresSaver + both-paths canary +
-  smoke round-trip + BDD); default-on since the AC4-6 activation.
+  smoke round-trip + BDD); default-on since the AC4-6 activation. Mechanism C (#386, REQ-005) adds
+  the ADR-038 optional TTL stack-on: an opt-in `mj-agent memory-evict` command deletes whole
+  checkpoint threads older than a configured TTL (age from the uuid6 checkpoint_id; via langgraph
+  adelete_thread), bounding the at-rest lifetime of the residual — including the answer-side biz
+  values in AIMessage NL that B's row-digest does not cover. Default-off because eviction is a
+  destructive DELETE (unlike B's non-destructive digest); no in-app scheduler — external cron.
 
 requirements:
   - id: REQ-001
@@ -65,6 +72,15 @@ requirements:
       examples:
         - "Given the redacting saver is installed / When a checkpoint is written via aput AND when pending writes are flushed via aput_writes / Then neither checkpoint_blobs nor checkpoint_writes contains a verbatim biz cell value"
 
+  - id: REQ-005
+    statement: "The system SHALL provide an OPT-IN TTL eviction that, when explicitly run, deletes whole checkpoint threads whose most-recent activity is older than a configured number of days; disabled by default (MJ_AGENT_MEMORY_TTL_DAYS=0), invoked via `mj-agent memory-evict`, with a `--dry-run` that reports the stale threads without deleting"
+    rationale: "Mechanism C (ADR-038, adopted as the optional stack-on) — bounds the at-rest lifetime of the residual, INCLUDING the answer-side biz values echoed in AIMessage NL that mechanism B's row-digest deliberately does not cover. Irreversible hard DELETE via langgraph adelete_thread (checkpoints + checkpoint_blobs + checkpoint_writes); thread age from the uuid6 checkpoint_id (no schema change, no created_at). Default-off because eviction is destructive — unlike mechanism B's non-destructive forward digest. Medium: a bug deletes forward-only, not-durably-resumed checkpoint history (biz data is never in this DB's reach) — mitigated by default-off + --dry-run + strict age boundary."
+    priority: medium
+    bdd:
+      examples:
+        - "Given threads whose newest checkpoint is older vs newer than the TTL / When `mj-agent memory-evict` runs with that TTL / Then only the older threads are removed from checkpoints, checkpoint_blobs and checkpoint_writes, and the newer threads remain"
+        - "Given a stale thread and a dry run / When `mj-agent memory-evict --dry-run` runs / Then the stale thread is reported but nothing is deleted"
+
 related_decisions:
   - decisions/ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md   # direction (Ruling 1/2, mechanism B)
   - decisions/ADR-037_Memory_PG_MCP_Projection_To_Codex.md           # driver (the residual, now Codex-readable)
@@ -80,3 +96,6 @@ cross_capability_refs:
 # scenarios) + trace.yml (schema v1.2) + evidence/verification/ + lifecycle_state → active
 # (G8 evidence gate now satisfied). Adapter automation: 3 offline BDD scenarios (REQ-001/002/003)
 # + REQ-004 both-paths canary (tests/smoke, container-gated).
+# Extended #386 (mechanism C): REQ-005 (opt-in TTL eviction) + contracts/checkpoint-retention.contract.yml
+# (INV-R1..R4) + behavior.feature REQ-005 scenarios (@risk:medium; container-gated → unautomated,
+# covered by tests/unit/test_memory_retention.py offline logic + tests/smoke/test_memory_retention_smoke.py).

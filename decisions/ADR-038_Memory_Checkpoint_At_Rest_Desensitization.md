@@ -130,5 +130,10 @@ ToolMessage 的 `rows` 替换为**确定性 per-column 摘要**（如每列 `{no
   ——memory 库从来不是 biz 表通道。
 - **不改** [[ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]] secrets 边界。
 - **追踪**：#365（owning issue，本 ADR = 其 AC1）；相关总锚 #312。
+- **机制 C 落地（#386）**：本 ADR 采纳为「可选叠加」的机制 C（TTL 逐出）已实现，落
+  `capabilities/data-agent/memory-checkpointer` REQ-005 + `contracts/checkpoint-retention.contract.yml`
+  ——opt-in `mj-agent memory-evict`（默认关；按 uuid6 `checkpoint_id` 定龄；经 langgraph `adelete_thread`
+  删整线程；无 in-app 调度器→外部 cron）。§Consequences「可选叠 C」+ §Alternatives「C 采纳为可选叠加」
+  于此兑现；backup-retention 依赖仍为设计注记（当前无备份管线）。
 - **设计证据**：`[ASSESSMENT]_checkpoint-desensitization-design-space`（Owner vault 草稿 v0.1；升格后落
   `evidence/assessments/`）——4+5 机制族全枚举 + 两裁定 + 7 open questions。
