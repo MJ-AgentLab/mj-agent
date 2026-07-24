@@ -5,6 +5,25 @@
 
 ## [Unreleased]
 
+### Added — memory checkpoint TTL 逐出（mechanism C；#386；ADR-038 可选叠加）
+
+- **`data-agent.memory-checkpointer` 新增 opt-in TTL 逐出（`feature/386-memory-ttl-eviction`；owning
+  issue #386；承 #365 mechanism B）**：ADR-038 采纳为「可选叠加」的机制 C 落地——新增
+  `mj-agent memory-evict [--older-than DAYS] [--dry-run]` CLI，删除**最近活跃早于 TTL** 的整条
+  checkpoint 线程（线程龄取自 langgraph uuid6 `checkpoint_id`，无需 schema 变更；经 langgraph
+  `adelete_thread` 删 `checkpoints`+`checkpoint_blobs`+`checkpoint_writes`），以此**界定 at-rest 残留
+  的存活时长**——含 mechanism B 的 row-digest **不覆盖**的 answer-side（`AIMessage` NL）biz 值。
+  **默认关 + 不可逆**：`MJ_AGENT_MEMORY_TTL_DAYS` 默认 `0`（禁用；opt-in），逐出是硬 DELETE（异于
+  mechanism B 的非破坏性 forward digest），`--dry-run` 先看；creds 缺失 / TTL≤0 均 no-op exit 0；
+  **无 in-app 调度器**——外部 cron 驱动（runbook §6）。**安全**：删前对每线程**再核龄**（TOCTOU 缓解，
+  竞态转新则跳过），非 uuid6 / 损坏 id 跳过而非中止整轮。**验证**：`tests/unit/test_memory_retention.py`
+  （uuid6→epoch 对钉 langgraph 1.1.8、边界、dry-run、竞态 / 损坏跳过）+
+  `tests/unit/test_cli_memory_evict.py`（opt-in 门 / SKIP / override / dry-run）+
+  `tests/smoke/test_memory_retention_smoke.py`（真库选择性逐出 + MAX-picks-newest，容器门控〔执行递延〕）。
+  capability 演进：REQ-005 + `contracts/checkpoint-retention.contract.yml`（INV-R1..R4）+ behavior.feature
+  ×2 + trace + design §6 + runbook §6 + evidence；ADR-038 §Relationship addendum。经 5 维对抗性 review
+  （确认龄 / 边界 / MAX 逻辑正确；4 项 low finding 已修）。
+
 ### Added — memory checkpoint at-rest 脱敏 default-on + capability 升 active（#365 AC4-6；ADR-038）
 
 - **`data-agent.memory-checkpointer` capability 升 `active` + `MJ_AGENT_MEMORY_REDACT_BIZ_ROWS`

@@ -94,9 +94,43 @@ asserts neither `checkpoint_blobs` nor `checkpoint_writes` contains a verbatim b
 `contracts/behavior.feature` (scenario "Both on-disk write paths carry no verbatim biz cell value") →
 `tests/smoke/test_memory_redaction_canary.py::{test_aput_path_no_verbatim_value, test_aput_writes_path_no_verbatim_value, test_plain_saver_leaks_on_both_paths}`.
 
+## REQ-005 — Opt-in TTL/retention eviction of stale threads
+
+**Priority**：medium
+
+**Statement**：The system SHALL provide an opt-in TTL eviction that, when explicitly run, deletes
+whole checkpoint **threads** whose most-recent activity is older than a configured number of days.
+It is disabled by default (`MJ_AGENT_MEMORY_TTL_DAYS=0`), invoked via `mj-agent memory-evict`
+(overridable per-run with `--older-than DAYS`), and offers a `--dry-run` that reports the stale
+threads without deleting. Deletion goes through langgraph's `adelete_thread`, removing the thread's
+rows from `checkpoints`, `checkpoint_blobs`, and `checkpoint_writes`. Thread age is derived from the
+uuid6 `checkpoint_id` (time-ordered), requiring no schema change.
+
+**Rationale**：Mechanism C (ADR-038, adopted as the optional stack-on on top of mechanism B). Bounds
+the at-rest lifetime of the residual — including the biz values echoed in the assistant's NL answer
+(`AIMessage`) that mechanism B's row-digest deliberately does not minimize (REQ-001 scope). Default-off
+because eviction is an irreversible hard DELETE, unlike mechanism B's non-destructive forward digest;
+`--dry-run` + explicit invocation guard the destructive path. mj-agent has no in-app scheduler, so
+periodic retention is wired via external cron (see runbook §6). **Medium**: a bug deletes forward-only,
+not-durably-resumed checkpoint history (the memory DB is never a biz-table path); the strict age
+boundary + dry-run + default-off contain the blast radius.
+
+**Acceptance**：`mj-agent memory-evict` with a positive TTL removes exactly the threads whose newest
+checkpoint is older than the TTL (and no others) from all three checkpoint tables; `--dry-run` reports
+them but deletes nothing; with TTL unset (0) or memory creds absent it is a clean no-op (exit 0).
+
+**Trace**：REQ-005 → `contracts/checkpoint-retention.contract.yml` (INV-R1..INV-R4) →
+`contracts/behavior.feature` (scenarios "Evicting stale threads removes only threads older than the
+TTL" + "A dry run reports stale threads without deleting") →
+`tests/unit/test_memory_retention.py` (age extraction, boundary, dry-run, selective eviction via a
+fake saver) + `tests/smoke/test_memory_retention_smoke.py` (real-DB selective eviction incl. the SQL
+MAX-picks-newest semantics; container-gated).
+
 ## Non-goals (see design.md §4)
 
-- Does NOT cover biz values echoed in the assistant's natural-language answer (AIMessage) —
-  answer-side / egress control, out of scope.
+- Does NOT *minimize the content of* biz values echoed in the assistant's natural-language answer
+  (AIMessage) — answer-side / egress control, out of scope. (Mechanism C bounds their at-rest
+  *lifetime* by evicting old threads, but does not redact their content.)
 - Does NOT relax any data boundary (ADR-006/009/000); the memory DB was never a biz-table path.
-- Forward-only: pre-deploy checkpoints keep full rows unless a one-time backfill is funded.
+- Forward-only: pre-deploy checkpoints keep full rows unless a one-time backfill is funded; TTL
+  eviction is opt-in and never auto-runs (no in-app scheduler).

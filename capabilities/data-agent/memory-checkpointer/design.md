@@ -38,7 +38,8 @@ Direction fixed by [ADR-038](../../../decisions/ADR-038_Memory_Checkpoint_At_Res
   ADR-037's Codex projection stays.
 - **Ruling 2 (mechanism B)** — at **persist time**, replace the `execute_sql` ToolMessage `rows`
   with a deterministic per-column digest, retain `executed_sql` for recoverable-by-refetch, leave
-  the live conversation untouched. Optional pairing with C (TTL) is out of scope for this capability.
+  the live conversation untouched. The optional pairing with C (TTL) is **now adopted here** via
+  REQ-005 (#386) — see §6.
 
 ## §3 Architecture
 
@@ -75,7 +76,7 @@ state intact.
 |---|---|---|---|
 | **B: persist-time digest + keep SQL** (chosen) | at-rest minimized; live untouched; recoverable-by-refetch; deterministic/testable; no key mgmt; no new dep; non-必停 | forward-only; refetch drifts for relative-time queries; digest is still biz-derived (aggregates) | Best fits Ruling 1 (minimize) while keeping the store useful to Codex (envelope shape/stats/SQL), aligned with retained ADR-037 |
 | A: hard-stub redact (rejected as primary) | maximal minimization; cheapest | irreversible cold-resume loss; roadmap-fragile; less signal to Codex | Retained as fallback if digest cost is unjustified |
-| C: TTL/retention (complement) | bounds standing window | doesn't minimize live/recent copies | Optional add-on, not this capability |
+| C: TTL/retention (complement) | bounds standing window; the only control over answer-side (AIMessage) biz values B doesn't digest | doesn't minimize live/recent copies; destructive DELETE | **Adopted as opt-in complement** via REQ-005 (#386); see §6 |
 | D: encrypt-at-rest (rejected) | lossless; confidentiality | not minimization (data stays); opaque to Codex (conflicts ADR-037); AES key mgmt | Off-target for the minimization goal |
 
 Threats addressed: a reader of the second store (dump/backup/insider/Codex) gets column stats + SQL,
@@ -96,3 +97,55 @@ the redaction target; a change to the envelope keys would require re-checking th
 4. **forward-only vs backfill** — whether to fund a one-time scrub of pre-deploy `checkpoint_blobs`.
 5. **BDD risk levels** — whether the build-slice `behavior.feature` scenarios warrant @risk:high (with
    trace.yml + runbook justification) or stay medium; deferred with the build.
+
+## §6 Mechanism C — opt-in TTL/retention eviction (REQ-005; #386)
+
+ADR-038 adopted C as the **optional stack-on** on top of B. Where B minimizes the *content* of
+`execute_sql` rows at persist time, C bounds the *lifetime* of the whole checkpoint — the only
+control over the answer-side biz values echoed in `AIMessage` NL that B does not digest.
+
+**Owner rulings (2026-07-23, AskUserQuestion):**
+
+- **Mechanism = CLI command + external cron.** mj-agent has no in-app scheduler and the
+  `mj-agent-postgres` image has no `pg_cron`; `mj-agent memory-evict` (typer) reuses langgraph's
+  `adelete_thread` and is fully `--dry-run`-able. The runbook documents wiring it into external
+  cron / Task Scheduler. Rejected: opportunistic on-write sweep (an idle DB never evicts + hot-path
+  latency); `pg_cron` (extension the stock image lacks + hand-maintained cross-table DELETE).
+- **Default = OFF / opt-in** (`MJ_AGENT_MEMORY_TTL_DAYS=0`). Eviction is an irreversible hard DELETE,
+  unlike B's non-destructive forward digest (which shipped default-on); operators opt in consciously.
+- **Home = this capability** (REQ-005 + `checkpoint-retention.contract.yml`), not a new capability —
+  same DB, same `memory/` module, complementary control.
+
+**Locked engineering calls:**
+
+- **Per-thread granularity** via `adelete_thread` (removes the thread's `checkpoints` +
+  `checkpoint_blobs` + `checkpoint_writes` together) — matches the "abandoned conversation" model;
+  per-checkpoint pruning has no clean langgraph API and risks corrupting a live thread's history.
+- **Age from the uuid6 `checkpoint_id`** (langgraph mints time-ordered v6 ids), so no schema change
+  and no `created_at` column. `memory/retention.py` reconstructs the 60-bit v6 timestamp from the
+  standard `time_low`/`time_mid`/`time_hi_version` fields — verified byte-identical to langgraph's
+  own `UUID.time` and pinned against langgraph 1.1.8 in `tests/unit/test_memory_retention.py`.
+- **Newest-per-thread** = SQL `MAX(checkpoint_id)` (uuid6 string form sorts lexicographically by
+  time), so a thread with recent activity is never evicted for its old checkpoints. The real-DB
+  smoke test seeds an old+fresh thread to prove it survives.
+
+```
+mj-agent memory-evict [--older-than N] [--dry-run]
+        │  opt-in gate: TTL<=0 -> no-op; memory creds absent -> SKIP (exit 0)
+        ▼
+memory/retention.py
+   SELECT thread_id, MAX(checkpoint_id) FROM checkpoints GROUP BY thread_id   (saver._cursor)
+        │  age = now - uuid6_epoch(latest);  stale iff age > TTL (strict)
+        ▼
+   for each stale thread:  saver.adelete_thread(tid)   (checkpoints + blobs + writes)  [skipped on --dry-run]
+```
+
+**Backup-retention caveat (ADR-038):** the effective retention window = `MIN(TTL, backup-retention)`.
+Today mj-agent-postgres has **no backup pipeline** (the compose `com.mj-agent.volume.backup: "daily"`
+entries are volume *labels*, not an implemented job), so TTL alone is the retention control. If a
+backup regime is later added, its retention must be bounded too or it undermines TTL — documented,
+not built here.
+
+**Roadmap tension:** durable cross-session resume is not shipped today (§1), so evicting old threads
+is low-risk now; once durable memory lands, TTL bounds resumable history (a minimization feature, but
+operators should set the TTL with that in mind).
