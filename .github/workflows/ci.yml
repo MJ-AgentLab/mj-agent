@@ -23,7 +23,7 @@ jobs:
       # (supply-chain hardening). Dependabot recognises the `# vX.Y.Z` comment
       # and bumps SHA + comment together when upstream publishes new versions.
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Read Python version
         id: pyver
@@ -404,7 +404,7 @@ jobs:
     steps:
       - name: Checkout
         # fetch-depth: 0 so the changed-files diff below can resolve the base commit.
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
