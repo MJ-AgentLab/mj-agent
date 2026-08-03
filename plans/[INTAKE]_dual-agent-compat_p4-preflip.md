@@ -11,8 +11,8 @@ summary: >-
   #312 P4 tracker 行的子切片（晋级证据回填 #312），非 tracker 行本身。
 owner: ranzuozhou
 created: 2026-07-24
-updated: 2026-07-24
-state: active
+updated: 2026-08-03
+state: completed
 track: shared
 ---
 
