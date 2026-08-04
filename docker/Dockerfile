@@ -43,7 +43,7 @@ RUN sed -i "s|deb.debian.org|${APT_MIRROR_URL}|g" \
         gcc libc6-dev libpq-dev libffi-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY --from=ghcr.io/astral-sh/uv:0.12.1@sha256:cf4eedcaa81655197f625739489effcbe71b61ceb1506f332c3facae5deceded /uv /usr/local/bin/uv
 
 WORKDIR /app
 
