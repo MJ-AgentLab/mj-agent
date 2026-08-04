@@ -3,8 +3,9 @@ type: plan
 summary: 双工具全职责兼容方案 v5（Owner 2026-07-13 拍板）仓内 port——项目内 Kernel + 薄 adapter + manifest + checker + scoped 投影生成器（agents_sync）；P0-P4 主轨道 + S0-S3 投影轨道；总锚 #312
 owner: ranzuozhou
 created: 2026-07-13
-updated: 2026-07-15
-state: active
+updated: 2026-08-04
+completed: 2026-08-04
+state: completed
 track: shared
 ---
 
