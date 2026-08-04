@@ -80,9 +80,15 @@ entrypoint_script:
     - "orchestrator injects secrets via --env-file .env / Compose env / Docker secrets"
 
 hitl_required:
-  - none                                            # Dockerfile / entrypoint.sh changes are infra;
-                                                    # but docker/compose.prod.yml mods → cross-cap HITL
-                                                    # (per policies/docker-runtime.md)
+  - none                                            # gate-ID references only (per sdd/adapters/contract.md):
+                                                    # list the gate IDs anchoring this contract's surfaces —
+                                                    # canonical 10-enum (policies/ai-agent.md §4) or an adapter
+                                                    # gate ID defined in sdd/gates.md §4; `none` = none
+                                                    # applies. NOT a claim that edits are ungated —
+                                                    # docker-LOCAL hard stops live in docker/AGENTS.md
+                                                    # §Hard stops = SoT; name the block mirroring them here,
+                                                    # do NOT restate their scope (single-source). Editing a
+                                                    # contract file = canonical `declared-contract-change`.
 
 # TBD Phase M3:
 #   - tests/docker/test_dockerfile_lint.py (no .env / no secrets.enc in COPY paths)
