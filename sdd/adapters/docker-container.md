@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: docker-container
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-08-04
 track: code
 ai_visibility: source-of-truth
 ---
@@ -49,9 +49,9 @@ ai_visibility: source-of-truth
 本 adapter 唯一 **multi-contract pattern**；3 contract 各管一维度，同一 capability 可全用或
 部分用：
 
-- `<capability>/contracts/docker.contract.yml` — Dockerfile build contract（base image
-  allowlist / apt deps + retries / Python version pin / `uv` install mode / non-root user /
-  exposed ports / forbidden-in-image 黑名单）；schema 见
+- `<capability>/contracts/docker.contract.yml` — Dockerfile build contract（base image 固定引用
+  （含 uv 工具镜像）/ apt deps + retries / Python version pin / `uv` install mode / non-root user /
+  `exposed_port`（标量）/ forbidden-in-image 黑名单）；schema 见
   `sdd/templates/contracts/docker.contract.yml.template`
 - `<capability>/contracts/compose.contract.yml` — 4-file profile layering schema（base +
   override + test + prod；`project_name` 跨 profile 不变；`attached_networks`；
@@ -75,16 +75,31 @@ freeze_anchor 字符串已同步更新）；M2 新 contract **不涉**本 adapte
 
 ### §Image schema (`docker.contract.yml`)
 
-- `dockerfile` — Dockerfile 路径（`docker/Dockerfile`；M5-PR2 自 `infra/docker/Dockerfile` 平移）
-- `base_image_allowlist[]` — 允许的 base image 集合（如 `python:3.13-slim` /
-  `python:3.13-bookworm`）
-- `user_required: non-root` — `USER` directive 必填（防 root 容器逃逸）
-- `build_args_no_secrets: true` — `ARG` 不允许传 secret（防 image layer 泄露）
-- `copied_paths_allowlist[]` — `COPY` 路径白名单（`src/` / `pyproject.toml` / `uv.lock`）
-- `forbidden_in_image[]` — image 内黑名单（`.env` / `config/secrets.enc` /
-  `config/secrets-mcp.enc` / `.git/`）
-- `healthcheck_required: true` — `HEALTHCHECK` directive 必填
-- `exposed_ports[]` — `EXPOSE` 端口列表（mj-agent 主 port 8000）
+M1 起为**嵌套块**结构：real contract 自 `bc230a4`（Pilot 4 baseline）即为 nested，`d3f0f0b`
+（M5-PR1）把 M0 扁平 template 对齐过来——本节 prose 当时漏改，故长期描述已退役的扁平形。下列
+括注的扁平旧名**均非**现行 contract 字段；其中仅 `user_required` / `healthcheck_required` 在
+`scripts/sdd/check_docker_contracts.py`（`:123` / `:137`）保留向后兼容 fallback，
+`build_args_no_secrets` / `exposed_ports` 无任何读取方，纯历史名：
+
+- `dockerfile.path` / `dockerfile.freeze_anchor` — Dockerfile 路径 + 行数锚
+  （`docker/Dockerfile`；M5-PR2 自 `infra/docker/Dockerfile` 平移）
+- `base_image.{builder_stage,runtime_stage}.image` — 每 stage 的 base image 固定引用（当前两者
+  同为 `python:3.13-slim` + 同 digest）。**非**可选集合：minor 由 `.github/dependabot.yml`
+  ignore-list 锁死（#294），只允许同 tag 线内 digest bump
+- `base_image.uv_binary.image` — builder 工具镜像（经 `COPY --from=` 引入，非 `FROM`）；
+  供应链面等同 base image（per #408）
+- `builder_stage_contract.build_args{}` — 构建期 ARG 契约（当前仅 `APT_MIRROR_URL`）
+- `runtime_stage_contract.user.non_root: true` — `USER` directive 必填（防 root 容器逃逸）
+  （旧扁平名 `user_required: non-root`）
+- `runtime_stage_contract.copied_paths_allowlist[]` — `COPY` 路径白名单
+  （`/app/.venv` / `/app/src` / `/app/pyproject.toml` …）
+- `runtime_stage_contract.forbidden_in_image[]` — image 内黑名单（`.env` / `config/secrets.enc` /
+  `config/secrets-mcp.enc` / private keys）；「`ARG` 不得传 secret」由本项末条覆盖
+  （旧扁平名 `build_args_no_secrets: true`）
+- `healthcheck{}` — `HEALTHCHECK` 契约块（cmd / interval / timeout / start_period / retries）
+  （旧扁平名 `healthcheck_required: true`）
+- `runtime_stage_contract.exposed_port` — `EXPOSE` 端口（mj-agent 主 port 8000；**标量**，非列表）
+  （旧扁平名 `exposed_ports[]`）
 
 ### §Compose schema (`compose.contract.yml`)
 
@@ -178,8 +193,9 @@ Scenario: prod compose up fails fast when external network is missing
 
 **Contract-test-first 限于 schema layer**：
 
-- `docker.contract.yml` 的 `base_image_allowlist` / `forbidden_in_image` / `exposed_ports`
-  字段变更 → 必先有 failing test（解析 Dockerfile + 比对 contract）
+- `docker.contract.yml` 的 `base_image` / `runtime_stage_contract.forbidden_in_image` /
+  `runtime_stage_contract.exposed_port` 字段变更 → 必先有 failing test（解析 Dockerfile + 比对
+  contract）
 - `compose.contract.yml` 的 `compose_files[]` 顺序 / `external_networks[]` 变更 → 必先
   failing test
 - `runtime.expected.yaml` 字段从 M2 skeleton → M4 完整化是单向扩展（不删字段）；新增字段必先
@@ -230,8 +246,9 @@ M3+ 路径）.
 - **Triggers**: `capabilities/infrastructure/docker-compose/contracts/docker.contract.yml` 或
   `compose.contract.yml` 存在
 - **Modes**: `--dry-run` / `--capability <path>` / `--all`
-- **Output**: `PASS` / `WARN` / `FAIL` + 详细错误（base image 不在 allowlist / `USER` 缺失 /
-  `external_networks` 不匹配 / `env_file_explicit` 违反）
+- **Output**: `PASS` / `WARN` / `FAIL` + 详细错误（`USER` 缺失或为 root / `forbidden_in_image`
+  路径被 `COPY`/`ADD` / `external_networks` 不匹配 / `env_file_explicit` 违反）；`base_image`
+  **无 allowlist 校验**，仅 `base_image.runtime_stage.image` 的信息性 WARN
 - **Implementation**: Dockerfile 解析（line-by-line + regex）+ compose YAML 解析（via
   `_common.yaml_io.load_yaml`）+ schema cross-check
 
