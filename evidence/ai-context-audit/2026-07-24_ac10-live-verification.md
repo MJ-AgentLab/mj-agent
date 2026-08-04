@@ -6,7 +6,7 @@ scope:
   - codex-mcp-projection-memory5
   - env-vars-name-chain
   - codex-user-config-data-boundary
-findings_summary: "memory×5 Codex 投影名链机制端到端实机验证通过（#353 目的达成）；字面查询返回行被 dev-memory 凭据漂移挡（→#394）；用户级 ~/.codex 另给 Codex biz-pg×5+ssh-manager（数据边界发现，Owner 待判）"
+findings_summary: "memory×5 Codex 投影名链机制端到端实机验证通过（#353 目的达成）；字面查询返回行被 dev-memory 凭据漂移挡（→#394）；用户级 ~/.codex 另给 Codex biz-pg×5+ssh-manager（数据边界发现 → Owner 2026-07-24 拍板知情接受，repo-side 排除不放宽）"
 date: 2026-07-24
 parent_artifacts:
   - "plans/[PLAN]_dual-agent-compat_pg-cred.md"
@@ -101,7 +101,7 @@ PostgreSQL 报 `password authentication failed for user "mj_agent_app"`。即：
 即 env 未设 → server **硬失败启动**（非静默兜底错连），与 AC-5「显式失败 tightening」一致，**live 佐证**
 （此前仅 Spike 手验 + AC-5 记录，CI 不跑 Windows `.cmd`）。
 
-## 7. 数据边界发现（Owner 待判，非本记录动作面）
+## 7. 数据边界发现（Owner 已拍板：知情接受，2026-07-24）
 
 `codex mcp list` 显示**用户级** `~/.codex/config.toml` 另给 Codex：`postgres-{dev,prod-lan,prod-wan,test-lan,
 test-wan}`（biz 仓，`@modelcontextprotocol/server-postgres` raw client）+ `ssh-manager`——正是 mj-agent
@@ -112,13 +112,17 @@ projection 依 ADR-006/009 **永久排除**的那些 server。
 - **但排除是必要非充分**：用户全局 config 独立地在**每个** trusted project 给 Codex 绕 L1/L1b 的 raw biz-pg
   + ssh 访问。属工程师权限内（D-015：用户级 config 为每工程师手工/私域，仓治理管不到），但在本机**实质削弱
   数据边界意图**。
-- **Owner 待判**：(a) 知情接受（很可能——工程师做 mj-system 时需 Codex 的 biz 访问），或 (b) 从全局 config
-  剪除 / 做按项目隔离。AI **不碰** `~/.codex/config.toml`（仓外，Owner 手工域）。
+- **Owner 拍板（2026-07-24）= (a) 知情接受**：工程师在本机做 mj-system 工作时需 Codex 的 biz / ssh 访问，
+  故保留用户全局 config 原样，**不**剪除、不做按项目隔离。决定记录 = #312
+  comment（`issuecomment-5068586496`）。
+  - **边界不放宽**：repo-side 的 projection 排除仍由 AC-3/AC-4 + PJ044 + V11 强制（`.codex/config.toml`
+    永不含 biz×5 / ssh-manager、零字面凭据）；本决定仅涉及**仓外**用户级 config 的知情接受。
+  - AI **不碰** `~/.codex/config.toml`（仓外，Owner 手工域，D-015）。
 
 ## 8. 处置
 
 - AC-10 记为「**投影机制实机验证通过**（#353 目的达成）」；字面「查询返回行」记为 **未达 / blocked-by #394**。
 - dev-memory 凭据漂移 → **#394**（maintain，Owner secrets 域，parked）。
-- 数据边界发现 → 本记录 §7 + 待 Owner (a)/(b) 决定。
+- 数据边界发现 → 本记录 §7；**Owner 2026-07-24 拍板 (a) 知情接受**（无仓内改动；repo-side 排除不放宽）。
 - 关联：#353（AC-10 出处，CLOSED）· #312（dual-agent-compat tracker）· #394（凭据 follow-up）·
   `plans/[PLAN]_dual-agent-compat_pg-cred.md` §2/§8/§12 · `evidence/ai-context-audit/2026-07_ci_audit.md`。

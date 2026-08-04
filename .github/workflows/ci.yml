@@ -300,11 +300,17 @@ jobs:
       # ===== End of completion-audit PR2 G3/G7/G25 block =====
 
       # ===== dual-agent-compat — V8/V9/V10/V11 manifest + projection gates (#320, #326, #330) =====
-      # V8/V9/V10 run in WARNING mode (continue-on-error: true) per D-009 (warning-first);
-      # their blocking flips are separate ci-blocking-gate-toggle HITL actions
-      # (policies/ai-agent.md §4). V11 is the one deliberate exception: the MCP
-      # projection surface is BLOCKING from day 1 per D-016 — Owner ci-blocking-gate-toggle
-      # execution record in #330 (2026-07-14). V8/V9 run at --fail-on error (plan §10);
+      # V8/V9/V10 are BLOCKING (continue-on-error: false) since the P4 dual-axis flip
+      # (#399, 2026-08-03); they landed warning-first per D-009 and were flipped only
+      # after the §11.2 observation window closed. Owner ci-blocking-gate-toggle
+      # execution records: one per gate (policies/ai-agent.md §4), issue #399.
+      # Eligibility (plan §11.2 four criteria, measured 2026-08-03): anchor 2026-07-14
+      # +20d (gate 07-28); consecutive-clean streaks V8/V9 = 55, V10 = 49 (both >= 20);
+      # zero waiver; ledger = evidence/ai-context-audit/2026-07_ci_audit.md.
+      # V11 was BLOCKING from day 1 per D-016 (trust surface takes no observation
+      # period) — Owner execution record in #330 (2026-07-14).
+      # V8/V9 now run at --fail-on warning (threshold axis, plan §11.2(1); for V9 this
+      # is an ADDED flag — the script's argparse default is "error");
       # V10/V11 are `agents_sync.py --check` per surface (no --fail-on; exit 1 on drift).
       # Step output is the SoT for counts. NOTE: real-tree pins in tests/unit
       # (test_real_tree_* / test_real_tree_projection_in_sync /
@@ -325,16 +331,16 @@ jobs:
       #     + reserved lock key must match .mcp.json x manifest mcp tiers + codex.posture
       #     (emitter B, S2 #330). Zero env/secret parsing at generation and check time,
       #     so forks / no-secrets environments cannot false-red.
-      - name: 'V8 dual-agent manifest (warning at landing; P1 first mount; 0E/0W)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/check_development_agent.py --all --fail-on error
+      - name: 'V8 dual-agent manifest (BLOCKING since P4 #399; 0E/0W)'
+        continue-on-error: false
+        run: uv run python scripts/sdd/check_development_agent.py --all --fail-on warning
 
-      - name: 'V9 agents projection (warning at landing; S1 closure closed; S2 PJ04x; 0E/0W)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/check_agents_projection.py --all
+      - name: 'V9 agents projection (BLOCKING since P4 #399; S1 closure; S2 PJ04x; 0E/0W)'
+        continue-on-error: false
+        run: uv run python scripts/sdd/check_agents_projection.py --all --fail-on warning
 
-      - name: 'V10 agents_sync skills drift (warning; surface=skills since S2 #330; clean)'
-        continue-on-error: true
+      - name: 'V10 agents_sync skills drift (BLOCKING since P4 #399/S3; surface=skills; clean)'
+        continue-on-error: false
         run: uv run python scripts/sdd/agents_sync.py --check --surface skills
 
       - name: 'V11 codex MCP projection drift (BLOCKING day-1 per D-016; Owner record #330)'

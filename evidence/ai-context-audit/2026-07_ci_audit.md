@@ -1,10 +1,12 @@
 ---
 type: evidence
 summary: 2026-07 月度 CI blocking-flip 计数账本（program plan §11.2(4) 强制工件）——V8/V9/V10 观察期
-  gate 的 per-gate 连续-clean streak + violation 数 + 影响范围；P4 双轴翻转拍板（最早 2026-07-28）的可核验依据
+  gate 的 per-gate 连续-clean streak + violation 数 + 影响范围；P4 双轴翻转拍板的可核验依据。§7 记
+  flip-time 权威重跑（2026-08-03，issue 399）：streak 55/55/49、violation 0、zero-delta 复验、
+  exit-0 warning 盲区闭合，并按 §11.2(3) 登记窗口内无关 job 失败（dependabot docker 生态 ×4）
 owner: ranzuozhou
 created: 2026-07-24
-updated: 2026-07-24
+updated: 2026-08-03
 state: active
 track: shared
 ---
@@ -114,3 +116,91 @@ P4 翻转是**双轴**动作（§11.2(1)），本切片**均不涉及**：
 
 翻转前置（§11.1 P4 资格）：14 日（07-28）+ 每 gate ≥20 连续 clean + 零 waiver/误报/未关闭 warning + Owner 逐 gate 批准。
 本账本为该拍板提供计数依据；翻转本身另行执行（S3 blocking 转正腿，calendar-gated ~07-28）。
+
+> **后续**：翻转已于 **2026-08-03** 执行（issue #399）——见下方 §7 flip-time 权威重跑。本节（§1-§6）
+> 保留 2026-07-24 快照原貌，不回改。
+
+## 7. Flip-time 权威重跑（2026-08-03；履行 §11.2(3)「实测勿外推」）
+
+P4 双轴翻转于 **2026-08-03** 执行（执行 issue #399）。§5 caveat 与 §11.2(3) 均要求**权威计数以
+flip-time 重跑为准**，本节即该重跑记录，接续 §4 快照（2026-07-24）而非取代它。
+
+### 7.1 计数（delta 法 = §4 快照 + 其后新增 head-SHA）
+
+| Gate | §4 快照（07-24） | flip-time delta | **flip-time 合计** | 门槛 | 判定 |
+|---|---|---|---|---|---|
+| V8 | 50 | +5 | **55** | ≥20 | ✅ |
+| V9 | 50 | +5 | **55** | ≥20 | ✅ |
+| V10 | 44 | +5 | **49** | ≥20 | ✅ |
+
+delta 的 5 个 head-SHA（§4 快照后至 2026-08-03 的全部 `ci.yml` run，按 headSha 去重）：
+
+| head-SHA | 分支 | 事件 | `ci` 结论 | failure annotations |
+|---|---|---|---|---|
+| `c82a2bc` | `feature/391-dual-agent-negative-tests` | push + PR | success | **0** |
+| `f662c01` | `documentation/312-ac10-live-verification` | push + PR | success | **0** |
+| `d2052a4` | `dependabot/…/gha-minor-patch-7a5a078ad4` | PR | success | **0** |
+| `a5987f6` | `dependabot/…/actions/setup-python-7` | PR | success | **0** |
+| `69bc709` | `dependabot/…/astral-sh/setup-uv-9.0.0` | PR | success | **0** |
+
+`863ec4f` 是 merge commit——按 §2 既定口径 merge-to-develop 不触发 `ci.yml`，不计入。
+
+### 7.2 exit-0 warning 盲区的闭合（履行 §5 caveat）
+
+§5 诚实记录：annotation 法**只覆盖非零退出**，纯 warning 的 V8/V9 step（`exit 0`）不产生 annotation，
+本法看不见。本次翻转**以本地实跑直接闭合该盲区**——在 flip-time HEAD `863ec4f` 上按**翻转后的阈值**
+跑全部四个 gate：
+
+```text
+check_development_agent.py --all --fail-on warning → === Summary === errors: 0 / warnings: 0 / info: 0   exit 0
+check_agents_projection.py --all --fail-on warning → === Summary === errors: 0 / warnings: 0 / info: 0   exit 0
+agents_sync.py --check --surface skills            → OK: projection in sync (surface=skills, 5 skills, lock consistent)  exit 0
+agents_sync.py --check --surface mcp               → OK: projection in sync (surface=mcp, 5 skills, lock consistent)     exit 0
+```
+
+→ 翻转在 flip-time HEAD 为 **zero-delta**：阈值收紧**不产生任何新失败**，`warnings: 0` 由实测直证
+（不再是 §5 所述的推断下界）。
+
+**阈值轴非 vacuous 佐证**（防 false-green——若 `--fail-on warning` 是空操作，上述全绿将毫无信息量）：
+两 checker 的阈值判定同构
+`at_threshold = summary["error"] > 0 or (args.fail_on == "warning" and summary["warning"] > 0)`
+（`check_development_agent.py:608` / `check_agents_projection.py:449`）；且 committed test **双向**钉——
+warning 树 `exit 1`（`test_sdd_development_agent.py:256,275` 为 V8；`:348` 为 V9），clean 树 `exit 0`
+（`:338`）。
+
+### 7.3 violation 数 + 影响范围（履行 `policies/ci-gates.md` §4.1「产物保留」）
+
+- **violation 数 = 0**——三 gate 全窗口零非零退出、零 warning。
+- **影响范围**：翻转在 flip-time HEAD zero-delta，故**对现存代码零影响、零 PR 受阻**。此后影响面 =
+  任何引入 manifest / projection drift 或 manifest warning 的 PR 将被**阻断**而非仅告警。
+- **回退成本**：单行 `continue-on-error: false → true`（每 gate 可独立回退）。
+- **冗余安全网**：`ci.yml` 块注释所载 real-tree pins（`test_real_tree_*`）早已令同批不变量经 blocking
+  Tests step 实质生效；翻转后 gate step 与测试钉线互为冗余（本地复验 `pytest -k real_tree` 9 passed）。
+
+### 7.4 无关 job 失败登记（§11.2(3) 强制项）
+
+§11.2(3) 规定：「streak 重置**仅**因被观察 gate 的 step 非 clean 而重置；无关 job 失败 / flake
+**不重置**，**但须在审计产物中登记**」。观察窗内登记如下：
+
+| 时间（UTC） | job | 生态 | 结论 | 重置 streak？ |
+|---|---|---|---|---|
+| 2026-07-27T01:07:18Z | `docker in /infra/docker` | dependabot `docker` | failure | **否** |
+| 2026-07-27T01:07:17Z | `docker_compose in /infra/docker` | dependabot `docker-compose` | failure | **否** |
+| 2026-08-03T01:06:15Z | `docker in /infra/docker` | dependabot `docker` | failure | **否** |
+| 2026-08-03T01:06:15Z | `docker_compose in /infra/docker` | dependabot `docker-compose` | failure | **否** |
+
+- **不重置的判据**：这些是 Dependabot 生态更新 job（`event=dynamic`），**不是 `ci.yml` 的 run**，
+  不含 V8/V9/V10 任何 step——§11.2(3) 计数域明确限定为「`ci.yml` 的全部 run」。
+- **根因（已核实）**：Dependabot 从**默认分支**读取配置；默认分支 `main` 的 `.github/dependabot.yml`
+  中 `docker` / `docker-compose` 两个 ecosystem 的 `directory` 仍为 `/infra/docker`（本仓无 `infra/`
+  目录，实际路径为 `/docker`；`develop` 分支已修正但因 Dependabot 只读默认分支而未生效）。
+- **归属**：根因修复另立 `maintain` issue（Low；须落到 `main` 才生效）。本账本只履行登记义务。
+
+### 7.5 翻转执行记录
+
+- **执行 issue**：#399。**拍板**：三次**独立**的 `ci-blocking-gate-toggle` Owner 拍板（V8 / V9 / V10
+  各一，不合并、不自判 N/A），执行记录 = #399 comment（先例 = V11 的 #330 comment）。
+- **改动面**：`.github/workflows/ci.yml` 恰 3 个 step + 其块注释；**V11 逐字未动**；其余 9 条
+  warning-mode gate 零改动。
+- **镜像面同步**：`sdd/gates.md` 的 V8/V9/V10 行 `warning@ci → blocking@ci`；`AGENTS.md` 漂移 gate
+  段落 + dated 脚注。

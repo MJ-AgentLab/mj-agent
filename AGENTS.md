@@ -63,10 +63,13 @@ the 37-skill SoT. Rules — they bind BOTH tools:
   there is NO adopt path for `.codex/config.toml` (fully derived).
 - Merge conflict on generated files: merge the source, re-run `sync` to overwrite the artifacts —
   never 3-way-merge artifacts by hand.
-- Drift gates: CI runs `agents_sync.py --check --surface skills` (V10, warning-first per D-016)
-  and `agents_sync.py --check --surface mcp` (**V11, BLOCKING day-1 per D-016**; Owner execution
-  record #330) plus V9 (`check_agents_projection.py`) closure / reconcile / lock / codex-config
-  (PJ04x, incl. PJ044 never-tier leak) rules.
+- Drift gates: CI runs `agents_sync.py --check --surface skills` (**V10, BLOCKING since the P4
+  flip #399, 2026-08-03**; it landed warning-first per D-016) and `agents_sync.py --check
+  --surface mcp` (**V11, BLOCKING day-1 per D-016**; Owner execution record #330) plus V9
+  (`check_agents_projection.py --fail-on warning`) closure / reconcile / lock / codex-config
+  (PJ04x, incl. PJ044 never-tier leak) rules. **V8 / V9 / V10 are all BLOCKING as of #399** —
+  one Owner `ci-blocking-gate-toggle` execution record per gate, in issue #399; eligibility per
+  `plans/[PLAN]_dual-agent-compat.md` §11.2 (anchor 2026-07-14 +20d; streaks 55 / 55 / 49).
 - Codex consumption semantics (spike-verified 2026-07-14, #330): project-level `.codex/config.toml`
   loads only in **trusted** projects; trust matches the exact project root or an in-repo ancestor
   entry (the bare-container entry covers all worktrees on the reference machine). Trust stays a
@@ -193,3 +196,11 @@ contract to `.codex/config.toml` (emitter B; 3 spikes PASS + Owner 进拍板): g
 serena(--context codex) projected from `.mcp.json` by manifest mcp tiers, secrets BY NAME via
 `env_vars`, biz×5 + ssh-manager permanently excluded. MCP drift gate V11 mounted BLOCKING day-1
 (D-016; ci-blocking-gate-toggle record in #330); V10 narrowed to --surface skills.*
+
+*Updated 2026-08-03 — dual-agent-compat v5 P4 + S3 (#399): V8 / V9 / V10 flipped from warning to
+**BLOCKING** (dual-axis per plan §11.2(1) — `continue-on-error: true→false` on all three, plus the
+threshold axis `--fail-on error→warning` for V8 and a newly added `--fail-on warning` for V9; V10
+has no threshold axis). Eligibility measured 2026-08-03: observation anchor 2026-07-14 +20 days
+(gate was 07-28), consecutive-clean streaks V8/V9 = 55 and V10 = 49 (both ≥ 20), zero waiver,
+ledger `evidence/ai-context-audit/2026-07_ci_audit.md`. Three separate Owner
+`ci-blocking-gate-toggle` execution records in #399. V11 unchanged (already day-1 blocking).*
