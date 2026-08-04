@@ -19,14 +19,16 @@ base_image:
   runtime_stage:
     image: python:3.13-slim                       # same digest
     note: "same digest as builder; runtime additions: libpq5 + tini"
+  uv_binary:
+    image: ghcr.io/astral-sh/uv:0.12.1            # tag + digest pinned inline at docker/Dockerfile:46 (#405)
+    note: "builder-only tool image pulled via COPY --from= (not FROM); supplies the uv that runs uv sync to build /app/.venv, which is copied into the runtime image — same blast radius as a base image (per #408)"
+    rationale: "pinned inline and deliberately NOT parameterised via a build arg; an ARG would restore the mutability #405 removed. Dependabot cannot refresh a COPY --from= image reference (upstream dependabot-core#5103, open since 2022-05-07; recorded in a325aaf / #405), so this pin is hand-maintained by design"
 
 builder_stage_contract:
   build_args:
     APT_MIRROR_URL:
-      default: "https://mirrors.tuna.tsinghua.edu.cn/debian-security"   # informational; default; --build-arg override allowed
-      semantics: "apt mirror URL; mirror.tuna by default for CN bandwidth"
-    UV_VERSION:
-      semantics: "uv binary version; copied from ghcr.io/astral-sh/uv:<version>"
+      default: "mirrors.tuna.tsinghua.edu.cn"     # bare host, no scheme/path; --build-arg override allowed (CI passes deb.debian.org)
+      semantics: "apt mirror host; sed-substituted for deb.debian.org in /etc/apt/sources.list.d/debian.sources (both stages — ARG redeclared at docker/Dockerfile:37 / :66, sed at :39-40 / :69-70). Must stay a bare host: that file is deb822, so a full URL yields 'URIs: http://https://.../debian' and breaks apt"
   env:
     UV_PYTHON_PREFERENCE: only-system             # avoid uv-managed Python that doesn't survive COPY --from=builder
   caching_strategy:

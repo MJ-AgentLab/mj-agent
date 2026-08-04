@@ -2,10 +2,10 @@
 type: policy
 artifact: docker-runtime
 state: draft
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-08-04
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -21,7 +21,7 @@ ai_visibility: source-of-truth
 > TBD: Phase M2:
 > - secrets / .env 禁入 image
 > - 非 root 用户（USER directive 必填）
-> - base_image_allowlist
+> - base_image 固定引用（builder / runtime stage + uv 工具镜像）
 > - .dockerignore 配置规则
 > 详 `sdd/templates/contracts/docker.contract.yml.template`.
 

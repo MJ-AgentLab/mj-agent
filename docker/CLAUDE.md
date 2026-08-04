@@ -55,7 +55,7 @@ H3 hard-confirm 在 Level 2/3 — skill 必须先询问 user 确认 destination 
 | Prod compose | `docker/compose.prod.yml` 任何字段修改 | 生产 runtime 红线（详 `policies/docker-runtime.md` §4；canonical enum `secrets-grants-or-prod-config` per `policies/ai-agent.md §4`） |
 | External network | `mj-system-backend-network` external 配置变更 | 跨仓边界（per ADR-008） |
 | Healthcheck | mj-agent / mj-agent-postgres / mj-agent-redis healthcheck 字段变更 | 生产可观测性 |
-| Image base | Dockerfile FROM 行 / `base_image_allowlist` 变更 | supply-chain |
+| Image base | `docker/Dockerfile` 外部镜像引用变更：`FROM <image>` + `COPY --from=<registry image>`（内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内）；contract 对应面 = `docker.contract.yml` `base_image` | supply-chain |
 
 ## 本子目录最小可执行命令集
 
@@ -91,7 +91,7 @@ docker compose --env-file .env -f docker/compose.yaml ps
 - ❌ 省略 `--env-file .env`（导致 postgres init 烘焙 placeholder 密码进 volume）
 - ❌ 用 `docker compose up` 不带 `-f`（不会自动 load override；与 ADR-026 4-file 分层冲突）
 - ❌ 修改 `compose.prod.yml` 不 HITL（违反 prod 红线）
-- ❌ Dockerfile 用 root user（违反 docker.contract.yml `user_required: non-root`）
+- ❌ Dockerfile 用 root user（违反 docker.contract.yml `runtime_stage_contract.user.non_root: true`）
 
 ## See Also
 

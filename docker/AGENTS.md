@@ -12,7 +12,7 @@
 | `docker/compose.prod.yml` (any field) | prod red line — canonical enum `secrets-grants-or-prod-config` (`policies/ai-agent.md` §4) |
 | `mj-system-backend-network` external wiring | cross-repo boundary (ADR-008) |
 | healthcheck fields (mj-agent / mj-agent-postgres / mj-agent-redis) | production observability |
-| `docker/Dockerfile` FROM line / base-image allowlist | supply chain |
+| `docker/Dockerfile` external image refs — `FROM <image>` + `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in scope); contract mirror = `docker.contract.yml` `base_image` | supply chain |
 
 ## Env & secrets carrier rule
 
