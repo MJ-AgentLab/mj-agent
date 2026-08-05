@@ -9,9 +9,10 @@
 #   - github-actions: bumps for actions/* + astral-sh/setup-uv used in
 #     `.github/workflows/ci.yml` (PR #51 pinned them to commit SHA;
 #     Dependabot bumps SHA + `# vX.Y.Z` comment together)
-#   - docker: bumps for FROM image digests in `infra/docker/Dockerfile`
-#     and `image:` digests in `docker-compose.mj-agent.yml` (PR #52
-#     pinned them to digest; Dependabot bumps digest + `# tag` comment)
+#   - docker: bumps for FROM image digests in `docker/Dockerfile`
+#     and `image:` digests in `docker/compose.yaml` (PR #52 pinned
+#     them to digest). Dependabot rewrites the image reference only —
+#     any adjacent `# tag:` comment is hand-maintained (see #294).
 #
 # Out of scope (deferred):
 #   - pip / uv ecosystem updates: Dependabot's uv support is still
@@ -35,8 +36,13 @@ updates:
       - "dependencies"
       - "ci"
     commit-message:
-      # Align with mj-agent commit conv (STANDARD §4): infra scope.
-      prefix: "maintain(infra)"
+      # Commit type is `infra` (STANDARD §3), NOT `maintain` — that is a
+      # branch type, and STANDARD §5.1 keeps the two namespaces distinct
+      # precisely to stop this collapse. `include: scope` appends
+      # Dependabot's own scope, so the rendered subject is
+      # `infra(deps): bump ...` (`deps` is a §4.2 scope). Applies to all
+      # three ecosystem blocks below.
+      prefix: "infra"
       include: "scope"
     # Keep major version bumps gated behind manual review (security +
     # breaking-change scrutiny). Minor / patch can auto-merge once
@@ -56,7 +62,7 @@ updates:
 
   # ── Dockerfile FROM image digests ────────────────────────────────
   - package-ecosystem: "docker"
-    directory: "/infra/docker"
+    directory: "/docker"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -68,7 +74,7 @@ updates:
       - "dependencies"
       - "docker"
     commit-message:
-      prefix: "maintain(infra)"
+      prefix: "infra"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
@@ -78,12 +84,23 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Guard (#294): the python base-image minor is LOCKED. pyproject
+    # requires-python >=3.13,<3.14 + UV_PYTHON_PREFERENCE=only-system
+    # mean a 3.14+ base can never satisfy uv.lock — the build dies at
+    # `uv sync` ("No interpreter found for Python ==3.13.*"). Only
+    # same-tag digest bumps may flow; a major/minor jump needs a human
+    # PR that moves requires-python + uv.lock in the same change.
+    ignore:
+      - dependency-name: "python"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
 
   # ── docker-compose service image digests ─────────────────────────
   # Note: Dependabot's `docker-compose` ecosystem watches `image:` lines
   # in compose files. Same digest-pinning convention as Dockerfile FROM.
   - package-ecosystem: "docker-compose"
-    directory: "/infra/docker"
+    directory: "/docker"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -95,7 +112,7 @@ updates:
       - "dependencies"
       - "docker"
     commit-message:
-      prefix: "maintain(infra)"
+      prefix: "infra"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
