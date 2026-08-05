@@ -90,6 +90,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停 12）+ scripts/diff_biz_schema.py 比对 |
 | `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停 13）+ ADR-006/009 红线检查 |
 | `docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
+| `docker/Dockerfile` 外部 registry 镜像引用改动（`FROM <image>` / `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **D7b 供应链必停**（canonical `secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）：核 Owner 拍板留痕 + PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项已勾 + digest 变化经核对。**无审批类 CI gate 兜底 → 此项只能人审**（`docker-build` 只验可构建、V5 只 lint 契约）。**bot 作者 PR**（Dependabot digest bump）不渲染 PR 模板 → 拍板即 merge 决定本身，须以 PR comment 留痕 |
 | `.env.example` / `secrets.enc` 改动 | D8（secret 管理）+ config/README.md 同步 |
 | `docs/` 改动 | 不动态检查；输出 "建议 /mj-agent-doc-review (PR-C1)" |
 | `.claude/skills/` 改动 | D9（A12 description 质量）+ A12-A14 自检 |

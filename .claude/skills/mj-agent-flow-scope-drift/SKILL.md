@@ -96,6 +96,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | A 纯代码 |
 | `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical**（永远 §3.1 必停 HITL） |
 | `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | C infra |
+| `docker/Dockerfile` 外部 registry 镜像引用（内部 `COPY --from=<stage>` **不**在内） | C infra，但**该子面必停**（`secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）——漂移进此面须回 Gate 而非归入常规 C |
 
 **输出表格**：
 

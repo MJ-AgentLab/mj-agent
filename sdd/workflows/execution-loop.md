@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.3
+version: 1.4
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-07-08
+updated: 2026-08-04
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -216,7 +216,10 @@ mj-agent 专属新增（4 项硬必停）：
    - `src/mj_agent/prompts/system.md` body（prompt-version-or-body-change）
    - `src/mj_agent/biz_catalog/qcm_catalog.yaml`（biz-catalog-sync）
    - `src/mj_agent/tools/sql/{guardrail,precheck}.py`（sql-guardrail-relax）
-4. **不涉及** `.env` / `.env.example` / `infra/docker/` / CI workflow /
+4. **不涉及** `.env` / `.env.example` / `docker/`（M5-PR2 起路径为 `docker/`，
+   非平移前的 `infra/docker/`；其中 `docker/Dockerfile` 外部 registry 镜像引用
+   另需 Owner 拍板——canonical `secrets-grants-or-prod-config`，规则体
+   `policies/docker-runtime.md` §4） / CI workflow /
    `pyproject.toml` `[project.dependencies]` 主条目（version patch 除外）。
 
 豁免必须在 **Intake Result 显式声明** `Plan: 不需要 / 豁免依据=§3.2`；否则

@@ -140,6 +140,7 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 | 跨边界 | mj-system biz pg consumer（ADR-008 / ADR-009 数据边界） | Medium 起；触红线 → High |
 | 跨边界 | mj-agent-postgres / mj-agent-redis 容器（storage stack） | Medium 起 |
 | infra | `docker/` / `pyproject.toml` / `langgraph.json` | Low / Medium |
+| **docker 供应链** | `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **High** + 改前 Owner 拍板（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4。**不在** execution-loop §3.1 的 4 项 in-source 必停之列——那 4 项是 `src/mj_agent/` 面）。Dockerfile 其余行仍 Low / Medium |
 | docs | `docs/` / `CLAUDE.md` / `INDEX.md` | Low（纯 docs）/ Medium（含 STANDARD/ADR） |
 
 ## Step 4: AC 可验证性（gate）

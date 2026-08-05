@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.3
+version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-07-08
+updated: 2026-08-04
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -94,7 +94,7 @@ of truth），LSP 仅作交互式辅助.
 | `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode；**D-017 扩展邻接面（ADR-036）**：派生 `.codex/config.toml`、`.agents/**`、`scripts/sdd/agents_sync.py`、manifest `sdd/development-agent.yml` 的 `mcp` / `codex.posture` 段 | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
 | `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
 | `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
-| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000 | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger |
+| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000；**#413 扩展供应链面**：`docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger；供应链面规则体 = `policies/docker-runtime.md` §4（anchor 扩展沿用 D-017 先例：**enum 数量不变**，只扩既有行的 surface anchor） |
 | `ci-blocking-gate-toggle` | `.github/workflows/ci.yml` `continue-on-error` flip 或新增 blocking gate | per Stage C C-a 流程；M-FU plan 必先 register |
 | `bulk-content-purge-or-migration` | ≥10 file delete/move 或 archive ceremony | 含义吸收原 "删除 / 迁移 / 归档历史内容" + "大规模目录迁移（≥10 文件）" |
 
@@ -112,8 +112,14 @@ of truth），LSP 仅作交互式辅助.
 > `ask` 列表逐写拍板门 enforce（原 `deny` 物理硬锁已解除）；`mcp-server-trust-posture-change`
 > 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce；其 **D-017
 > 扩展邻接面**（`.codex/**` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture`
-> 段）非 harness 保护路径，由 Owner 拍板纪律 + V8/V9 gate + merge review 兜底（ADR-036）。两类
-> 落盘后均由 **merge review（A13 settings allowlist / A14 .mcp.json trust posture）兜底**。
+> 段）非 harness 保护路径，由 Owner 拍板纪律 + V8/V9 gate + merge review 兜底（ADR-036）。
+> `secrets-grants-or-prod-config` 的 **#413 供应链面**（`docker/Dockerfile` 外部 registry 镜像
+> 引用）同属**非 harness 保护路径**一类：`.claude/settings.json` 无对应 `ask` 条目，亦无**审批类**
+> CI gate 读取它（`docker-build` 只验镜像可构建、V5 只 lint 契约字段，均不判拍板）。**刻意不加
+> `ask` 条目**——`ask` 只能按路径整文件匹配，会把 #408 明确排除的内部 stage 拷贝一并纳入必停面
+> （裁定见 #413）。**前两类**落盘后由 **merge review（A13 settings allowlist / A14 .mcp.json
+> trust posture）兜底**；**第三类（#413 供应链面）没有对应的 A-编号 gate**，其兜底 = Owner 拍板
+> 纪律 + PR 模板 Docker Impact 勾选 + 人工 merge review。
 > **仅交互模式成立**——`auto` / `bypass` 模式下放宽类改动被 classifier 硬拦，须切交互模式
 > （详 §9 + `sdd/workflows/execution-loop.md §3.0`）。
 

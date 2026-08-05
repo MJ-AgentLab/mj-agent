@@ -91,15 +91,24 @@ entrypoint_script:
     - "orchestrator injects secrets via --env-file .env / Compose env / Portainer Stack vars / Docker secrets"
 
 hitl_required:
-  - none                                          # gate-ID sense only: no canonical 10-enum
-                                                  # (policies/ai-agent.md §4) anchors docker/Dockerfile or
-                                                  # docker/entrypoint.sh — NOT a claim that edits are ungated.
-                                                  # docker-LOCAL hard stops (OWNER_APPROVAL_REQUIRED) live in
-                                                  # docker/AGENTS.md §Hard stops = SoT, mirrored here at
-                                                  # base_image (external registry image refs, #408); scope
-                                                  # NOT restated here (single-source). entrypoint.sh has no
-                                                  # stop of either kind. Editing this contract file =
-                                                  # canonical `declared-contract-change`.
+  - secrets-grants-or-prod-config                 # gate-ID reference (per sdd/adapters/contract.md).
+                                                  # #413 extended this canonical enum's surface anchor
+                                                  # (policies/ai-agent.md §4) to cover docker/Dockerfile
+                                                  # EXTERNAL registry image refs — mirrored by the
+                                                  # base_image block above at :14 (#408). The gate ID
+                                                  # applies to that block only; dockerfile/* other
+                                                  # fields and entrypoint_script are NOT gated by it.
+                                                  # Enum count stays 10; the anchor was
+                                                  # widened instead of adding an 11th entry, per the
+                                                  # ADR-036 D-017 precedent. Scope + approval level are
+                                                  # NOT restated here (single-source): rule body lives in
+                                                  # policies/docker-runtime.md §4, entry adapters are
+                                                  # docker/AGENTS.md + docker/CLAUDE.md. This supersedes
+                                                  # the `none` value set by #411/PR #414, which was
+                                                  # correct while no gate ID anchored the surface.
+                                                  # docker/entrypoint.sh has no stop of either kind.
+                                                  # Editing this contract file is itself a canonical
+                                                  # `declared-contract-change`.
 
 # TBD Phase M3:
 #   - tests/docker/test_dockerfile_lint.py (no .env / no secrets.enc in COPY paths)

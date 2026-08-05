@@ -67,6 +67,7 @@ git diff --stat HEAD
 | `docs/` | docs | wikilinks + frontmatter |
 | `.claude/skills/` | claude-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
 | `docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
+| `docker/Dockerfile` 外部 registry 镜像引用 | infra，**必停子面** | 上述 C 项 + 确认 Owner 拍板已留痕（PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项 + HITL Trigger Inventory 的 `secrets-grants-or-prod-config` 均已勾）；内部 `COPY --from=<stage>` 不在此面 |
 | `pyproject.toml` / `uv.lock` | deps | uv lock + uv sync |
 | `.github/workflows/` | ci | yamllint（如配置） |
 | `langgraph.json` | langgraph | Studio probe 必跑 |

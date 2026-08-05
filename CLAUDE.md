@@ -32,9 +32,11 @@ external problem-framing only; all active governance is mj-agent-native).
 ## 必停 surfaces (pause for HITL 拍板 — AI 提议 + Owner 拍板后 AI 落盘；never flip unilaterally)
 
 > **HITL 模型 (ADR-034 / execution-loop §3.0)**：暂停 ≠ 让 Owner 手动转写。AI 呈现方案/diff →
-> Owner 拍板（AskUserQuestion 选 / 权限 prompt 批准）→ **AI 直接落盘**。下列必停面由
-> `.claude/settings.json` `permissions.ask` 逐写拍板门 enforce（原 `deny` 物理硬锁已解除），
-> A13/A14 合并审查兜底；**仅交互模式成立**（`auto`/`bypass` 下放宽类改动被 classifier 硬拦）。
+> Owner 拍板（AskUserQuestion 选 / 权限 prompt 批准）→ **AI 直接落盘**。下列前 3 类必停面由
+> `.claude/settings.json` `permissions.ask` / protected-path prompt 逐写拍板门 enforce
+> （原 `deny` 物理硬锁已解除），A13/A14 合并审查兜底；**仅交互模式成立**（`auto`/`bypass` 下
+> 放宽类改动被 classifier 硬拦）。**第 4 类（docker 供应链面）没有 harness 载体**，与
+> `policies/ai-agent.md` §4 的 D-017 扩展邻接面同属「声明为必停但靠纪律 + merge review 兜底」一档。
 
 - **Data/agent 必停** (5; `ask`-gated): `src/mj_agent/tools/sql/guardrail.py` (L1) ·
   `tools/sql/precheck.py` (L1b) · `prompts/system.md` · `skills/*/SKILL.md` bodies ·
@@ -44,6 +46,12 @@ external problem-framing only; all active governance is mj-agent-native).
   `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`.
 - **Protected paths** (`.claude/**` / `.mcp.json` / `.claude.json`): harness 硬编码——交互模式
   写入必弹权限 prompt（= 拍板，`allow` 不可抑制）；AI 改、Owner 拍板、A13/A14 兜底（per §9）.
+- **Docker 供应链面**（**无 harness 保护、无审批类 CI gate —— 靠纪律**；`docker-build` 只验镜像
+  可构建、V5 只 lint 契约字段，均不判拍板）: `docker/Dockerfile` 外部
+  registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>`
+  **不**在内）改前须 Owner 拍板。规则体 `policies/docker-runtime.md` §4；canonical anchor =
+  `secrets-grants-or-prod-config`（#408 / #413）。**刻意不进 `ask` 列表**——`ask` 只能整文件匹配，
+  会把 #408 排除的内部 stage 拷贝一并纳入。Dockerfile 其余行 = ≥ 2 reviewer，非必停。
 - **Gated actions**: CI gate blocking-flip (`continue-on-error true→false`) =
   `ci-blocking-gate-toggle`; `.mcp.json` trust-posture change = A14; `.env` /
   `config/secrets*.enc` 保持 permission-`deny`（AI 取不到的外部 secret 走 §8 给 Owner 步骤）.

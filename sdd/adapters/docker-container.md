@@ -2,7 +2,7 @@
 type: sdd-adapter
 artifact: docker-container
 state: draft
-version: 0.3
+version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-04
@@ -87,7 +87,9 @@ M1 起为**嵌套块**结构：real contract 自 `bc230a4`（Pilot 4 baseline）
   同为 `python:3.13-slim` + 同 digest）。**非**可选集合：minor 由 `.github/dependabot.yml`
   ignore-list 锁死（#294），只允许同 tag 线内 digest bump
 - `base_image.uv_binary.image` — builder 工具镜像（经 `COPY --from=` 引入，非 `FROM`）；
-  供应链面等同 base image（per #408）
+  供应链面等同 base image（per #408）。整个 `base_image` 块所镜像的外部 registry 引用面
+  = canonical `secrets-grants-or-prod-config`（#413 扩展的 surface anchor），审批级别见
+  `policies/docker-runtime.md` §4；故本类 contract 的 `hitl_required[]` 填该 gate ID
 - `builder_stage_contract.build_args{}` — 构建期 ARG 契约（当前仅 `APT_MIRROR_URL`）
 - `runtime_stage_contract.user.non_root: true` — `USER` directive 必填（防 root 容器逃逸）
   （旧扁平名 `user_required: non-root`）

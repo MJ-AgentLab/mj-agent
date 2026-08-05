@@ -186,7 +186,7 @@ python scripts/diff_biz_schema.py
 |---|---|---|
 | **Low** | 12 项 checklist 全 ✅；scope-drift = None；diff < 100 行 | GO + commit message |
 | **Medium** | 1-2 项 checklist ⚠️；或 scope-drift = Low/Medium；或多模块影响 | GO + 提示重点核对 ⚠️ 项 |
-| **High** | 任一 checklist ❌；或 scope-drift = High；或 §3.1 必停 4 项触发；或 in-source canonical 改动未走 §3.1 HITL | **HITL pause** + 3-5 questions |
+| **High** | 任一 checklist ❌；或 scope-drift = High；或 §3.1 必停 4 项触发；或 in-source canonical 改动未走 §3.1 HITL；或 `docker/Dockerfile` 外部 registry 镜像引用改动未走 Owner 拍板（canonical `secrets-grants-or-prod-config`；内部 `COPY --from=<stage>` 不在内） | **HITL pause** + 3-5 questions |
 
 **HITL questions 格式**：参 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.3 7-段格式。
 
