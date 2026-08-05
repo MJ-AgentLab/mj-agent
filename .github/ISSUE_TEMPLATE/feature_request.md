@@ -1,8 +1,8 @@
 ---
 name: Feature Request
 about: 新功能 / 新 capability / 演进；走 sdd/workflows/new-capability.md 或 evolve-capability.md
-title: "[FEAT] <one-line summary>"
-labels: ["type:feature"]
+title: "[Feature] <one-line summary>"
+labels: ["enhancement"]
 assignees: []
 ---
 
@@ -32,6 +32,14 @@ assignees: []
 
 - python / langchain-agent / prompt / runtime-skill / claude-skill / docker-container /
   tdd-bdd（多选；详 `sdd/adapters/`）
+
+## Acceptance Criteria
+
+- [ ] AC-1 <可验证陈述；逐条对位上面的 REQ>
+- [ ] AC-2 <可验证陈述>
+
+> 每条 AC 须落到一种验证手段（pytest / ruff / mypy / `mj-agent check` / Studio 探针 /
+> `scripts/**` 校验脚本 / 文档 grep）。写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
 ## HITL Trigger Check（提议前自检）
 

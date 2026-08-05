@@ -1,8 +1,8 @@
 ---
 name: Hotfix
 about: 生产紧急修复；走 sdd/workflows/hotfix.md (base = main)
-title: "[HOTFIX] <one-line summary>"
-labels: ["type:hotfix", "priority:critical"]
+title: "[Hotfix] <one-line summary>"
+labels: ["bug"]
 assignees: []
 ---
 
@@ -35,6 +35,14 @@ assignees: []
 ## Minimal Fix Scope
 
 <最小变更面 — 仅这些文件需改>
+
+## Acceptance Criteria
+
+- [ ] AC-1 <可验证陈述；hotfix 类首条通常是"生产症状消失">
+- [ ] AC-2 <回归测试已覆盖，防止再犯>
+
+> 每条 AC 须落到一种验证手段（pytest / ruff / mypy / `mj-agent check` / Studio 探针 /
+> `scripts/**` 校验脚本 / 文档 grep）。写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
 ## HITL Trigger Check
 
