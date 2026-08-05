@@ -80,15 +80,22 @@ entrypoint_script:
     - "orchestrator injects secrets via --env-file .env / Compose env / Docker secrets"
 
 hitl_required:
-  - none                                            # gate-ID references only (per sdd/adapters/contract.md):
+  - <gate-id | none>                                # gate-ID references only (per sdd/adapters/contract.md):
                                                     # list the gate IDs anchoring this contract's surfaces —
                                                     # canonical 10-enum (policies/ai-agent.md §4) or an adapter
                                                     # gate ID defined in sdd/gates.md §4; `none` = none
-                                                    # applies. NOT a claim that edits are ungated —
-                                                    # docker-LOCAL hard stops live in docker/AGENTS.md
-                                                    # §Hard stops = SoT; name the block mirroring them here,
-                                                    # do NOT restate their scope (single-source). Editing a
-                                                    # contract file = canonical `declared-contract-change`.
+                                                    # applies. Name the gate ID and the block it anchors; do
+                                                    # NOT restate the scope or the approval level here
+                                                    # (single-source — the rule body belongs in the kernel
+                                                    # policy, the entry adapters only point at it).
+                                                    # Worked example (mj-agent's own docker.contract.yml):
+                                                    # the base_image block mirrors docker/Dockerfile EXTERNAL
+                                                    # registry image refs, whose anchor is
+                                                    # `secrets-grants-or-prod-config` — #413 widened that
+                                                    # canonical entry's surface anchor rather than adding an
+                                                    # 11th enum (#408; rule body policies/docker-runtime.md
+                                                    # §4). Editing a contract file is itself a canonical
+                                                    # `declared-contract-change`.
 
 # TBD Phase M3:
 #   - tests/docker/test_dockerfile_lint.py (no .env / no secrets.enc in COPY paths)

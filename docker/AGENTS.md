@@ -12,7 +12,18 @@
 | `docker/compose.prod.yml` (any field) | prod red line — canonical enum `secrets-grants-or-prod-config` (`policies/ai-agent.md` §4) |
 | `mj-system-backend-network` external wiring | cross-repo boundary (ADR-008) |
 | healthcheck fields (mj-agent / mj-agent-postgres / mj-agent-redis) | production observability |
-| `docker/Dockerfile` external image refs — `FROM <image>` + `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in scope); contract mirror = `docker.contract.yml` `base_image` | supply chain |
+| `docker/Dockerfile` external image refs — `FROM <image>` + `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in scope); contract mirror = `docker.contract.yml` `base_image` | supply chain — canonical enum `secrets-grants-or-prod-config` (`policies/ai-agent.md` §4); approval level `policies/docker-runtime.md` §4 |
+
+> **This table names surfaces; the kernel sets the levels.** Approval levels for the
+> compose.prod.yml, image-ref and external-network rows live in `policies/docker-runtime.md` §4;
+> the healthcheck row has no §4 entry yet (§3 is unfilled), so it keeps this section header's
+> `OWNER_APPROVAL_REQUIRED` until the kernel covers it. Note the §4 split: only the external
+> registry image refs above carry `OWNER_APPROVAL_REQUIRED` **among `docker/Dockerfile` lines** —
+> **every other `docker/Dockerfile` line is ≥ 2 reviewer and is not a hard stop** (per #408 AC-4 /
+> #413). That statement is about Dockerfile lines only; it does not touch the other three rows.
+> Codex: this file loads only once your cwd is under `docker/`
+> — the same stop is restated in the repo-root `AGENTS.md` §Self-enforced boundaries item 3, which
+> always loads.
 
 ## Env & secrets carrier rule
 

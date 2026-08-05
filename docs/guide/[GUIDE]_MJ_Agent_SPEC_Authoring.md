@@ -11,9 +11,9 @@ aliases:
   - mj-agent SPEC Authoring Guide
   - mj-agent SPEC 撰写指南
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-08-04
 state: draft
-version: v0.1
+version: v0.2
 track: shared
 owner: 项目负责人
 ---
@@ -22,7 +22,7 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 仓内所有 `docs/design/<module>/[SPEC]_*.md` 起草与更新（HITL Stage 6）
 > **目标受众**：SPEC 起草者（开发 / AI Agent / Reviewer）
-> **版本**：v0.1
+> **版本**：v0.2
 > **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[sdd/workflows/execution-loop|执行闭环 workflow]]（Stage 6 SPEC 起草）
 
 ---
@@ -213,7 +213,7 @@ SPEC Delta:
 | #1 Python 应用代码 | 多数无 §4 enum（执行期暂停走 execution-loop §3.1）；触 `capabilities/*/contracts/*` → declared-contract-change |
 | #2 SQL guardrail | **sql-guardrail-relax**（永远必停） |
 | #3 In-source canonical | **runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync**（永远必停） |
-| #4 Docker compose + storage stack | secrets-grants-or-prod-config（`docker/compose.prod.yml`）/ database-migration（mj_agent_memory schema） |
+| #4 Docker compose + storage stack | secrets-grants-or-prod-config（`docker/compose.prod.yml`；**及 `docker/Dockerfile` 外部 registry 镜像引用**，per #413）/ database-migration（mj_agent_memory schema） |
 | #5 CI/CD + scripts | ci-blocking-gate-toggle（gate blocking flip 时） |
 | #6 Config / secrets / deps | secrets-grants-or-prod-config（secret / GRANT / prod 配置）；新依赖属 execution-loop §3.1 执行期暂停，非 §4 enum |
 | #7 Engineering-workflow infra | mcp-server-trust-posture-change（`.mcp.json` 面）；A12-A14 PR 门禁阻塞 |

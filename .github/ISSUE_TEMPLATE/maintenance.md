@@ -34,7 +34,9 @@ assignees: []
 - [ ] `.claude/settings.json` `permissions.deny` 红线修改？
 - [ ] `.mcp.json` 新增 server？（A14 PR gate 触发）
 - [ ] `pyproject.toml` 升级主版本（LangChain / LangGraph / pydantic）？
-- [ ] Dockerfile / compose.prod.yml 修改？（生产红线）
+- [ ] `docker/Dockerfile` **外部 registry 镜像引用**修改？（供应链红线；`FROM <image>` + `COPY --from=<registry image>`，内部 `COPY --from=<stage>` **不**在内 → 改前 Owner 拍板）
+- [ ] `compose.prod.yml` 修改？（生产红线）
+- [ ] Dockerfile 其余行 / compose.yaml / override.yml 修改？（≥ 2 reviewer，非必停）
 - [ ] secrets pipeline 修改（`config/secrets*.enc` / `setup-*.ps1`）？
 
 ## Verification Plan

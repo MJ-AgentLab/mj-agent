@@ -29,8 +29,8 @@ constraints live at:
 
 - `capabilities/AGENTS.md` — capability catalog: contract schema obligations / frozen-contract
   surfaces / archive-reference bans
-- `docker/AGENTS.md` — container security boundary: prod-compose hard stop, `--env-file`
-  carrier semantics, teardown safety
+- `docker/AGENTS.md` — container security boundary: prod-compose hard stop, **Dockerfile external
+  image-ref supply-chain hard stop**, `--env-file` carrier semantics, teardown safety
 - `src/mj_agent/AGENTS.md` — runtime code: the 4 mj-agent-specific hard-stop surfaces + data
   boundary + loading contracts
 - `tests/AGENTS.md` — test bands / fixtures / external-dependency and skip conventions
@@ -108,6 +108,13 @@ this file. Treat them as hard rules:
    `src/mj_agent/skills/*/SKILL.md` bodies, or `src/mj_agent/biz_catalog/qcm_catalog.yaml` without
    explicit Owner sign-off (per `policies/ai-agent.md` §4 canonical 10-enum). Same for `.mcp.json`
    trust posture, `.claude/**`, `config/secrets*.enc` / GRANT SQL, and `docker/compose.prod.yml`.
+   **Also `docker/Dockerfile` external registry image refs** — `FROM <image>` and
+   `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in
+   scope; every other Dockerfile line needs ≥ 2 reviewer, not Owner sign-off). This one is stated
+   here explicitly because it binds you and **nothing else does**: it has no `permissions.ask` entry
+   and no CI gate, and `docker/AGENTS.md` — where its local table lives — only loads once your cwd is
+   under `docker/`. Rule body + approval levels: `policies/docker-runtime.md` §4; canonical enum
+   anchor `secrets-grants-or-prod-config` (per #408 / #413).
 4. **Commit / push / PR / merge — `OWNER_APPROVAL_REQUIRED` (Owner HITL 拍板).** You may prepare
    changes and run verification freely, but treat commit, push, PR creation, and merge as gated
    actions needing the Owner's go-ahead (same as Claude Code, per ADR-034).
@@ -204,3 +211,10 @@ has no threshold axis). Eligibility measured 2026-08-03: observation anchor 2026
 (gate was 07-28), consecutive-clean streaks V8/V9 = 55 and V10 = 49 (both ≥ 20), zero waiver,
 ledger `evidence/ai-context-audit/2026-07_ci_audit.md`. Three separate Owner
 `ci-blocking-gate-toggle` execution records in #399. V11 unchanged (already day-1 blocking).*
+
+*Updated 2026-08-04 — docker supply-chain stop made visible to Codex (#413): self-enforced boundary
+3 now names `docker/Dockerfile` external registry image refs, and the nested-map entry for
+`docker/AGENTS.md` lists that hard stop. Before this, the stop existed only in `docker/AGENTS.md` —
+which Codex loads only when cwd is under `docker/` — so it did not bind a root-cwd Codex session at
+all. Rule body moved to the kernel (`policies/docker-runtime.md` §4); canonical anchor =
+`secrets-grants-or-prod-config` (enum count unchanged at 10, per ADR-036 D-017 precedent).*

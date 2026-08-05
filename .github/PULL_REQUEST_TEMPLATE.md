@@ -36,8 +36,9 @@
 ## Docker Impact
 
 - [ ] no
-- [ ] yes — Dockerfile / compose.yaml / override.yml 修改
-- [ ] yes — **compose.prod.yml 修改 → 生产红线 HITL（≥ 2 reviewer）**
+- [ ] yes — Dockerfile（**非**外部镜像引用行；→ ≥ 2 reviewer per `policies/docker-runtime.md` §4）/ compose.yaml / override.yml 修改
+- [ ] yes — **`docker/Dockerfile` 外部 registry 镜像引用修改**（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内）**→ 供应链红线 HITL：改前 Owner 拍板 + ≥ 2 reviewer**（`policies/docker-runtime.md` §4；勾此项须同时勾下方 `secrets-grants-or-prod-config`）
+- [ ] yes — **compose.prod.yml 修改 → 生产红线 HITL（≥ 2 reviewer + 项目负责人）**
 
 ## Evidence Links
 
@@ -67,7 +68,7 @@
 - [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode + 派生 `.codex/config.toml` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture` 段；A14 / D-017）
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
-- [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml`）
+- [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml` / `docker/Dockerfile` 外部 registry 镜像引用；#413 供应链面）
 - [ ] ci-blocking-gate-toggle（`ci.yml` continue-on-error flip）
 - [ ] bulk-content-purge-or-migration（≥10 文件删除/迁移 或 archive ceremony）
 

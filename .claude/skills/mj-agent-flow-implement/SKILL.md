@@ -106,6 +106,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | **A 纯代码** | TDD red-green；ruff/mypy strict；Rules 1-8 |
 | `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical** | **永远 HITL**；A11 EVAL 门禁；frontmatter strip 契约不破坏；五段式 body 保持；Rules 9-12 |
 | `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | **C infra** | mj-agent check healthcheck；compose 排练；uv lock；Rules 13-15 |
+| `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **C infra + 必停子面** | **改前 Owner 拍板**（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4）。无 `permissions.ask`、无审批类 CI gate → 靠本行提醒；Dockerfile 其余行按上一行常规 C 处理 |
 
 | Task 信号 | 路径 | 硬约束 |
 |---|---|---|
