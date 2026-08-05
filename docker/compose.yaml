@@ -116,7 +116,7 @@ services:
   # ========================================
   mj-agent-postgres:
     # Digest-pinned (PR #52 supply-chain hardening; Dependabot bumps via docker ecosystem).
-    image: postgres:18-alpine@sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88
+    image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
     container_name: mj-agent-postgres
     hostname: mj-agent-postgres
     environment:
@@ -174,7 +174,7 @@ services:
   # ========================================
   mj-agent-redis:
     # Digest-pinned (PR #52 supply-chain hardening; Dependabot bumps via docker ecosystem).
-    image: redis:8-alpine@sha256:09160599abd229764c0fb44cb6be640294e1d360a54b19985ab4843dcf2d90f1
+    image: redis:8-alpine@sha256:978f0e01593e65eed801f2402944efcd936d43b5027e4908a7897baf88ed6241
     container_name: mj-agent-redis
     hostname: mj-agent-redis
     # Optional auth: if MJ_AGENT_REDIS_PASSWORD is set in .env we enable
