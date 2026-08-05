@@ -36,8 +36,13 @@ updates:
       - "dependencies"
       - "ci"
     commit-message:
-      # Align with mj-agent commit conv (STANDARD §4): infra scope.
-      prefix: "maintain(infra)"
+      # Commit type is `infra` (STANDARD §3), NOT `maintain` — that is a
+      # branch type, and STANDARD §5.1 keeps the two namespaces distinct
+      # precisely to stop this collapse. `include: scope` appends
+      # Dependabot's own scope, so the rendered subject is
+      # `infra(deps): bump ...` (`deps` is a §4.2 scope). Applies to all
+      # three ecosystem blocks below.
+      prefix: "infra"
       include: "scope"
     # Keep major version bumps gated behind manual review (security +
     # breaking-change scrutiny). Minor / patch can auto-merge once
@@ -69,7 +74,7 @@ updates:
       - "dependencies"
       - "docker"
     commit-message:
-      prefix: "maintain(infra)"
+      prefix: "infra"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
@@ -107,7 +112,7 @@ updates:
       - "dependencies"
       - "docker"
     commit-message:
-      prefix: "maintain(infra)"
+      prefix: "infra"
       include: "scope"
     pull-request-branch-name:
       separator: "/"
