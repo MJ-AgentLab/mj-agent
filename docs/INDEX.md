@@ -71,9 +71,9 @@ track: shared
 | [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow / git / doc / runtime / infra）+ lifecycle (P0/P1/P2 + sunset 规则) |
 | [[decisions/ADR-020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；零维护 archive 引用校验 |
 | [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Agent_Side v1.2 §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；mj-agent 原生 |
-| [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] (PR-Γ；ADR-025 拆分) | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
-| [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] (PR-Γ；ADR-025 拆分) | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
-| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] (PR-Γ；ADR-025 拆分) | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
+| [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
+| [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
+| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1`；删除旧 `setup-mcp-env.ps1`（一次性迁移工具 `migrate-secrets-bundle-split.ps1` 已随 #297 移除，见 ADR-030 Amendment） |
 | [[decisions/ADR-031_Spec_Anchored_Refactor\|ADR-031 Spec-Anchored Refactor]] | SYS | accepted | Maximum Spec-Anchored Refactor（Phase M0-M6）：把 tri-track STANDARD + 20 active ADR + ~100 篇文档治理语料重构为 SDD Kernel + Capability Package + Business Policy 三支柱架构，落地机器可读 contract + capability lifecycle + CI gates（M0-M6 已落地、#245 闭幕；promoted accepted 2026-07-23 #372） |
@@ -183,7 +183,7 @@ track: shared
 | 子目录 | 摘要 |
 |---|---|
 | [[guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；含 `[GUIDE]_Quick_Start_Setup.md`（5 分钟赶时间版）+ `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径）+ `[GUIDE]_Analyst_Day_One.md`（分析师 Day-1 试用闭环） |
-| [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|MJ-Agent SPEC Authoring Guide v0.1]] (PR-118 commit-3) | mj-agent SPEC 撰写指南；§3 任务类型识别决策树 + §4 8 类任务详解（Python 应用 / SQL guardrail / In-source canonical / Docker compose / CI/CD scripts / Config secrets / Engineering-workflow infra / 文档治理）+ §5 与 HITL_Prompt 短码映射 + §6 与 §3.1 必停规则关系；HITL Stage 6 SPEC 起草必读 |
+| [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|MJ-Agent SPEC Authoring Guide v0.1]] | mj-agent SPEC 撰写指南；§3 任务类型识别决策树 + §4 8 类任务详解（Python 应用 / SQL guardrail / In-source canonical / Docker compose / CI/CD scripts / Config secrets / Engineering-workflow infra / 文档治理）+ §5 与 HITL_Prompt 短码映射 + §6 与 §3.1 必停规则关系；HITL Stage 6 SPEC 起草必读 |
 
 ---
 
@@ -192,7 +192,7 @@ track: shared
 | 术语来源 | 摘要 |
 |---|---|
 | [项目根 GLOSSARY](../GLOSSARY.md) | mj-agent 全项目术语索引；A-W 字母分段；约 40 术语 + 「定义 + 相关术语」二字段；专题深度词典在 `docs/glossary/` |
-| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] (PR-118 commit-3) | docs/glossary/ 专题词典之一；mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
+| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] | docs/glossary/ 专题词典之一；mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
 
 ---
 
