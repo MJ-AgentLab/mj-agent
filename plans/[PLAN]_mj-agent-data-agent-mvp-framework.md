@@ -1,3 +1,13 @@
+---
+type: plan
+summary: Phase 1 data-agent MVP 主纲——把 Phase 0 SQL 骨架推进到开发态可用的 mj-system biz 域数据分析智能体；4 个 PR（语义 context layer / SQL 预校验 / MVP skills 能力包 / 复用既有 eval 资产），开发期入口为 Claude Code + LangGraph Studio
+owner: ranzuozhou
+created: 2026-05-06
+updated: 2026-08-05
+state: active
+track: shared
+---
+
 # mj-agent Data-Agent MVP Framework
 
 ## Summary

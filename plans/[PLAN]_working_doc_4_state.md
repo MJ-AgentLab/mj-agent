@@ -3,8 +3,8 @@ type: plan
 summary: Phase C-3-3 — plans/ working 文档 4 态机（ADR-021；mj-system §10.5 派生）；Phase C-3 P1 三联包收尾
 owner: 项目负责人
 created: 2026-05-09
-updated: 2026-05-09
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 ---
 

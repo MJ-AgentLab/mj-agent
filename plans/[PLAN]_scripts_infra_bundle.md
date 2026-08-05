@@ -3,8 +3,8 @@ type: plan
 summary: Phase D-2 — scripts/infra：find_stale_docs.py 完整版 + plan GC infra + ADR-023；Phase D 子包 2/3
 owner: 项目负责人
 created: 2026-05-09
-updated: 2026-05-09
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 ---
 

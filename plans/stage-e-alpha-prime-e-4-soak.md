@@ -4,8 +4,8 @@ slug: stage-e-alpha-prime-e-4-soak
 summary: E-4 soak kickoff tracker, opened after the G21/G22 combined BLOCKING flip landed (#199). Opens the 1-2 week soak observation window for G21/G22 blocking mode and tracks the remaining E-4 workstreams (ADR-024 EVAL baseline, Action-N-2 M-FU registry batch, M3 carry-over closure, 5 pilot capability state promotion, Stage F closure prep) as a checklist. Tracker/status only — the opening PR makes no code / CI / validator / test changes.
 owner: ranzuozhou
 created: 2026-06-02
-updated: 2026-06-03
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 related_m_fu:
   - M-FU#6 — M4-FU-G22-MODE-WARN-TO-BLOCKING-FLIP (RESOLVED PR #199)

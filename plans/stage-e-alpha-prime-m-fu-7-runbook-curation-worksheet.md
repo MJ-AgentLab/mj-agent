@@ -4,8 +4,8 @@ slug: stage-e-alpha-prime-m-fu-7-runbook-curation
 summary: M-FU#7 owner curation worksheet — 15 critical|high × unautomated scenarios × 4-field justification (原因 / 替代验证手段 / 升级触发条件 / 预计时间) per bdd-tdd.md L121; SDD scaffold-only per R-13-3 Option (b); owner (Zack) authors domain content + writes to per-capability runbook.md; E-0b verify = G22 dry-run WARN → 0.
 owner: ranzuozhou
 created: 2026-05-28
-updated: 2026-05-28
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 related_m_fu:
   - M-FU#7 — M4-FU-RUNBOOK-JUSTIFICATION-CURATE-ALL-PILOTS (primary;G22 prereq)
