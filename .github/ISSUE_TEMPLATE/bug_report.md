@@ -6,8 +6,6 @@ labels: ["bug"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## TL;DR
 
 <一句话：什么场景下出现什么错误？>
@@ -64,7 +62,3 @@ assignees: []
 - [ ] 修复触及 prod compose / DB migration / secrets？
 
 如有任一勾选 → 必须 HITL.
-
----
-
-> *Phase M0 skeleton — Phase M2 起按 capability spec.yml 实例细化字段.*

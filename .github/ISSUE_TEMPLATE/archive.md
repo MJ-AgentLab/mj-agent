@@ -6,8 +6,6 @@ labels: ["maintain"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — Phase M5 archive ceremony 主用.
-
 ## TL;DR
 
 <一句话：要归档什么 + 为什么>
@@ -70,7 +68,3 @@ assignees: []
 - [ ] 归档 ≥ 10 文件？（大规模目录迁移 HITL）
 - [ ] 跨 capability 归档？（走 cross-capability workflow）
 - [ ] 项目负责人 + capability owner 已确认？
-
----
-
-> *Phase M0 skeleton — Phase M5 archive ceremony 大量使用此模板.*

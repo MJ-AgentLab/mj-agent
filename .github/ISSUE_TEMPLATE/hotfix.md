@@ -6,8 +6,6 @@ labels: ["bug"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## ⚠ Hotfix 启动检查清单
 
 - [ ] 确认此变更**真的需要走 hotfix 单线**（绕过 develop 标准流程）
@@ -57,7 +55,3 @@ merge 后 N 工作日内（默认 5；critical hotfix 3）补齐：
 - [ ] capability `requirements.md` / `contracts/` 演进（走 `sdd/workflows/evolve-capability.md`）
 - [ ] `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` 写入
 - [ ] trace.yml 关联 hotfix PR + postmortem
-
----
-
-> *Phase M0 skeleton — Phase M2 起按事故场景细化字段.*

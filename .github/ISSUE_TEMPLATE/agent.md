@@ -6,8 +6,6 @@ labels: ["track:agent"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## TL;DR
 
 <一句话：agent 行为 / tool 调用 / SKILL / prompt 在什么场景下如何？>
@@ -58,7 +56,3 @@ assignees: []
 ## EVAL References
 
 - 关联 EVAL：`tests/eval/<subtype>/<name>.py`（per ADR-024 4 子类）
-
----
-
-> *Phase M0 skeleton — Phase M2 起按 agent 行为变更场景细化字段.*
