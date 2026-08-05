@@ -21,9 +21,17 @@ Scope:
   updated, state, track). Per-type rules (e.g. SPEC needs version,
   ADR needs decision, EVAL needs dataset_path) are left for Phase 2
   expansion when the team wants stricter enforcement.
-- Templates under `docs/_templates/` are skipped — they're placeholder
-  scaffolds, not real canonical docs.
-- Markdown files without YAML frontmatter are skipped (not canonical).
+- Every `.md` under a scan root is in scope. Exemptions are explicit and
+  live in `SKIP_PATH_PARTS` — currently only `docs/_templates/`, whose
+  files are placeholder scaffolds rather than real canonical docs.
+- A file with no frontmatter is a VIOLATION, never a reason to skip it.
+
+Coverage note (#429): this gate used to treat "starts with `---`" as the
+definition of "is a canonical doc", so a canonical doc that lost — or never
+had — frontmatter silently left the gate's scope while the gate still exited
+0 (it shielded a missing-frontmatter plan for 3+ months, surfaced by #428).
+Scope is now the filesystem itself, so the checked set can only shrink via an
+explicit, reviewable edit to `SKIP_PATH_PARTS`.
 """
 
 from __future__ import annotations
@@ -86,8 +94,9 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
     """Return a list of violation messages for one doc. Empty = passes."""
     violations: list[str] = []
 
-    # 1. Required fields presence (skipped if frontmatter is empty — that means
-    # the file is non-canonical; caller filters those out before calling here).
+    # 1. Required fields presence. `check()` short-circuits the wholly-empty case
+    # (no frontmatter at all) into one dedicated violation, so an empty mapping is
+    # not expected here — an empty one would legitimately report every field missing.
     missing = REQUIRED_FIELDS - meta.keys()
     for field in sorted(missing):
         violations.append(f"missing required field `{field}`")
@@ -147,9 +156,39 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
     return violations
 
 
-def find_canonical_docs(repo_root: Path) -> list[Path]:
-    """Return relative paths of all .md files under the scan roots that have
-    YAML frontmatter (i.e. start with `---`).
+_NO_FRONTMATTER = (
+    "missing YAML frontmatter — every `.md` under a scan root must be a canonical doc; "
+    "add frontmatter, or add an explicit exemption to SKIP_PATH_PARTS in this script"
+)
+
+_BOM_FRONTMATTER = (
+    "file begins with a UTF-8 BOM, which prevents its frontmatter from being parsed — "
+    "re-save it as UTF-8 without BOM"
+)
+
+
+def _missing_frontmatter_message(path: Path) -> str:
+    """Tell "no frontmatter" apart from "frontmatter hidden behind a UTF-8 BOM".
+
+    A BOM used to make an otherwise-perfect doc invisible to this gate (the leading
+    `\\ufeff` defeated the old `startswith("---")` test), so it is worth naming
+    precisely rather than reporting it as absent frontmatter.
+    """
+    try:
+        raw = path.read_bytes()
+    except OSError:
+        return _NO_FRONTMATTER
+    if raw.startswith(b"\xef\xbb\xbf") and raw[3:].lstrip().startswith(b"---"):
+        return _BOM_FRONTMATTER
+    return _NO_FRONTMATTER
+
+
+def find_scanned_docs(repo_root: Path) -> list[Path]:
+    """Return relative paths of every `.md` under the scan roots, minus SKIP_PATH_PARTS.
+
+    Deliberately content-blind: nothing about a file's *contents* may remove it from
+    this gate's scope. Conflating "has frontmatter" with "is canonical" is exactly the
+    fail-open #429 fixed — the only way out of scope is an explicit SKIP_PATH_PARTS entry.
     """
     out: list[Path] = []
     for root in SCAN_ROOTS:
@@ -157,34 +196,40 @@ def find_canonical_docs(repo_root: Path) -> list[Path]:
         if not abs_root.exists():
             continue
         for md in abs_root.rglob("*.md"):
+            if not md.is_file():  # a directory literally named `*.md` is not a doc
+                continue
             rel = md.relative_to(repo_root)
             if is_skipped(rel):
                 continue
-            try:
-                first_chars = md.read_text(encoding="utf-8").lstrip()[:4]
-            except (OSError, UnicodeDecodeError):
-                continue
-            if first_chars.startswith("---"):
-                out.append(rel)
+            out.append(rel)
     return sorted(out)
 
 
-def main() -> int:
-    repo_root = Path(__file__).resolve().parent.parent
-    docs = find_canonical_docs(repo_root)
-
-    total = len(docs)
+def check(repo_root: Path) -> dict[Path, list[str]]:
+    """Return ``{rel: violations}`` for every scanned doc that fails the schema."""
     bad: dict[Path, list[str]] = {}
-
-    for rel in docs:
+    for rel in find_scanned_docs(repo_root):
+        path = repo_root / rel
         try:
-            post = frontmatter.load(repo_root / rel)
+            post = frontmatter.load(path)
         except Exception as exc:  # noqa: BLE001 — yaml errors are user-facing
             bad[rel] = [f"frontmatter parse error: {exc}"]
+            continue
+        if not post.metadata:
+            # No frontmatter at all, or an empty `---\n---` block. Report it as one
+            # clear violation rather than degrading into every REQUIRED_FIELDS message.
+            bad[rel] = [_missing_frontmatter_message(path)]
             continue
         violations = validate(post.metadata, rel)
         if violations:
             bad[rel] = violations
+    return bad
+
+
+def run(repo_root: Path) -> int:
+    """Validate every scanned doc; print a report; return the exit code (0 ok / 1 bad)."""
+    total = len(find_scanned_docs(repo_root))
+    bad = check(repo_root)
 
     if not bad:
         print(f"OK: {total} canonical docs all pass frontmatter schema check")
@@ -205,6 +250,10 @@ def main() -> int:
         file=sys.stderr,
     )
     return 1
+
+
+def main() -> int:
+    return run(Path(__file__).resolve().parent.parent)
 
 
 if __name__ == "__main__":
