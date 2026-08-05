@@ -1,8 +1,8 @@
 ---
 name: Documentation
 about: 仅文档变更；走 sdd/workflows/ + mj-agent-doc-* skill family
-title: "[DOCS] <one-line summary>"
-labels: ["type:documentation"]
+title: "[Documentation] <one-line summary>"
+labels: ["documentation"]
 assignees: []
 ---
 
@@ -28,6 +28,14 @@ assignees: []
 - 是否需更新 `docs/INDEX.md` / `decisions/INDEX.md` / `capabilities/INDEX.md`？
 - 是否需更新 `CLAUDE.md`（root / 4 subdir）？
 - 是否触发 A1-A6 + A7-A10 + A12-A14 PR gate？
+
+## Acceptance Criteria
+
+- [ ] AC-1 <可验证陈述>
+- [ ] AC-2 <可验证陈述>
+
+> 每条 AC 须落到一种验证手段（pytest / ruff / mypy / `mj-agent check` / Studio 探针 /
+> `scripts/**` 校验脚本 / 文档 grep）。写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
 ## HITL Trigger Check
 

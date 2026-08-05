@@ -1,8 +1,8 @@
 ---
 name: Maintenance
 about: CI/CD / Docker / deps / scripts / 配置；走 maintain/ branch
-title: "[MAINT] <one-line summary>"
-labels: ["type:maintenance"]
+title: "[Maintain] <one-line summary>"
+labels: ["maintain"]
 assignees: []
 ---
 
@@ -27,6 +27,14 @@ assignees: []
 - 影响 `infrastructure/docker-compose` capability
 - 影响 `infrastructure/mcp-server-governance` capability
 - ...
+
+## Acceptance Criteria
+
+- [ ] AC-1 <可验证陈述>
+- [ ] AC-2 <可验证陈述>
+
+> 每条 AC 须落到一种验证手段（pytest / ruff / mypy / `mj-agent check` / Studio 探针 /
+> `scripts/**` 校验脚本 / 文档 grep）。写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
 ## HITL Trigger Check
 

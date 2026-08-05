@@ -42,7 +42,7 @@ digraph intake {
   落盘 [label="Write plans/[INTAKE]_<id>_<brief>.md" shape=box];
   对话输出 [label="对话输出 Intake Result" shape=box];
 
-  s9 [label="Step 9: 输出 Issue Draft\n(mj-agent 5 类 type，无 ISSUE_TEMPLATE)" shape=box];
+  s9 [label="Step 9: 输出 Issue Draft\n(mj-agent 5 类 type → 填 .github/ISSUE_TEMPLATE/)" shape=box];
   hitl [label="Step 10: 等用户确认\n(STOP — do not create Issue)" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4;
@@ -203,37 +203,30 @@ mj-agent 专属：
 
 ## Step 9: Issue Draft
 
-mj-agent **没有 .github/ISSUE_TEMPLATE/**（Phase D PR-D1 落地）。Intake 输出 Issue body 用 inline structure（与 mj-agent-git-issue Step 2 对齐）：
+Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84efc` / 2026-05-20 起在仓）
+——intake **不另造结构**。按 branch type 路由到模板，填好后交 `/mj-agent-git-issue` Step 2 落盘：
 
-```markdown
-## What
-<feature: 做什么；bugfix/hotfix: 现象；documentation: 变更内容；maintain: 改什么>
+| Branch type | Template | Title prefix | Label |
+|---|---|---|---|
+| feature | `feature_request.md` | `[Feature]` | `enhancement` |
+| bugfix | `bug_report.md` | `[Bugfix]` | `bug` |
+| documentation | `documentation.md` | `[Documentation]` | `documentation` |
+| maintain | `maintenance.md` | `[Maintain]` | `maintain` |
+| hotfix | `hotfix.md` | `[Hotfix]` | `bug` |
 
-## Why
-<motivation；如对应已有 ADR/SPEC 给 wikilink>
+专题模板（无 1:1 分支类型，按主题选；分支类型仍取上表）：`agent.md` → `[Agent]` /
+`runtime.md` → `[Runtime]` / `archive.md` → `[Archive]`。
 
-## Scope
-- In-scope: <list>
-- Out-of-scope: <list>
+填写要点（完整规则见 `/mj-agent-git-issue` Step 2b）：
 
-## Acceptance Criteria
-- [ ] AC 1（可验证）
-- [ ] AC 2
+- 剥掉模板 YAML frontmatter；`<...>` 占位全部替换。
+- **`HITL Trigger Check` 必逐条作答** —— Step 8 的必停判定在这里落成可查证据；不适用标 `— No`，
+  不要删行。有 harness / CI gate 兜底的面漏答还能补救；`docker/Dockerfile` 外部 registry 镜像引用
+  一类**既无 harness 载体又无审批类 CI gate** 的面，这份勾选是唯一载体。
+- `Acceptance Criteria` 每条须对应 Step 4 表中的一种验证手段。
 
-## Risk
-- Risk level: Low / Medium / High
-- Risk areas: <e.g., in-source canonical / biz catalog / SQL guardrail / system.md version>
-
-## Verification Plan
-- `uv run pytest tests/<bands>`
-- `uv run ruff check` + `uv run mypy src/mj_agent`
-- <Studio 探针 / mj-agent check / smoke test 按需>
-
-## Related Docs
-- ADR / SPEC / GUIDE / Plan wikilinks
-```
-
-bugfix/hotfix 加 Reproduction / Expected vs Actual / Environment 段（参 mj-agent-git-issue SKILL）。
+> **别与 `docs/_templates/TEMPLATE_ISSUE.md` 混淆**：那是 `docs/issues/` 下*本地* `[ISSUE]`
+> 文档的骨架（doc track；Phase D-1 / #90 已落地），不是 GitHub issue 表单，与本步无关。
 
 ## Output Format
 

@@ -92,10 +92,10 @@ digraph author {
 | `[RUNBOOK]` | code | `docs/runbook/` 或 `docs/infrastructure/{domain}/` | `TEMPLATE_RUNBOOK.md`（PR-A3） | `[RUNBOOK]_Subject.md` |
 | `[ADR]` | shared/eng-workflow（按主题） | `docs/adr/` | `TEMPLATE_ADR.md` | `[ADR]_NNN_Decision_Title.md` |
 | `[SPEC]` | shared/agent/code（按主题） | `docs/design/{module}/` | `TEMPLATE_SPEC.md`（PR-A3） | `[SPEC]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4 active path stability） |
-| `[POSTMORTEM]` | shared | `docs/postmortem/` | `TEMPLATE_POSTMORTEM.md`（PR-D1，未落地，参 mj-system 上游） | `[POSTMORTEM]_Subject.md` |
+| `[POSTMORTEM]` | shared | `docs/postmortem/` | `TEMPLATE_POSTMORTEM.md`（PR-D1） | `[POSTMORTEM]_Subject.md` |
 | `[STANDARD]` | code/eng-workflow/shared（按主题） | `docs/rule/[STANDARD]_*.md` 或 `docs/infrastructure/{domain}/` | （type-specific；mj-agent 模板未独立） | `[STANDARD]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
-| `[ISSUE]` | shared | `docs/issues/` | `TEMPLATE_ISSUE.md`（PR-D1，未落地） | `[ISSUE]_NNN_DomainAbbr_Description.md`（per Meta v2.2 §4.5）|
-| `[ASSESSMENT]` | shared | `docs/assessments/` | `TEMPLATE_ASSESSMENT.md`（PR-D1，未落地） | `[ASSESSMENT]_Subject.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
+| `[ISSUE]` | shared | `docs/issues/` | `TEMPLATE_ISSUE.md`（PR-D1） | `[ISSUE]_NNN_DomainAbbr_Description.md`（per Meta v2.2 §4.5）|
+| `[ASSESSMENT]` | shared | `docs/assessments/` | `TEMPLATE_ASSESSMENT.md`（PR-D1） | `[ASSESSMENT]_Subject.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
 | `[SKILL]`（in-source；Track B） | agent | `src/mj_agent/skills/<name>/` | `TEMPLATE_SKILL.md`（13 字段 + 五段式） | `<name>/SKILL.md` |
 | `[PROMPT]`（in-source；Track B） | agent | `src/mj_agent/prompts/` | `TEMPLATE_PROMPT.md` | `<name>.md` |
 | `[SKILL]`（in-tree；Track C） | engineering-workflow | `.claude/skills/mj-agent-<group>-<verb>/` | `TEMPLATE_WORKFLOW_SKILL.md`（PR-B1） | `<name>/SKILL.md` |

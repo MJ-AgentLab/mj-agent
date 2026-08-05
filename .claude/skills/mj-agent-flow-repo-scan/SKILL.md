@@ -158,8 +158,8 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | RUNBOOK | Create / Update / None | `docs/runbook/[RUNBOOK]_*.md` 或 `docs/infrastructure/**/[RUNBOOK]_*.md` | … | <运维/回滚/排障> | <部署/容器/Studio 证据> | TEMPLATE_RUNBOOK.md 7 段 | PR / Release |
 | GUIDE | Create / Update / None | `docs/guide/` 或 `docs/infrastructure/**` | … | <开发者上手/操作路径> | <命令/工作流证据> | TEMPLATE_GUIDE.md CN-numbered | PR |
 | STANDARD | Create / Update / None | `docs/rule/[STANDARD]_*_v1.0.md` | … | <长期规则/命名/治理/工程流程> | <规范冲突/重复证据> | MUST/SHOULD/MAY + version 必填 | PR |
-| Local ISSUE | Create / Update / None | `docs/issues/[ISSUE]_*.md` | … | <中高风险长期知识锚点> | <证据/根因/影响> | Phase D TEMPLATE_ISSUE.md | Plan |
-| ASSESSMENT | Create / Update / None | `docs/assessments/[ASSESSMENT]_*_v1.0.md` | … | <优化后基线对比> | <基线/指标证据> | TEMPLATE_ASSESSMENT.md（Phase D） | Post-implementation |
+| Local ISSUE | Create / Update / None | `docs/issues/[ISSUE]_*.md` | … | <中高风险长期知识锚点> | <证据/根因/影响> | TEMPLATE_ISSUE.md 八段 | Plan |
+| ASSESSMENT | Create / Update / None | `docs/assessments/[ASSESSMENT]_*_v1.0.md` | … | <优化后基线对比> | <基线/指标证据> | TEMPLATE_ASSESSMENT.md 八维度 | Post-implementation |
 | CHANGELOG | Update / None | `CHANGELOG.md` | … | <user-visible / release> | <行为/发布证据> | 仅 user-visible 或 release | Commit / PR |
 | INDEX | Update / Regenerate / None | `docs/INDEX.md` 或 `docs/**/INDEX.md` | … | <新增/迁移 canonical> | <新文档路径/入口变更> | canonical 入口必须同步 | PR |
 

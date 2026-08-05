@@ -1,8 +1,8 @@
 ---
 name: Agent
 about: ★ NEW — Agent 行为 / Tool / SKILL / Prompt / Eval 相关
-title: "[AGENT] <one-line summary>"
-labels: ["type:agent"]
+title: "[Agent] <one-line summary>"
+labels: ["track:agent"]
 assignees: []
 ---
 
@@ -39,6 +39,14 @@ assignees: []
 - [ ] `src/mj_agent/biz_catalog/qcm_catalog.yaml` 修改？→ **biz-catalog-sync** HITL
 
 → 任一勾选必须走 `mj-agent-runtime-*` skill 提议 diff，停在 `OWNER_APPROVAL_REQUIRED`；拍板后由 skill 经 `ask` 门落盘，**不未经拍板直接 Edit**.
+
+## Acceptance Criteria
+
+- [ ] AC-1 <可验证陈述>
+- [ ] AC-2 <可验证陈述>
+
+> 每条 AC 须落到一种验证手段（pytest / ruff / mypy / `mj-agent check` / Studio 探针 /
+> `scripts/**` 校验脚本 / 文档 grep）。写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
 ## HITL Trigger Check
 

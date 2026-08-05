@@ -1,13 +1,27 @@
 ---
 name: mj-agent-git-issue
-description: This skill should be used when the user asks to create a GitHub Issue, draft an issue body, file a bug report, or start a new task in mj-agent. Make sure to use this skill whenever the user says "创建issue", "新建issue", "提issue", "报bug", "新任务", "开新工作", "create issue", "new issue", "report bug", "file issue", "open issue", "start new task" in the mj-agent context. Uses gh CLI with --body-file. mj-agent currently has no .github/ISSUE_TEMPLATE/ (Phase D will add) — this skill builds Issue body structure from branch-type taxonomy + Intake Result. Do not use for: branch creation (use mj-agent-git-branch), commit message authoring (use mj-agent-git-commit), PR creation (use mj-agent-git-pr), or Issue triage on existing issues.
+description: This skill should be used when the user asks to create a GitHub Issue, draft an issue body, file a bug report, or start a new task in mj-agent. Make sure to use this skill whenever the user says "创建issue", "新建issue", "提issue", "报bug", "新任务", "开新工作", "create issue", "new issue", "report bug", "file issue", "open issue", "start new task" in the mj-agent context. Uses gh CLI with --body-file. Fills the matching .github/ISSUE_TEMPLATE/ file (8 templates, in-repo since 2026-05-20) selected by branch-type taxonomy + Intake Result. Do not use for: branch creation (use mj-agent-git-branch), commit message authoring (use mj-agent-git-commit), PR creation (use mj-agent-git-pr), or Issue triage on existing issues.
 ---
 
 # mj-agent Git Issue
 
 ## Overview
 
-Creates GitHub Issues for **mj-agent** repo (https://github.com/MJ-AgentLab/mj-agent). mj-agent **does not yet have `.github/ISSUE_TEMPLATE/`** (Phase D PR-D1 will add `TEMPLATE_ISSUE.md`); this skill builds Issue body inline based on branch-type taxonomy ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5) + the Intake Result from Stage 0.
+Creates GitHub Issues for **mj-agent** repo (https://github.com/MJ-AgentLab/mj-agent). The repo
+has **8 issue templates under `.github/ISSUE_TEMPLATE/`** (in-repo since `6c84efc`, 2026-05-20).
+This skill **fills the matching template** — it does not invent a parallel body structure — with
+the template chosen by branch-type taxonomy
+([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5) + the
+Intake Result from Stage 0.
+
+> **Why template-first**: the templates carry `HITL Trigger Check` checklists — including the
+> `docker/Dockerfile` external-registry supply-chain stop (#408 / #413), a surface with **no
+> harness carrier and no CI gate**. A hand-rolled inline body silently drops those checks. Keeping
+> one source of truth is what stops the two structures drifting apart again.
+
+> **Distinct artifact — do not confuse**: `docs/_templates/TEMPLATE_ISSUE.md` is the skeleton for
+> *local* `[ISSUE]` docs under `docs/issues/` (a doc-track artifact, delivered by Phase D-1 /
+> #90). It is **not** a GitHub issue form and is not used by this skill.
 
 **Workflow position**: optional pre-step before `mj-agent-git-branch`.
 
@@ -47,76 +61,68 @@ mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message
 
 | Option | Type | Label | When to choose |
 |---|---|---|---|
-| 1 | feature | `feature` | New feature / new skill / new tool / refactor |
-| 2 | bugfix | `bugfix` | Bug found on develop, needs fix |
+| 1 | feature | `enhancement` | New feature / new skill / new tool / refactor |
+| 2 | bugfix | `bug` | Bug found on develop, needs fix |
 | 3 | documentation | `documentation` | Docs only, no code changes |
 | 4 | maintain | `maintain` | CI/CD / Docker / deps / env / scripts |
-| 5 | hotfix | `hotfix` | Production emergency (auto-selected if Step 1a = Yes) |
+| 5 | hotfix | `bug` | Production emergency (auto-selected if Step 1a = Yes) |
+
+> **Label column = labels that actually exist in this repo.** Verify with `gh label list` before
+> passing `--label`; `gh issue create` **fails** on an unknown label. There are deliberately no
+> `feature` / `bugfix` / `hotfix` labels — those are *branch* types, and per Commit Convention
+> §5.1 the branch namespace is kept distinct from other namespaces. `hotfix` maps to `bug`
+> because the repo carries no priority label; the `[Hotfix]` title prefix is what marks urgency.
 
 > mj-agent **不**用 `optimization/` 类型（与 mj-system 差异；详见 ADR-010 + Commit Convention v1.0）。
 
-## Step 2: Build Issue Body（5 fields）
+## Step 2: Build Issue Body（fill the matching template）
 
-**mj-agent Issue body 结构**（Phase D `TEMPLATE_ISSUE.md` 落地前的临时约定，与 PR 模板字段对位）：
+**Source of truth = `.github/ISSUE_TEMPLATE/<name>.md`.** Do **not** hand-roll a parallel body
+structure — a second structure is what drifted out of sync before (#422).
 
-```markdown
-## What
+### Step 2a: Route branch type → template
 
-<feature: 做什么；bugfix/hotfix: 现象；documentation: 变更内容；maintain: 改什么>
+| Branch type | Template | Title prefix | Label |
+|---|---|---|---|
+| feature | `feature_request.md` | `[Feature]` | `enhancement` |
+| bugfix | `bug_report.md` | `[Bugfix]` | `bug` |
+| documentation | `documentation.md` | `[Documentation]` | `documentation` |
+| maintain | `maintenance.md` | `[Maintain]` | `maintain` |
+| hotfix | `hotfix.md` | `[Hotfix]` | `bug` |
 
-## Why
+Three topical templates have no 1:1 branch type — pick them by subject; the branch type still
+comes from the table above:
 
-<motivation；如对应已有 ADR/SPEC 给 wikilink>
+| Template | Use for | Title prefix | Label |
+|---|---|---|---|
+| `agent.md` | Agent 行为 / Tool / SKILL / Prompt / Eval | `[Agent]` | `track:agent` |
+| `runtime.md` | 运行时 / 部署 / Studio / 监控 | `[Runtime]` | `maintain` |
+| `archive.md` | 归档已弃用 capability / STANDARD / ADR | `[Archive]` | `maintain` |
 
-## Scope
+### Step 2b: Fill it
 
-- **In-scope**: <本 issue 覆盖的具体范围>
-- **Out-of-scope**: <相邻但不覆盖>
+1. Read `.github/ISSUE_TEMPLATE/<name>.md`.
+2. **Strip the YAML frontmatter** — `name` / `about` / `title` / `labels` / `assignees` are
+   GitHub form metadata and must never appear in the body.
+3. Replace every `<...>` placeholder. For checklist items that do not apply, answer them
+   `— No` rather than deleting the line: a visibly-answered check is evidence, a deleted one is
+   indistinguishable from one nobody considered.
+4. Fill `HITL Trigger Check` honestly — for several surfaces it is the **only** carrier. The
+   `docker/Dockerfile` external-registry supply-chain stop has no harness gate and no CI gate
+   (`policies/docker-runtime.md` §4); skipping the checkbox is how that stop goes unnoticed.
+5. Write the filled body to a temp file → `gh issue create --body-file` (Step 5). `--template`
+   only takes effect for interactive / web-UI creation and is silently inert in non-interactive
+   use — `--body-file` is the required carrier here.
 
-> **纵切片归属**（承 `/mj-agent-flow-plan` Step 2 纵切纪律）：若本 issue 是某 milestone 的一个**端到端纵切片**，In-scope 应是**自身可验、可独立 review-合**的窄完整路径；用 `blocked-by` 标依赖序，**不**按层水平切。
+> **Scope 段·纵切片归属**（承 `/mj-agent-flow-plan` Step 2 纵切纪律）：若本 issue 是某 milestone
+> 的一个**端到端纵切片**，In-scope 应是**自身可验、可独立 review-合**的窄完整路径；用
+> `blocked-by` 标依赖序，**不**按层水平切。
 
-## Acceptance Criteria
+> **Acceptance Criteria 段**：每条须能对应一条可跑命令（intake Step 4 的 AC 可验证性准入门）。
+> 写不出验证手段的 AC 应回 Stage 0 重新拆解，而不是照写。
 
-- [ ] 验收标准 1（可验证 / 可测试）
-- [ ] 验收标准 2
-
-## Risk
-
-- **Risk level**: Low / Medium / High（来自 Intake §7）
-- **Risk areas**: <e.g., in-source canonical 改动 / biz catalog 镜像 / SQL guardrail / system.md version bump（4 项 mj-agent 专属 §3.1 必停 trigger）>
-
-## Verification Plan
-
-- `uv run pytest tests/<bands>` <按改动范围选 unit/eval/integration/smoke/contract>
-- `uv run ruff check` + `uv run mypy src/mj_agent`
-- <如需 Studio 探针 / mj-agent check：列出>
-
-## Related Docs
-
-- ADR / SPEC / GUIDE / RUNBOOK wikilinks（如有）
-- Plan: `plans/[PLAN]_*.md`（如已起草）
-```
-
-**bugfix / hotfix 加段**（参 mj-system mj-sys-git-issue v3.0 完整 Bug 模板）：
-
-```markdown
-## Reproduction
-
-1. <步骤 1>
-2. <步骤 2>
-...
-
-## Expected vs Actual
-
-- **Expected**: <期望行为>
-- **Actual**: <实际行为>
-
-## Environment
-
-- mj-agent version / commit:
-- Python / uv versions:
-- Profile: DEV / TEST / PROD
-```
+> `bugfix` / `hotfix` 的 Reproduction / Expected vs Actual / Environment 段**已在
+> `bug_report.md` / `hotfix.md` 模板内**，不必另行拼接。
 
 ## Step 3: Title Format
 
@@ -130,6 +136,11 @@ mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message
 - `[Documentation] Phase B PR-B1 backfill notes`
 - `[Maintain] Bump langgraph 1.1.8 → 1.1.9`
 - `[Hotfix] AsyncPostgresSaver checkpointer drops connections under load`
+- `[Agent] describe_biz_table returns wrong column names for biz_dws`（专题模板）
+- `[Runtime] Studio probe fails after LLM endpoint switch`（专题模板）
+- `[Archive] Retire v1.1 trio into archive/rule/`（专题模板）
+
+> Prefix 与 Step 2a 表一一对应，且**与模板 frontmatter `title:` 一致**——改一处必须改另一处。
 
 ## Step 4: Preview & Confirm
 
@@ -152,11 +163,11 @@ AskUserQuestion 3 options：
 # Windows: $env:TEMP/mj-agent-issue-body-<type>.md
 # Unix: /tmp/mj-agent-issue-body-<type>.md
 
-# 写 body 到临时文件后
+# 把 Step 2b 填好的模板正文（已剥 frontmatter）写入临时文件后
 gh issue create \
   --title "[<Type>] <短描述>" \
   --body-file <tmp-file> \
-  --label "<type>" \
+  --label "<Step 2a 表中的 label>" \
   [--assignee <user>]
 
 # 创建后清理临时文件
@@ -191,11 +202,15 @@ handoff **suggestive，不强制**——`mj-agent-git-branch` 的 issue-id 是�
 | H2 | 用户在预览阶段 cancel | 清理临时文件，停止 |
 | H3 | `gh issue create` 失败 | 显示错误，建议检查网络 / 权限 / GitHub token |
 | H4 | 用户选 hotfix | 加注：`Hotfix branch from main, PR target also main`（与 mj-agent-git-branch / mj-agent-git-pr 对位） |
-| H5 | mj-agent 仓 .github/ISSUE_TEMPLATE/ 缺失 | 默认行为（v1.0 期间正常状态）；按 Step 2 inline body；提示用户 Phase D PR-D1 会落地 TEMPLATE_ISSUE.md |
+| H5 | Step 2a 路由到的模板文件读不到（被删 / 改名 / 移位） | **停**并报出缺失路径。**不要**退回内联自造 body——那正是 #422 的成因。先确认模板是被有意移除还是误删，再决定补回文件还是改 Step 2a 路由表 |
+| H6 | `gh issue create` 因 label 不存在而失败 | 用 `gh label list` 核对实际 label。**不要**顺手新建 label——建 label 是仓库级外向改动，需 Owner 拍板；改用 Step 2a 表中已存在的 label |
 
 ## Anti-patterns
 
 - **不要** 用 `--body` inline Issue 描述（违反 ADR-013 + mj-system mj-sys-git-issue 风格；非交互模式应用 `--body-file`）
+- **不要** 绕开 `.github/ISSUE_TEMPLATE/` 自造 body 结构（#422：并行结构必然漂移，且会丢掉模板携带的 `HITL Trigger Check`）
+- **不要** 把模板的 YAML frontmatter 一起写进 body（`name/about/title/labels` 是 GitHub 表单元数据）
+- **不要** 因为某个勾选项不适用就删掉它（标 `— No`：已回答与没人看过必须可区分）
 - **不要** 在没有 Intake Result 时直接创建 Issue（跳过 §3.1 必停 HITL trigger）
 - **不要** 在 Issue body 中塞详细实现计划（那是 Plan / SPEC 的职责）
 - **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5.1）
