@@ -116,7 +116,7 @@ services:
   # ========================================
   mj-agent-postgres:
     # Digest-pinned (PR #52 supply-chain hardening; Dependabot bumps via docker ecosystem).
-    image: postgres:18-alpine@sha256:96d56f7f57c6aacd1fcb908bc83b345ec5f83231ee486dd66a1baadce274db88
+    image: postgres:18-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
     container_name: mj-agent-postgres
     hostname: mj-agent-postgres
     environment:
