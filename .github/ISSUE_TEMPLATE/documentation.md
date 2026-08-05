@@ -6,8 +6,6 @@ labels: ["documentation"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## TL;DR
 
 <一句话：要修改 / 新增 / 归档什么文档？>
@@ -44,7 +42,3 @@ assignees: []
 - [ ] 修改 `CLAUDE.md` > 50 行？（AI 主入口）
 - [ ] 修改 ADR `state` 字段（draft → active / active → deprecated）？
 - [ ] 触发 archive ceremony（≥ 10 文件迁移）？
-
----
-
-> *Phase M0 skeleton — Phase M2 起按 doc 工作流实例细化字段.*

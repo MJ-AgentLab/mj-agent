@@ -6,8 +6,6 @@ labels: ["enhancement"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## TL;DR
 
 <一句话：要做什么 + 业务价值>
@@ -51,7 +49,3 @@ assignees: []
 ## Related ADR
 
 <引用支撑本 feature 的 ADR；如需新 ADR，标注 "ADR needed" 并 link 草案>
-
----
-
-> *Phase M0 skeleton — Phase M2 起按 5 pilot capability 实例细化字段.*

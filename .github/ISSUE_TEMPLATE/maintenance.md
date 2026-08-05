@@ -6,8 +6,6 @@ labels: ["maintain"]
 assignees: []
 ---
 
-> Phase M0 skeleton template — 完整字段在 Phase M2 内容填充.
-
 ## TL;DR
 
 <一句话：要维护什么基础设施 / 工具链？>
@@ -56,7 +54,3 @@ uv run mypy src/mj_agent
 uv run ruff check
 uv run pytest tests/unit
 ```
-
----
-
-> *Phase M0 skeleton — Phase M2 起按 maintenance 类型细化字段.*
