@@ -44,9 +44,13 @@ Same layering rule as this file: nested files point to the kernel, they do not r
 (per ADR-036 D-011/D-012/D-013/D-014): byte-identical projections of the whitelisted
 `.claude/skills/<name>/SKILL.md` sources (whitelist SoT = manifest `sdd/development-agent.yml`
 `projection: project` entries), plus — since S2 (#330) — a Codex MCP config derived from
-`.mcp.json` filtered by the manifest `mcp` per-server tiers (github / playwright / serena only;
-`pg-mj-system-biz-*` + `ssh-manager` are PERMANENTLY excluded, ADR-006/009 data boundary) with
-`codex.posture` transcribed. They are committed so Codex discovers skills under `.agents/skills`
+`.mcp.json` filtered by the manifest's per-server `mcp.servers.<name>.projection_policy`.
+**That manifest field is the SoT for which servers get projected — do not re-enumerate the list
+here**: it grew from 3 to 8 at #353 (`c700934`, which projected `pg-mj-agent-memory-*`×5) and the
+enumeration that used to sit in this sentence went stale unnoticed, because V11 compares the
+config to the manifest and no gate reads this prose. What is fixed and MUST stay stated:
+`pg-mj-system-biz-*`×5 + `ssh-manager` are pinned `never` — PERMANENTLY excluded per the
+ADR-006/009 data boundary. `codex.posture` is transcribed alongside. They are committed so Codex discovers skills under `.agents/skills`
 and MCP servers via `.codex/config.toml` after `git pull`; projected copies do NOT count toward
 the 37-skill SoT. Rules — they bind BOTH tools:
 
@@ -218,3 +222,11 @@ ledger `evidence/ai-context-audit/2026-07_ci_audit.md`. Three separate Owner
 which Codex loads only when cwd is under `docker/` — so it did not bind a root-cwd Codex session at
 all. Rule body moved to the kernel (`policies/docker-runtime.md` §4); canonical anchor =
 `secrets-grants-or-prod-config` (enum count unchanged at 10, per ADR-036 D-017 precedent).*
+
+*Updated 2026-08-04 — corrected the "Generated projections" MCP sentence, which still said the
+projection was "github / playwright / serena only". It has been **8** servers since #353
+(`c700934`) added `pg-mj-agent-memory-*`×5. The enumeration is replaced by a pointer to the
+manifest's `projection_policy` (per `policies/documentation.md` 代偿纪律 — root files must not copy
+volatile derived facts), keeping only the permanent `never` exclusions stated inline. Surfaced by a
+live Codex MCP-startup log; V11 was green throughout, i.e. the prose was the stale party, not the
+config.*
