@@ -3,8 +3,8 @@ type: plan
 summary: 把 G1 (新分支必须 worktree)、G2 (gh pr create 必须 --base) 两条 mj-agent git workflow 约定从纯文档约束升级为 3 层运行时强制 — L1 SKILL.md HARD REQUIREMENT + L2 CLAUDE.md Repo conventions + L3 .claude/scripts/guard-git-workflow.ps1 PreToolUse hook；起源于 2026-05-12 同日发生的 PR #154 (bugfix 用 git checkout -b) 与 PR #158 (gh pr create 缺 --base 误合到 main) 两起 precipitating incident
 owner: ranzuozhou
 created: 2026-05-13
-updated: 2026-05-13
-state: active
+updated: 2026-08-05
+state: completed
 track: engineering-workflow
 ---
 

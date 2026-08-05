@@ -4,8 +4,8 @@ slug: stage-f-m4-closure-prep
 summary: Stage F (M4 closure) — drafted as prep during the E-4 soak window (E-4-PR10), then EXECUTED in E-4-PR11 (2026-06-03). Records the soak EARLY-ACCEPT (run-based criterion + owner risk acceptance; calendar window waived), the executed closure (4/5 capabilities promoted drafting->active; mcp-server-governance held -> M4-FU-MCP-GOV-PROMOTION-DEFER; phase_progress.M4 E/F/overall -> completed; phase-m4-complete tag applied post-merge), and the remaining-work disposition (F-7 polish/code cluster descoped from M4 -> post-M4 tail/M5; G26-G28 -> M6).
 owner: ranzuozhou
 created: 2026-06-03
-updated: 2026-06-03
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 related_m_fu:
   - "M-FU#9 — M4-FU-G23-TASKS-CURATION-SURFACE (→ M6)"

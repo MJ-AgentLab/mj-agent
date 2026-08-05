@@ -4,8 +4,8 @@ slug: stage-e-alpha-prime-e-0b-elicitation-aid
 summary: Elicitation aid for M-FU#7 owner curation — owner (Zack) provides domain facts per scenario in rough form;Claude Code structures into 4-field runbook justification ready to paste into per-pilot runbook.md;non-fabrication boundary per R-13-3 + R-13-10 + R-16-6 enforced via "every output字 must trace to owner-provided fact" rule.
 owner: ranzuozhou
 created: 2026-05-29
-updated: 2026-05-29
-state: active
+updated: 2026-08-05
+state: completed
 track: shared
 related_m_fu:
   - M-FU#7 — M4-FU-RUNBOOK-JUSTIFICATION-CURATE-ALL-PILOTS (companion;this aid supports owner workstream)
