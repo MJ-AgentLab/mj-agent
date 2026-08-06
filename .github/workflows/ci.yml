@@ -370,18 +370,21 @@ jobs:
         # provisioned the same command exercises the contract.
         run: uv run pytest tests/contract -m contract
 
-  # ===== #296 docker-build gate (warning-first; blocking flip = separate ci-blocking-gate-toggle) =====
+  # ===== #296 docker-build gate (BLOCKING since #385; warning-first 2026-07-23 → 2026-08-06) =====
   # Incident #294: a Dependabot base-image minor bump broke `docker build` and went
   # undetected for 8 weeks because no CI job actually builds the image (V5 docker
   # contracts only LINT the Dockerfile/compose; smoke is local-only). This job builds
   # docker/Dockerfile so an unbuildable image fails in the PR — the second layer after
   # the .github/dependabot.yml python semver-major/minor ignore-list (first layer).
   #
-  # Posture: WARNING (job-level continue-on-error: true) — lands non-blocking per repo
-  # precedent (V8/V9/V10, G14/G15) + policies/ci-gates.md §4.1. A future blocking flip is
-  # a separate ci-blocking-gate-toggle HITL action (policies/ai-agent.md §4) once an
-  # observation window + evidence/ai-context-audit record exist. Registry: sdd/gates.md
-  # §2 `docker-image-build` row.
+  # Posture: BLOCKING (job-level continue-on-error: false) — flipped 2026-08-06 by #385 as a
+  # ci-blocking-gate-toggle HITL action (policies/ai-agent.md §4). It landed warning-first on
+  # 2026-07-23 per repo precedent (V8/V9/V10, G14/G15) + policies/ci-gates.md §4.1, then ran a
+  # registered observation window (plans/[PLAN]_m-fu-docker-build-gate-flip.md): anchor 3faaec7
+  # + ≥14 calendar days AND a head-SHA-deduped streak of 33 clean executions / 0 violation
+  # (threshold 20). Evidence ledger: evidence/ai-context-audit/2026-08_ci_audit.md; Owner
+  # execution record: issue #385 comment. Registry: sdd/gates.md §2 `docker-image-build` row.
+  # Rollback = this key back to `true` (one line).
   #
   # Scope (docker build inputs): the job always starts (ci.yml runs on every PR/push) but
   # only BUILDS when a build-relevant path changed — the Dockerfile's actual inputs:
@@ -404,9 +407,9 @@ jobs:
   # deb.debian.org (Fastly) reliably, so CI pins it to avoid tuna-from-abroad flakiness
   # (false reds). The gate tests Dockerfile BUILDABILITY, not mirror reachability.
   docker-build:
-    name: docker-build (warning)
+    name: docker-build
     runs-on: ubuntu-latest
-    continue-on-error: true
+    continue-on-error: false
     steps:
       - name: Checkout
         # fetch-depth: 0 so the changed-files diff below can resolve the base commit.
