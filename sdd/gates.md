@@ -2,7 +2,7 @@
 type: sdd-kernel
 artifact: gates
 state: active
-version: 0.5
+version: 0.6
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-06
@@ -64,6 +64,7 @@ ai_visibility: source-of-truth
 | docker-bdd-scenario-check | `check_bdd_scenario_trace.py --scope docker` | docker behavior.feature | covered-by(G19)（CI 跑 `--scope full` 全集；docker 子集为其真子集）|
 | docker-tdd-contract-test | `check_tdd_refactor_contract.py`（未建）| docker contract change | deferred(M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER)（与 G27/G28 同执行体家族）|
 | docker-image-build | `docker build -f docker/Dockerfile`（`.github/workflows/docker-build.yml` `docker-build` job——**#438 起独立 workflow 仅 `pull_request` 触发**，原居 ci.yml；非 G/V spec-gate，属 CI infra 构建门，同 Tests/Contract 步）| Dockerfile 实际可构建（#294 防复发第二层；V5 只 lint 不 build）| **blocking@ci（翻转 = #385，2026-08-06；`ci-blocking-gate-toggle` Owner 执行记录 = issue #385 comment）**。落地时为 warning 首发（#296 per `policies/ci-gates.md` §4.1）；**CI 首挂锚 `3faaec7` 2026-07-23 15:55:16 +0800 #296**——pickaxe 判据用 run 命令片段（`-S "docker/Dockerfile"`），详注册工件 §3.1。观察期按 §4.1.1 注册于 `plans/[PLAN]_m-fu-docker-build-gate-flip.md`（**本仓首个 path-triggered gate**，故适用 §4.1.4 三态口径：`skipped` = 未触发中性、step 不存在 = 剔除）。资格实测（2026-08-06）：锚 +≥14 自然日 / head-SHA 去重连续 clean **33** 次（≥20）/ violation 0 / streak 重置 0 / 零 waiver；证据账本 `evidence/ai-context-audit/2026-08_ci_audit.md`。**翻转机制**：仅 blocking 轴 job-level `continue-on-error: true→false`（**无 `--fail-on` 旗标**，与 V10 同型）。path-scoped 到 Dockerfile 构建输入面〔`docker/`（#438 起剔除其下 `*.md` 纯文档——COPY 面下 `docker/` 仅 `entrypoint.sh`）+ `.dockerignore` + `pyproject.toml`/`uv.lock` + `README.md` + workflow 自身（`docker-build.yml`；原自引用 `ci.yml` 随迁）；`src/` 有意排除，由 ci job compileall/ruff/mypy/pytest 兜底〕，diff base 不可解时 fail-open 构建。**#438 触发面收窄**（2026-08-06）：迁出 ci.yml 后 push run 不再产生本 job——根除新分支首推 all-zeros fail-open 无条件构建、及同一 head SHA push/PR 双 run 下绿 skip 盖住红构建的掩蔽（账本 §6 / flip-plan §7 记录的两个暴露面）；§4.1.4 三态口径不变，审计度量改用 `gh run list --workflow docker-build.yml`。**边界注记**：本 gate 不在 `protect-develop`/`protect-main` 的 required contexts 内（两者各只要求 `ci`），翻转令其变红但不机械锁死 merge 按钮；加入 required contexts = 可选硬化，非翻转前置|
+| check-stale-docs | `scripts/find_stale_docs.py`（`.github/workflows/check-stale-docs.yml` `check-stale-docs` job；非 G/V spec-gate，属 CI infra 文档守卫，同 `docker-image-build` 体例）| PR diff 中 rename/delete 的旧路径，在 `docs/**` / `plans/**` + `CLAUDE.md`/`CHANGELOG.md`/`README.md` 里是否仍有 backtick 残留引用 | **warning@ci（长期姿态；明确不追求 blocking flip —— #440，2026-08-06 Owner 拍板）**。**CI 首挂锚 `d56f64e` 2026-05-09 #92**（与执行体 `scripts/find_stale_docs.py` 同批落地；本 gate 自始为独立 workflow，pickaxe 用 `-- .github/workflows/check-stale-docs.yml`，**不**在 ci.yml 内）。**不追求翻转的理由**：(1) 执行体 `main()` 每条路径 `return 0`、且无 `--fail-on` / `--strict` 旗标 —— 单翻 `continue-on-error: true→false` 是**空操作**（step 恒绿）。**注意本 gate 的 `continue-on-error` 在 step 层**（`jobs.check-stale-docs.steps[-1]`），与 `docker-image-build` 的 job 层**不同型**，照搬 docker 先例会找错位置，真翻转须先改退出码语义 + 补测试（当前零覆盖）；(2) 检测算法是 backtick 字面量 grep 的启发式，误报会卡住散文类 PR，收益/成本不对称。**故不按 `policies/ci-gates.md` §4.1.1 注册观察期** —— 不追求翻转即无注册义务；原 ADR-023「4 周后评估升级 blocking」的承诺随该 ADR 于 2026-05-11 归档而失效（其 `replaced-by` 指向两个 script 而非后继 ADR），且从未按 §4.1.1 注册，故本就不构成明文观察期。path-triggered（`on.pull_request.paths`，同 `docker-image-build` 族）：**若将来改判追求 blocking**，须补齐 §4.1.1 五字段注册并适用 §4.1.4 三态口径。检测面覆盖缺口（SDD kernel 四目录在触发面与扫描面双双缺席）= #441|
 
 ## §3 BDD/TDD Gate（G19-G28）
 
@@ -124,6 +125,11 @@ Scenarios — Canonical 10-Enum` 的 in-source 子集（前 4 行）：
 
 ---
 
+> *v0.6（2026-08-06）：#440 — §2 新增 `check-stale-docs` 行。该 gate 自 `d56f64e`（2026-05-09）
+> 起在 CI 运行，却从未进入本注册表；posture 据实记为 `warning@ci` 并声明为**长期姿态**（Owner
+> 拍板不追求 blocking flip，理由随行内注）。同批把 workflow header 与 `find_stale_docs.py`
+> docstring 中引用已归档 ADR-023 的「4 周后转 blocking」承诺真值化。**`continue-on-error` 值未变
+> → 非 `ci-blocking-gate-toggle`**（同 #438 判例：只改载体/措辞不动 posture 值）。*
 > *v0.5（2026-08-06）：#438 — §2 `docker-image-build` 行触发面收窄：job 迁独立 workflow
 > `.github/workflows/docker-build.yml` 仅 `pull_request` 触发（push run 不再产生本 job）+
 > 触发路径剔除 `docker/` 下 `*.md` 纯文档；posture 不变（非 `ci-blocking-gate-toggle`）。*

@@ -9,9 +9,9 @@ in the current PR's git diff. For each rename / delete, greps:
 - ``CLAUDE.md``, ``CHANGELOG.md``, ``README.md``
 
 for backtick-bounded references to the old path (e.g. ``\\`docs/old/file.md\\```).
-Reports remaining references as warnings. **Always exits 0 (warning mode)**;
-4-week observation window planned before upgrading to blocking
-(ADR-023 §Decision).
+Reports remaining references as warnings. **Always exits 0 (warning mode)** --
+warning is this gate's long-term registered stance (``sdd/gates.md`` §2);
+a blocking flip is not pursued (#440). Provenance: archived ADR-023.
 
 Usage::
 
@@ -153,8 +153,8 @@ def main() -> int:
     }
     sys.stderr.write(json.dumps(summary, ensure_ascii=False) + "\n")
 
-    # Always exit 0: warning mode. Upgrade to blocking after 4-week
-    # observation period evaluates false-positive rate (ADR-023 §Decision).
+    # Always exit 0: warning mode is this gate's long-term posture
+    # (sdd/gates.md §2; blocking flip not pursued -- #440).
     return 0
 
 
