@@ -122,3 +122,32 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Guard (#433): the two FIRST-PARTY images in docker/compose*.yml are built
+    # by this repo, are never published to a registry Dependabot can reach, and
+    # must not be tracked for updates at all:
+    #   - docker/compose.yaml           `mj-agent:0.1` — no registry prefix, so
+    #     Dependabot resolves it against Docker Hub as `library/mj-agent` → 401
+    #     UNAUTHORIZED (the image does not exist there; it is a local build).
+    #   - docker/compose.{test,prod}.yml `8.135.38.175/mj-agent/mj-agent:0.1` —
+    #     private Harbor, unreachable from GitHub-hosted runners →
+    #     `private_source_timed_out`.
+    # Either one makes the whole `docker_compose in /docker` job exit non-zero
+    # even though it still opens correct PRs for the third-party service images
+    # (the DB / cache services in docker/compose.yaml). A permanently
+    # red Dependabot job is precisely how the #294 base-image breakage stayed
+    # hidden for 8 weeks — see the same ignore convention in the `docker` block
+    # above, this is that convention applied here, not a new mechanism.
+    #
+    # NOTE on the names below: Dependabot strips the registry into the
+    # dependency's `source` field, so the Harbor image is named
+    # `mj-agent/mj-agent` — NOT `8.135.38.175/mj-agent/mj-agent`. Verified in the
+    # log of run 30980823108: `Handled error whilst updating mj-agent/mj-agent:
+    # private_source_timed_out {source: "8.135.38.175"}`. Naming it with the
+    # registry prefix would silently never match and leave the job red.
+    # The third-party service images are deliberately NOT listed below — they
+    # resolve fine and must keep receiving update PRs. Keeping their names out
+    # of this block also keeps the #433 AC-4 grep check ("the ignore section
+    # names neither service image") truthful as literally written.
+    ignore:
+      - dependency-name: "mj-agent"
+      - dependency-name: "mj-agent/mj-agent"
