@@ -11,9 +11,9 @@ aliases:
   - mj-agent Git Branch Strategy
   - mj-agent Git 分支策略指南
 created: 2026-04-30
-updated: 2026-04-30
+updated: 2026-08-06
 state: draft
-version: v1.0
+version: v1.1
 track: code
 owner: 项目负责人
 ---
@@ -601,24 +601,13 @@ mj-agent/
 | `maintain` | `infra` | 完全不同的词 |
 | `hotfix` | `fix` | 复合词 ≠ 简称 |
 
-### mj-agent 12 scope 速查
+### mj-agent scope 速查
 
-| scope | 覆盖 | 示例 commit header |
-|---|---|---|
-| `agent` | `src/mj_agent/agent.py`、graph 装配 | `feat(agent): 接入 describe_biz_table 到 ALL_TOOLS` |
-| `llm` | `src/mj_agent/llm.py`、Ark client | `fix(llm): 空 ARK_API_KEY 时抛 LLMConfigError` |
-| `prompt` | `src/mj_agent/prompts/*.md` | `feat(prompt): system.md v0.3 追加安全章节` |
-| `skill` | `src/mj_agent/skills/*` | `feat(skill): 新增 metrics-glossary skill` |
-| `sql` | `src/mj_agent/tools/sql/*` | `fix(sql): guardrail 正则收紧尾随分号` |
-| `db` | `src/mj_agent/integrations/mj_system_db.py` | `infra(db): 连接池初始化时强制 read-only` |
-| `config` | `src/mj_agent/config.py` | `feat(config): 新增 LLM_THINKING_ENABLED 默认值` |
-| `tests` | `tests/**` | `test(tests): live_db fixture 在环境缺失时改为 skip` |
-| `eval` | Phase 2+ `evaluation/` | `test(eval): 增加 5 条 biz_dws 基线问题` |
-| `ci` | `.github/workflows/`、PR templates | `infra(ci): 引入 ruff 检查到 PR 工作流` |
-| `deps` | `pyproject.toml`、`uv.lock` | `infra(deps): 升 langgraph 到 1.1.9` |
-| `infra` | 跨领域兜底 | `infra(infra): 新增 scripts/setup-env.ps1` |
+**scope 白名单的唯一真相源 = [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范]] §4**（v1.1 起为 **35 项**闭合白名单，分三组：`src/mj_agent/` 代码面 14 项 / 工程测试构建面 10 项 / 文档治理面 10 项 + 兜底 `infra`）。
 
-完整 scope 定义见 [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] §4。
+> **本节曾内嵌一份 12 行的 scope 副本表，v1.1（#443）起改为指针。** 原因即 #443 查实的病因本身：白名单被复制到多处后各自漂移——STANDARD 已重建为 35 项时，本 GUIDE 的副本仍停在 12 项。**再抄一份 35 行只会保证下一次再漂**，故此处只保留指针。
+>
+> 日常推导「改了这些文件该用哪个 scope」请用 `/mj-agent-git-commit`（Step 3 内置完整路径→scope 推导表，与 STANDARD 同步维护）。
 
 ---
 
@@ -627,7 +616,7 @@ mj-agent/
 - [[GUIDE]_Git_Push_Workflow|Git 推送工作流]] — 推送前检查 + 推送流程
 - [[GUIDE]_GitHub_Setup_And_Versioning|GitHub 设置与版本管理]] — 仓库配置与版本号管理
 - [[GUIDE]_PR_Description_Convention|PR 描述规范指南]] — PR 模板使用
-- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]] — 提交消息格式
+- [[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.1]] — 提交消息格式
 - [[../../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] — 决策依据
 - CI/CD 发布流程手册 —— Phase 0.5/1 待 `docs/runbook/[RUNBOOK]_Release_Process.md` 启用，参见 ADR-010 §Defer
 
@@ -637,4 +626,5 @@ mj-agent/
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
+| 2026-08-06 | v1.1 | #443 — 删除 §「scope 速查」内嵌的 12 行 scope 副本表，改为指向 STANDARD §4 的指针（白名单 v1.1 起为 35 项）。**副本化本身正是 #443 查实的漂移病因**：STANDARD 重建后本 GUIDE 的副本仍停在 12 项，再抄一份 35 行只会保证下次再漂。参考链接同步 v1.0 → v1.1 |
 | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：5 分支模型 + worktree 用法逐字保留；§0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agent 12 scope；URL 改 `MJ-AgentLab/mj-agent` |

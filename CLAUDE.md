@@ -166,7 +166,8 @@ Active doc-governance now lives in the kernel:
   PR `--base develop` except `hotfix`→main. Enforced by
   `.claude/scripts/guard-git-workflow.ps1`. Rules: `policies/git-branching.md`.
 - **Commits** — `<type>(<scope>): <summary>` (feat/fix/perf/refactor/test/docs/infra);
-  scopes from `src/mj_agent/` modules. STANDARD:
+  **35-scope closed allowlist** (v1.1 — `src/mj_agent/` modules + engineering/test/build +
+  doc-governance areas); omit scope when genuinely mixed. STANDARD:
   `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`.
 - **In-tree skills** — active across 5 families (flow/git/doc/runtime/infra);
   namespace `/mj-agent-<group>-<verb>`; auto-discover (no registration). `runtime-*` follow

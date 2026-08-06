@@ -4,9 +4,9 @@ domain: SYS
 summary: mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope、分支对齐矩阵与示例
 owner: 项目负责人
 created: 2026-04-25
-updated: 2026-05-09
+updated: 2026-08-06
 state: active
-version: v1.0
+version: v1.1
 track: code
 tags:
   - standard
@@ -131,36 +131,83 @@ aliases:
 ## 4 范围（scope）
 
 > [!IMPORTANT]
-> mj-agent 的 scope 列表完全 mj-agent 原生：按 `src/mj_agent/` 实际模块结构定义。其它项目（含上游业务系统）使用的 ETL 服务名缩写（如 `aec/dqv/qvl/qcm/sac/fc`）对 mj-agent 无效。下表为 mj-agent 12 项闭合 scope。
+> mj-agent 的 scope 列表完全 mj-agent 原生，**按仓库真实结构定义**：`src/mj_agent/` 的模块面 + git 跟踪的顶层目录。其它项目（含上游业务系统）使用的 ETL 服务名缩写（如 `aec/dqv/qvl/qcm/sac/fc`）对 mj-agent 无效。下列 **35 项**构成闭合 scope 白名单。
 
-### 4.1 代码范围
+> **v1.1 重建缘由（#443）**：v1.0 的 12 项白名单只建模了 `src/mj_agent/` 代码面（§4 原文即写「按 `src/mj_agent/` 实际模块结构定义」），而实测 **59% 的提交是 `docs` 型**，工作重心早已移到 `sdd/` `policies/` `decisions/` `plans/` `capabilities/` `docs/rule/` —— 这些区域在 12 项里**一个都没有**。结果是 45 种野生 scope、211 次使用、**51% 的提交带违规**，其中 65% 属「真实存在的仓库区域，白名单却没有」。
+>
+> **根因是白名单相对仓库结构不完整，不是纪律松弛。** 故 v1.1 以**完整性**为重建原则：下列 35 项对 `src/mj_agent/` 全部模块目录与顶层 `.py`、以及全部 git 跟踪的顶层治理目录**无遗漏**；§4.5 把维持这一不变量的责任落到具体 PR，避免重蹈 v1.0 的覆辙。
+
+### 4.1 代码范围（`src/mj_agent/`）
+
+14 项，覆盖全部 9 个模块目录与全部 7 个顶层 `.py`：
 
 | scope | 覆盖路径 | 示例 header |
 |---|---|---|
-| `agent` | `src/mj_agent/agent.py`、graph 装配、`make_graph` | `feat(agent): 接入 describe_biz_table 到 ALL_TOOLS` |
-| `llm` | `src/mj_agent/llm.py`、Ark client 工厂、模型配置 | `fix(llm): 空 ARK_API_KEY 时抛 LLMConfigError` |
-| `prompt` | `src/mj_agent/prompts/*.md`（in-source canonical） | `feat(prompt): system.md v0.3 追加安全章节` |
-| `skill` | `src/mj_agent/skills/*/SKILL.md` 与同目录 Python | `feat(skill): 新增 metrics-glossary skill` |
-| `sql` | `src/mj_agent/tools/sql/{guardrail,execute,introspect}.py` | `fix(sql): guardrail 正则收紧尾随分号` |
-| `db` | `src/mj_agent/integrations/mj_system_db.py`、连接池、role | `infra(db): 连接池初始化时强制 read-only` |
-| `config` | `src/mj_agent/config.py`、pydantic-settings 字段 | `feat(config): 新增 LLM_THINKING_ENABLED 默认值` |
+| `agent` | `agent.py`、`runtime.py`、`state.py`、graph 装配、`make_graph` | `feat(agent): 接入 describe_biz_table 到 ALL_TOOLS` |
+| `llm` | `llm.py`、provider 工厂、模型配置 | `fix(llm): 空 ARK_API_KEY 时抛 LLMConfigError` |
+| `config` | `config.py`、`env_drift.py`、pydantic-settings 字段 | `feat(config): 新增 LLM_THINKING_ENABLED 默认值` |
+| `prompt` | `prompts/`（in-source canonical） | `feat(prompt): system.md v0.3 追加安全章节` |
+| `skill` | `skills/`（in-source runtime skill，含同目录 Python） | `feat(skill): 新增 metrics-glossary skill` |
+| `sql` | `tools/sql/`（`guardrail` / `precheck` / `execute` / `introspect`） | `fix(sql): guardrail 收紧尾随分号` |
+| `tools` | `tools/` 下 `sql/` 以外（`analysis/` `charts/` `excel/` `biz_context.py`） | `feat(tools): charts 支持双轴折线` |
+| `db` | `integrations/`（含 `mj_system_db.py`、连接池、role） | `infra(db): 连接池初始化时强制 read-only` |
+| `memory` | `memory/`（checkpointer） | `feat(memory): 新增 TTL 逐出 CLI` |
+| `middleware` | `middleware/` | `fix(middleware): 补 awrap_tool_call 异步实现` |
+| `biz_catalog` | `biz_catalog/`（`loader` / `finder` / `qcm_catalog.yaml`） | `feat(biz_catalog): finder 支持同义词匹配` |
+| `entity` | `entity/` | `feat(entity): 新增机构实体归一` |
+| `server` | `server/`（`cli.py` 等入口） | `feat(server): mj-agent check 增加 --live` |
+| `ui` | `ui.py`（Chainlit） | `fix(ui): 流式输出丢失最后一段` |
+
+> **「零使用」不构成删除理由**：`db` 在 v1.0 全期零使用，但 `integrations/` 是 [[../../decisions/ADR-006_Fail_Safe_Reads|ADR-006]] 数据边界 L3 层的载体，是真实且受维护的模块面；§3 的 `perf` type 同样零使用而显然仍有效。零使用只说明该面近期无改动，不说明它不需要命名。v1.1 保留 `db` 并把覆盖路径由单文件放宽到整个 `integrations/`。
 
 ### 4.2 跨代码范围
 
+#### 4.2.1 工程、测试与构建（10 项）
+
 | scope | 覆盖路径 | 示例 header |
 |---|---|---|
-| `tests` | `tests/unit/`、`tests/integration/`、`tests/smoke/`、`tests/conftest.py` | `test(tests): live_db fixture 在环境缺失时改为 skip` |
-| `eval` | Phase 2+ `evaluation/` 目录与 `[EVAL]` 文档关联代码 | `test(eval): 增加 5 条 biz_dws 基线问题` |
-| `ci` | `.github/workflows/`、`.github/PULL_REQUEST_TEMPLATE/` | `infra(ci): 引入 ruff 检查到 PR 工作流` |
+| `tests` | `tests/` 下 `bdd/` `contract/` `eval/` 以外（`unit/` `integration/` `smoke/` `fixtures/` `conftest.py`） | `test(tests): live_db fixture 在环境缺失时改为 skip` |
+| `bdd` | `tests/bdd/` + `capabilities/**/behavior.feature` | `test(bdd): safe-sql 补 blocked-keyword scenario` |
+| `contract` | `capabilities/**/contracts/` + `tests/contract/` | `test(contract): docker contract 增加 compose-config 校验` |
+| `eval` | `tests/eval/` 与 `[EVAL]` 关联代码 | `test(eval): 增加 5 条 biz_dws 基线问题` |
+| `ci` | `.github/`（`workflows/` / `ISSUE_TEMPLATE/` / PR 模板 / `dependabot.yml`） | `infra(ci): 引入 ruff 检查到 PR 工作流` |
 | `deps` | `pyproject.toml`、`uv.lock` | `infra(deps): 升 langgraph 到 1.1.9` |
-| `infra` | 跨领域兜底（`scripts/`、`.env.example`、Dockerfile 等无更精确 scope 的基础设施变更） | `infra(infra): 新增 scripts/setup-env.ps1` |
+| `docker` | `docker/`、`.dockerignore` | `infra(docker): compose 增加 test overlay` |
+| `scripts` | `scripts/`（含 `scripts/sdd/`） | `infra(scripts): 新增 setup-env.ps1` |
+| `claude` | `.claude/`（`settings.json` / `skills/` / `hooks/` / `scripts/`）、`.mcp.json`、`.claudeignore` | `docs(claude): flow-intake skill 补 grilling 段` |
+| `agents` | AI-agent 契约与生成投影面：`AGENTS.md`（根 + 嵌套）、`.agents/`、`.codex/`、`.agents.lock.json` | `docs(agents): 投影清单改指 manifest` |
+
+#### 4.2.2 文档与治理（10 项）
+
+| scope | 覆盖路径 | 示例 header |
+|---|---|---|
+| `sdd` | `sdd/`（kernel：`lifecycle` / `gates` / `workflows/` / `adapters/`） | `docs(sdd): gates.md 注册 check-stale-docs 行` |
+| `policies` | `policies/` | `docs(policies): ci-gates §4.1 提升为原生条文` |
+| `decisions` | `decisions/` + `archive/decisions/` | `docs(decisions): ADR-038 转 accepted` |
+| `plans` | `plans/`（`[PLAN]` / `[INTAKE]`） | `docs(plans): flip docker-build-gate-flip 为 completed` |
+| `capabilities` | `capabilities/`（其 `contracts/` 与 `evidence/` 另有 scope） | `docs(capabilities): data-agent spec.yml 补 REQ-005` |
+| `evidence` | `evidence/` + `capabilities/**/evidence/` | `docs(evidence): 补 2026-08 CI 审计账本` |
+| `rule` | `docs/rule/`（`[STANDARD]`）、`docs/_templates/` | `docs(rule): 重建 commit scope 白名单` |
+| `guide` | `docs/guide/`、`docs/infrastructure/**`（含 `[RUNBOOK]`）、`docs/_baselines/` | `docs(guide): Developer_Onboarding 补 §7 Studio 走查` |
+| `glossary` | `docs/glossary/`、`GLOSSARY.md` | `docs(glossary): 补上游仓术语归属段` |
+| `archive` | `archive/`（归档仪式本身；被归档内容的领域 scope 另计） | `docs(archive): 迁 v2.2 trio 入 archive/rule` |
+
+#### 4.2.3 兜底（1 项）
+
+| scope | 覆盖路径 | 示例 header |
+|---|---|---|
+| `infra` | 无更精确 scope 的基础设施面：仓库根 `config/`（secrets pipeline）、`.env.example`、`langgraph.json`、`.gitignore` / `.gitattributes` 等 | `infra(infra): .gitignore 排除 .worktrees/` |
+
+> **命名冲突提示**：scope `config` 指 **`src/mj_agent/config.py`**（应用配置模型），**不是**仓库根的 `config/` 目录（secrets pipeline）。后者归 `infra`。
 
 ### 4.3 Scope 约束
 
-mj-agent 通用约束：
+mj-agent 通用约束（后三条为 v1.1 新增，各附实测证据）：
 
-- **`docs` 仅作 type 使用，不得作为 scope**。文档相关 scope 应使用具体子系统（如 `docs(skill): ...`、`docs(db): ...`）；若文档跨子系统，省略 scope：`docs: 更新 README`
-- 一次 commit 只能有一个 scope
+- **`docs` 仅作 type 使用，不得作为 scope**。文档改动应取所在区域的 scope（`docs(sdd)` / `docs(rule)` / `docs(plans)`）；若跨区域，省略 scope：`docs: 更新 README`。*（历史误用 3 次）*
+- **不得以 type 作 scope**。`refactor` / `test` / `feat` 等属 §3 的 type 命名空间，不是 scope。*（历史上 `refactor` 被误用作 scope **25 次**，为单项最多的违规）*
+- **不得以项目阶段 / 里程碑作 scope**。阶段信息写进 summary 或 body，不占 scope 位。*（`stage-e` 13 次 + `phase0` / `phase-0.5` 各 1 次）*
+- **一次 commit 只能有一个 scope**。`type(a)(b):` 的双括号形式不合规。*（Dependabot 早期产出的 `maintain(infra)(deps)` 属此类；其 `commit-message.prefix` 已于 2026-08-05 `aade0c2` 修正为 `infra`）*
 - 真正混合无主导 scope 时，省略：`feat: <summary>`
 
 ### 4.4 多范围规则
@@ -170,15 +217,46 @@ mj-agent 通用约束：
 | 所有文件在同一子系统 | 使用该子系统 scope |
 | 跨子系统但同一层（如多个 SQL 工具） | 使用层 scope（如 `sql`） |
 | 基础设施 + 关联文档 | 使用基础设施 scope（如 `ci` / `deps`） |
+| `.claude/**` 与 `.github/**` 混合面 | 省略 scope |
+| 文档跨多个治理目录（如同时改 `sdd/` 与 `policies/`） | 省略 scope |
 | 真正混合，无主导 scope | 省略 scope：`feat: <summary>` |
 
 ### 4.5 引入新 scope 的规则
 
-scope 列表是封闭白名单。引入新 scope 必须通过修订本 STANDARD（state: active 后变更需要 minor 版本号），常见触发：
+scope 列表是封闭白名单。引入新 scope 必须通过修订本 STANDARD（`state: active` 后变更需要 minor 版本号），常见触发：
 
-- `src/mj_agent/` 下新增 top-level 模块目录
-- 新增独立子系统（如 Phase 2 的 `gateway`、Phase 1 的 `memory`）
-- 跨仓库契约目录（如 Phase 0.5 的 `docs/contracts/`）
+- `src/mj_agent/` 下新增 top-level 模块目录或顶层 `.py` 模块
+- git 跟踪的顶层目录新增
+- 新增独立子系统（如 Phase 2 的 `gateway`）
+- 跨仓库契约目录
+
+> **责任归属（v1.1 新增，本节的关键补丁）**：满足上述任一触发时，**由引入该目录 / 子系统的那个 PR 同批更新 §4.1-§4.2 表格**，不得留作无主待办。
+>
+> **教训来源**：v1.0 的本节已把「Phase 1 的 `memory`」明列为触发条件，而 `src/mj_agent/memory/` 落地后 scope **从未加入** —— 规范预写了自己的扩展触发，扩展却因无人负责而从未发生，`memory` 只能以野生 scope 形式出现。**触发条件不绑定责任人，等于触发条件不会被执行。**
+
+### 4.6 历史别名映射（v1.1 新增）
+
+v1.0 时期产生的野生 scope 按下表归并。**新提交一律使用右列的正式 scope**；本表仅供阅读历史 commit 与迁移期对照，不扩大白名单。
+
+| 历史写法 | 正式 scope | 说明 |
+|---|---|---|
+| `plan` | `plans` | 取目录名本身（历史上单复数各 20 次，完全对半分裂） |
+| `capability` | `capabilities` | 同上（6 : 2） |
+| `adr` | `decisions` | 目录名为 `decisions/`（4 : 1） |
+| `skills`、`safe-sql` | `skill` | 指 `src/mj_agent/skills/` 下的 runtime skill |
+| `prompts` | `prompt` | |
+| `mcp`、`hooks`、`setup`、`skill-index` | `claude` | 均落在 `.claude/` 或 `.mcp.json` 面。**注意 `skill-index` 指 `.claude/skills` 索引，不是 `skill`** —— `skill` scope 专指 `src/mj_agent/skills/` |
+| `unit` | `tests` | |
+| `guardrail` | `sql` | |
+| `runbook` | `guide` | `docs/runbook/` 并不存在；RUNBOOK 实住 `docs/infrastructure/**` |
+| `governance` | `policies` | 文档治理规则面（个别历史用例实际落在 `docs/infrastructure/`，按实际路径取 `guide`） |
+| `adapter`、`sdd-adapter`、`metrics`、`meta` | `sdd` | `metrics` 指 SDD 结构度量报告；`meta` 指已归档的 Meta framework，其治理内容已并入 kernel |
+| `workflow` | `ci` **或** `claude` | **该别名一词两义**：`ci(workflow)` 指 `.github/workflows/`；`docs(workflow)` 指 `.claude/skills/` 的 flow 家族。按实际改动路径二选一 |
+| `template` | `rule` | `docs/_templates/`，已并入 `rule` 覆盖路径 |
+| `env`、`scaffold` | `infra` | `.env.example` / `.gitignore` 等根级基础设施 |
+| `changelog` | 省略 scope | 项目根 5 文件不构成 scope 区域 |
+
+> **单复数规则**：一律与目录名本身一致。白名单内不得同时出现同一概念的单复数两形。
 
 ---
 

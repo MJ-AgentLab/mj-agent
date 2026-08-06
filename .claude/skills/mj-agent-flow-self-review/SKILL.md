@@ -115,7 +115,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 2 | 已读真实数据来源 / 列名 / 数据流（biz_catalog + find_biz_context），未加未要求的预处理 | mj-agent CLAUDE.md "Data boundary" |
 | 3 | 无硬编码敏感信息 / IP / 密码 / 绝对路径 / 残留调试代码 / `.env` / `secrets.enc` | 通用 |
 | 4 | 文档同步：canonical / working / INDEX / CLAUDE.md allowlist | documentation §7.1（4 类 allowlist）+ §7.2（tri-track 三段分组） |
-| 5 | Commit message 符合 `<type>(<scope>): <summary>` v1.0 规范 + 12 scope 闭合 allowlist | Commit Convention v1.0 |
+| 5 | Commit message 符合 `<type>(<scope>): <summary>` v1.1 规范 + 35 scope 闭合 allowlist（且未用 type / 项目阶段当 scope，per §4.3） | Commit Convention v1.1 |
 | 6 | Branch × commit type 矩阵正确（5 branch × 7 type；mj-agent 不含 optimization） | Commit Convention §5.2 |
 | 7 | scope-drift Severity = None / Low（如 ≥ Medium，必先 HITL） | mj-agent-flow-scope-drift 输出 |
 | 8 | 本地验证段 ≠ AI 自检段（execution-loop §6 严格不混用） | self-review §3 |
@@ -231,7 +231,7 @@ python scripts/diff_biz_schema.py
 - [x] 2. 真实数据来源
 - [x] 3. 无敏感信息
 - [x] 4. 文档同步
-- [x] 5. Commit message v1.0 规范 + 12 scope allowlist
+- [x] 5. Commit message v1.1 规范 + 35 scope allowlist
 - [x] 6. Branch × commit type
 - [x] 7. scope-drift OK
 - [x] 8. 双段不混用
@@ -276,7 +276,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §6（Rule 5a/5b/5c/5d + Rule 11/12 mj-agent 专属）
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §6（双段约束；实操矩阵见 §5）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]]（type/scope 矩阵）
+- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.1]]（type/scope 矩阵）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
 - `.claude/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）
 - `.claude/skills/mj-agent-git-commit/SKILL.md`（Stage 12 子例程）
