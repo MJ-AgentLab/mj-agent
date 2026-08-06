@@ -6,10 +6,13 @@ summary: >-
   定义「是 canonical」，导致缺失 frontmatter 的文档静默退出 gate 范围而非报错；改为
   SCAN_ROOTS 下所有 .md 一律要求 frontmatter、SKIP_PATH_PARTS 承载显式例外，
   并补齐该脚本此前完全缺失的单元测试（含关键负向测试）。消费者 = issue #429
+  （PR #431 merged `08d53bb`，#429 CLOSED；实施中另发现同类第二例 UTF-8 BOM 与第三例不可读文件，
+  一并封堵）
 owner: ranzuozhou
 created: 2026-08-05
 updated: 2026-08-05
-state: active
+completed: 2026-08-05
+state: completed
 version: 1.0
 track: engineering-workflow
 ---
