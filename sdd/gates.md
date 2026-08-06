@@ -2,7 +2,7 @@
 type: sdd-kernel
 artifact: gates
 state: active
-version: 0.4
+version: 0.5
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-06
@@ -63,7 +63,7 @@ ai_visibility: source-of-truth
 | V11 Codex-MCP-Projection | `scripts/sdd/agents_sync.py --check --surface mcp` | emitter B 产物 ↔ 源一致性（`.codex/config.toml` ↔ `.mcp.json` × manifest `mcp` 三档 + `codex.posture` 转写 + lock 保留键；生成/校验零 env 解析，fork/无 secrets 不假红） | **blocking@ci（day-1 per D-016，不设 warning 观察期；`ci-blocking-gate-toggle` Owner 执行记录 = issue #330 comment 2026-07-14；CI 首挂锚 `b8f43d3` 2026-07-14 17:08 +0800 #330）**。**豁免注记**：day-1 blocking 未走 `policies/ci-gates.md` §4:41 的「切换前 1 周 DRI dry-run」，属 D-016「信任面不设观察期」的**明确豁免**而非疏漏（plan §11.2(4) + §18 D-016 补记）。翻转机制不适用（既无 `continue-on-error` 键也无 `--fail-on`）。真值注记：`test_real_tree_mcp_projection_in_sync` 真实树钉线双保险（同族）|
 | docker-bdd-scenario-check | `check_bdd_scenario_trace.py --scope docker` | docker behavior.feature | covered-by(G19)（CI 跑 `--scope full` 全集；docker 子集为其真子集）|
 | docker-tdd-contract-test | `check_tdd_refactor_contract.py`（未建）| docker contract change | deferred(M6-FU-G27-G28-TDD-REFACTOR-CONTRACT-DEFER)（与 G27/G28 同执行体家族）|
-| docker-image-build | `docker build -f docker/Dockerfile`（ci.yml `docker-build` job；非 G/V spec-gate，属 CI infra 构建门，同 Tests/Contract 步）| Dockerfile 实际可构建（#294 防复发第二层；V5 只 lint 不 build）| **blocking@ci（翻转 = #385，2026-08-06；`ci-blocking-gate-toggle` Owner 执行记录 = issue #385 comment）**。落地时为 warning 首发（#296 per `policies/ci-gates.md` §4.1）；**CI 首挂锚 `3faaec7` 2026-07-23 15:55:16 +0800 #296**——pickaxe 判据用 run 命令片段（`-S "docker/Dockerfile"`），详注册工件 §3.1。观察期按 §4.1.1 注册于 `plans/[PLAN]_m-fu-docker-build-gate-flip.md`（**本仓首个 path-triggered gate**，故适用 §4.1.4 三态口径：`skipped` = 未触发中性、step 不存在 = 剔除）。资格实测（2026-08-06）：锚 +≥14 自然日 / head-SHA 去重连续 clean **33** 次（≥20）/ violation 0 / streak 重置 0 / 零 waiver；证据账本 `evidence/ai-context-audit/2026-08_ci_audit.md`。**翻转机制**：仅 blocking 轴 job-level `continue-on-error: true→false`（**无 `--fail-on` 旗标**，与 V10 同型）。path-scoped 到 Dockerfile 构建输入面〔`docker/` + `.dockerignore` + `pyproject.toml`/`uv.lock` + `README.md` + `ci.yml`；`src/` 有意排除，由 ci job compileall/ruff/mypy/pytest 兜底〕，diff base 不可解时 fail-open 构建。**边界注记**：本 gate 不在 `protect-develop`/`protect-main` 的 required contexts 内（两者各只要求 `ci`），翻转令其变红但不机械锁死 merge 按钮；加入 required contexts = 可选硬化，非翻转前置|
+| docker-image-build | `docker build -f docker/Dockerfile`（`.github/workflows/docker-build.yml` `docker-build` job——**#438 起独立 workflow 仅 `pull_request` 触发**，原居 ci.yml；非 G/V spec-gate，属 CI infra 构建门，同 Tests/Contract 步）| Dockerfile 实际可构建（#294 防复发第二层；V5 只 lint 不 build）| **blocking@ci（翻转 = #385，2026-08-06；`ci-blocking-gate-toggle` Owner 执行记录 = issue #385 comment）**。落地时为 warning 首发（#296 per `policies/ci-gates.md` §4.1）；**CI 首挂锚 `3faaec7` 2026-07-23 15:55:16 +0800 #296**——pickaxe 判据用 run 命令片段（`-S "docker/Dockerfile"`），详注册工件 §3.1。观察期按 §4.1.1 注册于 `plans/[PLAN]_m-fu-docker-build-gate-flip.md`（**本仓首个 path-triggered gate**，故适用 §4.1.4 三态口径：`skipped` = 未触发中性、step 不存在 = 剔除）。资格实测（2026-08-06）：锚 +≥14 自然日 / head-SHA 去重连续 clean **33** 次（≥20）/ violation 0 / streak 重置 0 / 零 waiver；证据账本 `evidence/ai-context-audit/2026-08_ci_audit.md`。**翻转机制**：仅 blocking 轴 job-level `continue-on-error: true→false`（**无 `--fail-on` 旗标**，与 V10 同型）。path-scoped 到 Dockerfile 构建输入面〔`docker/`（#438 起剔除其下 `*.md` 纯文档——COPY 面下 `docker/` 仅 `entrypoint.sh`）+ `.dockerignore` + `pyproject.toml`/`uv.lock` + `README.md` + workflow 自身（`docker-build.yml`；原自引用 `ci.yml` 随迁）；`src/` 有意排除，由 ci job compileall/ruff/mypy/pytest 兜底〕，diff base 不可解时 fail-open 构建。**#438 触发面收窄**（2026-08-06）：迁出 ci.yml 后 push run 不再产生本 job——根除新分支首推 all-zeros fail-open 无条件构建、及同一 head SHA push/PR 双 run 下绿 skip 盖住红构建的掩蔽（账本 §6 / flip-plan §7 记录的两个暴露面）；§4.1.4 三态口径不变，审计度量改用 `gh run list --workflow docker-build.yml`。**边界注记**：本 gate 不在 `protect-develop`/`protect-main` 的 required contexts 内（两者各只要求 `ci`），翻转令其变红但不机械锁死 merge 按钮；加入 required contexts = 可选硬化，非翻转前置|
 
 ## §3 BDD/TDD Gate（G19-G28）
 
@@ -124,6 +124,9 @@ Scenarios — Canonical 10-Enum` 的 in-source 子集（前 4 行）：
 
 ---
 
+> *v0.5（2026-08-06）：#438 — §2 `docker-image-build` 行触发面收窄：job 迁独立 workflow
+> `.github/workflows/docker-build.yml` 仅 `pull_request` 触发（push run 不再产生本 job）+
+> 触发路径剔除 `docker/` 下 `*.md` 纯文档；posture 不变（非 `ci-blocking-gate-toggle`）。*
 > *v0.4（2026-08-06）：#385 — §2 `docker-image-build` 行 posture `warning@ci` → **`blocking@ci`**
 > （`ci-blocking-gate-toggle`；观察期注册工件 `plans/[PLAN]_m-fu-docker-build-gate-flip.md`，
 > 账本 `evidence/ai-context-audit/2026-08_ci_audit.md`；streak 33 / 阈值 20、violation 0）。*
