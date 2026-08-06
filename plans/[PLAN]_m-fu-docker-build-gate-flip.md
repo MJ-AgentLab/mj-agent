@@ -142,8 +142,14 @@ GitHub-Actions 版本升级会改 `ci.yml` = 触发路径 → 产生**真实**�
    Owner 执行记录指针）。
 4. `sdd/gates.md:66` `docker-image-build` 行 posture → `blocking@ci`；`:127` 的 v0.3 dated
    脚注**不回改**（历史记录）。
-5. `docker/CLAUDE.md:80` / `:85` posture 表述 → 同步（**#385 的 Scope/AC 现未覆盖此文件，须补**）。
-   `docker/CLAUDE.md:86` 的 Registry 指针**不动**。
+5. `docker/CLAUDE.md:88` / `:93` posture 表述 → 同步（**#385 的 Scope/AC 现未覆盖此文件，须补**）。
+   `docker/CLAUDE.md:94` 的 Registry 指针**不动**。
+   > **行号更正（2026-08-06 翻转时实测，#385）**：本条原写 `:80` / `:85` / `:86` —— 那是本工件
+   > 注册时（2026-08-04）的行号。#413/PR#415 `9eb9183` 向 `docker/CLAUDE.md` 前部加了内容，
+   > 三处各**下移 8 行**。行号型指针会随无关改动腐化，复核时以内容锚为准。
+   > 同理 `docker/CLAUDE.md:65`「该面无 `permissions.ask` 条目、**无审批类 CI gate**」一句
+   > **不改** —— 它陈述的是 `docker/Dockerfile` 外部 registry 镜像引用面的审批载体；
+   > `docker-build` 即便翻为 blocking 也仍只验「镜像可构建」、不判 Owner 拍板，故该句翻转后依然成立。
 6. 产出 `evidence/ai-context-audit/2026-08_ci_audit.md`（violation 数 + 影响范围 + 分列
    「真实执行绿 / 未触发」两计数 + §5.2 披露 + 无关 job 失败登记）。
 7. 勾选 `.github/PULL_REQUEST_TEMPLATE.md` 的 `ci-blocking-gate-toggle` 项，指向 #385 的
