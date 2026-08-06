@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.4
+version: 0.5
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-04
+updated: 2026-08-06
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -122,7 +122,10 @@ gh run list --workflow ci.yml --limit 100 \
 > （§4.1.2 / §4.1.3 为逐字提升，不含新判据），故单独走拍板。
 > §4.1.3 成文时面对的 gate（V8/V9/V10）**每 run 必执行**，故未处理「gate 未被触发」的情形。
 > `docker-build`（#296/#385）是首个 **path-triggered** gate：job 每 run 都起，但其构建 step 仅在
-> 构建相关路径变更时执行，否则 `skipped`。
+> 构建相关路径变更时执行，否则 `skipped`。（成文时该 job 居 `ci.yml`、push/PR run 皆起；
+> **#438 起迁独立 workflow `.github/workflows/docker-build.yml` 仅 `pull_request` 触发**——
+> push run 不再产生该 job；本节三态口径不变，该 gate 审计度量改用
+> `gh run list --workflow docker-build.yml`。）
 
 对**非每 run 必执行**的 gate，§4.1.3「计数条件」按下表细化：
 

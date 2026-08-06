@@ -1,0 +1,116 @@
+# ===== #296 docker-build gate (BLOCKING since #385; own workflow since #438) =====
+# Incident #294: a Dependabot base-image minor bump broke `docker build` and went
+# undetected for 8 weeks because no CI job actually builds the image (V5 docker
+# contracts only LINT the Dockerfile/compose; smoke is local-only). This job builds
+# docker/Dockerfile so an unbuildable image fails in the PR — the second layer after
+# the .github/dependabot.yml python semver-major/minor ignore-list (first layer).
+#
+# Posture: BLOCKING (job-level continue-on-error: false) — flipped 2026-08-06 by #385 as a
+# ci-blocking-gate-toggle HITL action (policies/ai-agent.md §4). It landed warning-first on
+# 2026-07-23 per repo precedent (V8/V9/V10, G14/G15) + policies/ci-gates.md §4.1, then ran a
+# registered observation window (plans/[PLAN]_m-fu-docker-build-gate-flip.md): anchor 3faaec7
+# + ≥14 calendar days AND a head-SHA-deduped streak of 33 clean executions / 0 violation
+# (threshold 20). Evidence ledger: evidence/ai-context-audit/2026-08_ci_audit.md; Owner
+# execution record: issue #385 comment. Registry: sdd/gates.md §2 `docker-image-build` row.
+# Rollback = the continue-on-error key back to `true` (one line).
+#
+# Trigger surface (#438, narrowed from the original ci.yml placement): pull_request ONLY.
+# When this job lived in ci.yml it also ran on push events, where a new branch's first
+# push has an all-zeros diff base -> fail-OPEN built unconditionally regardless of the
+# change, and the resulting push/PR run pair on one head SHA let a later-starting green
+# skip mask a red build in startedAt-latest dedup (ledger §6 + flip-plan §7 exposures).
+# PR events always carry a resolvable base, and a single run per head SHA removes the
+# masking window. The job itself still starts on every PR (no `paths:` filter) so the
+# check stays present — only the build step is conditional; `skipped` stays the neutral
+# outcome per policies/ci-gates.md §4.1.4.
+#
+# Scope (docker build inputs): the job only BUILDS when a build-relevant path changed —
+# the Dockerfile's actual inputs: docker/** EXCEPT docker/**/*.md (#438: the COPY face
+# under docker/ is entrypoint.sh alone — docker/{AGENTS,CLAUDE,README}.md are pure docs
+# and cannot affect buildability), .dockerignore (the `.` build-context filter),
+# pyproject.toml + uv.lock (dep set), README.md (COPYd in the builder stage), and this
+# workflow file (so gate edits re-validate the build). src/ is intentionally OUT of
+# scope (backstopped by the ci job's compileall/ruff/mypy/pytest) per the #296
+# trigger-scope decision. The interpolated values (base/head SHAs) are git object ids,
+# not attacker-controlled text — no ${{ }} shell-injection surface.
+#
+# Fail-OPEN: a build-reliability gate must never SKIP on uncertainty. When the diff base
+# is missing/unresolvable (a force-pushed/orphaned base that fetch-depth:0 can't reach),
+# the gate builds unconditionally rather than silently skipping. PR diffs use three-dot
+# (merge-base) so a PR is scoped to its own changes, not base-side commits that landed
+# after the branch point.
+#
+# apt mirror: passes --build-arg APT_MIRROR_URL=deb.debian.org. The Dockerfile defaults
+# to the tuna mirror (mainland build reliability); GitHub-hosted runners reach
+# deb.debian.org (Fastly) reliably, so CI pins it to avoid tuna-from-abroad flakiness
+# (false reds). The gate tests Dockerfile BUILDABILITY, not mirror reachability.
+name: docker-build
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  docker-build:
+    name: docker-build
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - name: Checkout
+        # fetch-depth: 0 so the changed-files diff below can resolve the base commit.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Detect build-relevant changes
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          # Fail OPEN when the diff base is missing/unresolvable (force-pushed / orphaned
+          # base fetch-depth:0 can't reach). Never SKIP on uncertainty — this is a
+          # build-reliability gate. pull_request events always populate base/head, so the
+          # empty/all-zeros arms are pure paranoia kept from the ci.yml era.
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
+             || ! git cat-file -e "${base}^{commit}" 2>/dev/null \
+             || ! git cat-file -e "${head}^{commit}" 2>/dev/null; then
+            echo "Diff base unresolvable (force-push / missing object) — building unconditionally."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Three-dot (merge-base) scopes to the PR's OWN changes. No `|| true`: both
+          # objects are verified present above, so a diff failure is a real error →
+          # fail OPEN (build) rather than mask it into a silent skip.
+          echo "Diff range: ${base}...${head}"
+          if ! changed="$(git diff --name-only "${base}...${head}")"; then
+            echo "git diff failed unexpectedly — building unconditionally."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf 'Changed files:\n%s\n' "$changed"
+          # docker/**/*.md is stripped BEFORE the build-input match (#438): pure docs
+          # under docker/ are not build inputs and must not trigger (or re-arm) a build.
+          if printf '%s\n' "$changed" | grep -Ev '^docker/.*\.md$' \
+               | grep -Eq '^(docker/|\.dockerignore$|pyproject\.toml$|uv\.lock$|README\.md$|\.github/workflows/docker-build\.yml$)'; then
+            echo "Build-relevant path changed — running docker build."
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No build-relevant change — skipping build."
+            echo "relevant=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build image (no push)
+        if: steps.detect.outputs.relevant == 'true'
+        # No --push / registry: a successful build is the entire signal. deb.debian.org
+        # apt mirror for reliable GitHub-runner connectivity (see block comment above).
+        run: |
+          docker build \
+            -f docker/Dockerfile \
+            --build-arg APT_MIRROR_URL=deb.debian.org \
+            --tag "mj-agent:ci-${GITHUB_SHA}" \
+            .

@@ -88,15 +88,20 @@ docker compose --env-file .env -f docker/compose.yaml ps
 - **docker-image-build** — **BLOCKING** (#296 warning-first 2026-07-23 → #385 flip 2026-08-06;
   `docker-build` job actually runs
   `docker build -f docker/Dockerfile` so an unbuildable image fails the PR — #294
-  防复发第二层; V5 只 lint 不 build). Path-scoped 到 Dockerfile 构建输入面（`docker/**` +
-  `.dockerignore` + `pyproject.toml` + `uv.lock` + `README.md` + `ci.yml`；`src/` 有意排除，
+  防复发第二层; V5 只 lint 不 build). **#438 起独立 workflow
+  `.github/workflows/docker-build.yml` 仅 `pull_request` 触发**（push run 不再产生本 job——
+  根除首推 all-zeros fail-open 无条件构建与同 SHA 双 run 绿 skip 掩蔽）. Path-scoped 到
+  Dockerfile 构建输入面（`docker/**` 但剔除其下 `*.md` 纯文档〔COPY 面下 `docker/` 仅
+  `entrypoint.sh`〕+ `.dockerignore` + `pyproject.toml` + `uv.lock` + `README.md` +
+  `docker-build.yml` 自身；`src/` 有意排除，
   由 ci job compileall/ruff/mypy/pytest 兜底），diff base 不可解时 fail-open 构建; CI 用
   `--build-arg APT_MIRROR_URL=deb.debian.org`. 翻转依据 = 观察期注册工件
   `plans/[PLAN]_m-fu-docker-build-gate-flip.md` + 账本
   `evidence/ai-context-audit/2026-08_ci_audit.md`（streak 33 / 阈值 20、violation 0）；
   Owner `ci-blocking-gate-toggle` 执行记录 = issue #385 comment.
   Registry: `sdd/gates.md` §2 `docker-image-build` 行.
-- Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
+- Truth source: `.github/workflows/ci.yml`（V5/V6 所在）+ `.github/workflows/docker-build.yml`
+  （docker-image-build 所在）(per-job `continue-on-error` 状态)
 
 ## Anti-patterns
 
