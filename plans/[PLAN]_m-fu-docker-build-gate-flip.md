@@ -8,8 +8,9 @@ summary: >-
   消费者 = issue #385（warning→blocking 翻转），本工件随该翻转落地而闭合
 owner: ranzuozhou
 created: 2026-08-04
-updated: 2026-08-04
-state: active
+updated: 2026-08-06
+completed: 2026-08-06
+state: completed
 version: 1.0
 track: engineering-workflow
 ---
@@ -195,3 +196,31 @@ grep -rn "docker-build\|docker-image-build" plans/     # 期望：有命中（�
 `state: active` → `completed` 的条件 = **#385 翻转落地**（或 Owner 明示放弃翻转）。
 闭合时补 `completed:` 字段，并在此处记录：实际翻转日期 / 最终 streak 计数 / 账本路径 /
 Owner 执行记录 comment 链接。
+
+### 10.1 闭合记录（2026-08-06）
+
+**条件已满足 —— #385 翻转已落地，本工件闭合。**
+
+| 项 | 值 |
+|---|---|
+| 实际翻转日期 | **2026-08-06**（执行时刻 02:50Z） |
+| 落地 PR | [#434](https://github.com/MJ-AgentLab/mj-agent/pull/434)，merge commit `fd881ac`（2026-08-06T03:18:58Z） |
+| 执行 issue | [#385](https://github.com/MJ-AgentLab/mj-agent/issues/385) —— 已 CLOSED-COMPLETED |
+| 最终 streak 计数 | **33**（阈值 20，余量 +13）；violation **0** / streak 重置 **0** / 零 waiver |
+| 计数明细 | 窗口 61 run → 35 distinct head-SHA → clean 33 / violation 0 / 中性 1（`1964db4`）/ 剔除 1（`1ac2118`） |
+| 账本路径 | `evidence/ai-context-audit/2026-08_ci_audit.md` |
+| Owner 执行记录 | https://github.com/MJ-AgentLab/mj-agent/issues/385#issuecomment-5199940202 |
+
+**日历腿读法（如实留痕）**：翻转执行于 2026-08-06T02:50Z，**早于严读（14×24h）门槛
+2026-08-06T07:55:16Z 约 5h05m**。Owner 2026-07-24 曾拍板取严读；**2026-08-06 改判改采
+§5.1 字面的日期算术读法（`2026-07-23 + 14 天 = 2026-08-06`）并授权即时翻转**。
+账本 §1 与执行记录 comment 均已明载，**未**宣称两种读法都满足。
+
+**§9 Verification 勾项的最终状态**：三项均已满足 —— 本工件存在且 `grep plans/` 有命中；
+`policies/ai-agent.md:98`「M-FU plan 必先 register」前置满足；注册 PR（#403/#404）自身的 diff
+不含 `.github/workflows/**`。（**注**：末项约束的是**注册 PR**，不是翻转 PR —— 翻转 PR #434
+当然改 `ci.yml`，那正是它的目的。）
+
+**§4 快照与 §5.1「现状」列的时效说明**：二者是 **2026-08-04 注册时**的基线（16/20、12/14），
+按 §4 抬头「实测勿外推」**不**充当资格证明；正式资格依据 = 上表的 flip-time 实测（33/20）
+与账本。此处不回改历史快照数字。
