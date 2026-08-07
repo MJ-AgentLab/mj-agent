@@ -190,7 +190,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 - **不要** 跳过 B 风味识别（in-source canonical 改动 auto-High 是 mj-agent 专属硬约束）
 - **不要** 用 `develop..HEAD` 算 diff（用 merge-base..HEAD 避免 develop advance 假 diff）
 - **不要** 在 unclassified > 50% 时给 Low（自动升 High，重新 intake）
-- **不要** 把 SPEC 缺漏当成 drift 推（SPEC 缺漏归 SPEC Delta，由 self-review §4.9 Rule 5d 处理）
+- **不要** 把 SPEC 缺漏当成 drift 推（SPEC 缺漏归 SPEC Delta，由 self-review（execution-loop §6 检查项 5d）处理）
 
 ## Handoff
 

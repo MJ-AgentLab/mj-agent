@@ -209,7 +209,7 @@ per [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §决策点
 
 - **不要** 直接写完整 Plan body（那是 flow-plan 的职责；本 skill 仅 §7.1 子集）
 - **不要** 跳过 Q-05/Q-12 歧义判断（混合内容会导致 reviewer 反复挑战类型）
-- **不要** 在 B 风味改动场景跳过 EVAL backlog 备注（违反 §4.15 Rule 11 自动开单）
+- **不要** 在 B 风味改动场景跳过 EVAL backlog 备注（违反 execution-loop §7.3 Rule 11 自动开单）
 - **不要** 把 mj-agent 模块 boundary 跨越当作"shared"track（默认应优先按 mj-agent 7 模块分类）
 
 ## Handoff

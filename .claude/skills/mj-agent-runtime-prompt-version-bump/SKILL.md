@@ -57,7 +57,7 @@ digraph bump {
 
   s5 [label="Step 5: Propose diff (待拍板)\n• body 改动\n• version bump (semver: minor/major)\n• eval_references 同步\n• model_binding 一致" shape=box];
 
-  s6 [label="Step 6: Impact analysis\n• §3.1 prompt-version-or-body-change 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket\n• Studio probe H1/H2/H3/R1/R2 影响\n• smoke test 影响" shape=box];
+  s6 [label="Step 6: Impact analysis\n• §3.1 prompt-version-or-body-change 自动 HITL\n• execution-loop §7.3 Rule 11 EVAL backlog ticket\n• Studio probe H1/H2/H3/R1/R2 影响\n• smoke test 影响" shape=box];
 
   s7 [label="Step 7: Output proposed diff\n+ HITL Questions" shape=diamond];
 

@@ -83,7 +83,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 | 可独立验证 | 每子任务有 grep / pytest / `mj-agent check` / Studio 探针命令验证 |
 | 依赖排序 | 拓扑顺序，前置先做 |
 | 命名一致 | Stage 8a / 8b / 8c... 编号便于跟踪 |
-| **风味识别**（mj-agent 专属） | 标注每子任务属于 §4.7 哪个风味：A 纯代码 / B in-source canonical 永远 HITL / C infra |
+| **风味识别**（mj-agent 专属） | 标注每子任务属于哪个实现风味（execution-loop §5 实现 3 风味）：A 纯代码 / B in-source canonical 永远 HITL / C infra |
 | **纵切优先**（leading word「纵切」/ tracer-bullet） | 拆多 PR/issue 时优先**端到端纵切**而非按层水平切——见下「纵切纪律」 |
 
 **纵切纪律（leading word「纵切」，per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）**：
@@ -155,7 +155,7 @@ docker compose -f docker/compose.yaml up -d / down
 
 ### 6.3 Stage 11 AI 自检 tie-in
 
-- §4.9 Rule 5a/5b/5c/5d 反向扫描判断
+- execution-loop §6 检查项 5a/5b/5c/5d 反向扫描判断
 - mj-agent 扩展：runtime SKILL.md / system.md / qcm_catalog.yaml 反向扫描
 - scope-drift Severity 预期值
 ```
@@ -170,7 +170,7 @@ docker compose -f docker/compose.yaml up -d / down
 - [ ] <每条 = scope §2 包含的一项动作 + 验证证据>
 - [ ] PR 通过 CI + review + merge
 - [ ] CHANGELOG.md [Unreleased] 已更新（feat/fix 时）
-- [ ] B 风味改动同步 EVAL backlog ticket（in-source canonical 改动；§4.15 Rule 11 自动开单）
+- [ ] B 风味改动同步 EVAL backlog ticket（in-source canonical 改动；execution-loop §7.3 Rule 11 自动开单）
 ```
 
 **关联**（Plan §8）：

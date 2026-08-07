@@ -54,7 +54,7 @@ digraph improve {
 
   s4 [label="Step 4: Propose diff (待拍板)\n• body 改动建议\n• frontmatter version bump?\n• eval_references 同步审查 (A11 transitional waiver)\n• Anti-patterns 段强化建议" shape=box];
 
-  s5 [label="Step 5: Impact analysis\n• 改动 stage 8 B 风味 触发\n• §3.1 runtime-skill-content-change 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket 自动开单" shape=box];
+  s5 [label="Step 5: Impact analysis\n• 改动 stage 8 B 风味 触发\n• §3.1 runtime-skill-content-change 自动 HITL\n• execution-loop §7.3 Rule 11 EVAL backlog ticket 自动开单" shape=box];
 
   s6 [label="Step 6: Output proposed diff\n+ HITL Questions for Domain Expert review" shape=diamond];
 
