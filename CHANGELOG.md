@@ -5,6 +5,28 @@
 
 ## [Unreleased]
 
+### Fixed — execution-loop 章节交叉引用系统性指错 + 新增 `kernel-section-refs` gate（#453）
+
+- **19 个活体文件 / 66 处交叉引用重指向 + 机器化兜底（`maintain`，branch
+  `maintain/453-loop-section-refs`）**：**根因** = kernel `sdd/workflows/execution-loop.md` 的 `§4`
+  在 M6 PR4 重构中**换义**——历史源 HITL_Prompt 的 `§4.1`-`§4.15` 是 per-stage prompt，kernel
+  的 Kernel home note 明写**不 re-port**（归 `.claude/skills/mj-agent-*` 本体），而 kernel `§4` 现为
+  「Stage → Skill 映射表」（port 自 HITL_Prompt **`§5`**）；被 re-port 的两节亦重编号
+  （`§4.8`→`§5`、`§4.9`→`§6`、`§4.15`→`§7`）。**改动**：(1) 35 处 `dangling-section`
+  （`§4.3/4.4/4.5/4.6/4.7/6.6/§11/§12` 等）按语义逐条重指向，per-stage prompt 一律改写为
+  「`§4.1` 的 Stage N 映射 + 历史源 HITL_Prompt `§4.X`」；`§11 self-review` 实为 **stage 号误作章节号**
+  （Stage 11 = AI Self-review，住 kernel `§6`）。(2) 31 处 `positional-hitl-index`（`必停 10/11/12/13`）
+  改引 canonical enum 名——`§3.1` 通用必停已从 9 增至 **12**，专属 4 项的位号早已从 10-13 漂到
+  **13-16**；`flow-intake` Step 8 同步补齐缺失的 3 条通用必停。(3) `flow-self-review` 的 `§6` 清单出处
+  按 kernel 真值订正（item 10 = version bump、item 11 = commit type/scope；原引「`§4.7` Rule 12」不存在）。
+  (4) 新增 **`scripts/check_loop_section_refs.py`** + 41 条 unit test，挂 `ci` job **warning-first**。
+  **不动**：写作「原 HITL_Prompt `§4.X`」的**正确归档署名**（据此 5 个 infra freeze skill 全部干净，
+  **无需 re-freeze / bump content hash**）；`CHANGELOG.md` / `plans/` / `evidence/` / `archive/` 等历史账本。
+  `flow-diagnose` 在 `.agents/` 投影白名单内，已同批 `agents_sync.py sync`（V10 绿）。
+  配套 `sdd/gates.md` v0.10→v0.11（新增 `kernel-section-refs` 行，明写语义盲区与账本排除面）+
+  `[STANDARD]_MJ_Agent_Skill_Authoring_Craft` v1.0→v1.1。**新增 warning gate ≠ posture 翻转**
+  （#444 判例），不触发 `ci-blocking-gate-toggle`。
+
 ### Added — memory checkpoint TTL 逐出（mechanism C；#386；ADR-038 可选叠加）
 
 - **`data-agent.memory-checkpointer` 新增 opt-in TTL 逐出（`feature/386-memory-ttl-eviction`；owning
