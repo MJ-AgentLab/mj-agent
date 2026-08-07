@@ -110,7 +110,7 @@ digraph author {
 3. **Start as `state: draft`** — All new docs enter review before authoritative.
 4. **Template adaptation allowed** — Sections rename/reorder OK，but **MUST** preserve: frontmatter / blockquote header / 关联文档段。
 5. **B 风味 永远 HITL** — `src/mj_agent/skills/**/SKILL.md` 或 `prompts/*.md` body 起草 / 修改必须经 `/mj-agent-runtime-*` propose → Owner 拍板 → apply（拍板后由 runtime skill 经 `ask` 门落盘）。这是 §3.1 必停 + ADR-034 propose→拍板→apply 约束。
-6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.2 §4.3.1 路径决策树）。项目根 markdown 5 件不写 frontmatter 不适用 track（per §2.6 例外 + §4.3.1 第 0 条）。
+6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.2 §4.3.1 路径决策树）。项目根 markdown 5 件不写 frontmatter 不适用 track（per §2.6 例外 + §4.3.1 第 0 条）；`capabilities/**` 亦不适用 track（capability-package ontology 豁免，per kernel §3.1 规则 9 / #451）。
 
 ## Track Decision（Meta v2.2 §4.3.1 path-to-track 决策树）
 
@@ -124,14 +124,18 @@ digraph author {
 5. 路径在 docs/{infrastructure,runbook,api}/ → code
 6. 路径在 docs/rule/ 但治"engineering 流程" → engineering-workflow
 7. 路径在 docs/rule/ 治文档/代码/数据 → code 或 shared
-8. 其他 → 默认 shared 并 PR body 论证
+8. 路径在 policies/ sdd/ decisions/ → 按主题选 track（显式许可：工程编排/agent 工具面 →
+   engineering-workflow；runtime 语义面 → agent；代码栈面 → code；跨轨或不确定 → shared；
+   无需 per-file PR body 论证）
+9. 路径在 capabilities/** → 不适用 track（capability-package ontology 豁免）
+10. 其他 → 默认 shared 并 PR body 论证
 ```
 
 > **SoT = `policies/documentation.md` §3.1**（Meta v2.2 §4.3.1 是已归档的历史源）；本段是投影，
 > 改判定必先改 kernel。规则 3 原列的 4 个 `docs/rule/` STANDARD 族 glob 已随 #449 删除 —— M6
-> PR4 / X5 后全部落空，删除对现存文件零行为 delta。⚠ 本树**不覆盖** SDD kernel 四目录
-> （`policies/` `sdd/` `decisions/` `capabilities/`），它们一律落规则 8 而实际按主题分流；
-> 缺口处置见 #451。
+> PR4 / X5 后全部落空，删除对现存文件零行为 delta。kernel 四目录的覆盖缺口已随 #451 落规则：
+> 规则 8 = `policies/ sdd/ decisions/` 按主题选值（显式许可），规则 9 = `capabilities/**`
+> 不适用 track（capability-package ontology 豁免；豁免条款全文见 kernel §3.1）。
 
 ## Directory Placement Rules（Meta v2.2 §3.5，加 0 号 + 项目根例外）
 
