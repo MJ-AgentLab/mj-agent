@@ -15,9 +15,10 @@ name: check-stale-docs (warning mode)
 #
 # Runs `scripts/find_stale_docs.py` against the PR diff. Detects
 # backtick-quoted refs to renamed / deleted files in:
-#   - docs/**/*.md
-#   - plans/**/*.md
-#   - CLAUDE.md / CHANGELOG.md / README.md
+#   - docs/**/*.md, plans/**/*.md
+#   - SDD kernel (#441): capabilities/ decisions/ policies/ sdd/ (*.md only)
+#   - root: README.md CONTRIBUTING.md CHANGELOG.md GLOSSARY.md CLAUDE.md
+#     plus AGENTS.md
 #
 # Output goes to GitHub Actions step summary as `::warning::` annotations.
 # Always exits 0 (never blocks PR merge).
@@ -27,14 +28,31 @@ on:
     branches:
       - develop
       - main
+    # Trigger face = rename-SOURCE paths (which diffs warrant a run). It is
+    # NOT the same set as the script's WALK_DIRS grep-TARGET face (#441):
+    # scripts/ and .github/ hold no governed .md, but governed docs
+    # backtick-reference them heavily -- live miss: #442, the PR that
+    # registered this gate, could not trigger it. Not exhaustive by design:
+    # any path NOT listed below never triggers -- tests/, config/, docker/,
+    # evidence/, archive/ and root non-.md files among them; the residual
+    # gap is registered in the sdd/gates.md §2 row.
     paths:
       - 'docs/**'
       - 'plans/**'
       - 'src/**'
       - '.claude/**'
+      - 'capabilities/**'
+      - 'decisions/**'
+      - 'policies/**'
+      - 'sdd/**'
+      - 'scripts/**'
+      - '.github/**'
       - 'CLAUDE.md'
       - 'CHANGELOG.md'
       - 'README.md'
+      - 'CONTRIBUTING.md'
+      - 'GLOSSARY.md'
+      - 'AGENTS.md'
 
 permissions:
   contents: read

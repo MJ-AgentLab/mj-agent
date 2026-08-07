@@ -9,8 +9,9 @@ identifiers) and the glossary file (which intentionally defines the
 upstream-system relationship).
 
 **Mode**: WARNING by default (exit 0 + print findings to stderr). This matches
-the find_stale_docs.py warning-mode pattern: 4-week observation window before
-upgrading to strict (blocking) mode. Set `MJ_AGENT_CHECK_REFS_STRICT=1` to
+the find_stale_docs.py warning-mode pattern (warning is that gate's long-term
+registered stance per ``sdd/gates.md`` §2; its former 4-week-to-blocking note
+was retired by #440). Set `MJ_AGENT_CHECK_REFS_STRICT=1` to
 fail-fast (exit 1) on any forbidden pattern; flip the workflow gate to require
 this once cleanup tail is complete.
 
