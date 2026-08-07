@@ -7,8 +7,8 @@ summary: >-
   policies/ai-agent.md §4 对 ci-blocking-gate-toggle 的「M-FU plan 必先 register」前置；
   与 gate 本体同批落地（出生即注册），消费者 = 将来的 warning→blocking 翻转 issue
 owner: ranzuozhou
-created: 2026-08-06
-updated: 2026-08-06
+created: 2026-08-07
+updated: 2026-08-07
 state: active
 version: 1.0
 track: engineering-workflow
@@ -44,7 +44,7 @@ dry-run，且**无**连续次数阈值）。
 | 注册项 | 值 |
 |---|---|
 | **gate 标识** | `sdd/gates.md` §2 行名 `check-commit-messages`；workflow 名 `check-commit-messages`；job 名 `check-commit-messages`（三者**逐字同名**，有意为之 —— V10 那次正是因 step 名被改写而令 pickaxe 误指 `b8f43d3`） |
-| **CI 首挂锚** | `cd79b5c` · **2026-08-06**（判据见 §3） |
+| **CI 首挂锚** | `cd79b5c` · **2026-08-07 11:46:10 +0900**（判据见 §3） |
 | **适用口径** | `policies/ci-gates.md` §4.1.3（head-SHA 去重）。**§4.1.4 不适用** —— 见 §3.2 |
 | **阈值 + 资格公式** | §5（两腿 **AND**） |
 | **自排除规则** | §5.3 |
@@ -101,7 +101,7 @@ develop 的 PR 上被本 gate 判过**，重判是重复而非覆盖。
 与 §4.1.4 把 `skipped` 记为中性同一精神。审计时须**分列**「真实判定绿」与「release 豁免」两个
 计数，不得合并 —— 否则阈值会被空绿充满。识别判据 = PR 的 `base=main` 且 `head=develop`。
 
-> **历史校准**：截至 2026-08-06 本仓**尚未发生过** release PR（4 个 base=main 的已合并 PR
+> **历史校准**：截至 2026-08-07 本仓**尚未发生过** release PR（4 个 base=main 的已合并 PR
 > 全部是 hotfix / 单分支 maintain / bugfix）。故本桶当前为空，但规则先立 —— 首个 release PR
 > 出现时不应临时解释。
 
@@ -118,7 +118,11 @@ gh run list --workflow check-commit-messages.yml --limit 100 \
 
 ## 4 观察期实测
 
-**空 —— 观察期自本 PR 合入之日（锚 `cd79b5c`）起算，注册时尚无任何 run。**
+**空 —— 观察期自锚 `cd79b5c`（2026-08-07）起算，注册时尚无任何 run。**
+
+> **时钟属于锚 commit，不属于合并日**（§4.1.2：「以该 gate 在 CI 内的首次出现为准」）。本工件与
+> gate 同批落地，故二者相差不超过本 PR 的存续时间；如需精确，以 §3.1 pickaxe 输出的 commit 日期
+> 为准。**gate 在本 PR 上的首跑不计入 streak** —— 那是本分支自造的 run，被 §5.3 自排除规则剔除。
 
 这是「出生即注册」相对于补注册的唯一形式差异：docker 那份注册工件在 §4 携带了 12 天的基线快照，
 本工件没有可快照的历史。翻转拍板时须按 §3.2 的度量命令**当场重跑**并产出证据账本
@@ -128,10 +132,10 @@ gh run list --workflow check-commit-messages.yml --limit 100 \
 
 ### 5.1 两腿（AND）
 
-| 腿 | 判据 |
-|---|---|
-| **日历腿** | 锚日 + **≥14 自然日**，连续、跑真实流量 |
-| **计数腿** | §4.1.3 口径（head-SHA 去重、执行体 clean）**≥20** |
+| 腿 | 判据 | 现状（注册时） |
+|---|---|---|
+| **日历腿** | 锚日 + **≥14 自然日**，连续、跑真实流量 | 锚 2026-08-07 → 最早 **2026-08-21** |
+| **计数腿** | §4.1.3 口径（head-SHA 去重、执行体 clean）**≥20** | **0 / 20**（本 PR 自身的 run 按 §5.3 自排除） |
 
 **资格 = 两腿同时满足**；任一未满足即不构成资格，**不得**以单腿满足代替。
 
