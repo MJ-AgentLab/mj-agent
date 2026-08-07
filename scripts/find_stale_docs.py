@@ -4,9 +4,11 @@
 Detects backtick-quoted file paths that were renamed / moved / deleted
 in the current PR's git diff. For each rename / delete, greps:
 
-- ``docs/**/*.md``
-- ``plans/**/*.md``
-- ``CLAUDE.md``, ``CHANGELOG.md``, ``README.md``
+- ``docs/**/*.md``, ``plans/**/*.md``
+- SDD kernel (#441): ``capabilities/**/*.md``, ``decisions/**/*.md``,
+  ``policies/**/*.md``, ``sdd/**/*.md``
+- project root: ``README.md``, ``CONTRIBUTING.md``, ``CHANGELOG.md``,
+  ``GLOSSARY.md``, ``CLAUDE.md``, plus ``AGENTS.md``
 
 for backtick-bounded references to the old path (e.g. ``\\`docs/old/file.md\\```).
 Reports remaining references as warnings. **Always exits 0 (warning mode)** --
@@ -33,15 +35,32 @@ import sys
 from collections.abc import Iterable
 from pathlib import Path
 
-WALK_DIRS = ("docs", "plans")
-WALK_FILES = ("CLAUDE.md", "CHANGELOG.md", "README.md")
+# Scan face (grep TARGET dirs). ``docs`` + ``plans`` are the original
+# ADR-023 face; the four SDD-kernel dirs follow the M5 Spec-Anchored
+# Refactor, which moved governance prose there while this face stayed
+# behind (#441; sibling precedent: check_wikilinks.py WALK_DIRS).
+WALK_DIRS = ("docs", "plans", "capabilities", "decisions", "policies", "sdd")
+# All 5 project-root markdown files (#441; parity with check_wikilinks.py
+# ROOT_FILES per #267), plus AGENTS.md -- outside the canonical root-5
+# (ADR-035 exception) but dense with backtick path refs and already stale
+# once (#416).
+WALK_FILES = (
+    "README.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "GLOSSARY.md",
+    "CLAUDE.md",
+    "AGENTS.md",
+)
 
 
-def repo_root() -> Path:
+def default_repo_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def git_diff_renames(base_ref: str, head_ref: str) -> list[tuple[str, str | None]]:
+def git_diff_renames(
+    base_ref: str, head_ref: str, repo_root: Path
+) -> list[tuple[str, str | None]]:
     """Return list of (old_path, new_path or None for delete)."""
     try:
         result = subprocess.run(
@@ -54,7 +73,7 @@ def git_diff_renames(base_ref: str, head_ref: str) -> list[tuple[str, str | None
             ],
             capture_output=True,
             text=True,
-            cwd=str(repo_root()),
+            cwd=str(repo_root),
             check=False,
         )
     except (OSError, FileNotFoundError):
@@ -100,12 +119,13 @@ def grep_backtick_refs(target: Path, old_path: str) -> list[tuple[int, str]]:
     return out
 
 
-def main() -> int:
-    base_ref = sys.argv[1] if len(sys.argv) > 1 else "origin/develop"
-    head_ref = sys.argv[2] if len(sys.argv) > 2 else "HEAD"
+def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
+    args = sys.argv[1:] if argv is None else argv
+    base_ref = args[0] if len(args) > 0 else "origin/develop"
+    head_ref = args[1] if len(args) > 1 else "HEAD"
 
-    root = repo_root()
-    renames = git_diff_renames(base_ref, head_ref)
+    root = default_repo_root() if repo_root is None else repo_root
+    renames = git_diff_renames(base_ref, head_ref, root)
     if not renames:
         print(f"OK: no rename/move/delete in {base_ref}...{head_ref}")
         return 0
