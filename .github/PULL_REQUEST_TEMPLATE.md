@@ -69,7 +69,7 @@
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
 - [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml` / `docker/Dockerfile` 外部 registry 镜像引用；#413 供应链面）
-- [ ] ci-blocking-gate-toggle（`ci.yml` continue-on-error flip）
+- [ ] ci-blocking-gate-toggle（该 gate 所在 workflow 的 continue-on-error flip —— **不限 `ci.yml`**：`docker-build.yml` / `check-stale-docs.yml` / `check-commit-messages.yml` 各自承载；亦含新增 blocking gate）
 - [ ] bulk-content-purge-or-migration（≥10 文件删除/迁移 或 archive ceremony）
 
 ## Verification Plan
