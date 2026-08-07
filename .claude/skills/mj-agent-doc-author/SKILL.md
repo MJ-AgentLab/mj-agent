@@ -204,7 +204,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ```
 检测到目标路径 <path> 在 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
-§3.1 必停 10/11 触发；建议先：
+§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
 (1) 用 /mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 /mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
 (2) Domain Expert + Prompt Engineer review
 (3) Owner 拍板后由 runtime skill 经 `ask` 门落盘
@@ -252,7 +252,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ## Anti-patterns
 
-- **不要** B 风味改动跳过 Q-B1（违反 §3.1 必停 10/11；ADR-015 §决策点 4 runtime 硬约束）
+- **不要** B 风味改动跳过 Q-B1（违反 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；ADR-015 §决策点 4 runtime 硬约束）
 - **不要** 缺 frontmatter `track` 字段（v2.2 §4.3.1 必填；validate 阶段 A2 阻断；项目根 markdown 例外不在此约束）
 - **不要** 在 docs/rule/ 下塞领域专属 STANDARD（违反 §3.5 就近原则；应进 docs/infrastructure/{domain}/）
 - **不要** 跳过 ADR/SPEC §12 前置检查（边界案例可能漏建必要 ADR）

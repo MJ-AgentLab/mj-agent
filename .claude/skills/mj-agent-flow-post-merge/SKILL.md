@@ -149,7 +149,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 ### 关联
 
 - 触发 PR: #<id>
-- 触发条件: §3.1 必停 10 (runtime-skill-content-change) / 11 (prompt-version-bump)
+- 触发条件: §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change
 - A11 EVAL 门禁: transitional waiver 期内允许 `eval_references` 注释 TODO；Phase D 起强制
 ```
 
@@ -267,7 +267,7 @@ post-merge cleanup 跑完 Step 1-9 之后，执行 AI 经常处于"任务完成"
 mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-git-branch` SKILL §"Bare Repo Worktree 模型"）。在 `develop/` worktree 内 `git checkout -b maintain/post-merge-follow-up` 会：
 
 1. 把 `develop/` worktree 切到 follow-up 分支，`develop/` 不再代表 develop 分支 → 后续在此目录跑 `/mj-agent-git-sync` 等期望 develop 的工具会出错。
-2. 违反 execution-loop §4.3 Rule 5「mj-agent 默认每 PR 一个 worktree」+ Rules「不使用 git checkout 切换分支」+ Fallback「禁止使用 `git checkout` 切分支」。
+2. 违反 execution-loop §4.1 的 Stage 2 → /mj-agent-git-branch 映射（per-stage prompt 未 re-port，历史源 HITL_Prompt §4.3 Rule 5）「mj-agent 默认每 PR 一个 worktree」+ Rules「不使用 git checkout 切换分支」+ Fallback「禁止使用 `git checkout` 切分支」。
 3. 违反 `mj-agent-git-branch` SKILL §Anti-patterns 第 2 条「不要 跳过 worktree 直接 `git checkout -b <branch>`——破坏 worktree-per-branch 模型」。
 
 ### 例外（不触发 Step 10）
@@ -334,7 +334,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 （如触发，则）
 - 建议：退出本 skill，调 `/mj-agent-git-branch`（type=<feature|bugfix|documentation|maintain>，desc=<follow-up-kebab>）
-- ⚠️ **不要** 在当前 worktree 内 `git checkout -b <follow-up-branch>`（破坏 worktree-per-PR 约定；execution-loop §4.3 / git-branch anti-pattern）
+- ⚠️ **不要** 在当前 worktree 内 `git checkout -b <follow-up-branch>`（破坏 worktree-per-PR 约定；execution-loop §4.1 Stage 2 映射（历史源 HITL_Prompt §4.3）/ git-branch anti-pattern）
 
 ### Next User Actions
 - [x] CHANGELOG：跳过（非用户感知）
@@ -381,11 +381,11 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ## Anti-patterns
 
 - **不要** 跳过 Step 5 EVAL backlog（mj-agent 专属硬约束；execution-loop §7.3 Rule 11）
-- **不要** 在 §3.1 必停 10/11 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
+- **不要** 在 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
 - **不要** 物理移动 plan 文件到 archive（仅改 frontmatter；GC 是 Phase 2 工作）
 - **不要** 自动改 plan `state: draft` → `completed`（违反生命周期；draft 不应跳过 active）
 - **不要** 删受保护分支 main / develop（硬性阻断）
-- **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；execution-loop §4.3 Rule 5 + Rules + Fallback；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `/mj-agent-git-branch` 开新 worktree——见 Step 10。
+- **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；execution-loop §4.1 Stage 2 映射（历史源 HITL_Prompt §4.3 Rule 5 + Rules + Fallback）；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `/mj-agent-git-branch` 开新 worktree——见 Step 10。
 
 ## Handoff
 

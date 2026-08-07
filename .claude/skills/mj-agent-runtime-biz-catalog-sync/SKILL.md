@@ -13,7 +13,7 @@ description: This skill detects + reports drift between mj-agent biz catalog mir
 
 - `src/mj_agent/biz_catalog/qcm_catalog.yaml` 是 mj-system 上游 STANDARD §2-§4 的**镜像**，被 `find_biz_context` tool 在 runtime 召回
 - mj-system 上游 STANDARD 演化（如新增 metric、改列名、调时间维）若 mj-agent 镜像不同步 → `find_biz_context` 返回错误业务语义 → LLM 决策偏差
-- B 风味（in-source canonical 边缘）改动；触 §3.1 必停 12 + §4.7 Rule 9
+- B 风味（in-source canonical 边缘）改动；触 §3.1 必停面 biz-catalog-sync（B 风味永远 HITL）
 - Stage 8 sub by `/mj-agent-flow-implement`（C 风味或 B 风味边缘）
 
 **hard constraint**: 本 skill **先 propose diff + impact analysis + 依赖反扫，落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion + settings `ask` 权限 prompt，Codex 载体 = AGENTS.md 自守 prose 停点 + 可审计批准记录）；拍板后由本 skill 直接 Edit `src/mj_agent/biz_catalog/qcm_catalog.yaml` 落盘——catalog 是 mj-system 上游镜像，不加上游不存在的 entry。
@@ -25,7 +25,7 @@ description: This skill detects + reports drift between mj-agent biz catalog mir
 - 用户提到 mj-system 上游 STANDARD §2-§4 演化（新增 metric / period / dimension / 同环比列 / 信号表 / 维表 join key）
 - 用户要"同步 biz_catalog / 检测 catalog drift / mirror mj-system §2-§4"
 - Stage 3 Repo Scan §6.6 检测到 biz_catalog drift
-- execution-loop §4.4 Repo Scan §6 反向扫描发现 qcm_catalog.yaml 改动
+- execution-loop §4.1 的 Stage 3 映射（Repo Scan 反向扫描；历史源 HITL_Prompt §4.4 §6）发现 qcm_catalog.yaml 改动
 
 **MAY skip when**：
 
@@ -37,7 +37,7 @@ description: This skill detects + reports drift between mj-agent biz catalog mir
 - ❌ 跳过本 skill 的 propose + 反扫、未经 Owner 拍板盲改 qcm_catalog.yaml
 - ❌ 改 SKILL.md → `/mj-agent-runtime-skill-doc-improve`（B 风味）
 - ❌ 改 system.md → `/mj-agent-runtime-prompt-version-bump`
-- ❌ SQL guardrail / precheck 调整（tools/sql/{guardrail,precheck}.py；这是 A 风味纯代码，§3.1 必停 13 由 /mj-agent-flow-implement 处理）
+- ❌ SQL guardrail / precheck 调整（tools/sql/{guardrail,precheck}.py；这是 A 风味纯代码，§3.1 必停面 sql-guardrail-relax 由 /mj-agent-flow-implement 处理）
 - ❌ mj-system 上游 STANDARD 编辑（出 mj-agent 仓 governance）
 
 ## Workflow（propose → 拍板 → apply）
@@ -55,7 +55,7 @@ digraph sync {
 
   s4 [label="Step 4: Propose diff (待拍板)\n• qcm_catalog.yaml 改动建议\n• 依赖 SKILL.md examples 同步建议\n• tests/eval/golden_seed.jsonl 同步建议（如适用）" shape=box];
 
-  s5 [label="Step 5: Impact analysis\n• §3.1 必停 12 自动 HITL\n• find_biz_context 召回行为变化\n• Studio probe H1/H2/H3 影响\n• smoke test (real biz DB) 影响" shape=box];
+  s5 [label="Step 5: Impact analysis\n• §3.1 biz-catalog-sync 自动 HITL\n• find_biz_context 召回行为变化\n• Studio probe H1/H2/H3 影响\n• smoke test (real biz DB) 影响" shape=box];
 
   s6 [label="Step 6: Output proposed diff\n+ HITL Questions" shape=diamond];
 
@@ -165,7 +165,7 @@ metrics:
 ```markdown
 ## Impact Analysis
 
-- **Stage 8 B 风味边缘触发**：本改动是 biz_catalog 镜像漂移修复 → §3.1 必停 12 强制 HITL
+- **Stage 8 B 风味边缘触发**：本改动是 biz_catalog 镜像漂移修复 → §3.1 必停面 biz-catalog-sync 强制 HITL
 - **EVAL backlog ticket auto-issue**：per execution-loop §7.3 Rule 11（如 SKILL.md 同步改动也触；qcm_catalog 单独不触，但建议绑定 SKILL diff）
 - **find_biz_context 召回行为变化**：<具体；如"`qrynum` 业务问题召回时新增 dws_qcm_xxx_daily_total 候选">
 - **Studio probe 影响**：
@@ -270,7 +270,7 @@ per execution-loop §3.3 7-段格式：
 ## Reference Files
 
 - [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束；supersede ADR-015 §决策点 4 read-only 残留）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 12 + §4.4 §6.6（biz_catalog drift detection in Repo Scan）+ §4.7 Rule 9
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停面 biz-catalog-sync + §4.1 的 Stage 3 映射（biz_catalog drift detection in Repo Scan；历史源 HITL_Prompt §4.4 §6.6）+ §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only；catalog 是其实现）
 - src/mj_agent/biz_catalog/qcm_catalog.yaml（target file）
 - src/mj_agent/biz_catalog/{loader,finder}.py（catalog 加载入口；本 skill 不动这些）
@@ -285,7 +285,7 @@ per execution-loop §3.3 7-段格式：
 ## Anti-patterns
 
 - ❌ **未经 Owner 拍板就直接 Edit src/mj_agent/biz_catalog/qcm_catalog.yaml**（拍板后才落盘；ADR-034）
-- ❌ 不绕过 §3.1 必停 12（每次 catalog drift 都 HITL；不能"小改直接走"）
+- ❌ 不绕过 §3.1 必停面 biz-catalog-sync（每次 catalog drift 都 HITL；不能"小改直接走"）
 - ❌ 不在 catalog yaml 加 mj-system 上游不存在的 entry（catalog 是镜像；不允许 mj-agent 私自加）
 - ❌ 不跳过 Step 3 反向扫描（catalog 改动如不同步 SKILL.md → LLM 召回与 examples 矛盾）
 - ❌ 不放宽 ADR-009 biz 域 only（catalog 不应加 biz_ods / biz_ads / ops_* 内容）

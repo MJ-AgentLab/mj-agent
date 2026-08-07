@@ -7,7 +7,7 @@ description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-i
 
 ## Overview
 
-**Propose → 拍板 → apply**（ADR-034）：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；**Owner 拍板后由本 skill 直接 Write 到 `docs/evaluation/`**（不再要 Owner 手动粘贴）。仍**不**跑实际 EVAL（Phase 2 framework / PR-D2-enforcement）、**不**改 in-source canonical（走 sibling runtime-* skill）。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per execution-loop §3.0 拍板模型 + §3.1 必停（runtime-skill-content-change / prompt-version-or-body-change）+ §4.2 Runtime 约束 + §7.3 Rule 11（PR merge 后 EVAL backlog ticket 自动开单）+ ADR-024 EVAL spec §4 + documentation §5.3 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
+**Propose → 拍板 → apply**（ADR-034）：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；**Owner 拍板后由本 skill 直接 Write 到 `docs/evaluation/`**（不再要 Owner 手动粘贴）。仍**不**跑实际 EVAL（Phase 2 framework / PR-D2-enforcement）、**不**改 in-source canonical（走 sibling runtime-* skill）。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per execution-loop §3.0 拍板模型 + §3.1 必停（runtime-skill-content-change / prompt-version-or-body-change）+ §4.2 Runtime 约束 + §7.3 Rule 11（PR merge 后 EVAL backlog ticket 自动开单）+ ADR-024 EVAL spec §4 + policies/documentation.md §5.3 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
 
 **Why this skill exists**：
 
@@ -371,7 +371,7 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 
 - [[../../../docs/_templates/TEMPLATE_EVAL|TEMPLATE_EVAL.md]]（Phase D PR-D1 落地；本 skill 直接消费此模板填空）
 - [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟；supersede ADR-015 §决策点 4 read-only 残留）+ ADR-015 §决策点 5（EVAL backlog ticket auto-issue §4.15 Rule 11，历史源）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 10/13（runtime-skill-content-change / prompt-version-bump 触发本 skill）+ §4.7 Rule 9（B 风味永远 HITL）+ §4.13（regression 处理）+ §7.3 Rule 11（EVAL backlog ticket auto-issue）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change（触发本 skill）+ §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）+ §4.1 的 Stage 13/15 映射（regression 处理；历史源 HITL_Prompt §4.13）+ §7.3 Rule 11（EVAL backlog ticket auto-issue）
 - [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]（EVAL authoring spec；本 skill 落地的源依据）+ [[../../../policies/documentation|documentation]] §5.3（A8/A11 EVAL 引用同步审查；transitional waiver decay 进度）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow；EVAL 自身 versioning + target version 紧耦合）

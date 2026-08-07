@@ -85,10 +85,10 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 |---|---|
 | `src/mj_agent/` 下新模块目录 | D1（mj-agent 模块边界） |
 | `src/mj_agent/agent.py` / `langgraph.json` 改动 | D2（graph 装配 + Studio 入口） |
-| `src/mj_agent/skills/**/SKILL.md` 改动 | **D3 in-source SKILL canonical**（§3.1 必停 10）+ A11 EVAL 引用审查 |
-| `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1 必停 11）+ version bump 检查 |
-| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停 12）+ scripts/diff_biz_schema.py 比对 |
-| `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停 13）+ ADR-006/009 红线检查 |
+| `src/mj_agent/skills/**/SKILL.md` 改动 | **D3 in-source SKILL canonical**（§3.1 必停面 runtime-skill-content-change）+ A11 EVAL 引用审查 |
+| `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1 必停面 prompt-version-or-body-change）+ version bump 检查 |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停面 biz-catalog-sync）+ scripts/diff_biz_schema.py 比对 |
+| `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停面 sql-guardrail-relax）+ ADR-006/009 红线检查 |
 | `docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
 | `docker/Dockerfile` 外部 registry 镜像引用改动（`FROM <image>` / `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **D7b 供应链必停**（canonical `secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）：核 Owner 拍板留痕 + PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项已勾 + digest 变化经核对。**无审批类 CI gate 兜底 → 此项只能人审**（`docker-build` 只验可构建、V5 只 lint 契约）。**bot 作者 PR**（Dependabot digest bump）不渲染 PR 模板 → 拍板即 merge 决定本身，须以 PR comment 留痕 |
 | `.env.example` / `secrets.enc` 改动 | D8（secret 管理）+ config/README.md 同步 |
@@ -118,7 +118,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 | F1 | 分支同步 | ℹ️ | 同步 |
 | F2 | 变更概览 | ℹ️ | Code 5 / SKILL 1 / Docs 2 |
 | F3 | Commit 规范 | ✅ | 3 docs — feature/* 允许 |
-| D3 | in-source SKILL canonical | **⚠️ HITL** | **B 风味 §3.1 必停 10**；建议先 /mj-agent-runtime-skill-doc-improve propose diff |
+| D3 | in-source SKILL canonical | **⚠️ HITL** | **B 风味 §3.1 必停面 runtime-skill-content-change**；建议先 /mj-agent-runtime-skill-doc-improve propose diff |
 | D9 | .claude/skills/ A12 | ✅ | description 280 chars + 正反向触发 |
 ```
 

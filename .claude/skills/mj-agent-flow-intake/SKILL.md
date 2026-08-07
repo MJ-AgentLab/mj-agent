@@ -19,7 +19,7 @@ Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flo
 
 **Reference**:
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位；mj-agent 调版 Phase B+ 派生）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 Intake prompt）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 → 本 skill 映射；⚠ §4.1 是 Stage→Skill 映射表**不是** Stage 0 prompt——per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
 
 ## Workflow
 
@@ -178,11 +178,11 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 ### 文档需求
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.4 / §4.6 + Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
+按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 3 → /mj-agent-flow-repo-scan · Stage 6 → /mj-agent-doc-author；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.6）+ Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
 
 ## Step 8: HITL 触发
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 13 项必停规则（通用 9 + mj-agent 专属 4）：
+按 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停规则（通用 12 + mj-agent 专属 4；条数以 kernel §3.1 与 `policies/ai-agent.md` §4 canonical enum 为准，勿硬记位号）：
 
 通用必停：
 1. 任务目标/范围/AC 不清楚
@@ -194,12 +194,15 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 7. 公共 API / 用户可见行为
 8. 删除数据/文件/不可逆操作
 9. 引入新依赖（pyproject.toml / uv.lock）
+10. 实现中 scope 明显扩大
+11. 测试失败且原因不明确
+12. Review comment 会改变需求、API、schema、权限或用户行为
 
-mj-agent 专属：
-10. **runtime-skill-content-change**（src/mj_agent/skills/**/SKILL.md body）
-11. **prompt-version-bump**（system.md `version` 字段）
-12. **biz-catalog-sync**（qcm_catalog.yaml）
-13. **sql-guardrail-relax**（tools/sql/{guardrail,precheck}.py）
+mj-agent 专属（按 canonical enum 名引用，不用位号）：
+- **runtime-skill-content-change**（src/mj_agent/skills/**/SKILL.md body）
+- **prompt-version-or-body-change**（system.md `version` 字段 / body）
+- **biz-catalog-sync**（qcm_catalog.yaml）
+- **sql-guardrail-relax**（tools/sql/{guardrail,precheck}.py）
 
 ## Step 9: Issue Draft
 
@@ -292,7 +295,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 + §4.1（Stage 0 Intake prompt）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 + §4.1（Stage 0 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位上游）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]（type/scope）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）

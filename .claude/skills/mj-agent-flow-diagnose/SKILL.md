@@ -100,7 +100,7 @@ digraph diagnose {
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5（Level A/B 矩阵）+ §11（self-review tie-in）
+- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5（Level A/B 矩阵）+ §6（AI Self-review 检查清单；Stage 11 tie-in）
 - [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6（leading word「红信号」）
 - [[../../../policies/ai-agent|policies/ai-agent]] §8/§9（4 必停面 propose→拍板→apply）
 - [CLAUDE.md "Commands"](../../../CLAUDE.md)（uv-based 红信号命令）
