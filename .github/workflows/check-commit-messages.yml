@@ -1,0 +1,117 @@
+# ===== #444 commit-message gate (warning-first; blocking flip is registered, not yet taken) =====
+# The commit STANDARD (type 7 + a closed 35-scope allowlist + the branch x type matrix) had
+# ZERO machine enforcement: a repo-wide grep for commitlint / conventional found nothing, and
+# 132 of the 462 parseable commits on develop (28.6%, measured at 9ae9ec6 against the v1.1
+# 35-scope allowlist) carried at least one type/scope violation. This job runs
+# scripts/check_commit_messages.py over the commits a PR ADDS.
+#
+# NB the 51% figure in issue #444's body is NOT this number and must not be quoted here: it was
+# measured against the v1.0 TWELVE-scope allowlist, i.e. before #443 rebuilt §4 to 35 entries.
+# #443's whole finding was that ~65% of the "wild" scopes were real repo areas the allowlist
+# simply lacked, so rebuilding the allowlist retired most of that 51% by construction. Quoting
+# the pre-#443 rate would describe an allowlist that no longer exists -- exactly the copy-vs-
+# derive failure this gate is built to avoid.
+#
+# Posture: warning (job-level continue-on-error: true) per policies/ci-gates.md §4.1, with a
+# REGISTERED observation window aiming at a blocking flip -- registration at birth, which is
+# exactly what #440 found missing on check-stale-docs (a gate that ran for ~3 months with an
+# unregistered, mechanically unmeetable "4 weeks then blocking" promise). Five §4.1.1 fields:
+# plans/[PLAN]_m-fu-commit-message-gate-flip.md. Registry row: sdd/gates.md §2
+# `check-commit-messages`. The flip itself is a separate Owner ci-blocking-gate-toggle
+# decision; nothing here pre-authorises it.
+#
+# continue-on-error is at JOB level (like docker-build), NOT step level (like
+# check-stale-docs). Precisely what that buys, because the two conclusions differ and the
+# distinction is easy to misread: with job-level continue-on-error: true and a failing step,
+# the JOB's conclusion (and its check run, the row a reviewer sees in the PR checks list) is
+# `failure`, while the WORKFLOW RUN's conclusion is `success` so nothing is blocked. That is
+# also exactly what policies/ci-gates.md §4.1.3 means by "continue-on-error 会把失败掩成绿 run
+# （job 级同理）" -- it masks the RUN, not the job. Step level would instead leave the job
+# green and bury the violation in the log; check-stale-docs sits at step level only because
+# its executor returns 0 on every path, so its placement carries no signal either way.
+# Flipping this gate = one line, `continue-on-error: true -> false`, at job level. There is no
+# --fail-on threshold axis (same single-axis shape as V10 / docker-build).
+#
+# Trigger surface: pull_request only, with NO `paths:` filter.
+#   - pull_request only, because the gate's input is a base..head commit range; a push event
+#     has no base to diff against. Its own workflow rather than a step in ci.yml so push
+#     events produce zero check runs at all -- per the #438 finding that a job/step-level
+#     `if:` still emits a `skipped` check that muddies streak accounting.
+#   - no `paths:` filter, so the gate executes on EVERY pull request. It is therefore NOT a
+#     path-triggered gate: policies/ci-gates.md §4.1.4's three-state (skipped = neutral)
+#     accounting does not apply, and §4.1.3's plain head-SHA-deduped counting does.
+#
+# RELEASE-PR EXEMPTION (the one case where base..head is not "the PR's own commits"). Per
+# policies/release.md the Phase-1+ release PR is develop -> main. `main` is an old release
+# point hundreds of commits behind develop, so `origin/main..develop` is the entire accumulated
+# history, not this PR's contribution -- judging it would light up every historical violation
+# and make the gate permanently red on release PRs, which is precisely the "不得因历史存量而恒红"
+# constraint #444 sets. Every commit in a release PR has ALREADY passed this gate on its own PR
+# into develop, so re-judging is duplication, not coverage. The exemption is therefore exact
+# (base == main AND head == develop) and lives at STEP level so the job still runs and still
+# reports exactly one check run -- a job-level `if:` would emit a `skipped` check and break the
+# "executes on every PR" property the counting口径 above rests on. Hotfix PRs into main are NOT
+# exempt: their head is a hotfix/* branch, so base..head really is their own commits.
+# Accounting: release-PR runs are vacuously clean and MUST be excluded from the observation
+# streak (registered in plans/[PLAN]_m-fu-commit-message-gate-flip.md §3.2, same spirit as
+# §4.1.4's neutral `skipped`).
+#
+# fetch-depth: 0 because `origin/<base>..<head>` needs real history; ci.yml's shared checkout
+# deliberately stays shallow, which is the other reason this lives in its own workflow.
+name: check-commit-messages
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  check-commit-messages:
+    name: check-commit-messages
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      # Action references are pinned to commit SHA + version comment (supply-chain
+      # hardening, matching ci.yml / docker-build.yml). Dependabot reads the `# vX.Y.Z`
+      # comment and bumps SHA + comment together.
+      - name: Checkout (full history for the base..head commit range)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Read Python version
+        id: pyver
+        shell: bash
+        run: echo "version=$(cat .python-version)" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ steps.pyver.outputs.version }}
+
+      - name: Release PR — nothing to judge
+        # See RELEASE-PR EXEMPTION in the header block. Step-level `if:` on purpose: the job
+        # still runs, so the check run is present and green rather than `skipped`.
+        if: github.base_ref == 'main' && github.head_ref == 'develop'
+        run: |
+          echo "::notice::Release PR (develop -> main): every commit in this range already passed check-commit-messages on its own PR into develop, so it is not re-judged. This run is vacuously clean and must NOT count toward the observation streak (plans/[PLAN]_m-fu-commit-message-gate-flip.md §3.2)."
+
+      - name: Check commit messages (stdlib only, no uv sync needed)
+        # De Morgan of the release-PR predicate above, written without a leading `!` so the
+        # value needs no YAML quoting and cannot be misread as a YAML tag.
+        if: github.base_ref != 'main' || github.head_ref != 'develop'
+        # BASE_REF goes through env rather than inline ${{ }} so the branch name can never be
+        # spliced into the shell command. HEAD_SHA is a git object id. The script fails CLOSED
+        # (exit 2) if the STANDARD or the range is unreadable -- an unreadable input must not
+        # read as "nothing wrong" (the #429 lesson).
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python scripts/check_commit_messages.py "origin/${BASE_REF}" "${HEAD_SHA}"
+
+      - name: Warning-posture notice
+        if: always()
+        run: |
+          echo "::notice::check-commit-messages is warning@ci (sdd/gates.md §2). A red job here does NOT block merge. Observation window + flip criteria: plans/[PLAN]_m-fu-commit-message-gate-flip.md; the flip is a separate Owner ci-blocking-gate-toggle decision."
