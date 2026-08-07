@@ -222,7 +222,7 @@ Return JSON: {"correctness": N, "safety": N, "format": N, "reasoning": "..."}
   - <metric> 下降 < <regression_threshold> 但 > 0
   - latency 上升但 outcome 不变
 
-### §6.3 Regression 处理流程（per HITL_Prompt §4.13）
+### §6.3 Regression 处理流程（per Stage 15 Review Respond；活体 prompt 见 `/mj-agent-flow-review-respond`）
 
 1. PR review 阶段触发 regression alert
 2. /mj-agent-flow-review-respond Stage 15 处理 reviewer comment（如 reviewer 是自动化 EVAL）

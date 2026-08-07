@@ -135,7 +135,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 ### D3.2 开发流程
 
-<优化对开发流程的影响：HITL_Prompt 17-stage 闭环 / .claude/skills/ 编排 / dual-track A1-A11 / tri-track A12-A14 PR 门禁>
+<优化对开发流程的影响：17-stage 执行闭环（execution-loop）/ .claude/skills/ 编排 / dual-track A1-A11 / tri-track A12-A14 PR 门禁>
 
 ### D3.3 运维影响
 
@@ -198,7 +198,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 - 改动前 eval_references：<list 或 TODO>
 - 改动后 eval_references：<list 或 TODO；Phase D PR-D2 后强制非空>
-- EVAL backlog tickets 开单（per HITL_Prompt §4.15 Rule 11）：<list>
+- EVAL backlog tickets 开单（per execution-loop §7.3 Rule 11）：<list>
 
 ---
 

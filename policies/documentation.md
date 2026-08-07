@@ -2,10 +2,10 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.1
+version: 1.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-23
+updated: 2026-08-07
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -173,7 +173,7 @@ track: code | agent | engineering-workflow | shared
 |---|---|---|
 | `code` | Track A — 代码侧文档（开发 / 部署 / 运维） | 见 §2 类型表 |
 | `agent` | Track B — 智能体侧文档（runtime 直接影响业务） | 见 §2 类型表 |
-| `engineering-workflow` | Track C — 工程流程文档（`.claude/` + HITL_Prompt + 工程流程 STANDARD） | 物理路径在 `.claude/**` 或 HITL_Prompt / AI_Engineering / Claude_Code_Settings / MCP_Server_Governance STANDARD 时强制 |
+| `engineering-workflow` | Track C — 工程流程文档（`.claude/` + `.mcp.json` + 工程流程 STANDARD） | 物理路径在 `.claude/**` 或 `.mcp.json` 时强制；`docs/rule/` 下治工程流程者按 §3.1 规则 6 判 |
 | `shared` | 跨轨 — 多 track reviewer 都需介入 | **过渡期**默认值；Phase 1 末收紧为 explicit required |
 
 ### §3.1 path-to-track 决策树（Meta §4.3.1）
@@ -184,13 +184,36 @@ track: code | agent | engineering-workflow | shared
    `CLAUDE.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
 1. 路径在 `src/mj_agent/{skills,prompts}/**`？→ **agent**
 2. 路径在 `src/mj_agent/{其他}/**`？→ **code**
-3. 路径在 `.claude/**` 或 `.mcp.json` 或 `docs/rule/[STANDARD]_*_HITL_Prompt*.md` /
-   `_AI_Engineering_*.md` / `_Claude_Code_Settings_*.md` / `_MCP_Server_Governance_*.md`？→ **engineering-workflow**
+3. 路径在 `.claude/**` 或 `.mcp.json`？→ **engineering-workflow**
 4. 路径在 `docs/evaluation/`？→ **agent**
 5. 路径在 `docs/{infrastructure,runbook,api}/`？→ **code**
 6. 路径在 `docs/rule/` 但治"engineering 流程"？→ **engineering-workflow**
 7. 路径在 `docs/rule/` 治文档/代码/数据？→ **code** 或 **shared**
 8. 其他 → 默认 `shared` 并 PR body 论证
+
+> **规则 3 的 `docs/rule/` 分支已删除（#449，2026-08-07）**：原列 4 个 STANDARD 族 glob 逐一核过，
+> **无一能命中**，且四者的死法各不相同 ——
+>
+> | glob 族 | 该 STANDARD 存在过吗 | 为什么这条 `docs/rule/` glob 不命中 |
+> |---|---|---|
+> | `*_HITL_Prompt*` | 是（2026-05-08 落地 `docs/rule/`） | M6 PR4 归档 → `archive/rule/`；**唯一真正被本规则路由过的一族**。活体后继 = [[sdd/workflows/execution-loop|execution-loop]]（kernel，非 STANDARD） |
+> | `_MCP_Server_Governance_*` | 是（2026-05-09 落地） | **从来不在 `docs/rule/`** —— 按 ADR-022 C.3.2 领域专属 placement 落在 `docs/infrastructure/mcp/`，故 glob 自始就匹配不到；M6 X5 已归档，治理内容迁入 `capabilities/infrastructure/mcp-server-governance/` |
+> | `_AI_Engineering_*` | 否 | 仓内从无对应件 —— 该名字指的是上游 mj-system 的同名 STANDARD（Lite Phase A 占位引用） |
+> | `_Claude_Code_Settings_*` | 否 | 仓内从无对应件 —— Phase C 计划件，从未落地；A13 规则体实际住在 [[policies/ci-gates|ci-gates]] §5.1 |
+>
+> 规则 3 的 `.claude/**` + `.mcp.json` 两支一直有效，故这是**分支删除而非整条规则失效**；
+> `docs/rule/` 下若再出现治工程流程的 STANDARD，由规则 6 兜住。**删除对现存文件零行为 delta**：
+> `docs/rule/` 现有 3 个 STANDARD 的文件名与这 4 个 glob 均不匹配，其 `track` 现值
+> （`code` / `code` / `shared`）删前删后都由规则 7 判出。上表 `engineering-workflow` 行的
+> 「默认值」列曾持有同一份死枚举（且缺 `.mcp.json`，与本树互相矛盾），已同批 truth-up。
+>
+> **已知缺口 —— 本决策树不覆盖 SDD kernel 四目录（#449 存档，处置见 #451）**：规则 1-7 只对
+> `src/mj_agent/**` / `.claude/**` / `.mcp.json` / `docs/**` 强制路由，`policies/` `sdd/`
+> `decisions/` `capabilities/` 一律落规则 8。而实际落盘是**按主题**分流 —— 2026-08-07 全量复核
+> 这四个目录共 106 个 markdown：`shared` 28 / `engineering-workflow` 15 / `code` 9 / `agent` 7 /
+> **无 `track` 47**（后者全在 `capabilities/**`）。单是 `sdd/adapters/` 一个目录就同时出现四种
+> `track`。补一条 kernel 路由规则属**新增治理规则**，需自己的 AC 与逐文件核对，故不在 #449 范围内。
+> ⚠ 这些计数是**该日快照**，引用前须按 #451 的 AC-1 双口径重测。
 
 边界 artifact 归属规则见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4。
 
@@ -463,3 +486,10 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > schema / CLAUDE.md sync allowlist）；§4 Review Cadence native sustained。§8 per-type body
 > authoring depth（ORPH-09 GUIDE + ORPH-10 RUNBOOK；TEMPLATE_*.md designated authority）M6 PR4-OB-2
 > 迁入。源 STANDARD 在 PR4 archive 前留作历史源。*
+>
+> *v1.2（2026-08-07）：#449 — §3 值表 `engineering-workflow` 行 + §3.1 决策树规则 3 的 4 个
+> `docs/rule/` STANDARD 族 glob 删除（四者死法各异，详规则树下的核对表）。两处同出 `13605c8`
+> （M6 PR4a-1，2026-06-04）逐字搬运当时正被归档的 Meta v2.2 §4.3.1 —— 归档仪式 `11fa427` 与之
+> **同日**，即这两行落盘时已 stale；且两处枚举本身互相矛盾（表格行缺 `.mcp.json`）。行为零 delta —— 现存 3 个
+> `docs/rule/` STANDARD 的 `track` 判定不变。同批在决策树下存档「本树不覆盖 SDD kernel 四目录」
+> 这一同源缺口（处置另立 #451）。*
