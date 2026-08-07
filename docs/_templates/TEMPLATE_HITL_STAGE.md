@@ -9,19 +9,19 @@ tags:
   - workflow
 aliases: []
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-08-07
 state: draft
-version: v0.1
+version: v0.2
 track: shared
 owner: 项目负责人
 ---
 
-# TEMPLATE: HITL_Prompt 单 Stage Prompt
+# TEMPLATE: 执行闭环单 Stage Prompt
 
 > **何时复制本模板**：
 >
-> 1. 在 `[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md` 的 §4 中**新增** stage（如 mj-agent 实际需要 stage 7.5）
-> 2. **派生** 子规范时（如新建 `[STANDARD]_MJ_Agent_AI_Engineering_Intake_v1.0.md` 时，每个 sub-step 用本模板）
+> 1. 给 17-stage 执行闭环**新增** stage（如 mj-agent 实际需要 stage 7.5）——骨架加进 [[sdd/workflows/execution-loop|execution-loop]] §1 的 stage 列表 + §4 Stage→Skill 映射表；**detailed prompt 本体落到对应 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`**
+> 2. **派生** 执行闭环子流程时（如新建 `sdd/workflows/<flow>.md`，每个 sub-step 用本模板）
 > 3. 复用本模板创建 `.claude/skills/mj-agent-flow-*/SKILL.md` 的 Workflow 段（不要照搬本模板进 SKILL.md frontmatter；SKILL.md frontmatter 走 ADR-013 native schema）
 >
 > **不**用本模板：
@@ -30,9 +30,16 @@ owner: 项目负责人
 > - 起草 ADR（用 [[TEMPLATE_ADR|TEMPLATE_ADR]]）
 > - 起草 SKILL.md body 主体（参考 [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
 
+> **per-stage prompt 住在哪（#449 truth-up）**：kernel 的 [[sdd/workflows/execution-loop|execution-loop]]
+> §Kernel home note **明写不 re-port** 每个 stage 的 detailed prompt —— 它只持 stage 骨架（§1）
+> 与 stage→skill 映射（§4），prompt 本体归 `.claude/skills/mj-agent-*` SKILL 所有。本模板此前指向
+> 的 HITL_Prompt STANDARD 已随 M6 PR4 归档冻结，照旧文操作会去改一个冻结件。
+> ⚠ 注意 **`§4` 在两处含义不同**：历史源 HITL_Prompt 的 §4.1-§4.15 是 per-stage prompt；
+> execution-loop 的 §4 是 Stage→Skill 映射表（源 HITL_Prompt §5）。
+
 ---
 
-> **使用方法**：复制下方 **fenced markdown block** 内容到目标位置（`docs/rule/[STANDARD]_..._HITL_Prompt_v*.md` 的 §4.X 子节，或 `.claude/skills/mj-agent-*/SKILL.md` 的 `## Workflow` 段）。把占位符替换为实际内容。
+> **使用方法**：复制下方 **fenced markdown block** 内容到目标位置（`.claude/skills/mj-agent-*/SKILL.md` 的 `## Workflow` 段，或 `sdd/workflows/<flow>.md` 的对应 stage 子节）。把占位符替换为实际内容。
 
 ---
 
@@ -113,7 +120,7 @@ mj-agent 专属规则（如有；可删此段）：
 
 | 字段 | 说明 | 示例 |
 |---|---|---|
-| `### 4.X <Stage 名称>` | stage 编号；mj-agent 17-stage 闭环已分配 §4.1-§4.15；新增 stage 用 4.16+；子 stage 用 §4.X.Y | `### 4.16 Studio E2E Probe` |
+| `### 4.X <Stage 名称>` | stage 编号；沿用**历史源 HITL_Prompt §4 的 per-stage prompt 编号**（§4.1-§4.15 已分配）以保持 stage 身份连续；新增 stage 用 4.16+；子 stage 用 §4.X.Y。⚠ 这个 `§4.X` **不是** execution-loop 的 §4（那是 Stage→Skill 映射表） | `### 4.16 Studio E2E Probe` |
 | `## Task` | 本 stage 的目标语句 + "不做什么"边界 | "请进行 Studio E2E 探针。不要创建 Issue ..." |
 | `### Must Follow` | 必须遵守的规范文档（不可少） | `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `### Use As Template` | 输出结构模板（可选；某些 stage 没有模板就省略此子段） | `docs/_templates/TEMPLATE_REPO_SCAN_RESULT.md` |
@@ -128,7 +135,7 @@ mj-agent 专属规则（如有；可删此段）：
 
 ## 命名约定
 
-- Stage 编号沿用 mj-agent HITL_Prompt v1.0 §1 的 17-stage 闭环（不要重新编号）
+- Stage 编号沿用 [[sdd/workflows/execution-loop|execution-loop]] §1 的 17-stage 闭环（不要重新编号）
 - Stage 名称：动作 + 名词（如"Repo Scan"、"Plan"）；不要用动名词（不要"Scanning Repo"）
 - 跨 stage 的子流程：用 `§4.X.Y`（如 `§4.10.1 Level A 只读`）
 - 新增 stage：编号从 `§4.16` 开始
@@ -161,3 +168,4 @@ mj-agent 专属规则（如有；可删此段）：
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-05-08 | v0.1 | 初稿（与 HITL_Prompt v1.0 同 PR 落地） |
+| 2026-08-07 | v0.2 | #449 — 「何时复制 / 使用方法 / 命名约定」三处指向的目标从已归档冻结的 HITL_Prompt STANDARD 改指活体去处（execution-loop §1/§4 + `.claude/skills/mj-agent-*` SKILL body）；补记 kernel 明写「per-stage prompt 不 re-port」+ 两处 `§4` 含义不同的歧义警示 |

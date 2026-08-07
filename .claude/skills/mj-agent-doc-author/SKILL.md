@@ -119,13 +119,19 @@ digraph author {
    → 不适用 track（per Meta v2.2 §2.6 例外；不写 frontmatter；A1-A3 不适用；本 skill 不处理）
 1. 路径在 src/mj_agent/{skills,prompts}/** → agent
 2. 路径在 src/mj_agent/{其他}/** → code
-3. 路径在 .claude/** 或 .mcp.json 或 docs/rule/[STANDARD]_*_HITL_Prompt*.md / _AI_Engineering_*.md / _Claude_Code_Settings_*.md / _MCP_Server_Governance_*.md → engineering-workflow
+3. 路径在 .claude/** 或 .mcp.json → engineering-workflow
 4. 路径在 docs/evaluation/ → agent
 5. 路径在 docs/{infrastructure,runbook,api}/ → code
 6. 路径在 docs/rule/ 但治"engineering 流程" → engineering-workflow
 7. 路径在 docs/rule/ 治文档/代码/数据 → code 或 shared
 8. 其他 → 默认 shared 并 PR body 论证
 ```
+
+> **SoT = `policies/documentation.md` §3.1**（Meta v2.2 §4.3.1 是已归档的历史源）；本段是投影，
+> 改判定必先改 kernel。规则 3 原列的 4 个 `docs/rule/` STANDARD 族 glob 已随 #449 删除 —— M6
+> PR4 / X5 后全部落空，删除对现存文件零行为 delta。⚠ 本树**不覆盖** SDD kernel 四目录
+> （`policies/` `sdd/` `decisions/` `capabilities/`），它们一律落规则 8 而实际按主题分流；
+> 缺口处置见 #451。
 
 ## Directory Placement Rules（Meta v2.2 §3.5，加 0 号 + 项目根例外）
 
@@ -146,7 +152,7 @@ digraph author {
 | 范畴 | 目录 | 判定 |
 |---|---|---|
 | **全局规则** | `docs/rule/` | 跨领域、跨服务、跨工具的项目级规范 |
-| **engineering-workflow STANDARD** | `docs/rule/[STANDARD]_*_HITL_Prompt*.md` 等 | 治 .claude/ + 工程流程 |
+| **engineering-workflow STANDARD** | `docs/rule/` 下治工程流程者（判定走 Track Decision 规则 6） | 治 .claude/ + 工程流程；**现仓内无此类件**——原 HITL_Prompt 族已归档，活体后继是 SDD kernel（`sdd/workflows/` + `policies/`），非 STANDARD |
 | **API 专属** | `docs/api/` | 跨服务的 API 约定 |
 | **领域专属** | `docs/infrastructure/<domain>/` | 与具体技术领域绑定（git / cicd / database） |
 
