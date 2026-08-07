@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.4
+version: 1.5
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-08-04
+updated: 2026-08-07
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -18,8 +18,10 @@ ai_visibility: source-of-truth
 > §5（Skill Hint 映射表）+ §4.8（Local Verification）/ §4.9（AI Self-review）的
 > **结构性 / 契约性** 内容。
 >
-> 源 STANDARD（`docs/rule/[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt.md`）
-> 在 `docs/rule/` 中保持 `state: active` 作为历史源，直至 M6 PR4 将其归档。
+> 源 STANDARD 已由 M6 PR4 归档 →
+> `archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1.md`
+> （原居 `docs/rule/`，归档后该目录不再持有此 STANDARD；下文以 HITL_Prompt 为「历史源」的
+> 提法均指该归档件）。
 >
 > **不在本文件 re-port 的内容（cross-ref，避免重复）**：
 > - 每个 stage 的 **detailed prompt**（源 §4.1-§4.15 的完整步骤 + Output 结构）由
@@ -471,4 +473,4 @@ ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未
 ---
 
 > *M6-PR4a kernel-authoring 收尾件；本文件为 17-stage 执行闭环 kernel home。
-> 源 STANDARD 归档由 M6 PR4 执行。*
+> 源 STANDARD 归档已由 M6 PR4 执行完毕（归档件路径见文首 kernel home note）。*

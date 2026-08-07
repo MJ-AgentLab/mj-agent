@@ -4,7 +4,7 @@ domain: OPS
 summary: mj-agent 是独立的 compose project（自带 postgres + redis 存储栈），通过 `mj-system-backend-network` (external=true) Docker network 仅以 consumer 身份访问上游业务系统 biz pg；环境矩阵与上游业务系统时间表对齐
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-05-11
+updated: 2026-08-07
 state: active
 decision: accepted
 track: code
@@ -94,8 +94,8 @@ mj-agent 与上游业务系统是**独立项目，独立 compose project，独�
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层数据访问边界 L1-L4）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（仅 biz_dws + 2 张 biz_dwd dim 表）
 - [[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010]]（独立仓库 + 生态复用）
-- mj-agent `infra/docker/docker-compose.mj-agent.yml`（独立 compose project 定义）
-- mj-agent `infra/docker/README.md` §Standalone deploy（启动 / 拆栈步骤）
+- mj-agent `docker/compose.yaml`（独立 compose project 定义；原为 `infra/docker/` 下的 `docker-compose.mj-agent.yml`，M5-PR2 `63c9fdd` 平移改名——该 commit 只搬不拆；4-file profile 分层更早，落地于 `34e82f0`〔2026-05-09〕，规则体见 ADR-026）
+- mj-agent `docker/README.md` §Standalone deploy（启动 / 拆栈步骤；原居 `infra/docker/`，同批平移）
 - mj-agent `capabilities/infrastructure/docker-compose/runbook.md` §1（DEV 部署；原 `dev_deployment.md` §2.3，M6 X3 并入 capability runbook）
 - **Future work** — biz schema 同步机制规划在 Phase 2（见 [[../../plans/mj-agent-roadmap-v1.6|roadmap v1.6]] §4.4 "schema 自动同步"）；Phase 1 阶段通过 `tests/contract/*` + `qcm_catalog.yaml` 静态镜像 + manual review 维持
 - 上游业务系统 `docker-compose.yml`（被 attach 的 `mj-system-backend-network` Docker network 创建方）
