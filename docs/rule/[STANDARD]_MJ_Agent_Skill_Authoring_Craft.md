@@ -4,9 +4,9 @@ domain: SKILL
 summary: 定义 mj-agent 两类 skill（in-source runtime / in-tree workflow）正文与 description 的写作工艺质量准则——可预测性为根、双负载权衡、信息阶梯、完成判据、leading words、五大失效模式 + no-op 剪枝；是 ADR-013/016 schema 层与 A12 description 最低门之上的「正文质量层」，被 doc-author / runtime-skill-doc-improve / flow-self-review 引用
 owner: ranzuozhou
 created: 2026-06-22
-updated: 2026-06-22
+updated: 2026-08-07
 state: draft
-version: v1.0
+version: v1.1
 track: shared
 tags:
   - standard
@@ -199,5 +199,5 @@ leading word = 用一个**预训练里已有的紧凑概念**锚定一类行为�
 - [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（`mj-agent-<group>-<verb>` namespace + 5 family + lifecycle）
 - [[../../decisions/ADR-003_Progressive_Disclosure|ADR-003]]（渐进披露原则）
 - [[../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（拍板模型；必停不可绕）
-- [[../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5 Level 矩阵 + §11 self-review
+- [[../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5 Level 矩阵 + §6 AI Self-review 检查清单
 - [[STANDARD]_GitHub_Markdown|GitHub-Flavored Markdown 编写规范]]（本文件遵循的 GFM 语法基线）

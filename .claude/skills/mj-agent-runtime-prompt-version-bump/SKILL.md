@@ -26,7 +26,7 @@ description: This skill walks through proposing diffs + version bump for mj-agen
 - 用户提到"system.md 升级 / prompt version bump / 升 v1.7 → v1.8"
 - ADR-000 P1/P2/P3 数据边界原则有调整
 - system.md 现有 hard rule 要紧 / 放宽（如 v1.3 收紧 R1/R2 行为）
-- execution-loop §4.7 Stage 8 B 风味识别后系统提示改动
+- execution-loop §4.1 的 Stage 8 映射（历史源 HITL_Prompt §4.7）B 风味识别后系统提示改动
 
 **MAY skip when**：
 
@@ -57,7 +57,7 @@ digraph bump {
 
   s5 [label="Step 5: Propose diff (待拍板)\n• body 改动\n• version bump (semver: minor/major)\n• eval_references 同步\n• model_binding 一致" shape=box];
 
-  s6 [label="Step 6: Impact analysis\n• §3.1 必停 11 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket\n• Studio probe H1/H2/H3/R1/R2 影响\n• smoke test 影响" shape=box];
+  s6 [label="Step 6: Impact analysis\n• §3.1 prompt-version-or-body-change 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket\n• Studio probe H1/H2/H3/R1/R2 影响\n• smoke test 影响" shape=box];
 
   s7 [label="Step 7: Output proposed diff\n+ HITL Questions" shape=diamond];
 
@@ -184,7 +184,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 ```markdown
 ## Impact Analysis
 
-- **Stage 8 B 风味触发**：本改动是 in-source PROMPT body 修改 → §3.1 必停 11 强制 HITL
+- **Stage 8 B 风味触发**：本改动是 in-source PROMPT body 修改 → §3.1 必停面 prompt-version-or-body-change 强制 HITL
 - **EVAL backlog ticket auto-issue**：per execution-loop §7.3 Rule 11，PR merge 后自动开
 - **Studio probe 影响**：
   - H1（biz_dws 表查询）：<预期保持/变化>
@@ -303,7 +303,7 @@ token_budget_estimate: <new estimate>   # 显著变化时更新
 ## Reference Files
 
 - [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束；supersede ADR-015 §决策点 4 read-only 残留）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 11 + §4.7 Rule 9 + §7.3 Rule 11（EVAL backlog）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停面 prompt-version-or-body-change + §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）+ §7.3 Rule 11（EVAL backlog）
 - [[../../../sdd/adapters/prompt|prompt]]（PROMPT authoring：version / model_binding / token_budget_estimate / eval_references / supersedes + frontmatter strip 契约）
 - [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（P1/P2/P3 不可放宽）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail）

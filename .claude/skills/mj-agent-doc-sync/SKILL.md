@@ -144,7 +144,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ```
 检测到 code 改动触及 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
-§3.1 必停 10/11 触发；建议先：
+§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
 (1) 用 /mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 /mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
 (2) Domain Expert + Prompt Engineer review
 (3) Owner 拍板后 runtime skill 落盘 + 再同步 docs

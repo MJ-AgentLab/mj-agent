@@ -71,6 +71,24 @@ jobs:
           MJ_AGENT_A4_STRICT: "1"
         run: uv run python scripts/check_wikilinks.py
 
+      - name: Kernel section refs (execution-loop)
+        # Third doc-integrity validator (#453). check_wikilinks.py deliberately
+        # SKIPS `#anchor` fragments and these `§N.M` citations are plain prose,
+        # not wikilinks — so nothing saw 66 references pointing at kernel
+        # sections that do not exist (execution-loop §4 changed meaning during
+        # the M6 PR4 refactor: HITL_Prompt's per-stage prompts §4.1-§4.15 were
+        # NOT re-ported, and kernel §4 is now the Stage → Skill map).
+        # WARNING-FIRST (continue-on-error) — a NEW warning gate is not a
+        # posture flip (#444 判例), so no ci-blocking-gate-toggle 拍板 applies.
+        # A blocking flip is a CANDIDATE, deliberately NOT pursued here and
+        # therefore NOT registered under policies/ci-gates.md §4.1.1; per that
+        # section the only consequence is that a future flip falls back to the
+        # §4 "Gate 启用前" evidence standard (1-week DRI dry-run) instead of the
+        # streak-based absorption. Flip axis would be this step's
+        # continue-on-error: true→false (no --fail-on threshold axis).
+        continue-on-error: true
+        run: uv run python scripts/check_loop_section_refs.py
+
       - name: A6 audit schema (evidence/ai-context-audit)
         # Durability gate (#359 / #347 §三.2): the evidence/ai-context-audit/
         # quarterly A6 audit snapshots use SCHEMA.md §2's own frontmatter schema

@@ -25,7 +25,7 @@ description: This skill analyzes mj-agent in-source SKILL.md body content (src/m
 - 用户要升级 / 改进 / 优化 mj-agent in-source SKILL.md（src/mj_agent/skills/<name>/SKILL.md body）
 - 用户提到 "skill 五段式 / improve runtime SKILL / B 风味 / propose diff for SKILL"
 - 用户要把 query-writing 类老 skill body 升级到 runtime-skill 五段式（Purpose / When to use / Planning workflow / Common patterns / Anti-patterns）
-- execution-loop §4.7 Stage 8 B 风味识别后
+- execution-loop §4.1 的 Stage 8 映射（历史源 HITL_Prompt §4.7）B 风味识别后
 
 **MAY skip when**：
 
@@ -54,7 +54,7 @@ digraph improve {
 
   s4 [label="Step 4: Propose diff (待拍板)\n• body 改动建议\n• frontmatter version bump?\n• eval_references 同步审查 (A11 transitional waiver)\n• Anti-patterns 段强化建议" shape=box];
 
-  s5 [label="Step 5: Impact analysis\n• 改动 stage 8 B 风味 触发\n• §3.1 必停 10 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket 自动开单" shape=box];
+  s5 [label="Step 5: Impact analysis\n• 改动 stage 8 B 风味 触发\n• §3.1 runtime-skill-content-change 自动 HITL\n• §4.15 Rule 11 EVAL backlog ticket 自动开单" shape=box];
 
   s6 [label="Step 6: Output proposed diff\n+ HITL Questions for Domain Expert review" shape=diamond];
 
@@ -159,7 +159,7 @@ mj-agent 专属硬约束（参 ADR-006/009 数据边界；本 skill 自己也含
 ```markdown
 ## Impact Analysis
 
-- **Stage 8 B 风味触发**：本改动是 in-source canonical body 修改 → §3.1 必停 10 强制 HITL
+- **Stage 8 B 风味触发**：本改动是 in-source canonical body 修改 → §3.1 必停面 runtime-skill-content-change 强制 HITL
 - **EVAL backlog ticket auto-issue**：per execution-loop §7.3 Rule 11，PR merge 后自动开 follow-up issue 跟踪
 - **预期 LLM 行为变化**：<具体；如 "biz_dws 表查询时新增同环比字段优先建议"，"<场景>下的回答风格变化">
 - **smoke test 影响**：<如适用；list affected smoke 用例>
@@ -259,7 +259,7 @@ per execution-loop §3.3 7-段格式：
 ## Reference Files
 
 - [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现；supersede ADR-015 §决策点 4 read-only 残留）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停 10 + §4.7 Rule 9（B 风味永远 HITL）+ §7.3 Rule 11（EVAL backlog ticket）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停面 runtime-skill-content-change + §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）+ §7.3 Rule 11（EVAL backlog ticket）
 - [[../../../sdd/adapters/runtime-skill|runtime-skill]]（五段式 body + frontmatter strip 契约）+ [[../../../policies/documentation|documentation]] §5.3（EVAL coupling A11）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；body Anti-patterns 强化依据）
 - [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]（version bump + archive workflow）

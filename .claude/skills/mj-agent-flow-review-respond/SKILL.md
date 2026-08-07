@@ -16,7 +16,7 @@ description: This skill processes review comments and CI failures on **your own*
 | `/mj-agent-git-review-pr`（PR-B3） | **审别人 PR** | Architecture / design / merge-readiness review |
 | `/mj-agent-flow-review-respond`（本 skill） | **回应自己 PR comments** | Stage 15 of HITL flow — 处理收到的 feedback |
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §4.13（Stage 15 Rules + Output 6 字段）+ [[../../../sdd/workflows/execution-loop|execution-loop]] §6（AI Self-review 双段约束；修复后须出双段证据；实操矩阵见 §5）.
+**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 13/15 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.13 Rules + Output 6 字段）+ [[../../../sdd/workflows/execution-loop|execution-loop]] §6（AI Self-review 双段约束；修复后须出双段证据；实操矩阵见 §5）.
 
 ## Workflow
 
@@ -81,7 +81,7 @@ gh pr checks <pr-id>                                         # CI status detail
 
 ## Step 2: Classify Each Comment
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.13 Rules 2，每条 comment 归类（一条可多类）：
+按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1 的 Stage 13/15 映射（历史源 HITL_Prompt §4.13 Rules 2），每条 comment 归类（一条可多类）：
 
 | 类别 | 触发特征 | 例 |
 |---|---|---|
@@ -119,10 +119,10 @@ gh pr checks <pr-id>                                         # CI status detail
 
 | 维度 | 检查 | 升档 |
 |---|---|---|
-| **in-source canonical** | comment 触及 src/mj_agent/skills/**/SKILL.md 或 system.md body | **HITL High**（§3.1 必停 10/11） |
-| **biz_catalog** | comment 触及 qcm_catalog.yaml 镜像（与 mj-system STANDARD §2-§4 漂移） | **HITL High**（§3.1 必停 12） |
-| **SQL guardrail / precheck** | comment 触及 tools/sql/{guardrail,precheck}.py 放宽规则 | **HITL High**（§3.1 必停 13） |
-| **system.md `version` bump** | comment 触及 system.md frontmatter `version` 字段 | **HITL High**（§3.1 必停 11） |
+| **in-source canonical** | comment 触及 src/mj_agent/skills/**/SKILL.md 或 system.md body | **HITL High**（§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change） |
+| **biz_catalog** | comment 触及 qcm_catalog.yaml 镜像（与 mj-system STANDARD §2-§4 漂移） | **HITL High**（§3.1 必停面 biz-catalog-sync） |
+| **SQL guardrail / precheck** | comment 触及 tools/sql/{guardrail,precheck}.py 放宽规则 | **HITL High**（§3.1 必停面 sql-guardrail-relax） |
+| **system.md `version` bump** | comment 触及 system.md frontmatter `version` 字段 | **HITL High**（§3.1 必停面 prompt-version-or-body-change） |
 
 > **High 触发不可绕过**：即便 reviewer 是项目负责人，需求/API/schema/权限/用户行为/§3.1 4 项 mj-agent 专属变更也要在 PR description 显式记录决策。
 
@@ -195,7 +195,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 | 3 | @rev | tests/ | 测试 | P1 | 仅本 PR | accept |
 | 4 | @rev | naming | 风格 | P2 | 仅本 PR | accept |
 | 5 | CI | mypy | CI failure | P0 | 仅本 PR | accept |
-| 6 | @rev | system.md:5 | bug | P0 | **in-source canonical**（§3.1 必停 10） | **HITL** |
+| 6 | @rev | system.md:5 | bug | P0 | **in-source canonical**（§3.1 必停面 runtime-skill-content-change） | **HITL** |
 
 ### Risk: **High**（Comment #2 API change + #6 in-source canonical）
 
@@ -212,7 +212,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 2. **Comment #6: reviewer 要改 system.md system prompt body**
    - 当前观察：本 PR 是 documentation/* PR，未在 scope 内动 system.md
    - 不确定点：扩 scope 改 system.md vs 拒绝 vs follow-up
-   - 为什么重要：B 风味 in-source canonical 改动是 §3.1 必停 10/11；version bump 必同步 eval_references；建议走 /mj-agent-runtime-prompt-version-bump（PR-C2）
+   - 为什么重要：B 风味 in-source canonical 改动是 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 /mj-agent-runtime-prompt-version-bump（PR-C2）
    - 选项：A. 接受扩 scope（变 feature/* PR；本 PR rebase）/ B. defer → follow-up PR / C. 改 SPEC 重对齐
    - 推荐：B（B 风味单独 PR + Domain Expert review）
    - 默认假设：B
@@ -263,7 +263,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.13（Stage 15 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 13/15 映射；历史源 HITL_Prompt §4.13 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §6（修复后须出双段证据；AI Self-review 双段约束；实操矩阵见 §5）
 - [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（PR description / 回复规范）
 - `.claude/skills/mj-agent-git-review-pr/SKILL.md`（PR-B3 落地，方向相反对照）

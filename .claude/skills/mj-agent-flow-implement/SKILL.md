@@ -7,7 +7,7 @@ description: This skill orchestrates mj-agent coding methodology (HITL Stage 8 I
 
 ## Overview
 
-The 4th orchestrator in `mj-agent-flow-*` family — operationalizes [[../../../sdd/workflows/execution-loop|execution-loop]] §4.7 Rules 1-15 hard constraints. Runs **during** coding (after Plan/SPEC confirmed, before Stage 10 verification), enforcing 4 methodology pillars:
+The 4th orchestrator in `mj-agent-flow-*` family — owns the Stage 8 Implementation rules the kernel only maps ([[../../../sdd/workflows/execution-loop|execution-loop]] §4.1; the per-stage prompt is deliberately NOT re-ported into the kernel — historical source HITL_Prompt §4.7 Rules 1-15) as hard constraints. Runs **during** coding (after Plan/SPEC confirmed, before Stage 10 verification), enforcing 4 methodology pillars:
 
 1. **Red-green-refactor** for behavior changes (Rules 6, 风味 A/B applicable)
 2. **Root-cause-first** for bug fixes (Rule 7, no bypass / no try-except 吞错)
@@ -17,7 +17,7 @@ The 4th orchestrator in `mj-agent-flow-*` family — operationalizes [[../../../
 The skill is **the in-tree first preference** for §4.7 Implementation Skill Hint. When `superpowers:*` skills available, can be invoked as optional sub-call enhancers; when unavailable, falls back to manual execution.
 
 **Reference**:
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.7（Stage 8 Implementation, Rules 1-15）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
 - mj-system `.claude/skills/mj-sys-flow-implement/SKILL.md`（直接派生源；mj-agent 加 3 风味 + Rules 9-15）
 
 ## Workflow
@@ -99,7 +99,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 ## Step 2: Classify Task Type + 风味
 
-**3 风味判定**（mj-agent 专属，参 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.7 + ADR-015 §决策点 3）：
+**3 风味判定**（mj-agent 专属，参 [[../../../sdd/workflows/execution-loop|execution-loop]] §5（实现 3 风味 A/B/C）+ ADR-015 §决策点 3）：
 
 | 修改路径 | 风味 | 强约束 |
 |---|---|---|
@@ -281,7 +281,7 @@ handoff 输出：
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.7（Stage 8 Implementation Rules 1-15）
+- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
 - [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味决策） + §决策点 4（runtime 类目硬约束）
 - mj-system `.claude/skills/mj-sys-flow-implement/SKILL.md`（直接派生源；mj-agent 加 3 风味 + Rules 9-15）
 - `.claude/skills/mj-agent-flow-verify/SKILL.md`（PR-B3 落地，Stage 10 hand-off）

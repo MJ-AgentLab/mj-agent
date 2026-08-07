@@ -112,7 +112,7 @@ git diff --name-only HEAD
 - **可选 / 多数 N/A 段**：§4 Configuration（除非新增可调阈值）
 - **常见 anti-pattern**：
   - ❌ Scope 中漏写 "不涉及 DDL / migration"（mj-agent 永远只读，必须显式声明）
-  - ❌ §6 Rollback 写 "不涉及"（guardrail 放宽是 §3.1 必停 13；必须有回滚路径）
+  - ❌ §6 Rollback 写 "不涉及"（guardrail 放宽是 §3.1 必停面 sql-guardrail-relax；必须有回滚路径）
   - ❌ §7 漏 R1（biz_ods 拒绝）/ R2（导出全部）红线探针
 
 ### §4.3 In-source canonical（runtime LLM 上下文）— mj-agent 专属
