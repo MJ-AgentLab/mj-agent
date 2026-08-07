@@ -14,7 +14,7 @@ description: This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-i
 - src/mj_agent/skills/**/SKILL.md body 与 prompts/system.md 改动 → silent failure 风险（错答案 / 幻觉 / 业务漂移）；EVAL 是唯一可量化捕获手段
 - A11 transitional waiver decay：Phase 2 EVAL framework 落地后，state: active 的 SKILL/PROMPT 必须有非空 `eval_references`；本 skill 帮 B 风味改动方在 PR review 前就把 EVAL 草稿就绪
 - TEMPLATE_EVAL.md（Phase D PR-D1 落地）8 段 + 4 子类（outcome/trajectory/component/integration）+ 3 judge 类型（rule_based / llm_judge / human_review）—— 选什么子类、什么 judge、baseline metric 量级、regression threshold 选 0.05 还是其他，需要按 target 量身设计
-- §4.15 Rule 11：merge 后自动开 EVAL backlog ticket，但"开单"不等于"已设计"——本 skill 把 ticket 转化为可 review 的 EVAL 草稿
+- execution-loop §7.3 Rule 11：merge 后自动开 EVAL backlog ticket，但"开单"不等于"已设计"——本 skill 把 ticket 转化为可 review 的 EVAL 草稿
 - Phase 2 EVAL framework 选型（pytest-based vs 独立 runner / judge model 选什么 / run frequency）尚未决议；**本 skill 框架无关**：只产生 TEMPLATE_EVAL.md 文档草稿，框架决议落地后由 PR-D2-enforcement 跑实际测试
 
 **hard constraint**: 本 skill 先产生 proposed EVAL document（基于 TEMPLATE_EVAL.md 8 段填空版）+ HITL Questions for Domain Expert + Prompt Engineer review，**落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点，拍板后由本 skill 直接 Write 到 `docs/evaluation/`**（工具中立停点，v5 §5.3；Claude Code 载体 = AskUserQuestion——`docs/evaluation/` 非必停面、无 settings `ask` 门二次批准，Codex 载体 = AGENTS.md 自守 prose 停点）；但**不** run pytest tests/eval（不跑实际 EVAL；Phase 2 framework）、**不**改任何 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml；走 sibling runtime-* skill）。
@@ -66,7 +66,7 @@ digraph eval_baseline {
 
   s7 [label="Step 7: Fill TEMPLATE_EVAL.md draft\n8 段 + frontmatter 完整\n含 Open Questions §8.3 EVAL framework 选型 placeholder" shape=box];
 
-  s8 [label="Step 8: Impact analysis + HITL Questions\n• A8 EVAL 引用同步审查 (Phase 2 起强制非空)\n• A11 transitional waiver decay 进度\n• §4.15 Rule 11 EVAL backlog ticket 关联" shape=box];
+  s8 [label="Step 8: Impact analysis + HITL Questions\n• A8 EVAL 引用同步审查 (Phase 2 起强制非空)\n• A11 transitional waiver decay 进度\n• execution-loop §7.3 Rule 11 EVAL backlog ticket 关联" shape=box];
 
   s9 [label="Step 9: Output proposed EVAL document\n+ HITL Questions for Domain Expert + Prompt Engineer review" shape=diamond];
 
@@ -236,7 +236,7 @@ judges: [<Step 5 选定 list>]
 
 - **A8 EVAL 引用同步审查**（per documentation §5.3 A8）：target 的 eval_references frontmatter field 应在本 EVAL 写盘后 append 本文件路径
 - **A11 transitional waiver decay 进度**：当前 transitional / Phase 2 强制；本 EVAL 落地推进 1 个 target 进入 active EVAL coverage
-- **§4.15 Rule 11 EVAL backlog ticket**：merge 后自动开的 issue → 关联本 EVAL；issue 应 close 当 baseline_value 实测填回 active state
+- **execution-loop §7.3 Rule 11 EVAL backlog ticket**：merge 后自动开的 issue → 关联本 EVAL；issue 应 close 当 baseline_value 实测填回 active state
 - **Phase 2 EVAL framework 选型 unblock**：本 EVAL 草稿 dataset / judge prompt / regression criteria 框架无关；framework 选型决议（PR-D2-enforcement）后即可挂上跑
 - **关联 SKILL/PROMPT version**：target 的 frontmatter `version` 字段应同步 bump（per ADR-011）；如未 bump → propose 同步 bump 建议
 - **关联 SPEC/RUNBOOK**：如本 EVAL 由某 SPEC 触发 → 在 §1.2 关联
@@ -352,7 +352,7 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 - ❌ 不修改 .claude/skills/SKILL.md → /mj-agent-doc-author（不同 track + schema）
 - ❌ 不自动 commit（HITL 后由 /mj-agent-git-commit）
 - ❌ 不替代 Domain Expert + Prompt Engineer review（仅产生 review 材料）
-- ❌ 不取代 §4.15 Rule 11 自动开单（本 skill 是开单后 → 草稿就绪 阶段）
+- ❌ 不取代 execution-loop §7.3 Rule 11 自动开单（本 skill 是开单后 → 草稿就绪 阶段）
 
 ## Sub-skill / Tool Calls
 
@@ -370,7 +370,7 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 ## Reference Files
 
 - [[../../../docs/_templates/TEMPLATE_EVAL|TEMPLATE_EVAL.md]]（Phase D PR-D1 落地；本 skill 直接消费此模板填空）
-- [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟；supersede ADR-015 §决策点 4 read-only 残留）+ ADR-015 §决策点 5（EVAL backlog ticket auto-issue §4.15 Rule 11，历史源）
+- [[../../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟；supersede ADR-015 §决策点 4 read-only 残留）+ ADR-015 §决策点 5（EVAL backlog ticket auto-issue，历史源 HITL_Prompt §4.15 Rule 11）
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change（触发本 skill）+ §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）+ §4.1 的 Stage 13/15 映射（regression 处理；历史源 HITL_Prompt §4.13）+ §7.3 Rule 11（EVAL backlog ticket auto-issue）
 - [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]（EVAL authoring spec；本 skill 落地的源依据）+ [[../../../policies/documentation|documentation]] §5.3（A8/A11 EVAL 引用同步审查；transitional waiver decay 进度）
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
@@ -393,7 +393,7 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 - ❌ 不 propose baseline_value 实数（本 skill 不跑实测；只能填 `<TBD>` placeholder；实测在 PR-D2-enforcement 跑）
 - ❌ 不 propose 修改 EVAL framework 选型（pytest-based vs 独立 runner / judge model / run frequency 是 PR-D2-enforcement 决议；本 skill 在 §8.3 Open Questions 仅占位）
 - ❌ 不替代 Domain Expert + Prompt Engineer review（人工评分 / red-line case 设计 / judge prompt 校准必须 expert review）
-- ❌ 不替代 §4.15 Rule 11 EVAL backlog auto-issue（本 skill 在 issue 之后；issue close 条件是 baseline_value 实测进 active state）
+- ❌ 不替代 execution-loop §7.3 Rule 11 EVAL backlog auto-issue（本 skill 在 issue 之后；issue close 条件是 baseline_value 实测进 active state）
 
 ## Handoff
 
@@ -406,6 +406,6 @@ HITL 通过后：
   - 如 target = system.md → /mj-agent-runtime-prompt-version-bump 跑 frontmatter 段
 - /mj-agent-flow-self-review (Stage 11) 自检
 - /mj-agent-git-commit + /mj-agent-git-push + /mj-agent-git-pr
-- PR description 注明：(a) §4.15 Rule 11 EVAL backlog ticket 关联 close 条件；(b) Phase 2 EVAL framework 落地后跑 baseline 实测计划
+- PR description 注明：(a) execution-loop §7.3 Rule 11 EVAL backlog ticket 关联 close 条件；(b) Phase 2 EVAL framework 落地后跑 baseline 实测计划
 - Phase 2 EVAL framework 落地（PR-D2-enforcement）后由该 PR / framework runner 自动跑 baseline_value 实测 → state: draft → state: active → A11 transitional waiver decay 推进 1 个 target
 ```

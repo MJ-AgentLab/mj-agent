@@ -14,7 +14,7 @@ The 4th orchestrator in `mj-agent-flow-*` family — owns the Stage 8 Implementa
 3. **Fresh evidence** before claiming completion (Rule 8)
 4. **mj-agent-specific 3-flavor discipline**（Rules 9-15）：A 纯代码 / B in-source canonical **永远 HITL** / C infra
 
-The skill is **the in-tree first preference** for §4.7 Implementation Skill Hint. When `superpowers:*` skills available, can be invoked as optional sub-call enhancers; when unavailable, falls back to manual execution.
+The skill is **the in-tree first preference** for the Stage 8 Implementation Skill Hint (historical source HITL_Prompt §4.7; the generic Skill Hint rules live in kernel §2.2). When `superpowers:*` skills available, can be invoked as optional sub-call enhancers; when unavailable, falls back to manual execution.
 
 **Reference**:
 - [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
@@ -64,7 +64,7 @@ digraph implement {
 - Stage 5/6/7 (HITL Gates) 通过，用户准备写代码
 - 用户："开始编码" / "implement" / "实现 SPEC" / "Stage 8" / "TDD" / "先写测试"
 - Bug fix 触发（test failure / crash / 异常输出）— 强制 root-cause-first
-- 声称完成前（"done" / "完成了"）— 强制 fresh-evidence 检查（进 §4.8 前）
+- 声称完成前（"done" / "完成了"）— 强制 fresh-evidence 检查（进 Stage 10 本地验证前；execution-loop §5）
 
 **MAY skip when**：
 - 纯 docs 拼写 / 措辞修改 — 直接编辑无方法学开销
@@ -95,7 +95,7 @@ git diff --name-only HEAD
 git diff --stat $(git merge-base develop HEAD)..HEAD
 ```
 
-如 Plan / SPEC 缺失（非 trivial 任务）→ STOP，提示先跑 `/mj-agent-flow-plan` 或 `/mj-agent-doc-author`。无 plan 编码违反 §4.7 Rule 1（保持改动范围最小）。
+如 Plan / SPEC 缺失（非 trivial 任务）→ STOP，提示先跑 `/mj-agent-flow-plan` 或 `/mj-agent-doc-author`。无 plan 编码违反 HITL_Prompt §4.7 Rule 1（保持改动范围最小）。
 
 ## Step 2: Classify Task Type + 风味
 
@@ -121,7 +121,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 2. **HITL 必停**：输出"检测到 B 风味 in-source canonical 改动；§3.1 必停项 10/11 触发"
 3. 建议先用 `/mj-agent-runtime-skill-doc-improve` 或 `/mj-agent-runtime-prompt-version-bump`（PR-C2 落地后）propose diff
 4. 项目负责人 review diff → 用户确认接受 → 才进 Step 3
-5. PR description 必须含 EVAL backlog ticket 自动开单声明（§4.15 Rule 11）
+5. PR description 必须含 EVAL backlog ticket 自动开单声明（execution-loop §7.3 Rule 11）
 
 不分类错误 → 走错方法学路径，浪费工作。如不清晰，问用户。
 

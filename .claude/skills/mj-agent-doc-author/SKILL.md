@@ -58,7 +58,7 @@ digraph author {
 
   validate [label="Call /mj-agent-doc-validate" shape=box style=bold];
 
-  post [label="Post-creation\n• INDEX.md 同步\n• CLAUDE.md sync (按 track allowlist)\n• EVAL backlog ticket（B 风味；§4.15 Rule 11）" shape=box];
+  post [label="Post-creation\n• INDEX.md 同步\n• CLAUDE.md sync (按 track allowlist)\n• EVAL backlog ticket（B 风味；execution-loop §7.3 Rule 11）" shape=box];
 
   done [label="Done" shape=doublecircle];
 
@@ -208,7 +208,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 (1) 用 /mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 /mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
 (2) Domain Expert + Prompt Engineer review
 (3) Owner 拍板后由 runtime skill 经 `ask` 门落盘
-(4) 同步 PR description 含 EVAL backlog ticket（§4.15 Rule 11）
+(4) 同步 PR description 含 EVAL backlog ticket（execution-loop §7.3 Rule 11）
 
 或：(A) 跳过 B 风味流程直接写（user 全责，不推荐）/ (B) 取消本次 doc-author 调用
 ```
@@ -266,6 +266,6 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 - /mj-agent-doc-validate 校验 frontmatter + wikilinks
 - INDEX.md 同步（如新建 canonical doc）
 - CLAUDE.md sync（如 allowlist 项；按 track 落入对应段）
-- B 风味改动 → 自动开 EVAL backlog ticket（§4.15 Rule 11）
+- B 风味改动 → 自动开 EVAL backlog ticket（execution-loop §7.3 Rule 11）
 - /mj-agent-git-commit 提交
 ```
