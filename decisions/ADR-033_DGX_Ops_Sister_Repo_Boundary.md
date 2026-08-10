@@ -1,7 +1,7 @@
 ---
 type: adr
 domain: OPS
-summary: DGX-Spark serving/ops 由独立姊妹仓 MJ-AgentLab/dgx-mlops 治理；mj-agent 是唯一 DGX consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费 OpenAI-compat endpoint；跨仓 cross-ref 总数 ≤5（mj-agent 自设预算）
+summary: DGX-Spark serving/ops 由独立姊妹仓 MJ-AgentLab/dgx-mlops 治理；mj-agent 是唯一 DGX consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费 OpenAI-compat endpoint；跨仓 cross-ref 总数 ≤5（mj-agent 自设预算；计数单位 = 受治理跨仓锚点，2026-08-10 拍板）
 owner: 项目负责人
 created: 2026-06-11
 updated: 2026-08-10
@@ -36,7 +36,14 @@ mj-agent 侧既有决策已确立纯消费侧立场：
 1. **DGX serving / ops 归姊妹仓**：DGX-Spark 的 LLM serving 与运维（驱动 / 容器 / 模型部署 / 监控 / 评测底座）由独立姊妹仓 **`MJ-AgentLab/dgx-mlops`** 治理；mj-agent 仓不承载任何 DGX serving/ops 资产。
 2. **mj-agent 是唯一 DGX consumer**（当前阶段）：消费路径唯一——经 [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] provider 抽象（`LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL` + `LLM_MODEL_ID` 覆写；默认 `LLM_MODEL_ID` 是 Ark 云 id，切换时必须覆写）。
 3. **DGX 不部署 mj-agent**：重申 ADR-026 正文 2026-05-09 决策句；`Profile` enum 维持 `dev|test|prod` 不扩 dgx——DGX 是 LLM-endpoint switch，不是 deploy target。
-4. **跨仓反耦合预算**：dgx-mlops ↔ mj-agent 文档 cross-ref 总数 **≤ 5**（**mj-agent 自设约束**，非上游文档要求；防双仓互相渗透、保持各自可独立演进）（**计数口径**：仅计双仓 decision/capability 文档间的真实 cross-ref 指针；不计自动生成的 INDEX 行 / CHANGELOG 历史条目 / 运维 SKILL 提及。）；mj-agent 仓不存放任何 dgx-mlops 侧 secrets / runner 凭证；mj-agent 不替 dgx-mlops 执行任何 M/D-phase。
+4. **跨仓反耦合预算**：dgx-mlops ↔ mj-agent 文档 cross-ref 总数 **≤ 5**（**mj-agent 自设约束**，非上游文档要求；防双仓互相渗透、保持各自可独立演进）；mj-agent 仓不存放任何 dgx-mlops 侧 secrets / runner 凭证；mj-agent 不替 dgx-mlops 执行任何 M/D-phase。
+
+   **计数口径**（计数单位 2026-08-10 项目负责人拍板，issue #460；沿用并明确化 2026-07-01「语义 cross-ref」拍板，`plans/[PLAN]_255_dgx-cross-ref-t1.md` Task 4）：
+
+   - **计数单位 = 受治理跨仓锚点（governed cross-repo anchor）** —— 既不是承载指针的文档份数，也不是指针出现次数。一个锚点 = 一处经 **HITL-CROSS**（双仓 owner 双签 + 双侧 PR）确立的受治理绑定所落成的 canonical 段落；双仓各自的锚点段落分别计 1（正向锚点与反向锚点各计各）。**只有绑定才产生锚点**——未经 HITL-CROSS 确立的提及一律不计（见下「不计」）。因此预算 ≤ 5 的实际含义是：双仓被契约钉死的位置总数不超过 5 处。
+   - **通道折算**：dgx-mlops `capabilities/mj-agent/llm-provider-bridge/` 整体折算为**单一受管通道**（Decision 1 / Decision 2 指定的唯一耦合面），其内部文件之间以及对 mj-agent 的引用不逐份计入。
+   - **不计**：自动生成的 INDEX 行 / CHANGELOG 历史条目 / 运维 SKILL 提及 / 对 mj-agent 代码 · `.env` · runtime 符号的提及（非文档指针）/ **非绑定性引用** —— 如 dgx-mlops `ADR-001` `ADR-003` 引本 ADR 作先例，引用不建立耦合、不计入。
+   - **当前值 3 / 5**（2026-08-10 复核）：[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] §Cross-ref · 本 ADR §Cross-ref 槽位 · dgx-mlops `ADR-023-m7-phase2-e2e` 反向 anchor。
 
 ## Cross-ref 槽位（T-1 已填实 2026-06-29）
 
@@ -69,6 +76,8 @@ cross-ref 状态 = **active**（2026-07-03；[[decisions/ADR-027_LLM_Provider_Ab
 - **B. DGX ops 并入上游 mj-system**：拒绝。DGX 服务对象是 mj-agent 的 LLM 消费（现阶段唯一 consumer）；mj-system 是数据仓侧，边界更远
 - **C. 不立仓、临时脚本管理**：拒绝。dgx-mlops 已规划 M0-M7 治理（项目负责人 2026-06-11 批次决策）；临时态会让 serving 配置无 source of truth
 - **D. `Profile` enum 扩 dgx**：已被 ADR-026 / ADR-027 否决（DGX 不部署 mj-agent；endpoint switch 非 profile）
+- **E. 计数单位取「承载指针的文档份数」**（Decision 4 计数口径的备选，2026-08-10 评估）：拒绝。字面支持度最高，但按此读法实测 **16 份**（mj-agent 3 + dgx-mlops 13），当场超 ≤5 预算 3 倍——须同时上调上限或记 risk acceptance；且每次跨仓写文档都要重扫双仓才能报数，治理成本与「防渗透」的实际收益不匹配
+- **F. 计数单位取「指针出现次数」**（同上批备选）：拒绝。最贴「指针」字面（逐处计），但实测 **73 处**（mj-agent 32 + dgx-mlops 41），超限 14 倍——数量型预算事实失效，只能改分层预算或废除数量约束。更关键的是：受管通道内部的密集互指恰是耦合被**正确收拢**的证据，把它计为渗透会激励拆散通道，与 Decision 1 / Decision 2 相悖
 
 ## References
 
