@@ -10,9 +10,9 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-07-17
+updated: 2026-08-10
 state: draft
-version: v0.4
+version: v0.6
 track: code
 owner: 项目负责人
 ---
@@ -21,8 +21,8 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
-> **版本**：v0.4
-> **最后更新**：2026-07-08
+> **版本**：v0.6
+> **最后更新**：2026-08-10
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
 > GUIDE）、[[policies/documentation|documentation policy]]、
@@ -313,6 +313,7 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | precheck 报 `no_select_star` | SQL 含 `SELECT *` | 显式列名 |
 | Studio/Chainlit 本地 URL 502 / LLM 502/`httpx.ConnectError`（Clash/v2ray 机器） | 系统代理未排除 localhost / DGX 隧道 / Ark 域名，请求被塞进代理 | `langgraph dev`/compose 路径：查 `.env` 的 `NO_PROXY`（模板默认已含 `ark.cn-beijing.volces.com`）；**裸跑 `serve`/`check`：`.env` 该行不进程生效（无 dotenv 导出），须 shell/OS env 设 `NO_PROXY`**；单次 `curl --noproxy '*'`；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |
 | Claude Code `/doctor` 报 `Missing environment variables`（MCP） | `setup-mcp-secrets.ps1` 没跑 / 跑完没重启终端（stale env） | `.\.claude\scripts\setup-mcp-secrets.ps1 -Reload` 诊断；重跑 + **完全重启**终端与 Claude；详见 `config/README.md` §6.4 |
+| 某个 `pg-*` MCP server 起不来，但 `/doctor` 没报缺、`-Reload` 还显示 `15 / 15 set` | 该键在 `secrets-mcp.conf` §2 **留空**：空字符串照样写进 `HKCU\Environment`，`/doctor` 只判 key 存在与否、`-Reload` 只判非 `null`，两者都看不出空值。而 `pg-server-start.cmd` 判 `if not defined`（cmd 里空串等同未定义）→ `exit /b 3`，node 从未启动 | 看 `-Reload` 输出的**掩码**而不是计数：`****` = 仍是空，`post****` 这样的真实前缀 = 确实填了。要用就把该 URL 填进 `secrets-mcp.conf` §2 → `.\scripts\encrypt-secrets-mcp.ps1` → `setup-mcp-secrets.ps1 -Force` → 完全重启。机制详见 `config/README.md` §6.3 / §6.4 |
 
 ## §8 速查表
 
@@ -396,3 +397,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-07-08 | v0.3 | #297 env/config 完整性修齐：§3 补 MCP bundle 步骤（setup-mcp-secrets + 完全重启说明）+ `-LlmProfile` 用法 + LLM provider 切换段（DGX 隧道拓扑 / model-id 覆写）；§0.5 补两 bundle 同口令、GitHub PAT、playwright chromium；§7.3 诊断表补 proxy-502 与 /doctor-MCP 两行；§8 速查表拆 app/MCP 两条解密行。另订正：前次 frontmatter `updated: 2026-07-07` 无对应内容变更（日期漂移，本行起对齐） |
 | 2026-07-08 | v0.4 | #302 secrets 填写指南：§3 命令块后加「secrets.conf 填写速览」摘要卡（app 必填5/可空3 · §2c 照抄7/强制空1/可选1 · MCP 15 按需 · secrets.conf≠.env 铁律）+ 委托句指向 `config/README.md` §「secrets.conf 填写指南」新 SoT 小节（完整逐字段表落 config/README，本 GUIDE 按指针 charter 只留摘要） |
 | 2026-07-17 | v0.5 | #353（议题 3 pg 凭据单一真相）：§3 命令块加 pg-* MCP server 具名 env 解析说明——连接串从具名变量解析、无内嵌 default、未设即显式失败（exit 3），单一真相 = secrets-mcp.enc→HKCU env |
+| 2026-08-10 | v0.6 | #108 关联（承 PR #462/#463 的 `config/README.md` §6.3/§6.4 更正）：§7.3 诊断表新增「某个 `pg-*` MCP server 起不来，但 `/doctor` 没报缺、`-Reload` 还显示 `15 / 15 set`」一行——空值键照样计 `[SET]`，判据是**掩码**（`****` = 空 / `post****` = 真值）；机制为 `pg-server-start.cmd` 判 `if not defined`（cmd 里空串等同未定义）→ `exit /b 3`，node 从未启动。另订正两处**既存**漂移：① frontmatter `version` 停在 v0.4 而本表已记 v0.5（2026-07-17 那次只落表未 bump），本行起对齐；② body「最后更新」行停在 2026-07-08，改随 frontmatter |
