@@ -4,7 +4,7 @@ domain: OPS
 summary: DGX-Spark serving/ops 由独立姊妹仓 MJ-AgentLab/dgx-mlops 治理；mj-agent 是唯一 DGX consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费 OpenAI-compat endpoint；跨仓 cross-ref 总数 ≤5（mj-agent 自设预算）
 owner: 项目负责人
 created: 2026-06-11
-updated: 2026-07-03
+updated: 2026-08-10
 state: active
 decision: accepted
 track: shared
@@ -76,5 +76,5 @@ cross-ref 状态 = **active**（2026-07-03；[[decisions/ADR-027_LLM_Provider_Ab
 - [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]] — 唯一消费路径实现（`make_llm()` factory；T-1 已增 cross-ref 段，见 §Cross-ref）
 - [[decisions/ADR-028_MCP_Server_Inventory_And_Governance|ADR-028]] — DGX SSH 运维通道（与 LLM 消费正交）
 - [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction|ADR-025（archive）]] — 历史 bundle ADR（ADR-026/027 拆分来源）
-- `MJ-AgentLab/dgx-mlops`（姊妹仓）— `capabilities/mj-agent/llm-provider-bridge/` 消费方契约（pending M2）
+- `MJ-AgentLab/dgx-mlops`（姊妹仓）— `capabilities/mj-agent/llm-provider-bridge/` 消费方契约（`lifecycle: active` / `state: realized`，dgx-mlops PR #45 2026-07-07）
 - 项目负责人 vault 执行计划 `[PLAN]_mj-agent_DGX_Consumer_Side_Execution.md` v1.1（PR-A #254 + 本 PR-B + T-1~T-5 定义）
