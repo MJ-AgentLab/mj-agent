@@ -1,6 +1,6 @@
 ---
 name: Archive
-about: ★ NEW — 归档已弃用 capability / STANDARD / ADR；走 sdd/workflows/archive-capability.md
+about: 归档已弃用 capability / STANDARD / ADR；走 sdd/workflows/archive-capability.md
 title: "[Archive] <one-line summary>"
 labels: ["maintain"]
 assignees: []

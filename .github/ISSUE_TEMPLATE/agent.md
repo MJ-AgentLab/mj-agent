@@ -1,6 +1,6 @@
 ---
 name: Agent
-about: ★ NEW — Agent 行为 / Tool / SKILL / Prompt / Eval 相关
+about: Agent 行为 / Tool / SKILL / Prompt / Eval 相关
 title: "[Agent] <one-line summary>"
 labels: ["track:agent"]
 assignees: []

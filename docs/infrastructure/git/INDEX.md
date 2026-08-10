@@ -4,7 +4,7 @@ domain: SYS
 summary: docs/infrastructure/git/ 子目录索引 — 4 份 GUIDE（GitHub 设置 / 分支策略 / 推送工作流 / PR 描述规范）
 owner: 项目负责人
 created: 2026-04-30
-updated: 2026-04-30
+updated: 2026-08-10
 state: draft
 track: code
 ---
@@ -12,7 +12,7 @@ track: code
 # Git 基础设施索引
 
 > **所属目录**：`docs/infrastructure/git/`
-> **说明**：4 份 GUIDE 是 mj-agent git 治理基础设施，已按 mj-agent 12 scope、Phase 0 状态与 v2.0 framework 校对。摘要取自每份文档 frontmatter `summary`。
+> **说明**：4 份 GUIDE 是 mj-agent git 治理基础设施；规则权威见下方「规则真相源」段，本目录只保留 operational how-to。摘要取自每份文档 frontmatter `summary`。
 >
 > **规则真相源（M6 X6）**：git **规则**（分支类型 / G1·G2 worktree / PR 模板矩阵 / SemVer bump）的权威已迁入 SDD kernel — [[policies/git-branching|policies/git-branching]] + [[policies/release|policies/release]]；本目录 4 份 GUIDE 保留为 **operational how-to**（仓库初始化、worktree 搭建、推送前检查、gh CLI 用法），**不归档**。
 
