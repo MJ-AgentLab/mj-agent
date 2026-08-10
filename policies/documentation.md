@@ -2,7 +2,7 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.2
+version: 1.3
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-07
@@ -174,11 +174,12 @@ track: code | agent | engineering-workflow | shared
 | `code` | Track A — 代码侧文档（开发 / 部署 / 运维） | 见 §2 类型表 |
 | `agent` | Track B — 智能体侧文档（runtime 直接影响业务） | 见 §2 类型表 |
 | `engineering-workflow` | Track C — 工程流程文档（`.claude/` + `.mcp.json` + 工程流程 STANDARD） | 物理路径在 `.claude/**` 或 `.mcp.json` 时强制；`docs/rule/` 下治工程流程者按 §3.1 规则 6 判 |
-| `shared` | 跨轨 — 多 track reviewer 都需介入 | **过渡期**默认值；Phase 1 末收紧为 explicit required |
+| `shared` | 跨轨 — 多 track reviewer 都需介入 | **过渡期**默认值；原「Phase 1 末收紧为 explicit required」的指涉已悬空——该「Phase 1」锚 [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]]（`state: draft`）的 marketplace 双 plugin 阶段，已被 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] in-tree 路线演替且从未收口（#451 核定）；收紧与否悬置，待另立单拍板 |
 
 ### §3.1 path-to-track 决策树（Meta §4.3.1）
 
-新建 canonical 文档时按物理路径强制定 track：
+新建 canonical 文档时按物理路径路由 track（规则 0-7 路径即定值；规则 8 路径命中后按主题**选值**；
+规则 9 路径命中即**豁免**——kernel 面的两条例外，#451）：
 
 0. 路径是项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` /
    `CLAUDE.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
@@ -189,7 +190,12 @@ track: code | agent | engineering-workflow | shared
 5. 路径在 `docs/{infrastructure,runbook,api}/`？→ **code**
 6. 路径在 `docs/rule/` 但治"engineering 流程"？→ **engineering-workflow**
 7. 路径在 `docs/rule/` 治文档/代码/数据？→ **code** 或 **shared**
-8. 其他 → 默认 `shared` 并 PR body 论证
+8. 路径在 `policies/` `sdd/` `decisions/`？→ **按主题选 track**（显式许可，#451）：工程编排 /
+   agent 工具面 → **engineering-workflow**；runtime 语义面 → **agent**；代码栈面 → **code**；
+   跨轨或不确定 → **shared**。主题映射是指引非路径规则——kernel 目录按主题分流是既成实况
+   （`sdd/adapters/` 一个目录四种 track），路径 glob 无法表达；选值**无需** per-file PR body 论证
+9. 路径在 `capabilities/**`？→ **不适用 track**（capability-package ontology 豁免；见下方豁免条款）
+10. 其他 → 默认 `shared` 并 PR body 论证
 
 > **规则 3 的 `docs/rule/` 分支已删除（#449，2026-08-07）**：原列 4 个 STANDARD 族 glob 逐一核过，
 > **无一能命中**，且四者的死法各不相同 ——
@@ -207,13 +213,28 @@ track: code | agent | engineering-workflow | shared
 > （`code` / `code` / `shared`）删前删后都由规则 7 判出。上表 `engineering-workflow` 行的
 > 「默认值」列曾持有同一份死枚举（且缺 `.mcp.json`，与本树互相矛盾），已同批 truth-up。
 >
-> **已知缺口 —— 本决策树不覆盖 SDD kernel 四目录（#449 存档，处置见 #451）**：规则 1-7 只对
+> **kernel 四目录缺口已处置（#449 存档 → #451 落规则，2026-08-07）**：规则 1-7 只对
 > `src/mj_agent/**` / `.claude/**` / `.mcp.json` / `docs/**` 强制路由，`policies/` `sdd/`
-> `decisions/` `capabilities/` 一律落规则 8。而实际落盘是**按主题**分流 —— 2026-08-07 全量复核
-> 这四个目录共 106 个 markdown：`shared` 28 / `engineering-workflow` 15 / `code` 9 / `agent` 7 /
-> **无 `track` 47**（后者全在 `capabilities/**`）。单是 `sdd/adapters/` 一个目录就同时出现四种
-> `track`。补一条 kernel 路由规则属**新增治理规则**，需自己的 AC 与逐文件核对，故不在 #449 范围内。
-> ⚠ 这些计数是**该日快照**，引用前须按 #451 的 AC-1 双口径重测。
+> `decisions/` `capabilities/` 曾一律落旧规则 8（默认 `shared` + 论证），与实况不符——实际落盘
+> **按主题**分流。#451 AC-1 双口径复测（逐文件 frontmatter 解析 × `grep '^track:'` 交叉互验，
+> 2026-08-07，与 #449 快照一致）：四目录 106 个 markdown = `shared` 28 / `engineering-workflow`
+> 15 / `code` 9 / `agent` 7 / 无 `track` 47（后者全在 `capabilities/**`）；单 `sdd/adapters/`
+> 一个目录即四种 `track` 并存，证明路径规则无法表达 kernel 路由。处置（Owner 拍板选 (b)）=
+> 新规则 8 把主题选值写成**显式许可**、新规则 9 + 下方条款把 `capabilities/**` 豁免成文；
+> 15 个 `engineering-workflow` 现值获追认，历史上欠的 per-file PR body 论证债一并免除
+> （59 个现有 track 值未逐件核对——(a) 路的逐核不适用，且无 gate 消费这些目录的 track 值）。
+> ⚠ 计数是该日快照，引用前须重测。
+>
+> **`capabilities/**` 豁免条款（#451，2026-08-07）**：capability-package 工件**不适用 `track`**。
+> 它们属与 12 类 canonical **正交的另一轴**（§2 开头已定：SDD capability-package ontology——
+> spec / contract / tasks / runbook / evidence；本分类只治 `docs/**` + in-source canonical），
+> frontmatter 走 `type: capability-*` 自有 schema + [[sdd/lifecycle|lifecycle]] §1 9 态，
+> 不写 `track` 不是缺漏：四件套（requirements / design / tasks / runbook）带 `type: capability-*`
+> frontmatter；`evidence/**` 依既有惯例**无 YAML frontmatter**；`AGENTS.md` / `CLAUDE.md`
+> entry adapter 与 `INDEX.auto.md` 生成物同 §2.6 例外性质。⚠ 门禁事实：
+> `scripts/check_frontmatter.py` 的 `SCAN_ROOTS` 不含 `policies/` `sdd/` `capabilities/`——
+> 这三目录的 frontmatter **全程无 gate**，本条款与规则 8/9 的执行靠手工核验 + merge review
+> 兜底（同 #429 复发判据一脉；扩 `SCAN_ROOTS` 是独立决策，#451 显式 out-of-scope）。
 
 边界 artifact 归属规则见 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] §Decision 决策点 4。
 
@@ -493,3 +514,12 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > **同日**，即这两行落盘时已 stale；且两处枚举本身互相矛盾（表格行缺 `.mcp.json`）。行为零 delta —— 现存 3 个
 > `docs/rule/` STANDARD 的 `track` 判定不变。同批在决策树下存档「本树不覆盖 SDD kernel 四目录」
 > 这一同源缺口（处置另立 #451）。*
+>
+> *v1.3（2026-08-07）：#451 — §3.1 决策树补 kernel 覆盖（Owner 拍板）：新规则 8 = `policies/`
+> `sdd/` `decisions/` 按主题选 track 的显式许可（免 per-file PR body 论证；三路 (a)/(b)/(c) 选 (b)，
+> 未走 (a) 的 59 件逐核）；新规则 9 + 豁免条款 = `capabilities/**` 不适用 track（capability-package
+> ontology 与 12 类 canonical 正交，per §2：四件套 `type: capability-*` / `evidence/**` 无
+> frontmatter 惯例 / entry adapter 与生成物），并明写 `SCAN_ROOTS` 不覆盖 `policies/ sdd/
+> capabilities/` 的门禁事实；原规则 8 顺延为规则 10。§3 值表 `shared` 行补「Phase 1 末收紧」
+> 指涉悬空注记（锚 ADR-012 draft 的 marketplace 阶段、被 ADR-016 演替，收紧决策悬置另立单）。
+> 同批更新 doc-author skill 投影段。*
