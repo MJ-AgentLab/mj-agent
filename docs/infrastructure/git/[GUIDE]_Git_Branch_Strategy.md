@@ -11,9 +11,9 @@ aliases:
   - mj-agent Git Branch Strategy
   - mj-agent Git 分支策略指南
 created: 2026-04-30
-updated: 2026-08-06
+updated: 2026-08-10
 state: draft
-version: v1.1
+version: v1.2
 track: code
 owner: 项目负责人
 ---
@@ -22,9 +22,9 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 项目全体开发人员的 Git 分支操作规范
 > **目标受众**：开发者、维护者
-> **版本**：v1.0
-> **最后更新**：2026-04-30
-> **历史背景**：5 分支模型与 worktree 用法源自团队成熟实践；命名示例与 commit scope 已按 mj-agent 12 scope 调整。
+> **版本**：v1.2
+> **最后更新**：2026-08-10
+> **历史背景**：5 分支模型与 worktree 用法源自团队成熟实践；命名示例与 commit scope 已按 mj-agent 自有 scope 白名单调整（白名单唯一真相源见 §「mj-agent scope 速查」；**此处刻意不复述项数** —— 复述正是 #443 查实的漂移病因）。
 > **关联文档**：[[GUIDE]_Git_Push_Workflow|Git 推送工作流]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
 ---
@@ -348,7 +348,7 @@ git branch -d bugfix/25-guardrail-regex-fix
 message trailer** 显式豁免；非 silent bypass（per R-16-6 anti-gate-defeat 原则）：
 
 ```text
-fix(docs): typo in CLAUDE.md
+fix: typo in CLAUDE.md
 
 Trivial typo fix; no functional change.
 
@@ -626,5 +626,6 @@ mj-agent/
 
 | 日期 | 版本 | 内容 |
 |------|------|------|
+| 2026-08-10 | v1.2 | #470 — 补齐 #443 的收尾遗漏：body 头部区块此前停在 v1.0 时代（版本行 `v1.0` / 最后更新行 `2026-04-30`），且「历史背景」行仍复述旧项数、与本文件 §「mj-agent scope 速查」的现行项数**自相矛盾**；改为指针式表述，**不复述项数**。同批修 §4 G24 Escape Hatch 的 commit 示例 —— 原例把 `docs` 用作 scope，经 `check_commit_messages.py` 实测判 VIOLATION（`docs` 仅作 type，不得作 scope），改为省略 scope 的形态（`CLAUDE.md` 是根文件、不属任何单一治理区） |
 | 2026-08-06 | v1.1 | #443 — 删除 §「scope 速查」内嵌的 12 行 scope 副本表，改为指向 STANDARD §4 的指针（白名单 v1.1 起为 35 项）。**副本化本身正是 #443 查实的漂移病因**：STANDARD 重建后本 GUIDE 的副本仍停在 12 项，再抄一份 35 行只会保证下次再漂。参考链接同步 v1.0 → v1.1 |
 | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：5 分支模型 + worktree 用法逐字保留；§0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agent 12 scope；URL 改 `MJ-AgentLab/mj-agent` |

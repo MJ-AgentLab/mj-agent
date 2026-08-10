@@ -23,7 +23,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 开发人员完成编码和提交后、推送分支到远程仓库前的标准操作流程
 > **目标受众**：开发
 > **版本**：v1.0
-> **最后更新**：2026-04-30
+> **最后更新**：2026-05-06
 > **历史背景**：推送流程源自团队成熟实践；§2 CHANGELOG / §10 Q6 已按 mj-agent Phase 0 实际状态调整。
 > **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
