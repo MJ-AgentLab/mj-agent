@@ -12,7 +12,7 @@ aliases:
 created: 2026-05-06
 updated: 2026-08-10
 state: draft
-version: v0.6
+version: v0.7
 track: code
 owner: 项目负责人
 ---
@@ -21,7 +21,7 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
-> **版本**：v0.6
+> **版本**：v0.7
 > **最后更新**：2026-08-10
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
@@ -116,9 +116,16 @@ mj-agent 双远端：
 [[../infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git Branch Strategy]]。
 
 简述：mj-agent 是 **bare-repo + 多 worktree** 布局：
-- 长期 worktree：`develop`（默认开发线）、`main`（稳定）、`documentation/research-mj-agent`
+- **裸库**：`.bare/`（`git worktree list` 会把它列为 `bare`，不是工作树）
+- **长期 worktree：只有 `develop`**（默认开发线）——权威口径以 `git worktree list` 为准
 - 临时 worktree：每条 PR 一个 `feature/<name>` / `documentation/<name>` /
-  `bugfix/<name>` / `maintain/<name>` / `hotfix/<name>` 目录
+  `bugfix/<name>` / `maintain/<name>` / `hotfix/<name>` 目录；PR 合并后由
+  Stage 17 post-merge 清理（`git worktree remove` + `prune`），容器目录留空复用
+
+> **`git branch` 里 `main` 带 `+` 前缀是正常的，别误当成工作树**：`+` 表示该分支被某个
+> worktree 检出，而这里检出它的是 `.bare/` 自己（`.bare/HEAD` = `ref: refs/heads/main`）。
+> `main` 没有对应目录，也不该在本地切过去 —— 需要 main 的内容用 `origin/main`
+> （本地 `main` 指针自脚手架初始提交后就没再更新，`git log main` 只能看到第一条 commit）。
 
 ```powershell
 # 起新 feature worktree
@@ -398,3 +405,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-07-08 | v0.4 | #302 secrets 填写指南：§3 命令块后加「secrets.conf 填写速览」摘要卡（app 必填5/可空3 · §2c 照抄7/强制空1/可选1 · MCP 15 按需 · secrets.conf≠.env 铁律）+ 委托句指向 `config/README.md` §「secrets.conf 填写指南」新 SoT 小节（完整逐字段表落 config/README，本 GUIDE 按指针 charter 只留摘要） |
 | 2026-07-17 | v0.5 | #353（议题 3 pg 凭据单一真相）：§3 命令块加 pg-* MCP server 具名 env 解析说明——连接串从具名变量解析、无内嵌 default、未设即显式失败（exit 3），单一真相 = secrets-mcp.enc→HKCU env |
 | 2026-08-10 | v0.6 | #108 关联（承 PR #462/#463 的 `config/README.md` §6.3/§6.4 更正）：§7.3 诊断表新增「某个 `pg-*` MCP server 起不来，但 `/doctor` 没报缺、`-Reload` 还显示 `15 / 15 set`」一行——空值键照样计 `[SET]`，判据是**掩码**（`****` = 空 / `post****` = 真值）；机制为 `pg-server-start.cmd` 判 `if not defined`（cmd 里空串等同未定义）→ `exit /b 3`，node 从未启动。另订正两处**既存**漂移：① frontmatter `version` 停在 v0.4 而本表已记 v0.5（2026-07-17 那次只落表未 bump），本行起对齐；② body「最后更新」行停在 2026-07-08，改随 frontmatter |
+| 2026-08-10 | v0.7 | §2「长期 worktree」列表订正——原写 `develop` / `main` / `documentation/research-mj-agent` **三者**，实测 `git worktree list` 只有 `.bare`(bare) + `develop`：`research-mj-agent` 本地与两个远端都无对应分支、目录为空壳（本批已删），`main` 从不是工作树。改为「裸库 `.bare/` + 长期 worktree 只有 `develop`」+ 权威口径以 `git worktree list` 为准；临时 worktree 行补 Stage 17 清理与容器目录留空复用。新增一段解释 `git branch` 里 `main` 带 `+` 前缀的成因（`.bare/HEAD` = `ref: refs/heads/main`，故被 `.bare` 自己检出）并提示本地 `main` 指针仍停在脚手架初始提交、要 main 内容用 `origin/main` |
