@@ -2,10 +2,10 @@
 type: policy
 artifact: archive
 state: active
-version: 1.0
+version: 1.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-23
+updated: 2026-08-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -99,6 +99,15 @@ canonical 文档的退役沿 `active → deprecated → frozen → archived` 推
 | `ai_visibility` | ✅ | `hidden`（默认；AI 不应读取）\| `reference`（AI 可查阅历史背景）—— 见 §5 |
 | `retention_class` | ✅ | `permanent` \| `5-year` \| `1-year` —— 见 §6 |
 | `original_state` | ⬜（可选） | `draft` \| `active` \| `deprecated` \| `frozen`；填写时校验枚举 |
+| `superseded_by` | ⬜（可选） | list of string —— 替代位置（指向 active 源的路径）。留空规约见下 |
+| `last_active_version` | ⬜（可选） | string —— 归档前最后一个 active 版本号（如 `v2.2`） |
+| `related_decisions` | ⬜（可选） | list of string —— 驱动本次归档的 ADR 列表 |
+
+**`superseded_by` 留空规约**：**批量文档归档**（一个 unit 含多份文件、替代目标异构）在 unit 级
+没有单一答案，此时**留空即是正确取值** —— 权威记录在每份归档文件各自的 `replaced-by`（ADR-019）。
+该字段的主用户是 **capability 归档**（1 unit = 1 capability），其 ceremony 把「`superseded_by`
+完整」列为 HITL Gate-2 的 review 焦点（[[sdd/workflows/archive-capability|archive-capability]]
+步骤 7）。现存两个 unit 在 `archive/INDEX.md` 的该列为空**属预期，不要当缺陷"修"**。
 
 **FAIL 条件**：缺任一必填字段 / 枚举值非法 / 某 archive 子目录含 `.md` 内容文件但**无同级
 `archive.yml`**（missing manifest）。`INDEX.md` 与 `.gitkeep` 不计为内容文件（不要求 manifest）。
@@ -116,7 +125,8 @@ related_decisions:
   - decisions/ADR-031_Spec_Anchored_Refactor.md
 ```
 
-> `related_decisions` 等额外字段允许存在（脚本只校验必填 + 枚举，不禁止 extra key）。
+> 上表 4 个可选属性都是 `sdd/archive.schema.json` **明确定义**的 property，**不是** extra key；
+> 此外 schema 之外的自由 key 也允许存在（手写 validator 只校验必填 + 枚举，不禁止 extra key）。
 > `archive/INDEX.md` 由 `scripts/sdd/generate_archive_index.py` 生成，**不**需要 archive.yml。
 
 ## §4 STANDARD 整体归档 ceremony（playbook）
@@ -245,3 +255,14 @@ HITL 人工 review 确认（**不自动跑 GC**）。
 > *M6 PR4a-2 — kernel home for archive governance（触发判定 + 路径稳定 / 状态机 / archive.yml
 > manifest schema / ceremony playbook / ai_visibility + G14/G15 / retention / 目录布局 / working
 > 文档 GC）。源 STANDARD（Meta §4.4/§5.9）在 PR4 archive 前留作历史源；门禁 BLOCKING 翻转见 §4 步骤 7。*
+>
+> *v1.1（2026-08-10）：#473 — §3 字段表补齐 `sdd/archive.schema.json` 已定义、本表却漏写的 3 个
+> 可选属性（`superseded_by` / `last_active_version` / `related_decisions`），并改掉把
+> `related_decisions` 称作「额外字段」的错误定性 —— 它是 schema 明确定义的 property，不是 extra
+> key，原句把「schema 定义的可选属性」与「schema 之外的自由 key」混为一谈。同批新增
+> `superseded_by` 留空规约：现存两个 unit 该列为空是**批量文档归档的正确结果**（unit 级无单一
+> 答案，权威在 per-file `replaced-by`），不是缺陷。发现于 #468 收尾——当时只读本节表格就把该字段
+> 判成「无 schema 背书的生成列」并提议删列，实际它在 JSON schema / 2 个 unit test /
+> archive-capability 步骤 7 / generator 三处 / archive issue 模板共 6 处载荷。判例：**判断某字段
+> 有无 schema 背书时，散文 policy 表不是 ground truth** —— 本节 `:88-89` 自己就写着「脚本是
+> ground truth」且 mirror `sdd/archive.schema.json`。*
