@@ -8,12 +8,10 @@ decision: accepted
 version: 1.0
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-07-23
+updated: 2026-08-10
 domain: SYS
 track: shared
 ai_visibility: source-of-truth
-supersedes: []
-superseded_by: []
 ---
 
 # ADR-031: Spec-Anchored Refactor

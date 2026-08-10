@@ -2,10 +2,10 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.3
+version: 1.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-07
+updated: 2026-08-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -345,9 +345,23 @@ track: code | agent | engineering-workflow | shared
 ```
 
 带 `version` 的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）额外填 `version`。
-`supersedes` 字段接受 **list**（非单一 string）：单一替代 list 含单 string；拆分替代
-（1 旧 → N 新）每个新 doc 都列旧 doc；合并替代（N 旧 → 1 新）list 含 N strings（Meta §4.6）。
-**forbidden 字段**：`derives_from`（cross-repo decoupling 后移除；lineage 只用 `supersedes` + archive `replaced-by`）。
+
+**lineage 字段 `supersedes` / `superseded_by` 均为可选**——`scripts/check_frontmatter.py` 的
+`REQUIRED_FIELDS` 不含二者，无 gate 校验它们在 frontmatter 中的存在或取值（`archive.yml` 的
+同名 unit 级字段是另一回事，见 `policies/archive.md` §3）。**使用时**的取值形状：
+
+| 字段 | 方向 | 取值形状 |
+| --- | --- | --- |
+| `supersedes` | 新 doc → 被它取代的旧 doc | **list**（非单一 string）。单一替代 1→1：list 含单 string；拆分替代 1→N：每个新 doc 的 list 都含该旧 doc；合并替代 N→1：list 含 N strings |
+| `superseded_by` | 就地 deprecated 的 doc → 取代它的 doc | list 或单 string。契约面前置：`capabilities/**/contracts/{runtime-skill,prompt}.contract.yml` 的 `allowed_state_transitions` 以其非空作为 `active → deprecated` 的条件 |
+
+上表三种场景**是取值形状示例、不是补全义务**：源 Meta §4.6 的小节标题即「典型用例」，其决策源
+ADR-022 C.3.4 明写「本 ADR 仅文档化」。**拆分 / 归档 lineage 的权威记录是归档侧 `replaced-by`**
+（ADR-019：archived 文件必填，直指当前 stable path）；living 侧这两个字段不承担该职责，不填
+**不**构成漂移。
+
+**forbidden 字段**：`derives_from`（cross-repo decoupling 后移除；lineage 只用 `supersedes` /
+`superseded_by` + archive `replaced-by`）。
 
 ### §6.2 类型专属 frontmatter（Code_Side §3.x；ADR-022）
 
@@ -523,3 +537,14 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > capabilities/` 的门禁事实；原规则 8 顺延为规则 10。§3 值表 `shared` 行补「Phase 1 末收紧」
 > 指涉悬空注记（锚 ADR-012 draft 的 marketplace 阶段、被 ADR-016 演替，收紧决策悬置另立单）。
 > 同批更新 doc-author skill 投影段。*
+>
+> *v1.4（2026-08-10）：#468 — §6.1 lineage 段恢复源头语义（Owner 拍板读法 C）。原 `:348` 把
+> Meta §4.6「**典型用例**」小节（决策源 ADR-022 C.3.4 明写「本 ADR 仅文档化」）压缩成一句读起来
+> 像义务的话，又落在标题为「通用**必填**字段」的小节里，遂被读成「规定了拆分替代要逐个补
+> `supersedes`、但从未实施」。核查证否：该字段自始可选——`REQUIRED_FIELDS` 不含它，全仓无 gate
+> 校验；权威的拆分 / 归档 lineage 一直在归档侧 `replaced-by`（ADR-019）。同批把 `superseded_by`
+> 补进 §6 schema——它此前**在本 §6 未定义**，却已是 3 份 capability contract 的 `active →
+> deprecated` 前置（`safe-sql` / `biz-catalog` 的 runtime-skill + `llm-provider` 的 prompt），
+> 且这 3 份契约治理的正是 `SCAN_ROOTS` 内的 canonical doc；并删 `decisions/ADR-031` 的两个 inert
+> 空数组（其 `version` 不动——无决策 delta）。行为零 delta——无任何 living 文档的 lineage 事实被
+> 改写。*
