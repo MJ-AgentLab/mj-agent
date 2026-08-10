@@ -11,9 +11,9 @@ aliases:
   - mj-agent SPEC Authoring Guide
   - mj-agent SPEC 撰写指南
 created: 2026-05-11
-updated: 2026-08-04
+updated: 2026-08-10
 state: draft
-version: v0.2
+version: v0.3
 track: shared
 owner: 项目负责人
 ---
@@ -22,7 +22,7 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 仓内所有 `docs/design/<module>/[SPEC]_*.md` 起草与更新（HITL Stage 6）
 > **目标受众**：SPEC 起草者（开发 / AI Agent / Reviewer）
-> **版本**：v0.2
+> **版本**：v0.3
 > **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[sdd/workflows/execution-loop|执行闭环 workflow]]（Stage 6 SPEC 起草）
 
 ---
@@ -143,17 +143,18 @@ git diff --name-only HEAD
 - **可选 / 多数 N/A 段**：§3 Contract（脚本类一般无契约；如有 stdout schema 则填）；§6 Rollback（脚本可幂等重跑则 N/A）；§8 Observability（CI 自带日志）
 - **常见 anti-pattern**：
   - ❌ §1 Context 跳过 "为什么本脚本不能放到 mj-agent CLI"（避免 scripts/ 与 src/mj_agent/server/cli.py 职责混淆）
-  - ❌ §4 漏标 secret 依赖（如 `MJ_AGENT_SSH_*` 是否需要 setup-mcp-env.ps1）
+  - ❌ §4 漏标 secret 依赖（如 `MJ_AGENT_SSH_*` 是否需要 `.claude\scripts\setup-mcp-secrets.ps1`）
   - ❌ Verification 仅写 "CI 跑过"，不给出本地 reproduce 命令
 
 ### §4.6 Config / secrets / dependencies
 
-- **适用范围**：`.env.example`、`config/secrets.enc` / `config/secrets.example` / `config/secrets.conf`、`pyproject.toml`、`uv.lock`
+- **适用范围**：`.env.example`、**app bundle** `config/secrets.enc` / `secrets.example` / `secrets.conf`、**MCP bundle** `config/secrets-mcp.enc` / `secrets-mcp.example` / `secrets-mcp.conf`（ADR-030 双包，各有独立 setup 脚本与注入目标）、`pyproject.toml`、`uv.lock`
 - **必填段**：§1 Context + §2 Scope + §4 Configuration（新增 / 修改 var 全列；含 default / range / 何时调）+ §5 Error handling（缺 var 时 healthcheck 行为）+ §6 Rollback（密钥轮换 / dep 降级路径）+ §7 Verification（`mj-agent check` healthcheck + setup-env.ps1 drift 检测）
 - **可选 / 多数 N/A 段**：§3 Contract（schema 类一般 N/A）；§8 Observability（secret 不能 log；除非是非敏感 var）
 - **常见 anti-pattern**：
   - ❌ §4 新增 var 漏同步 `setup-env.ps1` 的 `[DRIFT]` 检测清单（导致 dev 已有 .env 永远漏 var）
-  - ❌ §6 Rollback 漏 `setup-mcp-env.ps1 -Reload` 流程（HKCU env var 不会自动刷新到运行中进程）
+  - ❌ §6 Rollback 漏 `.claude\scripts\setup-mcp-secrets.ps1 -Reload` 流程（HKCU env var 不会自动刷新到运行中进程）
+  - ❌ §7 Verification 把 `-Reload` 的 `N / N set` 当成「配置可用」的证据（空值键照样计 `[SET]`；判据是掩码 `****` vs 真实前缀，见 `config/README.md` §6.4）
   - ❌ §7 Verification 跳过 cross-profile（dev / test / prod）的 var 集合差异说明
 
 ### §4.7 Engineering-workflow infra（mj-agent 专属）
@@ -259,3 +260,6 @@ SPEC Delta:
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-05-11 | v0.1 | 初稿（PR-118 commit-3 落地；G3 gap 修复；mj-agent 8 类任务分类，区别于 mj-system 8 类） |
+| 2026-08-05 | v0.2 | **追补行**（当时 bump 了 frontmatter + body 版本行但未落本表）：#413 docker 供应链可见性——§6 必停映射表 #4 行补「及 `docker/Dockerfile` 外部 registry 镜像引用」入 `secrets-grants-or-prod-config`（commit `93edd6f`；该次 frontmatter 写 `updated: 2026-08-04`，与 commit 日期差一天，此处按 commit 日期记） |
+| 2026-08-07 | v0.2（in-place） | **追补行**（当时 version / updated 均未 bump）：#453 execution-loop 章节重指向——§4.2 anti-pattern 里对 guardrail 放宽的**位号式**必停引用改为 canonical enum 名 `sql-guardrail-relax`（commit `a2d8ca7`；此处刻意不复述旧位号，`check_loop_section_refs` 的 `positional-hitl-index` 规则不区分引用与使用） |
+| 2026-08-10 | v0.3 | #108 关联的 ADR-030 漂移清理：§4.5 / §4.6 anti-pattern 中已删脚本 `setup-mcp-env.ps1` → `.claude\scripts\setup-mcp-secrets.ps1`（2 处，旧脚本自 ADR-030 起不存在）；§4.6 适用范围补 **MCP bundle** 三文件（ADR-030 双包，各有独立 setup 脚本与注入目标）；§4.6 新增 anti-pattern——把 `-Reload` 的 `N / N set` 当成「配置可用」的证据（空值键照样计 `[SET]`） |

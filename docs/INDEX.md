@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-08-05
+updated: 2026-08-10
 state: draft
 track: shared
 ---
@@ -73,7 +73,7 @@ track: shared
 | [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Agent_Side v1.2 §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；mj-agent 原生 |
 | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
 | [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
-| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] | WORKFLOW | accepted | `.mcp.json` 13 servers + 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement）+ A14 PR gate 实施细则；独立 secrets pipeline |
+| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] | WORKFLOW | accepted | `.mcp.json` 13 servers（**决策时点数；现为 14**，活体清单 = `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`）+ 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement；**M6 X5 已 archive，该目录不复存在** → 同上 capability）+ A14 PR gate 实施细则；独立 secrets pipeline |
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1`；删除旧 `setup-mcp-env.ps1`（一次性迁移工具 `migrate-secrets-bundle-split.ps1` 已随 #297 移除，见 ADR-030 Amendment） |
 | [[decisions/ADR-031_Spec_Anchored_Refactor\|ADR-031 Spec-Anchored Refactor]] | SYS | accepted | Maximum Spec-Anchored Refactor（Phase M0-M6）：把 tri-track STANDARD + 20 active ADR + ~100 篇文档治理语料重构为 SDD Kernel + Capability Package + Business Policy 三支柱架构，落地机器可读 contract + capability lifecycle + CI gates（M0-M6 已落地、#245 闭幕；promoted accepted 2026-07-23 #372） |
