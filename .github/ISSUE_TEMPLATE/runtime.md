@@ -1,6 +1,6 @@
 ---
 name: Runtime
-about: ★ NEW — 运行时 / 部署 / Studio / 监控相关；触及 infrastructure capability
+about: 运行时 / 部署 / Studio / 监控相关；触及 infrastructure capability
 title: "[Runtime] <one-line summary>"
 labels: ["maintain"]
 assignees: []
