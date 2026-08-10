@@ -76,8 +76,8 @@
 | 字段组 | 分类 | 说明 |
 |---|---|---|
 | `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD` ×5 | 按需 | ssh-manager 连哪台就填哪台；不连的可空 |
-| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,PROD_LAN}_URL` ×6（LAN/DEV） | 按需 | `.mcp.json` 有 host fallback，但密码是占位字面量 → 走 fallback 连不上真库；要用对应 LAN pg MCP 就填 |
-| `MJ_AGENT_PG_{MEMORY,BIZ}_{TEST_WAN,PROD_WAN}_URL` ×4（WAN） | 要用则必填 | `.mcp.json` **无 fallback** → 不填则该 4 个 MCP server 启动失败（FRP 远程访问才需要，纯本地可全空） |
+| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,PROD_LAN}_URL` ×6（LAN/DEV） | 按需 | `.mcp.json` 里 10 个 PG URL **全是 pass-by-name `${VAR}`、无任何 fallback 或默认值** → 留空则该 server 拿到空连接串、连不上真库；要用对应 DEV/LAN pg MCP 就填 |
+| `MJ_AGENT_PG_{MEMORY,BIZ}_{TEST_WAN,PROD_WAN}_URL` ×4（WAN） | 要用则必填 | 同样无 fallback；区别只在 WAN 走 FRP 隧道（云侧 `8.135.38.175`）而非局域网直连 —— 纯本地开发用不到，可全空 |
 
 > 纯本地开发者可把 MCP 15 键**全部留空**——app 照常跑，只是 ssh-manager 和远程 pg MCP 工具不可用（`/doctor` 报缺属预期）。
 
@@ -282,7 +282,8 @@ Get-Content config\secrets-mcp.example |
   ForEach-Object { if ($_ -match '^\s*([A-Za-z0-9_]+)\s*=') {
       $k = $Matches[1]; "$k=$([Environment]::GetEnvironmentVariable($k,'User'))" } }
 
-# 3. 新建 secrets-mcp.conf，粘贴上一步输出（空值保持空——LAN URL 有 .mcp.json fallback）
+# 3. 新建 secrets-mcp.conf，粘贴上一步输出（空值保持空——留空的 URL 只是对应 pg MCP
+#    server 连不上，对 app 启动零影响；.mcp.json 无 fallback，见「填写指南」）
 Copy-Item config\secrets-mcp.example config\secrets-mcp.conf
 notepad config\secrets-mcp.conf
 
@@ -310,8 +311,8 @@ Remove-Item config\secrets-mcp.enc.bak.<date>
   中的必填 5**（analyst 凭据×2 找 mj-system DBA / Ark API key×1 找 Ark 控制台 / memory pg RW×2）；
   可空 3（LLM_API_KEY / LANGSMITH / SUPERUSER）按上文「填写指南」酌情（详见 `## secrets.conf 填写指南`）。
 - **MCP bundle**：至少一台机器 `HKCU\Environment` 仍持有 MCP 值。若连 OS env 也丢，从源头重拿
-  **5 个 SSH 密码**（对应主机管理员）+ **4 个 FRP WAN URL**（隧道 / FRP 配置）；6 个 LAN URL
-  有 `.mcp.json` 占位 fallback，可空。
+  **5 个 SSH 密码**（对应主机管理员）+ **4 个 FRP WAN URL**（隧道 / FRP 配置）；6 个 DEV/LAN URL
+  可空——留空只是对应 pg MCP server 连不上（`.mcp.json` 无 fallback，不会因此报错到 app 侧）。
 
 补齐来源后，各按对应 bundle 的加密流程执行（填 conf → encrypt → 验证 → 清理）。
 
@@ -423,7 +424,8 @@ mj-agent 的 `secrets.enc` 与 mj-system 的同名文件**故意采用不同口�
 ## §6 Multi-environment + multi-LLM-provider（ADR-025）
 
 ADR-025 (PR-1/2/3/4 multi-env+DGX+MCP bundle) 引入 4-file docker-compose
-分层 + LLM provider 抽象 + .mcp.json 13 servers，对 secret 管理影响：
+分层 + LLM provider 抽象 + `.mcp.json`（引入时 13 servers，**现为 14**——活体清单见
+§6.3），对 secret 管理影响：
 
 ### 6.1 LLM provider 分支
 
@@ -458,11 +460,13 @@ secrets pipeline isolation。即使两 .env 共存于一台开发机，secret �
 ### 6.3 .mcp.json postgres URL overrides（可选）
 
 `.mcp.json` 中的 10 个 `pg-mj-{agent-memory,system-biz}-{dev,test-lan,test-wan,
-prod-lan,prod-wan}` 默认值带 `REPLACE_WITH_TEAM_*_PASSWORD` 占位字面量；
-LAN URLs 由 `MJ_AGENT_PG_*_URL` env vars override，WAN URLs（FRP-tunneled
-remote pg）必填 `MJ_AGENT_PG_*_WAN_URL` 否则 MCP server 启动失败。
+prod-lan,prod-wan}` **全部经 `${MJ_AGENT_PG_*_URL}` pass-by-name 取值——既无
+`:-` 默认值、也无 `REPLACE_WITH_*` 占位字面量**；留空即拿到空连接串，该 server
+不可用（var 存在但值为空 → `/doctor` 不报，实际调用时才失败，见 §6.4 末）。
+其中 4 个 WAN URL（FRP-tunneled remote pg）没有局域网替代路径，要用就必须填
+`MJ_AGENT_PG_*_WAN_URL`。
 
-详见 `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`（13-server inventory；former MCP STANDARD §5，M6 X5 archived）。
+详见 `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`（**14-server** 活体清单；former MCP STANDARD §5，M6 X5 archived）。
 
 ### 6.4 Claude Code MCP secrets 注入（ADR-030 后；mj-ops 风格 OS-level 注入）
 
