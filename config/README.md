@@ -76,7 +76,7 @@
 | 字段组 | 分类 | 说明 |
 |---|---|---|
 | `MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD` ×5 | 按需 | ssh-manager 连哪台就填哪台；不连的可空 |
-| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,PROD_LAN}_URL` ×6（LAN/DEV） | 按需 | `.mcp.json` 里 10 个 PG URL **全是 pass-by-name `${VAR}`、无任何 fallback 或默认值** → 留空则该 server 拿到空连接串、连不上真库；要用对应 DEV/LAN pg MCP 就填 |
+| `MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,PROD_LAN}_URL` ×6（LAN/DEV） | 按需 | `.mcp.json` 里 10 个 PG URL **全是 pass-by-name `${VAR}`、无任何 fallback 或默认值** → 留空则该 server **启动即失败**（`pg-server-start.cmd` `exit /b 3`，见 §6.3）；要用对应 DEV/LAN pg MCP 就填 |
 | `MJ_AGENT_PG_{MEMORY,BIZ}_{TEST_WAN,PROD_WAN}_URL` ×4（WAN） | 要用则必填 | 同样无 fallback；区别只在 WAN 走 FRP 隧道（云侧 `8.135.38.175`）而非局域网直连 —— 纯本地开发用不到，可全空 |
 
 > 纯本地开发者可把 MCP 15 键**全部留空**——app 照常跑，只是 ssh-manager 和远程 pg MCP 工具不可用（`/doctor` 报缺属预期）。
@@ -312,7 +312,7 @@ Remove-Item config\secrets-mcp.enc.bak.<date>
   可空 3（LLM_API_KEY / LANGSMITH / SUPERUSER）按上文「填写指南」酌情（详见 `## secrets.conf 填写指南`）。
 - **MCP bundle**：至少一台机器 `HKCU\Environment` 仍持有 MCP 值。若连 OS env 也丢，从源头重拿
   **5 个 SSH 密码**（对应主机管理员）+ **4 个 FRP WAN URL**（隧道 / FRP 配置）；6 个 DEV/LAN URL
-  可空——留空只是对应 pg MCP server 连不上（`.mcp.json` 无 fallback，不会因此报错到 app 侧）。
+  可空——留空只是对应 pg MCP server 起不来（`exit /b 3`），app 侧零影响。
 
 补齐来源后，各按对应 bundle 的加密流程执行（填 conf → encrypt → 验证 → 清理）。
 
@@ -461,8 +461,16 @@ secrets pipeline isolation。即使两 .env 共存于一台开发机，secret �
 
 `.mcp.json` 中的 10 个 `pg-mj-{agent-memory,system-biz}-{dev,test-lan,test-wan,
 prod-lan,prod-wan}` **全部经 `${MJ_AGENT_PG_*_URL}` pass-by-name 取值——既无
-`:-` 默认值、也无 `REPLACE_WITH_*` 占位字面量**；留空即拿到空连接串，该 server
-不可用（var 存在但值为空 → `/doctor` 不报，实际调用时才失败，见 §6.4 末）。
+`:-` 默认值、也无 `REPLACE_WITH_*` 占位字面量**。
+
+**留空 = 该 server 启动即失败，且失败点比想象的早一层**：`.mcp.json` 把变量**名**
+传给 `.claude/scripts/pg-server-start.cmd`，脚本 Step 3 解析出值后判
+`if not defined PG_CONN_URL` —— **cmd 语义里空字符串等同未定义**，于是直接
+`exit /b 3` 并打印 `[pg-server] ERROR: connection env var <NAME> is not set`。
+**node / `pg-server-wrapper.mjs` / pg driver 全程没被启动**，所以这不是「连接时
+超时」而是**进程起不来**（fail-loud，非静默）。注意 `/doctor` 仍然绿——它只判
+var key 存在与否，见 §6.4 末。
+
 其中 4 个 WAN URL（FRP-tunneled remote pg）没有局域网替代路径，要用就必须填
 `MJ_AGENT_PG_*_WAN_URL`。
 
@@ -531,7 +539,11 @@ config/secrets-mcp.enc  -[.claude/scripts/setup-mcp-secrets.ps1]-> HKCU\Environm
 > }
 > ```
 >
-> 然后同 PS 跑 `claude` 即可。注意：claude `/doctor` 的 `Missing environment variables` 检查仅判 var key 存在与否，不判 value 是否非空 —— 即使 secrets-mcp.conf §2 某 WAN URL 是空字符串，OS env 写入空 string 后 var 仍"存在"，/doctor 不报；但 MCP server 实际尝试连接时会因空 URL 失败（runtime issue，非 /doctor 级）。
+> 然后同 PS 跑 `claude` 即可。
+>
+> **⚠ 空值陷阱（`/doctor` 绿 ≠ 能用）**：`/doctor` 的 `Missing environment variables` 检查**只判 var key 存在与否，不判 value 是否非空**。`secrets-mcp.conf` §2 里留空的键，`setup-mcp-secrets.ps1` 照样把**空字符串**写进 `HKCU\Environment`（.NET 保留空值项而非删除），于是 `/doctor` 不报、`-Reload` 也计入 `[SET]`。但对应的 pg MCP server **启动即失败**（`pg-server-start.cmd` `exit /b 3`，机制见 §6.3）——不是「连接时才失败」，是进程压根没起来。
+>
+> 由此，**`-Reload` 的 `15 / 15 set` 单独不能证明配置可用**：`Format-MaskedValue` 对长度 ≤ 4 的值（含空字符串）一律返回 `****`。判据是掩码本身——`****` = 仍是空，`post****` 这样的真实前缀 = 确实填了。
 
 #### 安全代价（已知 trade-off；vs ADR-030 前的对比）
 
