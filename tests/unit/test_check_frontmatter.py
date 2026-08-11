@@ -160,6 +160,21 @@ class TestValidate:
     def test_bad_state_enum_rejected(self) -> None:
         assert any("state=" in v for v in validate(_meta(state="nope"), Path("docs/x.md")))
 
+    def test_archived_state_accepted_on_a_plans_doc(self) -> None:
+        """#477: the archive ceremony must not break the gate that guards it.
+
+        ``policies/archive.md`` §8 step 5 instructs writing ``state: archived`` into a
+        ``plans/**`` doc, and ``plans/`` is inside ``SCAN_ROOTS`` — so while ``archived``
+        was absent from ``STATE_VALUES`` this blocking gate rejected the exact edit the
+        kernel prescribes. ``sdd/lifecycle.md`` §2.1 / §4 define the value on both axes.
+        """
+        assert validate(_meta(state="archived"), Path("plans/[PLAN]_old.md")) == []
+
+    def test_near_miss_state_still_rejected(self) -> None:
+        """Widening the enum by one value must not soften it into a free-for-all."""
+        violations = validate(_meta(state="archiving"), Path("docs/x.md"))
+        assert any("state=" in v for v in violations)
+
     def test_type_specific_field_required_when_active(self) -> None:
         violations = validate(_meta(type="runbook"), Path("docs/r.md"))
         assert any("last-verified" in v for v in violations)

@@ -71,7 +71,19 @@ FORBIDDEN_FIELDS: frozenset[str] = frozenset({"derives_from"})
 TRACK_VALUES: frozenset[str] = frozenset(
     {"code", "agent", "engineering-workflow", "shared"}
 )
-STATE_VALUES: frozenset[str] = frozenset({"draft", "active", "deprecated", "completed"})
+# Anchored on `sdd/lifecycle.md`, which declares itself the state-machine truth source and
+# defines `archived` on BOTH of its axes: §2.1 working-doc 4-state (draft / active /
+# completed / archived, scoped to `plans/**`) and §4 canonical 5-state (active → deprecated
+# → frozen → archived → purge-eligible).
+#
+# Omitting `archived` here made the documented archive ceremony self-defeating (#477):
+# `policies/archive.md` §8 step 5 tells the operator to write `state: archived` into a
+# `plans/**` doc, and `plans/` is inside SCAN_ROOTS, so this gate — which is blocking —
+# would reject the very edit the kernel prescribes. No file used the value yet, so the
+# breakage was latent rather than live.
+STATE_VALUES: frozenset[str] = frozenset(
+    {"draft", "active", "deprecated", "completed", "archived"}
+)
 
 
 def is_skipped(rel_path: Path) -> bool:
