@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-08-10
+updated: 2026-08-11
 state: draft
 track: shared
 ---
@@ -153,19 +153,33 @@ track: shared
 
 ## 运行时 canonical（in-source）
 
-按 [[policies/documentation\|documentation policy]] §2.2（+ §6.1 supersedes），以下文件虽位于 `src/` 但属于 canonical 治理范围：
+按 [[policies/documentation\|documentation policy]] §2.2 规则 1（Agent 专属：`src/mj_agent/{skills,prompts}/**`），以下文件虽位于 `src/` 但属于 canonical 治理范围：
+
+> **本表不复制易变派生事实**（per [[policies/documentation\|documentation policy]] 代偿纪律）。
+> 各文件的 `version` / `state` 以其自身 frontmatter 为准；**哪些 skill 被实际加载以
+> `src/mj_agent/agent.py` 的 `_ACTIVE_SKILLS` 元组为唯一 SoT**，本表不复述名单与个数。
+> 本表只登记「这些路径受 canonical 治理」+ 各自的运行时职责。
 
 | 文件 | 类型 | 运行时作用 |
 |------|------|-----------|
-| `src/mj_agent/prompts/system.md` | `[PROMPT]` v1.2 | agent 基础 system prompt（身份 + ADR-000 P1/P2/P3 + 工具清单 + envelope 字段说明 + 硬规则） |
-| `src/mj_agent/skills/biz-domain-context/SKILL.md` | `[SKILL]` v0.1 | 用 `find_biz_context` 把自然语言映射到 catalog（metric / period / dimension / 时间列 / 同环比列 / 信号表 / 维表 join key），产出"目标表+目标列"提案 |
-| `src/mj_agent/skills/qcm-analysis/SKILL.md` | `[SKILL]` v0.1 | QCM 五类高频分析模板（趋势 / Top-N / 同环比 / ETL 健康度 / Ready 信号），含 curated NL→SQL 示例（源头：`tests/eval/golden_seed.jsonl` 的 reference_sql） |
-| `src/mj_agent/skills/safe-sql-analysis/SKILL.md` | `[SKILL]` v0.1 | SQL 撰写守则与执行 envelope（时间谓词必填 / `SELECT *` 禁用 / LIMIT 策略），失败 → 修正回路 |
-| `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` v0.2 (`state: deprecated`) | MVP PR3 拆分为上述 3 个 skill；保留作历史参考，`agent.py` 不加载 |
-| `src/mj_agent/skills/probe-fixture/SKILL.md` | `[SKILL]` (fixture) | 治理框架 v1.1 自检用 dummy skill；`state: draft`，**不被** `agent.py` 加载 |
+| `src/mj_agent/prompts/system.md` | `[PROMPT]` | agent 基础 system prompt（身份 + ADR-000 P1/P2/P3 + 工具清单 + envelope 字段说明 + 硬规则） |
+| `src/mj_agent/skills/biz-schema-exploration/SKILL.md` | `[SKILL]` | 用户问「biz 域有哪些表 / 字段 / 含义」等元问题时，主导 `list_biz_tables` / `find_biz_context` / `describe_biz_table` 路线，避免直接进 SQL |
+| `src/mj_agent/skills/biz-domain-context/SKILL.md` | `[SKILL]` | 用 `find_biz_context` 把自然语言映射到 catalog（metric / period / dimension / 时间列 / 同环比列 / 信号表 / 维表 join key），产出"目标表+目标列"提案 |
+| `src/mj_agent/skills/mj-ddd-semantics/SKILL.md` | `[SKILL]` | biz 域 DDD 语义层——把业务概念（查询量 / 机构数 / 同环比）映射到具体物理列；把 catalog 召回结果转成可写 SQL 的字段清单 |
+| `src/mj_agent/skills/qcm-analysis/SKILL.md` | `[SKILL]` | QCM 五类高频分析模板（趋势 / Top-N / 同环比 / ETL 健康度 / Ready 信号），含 curated NL→SQL 示例（源头：`tests/eval/golden_seed.jsonl` 的 reference_sql） |
+| `src/mj_agent/skills/query-writing/SKILL.md` | `[SKILL]` | 通用 SQL 撰写指引——biz 域 ad-hoc 查询的列选择、JOIN 取舍、时间窗收敛；与 `mj-ddd-semantics` + `safe-sql-analysis` 协作但不重叠 |
+| `src/mj_agent/skills/monthly-report/SKILL.md` | `[SKILL]` | 用户要「上月报告 / 月报」时一键拼装：总量 + Top-N 机构 + 行业排行 + 同比环比 + 趋势 + ETL 就绪信号 |
+| `src/mj_agent/skills/safe-sql-analysis/SKILL.md` | `[SKILL]` | SQL 撰写守则与执行 envelope（时间谓词必填 / `SELECT *` 禁用 / LIMIT 策略），失败 → 修正回路 |
+| `src/mj_agent/skills/query-optimization/SKILL.md` | `[SKILL]` | 遇慢 SQL（`statement_timeout` / 大行集 / 大量 JOIN）时建议加时间谓词、改写聚合、调 LIMIT 或换表族 |
+| `src/mj_agent/skills/probe-fixture/SKILL.md` | `[SKILL]`（fixture） | 治理框架自检用 dummy skill，仅走 PR 模板 A1-A10 自检；不参与运行期加载 |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | catalog data | 静态镜像 上游业务系统 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4：metric / period / dimension / 同环比列 / 信号表 / 维表 join key；由 `find_biz_context` 召回 |
 
-*MVP 阶段 3 个 skill 静态全载（`agent.py:_ACTIVE_SKILLS`）。Phase 1+ 新增 skill 由 `docs/design/skills/INDEX.md` 补充详细目录；dynamic skill selector 推迟到 1.5。*
+> `qcm_catalog.yaml` 不落在 §2.2 规则 1 的 `{skills,prompts}` 路径内；它进入本表的依据是
+> `biz-catalog-sync` 必停面 + [[decisions/ADR-006_Fail_Safe_Reads\|ADR-006]] 数据边界 L2。
+> 另注：`scripts/check_frontmatter.py` 的 `SCAN_ROOTS` 只覆盖 `src/mj_agent/{skills,prompts}`，
+> 该 catalog 不受 frontmatter 门禁校验。
+
+*Skill 静态全载，dynamic skill selector 推迟到 1.5。新增 skill 直接加目录 + 在 `_ACTIVE_SKILLS` 注册，并补一行到上表。*
 
 ---
 
