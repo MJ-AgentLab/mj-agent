@@ -2,10 +2,10 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.4
+version: 1.5
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-10
+updated: 2026-08-11
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -278,7 +278,7 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
 |---|---|---|---|---|
 | **A1** | 路径与文件名合法 | `[TYPE][_Subject]_Description[_vX.Y].md` 或 type-specific 格式（如 `[ISSUE]_NNN_DomainAbbr_Description.md`、`.claude/skills/mj-agent-<group>-<verb>/`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A2** | Frontmatter schema 完整 | 必填基础字段 `type / domain / summary / owner / created / updated / state`（kernel policy 用 `type / summary / owner / created / updated / state / track`）；带 `version` 的类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）也填 `version` | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
-| **A3** | state 与专属字段枚举合法 | `state ∈ {draft, active, deprecated}`（working 文档 + `completed`）；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
+| **A3** | state 与专属字段枚举合法 | `state ∈ {draft, active, deprecated}`（working 文档另加 `completed`；**两轴末态另加 `archived`** —— working 文档 GC 与 canonical 归档都落这个值，per [[sdd/lifecycle|lifecycle]] §2.1 / §4，#477）；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A4** | 内部 Wikilink 目标存在 | `[[...]]` 目标存在于仓库中 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_wikilinks.py`） |
 | **A5** | INDEX.md 已同步或可重建 | 必要的 `docs/INDEX.md` / `docs/**/INDEX.md` 已同步或可由生成器重建 | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A6** | allowlist 文档变更同步检查 CLAUDE.md | §7 4 类 allowlist（框架 / 架构 / 核心运行入口 / runtime 语义）变更需同步检查 `CLAUDE.md` | code / agent / engineering-workflow / shared | Phase 0 PR review |
@@ -339,12 +339,20 @@ summary: <一句话摘要>
 owner: <DRI>
 created: <YYYY-MM-DD>
 updated: <YYYY-MM-DD>
-state: draft | active | deprecated   # working 文档另加 completed
+state: draft | active | deprecated   # working 文档另加 completed；两轴末态另加 archived
 track: code | agent | engineering-workflow | shared
 ---
 ```
 
 带 `version` 的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）额外填 `version`。
+
+**`archived` 的适用面**（#477）：[[sdd/lifecycle|lifecycle]] 是状态机真相源，它在**两条轴**上都定义了
+`archived`——§2.1 working 文档 4 态的末态（`completed` → `archived` 物理 GC，`plans/**`）与 §4 canonical
+5 态的第 4 态（`active → deprecated → frozen → archived → purge-eligible`）。因此该值对本 schema 合法，
+`scripts/check_frontmatter.py` 的 `STATE_VALUES` 与之对齐。**注意实际写入面很窄**：顶层 `archive/` 不在
+`SCAN_ROOTS` 内（canonical 归档件迁走后就出了本 gate 的判定面），故本 gate 会真正校验到 `archived` 的地方
+只有 `plans/**`——即 [[policies/archive|policies/archive]] §8 的 plan GC 与 [[sdd/lifecycle|lifecycle]]
+§2.3 的「确认废弃可手工标 `archived`（不移文件）」。
 
 **lineage 字段 `supersedes` / `superseded_by` 均为可选**——`scripts/check_frontmatter.py` 的
 `REQUIRED_FIELDS` 不含二者，无 gate 校验它们在 frontmatter 中的存在或取值（`archive.yml` 的
@@ -548,3 +556,14 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > 且这 3 份契约治理的正是 `SCAN_ROOTS` 内的 canonical doc；并删 `decisions/ADR-031` 的两个 inert
 > 空数组（其 `version` 不动——无决策 delta）。行为零 delta——无任何 living 文档的 lineage 事实被
 > 改写。*
+>
+> *v1.5（2026-08-11）：#477 — A3 与 §6.1 的 state 枚举补 `archived`，与
+> [[sdd/lifecycle|lifecycle]]（自述状态机真相源）§2.1 / §4 对齐。此前四方口径 2 对 2 冲突：
+> lifecycle 两条轴都定义了 `archived`、[[policies/archive|policies/archive]] §8 步骤 5 直接指示把
+> plan 的 frontmatter 改成该值，而本 §6.1 / A3 与 `scripts/check_frontmatter.py` 的 `STATE_VALUES`
+> 都不认它——`plans/` 在 `SCAN_ROOTS` 内且该 gate blocking，故**照 kernel 文档执行归档 ceremony 会当场
+> 弄红 CI**。判据取 lifecycle（唯一同时定义两轴者）⇒ 判为 validator 与本 policy 不完整，ceremony 正文
+> 不动。同批把 `archived` 加进 `STATE_VALUES` 并加两条钉线测试（含「近似值 `archiving` 仍被拒」的收窄
+> 断言）。⚠ 这是对一个 blocking gate 判定面的**放宽**，但 `continue-on-error` 值未变，按 #444 判例不
+> 构成 posture 翻转、不需 `ci-blocking-gate-toggle`。落盘时全仓无文件使用该值（`^state: archived`
+> 零命中）⇒ 缺陷为潜伏态，本次修复行为零 delta（gate 仍 `OK: 136`）。*
