@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.4
+version: 0.5
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-04
+updated: 2026-08-11
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -13,8 +13,8 @@ ai_visibility: source-of-truth
 # Policy: AI Agent Boundaries
 
 > Phase M0 — 4 段 native 内容 ✓（§Codex 参与 [ADR-035 起；原 §Codex 非参与] / §Subagent Split A3 / §Symbol-first Search A5 /
-> §HITL Required Scenarios）.
-> 其余段（§Read/Write boundary / §Read priority / §Output requirements）在 Phase M2 内容填充.
+> §HITL Required Scenarios）；§7-§9 亦 native。**§5 / §6 于 #482（2026-08-11）内容化，本文件不再有待填充节。**
+> ⚠ 引用本文件请用**章节号 + 行名**，勿用行号——内容增补会整体移动行号，且无任何 gate 能发现失效的行号锚。
 
 ## §1 Codex 参与策略层（native；最高优先级）
 
@@ -125,14 +125,81 @@ of truth），LSP 仅作交互式辅助.
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 
-> TBD: Phase M2 — 详 path-level 表（与 root CLAUDE.md "What Claude May Edit" / "What Claude
-> Must Not Edit Without Approval" 段同步；详 `mj-agent-refactored-structure.md` §17 CLAUDE.md
-> 模板 §What Claude May Edit / §What Claude Must Not Edit Without Approval）.
+> **本节按现状填写，而非按原 TBD 设想（2026-08-11，issue #482）。原 TBD 的前提已失效，且其框定
+> 与实现相反**，两处都在此更正：
+>
+> 1. 原 TBD 要求「与 root `CLAUDE.md` 的 §"What Claude May Edit" / §"What Claude Must Not Edit
+>    Without Approval" 两段同步」——**root `CLAUDE.md` 现无这两段**，其对位内容是 §"必停 surfaces"。
+> 2. 「**可修改路径白名单**」这个框定与实现相反：`.claude/settings.json` 的 `permissions.allow`
+>    含**未加路径限定的裸 `Edit` / `Write` / `Read`**，即实际模型是**默认可写 + 逐档收窄**，
+>    仓内**不存在**可修改路径白名单。本节因此改写为**四档路径模型**（收窄向）。
+>
+> 节标题保留原名以免打断既有引用；真值以本节正文为准。
+
+### §5.1 四档路径模型
+
+实测 `.claude/settings.json` + harness 行为（2026-08-11）。**取值随该文件变动**，判定时以文件
+本身为准：`python -c "import json;print(json.load(open('.claude/settings.json',encoding='utf-8'))['permissions'])"`。
+
+| 档 | 面 | 载体 | AI 能否落盘 |
+|---|---|---|---|
+| **D — 禁止** | `.env`（**含 Read**）· `config/secrets.enc` · `config/secrets-mcp.enc` · `rm -rf` / `Remove-Item` / `del` 类破坏命令 | `permissions.deny` | ❌ 完全不可触。AI 取不到的外部 secret 走 §8「给 Owner 的步骤」 |
+| **A — 逐写拍板** | 4 项 in-source 专属必停面（`tools/sql/{guardrail,precheck}.py` · `prompts/system.md` · `biz_catalog/qcm_catalog.yaml`）+ `src/mj_agent/skills/**/SKILL.md` | `permissions.ask` | ✅ Owner 拍板后由 AI 落盘（ADR-034 `deny`→`ask`） |
+| **P — protected（harness 硬编码）** | `.claude/**`（除 `.claude/worktrees`）· `.mcp.json` · `.claude.json` | harness 强制权限 prompt，`allow` **不可抑制** | ✅ 每写必弹 prompt = 拍板；详 §9 |
+| **F — 默认可写** | 其余全部路径 | `allow` 中的裸 `Edit` / `Write` / `Read` | ✅ 直接落盘 |
+
+**precedence**：`deny` > `ask` > `allow` —— 具体 path 落在 `ask` 时，即使 `Edit` 在 `allow` 也弹。
+**仅交互模式成立**：`auto` / `bypass` 下放宽类改动被 classifier 硬拦（详 §9）。
+
+### §5.2 「必须 HITL」清单不在本节复制
+
+canonical 10-enum 的唯一 home 是 **§4**——本节**不复制**那张表（同一枚举出现两次必然漂移）。
+本节只补 §4 之外、**落在档位 F 却仍须 Owner 拍板**的面；它们的共同特征是**没有任何 harness 载体**：
+
+| 面 | 要求 | 兜底 |
+|---|---|---|
+| `docker/Dockerfile` 的外部 registry 镜像引用（`FROM <image>` 与 `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | Owner 拍板 | 纪律 + PR 模板 Docker Impact 勾选 + merge review。无 `ask` 条目、亦无**审批类** CI gate；规则体 `policies/docker-runtime.md` §4，enum 锚点 `secrets-grants-or-prod-config` |
+| D-017 扩展邻接面（`.codex/**` · `.agents/**` · `scripts/sdd/agents_sync.py` · manifest 的 `mcp` 与 `codex.posture` 段） | Owner 拍板 | 纪律 + 投影 drift gate + merge review（ADR-036） |
+| `policies/**` + `sdd/**`（kernel 元规则本身） | HITL required | merge review。**不在** canonical 10-enum 内 ⇒ PR body 的 Inventory 全填 No，并在 AI Self-Check 中说明 |
+
+### §5.3 已知差距（如实记录；本节不预判）
+
+- **`deny` 与 `ask` 两档的条目全部是 `Edit(...)` / `Read(...)` 形态，无一条 `Write(...)`。**
+  这是可观察事实。但 `Edit(<path>)` 规则**是否覆盖 `Write` 工具**尚未核实，因而「是否构成真
+  旁路」本节**不下结论**——该判定是 **issue #485** 的 AC-1，其结论落地前本节不预写。
+- 档位 F 的三个 HITL 面**都没有 harness 载体**（§5.2 第三列已逐条注明），只有纪律 + review。
+- L3 数据边界面 `src/mj_agent/integrations/mj_system_db.py` 不在 `ask` 内，该面无 harness 门
+  （同 `policies/data-boundary.md` 的既有记载）。
 
 ## §6 每次任务输出要求
 
-> TBD: Phase M2 — 详 12 字段输出模板（详 `mj-agent-refactored-structure.md` §17 CLAUDE.md 模板
-> §Output Requirements + spec-anchored-calm-lampson §11.6）.
+> **本节按现状填写（2026-08-11，issue #482）。** 原 TBD 指向的「12 字段输出模板」在仓内**没有
+> 任何消费方**；而真正在用的输出要求**早已存在且有载体** —— root `.github/PULL_REQUEST_TEMPLATE.md`
+> 的 §"AI Self-Check Checklist" 那 4 条，且**该模板行本身就反向引用本节**（写作
+> "per `policies/ai-agent.md` §4 + §6"）。故本节按那 4 条真值化，**不另造一套无人消费的 12 字段**。
+
+### §6.1 每次任务输出必答 4 条
+
+| # | 条目 | 取值 | 判据出处 |
+|---|---|---|---|
+| 1 | **Codex 参与情况** | `NONE` 或描述其具体贡献 | §1（standalone Codex 已开 ⇒ 可为 non-NONE；non-NONE 须 Owner 拍板） |
+| 2 | **HITL scenario hit** | `NONE` 或逐项列出 | §4 canonical 10-enum |
+| 3 | **BDD/TDD impact** | `NONE` 或逐项列出 | `sdd/adapters/bdd-tdd.md` |
+| 4 | **Subagent dispatched** | `NONE` 或逐项列出 | §2（A3 subagent split 准则） |
+
+**PR 面另附 `HITL Trigger Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。它与上表
+第 2 条是**不同粒度**、不是重复：第 2 条是「本次是否命中」的摘要，Inventory 是**逐 enum 的可查
+证据**。**不适用的行标 `— No`，不要删行**——删行会让 reviewer 无法区分「不适用」与「漏答」。
+
+### §6.2 载体与差距
+
+- **载体**：root `.github/PULL_REQUEST_TEMPLATE.md`，**唯一**。
+- **无机器校验**：无任何 CI 执行体读取该 checklist；兜底 = merge review。
+- **差距（如实记录）**：`.github/PULL_REQUEST_TEMPLATE/` 下的 6 个类型模板
+  （bugfix / documentation / feature / hotfix / maintain / release）结构与根模板**完全不同**
+  （只有「文档变更内容 / 变更原因 / 自检结果」三段），**均不含**本节 4 条、也不含
+  `HITL Trigger Inventory`。选用类型模板的 PR 因此**不会被提示**作答本节要求。修订那 6 个模板
+  另立单。
 
 ## §7 Pre-flight Verification Discipline
 
@@ -333,4 +400,26 @@ precedence：`deny` > `ask` > `allow`（具体 path 在 `ask` 即使 `Edit` 在 
 
 ---
 
-> *Phase M0 — 4 段 native；§8/§9 native（ADR-034，2026-06-20）；§5/§6 余 TBD Phase M2.*
+> *`state: draft` — §1-§9 全部内容化（§5 / §6 于 #482，2026-08-11），本文件不再有待填充节。*
+>
+> *v0.5（2026-08-11）：#482 — 清空本文件仅剩的 2 个 TBD 块（§5 / §6），无一 decline；至此
+> `M6-FU-POLICIES-TBD-SWEEP` 的 20 块全部处置完毕。**两块都不是「照 TBD 写正文」，而是先纠正原
+> 占位块自身的错误前提**：*
+>
+> *— §5 的原 TBD 要求「与 root `CLAUDE.md` 的 §"What Claude May Edit" / §"What Claude Must Not
+> Edit Without Approval" 两段同步」，**该两段在 root `CLAUDE.md` 中已不存在**（对位内容是
+> §"必停 surfaces"）；且「可修改路径**白名单**」的框定与实现**相反** —— `permissions.allow`
+> 含未加路径限定的裸 `Edit` / `Write` / `Read`，实际是**默认可写 + 逐档收窄**。故改写为 §5.1
+> 四档路径模型（D 禁止 / A 逐写拍板 / P harness protected / F 默认可写）+ §5.2 三个「无 harness
+> 载体但仍须拍板」的面 + §5.3 差距。**§5.3 刻意不判**「`Edit(...)` 是否覆盖 `Write` 工具」——
+> 那是 issue #485 的 AC-1，不在本单预写。*
+>
+> *— §6 的原 TBD 指向一套「12 字段输出模板」，仓内**无任何消费方**；而真正在用的输出要求早已
+> 存在 —— root `.github/PULL_REQUEST_TEMPLATE.md` 的 AI Self-Check 4 条，且**该模板行本身反向
+> 引用本节**。故按那 4 条真值化，并记下差距：6 个类型 PR 模板结构与根模板完全不同，**均不含**
+> 这 4 条与 `HITL Trigger Inventory`。*
+>
+> *两块的 vault 指针（`mj-agent-refactored-structure.md` / `spec-anchored-calm-lampson`）随占位
+> 壳一并移除，内容改从实现本体取证 —— 沿用本单 PR #483（`data-boundary.md`）确立的先例。
+> 章节编号 §1-§9 与头注行数均未变，故仓内既有的 `ai-agent.md:94` / `:98`（皆在 §4）等行号锚
+> **不受影响**。`state` 不动（per #480 / `sdd/lifecycle.md` §4.1）。*
