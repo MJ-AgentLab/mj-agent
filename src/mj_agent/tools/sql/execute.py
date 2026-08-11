@@ -7,7 +7,7 @@ The execution path is layered:
 
   1. L1 hybrid guardrail (``guardrail.is_safe_select``) — blocks DML/DDL,
      multi-statement, schema/table allowlist breaches.
-  2. L2 sqlglot precheck (``precheck.precheck_sql``) — Component-Judge-
+  2. L1b sqlglot precheck (``precheck.precheck_sql``) — Component-Judge-
      aligned static rules: no_select_star, require_time_range, advisory
      LIMIT checks. P0 errors become ``ValueError``; P1 warnings travel
      in the response envelope.
@@ -82,7 +82,7 @@ def execute_sql(sql: str) -> dict[str, Any]:
             the AST precheck (e.g. missing LIMIT on detail queries)
 
     Raises:
-        ValueError: the L1 guardrail or the L2 precheck rejected the SQL.
+        ValueError: the L1 guardrail or the L1b precheck rejected the SQL.
         RuntimeError: the database returned an error. ``statement_timeout``
             (60s) raises ``RuntimeError`` with a friendly hint.
     """
