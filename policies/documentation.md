@@ -2,7 +2,7 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.5
+version: 1.6
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-11
@@ -277,7 +277,7 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
 | 编号 | 检查项 | 定义 | 适用 track | 自动化 |
 |---|---|---|---|---|
 | **A1** | 路径与文件名合法 | `[TYPE][_Subject]_Description[_vX.Y].md` 或 type-specific 格式（如 `[ISSUE]_NNN_DomainAbbr_Description.md`、`.claude/skills/mj-agent-<group>-<verb>/`） | code / agent / engineering-workflow / shared | Phase 2 CI |
-| **A2** | Frontmatter schema 完整 | 必填基础字段 `type / domain / summary / owner / created / updated / state`（kernel policy 用 `type / summary / owner / created / updated / state / track`）；带 `version` 的类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）也填 `version` | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
+| **A2** | Frontmatter schema 完整 | 必填基础字段 `type / domain / summary / owner / created / updated / state`；带 `version` 的类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）也填 `version`。**kernel 面（`policies/**` + `sdd/**`）走自有键集**，见下方 kernel 例外 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
 | **A3** | state 与专属字段枚举合法 | `state ∈ {draft, active, deprecated}`（working 文档另加 `completed`；**两轴末态另加 `archived`** —— working 文档 GC 与 canonical 归档都落这个值，per [[sdd/lifecycle|lifecycle]] §2.1 / §4，#477）；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A4** | 内部 Wikilink 目标存在 | `[[...]]` 目标存在于仓库中 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_wikilinks.py`） |
 | **A5** | INDEX.md 已同步或可重建 | 必要的 `docs/INDEX.md` / `docs/**/INDEX.md` 已同步或可由生成器重建 | code / agent / engineering-workflow / shared | Phase 2 CI |
@@ -287,6 +287,15 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
 > **engineering-workflow 专属补丁**：A2 schema 在 `track: engineering-workflow` + 路径 `.claude/skills/**` 时，
 > schema 是 ADR-013 native 2 字段（`name` + `description`），不是 13 字段。详见
 > [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + `sdd/adapters/claude-code-skill.md`。
+
+> **kernel 例外（`policies/**` + `sdd/**`；#480）**：kernel 文档**不**用上表的 canonical 键集，而用
+> `type / artifact / state / version / owner / created / updated / track / ai_visibility` —— 以
+> `artifact`（kernel 件的稳定标识）替 `domain` + `summary`，并额外带 `version` 与 `ai_visibility`。
+> 这是**刻意的自有 schema**、不是缺漏：本 policy 与 `sdd/**` 全部文件的键集**逐字一致**，无一例外。
+> 相应地，A2 的「必填基础字段」一列对 kernel 面读作上述键集。⚠ 门禁事实：`scripts/check_frontmatter.py`
+> 的 `SCAN_ROOTS` 不含这两个目录（详 §3.1 `capabilities/**` 豁免条款同段），故本例外**无机器校验**，
+> 靠 merge review 兜底；`state` 字段在 kernel 面的语义见 [[sdd/lifecycle|lifecycle]] §4.1。
+> 计数与键集**不在此硬写**——真值在文件本身，用 `frontmatter.load()` 逐件解析即得。
 
 ### §5.2 非阻塞式观察 OB1-OB5（Code_Side §7.2）
 
@@ -567,3 +576,11 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > 断言）。⚠ 这是对一个 blocking gate 判定面的**放宽**，但 `continue-on-error` 值未变，按 #444 判例不
 > 构成 posture 翻转、不需 `ci-blocking-gate-toggle`。落盘时全仓无文件使用该值（`^state: archived`
 > 零命中）⇒ 缺陷为潜伏态，本次修复行为零 delta（gate 仍 `OK: 136`）。*
+>
+> *v1.6（2026-08-11）：#480 — A2 的 kernel 括注改为实况并升格为独立例外块。原括注写「kernel policy 用
+> `type / summary / owner / created / updated / state / track`」，实测 **0/29** kernel 文件带
+> `summary`，且 29/29 的键集**逐字一致**为 `type / artifact / state / version / owner / created /
+> updated / track / ai_visibility`——散文与实况无一处吻合，而 `SCAN_ROOTS` 不含这两个目录，故无 gate
+> 发现。判为**刻意的自有 schema**（一致性 29/29 是最强证据），非缺漏，遂改写 A2 并在 §5.1 表下补
+> kernel 例外块，同时按 #475 判例**不硬写计数**、指回文件本体。同批在 [[sdd/lifecycle|lifecycle]]
+> 新增 §4.1 定义 canonical / kernel 侧的 `draft` 入口态，本块的 `state` 语义指向该节。零 state 变更。*
