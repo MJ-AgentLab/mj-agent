@@ -2,7 +2,7 @@
 type: sdd-kernel
 artifact: lifecycle
 state: active
-version: 1.2
+version: 1.3
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-08-11
@@ -163,8 +163,9 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 **定义**：`draft` = **正文尚未 authoring 到该文档在其 canonical home 应有的深度**——骨架、留有未填的
 `> TBD` 块、或内容已成型但沿用了当初的 phase 标签。
 
-**`draft` 不等于「未生效」。** 一份 `draft` 文档完全可以是活体规则的唯一真相源，且仓内确有此例
-（`policies/docker-runtime.md` 的头注即自陈「§4 已是 live SoT；§1-§3 待内容填充」）。判断一份文档
+**`draft` 不等于「未生效」。** 一份 `draft` 文档完全可以是活体规则的唯一真相源，且仓内确有此例：
+`policies/docker-runtime.md` 长期是 `docker/` 下审批级别的 kernel SoT——其 §4 被 `docker/AGENTS.md`
+与 `docker/CLAUDE.md` 两个 entry adapter 回指取级别——却始终是 `state: draft`。判断一份文档
 对 AI 是否权威，看 **`ai_visibility`** 而不是 `state`——这就是 kernel 文档同时写着 `state: draft` 与
 `ai_visibility: source-of-truth` 却不矛盾的原因：前者说"写完了没"，后者说"算不算数"。
 
@@ -221,3 +222,10 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 > 该追的是登记在 `M6-FU-*-TBD-SWEEP` 的内容债务；(c) `state` 在哪些面**有**机器后果——runtime SKILL
 > 的契约冻结是 blocking 的，`SCAN_ROOTS` 内只对 5 个类型生效，而 `policies/` `sdd/` `capabilities/`
 > 三处完全无 gate。**本次零 state 变更**：不翻任何一份文档，只补定义。*
+>
+> *v1.3（2026-08-11）：#482 — §4.1 的「`draft` 不等于未生效」举例改为**耐久措辞**。原句逐字引用
+> `policies/docker-runtime.md` 的头注（「§4 已是 live SoT；§1-§3 待内容填充」），而该头注在同批
+> PR 里随三个 TBD 块填充而改写，引用当场失真。改为引「该文件长期是 `docker/` 审批级别的 kernel
+> SoT（§4 被两个 entry adapter 回指）却始终 `state: draft`」——同一论点，但不依赖任何会变的
+> 措辞。**本次零 state 变更、零定义变更**，只修这一处诱发性陈旧。判例：引用他文时引**结构事实**
+> 不引**当期措辞**——后者没有任何 gate 兜底（`check-stale-docs` 只匹配完整 backtick 路径字面量）。*
