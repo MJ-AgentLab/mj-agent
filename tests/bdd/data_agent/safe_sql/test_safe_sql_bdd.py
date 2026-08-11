@@ -100,7 +100,7 @@ def _call_execute_sql_capture_exception(sql: str) -> BaseException:
 
     Used by @then steps so they remain stateless (do not require a prior
     @when to capture the exception into a fixture). Safe because execute_sql
-    is idempotent in the rejection path (no DB contact before L1/L2 raise).
+    is idempotent in the rejection path (no DB contact before L1/L1b raise).
     """
     from mj_agent.tools.sql.execute import execute_sql
     try:

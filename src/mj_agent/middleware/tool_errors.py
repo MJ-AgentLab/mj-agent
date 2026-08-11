@@ -1,7 +1,7 @@
 """Convert SQL tool exceptions into ``ToolMessage`` so the LLM can self-correct.
 
 The SQL tool chain (``tools/sql/execute.py``, ``tools/sql/introspect.py``)
-raises ``ValueError`` on validation rejections (L1 guardrail, L2 precheck,
+raises ``ValueError`` on validation rejections (L1 guardrail, L1b precheck,
 allowlist) and ``RuntimeError`` on execution failures (60s statement_timeout,
 DB errors). LangGraph's default ``ToolNode`` re-raises these — the graph
 step fails and the Chainlit UI hangs waiting for a ``ToolMessage`` that
