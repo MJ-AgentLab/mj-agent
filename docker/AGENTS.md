@@ -16,9 +16,12 @@
 
 > **This table names surfaces; the kernel sets the levels.** Approval levels for the
 > compose.prod.yml, image-ref and external-network rows live in `policies/docker-runtime.md` §4;
-> the healthcheck row has no §4 entry yet (§3 is unfilled), so it keeps this section header's
-> `OWNER_APPROVAL_REQUIRED` until the kernel covers it. Note the §4 split: only the external
-> registry image refs above carry `OWNER_APPROVAL_REQUIRED` **among `docker/Dockerfile` lines** —
+> the healthcheck row still has no §4 entry, so it keeps this section header's
+> `OWNER_APPROVAL_REQUIRED` until the kernel covers it. (§3 was filled in v0.4, but the row was
+> **deliberately** not added to §4 — which canonical enum anchors that surface is an Owner posture
+> call; the criterion and trigger are recorded at the end of that file's §3.) Note the §4 split:
+> only the external registry image refs above carry `OWNER_APPROVAL_REQUIRED`
+> **among `docker/Dockerfile` lines** —
 > **every other `docker/Dockerfile` line is ≥ 2 reviewer and is not a hard stop** (per #408 AC-4 /
 > #413). That statement is about Dockerfile lines only; it does not touch the other three rows.
 > Codex: this file loads only once your cwd is under `docker/`

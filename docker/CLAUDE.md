@@ -58,9 +58,10 @@ H3 hard-confirm 在 Level 2/3 — skill 必须先询问 user 确认 destination 
 | Image base | `docker/Dockerfile` 外部镜像引用变更：`FROM <image>` + `COPY --from=<registry image>`（内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内）；contract 对应面 = `docker.contract.yml` `base_image` | supply-chain（详 `policies/docker-runtime.md` §4；canonical enum `secrets-grants-or-prod-config` per `policies/ai-agent.md §4`） |
 
 > **本表只点名对象，级别由 kernel 定**：Prod compose / Image base / External network 三行的审批
-> 级别见 `policies/docker-runtime.md` §4；Healthcheck 行 §4 尚无对应条目（§3 待填），暂沿用本节
-> 标题的必停级别。注意 §4 的拆分——**在 `docker/Dockerfile` 各行之中**只有上面点名的**外部
-> registry 镜像引用**是 `OWNER_APPROVAL_REQUIRED`；**其余 Dockerfile 行 = ≥ 2 reviewer，不是
+> 级别见 `policies/docker-runtime.md` §4；Healthcheck 行 §4 仍无对应条目，暂沿用本节标题的必停
+> 级别——§3 已于 v0.4 填充完毕，但**刻意**未把该行补进 §4（canonical enum 锚点属 Owner 姿态决策；
+> 判据与触发条件见该文件 §3 末段）。注意 §4 的拆分——**在 `docker/Dockerfile` 各行之中**只有上面
+> 点名的**外部 registry 镜像引用**是 `OWNER_APPROVAL_REQUIRED`；**其余 Dockerfile 行 = ≥ 2 reviewer，不是
 > 必停**（per #408 AC-4 / #413；该句只针对 Dockerfile 行，不涉及本表其余三行）。该面**无
 > `permissions.ask` 条目、无审批类 CI gate**（`docker-build` 只验镜像可构建、V5 只 lint 契约字段，
 > 均不判 Owner 拍板），靠纪律 + PR 模板 Docker Impact 声明 + merge review 兜底。
