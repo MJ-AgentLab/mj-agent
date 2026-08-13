@@ -2,12 +2,9 @@
 
 Capability ``data-agent.memory-checkpointer`` (#365 AC4 + AC5; REQ-001/002/003/004).
 
-Container-gated: these hit the dedicated ``mj-agent-postgres`` container and skip cleanly
-without ``MJ_AGENT_MEMORY_USER`` (``memory_db`` fixture), so CI (which has no container)
-does not run them. Run locally with the storage stack up::
-
-    docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d mj-agent-postgres
-    uv run pytest tests/smoke -m smoke -k memory_redaction
+The ``memory_db`` fixture returns ``SKIP_POLICY_EXTERNAL_DEPENDENCY`` for every
+pytest invocation until a future separately Owner-approved non-biz external
+profile exists. Credentials or a running container never enable this module.
 
 The canary reads the raw ``BYTEA`` blobs straight out of ``checkpoint_blobs`` (aput path)
 AND ``checkpoint_writes`` (aput_writes path) and asserts a distinctive verbatim cell value

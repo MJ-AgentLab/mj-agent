@@ -311,19 +311,28 @@ External-Info Handoff Discipline）。
 |---|---|
 | `uv run ruff check` | lint（CI 必跑，本地等价） |
 | `uv run mypy src/mj_agent` | 类型检查 strict（CI 必跑，本地等价） |
-| `uv run pytest tests/unit` | unit tests（无外部依赖） |
-| `uv run pytest tests/eval` | eval tests（seed schema + Component check，无 DB） |
+| `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit` | unit tests（无外部依赖） |
+| `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval` | eval tests（seed schema + Component check，无 DB） |
 | `python -m compileall src` | 编译可解析 |
 | `python scripts/check_wikilinks.py` | 文档 wikilinks（docs/ 改动时） |
 | `python scripts/check_frontmatter.py` | 文档 frontmatter（docs/ 改动时） |
+
+### Offline pytest external bands（只验证 structured skip）
+
+Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 live route；biz live pytest
+永久不可用，non-biz external 需未来独立 Owner-approved profile。当前这些命令只验证
+`SKIP_POLICY_EXTERNAL_DEPENDENCY`，不算 live integration 证据。
+
+| 命令 | 用途 |
+|---|---|
+| `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration` | integration collection + biz-live policy skip |
+| `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke` | smoke collection + external policy skip |
+| `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract` | contract collection + biz-live policy skip |
 
 ### Level B：DB / LLM 依赖 / 副作用 / **HITL-confirm**
 
 | 命令 | 用途 | HITL 触发条件 |
 |---|---|---|
-| `uv run pytest tests/integration` | integration（需 live biz DB） | 需 `POSTGRES_ANALYST_USER` |
-| `uv run pytest tests/smoke -m smoke` | smoke（需 live biz DB + Ark API） | 需 `ARK_API_KEY`；CI 不跑 |
-| `uv run pytest tests/contract -m contract` | contract | 需 DB creds |
 | `uv run mj-agent check` | DB + LLM creds 健康探针 | 需 `.env` 充实 |
 | `uv run langgraph dev` | LangGraph Studio 起服务 | 需 `.env` + Ark；交互式探针 H1/H2/H3/R1/R2 |
 | `docker compose ... up -d` | mj-agent compose 启动 | 需上游业务系统栈先 up；本地 docker daemon |
@@ -331,10 +340,10 @@ External-Info Handoff Discipline）。
 
 按影响范围（实现 3 风味）检查：
 
-- **风味 A 纯代码**：Level A 全跑；Level B 按改动域选（碰 SQL/biz 必跑
-  integration + Studio 探针）。
-- **风味 B in-source canonical**：Level A + Studio 探针（手动看 LLM 行为差异）
-  + smoke（业务样本对比）。
+- **风味 A 纯代码**：Level A 与 offline pytest external bands 全跑；Level B 按改动域选
+  （碰 SQL/biz 时，live 证据走 sanctioned probe / Studio，不以 pytest 代替）。
+- **风味 B in-source canonical**：Level A + 对是否运行 Studio / sanctioned live probe 的
+  显式 Owner 决策；pytest smoke 仅证明结构化 policy skip，不作为业务样本 live 证据。
 - **风味 C infra**：Level A + 必跑 `mj-agent check` + compose up/down 排练 +
   Studio 探针。
 

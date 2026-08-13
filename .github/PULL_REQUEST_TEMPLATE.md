@@ -76,8 +76,8 @@
 
 ```bash
 # 列出本 PR 跑过的验证命令 + 结果
-uv run pytest tests/unit -q
-uv run pytest tests/contract -m contract
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 # ...
 ```
 

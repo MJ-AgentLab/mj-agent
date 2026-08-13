@@ -194,7 +194,7 @@ git pushall   # 推 develop 到 gitee + origin
 1. **先找 why**：每段冲突 hunk，读相关 commit message / 关联 PR / issue，弄清两侧改动各自**意图**（非只看语法谁覆盖谁）。
 2. **保留双方意图**：能并存则并存；冲突时选**匹配本次 sync 目标**的一侧，merge commit body **文档化取舍**（选哪侧、为何）。
 3. **绝不发明**：只解既有冲突，不引入两侧都没有的新行为。
-4. **续行前跑 Level A**：解完（或 `git stash pop` 后）先跑 `uv run ruff check` / `uv run mypy src/mj_agent` / `uv run pytest tests/unit`（矩阵见 [[../../../sdd/workflows/execution-loop|execution-loop]] §5）确认绿，再交付 / 续 rebase 链。
+4. **续行前跑 Level A**：解完（或 `git stash pop` 后）先跑 `uv run ruff check` / `uv run mypy src/mj_agent` / `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit`（矩阵见 [[../../../sdd/workflows/execution-loop|execution-loop]] §5）确认绿，再交付 / 续 rebase 链。
 5. **承诺解完**：AI 默认把冲突解到底（含 stacked-PR rebase 链续到底），**不主动** `--abort` 逃避。
 
 **安全出口（user-only）**：任何步骤 **user** 说"放弃" → `git merge --abort`，告知"合并已中止，分支恢复同步前状态"。此为 HITL 安全阀，**AI 不主动触发**。

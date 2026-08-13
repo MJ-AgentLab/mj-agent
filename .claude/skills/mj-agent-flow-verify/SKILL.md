@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-verify
-description: This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / pytest unit+eval / compileall / wikilinks / frontmatter / git status) and HITL-confirms Level B side-effecting checks (pytest integration+smoke+contract / mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .claude/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "uv run pytest", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
+description: This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / hardened offline pytest unit+eval / compileall / wikilinks / frontmatter / git status), verifies structured skips for pytest external bands, and HITL-confirms explicit Level B probes (mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .claude/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "offline pytest runner", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
 ---
 
 # mj-agent Flow — Local Verification (HITL Stage 10)
@@ -55,12 +55,12 @@ git diff --stat HEAD
 
 | 路径前缀 | Domain | 关键 verify 命令池 |
 |---|---|---|
-| `src/mj_agent/agent.py` | agent | ruff + mypy + pytest unit + Studio probe |
-| `src/mj_agent/llm.py` | llm | ruff + mypy + smoke（Ark API key 测试） |
-| `src/mj_agent/prompts/*.md` | prompt（**B 风味**） | smoke + Studio probe（LLM 行为对比） |
-| `src/mj_agent/skills/*/SKILL.md` | skill（**B 风味**） | smoke + Studio probe |
-| `src/mj_agent/tools/sql/{guardrail,execute,introspect,precheck}.py` | sql | ruff + mypy + pytest unit + integration |
-| `src/mj_agent/integrations/mj_system_db.py` | db | ruff + mypy + pytest integration（需 POSTGRES_ANALYST_USER） |
+| `src/mj_agent/agent.py` | agent | ruff + mypy + hardened offline pytest unit + separately approved Studio probe |
+| `src/mj_agent/llm.py` | llm | ruff + mypy + offline smoke structured-skip + separately approved Studio / sanctioned probe |
+| `src/mj_agent/prompts/*.md` | prompt（**B 风味**） | offline smoke structured-skip + separately approved Studio probe（LLM 行为对比） |
+| `src/mj_agent/skills/*/SKILL.md` | skill（**B 风味**） | offline smoke structured-skip + separately approved Studio probe |
+| `src/mj_agent/tools/sql/{guardrail,execute,introspect,precheck}.py` | sql | ruff + mypy + hardened offline pytest unit/integration structured-skip + separately approved sanctioned probe |
+| `src/mj_agent/integrations/mj_system_db.py` | db | ruff + mypy + offline integration structured-skip + sanctioned live probe |
 | `src/mj_agent/config.py` | config | ruff + mypy + mj-agent check |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | biz_catalog（**B 风味边缘**） | scripts/diff_biz_schema.py + pytest eval |
 | `tests/{unit,eval,integration,smoke,contract}/` | tests | 对应 pytest band |
@@ -88,8 +88,8 @@ git diff --stat HEAD
 # Application（按 detected scope）
 uv run ruff check                          # 全仓 lint
 uv run mypy src/mj_agent                   # strict 类型检查
-uv run pytest tests/unit                   # unit tests（无外部依赖）
-uv run pytest tests/eval                   # eval tests（seed schema + Component check，无 DB）
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval
 python -m compileall src                   # 解析检查
 
 # Docs（如 docs/ 改动）
@@ -111,10 +111,10 @@ docker compose -f docker/compose.yaml config   # 校验 yaml
 ### Level B — 局部写入 / 外部依赖（HITL-confirm 后调）
 
 ```bash
-# Application（需 POSTGRES_ANALYST_USER 或 ARK_API_KEY）
-uv run pytest tests/integration            # 需 live biz DB
-uv run pytest tests/smoke -m smoke         # 需 live biz DB + Ark API
-uv run pytest tests/contract -m contract   # 需 DB creds
+# Pytest external bands（只验证 structured skip；凭据永不启用 live route）
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 
 # Health probe
 uv run mj-agent check                      # DB + LLM creds 健康（Docker healthcheck 等价）
@@ -160,18 +160,18 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 ```markdown
 ### Level B HITL（待确认）
 
-1. **跑 pytest tests/integration?**
+1. **跑 sanctioned live integration probe?**
    - 当前观察：src/mj_agent/integrations/mj_system_db.py 改动
    - 不确定点：是否需 live biz DB 验证
    - 为什么重要：仅 ruff/mypy 不能验证 DB 连接行为
-   - 选项：A. 跑 integration（~2-5 min；需 POSTGRES_ANALYST_USER） / B. 跳过 / C. 仅跑 contract
+   - 选项：A. 跑 sanctioned probe（~2-5 min；HITL） / B. 跳过 / C. 仅验证 offline structured skips
    - 推荐：A（DB-touching 改动需端到端验证）
-   - 默认假设：B（跳过；如 .env 缺 POSTGRES_ANALYST_USER）
+   - 默认假设：B（跳过；credential presence 不改变 external pytest policy，sanctioned probe 始终单独 HITL）
 
 2. **Studio probe?**
    - 当前观察：src/mj_agent/skills/biz-domain-context/SKILL.md body 改动（**B 风味**）
    - 不确定点：是否需 manual LLM 行为对比
-   - 选项：A. 跑 langgraph dev + H1/H2/H3/R1/R2 矩阵（~10 min） / B. 跳过 / C. 仅跑 smoke 自动化对比
+   - 选项：A. 跑 langgraph dev + H1/H2/H3/R1/R2 矩阵（~10 min） / B. 跳过 / C. 仅验证 offline smoke structured skips（不能替代 live evidence）
    - 推荐：A（B 风味改动 LLM 行为）
    - 默认假设：A
 ```
@@ -208,8 +208,8 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 ### Level A 自动执行（7/7 PASS, 18.4s）
 - ✅ uv run ruff check — 0 issues (3.2s)
 - ✅ uv run mypy src/mj_agent — Success: no issues (4.1s)
-- ✅ uv run pytest tests/unit — 87 passed (6.0s)
-- ✅ uv run pytest tests/eval — 12 passed (2.1s)
+- ✅ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit — 87 passed (6.0s)
+- ✅ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval — 12 passed (2.1s)
 - ✅ python -m compileall src — All compiled (1.0s)
 - ✅ python scripts/check_wikilinks.py — 0 violations (0.5s)
 - ✅ python scripts/check_frontmatter.py — 58 docs all pass (0.8s)
@@ -249,7 +249,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 | Bash `python -m compileall` / `python scripts/check_wikilinks.py` / `check_frontmatter.py` | Step 3 Level A docs / parse |
 | Bash `python scripts/diff_biz_schema.py` | Step 3 Level A biz_catalog drift |
 | Bash `docker --version` / `compose config` | Step 3 Level A docker config check |
-| Bash `uv run pytest tests/{integration,smoke,contract}` | Step 5 Level B controllers |
+| Bash `scripts/sdd/run_offline_pytest.py tests/{integration,smoke,contract}` | structured skip verification |
 | Bash `uv run mj-agent check` / `uv run langgraph dev` | Step 5 Level B health + Studio |
 | Bash `docker compose ... up -d / ps / logs / down` | Step 5 Level B compose lifecycle |
 | Bash `uv lock` / `uv sync` | Step 5 Level B deps（pyproject.toml 改动） |
@@ -273,7 +273,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 - **不要** 跨 Level 把 Level B 写到「本地验证」自动跑（HITL-confirm 必须）
 - **不要** 把 verify 输出塞到「AI 自检」段（违反 execution-loop §6 双段约束）
 - **不要** 在 mj-system biz pg 上跑 write 操作（ADR-006 / ADR-009 红线）
-- **不要** 跳过 B 风味（in-source canonical 改动）的 Studio probe / smoke 验证
+- **不要** 把 B 风味的 live 证据静默降级为 pytest smoke；Studio / sanctioned probe 必须单独 Owner-approved，未批准时记录跳过
 
 ## Handoff to mj-agent-flow-self-review
 

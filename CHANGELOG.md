@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+### Fixed — hardened offline pytest boundary and Agent/CI runner (#499)
+
+- **PR-0b (`bugfix/499-offline-test-boundary`)**：safe direct pytest 始终 offline；新增
+  Settings construction seam、静态 boundary checker 与 hardened Agent/CI runner；external
+  pytest bands 仅验证 `SKIP_POLICY_EXTERNAL_DEPENDENCY`，凭据不会启用 live route。
+
 ### Fixed — execution-loop 章节交叉引用系统性指错 + 新增 `kernel-section-refs` gate（#453）
 
 - **19 个活体文件 / 66 处交叉引用重指向 + 机器化兜底（`maintain`，branch

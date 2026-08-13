@@ -52,7 +52,7 @@ digraph diagnose {
 
 | 红信号载体 | 适用 |
 |---|---|
-| 最小 `uv run pytest tests/unit/...::test_x` | 逻辑 / guardrail / precheck / 工具行为 bug |
+| 最小 `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/...::test_x` | 逻辑 / guardrail / precheck / 工具行为 bug |
 | `uv run mj-agent check` | DB / LLM 凭证 / 连接 / 配置 drift |
 | 最小 eval case（`tests/eval/`） | SQL 生成 / skill routing / LLM 行为质量 bug |
 | Studio repro（`/mj-agent-infra-studio-probe`）/ curl | 端到端 graph / 中间件 / envelope bug |

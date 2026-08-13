@@ -1,7 +1,9 @@
 """Smoke tests — agent + live biz + live LLM, end to end.
 
-Run with: ``uv run pytest tests/smoke -m smoke``. Gated by the live_db
-fixture (credentials present) and by an LLM provider being reachable.
+The ``live_db`` fixture permanently returns
+``SKIP_POLICY_EXTERNAL_DEPENDENCY``. This legacy live module remains
+collectable, but credentials and endpoint reachability never enable it in
+pytest; live behavior is verified through separately approved probes.
 
 MVP PR4 expands from smoke #1 to cover the trajectory matrix the v2
 plan calls for, plus a mirror of mj-system GUIDE §6.1's six analyst-

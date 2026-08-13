@@ -7,7 +7,7 @@ import inspect
 from typer.testing import CliRunner
 
 from mj_agent.agent import make_graph
-from mj_agent.config import Settings
+from mj_agent.config import OFFLINE_TEST_ENV, Settings
 from mj_agent.memory import memory_conn_string
 from mj_agent.server.cli import app
 
@@ -26,8 +26,8 @@ def test_settings_default_memory_db_name(isolated_settings: Settings) -> None:
     # ``isolated_settings`` (tests/unit/conftest.py) wipes the whole env surface
     # before building Settings, so these default assertions stay hermetic even on
     # a dev machine whose ``.env`` / shell sets ``MJ_AGENT_MEMORY_DB`` (issue #298
-    # follow-up: ``Settings(_env_file=None)`` opts out of the ``.env`` *file* but
-    # still reads ``os.environ``).
+    # follow-up: the offline construction seam disables filesystem sources but
+    # intentionally still reads ``os.environ``).
     assert isolated_settings.mj_agent_memory_db == "mj_agent_memory"
     assert isolated_settings.mj_agent_memory_pool_max >= 1
 
@@ -98,11 +98,10 @@ def test_cli_check_reports_missing_env(monkeypatch, isolated_settings) -> None: 
     """`mj-agent check` exits non-zero with explicit reasons when creds absent.
 
     Uses the ``isolated_settings`` fixture (``tests/unit/conftest.py``) so the
-    whole credential surface is wiped before ``Settings`` is built. Opting out
-    of the ``.env`` *file* alone is not enough: the root conftest loads a real
-    ``.env`` into ``os.environ``, and a stray ``LLM_API_KEY`` there would keep
-    ``effective_llm_api_key`` non-empty and mask the ``"ARK_API_KEY not set"``
-    line this test asserts on (issue #298).
+    whole mapped OS-variable surface is wiped before ``Settings`` is built.
+    The root offline seam already disables dotenv and secrets-directory
+    sources; clearing OS variables here closes pydantic's remaining source and
+    keeps the expected missing-key report deterministic (issue #298).
     """
     import mj_agent.config as cfg
     monkeypatch.setattr(cfg, "settings", isolated_settings)
@@ -115,28 +114,45 @@ def test_cli_check_reports_missing_env(monkeypatch, isolated_settings) -> None: 
     assert "MJ_AGENT_MEMORY_USER not set" in result.output
 
 
-def test_settings_env_file_none_isolates_from_dotenv(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """Regression: ``Settings(_env_file=None)`` must ignore `.env` on disk.
-
-    Guards the contract that `test_cli_check_reports_missing_env` and
-    sibling default-asserting tests rely on. If pydantic-settings ever
-    changes the semantics of ``_env_file=None``, this test fires before
-    the cli check test silently goes back to leaking developer state.
-    """
+def test_settings_offline_seam_disables_dotenv_and_secrets_dir(
+    tmp_path, monkeypatch
+) -> None:  # type: ignore[no-untyped-def]
+    """The offline marker closes both filesystem sources before construction."""
     env_file = tmp_path / ".env"
     env_file.write_text(
         "MJ_AGENT_MEMORY_DB=leaked-from-dotenv\n"
         "CHAINLIT_PORT=65432\n",
         encoding="utf-8",
     )
+    secrets_dir = tmp_path / "secrets"
+    secrets_dir.mkdir()
+    (secrets_dir / "mj_agent_memory_db").write_text(
+        "leaked-from-secrets-dir", encoding="utf-8"
+    )
     monkeypatch.chdir(tmp_path)
     for k in ("MJ_AGENT_MEMORY_DB", "CHAINLIT_PORT"):
         monkeypatch.delenv(k, raising=False)
 
-    leaked = Settings()
-    assert leaked.mj_agent_memory_db == "leaked-from-dotenv"
-    assert leaked.chainlit_port == 65432
-
-    isolated = Settings(_env_file=None)
+    monkeypatch.setenv(OFFLINE_TEST_ENV, "1")
+    isolated = Settings(_env_file=env_file, _secrets_dir=secrets_dir)
     assert isolated.mj_agent_memory_db == "mj_agent_memory"
     assert isolated.chainlit_port == 8000
+
+
+def test_settings_production_entry_keeps_default_dotenv_source(
+    tmp_path, monkeypatch
+) -> None:  # type: ignore[no-untyped-def]
+    """Without the pytest marker, the production dotenv behavior is unchanged."""
+    (tmp_path / ".env").write_text(
+        "MJ_AGENT_MEMORY_DB=synthetic-production-dotenv\n"
+        "CHAINLIT_PORT=65432\n",
+        encoding="utf-8",
+    )
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv(OFFLINE_TEST_ENV, raising=False)
+    for key in ("MJ_AGENT_MEMORY_DB", "CHAINLIT_PORT"):
+        monkeypatch.delenv(key, raising=False)
+
+    production = Settings()
+    assert production.mj_agent_memory_db == "synthetic-production-dotenv"
+    assert production.chainlit_port == 65432

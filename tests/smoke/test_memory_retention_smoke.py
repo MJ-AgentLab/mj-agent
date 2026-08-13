@@ -1,11 +1,8 @@
 """Real-DB smoke test for memory checkpoint TTL/retention eviction (mechanism C; ADR-038, REQ-005).
 
-Container-gated: hits the dedicated ``mj-agent-postgres`` container and skips cleanly without
-``MJ_AGENT_MEMORY_USER`` (``memory_db`` fixture), so CI (no container) does not run it. Run locally
-with the storage stack up::
-
-    docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml up -d mj-agent-postgres
-    uv run pytest tests/smoke -m smoke -k memory_retention
+The ``memory_db`` fixture returns ``SKIP_POLICY_EXTERNAL_DEPENDENCY`` for every
+pytest invocation until a future separately Owner-approved non-biz external
+profile exists. Credentials or a running container never enable this module.
 
 Proves selective eviction end-to-end, including the SQL ``MAX(checkpoint_id)`` semantics the unit
 tests cannot exercise: a thread seeded with BOTH an old and a fresh checkpoint survives (its newest

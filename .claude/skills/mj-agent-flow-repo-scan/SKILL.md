@@ -197,14 +197,15 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - Level A 只读检查:
     uv run ruff check
     uv run mypy src/mj_agent
-    uv run pytest tests/unit
-    uv run pytest tests/eval
+    uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit
+    uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval
     python -m compileall src
     python scripts/check_wikilinks.py     # 文档变更时
     python scripts/check_frontmatter.py   # 文档变更时
-- Level B HITL-confirm:
-    uv run pytest tests/integration       # 需 POSTGRES_ANALYST_USER
-    uv run pytest tests/smoke -m smoke    # 需 ARK_API_KEY
+- Offline external bands（只证明 structured policy skip；凭据不启用）:
+    uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
+    uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
+- Level B HITL-confirm（explicit live probe）:
     uv run mj-agent check
     uv run langgraph dev                  # Studio 探针 H1/H2/H3/R1/R2
     docker compose -f docker/compose.yaml up -d

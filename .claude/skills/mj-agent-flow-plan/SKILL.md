@@ -138,17 +138,20 @@ PR-B4 之前：手工填 §7.1 矩阵，参 [[../../../sdd/workflows/execution-l
 
 uv run ruff check
 uv run mypy src/mj_agent
-uv run pytest tests/unit
-uv run pytest tests/eval
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval
 python -m compileall src
 python scripts/check_wikilinks.py     # 文档变更
 python scripts/check_frontmatter.py   # 文档变更
 
-### 6.2 Stage 10 Level B（HITL-confirm 后跑）
+### 6.2 Offline external bands + Stage 10 Level B（HITL-confirm 后跑）
 
-uv run pytest tests/integration       # 需 POSTGRES_ANALYST_USER
-uv run pytest tests/smoke -m smoke    # 需 ARK_API_KEY
-uv run pytest tests/contract -m contract
+# pytest external bands only prove structured policy skips; credentials never enable them
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
+
+# Explicit live probes remain Level B / HITL
 uv run mj-agent check
 uv run langgraph dev                  # Studio H1/H2/H3/R1/R2 探针
 docker compose -f docker/compose.yaml up -d / down

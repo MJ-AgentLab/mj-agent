@@ -34,13 +34,16 @@ Claude Code has these enforced by its harness (`ask` gates); Codex self-enforces
 - 4 freeze surfaces here carry `content_hash` anchors (prompt + runtime-skill contracts);
   body drift without a sanctioned re-freeze fails CI.
 
-## Verification (either tool, from repo root)
+## Verification (AI agents, from repo root)
 
 ```bash
 uv run mypy src/mj_agent          # strict — CI gate
 uv run ruff check src/mj_agent
-uv run pytest tests/unit -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
 ```
+
+Human/IDE direct pytest remains supported and is forced offline by
+`tests/conftest.py`; Agent and CI invocations always use the hardened runner.
 
 ## See also
 
