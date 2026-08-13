@@ -39,7 +39,7 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 
       - name: Sync dependencies
-        run: uv sync --frozen || uv sync
+        run: uv sync --frozen
 
       - name: Syntax check (compileall)
         # Scope to project code dirs. `compileall -q .` would recurse into
@@ -368,25 +368,24 @@ jobs:
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
-        # this runs unit + eval + integration. The integration suite session-
-        # skips cleanly when POSTGRES_ANALYST_USER is unset (CI's case).
-        # BDD scenarios are run by the dedicated step below (warning mode).
-        run: uv run pytest --ignore=tests/bdd
+        # this runs unit + eval + integration. External legs are always
+        # structured policy skips; credentials never enable them. BDD scenarios
+        # are run by the dedicated step below.
+        run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests --ignore tests/bdd
 
-      - name: 'BDD scenarios (BLOCKING per Stage C C-a; 9P/7SKIP/0F clean)'
+      - name: 'BDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)'
         # Phase M3 Stage B (M3-FU-BDD-TDD-RESTORE landing) + Stage C flip.
         # tests/bdd/ contains 5 capability subdirs × N scenarios bound via
         # pytest-bdd against each capabilities/*/contracts/behavior.feature.
-        # Live-DB / docker / slow scenarios are skip-clean via live_db /
-        # docker_available fixtures (SKIP does not count as FAIL).
-        run: uv run pytest tests/bdd -q
+        # Live/external scenarios are unconditional structured policy skips
+        # (SKIP does not count as FAIL).
+        run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/bdd -q
 
-      - name: Contract tests (skip on missing analyst creds)
+      - name: Contract tests (offline policy skip for live contracts)
         # tests/contract/* is gated by the `contract` pytest marker AND the
-        # `live_db` session fixture (skip when POSTGRES_ANALYST_USER unset).
-        # CI runs without DB creds → tests skip cleanly; locally with .env
-        # provisioned the same command exercises the contract.
-        run: uv run pytest tests/contract -m contract
+        # `live_db` session fixture. Pytest never opens the biz-live route;
+        # credential presence cannot change this structured skip.
+        run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 
   # The #296 docker-build gate (BLOCKING; sdd/gates.md `docker-image-build` row) lives in
   # .github/workflows/docker-build.yml since #438 — moved out of ci.yml so it triggers on

@@ -98,7 +98,8 @@ uv sync                                # 装依赖、锁版本
 uv run langgraph dev                   # LangGraph Studio
 uv run mj-agent serve                  # Chainlit UI
 uv run mj-agent check                  # 探测 DB + LLM 凭据（Docker healthcheck）
-uv run pytest tests/unit               # 单元测试（快；无外部依赖）
+uv run pytest tests/unit               # 人类/IDE direct 路径；始终 offline
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit  # Agent/CI
 uv run ruff check                      # Lint
 uv run mypy src/mj_agent                # Type-check（strict）
 ```
@@ -159,10 +160,10 @@ ssh -L 0.0.0.0:18000:127.0.0.1:8000 <user>@192.168.0.189
 uv run pytest tests/unit
 
 # 集成测试（需 POSTGRES_ANALYST_USER 已设置）
-uv run pytest tests/integration
+uv run pytest tests/integration        # offline；biz-live fixture structured-skip
 
 # Smoke 测试（需真实 biz 域 + LLM provider）
-uv run pytest tests/smoke -m smoke
+uv run pytest tests/smoke -m smoke     # offline；external fixtures structured-skip
 ```
 
 ## 架构概览
@@ -223,7 +224,11 @@ mj-agent 仅访问 上游业务系统 业务指标域：
 <details>
 <summary><strong>pytest smoke 全部 skip</strong></summary>
 
-预期行为——`conftest.py` 在凭据缺失时自动 skip 而非 fail；`pyproject.toml` `addopts = "-m 'not smoke'"` 默认排除。需真跑 `uv run pytest tests/smoke -m smoke` 且 `.env` 完整。
+预期行为——`conftest.py` 不因凭据存在而启用外部测试：biz-live pytest 永久 structured-skip，
+non-biz external 也在未来独立 Owner-approved profile 出现前返回
+`SKIP_POLICY_EXTERNAL_DEPENDENCY`。`pyproject.toml` 默认排除 smoke；direct pytest 仅供
+人类/IDE 且同样 offline，Agent/CI 必须使用 hardened runner。真实服务验证走
+`mj-agent check` / Studio 等显式 HITL probe，而不是 pytest。
 
 </details>
 

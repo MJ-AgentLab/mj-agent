@@ -15,7 +15,7 @@
 | `tests/unit/` | 纯 Python 单元测试 | default selected |
 | `tests/contracts/` ★ Phase M3 改名 | capability contract 测试（由 `tests/contract/` 改名）| `-m contract`；默认 deselect |
 | `tests/bdd/` | BDD scenario 自动化（pytest-bdd; active per Stage B B-1..B-6 + B-7 CI gate `c60aaa3`） | default selected |
-| `tests/integration/` | 跨组件 + 真实依赖 | default selected；缺 .env 时 session-skip |
+| `tests/integration/` | 跨组件 + 真实依赖 | default selected；始终 structured policy skip |
 | `tests/smoke/` | 端到端 + LLM | `-m smoke`；默认 deselect |
 | `tests/eval/` | EVAL framework（ADR-024 联动）| default selected；4 子类 outcome / trajectory / component / integration |
 | `tests/agents/` ★ Phase 2+ | LangChain Agent schema 测试 | TBD |
@@ -28,20 +28,19 @@
 
 ```bash
 # 单元测试（默认 default selected）
-uv run pytest tests/unit -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
 
 # 仅 contract 测试（per-capability）
-uv run pytest tests/contracts/data_agent/safe_sql/ -m contract
-uv run pytest tests/contracts/infrastructure/docker_compose/ -m contract
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 
 # BDD scenario（per-capability）
-uv run pytest tests/bdd/data_agent/safe_sql/ -k "<scenario name keyword>"
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/bdd/data_agent/safe_sql -k "<scenario name keyword>"
 
 # Smoke（默认 deselect；需 -m smoke 显式 opt-in）
-uv run pytest tests/smoke -m smoke
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
 
 # EVAL framework baseline（Phase 2+ EVAL framework 落地后）
-uv run pytest tests/eval/component
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval/component
 ```
 
 `pyproject.toml` pins `addopts = "-m 'not smoke and not contract'"` — plain `pytest` excludes
@@ -51,7 +50,7 @@ smoke + contract by default.
 
 - **BDD scenarios** — BLOCKING (Stage C C-a; commit `02b1cc8`); runs `tests/bdd/` via dedicated CI step
 - **Main Tests step** — strict (no `continue-on-error`); runs `tests/unit + tests/eval + tests/integration` with `--ignore=tests/bdd`
-- **Contract tests step** — gated (`tests/contract -m contract`; skip-clean without DB creds)
+- **Contract tests step** — gated (`tests/contract -m contract`; live legs always policy-skip)
 - Smoke (`-m smoke`) — never in CI; manual only
 - Truth source: `.github/workflows/ci.yml` (per-job `continue-on-error` 状态)
 
@@ -61,7 +60,9 @@ smoke + contract by default.
 - ❌ contract 测试无 `@pytest.mark.contract` marker（同上）
 - ❌ bdd scenario 不在 `tests/bdd/<capability>/steps/` 写 step definitions（违反 BDD adapter
   规则）
-- ❌ integration / smoke 测试硬依赖 .env 而无 session-skip fallback（CI 会 fail 而非 skip）
+- ❌ integration / smoke 测试读取 `.env`、以 credential presence 控制 session skip、或据此
+  启用 external route；external bands 必须无条件使用 canonical
+  `SKIP_POLICY_EXTERNAL_DEPENDENCY`
 
 ## See Also
 

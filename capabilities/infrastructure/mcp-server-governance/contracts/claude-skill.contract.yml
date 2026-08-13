@@ -125,15 +125,13 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-env-setup/SKILL.md
     name: mj-agent-infra-env-setup
-    # re-frozen 2026-07-13 (#313 P0 dual-agent-compat): Step 3 agent-side .env
-    # parsing (bash grep/cut + PS Get-Content dual blocks) replaced by sanitized
-    # scripts/check_env_keys.ps1 (key names + PRESENT/EMPTY/MISSING only, values
-    # never echoed; v5 §5.2 secrets boundary); execution-boundary table + tool
-    # table + Output Format aligned. Body-only; description + section heads
-    # unchanged. Prior freeze #302 (description+body, e905e0af).
+    # re-frozen 2026-08-13 (Epic #499 PR-0b): Agent pytest commands now use the
+    # frozen/no-sync hardened offline runner; external bands only verify the
+    # structured policy skip and credential presence never enables them.
+    # Body-only; description + section heads unchanged. Exact Owner hunk approved.
     description_hash: sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745
-    body_content_hash: sha256:37ebae50b47398a0e5b597c9c1d5481efdbefcca1104e8035c7b6a7a7fb17c97
-    frozen_at: 2026-07-13T00:00:00Z
+    body_content_hash: sha256:402d9b748cdee70bc8eb2134bcedb4cecc380fc20390df36d3c6dc97116e8e0f
+    frozen_at: 2026-08-13T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"
@@ -216,13 +214,13 @@ skills:                                             # 8 SKILLs alphabetical (no 
 
   - file: .claude/skills/mj-agent-infra-studio-probe/SKILL.md
     name: mj-agent-infra-studio-probe
-    # re-frozen 2026-07-08 (#306): added app-start reverse-trigger deferral to the description
-    # "Do not use for:" block (bidirectional boundary; PR #305 finding #5 — bare "起 Studio"
-    # over-fires both studio-probe + app-start) + dropped a stale "in PR-C3" ref. Deferral-only
-    # (negative trigger) → no positive trigger-hit-rate change; body untouched.
-    description_hash: sha256:d60021f7fcd2172a9d132df0649c123b1426c072b0eabc5916119815449e1e07
+    # re-frozen 2026-08-13 (Epic #499 PR-0b): reverse trigger routes pytest
+    # regression execution to the hardened offline runner instead of an Agent
+    # direct command. Description-only; body + section heads unchanged. Exact
+    # Owner hunk approved.
+    description_hash: sha256:3b01bf7bc5b2c9f7671bbb97cfe6ba0ddf8cb7d9a96a9d27fcd896bfc77e9edd
     body_content_hash: sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6
-    frozen_at: 2026-07-08T00:00:00Z
+    frozen_at: 2026-08-13T00:00:00Z
     body_section_heads:
       - "## Overview"
       - "## 前置条件"

@@ -103,7 +103,7 @@ per documentation change：
 PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 **「本地验证」段** — 人类（或 CI）执行**客观可重复检查**：
-- ✅ 接受：`uv run pytest tests/` / `uv run ruff check` / `uv run mypy src/mj_agent` / `python scripts/check_wikilinks.py` / `python scripts/check_frontmatter.py` / `uv run mj-agent check` / Studio probe / docker compose 启动 / mj-agent compose ps
+- ✅ 接受：`uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests` / `uv run ruff check` / `uv run mypy src/mj_agent` / `python scripts/check_wikilinks.py` / `python scripts/check_frontmatter.py` / `uv run mj-agent check` / Studio probe / docker compose 启动 / mj-agent compose ps
 - ❌ 拒绝："代码看起来正常" / "Claude 已检查" / "文档应该 OK"（属 AI 自检）
 
 **「AI 自检」段** — AI Agent 对生成内容**可信度自查**：

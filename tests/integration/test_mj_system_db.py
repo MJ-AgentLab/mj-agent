@@ -1,7 +1,7 @@
 """Integration tests against the real DEV biz domain.
 
-Gated by the ``live_db`` fixture — skipped automatically if analyst
-credentials are absent from the environment.
+Gated by the ``live_db`` fixture, which permanently returns the structured
+biz-live pytest policy skip. Credential presence never enables this module.
 """
 
 from __future__ import annotations

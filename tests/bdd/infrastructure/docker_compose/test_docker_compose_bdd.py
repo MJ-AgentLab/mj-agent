@@ -5,13 +5,13 @@ Binds all 3 scenarios from
 
 All 3 scenarios require live docker + the mj-system stack running on the
 same host (mj-system-backend-network external + biz pg). They are gated by
-the `docker_available` fixture in tests/bdd/conftest.py, which currently
-skips unconditionally in CI.
+the `docker_available` fixture in tests/bdd/conftest.py, which returns
+`SKIP_POLICY_EXTERNAL_DEPENDENCY` for every pytest invocation until a future
+separately Owner-approved non-biz profile exists.
 
-Step defs are minimal placeholders — they exist so pytest-bdd does not
-raise StepDefinitionNotFoundError if the fixture is bypassed locally.
-Local smoke runs (e.g., `pytest tests/bdd/infrastructure/docker_compose
---override-ini=...`) would exercise the actual compose stack.
+Step defs are minimal placeholders — they exist so pytest-bdd collection
+remains deterministic. Credentials or local service presence do not bypass
+the fixture.
 """
 
 from __future__ import annotations

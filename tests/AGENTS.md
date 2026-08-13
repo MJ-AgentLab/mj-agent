@@ -15,8 +15,9 @@
 
 ## External-dependency rules
 
-- Missing credentials must SKIP, not fail: integration/smoke tests follow the
-  `tests/conftest.py` session-skip convention (`POSTGRES_ANALYST_USER` / `ARK_API_KEY`).
+- Credential presence never enables an external pytest leg. Biz-live pytest is permanently
+  unavailable; non-biz external tests use `SKIP_POLICY_EXTERNAL_DEPENDENCY` until a future,
+  separately Owner-approved profile exists.
 - Tests must not read `.env` values or embed secrets/DSNs in fixtures; biz-DB access in tests
   goes through the sanctioned integration fixtures only (root `AGENTS.md` boundaries 1-2).
 - No dev-machine coupling: never reference a developer's local branches, absolute paths, or
@@ -29,13 +30,15 @@
 - Real-tree assertion tests (asserting live repo file contents) must enumerate their target
   files explicitly, so structural moves fail loudly rather than silently passing.
 
-## Verification (either tool, from repo root)
+## Verification (AI agents, from repo root)
 
 ```bash
-uv run pytest tests/unit -q
-uv run pytest tests/eval -q
-uv run pytest tests/bdd -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval -q
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/bdd -q
 ```
+
+Human/IDE direct pytest is supported but remains offline through the root conftest.
 
 ## See also
 

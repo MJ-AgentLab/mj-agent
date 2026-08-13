@@ -11,13 +11,15 @@ consumer via the analyst RO role.
 
 from __future__ import annotations
 
+import os
 from functools import cached_property
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 Profile = Literal["dev", "test", "prod"]
+OFFLINE_TEST_ENV = "MJ_AGENT_OFFLINE_TEST"
 
 
 class Settings(BaseSettings):
@@ -29,6 +31,20 @@ class Settings(BaseSettings):
         extra="ignore",
         case_sensitive=False,
     )
+
+    def __init__(self, **values: Any) -> None:
+        """Construct settings through the single test-source isolation seam.
+
+        Production keeps the model-configured dotenv and secrets sources.  A
+        pytest process marks itself offline before importing application code;
+        in that mode the source selectors are overridden *before*
+        ``BaseSettings`` builds its sources.  Caller-provided selectors cannot
+        reopen either filesystem source while the offline marker is active.
+        """
+        if os.environ.get(OFFLINE_TEST_ENV) == "1":
+            values["_env_file"] = None
+            values["_secrets_dir"] = None
+        super().__init__(**values)
 
     # ── 0. Application ────────────────────────────────────────────────
     mj_agent_env: Literal["development", "test", "production"] = "development"

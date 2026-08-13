@@ -70,26 +70,16 @@ def assert_message_contains(raised_exception: BaseException, substring: str) -> 
 
 # -------- docker_available fixture --------
 #
-# Used by tests/bdd/infrastructure/docker_compose scenarios. The mj-agent
-# compose stack requires the mj-system biz pg + mj-system-backend-network
-# external to already be running on the same host; this is not reproducible
-# in standard CI runners. The fixture currently skips unconditionally;
-# M4+ may replace with a probe (`docker info` + `docker network inspect
-# mj-system-backend-network`) that succeeds locally on a dev box.
+# Used by tests/bdd/infrastructure/docker_compose scenarios. External pytest
+# legs require a future, separately Owner-approved non-biz profile; local
+# service presence alone must never unlock them.
 
 import pytest  # noqa: E402
 
 
 @pytest.fixture(scope="session")
 def docker_available() -> None:  # type: ignore[misc]
-    """Skip unless the mj-agent compose stack can run.
-
-    Currently always skips (CI does not have mj-system stack up). Local
-    smoke runs that want to exercise compose-up scenarios should remove
-    or override this fixture.
-    """
+    """Apply the structured external-dependency skip policy."""
     pytest.skip(
-        "docker_compose scenarios require mj-system stack running on the host "
-        "(mj-system-backend-network external + biz pg); not reproducible in CI. "
-        "Run locally with `docker compose --env-file .env -f ... up` to manually verify."
+        "SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists"
     )

@@ -99,7 +99,7 @@ envelope: `executed_sql / columns / rows / row_count / truncated / statement_tim
 uv sync                                          # deps
 uv run langgraph dev                             # Studio (local)
 uv run mj-agent serve | check                    # Chainlit UI | DB+LLM creds probe
-uv run pytest tests/{unit,eval,integration}      # smoke: add -m smoke (needs DB+LLM)
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests  # Agent pytest carrier
 uv run ruff check && uv run mypy src/mj_agent    # lint + types (CI runs both, mypy strict)
 ```
 
@@ -108,8 +108,10 @@ Docker — independent compose project (ADR-026 4-file profile; attaches
 -f docker/compose.{override,test,prod}.yml up -d` (DEV/TEST/PROD; both `--env-file` and
 explicit `-f base -f overlay` required — `docker/` subdir auto-load quirk). 3-level teardown:
 `/mj-agent-infra-env-teardown`. Studio walkthrough: `Developer_Onboarding` §7. CI = compileall +
-ruff + mypy(strict) + pytest(unit/eval/integration + contract); smoke local-only.
-`tests/conftest.py` *skips* (not fails) on missing `POSTGRES_ANALYST_USER`/`ARK_API_KEY`.
+ruff + mypy(strict) + hardened offline pytest (unit/eval + structured external skips).
+`tests/conftest.py` unconditionally skips external pytest bands with
+`SKIP_POLICY_EXTERNAL_DEPENDENCY`; credential presence never enables them. Live evidence runs only
+through a separately Owner-approved sanctioned probe / Studio.
 
 ## LLM provider (ADR-025 / ADR-027)
 

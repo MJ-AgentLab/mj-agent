@@ -139,7 +139,7 @@ per comment（P0/P1）：
   - `path/to/file.py` 第 X 行：<具体改动>
   - 新增文件：<如需要>
 - 是否新 commit：是 / 否（合入既有 fixup commit）
-- 重测命令：<uv run pytest / ruff / mypy / Studio probe / etc.>
+- 重测命令：<offline pytest runner / ruff / mypy / Studio probe / etc.>
 ```
 
 整批 modifications 汇总后 **commit shape recommendation**：
@@ -232,10 +232,10 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 - #6: ⏳ HITL 后回（B 风味专属流程；建议 follow-up PR）
 
 ### Retest Commands
-- `uv run pytest tests/unit -k <test_name>`
+- `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -k <test_name>`
 - `uv run ruff check src/mj_agent/<module>/`
 - `uv run mypy src/mj_agent`
-- 涉及 #2 → `uv run pytest tests/integration -k test_org_id`
+- 涉及 #2 → offline runner 收集相应 regression；live 证据走 Owner-approved sanctioned probe
 ```
 
 ## What This Skill DOES NOT DO

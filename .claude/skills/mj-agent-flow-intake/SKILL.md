@@ -149,12 +149,12 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 | 验证手段 | 例 |
 |---|---|
-| pytest 命令 | `uv run pytest tests/unit -k test_xxx` |
+| pytest 命令 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -k test_xxx` |
 | ruff / mypy | `uv run ruff check` / `uv run mypy src/mj_agent` |
 | Studio 探针 | `uv run langgraph dev` + H1/H2/H3/R1/R2 矩阵 |
 | `mj-agent check` | DB + LLM creds 健康 |
 | 文档 grep 校验 | `python scripts/check_wikilinks.py` / `check_frontmatter.py` |
-| 业务样本对比 | smoke test（needs Ark + biz DB） |
+| 业务样本对比 | 经 Owner 单独批准的 sanctioned live probe / Studio；pytest smoke 仅证明结构化 policy skip，凭据存在也不启用 external band |
 | Studio + LangSmith trace | LLM 行为质量评估（B 风味 in-source canonical 改动） |
 
 如某条 AC 无法对应任一手段 → 回到 Step 2 重新拆解。

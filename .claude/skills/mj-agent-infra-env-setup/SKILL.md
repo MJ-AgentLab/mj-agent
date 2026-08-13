@@ -183,12 +183,12 @@ uv run ruff check
 uv run mypy src/mj_agent
 
 # 3. fast test（不打 DB / LLM）
-uv run pytest tests/unit
-uv run pytest tests/eval
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval
 
-# 4.（可选）integration / smoke（需 .env 充实）
-# uv run pytest tests/integration  # 需 POSTGRES_ANALYST_USER
-# uv run pytest tests/smoke -m smoke  # 需 ARK_API_KEY
+# 4.（可选）只验证 external bands 的 structured policy skip
+# uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
+# uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
 ```
 
 `uv run mj-agent check` 通过 = 环境就绪。
@@ -252,7 +252,7 @@ uv run pytest tests/eval
 - ✅ uv run mj-agent check — DB OK + LLM OK
 - ✅ uv run ruff check — All checks passed!
 - ✅ uv run mypy src/mj_agent — Success: no issues
-- ✅ uv run pytest tests/unit — 87 passed
+- ✅ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit — 87 passed
 
 ### Next Steps
 - 进入开发：/mj-agent-flow-intake

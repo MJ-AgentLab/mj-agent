@@ -79,7 +79,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 
 | 类别 | 接受？ | 例 |
 |---|---|---|
-| 测试套件 | ✅ | `uv run pytest tests/unit` 通过 |
+| 测试套件 | ✅ | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit` 通过 |
 | Lint / Typecheck | ✅ | `uv run ruff check` / `uv run mypy src/mj_agent` 通过 |
 | Build / Compose | ✅ | `docker compose -f docker/compose.yaml up -d` 启动成功 |
 | 文件存在性 grep | ✅ | `grep -l "..." src/` 命中预期数量 |
@@ -213,7 +213,7 @@ python scripts/diff_biz_schema.py
 **本地验证**：
 - ✅ uv run ruff check — 0 issues
 - ✅ uv run mypy src/mj_agent — Success
-- ✅ uv run pytest tests/unit — 87 passed
+- ✅ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit — 87 passed
 - ✅ python scripts/check_wikilinks.py — 0 violations
 
 **AI 自检**：
