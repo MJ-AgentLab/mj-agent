@@ -76,6 +76,11 @@ def repo(tmp_path: Path) -> Path:
     _git(root, "config", "user.email", "task0@example.invalid")
     _git(root, "config", "user.name", "Task0 Fixture")
     _git(root, "config", "commit.gpgsign", "false")
+    # Windows git ignores the filesystem exec bit; POSIX git honours it and would
+    # re-derive index modes from disk on the next `add`. Pinning core.fileMode makes
+    # the recorded mode come from the index alone, so mode-related cases behave
+    # identically on both platforms.
+    _git(root, "config", "core.fileMode", "false")
     for rel, data in FIXTURE_TREE.items():
         _write(root, rel, data)
     _commit(root, "initial")
@@ -296,7 +301,9 @@ def test_mode_flip_on_a_hard_frozen_file_stops(
     """An exec bit landing on a frozen hook script is drift even with identical content."""
     assert _emit(repo) == 0
     _git(repo, "update-index", "--chmod=+x", ".claude/settings.json")
-    _commit(repo, "flip exec bit")
+    # Commit the index directly. `_commit` runs `git add -A`, which on POSIX re-stats
+    # the working tree and would undo the staged mode before it is ever committed.
+    _git(repo, "commit", "-q", "-m", "flip exec bit")
 
     raw = subprocess.run(
         ["git", "diff", "HEAD~1", "HEAD", "--raw"],

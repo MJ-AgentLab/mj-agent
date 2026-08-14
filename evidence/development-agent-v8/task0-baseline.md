@@ -156,6 +156,8 @@ V10 / V11 / `--surface all` 三种口径均报 `projection in sync ... lock cons
 
 **测试数增量对账**：PR-0c Stage 17 ledger 记录 full offline suite = 1009 passed；本 unit 新增 23 个 test，1009 + 23 = **1032**，与实测一致。
 
+**平台口径**：上表全部为 **Windows worktree** 实测。GitHub CI 跑 ubuntu-latest，pass / skip 的分配合法地不同（若干用例按平台分支跳过），`passed + skipped` 总数才是平台不变量——本地为 1032 + 6 = **1038**。比对 CI 与本表时按总数对账，不要按 passed 单项。CI 的实测分配以本 PR 的 CI 结论为准，不在此预填。
+
 ### 负控 —— 证明断言不是空转
 
 全部在真实树上实测，变异后均已还原并复绿（23/23）。
