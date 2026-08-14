@@ -1,0 +1,341 @@
+{
+  "schema_version": "task0-freeze-identity-v1",
+  "epic_id": 499,
+  "unit_id": "PR-0d",
+  "rev": "829482b26139f7e23af4c015d6f509d71e1524ed",
+  "content_basis": "git-blob",
+  "hash_algorithm": "sha256",
+  "gitlink_sha256_convention": "a mode-160000 entry has no blob; its sha256 is sha256('gitlink:' + commit_sha1)",
+  "digest_serialization": "sha256 over path\\0mode\\0sha256 lines joined by \\n, path-sorted",
+  "hard_frozen": {
+    "patterns_exact": [
+      ".claudeignore",
+      ".mcp.json",
+      "CLAUDE.md",
+      "capabilities/CLAUDE.md",
+      "capabilities/AGENTS.md",
+      "docker/CLAUDE.md",
+      "docker/AGENTS.md",
+      "src/mj_agent/CLAUDE.md",
+      "src/mj_agent/AGENTS.md",
+      "tests/CLAUDE.md",
+      "tests/AGENTS.md",
+      "tests/unit/test_guard_git_workflow_hook.py"
+    ],
+    "patterns_prefix": [
+      ".claude/"
+    ],
+    "absent_exact_patterns": [],
+    "count": 58,
+    "digest": "43bb10d40d59f0d1fbfb265bf4e1c8f04324faa5d8209991921022fecfa1e957",
+    "files": [
+      {
+        "path": ".claude/hooks/stop-claude-md-improver/README.md",
+        "mode": "100644",
+        "sha256": "83b1251d2695bf5c04d1c938d42288e5b84dc55255bbd9adb09d43195b38413b"
+      },
+      {
+        "path": ".claude/hooks/stop-claude-md-improver/on-stop.ps1",
+        "mode": "100644",
+        "sha256": "2ab6e27869a912057ac9fe5430d8db71229138a79a526e01db77cc48f146ae0f"
+      },
+      {
+        "path": ".claude/plugins.json",
+        "mode": "100644",
+        "sha256": "1d548e2f5f803de864409361c036c6c2f3988eb441021f53e21c198d86d07c4a"
+      },
+      {
+        "path": ".claude/scripts/guard-git-workflow.ps1",
+        "mode": "100644",
+        "sha256": "a7d79cb01fcff567d47ffb24cb9053a8c6593646fa2ba95256dedb8ee424f826"
+      },
+      {
+        "path": ".claude/scripts/pg-server-start.cmd",
+        "mode": "100644",
+        "sha256": "b20f91ecaee8a0b640d9b694a87ee517da7f88e1156ab2994d7826d2a07c669a"
+      },
+      {
+        "path": ".claude/scripts/pg-server-wrapper.mjs",
+        "mode": "100644",
+        "sha256": "a29ddc650bcd408c579526183624e4b0a6b1c919876ff88e9d28075601c6b385"
+      },
+      {
+        "path": ".claude/scripts/setup-mcp-secrets.ps1",
+        "mode": "100644",
+        "sha256": "c6007a0e1e9b215f11d24f56413d398fe7eb677a78eade42c728884a293e3ae7"
+      },
+      {
+        "path": ".claude/settings.json",
+        "mode": "100644",
+        "sha256": "8d9d32dc9cbed0a73446a7c81e4a307739945555281b75b0dcf5cdfd71df4f7c"
+      },
+      {
+        "path": ".claude/skills/SKILL_INDEX.md",
+        "mode": "100644",
+        "sha256": "09506583e8db60ce244ebf6412aafa9b94b09128d416ff17a14a934936a66893"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-author/SKILL.md",
+        "mode": "100644",
+        "sha256": "e9425550231750652323b7b17bfb0e41f6d983a71d879008e9a9f3f18701192e"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-migrate/SKILL.md",
+        "mode": "100644",
+        "sha256": "4496286fc59cc992032c144e6d1922ab86610c3e09b68a9923ca45ab3b376c3d"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-plan/SKILL.md",
+        "mode": "100644",
+        "sha256": "e554af928d7f53804b2d586d199a11fd1c2d4be6a70a249a6862a107f4b8eae3"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-review/SKILL.md",
+        "mode": "100644",
+        "sha256": "bbc78d3891598f49a119f109ac9312fc73eaf90bd624d449ff02904f951fd806"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-sync/SKILL.md",
+        "mode": "100644",
+        "sha256": "37159952abf077b61e6b1f20a721e422a231f33eb02342fb17a15d5e1472e48c"
+      },
+      {
+        "path": ".claude/skills/mj-agent-doc-validate/SKILL.md",
+        "mode": "100644",
+        "sha256": "b6ff6c3a15b21381312a36d76d8bd1a98a352a8f3c27ba70c292a73488c767f2"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-diagnose/SKILL.md",
+        "mode": "100644",
+        "sha256": "0e3d2e04936c38c870880be6edf420c04d4b77667acc0e28e83f42719c63d6af"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-implement/SKILL.md",
+        "mode": "100644",
+        "sha256": "6aff6a74af4cc1b43d8db6c944ba4d9ca6e13e232ccb0355d0aae1e345aed629"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-intake/SKILL.md",
+        "mode": "100644",
+        "sha256": "adb888e35cc06e93ac46f8e564b7ca8a497fc6ca10e92b165da0715572fe4773"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-plan/SKILL.md",
+        "mode": "100644",
+        "sha256": "e97a79a73d74249225ec24561970911e2f273229bc3c447f71a57c8eb12172e6"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-post-merge/SKILL.md",
+        "mode": "100644",
+        "sha256": "f4f6b397cc61075899c949751dcbb925564b71b5055ff8dbc13ef83b15675247"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-repo-scan/SKILL.md",
+        "mode": "100644",
+        "sha256": "d1dd7c1839492b4f944bb39f17a943f1db3ad42e5c905a97cf47238aefa48f25"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-review-respond/SKILL.md",
+        "mode": "100644",
+        "sha256": "d91e7fc7427f68cb4e851243d32a930013e51a3186804275a1384be4e9992436"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-scope-drift/SKILL.md",
+        "mode": "100644",
+        "sha256": "cf0ebee0681769948c2b044329d789dda08b59d7b5b6b42a8270e8af9c61f0c8"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-self-review/SKILL.md",
+        "mode": "100644",
+        "sha256": "1864c528a4483ba5bdae363088da393a24874bd8e872755f0084bab54714cf93"
+      },
+      {
+        "path": ".claude/skills/mj-agent-flow-verify/SKILL.md",
+        "mode": "100644",
+        "sha256": "1d8fe73fb177ee631d67230b96a66a120dc29be1c259464f164652e70682d174"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-branch/SKILL.md",
+        "mode": "100644",
+        "sha256": "c75633eddbd83230025efcb505d400ecc9532af06b1dcaa402d0e50b837c2624"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-check-merge/SKILL.md",
+        "mode": "100644",
+        "sha256": "978a2e06ebac6ab18121d685ea5e1da644f2e605f14815cc465edf9c449868a0"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-commit/SKILL.md",
+        "mode": "100644",
+        "sha256": "d0d79d42fa617aaf81dc45ad300796f423a3360222705c2a95a7abc39e8e5150"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-delete/SKILL.md",
+        "mode": "100644",
+        "sha256": "47d491cd5cadaf1f102f913c5a59da87e80fb110d48ca2aba12bb7d2ce40ee05"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-issue/SKILL.md",
+        "mode": "100644",
+        "sha256": "20190f5ba05dd5694af3c1473468278ad1b163e0ad0de3f98be559c8a7712141"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-pr/SKILL.md",
+        "mode": "100644",
+        "sha256": "bdbdcd4cf3136c8f0ba74e37a0134830b1e230fd5d137f6a49d64d6cce4496fa"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-push/SKILL.md",
+        "mode": "100644",
+        "sha256": "412f28ea801020f303aa397c915a56b24ad4c2e5640e3933a867d79ce388d902"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-review-pr/SKILL.md",
+        "mode": "100644",
+        "sha256": "7c6995ea99ed311f65e06301d01c04ba2afc97f01c1d73bfd298b1e2387ca93c"
+      },
+      {
+        "path": ".claude/skills/mj-agent-git-sync/SKILL.md",
+        "mode": "100644",
+        "sha256": "a23e6bcb5a62f3e2ce545469ea6f6bea933063a86b008a9d63fd75f7d7649052"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-app-start/SKILL.md",
+        "mode": "100644",
+        "sha256": "66276af6f6656161d8fb5b217b410f7fd430152e6ba90398f158a275a3228c0c"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-app-stop/SKILL.md",
+        "mode": "100644",
+        "sha256": "59148197413d9c3b371b21ccbecc6c763ba5a691c9cd7a20c10b1cd88b602374"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-docker-compose/SKILL.md",
+        "mode": "100644",
+        "sha256": "667f51d2f8df07d10f71b9d22b044a75c2b5f64a5fc5f83baf986567b0e18aef"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-env-setup/SKILL.md",
+        "mode": "100644",
+        "sha256": "a3ee532da5609742f80cd38f5ca20629329dc13f233811fc05ef4fcc8b7d5c7e"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-env-teardown/SKILL.md",
+        "mode": "100644",
+        "sha256": "ba8d0e15bfb6620c0ed47e0f8eb241c0151da95d0a39139708d19f575f433ca5"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+        "mode": "100644",
+        "sha256": "0600a50891e107acb180683a83228689c8cbc52430b75e5d28717ca4214a281d"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-storage-stack/SKILL.md",
+        "mode": "100644",
+        "sha256": "90081d0fac8e391b2347e6ea5a77b16f6ba62cbb13d1273ef0c32ee67421b99f"
+      },
+      {
+        "path": ".claude/skills/mj-agent-infra-studio-probe/SKILL.md",
+        "mode": "100644",
+        "sha256": "925605d3fa2fbf99c0c53fa2ed224eec9e32792b13276173dd92ced0f913bf89"
+      },
+      {
+        "path": ".claude/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+        "mode": "100644",
+        "sha256": "917498928c39486b1f30a9e3c1b57e836f2e8fe26d2c47de5f523c2f64a05a3b"
+      },
+      {
+        "path": ".claude/skills/mj-agent-runtime-eval-baseline/SKILL.md",
+        "mode": "100644",
+        "sha256": "f513ad414653609dd2e926342e7bf5b564558ed0c62e95a96a9526e65ffb0d7a"
+      },
+      {
+        "path": ".claude/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+        "mode": "100644",
+        "sha256": "fcb0f75b1cb10fbd5c0356472e5b0e6686e37709f4f75d279cba82526029598d"
+      },
+      {
+        "path": ".claude/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+        "mode": "100644",
+        "sha256": "435206ce3fa08dc6af8a4c0133262788d9d1e025a194507227b8bc638b4650af"
+      },
+      {
+        "path": ".claudeignore",
+        "mode": "100644",
+        "sha256": "977f738c4390f0296179210545d3b827a8ee3f88b1322ca435b37e7ecb2b0559"
+      },
+      {
+        "path": ".mcp.json",
+        "mode": "100644",
+        "sha256": "cbcbcabfa700577fea7ec2c32c1689149b44ec12d228a57dd1ad1db4faeacd2f"
+      },
+      {
+        "path": "CLAUDE.md",
+        "mode": "100644",
+        "sha256": "7896539cc35941b77680456337c8abec7e668c3b310efa0c5e324b6597785b1f"
+      },
+      {
+        "path": "capabilities/AGENTS.md",
+        "mode": "100644",
+        "sha256": "28abdf0e1e0b6e0f678aea60a9c76fb8cc82c15518063cc7c19afe7c804cd2fd"
+      },
+      {
+        "path": "capabilities/CLAUDE.md",
+        "mode": "100644",
+        "sha256": "093dcc5bd7cf7e42e06dc5f863ea05ccf051911ae5977d48a4ada58539d8ac6a"
+      },
+      {
+        "path": "docker/AGENTS.md",
+        "mode": "100644",
+        "sha256": "f8f6c093994d062e79228edb65e4d378a3820838fc889311cfa3d57e01339aac"
+      },
+      {
+        "path": "docker/CLAUDE.md",
+        "mode": "100644",
+        "sha256": "39552a0bf75fd78da330e269b8e5ddee6dfa645f23afa2463425d4b9ebb6d78a"
+      },
+      {
+        "path": "src/mj_agent/AGENTS.md",
+        "mode": "100644",
+        "sha256": "5ee6e37129e8fb3700e1ebf01452416b661074e855b8d01983cfb8d1dd874eaa"
+      },
+      {
+        "path": "src/mj_agent/CLAUDE.md",
+        "mode": "100644",
+        "sha256": "743f09cf07959b0ebbf1fe06f37a315736f12b80ad2273616d5c66d32d64a5d4"
+      },
+      {
+        "path": "tests/AGENTS.md",
+        "mode": "100644",
+        "sha256": "55e154c35b27cb1ff1bcd1c3e49c824d0c971c1b29cfb4b0b3913dcb767219ba"
+      },
+      {
+        "path": "tests/CLAUDE.md",
+        "mode": "100644",
+        "sha256": "1a763374cf0f41ea15729647ed50efcd7e30696579a118f039557ce31265bdb1"
+      },
+      {
+        "path": "tests/unit/test_guard_git_workflow_hook.py",
+        "mode": "100644",
+        "sha256": "4b43eba7dbe005e544bdf624d309baad6c0a3926375e53ab223b348312b08f79"
+      }
+    ]
+  },
+  "controlled_frozen": {
+    "patterns_exact": [
+      "AGENTS.md"
+    ],
+    "patterns_prefix": [],
+    "absent_exact_patterns": [],
+    "count": 1,
+    "digest": "124d830374a607587f10ddc7d504c045577edf7766462d7d7ee8d5e2450bdd14",
+    "files": [
+      {
+        "path": "AGENTS.md",
+        "mode": "100644",
+        "sha256": "23f1d70eb5924721ab0039cd7b0835f2505af8098344a0290ba5fbd2b77b6e33"
+      }
+    ]
+  },
+  "identity_digest": "36f64771efeed88ca95bc98fadf3b3a0d1e56cc0b3e9f46afa675d9dbf88a6a7"
+}
