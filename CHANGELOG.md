@@ -5,6 +5,21 @@
 
 ## [Unreleased]
 
+### Fixed — sanitized biz snapshot boundary + agent-facing source truth-up (#499)
+
+- **PR-0c (`bugfix/499-biz-snapshot-boundary`)**：`scripts/fetch_biz_schema.py` 改为
+  fail-closed tombstone（exit 2，不 import dotenv / DB client / introspection wrapper，
+  无任何 argv 能复活旧路线）；`scripts/diff_biz_schema.py` 改为 offline 校验器，只读
+  `.mj-agent-local/biz-schema-snapshots/`（新增 gitignore）下 Owner 背书的 closed
+  `schema-v1` 快照——路径限定在 root 内、regular / non-reparse / size-bounded，必需字段严格为
+  `schema_version,captured_at,provenance,sanitized,payload`，unknown / sensitive / tag /
+  alias 一律拒绝，最大年龄 7 天且 clock 可注入。无快照 / 过期分别输出 `SKIP_NO_SNAPSHOT` /
+  `SKIP_STALE_SNAPSHOT`（exit 0）且**绝不冒充 PASS 或当前数据库 freshness**。两个 biz contract
+  测试去掉 introspection import 与 `live_db` 凭据门，改吃 synthetic 快照 fixture——从「永远
+  session-skip、什么都没验证」变成 CI 真跑真绿（12 skipped → 50 passed）。agent-facing
+  repo-scan / verify / self-review / review / biz-sync 五条路径移除 live/direct 指引并保留显式
+  SKIP 语义。`provenance` 是 **Owner attestation，不是对采集链路的密码学证明**。
+
 ### Fixed — hardened offline pytest boundary and Agent/CI runner (#499)
 
 - **PR-0b (`bugfix/499-offline-test-boundary`)**：safe direct pytest 始终 offline；新增

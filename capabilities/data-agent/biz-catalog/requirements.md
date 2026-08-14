@@ -56,7 +56,7 @@ updated: 2026-05-20
 
 **Statement**：Every `signal_tables[].name` / `dimension_tables[].name` SHALL resolve to a live analyst-visible biz_dws/biz_dwd table; per-period `time_column` SHALL exist on at least one matching `_total` fact table.
 
-**Rationale**：Catalog is a mirror of the live upstream DB. Drift (upstream rename / drop / new table) → catalog becomes stale → generated SQL fails or returns wrong data. Contract test `tests/contract/test_qcm_catalog_alignment.py` encodes the alignment assertions; gated on `live_db` fixture.
+**Rationale**：Catalog is a mirror of the live upstream DB. Drift (upstream rename / drop / new table) → catalog becomes stale → generated SQL fails or returns wrong data. Contract test `tests/contract/test_qcm_catalog_alignment.py` encodes the alignment assertions; offline against a sanitized snapshot fixture since #499 PR-0c (no credential gate). Real-data drift is detected separately by `scripts/diff_biz_schema.py`.
 
 **Acceptance**：
 
@@ -79,10 +79,10 @@ updated: 2026-05-20
 **BDD Examples**：
 
 - **Given** a freshly loaded catalog with 3 `signal_tables` entries
-- **When** analyst lists biz_dws tables from live DB
+- **When** analyst lists biz_dws tables from the sanctioned snapshot of the warehouse
 - **Then** each entry's `name` exists in the returned set; mismatch surfaces a catalog-vs-DB drift error naming the missing table
 
-**Trace**：REQ-002 → `contracts/catalog-db-alignment.contract.yml` + `behavior.feature` Scenario 2 + `tests/contract/test_qcm_catalog_alignment.py` (existing; live_db gated)
+**Trace**：REQ-002 → `contracts/catalog-db-alignment.contract.yml` + `behavior.feature` Scenario 2 + `tests/contract/test_qcm_catalog_alignment.py` (offline snapshot fixtures since #499 PR-0c)
 
 ---
 
@@ -90,7 +90,7 @@ updated: 2026-05-20
 
 **Priority**：high
 
-**Statement**：Active in-source SKILLs (`biz-domain-context` / `qcm-analysis` / `safe-sql-analysis`) SHALL reference only metric / period / dimension keys that exist in `qcm_catalog.yaml`; biz table names referenced in SKILL.md body SHALL resolve in live DB.
+**Statement**：Active in-source SKILLs (`biz-domain-context` / `qcm-analysis` / `safe-sql-analysis`) SHALL reference only metric / period / dimension keys that exist in `qcm_catalog.yaml`; biz table names referenced in SKILL.md body SHALL resolve in the sanctioned snapshot of the warehouse.
 
 **Rationale**：SKILL bodies are LLM-facing prompt content (concatenated by `_build_system_prompt()` in `agent.py`). Stale references → LLM hallucinates non-existent tables / columns → guardrail rejects or DB errors. Existing test `tests/contract/test_biz_schema_alignment.py` regex-extracts table refs from SKILL bodies and asserts DB resolution.
 
@@ -103,7 +103,7 @@ updated: 2026-05-20
 - All metric families referenced in SKILL bodies exist in catalog `metrics` (e.g. `qrynum`, `tntcnt`)
 - All period names referenced exist in catalog `periods` (e.g. `daily`, `monthly`)
 - All dimension suffixes referenced exist in catalog `dimensions[].suffix` (e.g. `_total`, `_by_tenant`)
-- All biz_dws.*/biz_dwd.* table names referenced resolve in live DB (visible to analyst role)
+- All biz_dws.*/biz_dwd.* table names referenced resolve in the snapshot payload (analyst-visible scope)
 - Daily / monthly metric column patterns documented in catalog `metric_column_shapes` resolve to actual column names
 
 **Documented stale test reference (informational)**：
@@ -114,9 +114,9 @@ updated: 2026-05-20
 
 - **Given** catalog `metrics` has families `{qrynum, tntcnt}` and `periods` has `{daily, weekly, monthly, quarterly, yearly}`
 - **When** an active SKILL body references metric family `daily_qrynum_total`
-- **Then** family `qrynum` resolves in catalog `metrics`; period `daily` resolves in catalog `periods`; table `biz_dws.dws_qcm_qrynum_daily_total` resolves in live DB
+- **Then** family `qrynum` resolves in catalog `metrics`; period `daily` resolves in catalog `periods`; table `biz_dws.dws_qcm_qrynum_daily_total` resolves in the snapshot payload
 
-**Trace**：REQ-003 → `contracts/catalog-db-alignment.contract.yml` (SKILL alignment section) + `behavior.feature` Scenario 3 + `tests/contract/test_biz_schema_alignment.py` (existing; live_db gated)
+**Trace**：REQ-003 → `contracts/catalog-db-alignment.contract.yml` (SKILL alignment section) + `behavior.feature` Scenario 3 + `tests/contract/test_biz_schema_alignment.py` (offline snapshot fixtures since #499 PR-0c)
 
 ---
 

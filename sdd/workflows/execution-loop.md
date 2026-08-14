@@ -381,8 +381,12 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
      时显式输出"不涉及 SPEC Delta"。
 6. acceptance criteria 是否都有验证证据。
 7. 是否有不应提交的文件（`.env` / `*.pyc` / `.venv/` / log files）。
-8. **biz catalog drift**：若 `qcm_catalog.yaml` 改动，与上游业务系统数据字典
-   STANDARD 是否一致（`scripts/diff_biz_schema.py`）。
+8. **biz catalog drift**：若 `qcm_catalog.yaml` 改动，与上游业务系统数据字典 STANDARD
+   是否一致。检测器 = `scripts/diff_biz_schema.py`，**只读**
+   `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner 背书的 sanitized 快照，
+   不连任何数据库。无快照 / 快照超 7 天 → `SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT`
+   （均 exit 0）：**SKIP 不是 PASS**，须如实记为「未验证」，不得据此声称 catalog 与当前
+   数据库一致。
 9. **runtime canonical 改动审查**：若 `src/mj_agent/skills/**/SKILL.md` 或
    `src/mj_agent/prompts/*.md` 改动，A11 / A8 EVAL 同步审查 + frontmatter
    `version` bump + Domain Expert 评审签字。

@@ -86,7 +86,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 文档校验 | ✅ | `python scripts/check_wikilinks.py` / `check_frontmatter.py` 0 violations |
 | Studio probe | ✅ | `uv run langgraph dev` H1/H2/H3/R1/R2 矩阵通过 |
 | Health probe | ✅ | `uv run mj-agent check` 通过 |
-| biz_catalog drift | ✅ | `python scripts/diff_biz_schema.py` 输出 |
+| biz_catalog drift | ✅ | `uv run python scripts/diff_biz_schema.py` 的 **result code**（`PASS_NO_DRIFT` / `DRIFT_DETECTED`）。两个 SKIP 码**不是**验证证据——`SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT` 只能记为「未验证」 |
 | **「代码看起来正常」** | ❌（属 AI 自检） | — |
 | **「Claude 已检查」** | ❌（属 AI 自检） | — |
 
@@ -101,7 +101,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 引用路径有效 | ✅ | wikilink target 在 docs/ 下存在 |
 | 与既有规范一致 | ✅ | commit type / branch type 矩阵 / documentation §6 frontmatter |
 | **mj-agent 专属**：runtime SKILL/system.md body 反向扫描结果 | ✅ | 5a 反扫命中数 + 处理决策 |
-| **mj-agent 专属**：biz_catalog 镜像状态 | ✅ | scripts/diff_biz_schema.py 是否漂移 |
+| **mj-agent 专属**：biz_catalog 镜像状态 | ✅ | scripts/diff_biz_schema.py result code：漂移 / 无漂移 / **未验证（SKIP_NO_SNAPSHOT 或 SKIP_STALE_SNAPSHOT）**——三态如实记录，不得把未验证折叠成无漂移 |
 | **「测试通过」** | ❌（属本地验证） | — |
 | **「validator 输出 PASS」** | ❌（属本地验证） | — |
 
@@ -148,8 +148,8 @@ Grep "`<old_name>`" docs/ CLAUDE.md src/mj_agent/skills/ src/mj_agent/prompts/
 # 例：文件路径重组
 Grep "`<old/path/file.py>`" docs/ CLAUDE.md src/mj_agent/skills/
 
-# 例：biz_catalog drift
-python scripts/diff_biz_schema.py
+# 例：biz_catalog drift（offline 快照；SKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT = 未验证，非通过）
+uv run python scripts/diff_biz_schema.py
 ```
 
 每条命中文档列入 PR description（Update 行）；不涉及时显式记"不涉及反向扫描"。

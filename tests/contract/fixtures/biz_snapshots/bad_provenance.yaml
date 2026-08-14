@@ -1,0 +1,12 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: provenance is not the sanctioned attestation value.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: manual-psql-dump
+sanitized: true
+payload:
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}

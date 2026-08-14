@@ -26,13 +26,14 @@ table + column references. That mirror is `qcm_catalog.yaml`.
 3. Couple the agent's startup to DB availability (booting offline-first preferred)
 
 A **static YAML mirror** trades freshness for determinism. Drift between mirror
-and live DB is the cost; existing contract tests in `tests/contract/` catch it.
+and the warehouse is the cost; `scripts/diff_biz_schema.py` against an Owner-attested sanitized
+snapshot catches it (the `tests/contract/` band verifies the assertion logic offline).
 
 **Threats**：
 
 1. Catalog YAML malformed (parse failure) → loader raises → graph fails to build
 2. Top-level key missing → `find_biz_context()` raises `KeyError` per REQ-001
-3. Table name in catalog doesn't exist in live DB → generated SQL fails
+3. Table name in catalog doesn't exist upstream → generated SQL fails
 4. SKILL.md body references a metric / period / dimension that doesn't exist
    in catalog → LLM hallucinates SQL that gets rejected by L1 guardrail
 5. Upstream renames column (e.g. `stat_date` → `data_date`) → catalog goes
@@ -49,8 +50,8 @@ and live DB is the cost; existing contract tests in `tests/contract/` catch it.
 | Finder | `src/mj_agent/biz_catalog/finder.py` | `find_biz_context(question: str)` — NL → 14-field dict via 4 keyword dicts |
 | Schema test | `tests/unit/test_biz_catalog.py` | top-level key set + metric family enumeration |
 | Behavior test | `tests/unit/test_find_biz_context.py` | 5+ keyword cases incl. fallback |
-| Alignment test | `tests/contract/test_qcm_catalog_alignment.py` | signal_tables + dimension_tables + periods.time_column resolve in live DB |
-| SKILL alignment | `tests/contract/test_biz_schema_alignment.py` | SKILL body table refs resolve in live DB + metric column patterns |
+| Alignment test | `tests/contract/test_qcm_catalog_alignment.py` | signal_tables + dimension_tables + periods.time_column resolve in the snapshot payload (offline) |
+| SKILL alignment | `tests/contract/test_biz_schema_alignment.py` | SKILL body table refs resolve in the snapshot payload + metric column patterns (offline) |
 
 **Catalog drift policy**：catalog mirrors **actual DEV DB**, not staged STANDARD.
 Re-sync triggered only by mj-system upstream PR1/PR2 landing (renaming

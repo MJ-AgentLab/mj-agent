@@ -66,5 +66,11 @@ chainlit.md
 # ========== Git worktrees（并行 agent 隔离） ==========
 .worktrees/
 
+# ========== 本地 agent 工作区（Epic #499 PR-0c；绝不入库） ==========
+# `.mj-agent-local/biz-schema-snapshots/` 存放 Owner 背书的 sanitized biz schema
+# 快照，供 `scripts/diff_biz_schema.py` 离线做 catalog 漂移检测。快照来自业务仓
+# 元数据，**永不提交**——入库即等同把 biz schema 泄漏进公共历史（ADR-006 / ADR-009）。
+.mj-agent-local/
+
 # ========== 学习材料（本地草稿，不入库） ==========
 learning/

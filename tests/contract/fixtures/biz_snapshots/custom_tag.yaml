@@ -1,0 +1,7 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: explicit non-standard YAML tag. SafeLoader must refuse to construct it.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload: !!python/object/apply:os.system ['echo pwned']

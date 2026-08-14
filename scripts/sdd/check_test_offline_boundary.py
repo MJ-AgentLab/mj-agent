@@ -1703,7 +1703,10 @@ def _check_ci(repo_root: Path, violations: list[Violation]) -> None:
         "'BDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)'": (
             f"{_RUNNER_COMMAND} tests/bdd -q"
         ),
-        "Contract tests (offline policy skip for live contracts)": (
+        # Renamed at #499 PR-0c: the band stopped being a policy skip and became real
+        # offline assertions over synthetic snapshot fixtures. The binding this gate
+        # enforces — that the step runs through the hardened runner — is unchanged.
+        "Contract tests (offline; synthetic snapshot fixtures)": (
             f"{_RUNNER_COMMAND} tests/contract -m contract"
         ),
     }

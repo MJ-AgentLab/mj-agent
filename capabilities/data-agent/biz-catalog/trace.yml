@@ -72,15 +72,19 @@ links:
       feature: contracts/behavior.feature
       scenarios:
         - "Active SKILL bodies reference only resolvable catalog symbols and DB tables"
-      automation_status: automated                # env-gated: live_db fixture skips without POSTGRES_ANALYST_USER
+      # Mixed since #499 PR-0c: the two contract legs below now run offline against synthetic
+      # snapshot fixtures (no credential gate, green in CI); the BDD leg still carries the
+      # live_db fixture and therefore still policy-skips. Do not read this as "fully verified".
+      automation_status: automated
     contracts:
       - contracts/catalog-db-alignment.contract.yml
     tests:
       - tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_003_skill_catalog_coherence
-      - tests/contract/test_biz_schema_alignment.py::TestSkillTableReferences     # references stale `mj-ddd-semantics`
+      - tests/contract/test_biz_schema_alignment.py::TestSkillTableReferences
       - tests/contract/test_biz_schema_alignment.py::TestSkillMetricColumnsResolve
-      # rewrite-for-3-_ACTIVE_SKILLS placeholder dropped: tracked as tasks.md#T-005
-      # (capability curation), not a missing test file.
+      # The former "references stale `mj-ddd-semantics`" note was FALSE and is removed:
+      # src/mj_agent/agent.py:_ACTIVE_SKILLS does list mj-ddd-semantics, so T-005 was
+      # tracking a non-existent defect (corrected in #499 PR-0c).
     tasks:
       - tasks.md#T-004
       - tasks.md#T-005                              # cleanup

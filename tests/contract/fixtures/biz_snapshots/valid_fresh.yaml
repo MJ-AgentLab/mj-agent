@@ -1,0 +1,83 @@
+# Synthetic biz-schema snapshot fixture (Epic #499 PR-0c).
+#
+# NOT captured from any database. Hand-authored to satisfy the closed schema-v1 envelope
+# and the claims that qcm_catalog.yaml + mj-ddd-semantics/SKILL.md make, so the contract
+# tests can exercise the alignment logic entirely offline.
+#
+# `captured_at` is fixed; tests inject `now` to make this fixture fresh or stale
+# deterministically rather than depending on wall-clock time.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload:
+  schemas:
+    biz_dws:
+      tables:
+        # --- 3 signal tables declared by qcm_catalog.yaml signal_tables ---
+        dws_qcm_preprocessed_data:
+          comment: synthetic signal table
+          columns:
+            - {name: data_date, type: date, nullable: false, comment: null}
+            - {name: row_count, type: bigint, nullable: true, comment: null}
+        dws_qcm_etl_metrics:
+          comment: synthetic signal table
+          columns:
+            - {name: data_date, type: date, nullable: false, comment: null}
+            - {name: job_name, type: text, nullable: true, comment: null}
+        dws_qcm_ready_signal:
+          comment: synthetic signal table
+          columns:
+            - {name: data_date, type: date, nullable: false, comment: null}
+            - {name: is_ready, type: boolean, nullable: true, comment: null}
+
+        # --- one *_total fact table per catalog period, each carrying its time_column ---
+        dws_qcm_qrynum_daily_total:
+          comment: synthetic daily fact table
+          columns:
+            - {name: data_date, type: date, nullable: false, comment: null}
+            - {name: day_qrynum, type: bigint, nullable: true, comment: null}
+            - {name: prev_day_qrynum, type: bigint, nullable: true, comment: null}
+            - {name: dod_qrynum_diff, type: bigint, nullable: true, comment: null}
+            - {name: dod_qrynum_rate, type: numeric, nullable: true, comment: null}
+        dws_qcm_qrynum_weekly_total:
+          comment: synthetic weekly fact table
+          columns:
+            - {name: week, type: text, nullable: false, comment: null}
+            - {name: daily_qrynum_avg, type: numeric, nullable: true, comment: null}
+            - {name: daily_qrynum_max, type: bigint, nullable: true, comment: null}
+            - {name: daily_qrynum_min, type: bigint, nullable: true, comment: null}
+        dws_qcm_qrynum_monthly_total:
+          comment: synthetic monthly fact table
+          columns:
+            - {name: month, type: text, nullable: false, comment: null}
+            - {name: daily_qrynum_avg, type: numeric, nullable: true, comment: null}
+            - {name: daily_qrynum_max, type: bigint, nullable: true, comment: null}
+            - {name: daily_qrynum_min, type: bigint, nullable: true, comment: null}
+        dws_qcm_qrynum_quarterly_total:
+          comment: synthetic quarterly fact table
+          columns:
+            - {name: quarter, type: text, nullable: false, comment: null}
+            - {name: daily_qrynum_avg, type: numeric, nullable: true, comment: null}
+            - {name: daily_qrynum_max, type: bigint, nullable: true, comment: null}
+            - {name: daily_qrynum_min, type: bigint, nullable: true, comment: null}
+        dws_qcm_qrynum_yearly_total:
+          comment: synthetic yearly fact table
+          columns:
+            - {name: year, type: text, nullable: false, comment: null}
+            - {name: daily_qrynum_avg, type: numeric, nullable: true, comment: null}
+            - {name: daily_qrynum_max, type: bigint, nullable: true, comment: null}
+            - {name: daily_qrynum_min, type: bigint, nullable: true, comment: null}
+    biz_dwd:
+      tables:
+        # --- 2 allowlisted dimension tables + their catalog join_keys ---
+        dwd_dim_product_interface:
+          comment: synthetic dimension table
+          columns:
+            - {name: interface_id, type: text, nullable: false, comment: null}
+            - {name: interface_name, type: text, nullable: true, comment: null}
+        dwd_dim_institution:
+          comment: synthetic dimension table
+          columns:
+            - {name: tenant_id, type: text, nullable: false, comment: null}
+            - {name: institution_name, type: text, nullable: true, comment: null}

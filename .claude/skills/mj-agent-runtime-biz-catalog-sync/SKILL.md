@@ -1,13 +1,13 @@
 ---
 name: mj-agent-runtime-biz-catalog-sync
-description: This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` + `scripts/fetch_biz_schema.py`, proposes a diff to qcm_catalog.yaml + reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names, and **after Owner 拍板 applies the change directly via Edit through the settings.json `ask` permission gate** (ADR-034 propose→拍板→apply; no manual paste). Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers execution-loop §3.0 拍板模型 + §3.1 必停 (biz-catalog-sync) + §4.2 Runtime constraint. Do not use for: modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use /mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
+description: This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` (offline; reads only an Owner-attested sanitized snapshot under `.mj-agent-local/biz-schema-snapshots/`, never a live DB), proposes a diff to qcm_catalog.yaml + reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names, and **after Owner 拍板 applies the change directly via Edit through the settings.json `ask` permission gate** (ADR-034 propose→拍板→apply; no manual paste). Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers execution-loop §3.0 拍板模型 + §3.1 必停 (biz-catalog-sync) + §4.2 Runtime constraint. Do not use for: modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use /mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
 ---
 
 # mj-agent Runtime — Biz Catalog Sync
 
 ## Overview
 
-**Propose → 拍板 → apply**（ADR-034）：检测 + 报告 mj-agent `qcm_catalog.yaml` 与 mj-system 上游 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4 的漂移，包装 `scripts/diff_biz_schema.py` + `scripts/fetch_biz_schema.py`，propose diff + 反扫 SKILL.md curated examples 中受影响的 metric / period / dimension 名；**Owner 拍板后由本 skill 经 settings.json `ask` 权限门直接 Edit `qcm_catalog.yaml` 落盘**（不再 read-only、不再要 Owner 手动粘贴）。
+**Propose → 拍板 → apply**（ADR-034）：检测 + 报告 mj-agent `qcm_catalog.yaml` 与 mj-system 上游 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4 的漂移，包装 `scripts/diff_biz_schema.py`（**offline**：只读 `.mj-agent-local/biz-schema-snapshots/` 下 Owner 背书的 sanitized 快照，不连数据库；`scripts/fetch_biz_schema.py` 已作废为 fail-closed tombstone），propose diff + 反扫 SKILL.md curated examples 中受影响的 metric / period / dimension 名；**Owner 拍板后由本 skill 经 settings.json `ask` 权限门直接 Edit `qcm_catalog.yaml` 落盘**（不再 read-only、不再要 Owner 手动粘贴）。
 
 **Why this skill exists**：
 
@@ -47,7 +47,7 @@ digraph sync {
   rankdir=TB;
   start [label="User: 'biz_catalog sync'\nor Stage 3 §6.6 drift detected" shape=doublecircle];
 
-  s1 [label="Step 1: Run scripts/diff_biz_schema.py\n(or scripts/fetch_biz_schema.py if mj-system upstream)" shape=box];
+  s1 [label="Step 1: Run scripts/diff_biz_schema.py\n(offline; sanitized snapshot only)\nSKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT -> STOP, report 未验证" shape=box];
 
   s2 [label="Step 2: Classify drift\n• new metric / period / dimension\n• renamed column / table\n• deprecated entry\n• semantic shift (同环比 列变化等)" shape=box];
 
@@ -68,20 +68,34 @@ digraph sync {
 ## Step 1: Run diff_biz_schema.py
 
 ```bash
-# 比对当前 qcm_catalog.yaml vs mj-system 上游 STANDARD §2-§4
+# 比对当前 qcm_catalog.yaml vs sanitized 快照（自动选最新）
 uv run python scripts/diff_biz_schema.py
 
-# 如需 fetch 上游最新（CI 模式或本地 mj-system clone）
-uv run python scripts/fetch_biz_schema.py --upstream-path D:/workspace/.../mj-system/develop/docs/rule/[STANDARD]_Biz_DWS_Naming_Stability.md
+# 或显式指定快照（必须位于 .mj-agent-local/biz-schema-snapshots/ 内）
+uv run python scripts/diff_biz_schema.py --snapshot <name>.yaml
 ```
 
-`diff_biz_schema.py` 输出（按 mj-agent 实际脚本约定）：
-- 新增 metric / period / dimension 清单
-- renamed columns 清单（含 mapping）
-- deprecated entries 清单
-- semantic shifts（如同环比列定义变化）
+> **无 live/direct 路线**（Epic #499 PR-0c）。`scripts/fetch_biz_schema.py` 已是 fail-closed
+> tombstone（exit 2）；本脚本只读 `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner
+> 背书的 sanitized `schema-v1` 快照，不连任何数据库。快照由 Owner 通过 sanctioned 工具链
+> （`find_biz_context → list_biz_tables → describe_biz_table → execute_sql`）产出并放置；
+> `provenance: sanctioned-agent-tool-chain` 是 **Owner 背书声明，不是密码学证明**。
 
-如脚本返回 0 + 输出 "No drift" → 跳过后续；输出"Drift detected" → 进 Step 2。
+**按 result code 分支（不要只看 exit code）** —— 脚本把结果码打在输出首行：
+
+| result code | exit | 该怎么做 |
+|---|---|---|
+| `SKIP_NO_SNAPSHOT` | 0 | **停止**。没有任何东西被验证。如实报「biz_catalog drift：未验证（无快照）」，**不得**写成 no-drift / N/A / 通过 |
+| `SKIP_STALE_SNAPSHOT` | 0 | **停止**。快照超 7 天。如实报「未验证（快照过期）」，同上不得冒充通过 |
+| `PASS_NO_DRIFT` | 0 | 无漂移，跳过后续 |
+| `DRIFT_DETECTED` | 1 | 进 Step 2 |
+| `REJECT_INVALID_SNAPSHOT` | 2 | 快照不合法/路径不安全。**停止**并报错，不要改快照去迁就脚本 |
+
+> ⚠️ `exit 0` 有三种含义（PASS / 两种 SKIP）。只判 `$?==0` 会把「什么都没验证」误读成
+> 「catalog 与数据库一致」——这正是 PR-0c 要杜绝的失效模式。
+
+`DRIFT_DETECTED` 时输出包含：新增 / 缺失的 signal 表、dimension join_key 缺失、
+QCM fact 表缺失预期时间列。
 
 ## Step 2: Classify Drift
 
@@ -259,8 +273,7 @@ per execution-loop §3.3 7-段格式：
 
 | Tool | 用途 |
 |---|---|
-| Bash `uv run python scripts/diff_biz_schema.py` | Step 1 drift detection |
-| Bash `uv run python scripts/fetch_biz_schema.py` | Step 1 fetch upstream（如适用） |
+| Bash `uv run python scripts/diff_biz_schema.py` | Step 1 drift detection（offline；须按 result code 分支，SKIP ≠ PASS） |
 | Read | Step 3 反向扫描 SKILL.md / system.md / golden_seed.jsonl / guardrail.py |
 | Grep | Step 3 反向扫描 |
 | AskUserQuestion | Step 6 HITL Questions |
@@ -278,8 +291,9 @@ per execution-loop §3.3 7-段格式：
 - src/mj_agent/skills/qcm-analysis/SKILL.md（curated NL→SQL examples）
 - src/mj_agent/skills/safe-sql-analysis/SKILL.md（SQL 写法守则）
 - tests/eval/golden_seed.jsonl（reference_sql；可能需同步）
-- scripts/diff_biz_schema.py（drift detection 主脚本）
-- scripts/fetch_biz_schema.py（fetch upstream STANDARD）
+- scripts/diff_biz_schema.py（drift detection 主脚本；offline snapshot-only）
+- scripts/fetch_biz_schema.py（**已作废**：fail-closed tombstone，exit 2；无替代 live fetch）
+- .mj-agent-local/biz-schema-snapshots/（gitignored；Owner 背书的 sanitized `schema-v1` 快照）
 - mj-system 上游：`docs/rule/[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4（mirror source）
 
 ## Anti-patterns
