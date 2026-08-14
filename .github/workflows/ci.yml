@@ -381,10 +381,14 @@ jobs:
         # (SKIP does not count as FAIL).
         run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/bdd -q
 
-      - name: Contract tests (offline policy skip for live contracts)
-        # tests/contract/* is gated by the `contract` pytest marker AND the
-        # `live_db` session fixture. Pytest never opens the biz-live route;
-        # credential presence cannot change this structured skip.
+      - name: Contract tests (offline; synthetic snapshot fixtures)
+        # tests/contract/* is selected by the `contract` pytest marker. Since #499 PR-0c
+        # the band no longer takes a `live_db` credential gate: it asserts catalog / SKILL
+        # claims against synthetic sanitized-snapshot fixtures and therefore RUNS FOR REAL
+        # here (it used to session-skip in full, verifying nothing). Pytest still never
+        # opens a biz-live route — the scripts under test import no DB client at all.
+        # NOTE: name/comment only were touched by PR-0c; posture is unchanged (no
+        # continue-on-error flip, no new gate), so no ci-blocking-gate-toggle applies.
         run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 
   # The #296 docker-build gate (BLOCKING; sdd/gates.md `docker-image-build` row) lives in

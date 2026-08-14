@@ -22,7 +22,11 @@ def test_mj_ddd_semantics_loadable_and_active() -> None:
     meta = load_skill_meta("mj-ddd-semantics")
     assert meta["state"] == "active"
     assert meta["track"] == "agent"
-    assert meta["version"] == "v0.1"
+    # Pinned on purpose: a body change to this runtime SKILL is a `runtime-skill-content-change`
+    # hard stop and execution-loop §6 item 9 requires a frontmatter version bump alongside it, so
+    # this literal must be updated consciously rather than made tolerant.
+    # v0.1 -> v0.2 at Epic #499 PR-0c (biz snapshot boundary truth-up).
+    assert meta["version"] == "v0.2"
 
 
 def test_mj_ddd_semantics_in_system_prompt() -> None:

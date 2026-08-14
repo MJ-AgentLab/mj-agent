@@ -1,0 +1,18 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: the envelope is well-formed but the payload interior is not the shape _drift()
+# indexes into (`columns` is a string, not a list of column mappings). Without interior
+# validation this escapes as a TypeError rather than SnapshotRejected, exiting non-2 —
+# and a caller following the documented result-code table would misread it.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload:
+  schemas:
+    biz_dws:
+      tables:
+        dws_qcm_qrynum_daily_total:
+          comment: malformed on purpose
+          columns: "data_date, day_qrynum"
+    biz_dwd:
+      tables: {}

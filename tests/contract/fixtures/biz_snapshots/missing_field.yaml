@@ -1,0 +1,11 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: required field `sanitized` absent.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+payload:
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}

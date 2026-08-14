@@ -1,0 +1,14 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: uses a YAML alias. SafeLoader would resolve it silently, so the
+# strict loader must refuse anchors/aliases outright.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: &prov sanctioned-agent-tool-chain
+sanitized: true
+payload:
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}
+      smuggled: *prov

@@ -62,7 +62,7 @@ git diff --stat HEAD
 | `src/mj_agent/tools/sql/{guardrail,execute,introspect,precheck}.py` | sql | ruff + mypy + hardened offline pytest unit/integration structured-skip + separately approved sanctioned probe |
 | `src/mj_agent/integrations/mj_system_db.py` | db | ruff + mypy + offline integration structured-skip + sanctioned live probe |
 | `src/mj_agent/config.py` | config | ruff + mypy + mj-agent check |
-| `src/mj_agent/biz_catalog/qcm_catalog.yaml` | biz_catalog（**B 风味边缘**） | scripts/diff_biz_schema.py + pytest eval |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` | biz_catalog（**B 风味边缘**） | scripts/diff_biz_schema.py（offline 快照；无快照/过期 → SKIP，记未验证）+ pytest eval + `run_offline_pytest.py tests/contract -m contract` |
 | `tests/{unit,eval,integration,smoke,contract}/` | tests | 对应 pytest band |
 | `docs/` | docs | wikilinks + frontmatter |
 | `.claude/skills/` | claude-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
@@ -99,8 +99,11 @@ python scripts/check_frontmatter.py
 # .claude/skills/（如该路径改动）
 # A12 description quality 人工自检（≥ 200 chars / 正向触发 / "Do not use for" 反向触发段）
 
-# biz_catalog（如改动）
-python scripts/diff_biz_schema.py          # 与 mj-system 上游 STANDARD §2-§4 比对
+# biz_catalog（如改动）— offline，只读 .mj-agent-local/biz-schema-snapshots/ 下的 sanitized 快照
+# 结果码：PASS_NO_DRIFT(0) / DRIFT_DETECTED(1) / SKIP_NO_SNAPSHOT(0) / SKIP_STALE_SNAPSHOT(0) /
+#         REJECT_INVALID_SNAPSHOT(2)。两个 SKIP 表示「什么都没验证」，必须如实记为未验证，
+#         不得因 exit 0 就当作通过。
+uv run python scripts/diff_biz_schema.py
 
 # Docker（仅检查 config，不启动）
 docker --version
@@ -247,7 +250,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 | Bash `git diff` / `git status` | Step 1 detect scope |
 | Bash `uv run ruff` / `mypy` / `pytest` | Step 3 Level A application |
 | Bash `python -m compileall` / `python scripts/check_wikilinks.py` / `check_frontmatter.py` | Step 3 Level A docs / parse |
-| Bash `python scripts/diff_biz_schema.py` | Step 3 Level A biz_catalog drift |
+| Bash `uv run python scripts/diff_biz_schema.py` | Step 3 Level A biz_catalog drift（offline 快照；须按 result code 分支，SKIP ≠ PASS） |
 | Bash `docker --version` / `compose config` | Step 3 Level A docker config check |
 | Bash `scripts/sdd/run_offline_pytest.py tests/{integration,smoke,contract}` | structured skip verification |
 | Bash `uv run mj-agent check` / `uv run langgraph dev` | Step 5 Level B health + Studio |

@@ -1,0 +1,10 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: payload is a list, not a mapping.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload:
+  - not
+  - a
+  - mapping

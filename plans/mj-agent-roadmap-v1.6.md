@@ -1198,7 +1198,11 @@ roles:
 ### D.3 mj-agent 侧必须做的事
 
 **Phase 0**：
-- `scripts/fetch_biz_schema.py` 可手动运行
+- ~~`scripts/fetch_biz_schema.py` 可手动运行~~ → **已作废（Epic #499 PR-0c）**：该脚本改为
+  fail-closed tombstone（exit 2；不 import dotenv / DB client / introspection wrapper），
+  直连采集路线永久 retired。离线漂移检测改由 `scripts/diff_biz_schema.py` 读
+  `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner 背书的 sanitized 快照；
+  无快照 / 过期分别输出 `SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT`，绝不冒充 PASS
 - 手工维护 `biz_domain_dictionary.md`
 
 **Phase 1 末**：

@@ -1,0 +1,15 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: an ordinary application-defined YAML tag, NOT a python/object one.
+# SafeLoader alone would also refuse this, but the point of this fixture is to prove the
+# rejection comes from _StrictSnapshotLoader's own tag allowlist rather than from PyYAML
+# incidentally refusing a dangerous constructor.
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload: !inventory
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}

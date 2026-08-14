@@ -105,8 +105,8 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 |---|---|---|---|
 | 6.2 | **mj-agent 7 模块** | agent.py / llm.py / prompts/ / skills/ / tools/{sql,biz_context} / memory / integrations / config / server / ui | Glob `src/mj_agent/**`, Read |
 | 6.3 | **API 与 Studio** | LangGraph Studio (langgraph.json) / Chainlit `src/mj_agent/ui.py` / CLI `src/mj_agent/server/cli.py` (typer) | Read |
-| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / find_biz_context 真实返回 / biz_dws + biz_dwd allowlist | 4-tool 链（见下方载体）/ Read qcm_catalog |
-| 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | biz 侧：4-tool 链；memory 侧：mcp pg-mj-agent-memory-*（自有 checkpointer 库，非 biz 边界对象） |
+| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / biz_dws + biz_dwd allowlist / 可见表清单 | Read qcm_catalog + SKILL.md；漂移看 diff_biz_schema.py（offline 快照，见下） |
+| 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | biz 侧：scan 阶段无 live 载体（见下三层）；memory 侧：mcp pg-mj-agent-memory-*（自有 checkpointer 库，非 biz 边界对象） |
 | 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `compose.yaml` / `langgraph.json` / DEV/TEST/PROD profile | Read |
 | 6.7 | ~~n8n~~ | **跳过**——mj-agent 不用 n8n（与 mj-system 差异） | — |
 | 6.8 | **测试与验证** | 5 类 pytest（unit/eval/integration/smoke/contract）+ ruff + mypy strict + python -m compileall | Glob `tests/**` |
@@ -114,15 +114,25 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 
 > **§6.4 硬规则**：涉及业务字段时 **必须** 读真实列名（`find_biz_context` 返回 / `describe_biz_table` 真实列）。**不**得仅凭"qcm_xxx 看起来像 numeric"推断。**不**得绕过 4-tool 链用 raw PostgreSQL / postgres MCP / 任何 DB 客户端直读 biz 数据（v5 §5.1 数据边界；对 Claude Code 与 Codex 同等生效）。
 
-**4-tool 链可执行载体**（§6.4 / §6.5 biz 侧；任一工具通用，需 `.env` 就绪）：
+**biz schema 事实怎么拿**（§6.4 / §6.5 biz 侧）——分三层，**scan 阶段没有 live 载体**：
 
-```bash
-uv run python -c "from mj_agent.tools.biz_context import find_biz_context; print(find_biz_context('<业务词>'))"
-uv run python -c "from mj_agent.tools.sql.introspect import list_biz_tables; print(list_biz_tables())"
-uv run python -c "from mj_agent.tools.sql.introspect import describe_biz_table; print(describe_biz_table('<table>'))"
-```
+1. **仓内可离线核对**：`src/mj_agent/biz_catalog/qcm_catalog.yaml`（镜像）与
+   `src/mj_agent/skills/*/SKILL.md`（可见表清单）直接 Read，不需要任何凭据。scan 的绝大
+   多数问题在这一层就能答。
+2. **catalog 漂移检测**：`uv run python scripts/diff_biz_schema.py` —— offline，只读
+   `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner 背书的 sanitized 快照。
+   **按 result code 分支**：`SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT`（均 exit 0）= 什么
+   都没验证，如实记「未验证」；`PASS_NO_DRIFT` = 无漂移；`DRIFT_DETECTED`（exit 1）= 有漂移；
+   `REJECT_INVALID_SNAPSHOT`（exit 2）= 快照不合法，停下报错。**只判 `$?==0` 会把 SKIP 误读
+   成通过**。
+3. **确需真实 schema**：走 sanctioned agent 工具链
+   （`find_biz_context → list_biz_tables → describe_biz_table → execute_sql`），即通过
+   LangGraph Studio / Chainlit 运行 agent、由 agent 自身发起。
 
-> **env-guard**：4-tool 链目标库由 worktree `.env` biz DSN / `MJ_CONFIG_PROFILE` 决定——先确认非 prod 再做 `execute_sql` 采样（指向 prod 时仅 describe 不采样）；兜底 = analyst RO role + L1/L1b guardrail + statement_timeout=60s。
+> **不得**在 dev shell 里用 `python -c` 直接 import `mj_agent.tools.sql.introspect` 之类的
+> wrapper 去连库。该可执行载体已于 Epic #499 PR-0c 移除：它需要 `.env` 凭据、绕开 agent
+> 运行时，并且把「目标库是不是 prod」变成人肉判断。`scripts/fetch_biz_schema.py` 同期改为
+> fail-closed tombstone（exit 2），没有替代的 live fetch。
 >
 > **§6.5 硬规则**：mj-agent 是 biz pg 只读消费者；任何 schema 修改需求必须返到 mj-system 上游开 Issue（mj-agent 侧不能 V__/R__ migration）。
 >
@@ -139,7 +149,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | 列名 / 表名 / SQL 对象重命名（**触发 biz_catalog 漂移**） | grep `docs/**/*.md` + qcm_catalog.yaml + skills/safe-sql-analysis SKILL.md curated examples | `Grep "<old_col>" docs/ src/mj_agent/biz_catalog/qcm_catalog.yaml src/mj_agent/skills/` |
 | DDD 层重组 / 模块迁移（接口不变） | review SPEC §实现 + GUIDE 代码路径示例 + CLAUDE.md "Architecture" 段 | Read SPEC + Grep |
 | 性能 / 内部行为优化（接口不变） | review SPEC 性能段 + RUNBOOK 诊断步骤 + ASSESSMENT 后置评估计划 | Read SPEC + RUNBOOK |
-| **biz_catalog mirror 漂移**（mj-agent 专属） | `python scripts/diff_biz_schema.py` 比对 mj-system 上游 STANDARD §2-§4 | scripts/diff_biz_schema.py |
+| **biz_catalog mirror 漂移**（mj-agent 专属） | `uv run python scripts/diff_biz_schema.py`（offline；只读 sanitized 快照。SKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT = 未验证，不是通过） | scripts/diff_biz_schema.py |
 | **runtime SKILL/system.md body 改动**（mj-agent 专属） | 触发 §3.1 必停 HITL；列出受影响 in-source canonical | Direct file diff |
 
 每条命中文档必须列入 Step 5 §7.1 表（Action=`Update`，Existing Target=命中文档，Evidence=grep 命令 + 命中行号）。
@@ -263,7 +273,9 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - 已扫改动类型：<rename / move / SQL-rename / DDD-restructure / internal-opt / biz_catalog-drift / runtime-canonical-change / N/A>
 - 命中文档：<列入 Documentation Decision Update 行 / 无命中 / 不涉及>
 - grep 证据：`<命令>`
-- biz_catalog drift status：`<scripts/diff_biz_schema.py 输出 / N/A>`
+- biz_catalog drift status：`<PASS_NO_DRIFT / DRIFT_DETECTED / SKIP_NO_SNAPSHOT（未验证）/ SKIP_STALE_SNAPSHOT（未验证）/ REJECT_INVALID_SNAPSHOT / 不涉及>`
+  <!-- SKIP 必须原样记为「未验证」，不得折叠成 N/A 或 no-drift -->
+
 
 ## Plan Verdict
 - 是否成立：…
@@ -299,8 +311,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | Bash `gh issue view` | Step 1 Issue |
 | Glob / Grep | Step 3 8-dim + Step 4 反向 grep |
 | Read | Step 1 anchors / Step 3 真实数据流 / Step 4 SPEC review |
-| `python scripts/diff_biz_schema.py` | Step 4 biz_catalog drift |
-| Bash `uv run python -c "..."` 起 4-tool 链 | Step 3 §6.4/§6.5 biz 真实表/列（`describe_biz_table`；env-guard——`.env` biz DSN 指向 prod 时仅 describe 不采样） |
+| `uv run python scripts/diff_biz_schema.py` | Step 4 biz_catalog drift（offline 快照；SKIP ≠ PASS） |
 | mcp pg-mj-agent-memory-* | Step 3 §6.5 memory checkpointer 侧（自有库，非 biz 边界对象） |
 
 用户确认 Repo Scan Result 后**由用户决定**调用：

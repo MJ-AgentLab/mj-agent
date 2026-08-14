@@ -87,7 +87,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 | `src/mj_agent/agent.py` / `langgraph.json` 改动 | D2（graph 装配 + Studio 入口） |
 | `src/mj_agent/skills/**/SKILL.md` 改动 | **D3 in-source SKILL canonical**（§3.1 必停面 runtime-skill-content-change）+ A11 EVAL 引用审查 |
 | `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1 必停面 prompt-version-or-body-change）+ version bump 检查 |
-| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停面 biz-catalog-sync）+ scripts/diff_biz_schema.py 比对 |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停面 biz-catalog-sync）+ scripts/diff_biz_schema.py 比对（offline 快照；缺快照时如实记未验证） |
 | `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停面 sql-guardrail-relax）+ ADR-006/009 红线检查 |
 | `docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
 | `docker/Dockerfile` 外部 registry 镜像引用改动（`FROM <image>` / `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **D7b 供应链必停**（canonical `secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）：核 Owner 拍板留痕 + PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项已勾 + digest 变化经核对。**无审批类 CI gate 兜底 → 此项只能人审**（`docker-build` 只验可构建、V5 只 lint 契约）。**bot 作者 PR**（Dependabot digest bump）不渲染 PR 模板 → 拍板即 merge 决定本身，须以 PR comment 留痕 |
@@ -101,7 +101,10 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 - **D2 graph 装配**：读 agent.py，确认 `_ACTIVE_SKILLS` + `make_graph` + `langgraph.json` 入口一致
 - **D3 in-source SKILL**：读 SKILL.md body 改动；确认 13 字段 frontmatter（sdd/adapters/runtime-skill schema）+ 五段式 body 保持；A11 `eval_references` 同步审查
 - **D4 system.md**：读 prompt body 改动；确认 frontmatter `version` bump（如适用）+ `eval_references` 同步
-- **D5 biz catalog**：跑 `python scripts/diff_biz_schema.py` 比对 mj-system 上游 STANDARD §2-§4
+- **D5 biz catalog**：跑 `uv run python scripts/diff_biz_schema.py`（offline，只读
+  `.mj-agent-local/biz-schema-snapshots/` 下 Owner 背书的 sanitized 快照，不连库）。**审别人的
+  PR 时你本地通常没有快照**，届时会得到 `SKIP_NO_SNAPSHOT`（exit 0）——那是「未验证」，
+  不是「无漂移」；如实写进 review 结论，不要因为 exit 0 就放行 D5
 - **D6 SQL guardrail**：检查 BIZ_ALLOWED_DWD_TABLES 修改是否扩边界；ADR-006 4 层 guardrail / ADR-009 biz 域 only 红线
 - **D7 infra**：docker compose config 校验 + pyproject.toml 改动 → uv lock 同 PR commit + .env.example 改 → secrets.enc 同步
 - **D8 secret**：grep `ARK_API_KEY` / `POSTGRES_*PASSWORD` 是否硬编码
@@ -208,7 +211,7 @@ GitHub Comment 格式（建议）：
 | Bash `gh pr view --json` | Stage 1/2 fetch |
 | Bash `gh pr diff` / `gh api ...files` | Stage 2 file list |
 | Read | Stage 3 SKILL.md / system.md / config 改动审 |
-| Bash `python scripts/diff_biz_schema.py` | D5 biz_catalog drift |
+| Bash `uv run python scripts/diff_biz_schema.py` | D5 biz_catalog drift（offline 快照；SKIP ≠ PASS） |
 | Grep | D8 secret 硬编码扫描 |
 | `/mj-agent-doc-review`（PR-C1） | docs/ 改动时建议运行 |
 | `/mj-agent-git-check-merge` | 评架构后接技术合并检查 |

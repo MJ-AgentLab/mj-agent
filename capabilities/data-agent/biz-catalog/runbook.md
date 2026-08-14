@@ -34,19 +34,18 @@ uv run pytest tests/unit/test_biz_catalog.py -q
 # Finder behavior (no DB needed)
 uv run pytest tests/unit/test_find_biz_context.py -q
 
-# Live DB alignment (requires POSTGRES_ANALYST_USER + biz pg reachable)
-uv run pytest tests/contract/test_qcm_catalog_alignment.py -m contract -q
-uv run pytest tests/contract/test_biz_schema_alignment.py -m contract -q
+# Catalog ↔ snapshot alignment (offline; synthetic fixtures, NO credentials needed)
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
 ```
 
-Expected:
+Expected — **no credential axis any more** (Epic #499 PR-0c made these contract tests
+fixture-only; they used to session-skip unconditionally and verify nothing):
 
-| Command | DB creds present | DB creds absent |
-|---|---|---|
-| `pytest tests/unit/test_biz_catalog.py` | all pass (no DB) | all pass (no DB) |
-| `pytest tests/unit/test_find_biz_context.py` | all pass | all pass |
-| `pytest tests/contract/test_qcm_catalog_alignment.py -m contract` | all pass | session-skip clean |
-| `pytest tests/contract/test_biz_schema_alignment.py -m contract` | all pass | session-skip clean |
+| Command | Result |
+|---|---|
+| `pytest tests/unit/test_biz_catalog.py` | all pass (no DB) |
+| `pytest tests/unit/test_find_biz_context.py` | all pass (no DB) |
+| `run_offline_pytest.py tests/contract -m contract` | all pass (synthetic snapshot fixtures) |
 
 ## §3 Troubleshooting
 
@@ -67,7 +66,7 @@ Expected:
 **Resolution**：
 
 - Identify drift: look at failing assertion (signal_tables / dimension_tables / time_columns / forbidden_schemas)
-- Run `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and live DB schema; surfaces drift list
+- Run `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB); surfaces drift list
 - Decide policy:
   - **Upstream renamed column** (e.g. `stat_date` → `data_date`): file `[AGENT]` issue; update `qcm_catalog.yaml` via biz-catalog-sync HITL (4 项必停)
   - **Catalog has stale extra entry** (DB dropped it): update catalog accordingly
@@ -111,7 +110,7 @@ Expected:
 - `contracts/catalog.contract.yml` — REQ-001 schema completeness
 - `contracts/catalog-db-alignment.contract.yml` — REQ-002 + REQ-003 alignment
 - `contracts/behavior.feature` — 3 Gherkin scenarios
-- `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and live DB
+- `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB)
 - `policies/data-boundary.md` §3 — biz-catalog-sync 4 项必停 governance
 - `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
 - `§6.1 Catalog Freshness Check Cadence SOP` — cross-ref `qcm_catalog.yaml source.status` + `scripts/diff_biz_schema.py` reference
@@ -138,16 +137,24 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 **Trigger**: Periodic catalog ↔ DB alignment check (cadence: weekly during active development phase OR after any mj-system upstream merge announcement); OR `source.status: drift_detected` field investigation per §3 catalog drift symptom block.
 
-**Pre-conditions**: Analyst credentials (`POSTGRES_ANALYST_USER`) configured for live DB access; `scripts/diff_biz_schema.py` available (per `qcm_catalog.yaml` header reference).
+**Pre-conditions**: An Owner-attested sanitized `schema-v1` snapshot present under
+`.mj-agent-local/biz-schema-snapshots/` (gitignored) and captured within the last 7 days.
+**No credentials and no DB reachability are required or permitted** — `scripts/diff_biz_schema.py`
+is offline-only since Epic #499 PR-0c, and `scripts/fetch_biz_schema.py` is a fail-closed
+tombstone (exit 2). If no fresh snapshot exists, this SOP yields `SKIP_NO_SNAPSHOT` /
+`SKIP_STALE_SNAPSHOT` and the correct outcome is to record **"not verified"**, not "no drift".
 
 **Steps**:
 
-1. Run `scripts/diff_biz_schema.py` against current biz_dws/biz_dwd schema → capture diff output
+1. Run `uv run python scripts/diff_biz_schema.py` against the sanitized snapshot → capture the
+   result code (`PASS_NO_DRIFT` / `DRIFT_DETECTED` / `SKIP_*` / `REJECT_INVALID_SNAPSHOT`)
 2. Cross-reference output with `qcm_catalog.yaml source.status` field state (current expected: `drift_detected` per header)
 3. If diff matches expected drift (staged STANDARD `stat_date/qrynum` vs DEV `data_date/day_qrynum`) → log expected; no action
 4. If new unexpected drift surfaced → trigger §6.2 Catalog-Sync Skill Walkthrough SOP
 
-**Verify**: `uv run pytest tests/contract/test_qcm_catalog_alignment.py -m contract -q` → expected PASS (current drift accepted by tests)
+**Verify**: `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract`
+→ expected all PASS. Note these assert catalog claims against the **synthetic fixture**, so a green
+run does not by itself prove the live warehouse agrees — that is what step 1's snapshot diff is for.
 
 **Rollback**: N/A (read-only check; no state change)
 
@@ -159,11 +166,11 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
 
 **Steps** (skill wraps; see `/mj-agent-runtime-biz-catalog-sync` for black-box workflow):
 
-1. Invoke `/mj-agent-runtime-biz-catalog-sync` skill — skill performs read-only diff between catalog and live DB, surfaces drift items as proposed changes
+1. Invoke `/mj-agent-runtime-biz-catalog-sync` skill — skill performs read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB), surfaces drift items as proposed changes
 2. **HITL Gate-2 question** — Open `biz-catalog-sync` canonical enum question; obtain user ack on proposed `qcm_catalog.yaml` modifications
 3. User applies proposed diff to `qcm_catalog.yaml` via Edit (skill outputs diff; does not auto-write)
 4. Update `qcm_catalog.yaml source.status: synced` field
-5. Regression: `uv run pytest tests/contract/test_qcm_catalog_alignment.py tests/contract/test_biz_schema_alignment.py -m contract -q`
+5. Regression: `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract`
 
 **Verify**: tests/contract alignment tests PASS; `source.status: synced` field reflects new state
 

@@ -58,7 +58,7 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
     "smoke: end-to-end tests hitting live biz domain and LLM (disabled by default)",
-    "contract: catalog ⇄ live DB alignment tests (skip when no analyst creds; not run by default)",
+    "contract: catalog ⇄ sanitized-snapshot alignment tests (offline, fixture-only since #499 PR-0c; not run by default)",
 ]
 addopts = "-ra --strict-markers -m 'not smoke and not contract'"
 # Gherkin scenario tags (@REQ-NNN / @CTR-X / @risk:Y / @adapter:Z) are not

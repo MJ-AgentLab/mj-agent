@@ -12,12 +12,13 @@ covers_requirements:
 # REQ-002 — Catalog ↔ DB alignment rules
 db_alignment:
   freeze_anchor: tests/contract/test_qcm_catalog_alignment.py
-  live_db_required: true                          # gated on live_db fixture; skip-clean without POSTGRES_ANALYST_USER
+  live_db_required: false                         # offline since #499 PR-0c: verified against an
+                                                  # Owner-attested sanitized snapshot, never a live DB
 
   rules:
     - rule_id: signal_tables_exist
       description: "Every catalog signal_tables[].name resolves to an analyst-visible biz_dws table"
-      verification: "SELECT FROM information_schema.tables WHERE table_schema='biz_dws' AND table_name IN catalog.signal_tables[].name"
+      verification: "lookup in snapshot payload.schemas.biz_dws.tables for each catalog.signal_tables[].name (offline)"
       current_expected:
         - biz_dws.dws_qcm_preprocessed_data
         - biz_dws.dws_qcm_etl_metrics
@@ -25,14 +26,14 @@ db_alignment:
 
     - rule_id: dimension_tables_exist
       description: "Every catalog dimension_tables[].name resolves to an analyst-visible biz_dwd table; join_key column exists"
-      verification: "SELECT FROM information_schema.columns WHERE table_schema='biz_dwd' AND table_name IN catalog.dimension_tables[].name AND column_name=join_key"
+      verification: "lookup join_key in snapshot payload.schemas.biz_dwd.tables[<name>].columns (offline)"
       current_expected:
         - biz_dwd.dwd_dim_product_interface (join_key: product_interface_id)
         - biz_dwd.dwd_dim_institution (join_key: tenant_id)
 
     - rule_id: time_columns_resolve
       description: "For each catalog.periods[k].time_column, exists on at least one matching <metric>_<period>_total fact table"
-      verification: "SELECT FROM information_schema.columns WHERE table_schema='biz_dws' AND column_name=time_column AND table_name LIKE 'dws_qcm_%_<period>_total'"
+      verification: "per-period lookup of time_column in snapshot payload.schemas.biz_dws.tables[dws_qcm_*_<period>_total].columns (offline)"
       current_expected:
         daily: data_date (resolves on dws_qcm_qrynum_daily_total etc.)
         weekly: week
@@ -41,19 +42,19 @@ db_alignment:
         yearly: year
 
     - rule_id: forbidden_schemas_not_visible
-      description: "Schemas listed in catalog.forbidden_access.schemas are NOT visible to analyst role via information_schema.tables"
-      verification: "assert no rows in SELECT FROM information_schema.tables WHERE table_schema IN catalog.forbidden_access.schemas"
+      description: "Schemas listed in catalog.forbidden_access.schemas do NOT appear in a sanctioned sanitized snapshot"
+      verification: "assert snapshot payload.schemas has no key in catalog.forbidden_access.schemas (offline)"
       current_expected: "5 schemas (biz_ods / biz_ads / ops_* — see catalog forbidden_access.schemas)"
 
   drift_detection:
     detector: tests/contract/test_qcm_catalog_alignment.py
-    fixture: live_db (skip-clean without POSTGRES_ANALYST_USER)
+    fixture: synthetic snapshot under tests/contract/fixtures/biz_snapshots/ (no credential gate)
     failure_mode: "test fails → catalog or DB has drifted; manual triage via /mj-agent-runtime-biz-catalog-sync skill"
 
 # REQ-003 — SKILL ↔ catalog coherence
 skill_alignment:
   freeze_anchor: tests/contract/test_biz_schema_alignment.py
-  live_db_required: true
+  live_db_required: false                         # offline since #499 PR-0c
 
   active_skills:                                  # per agent.py:_ACTIVE_SKILLS
     - path: src/mj_agent/skills/biz-domain-context/SKILL.md
@@ -79,19 +80,14 @@ skill_alignment:
 
   rules:
     - rule_id: skill_table_refs_resolve
-      description: "Every biz_dws.* / biz_dwd.* table name referenced in SKILL.md body resolves in live DB visible to analyst"
+      description: "Every biz_dws.* / biz_dwd.* table name referenced in SKILL.md body resolves in the sanitized snapshot payload"
       extraction: "regex `(biz_dws|biz_dwd)\\.[a-z_]+` over SKILL body"
-      verification: "SELECT FROM information_schema.tables for each extracted ref"
+      verification: "lookup in snapshot payload.schemas[<schema>].tables (offline; no DB query since Epic #499 PR-0c)"
 
     - rule_id: skill_metric_columns_resolve
       description: "Daily / monthly metric column patterns documented in catalog resolve to actual columns"
       extraction: "catalog.metric_column_shapes[period].primary / examples"
-      verification: "SELECT FROM information_schema.columns for each pattern"
-
-  documented_test_drift:
-    issue: "tests/contract/test_biz_schema_alignment.py loads skill named 'mj-ddd-semantics' which is NOT in current _ACTIVE_SKILLS"
-    current_active_skills: [biz-domain-context, qcm-analysis, safe-sql-analysis]
-    resolution: "TBD-M3 — update test to load all 3 _ACTIVE_SKILLS; track as tasks.md#T-005"
+      verification: "lookup in snapshot payload.schemas[<schema>].tables[<table>].columns (offline; no DB query since Epic #499 PR-0c)"
 
 hitl_required:
   - biz-catalog-sync                              # any change to qcm_catalog.yaml
@@ -101,7 +97,11 @@ cross_capability_dependencies:
   - target: data-agent.safe-sql
     rule_link: time_columns_resolve              # catalog.periods.*.time_column → safe-sql REQ-002 require_time_range
 
-# TBD Phase M3:
-#   - existing tests pass when live_db available (verify; no new tests at M1)
-#   - mj-ddd-semantics → 3 active skills cleanup (T-005)
+# Resolved at Epic #499 PR-0c:
+#   - the M3 "existing tests pass when live_db available" item is void: the contract tests
+#     no longer take a live_db gate at all. They run offline against synthetic snapshot
+#     fixtures and are green in CI (previously they always skipped).
+#   - the documented_test_drift block claiming mj-ddd-semantics is "NOT in current
+#     _ACTIVE_SKILLS" was FALSE and has been removed: src/mj_agent/agent.py:_ACTIVE_SKILLS
+#     does list mj-ddd-semantics. T-005 was tracking a non-existent defect.
 # TBD Phase M4: evidence/runtime/ catalog freshness reports auto-collected

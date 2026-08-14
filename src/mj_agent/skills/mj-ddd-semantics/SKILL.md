@@ -4,9 +4,9 @@ domain: SKILL
 summary: biz 域 DDD 语义层 — 把"业务概念（查询量 / 机构数 / 同环比）"映射到具体物理列；把 catalog 召回结果转成可写 SQL 的字段清单
 owner: 项目负责人
 created: 2026-05-07
-updated: 2026-05-07
+updated: 2026-08-14
 state: active
-version: v0.1
+version: v0.2
 track: agent
 activation:
   when_to_use: 拿到 find_biz_context 候选表后，需要决定"用户问的'查询量'到底指哪个物理列"——day_qrynum 还是 day_qrynum_sum 还是 daily_qrynum_avg？
@@ -143,5 +143,5 @@ biz 域用户问的"查询量"、"机构数"、"同比"是**业务概念**；DB 
 - Upstream skill: `biz-domain-context`
 - Downstream skills: `qcm-analysis`（落 SQL 模板）、`safe-sql-analysis`（执行守则）
 - Catalog: `src/mj_agent/biz_catalog/qcm_catalog.yaml`
-- 维护（Phase 1 阶段）：`scripts/fetch_biz_schema.py` + `scripts/diff_biz_schema.py` 是**手动**对账工具，由维护者本地按需运行；schema 漂移的自动同步机制规划在 **Phase 2**（见 `plans/mj-agent-roadmap-v1.6.md` §4.4 "schema 自动同步"）。Phase 1 阶段，schema 漂移由 `tests/contract/*` 测试 fail 触发分析师手动修正 catalog / SKILL
+- 维护（Phase 1 阶段）：schema 对账用 `scripts/diff_biz_schema.py`，**只读** `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner 背书的 sanitized 快照，不连任何数据库；无快照 / 超 7 天分别输出 `SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT`——**SKIP 不等于 PASS**。`scripts/fetch_biz_schema.py` 已作废为 fail-closed tombstone（Epic #499 PR-0c），直连采集路线永久 retired：biz schema 事实一律走 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`。自动同步机制规划在 **Phase 2**（见 `plans/mj-agent-roadmap-v1.6.md` §4.4 "schema 自动同步"）
 - Evals: Phase 2 起引用 outcome / component eval；契约测试在 Phase 1 sub 1.G 落地

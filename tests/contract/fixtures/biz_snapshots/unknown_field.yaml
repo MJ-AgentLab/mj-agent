@@ -1,0 +1,14 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: unknown top-level keys `tag` and `notes` (closed envelope).
+schema_version: schema-v1
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+tag: internal-only
+notes: smuggled sidecar field
+payload:
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}

@@ -1,0 +1,12 @@
+# Synthetic NEGATIVE snapshot fixture (Epic #499 PR-0c) - must be REJECTED.
+# Defect: unsupported schema_version.
+schema_version: schema-v2
+captured_at: "2026-08-13T00:00:00+00:00"
+provenance: sanctioned-agent-tool-chain
+sanitized: true
+payload:
+  schemas:
+    biz_dws:
+      tables: {}
+    biz_dwd:
+      tables: {}
