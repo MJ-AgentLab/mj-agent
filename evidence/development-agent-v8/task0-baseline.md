@@ -5,10 +5,11 @@ summary: >-
   inventory（789 文件 / raw SHA-256 / mode / owning surface）、18-carrier census、
   manifest/lock/gate 现状、hard+controlled freeze identity、known divergence ledger、
   pre-change 全量安全离线验证，以及 Owner private attestation = SKIP_PRIVATE。
-  freeze identity digest = 36f64771efeed88ca95bc98fadf3b3a0d1e56cc0b3e9f46afa675d9dbf88a6a7
+  freeze identity digest = 8c7c1e4847b8c5efe843009fd4d6c2b357488325f1f67ca2e1ec409546cce443
+  （F5 重锚 @83fe8e6；PR-0d 原值 36f64771… 见 §5 D-7）。
 owner: ranzuozhou
 created: 2026-08-14
-updated: 2026-08-14
+updated: 2026-08-24
 state: active
 track: agent
 ---
@@ -60,9 +61,12 @@ track: agent
 
 | 档 | 文件数 | digest |
 |---|---:|---|
-| hard-frozen | 58 | `43bb10d40d59f0d1fbfb265bf4e1c8f04324faa5d8209991921022fecfa1e957` |
+| hard-frozen | 58 | `dce1ddda1e4747ebfa7230095980f0846487aafb24cdadbf3cb98287bbce1269` |
 | controlled-frozen | 1 | `124d830374a607587f10ddc7d504c045577edf7766462d7d7ee8d5e2450bdd14` |
-| **identity_digest** | — | **`36f64771efeed88ca95bc98fadf3b3a0d1e56cc0b3e9f46afa675d9dbf88a6a7`** |
+| **identity_digest** | — | **`8c7c1e4847b8c5efe843009fd4d6c2b357488325f1f67ca2e1ec409546cce443`** |
+
+> F5 重锚（rev `83fe8e6`，见 §5 D-7）：hard `43bb10d4…`→`dce1ddda…`、identity `36f64771…`→`8c7c1e48…`；
+> controlled digest 与全部计数（58 hard + 1 controlled；46 前缀 + 12 exact）不变。@`829482b` 原值即箭头左侧。
 
 58 = 46（`.claude/` 前缀）+ 12（exact）。12 个 exact 模式**全部命中**，`absent_exact_patterns` 为空 —— 即 §1.1 列出的每一条冻结路径在本仓都真实存在：
 
@@ -186,6 +190,7 @@ skip 全部为结构化外部依赖跳过（`SKIP_POLICY_EXTERNAL_DEPENDENCY`：
 | **D-4** | `ACTIVE_ACCEPTED_PR0A_IN_PROGRESS` 相关陈述在 plan + ADR-039 中陈旧 | Owner（F2 follow-up） | Owner 于 PR-0c Gate 1 裁定「全部排除、另立 follow-up」 | 两文件按 §3.3 归 PR-0a、lifecycle 收尾按 AC-14 归 PR-G |
 | **D-5** | manifest 缺 `codex_carrier` / `workflow_id` 字段；13 项待 `projection → project`、17 项待 `support_mode → native` | PR-B / PR-C1 | §2.2.1 终态矩阵尚未 cutover | PR-C1 cutover 时逐行断言终态矩阵 |
 | **D-6** | ignored / private harness 面**未经核验** | Owner | §1.1 禁止 agent 打开、打印、hash 或传输该面；只接受 Owner private attestation | 见 §6；PR-F 的 final evidence 会再取一次 attestation |
+| **D-7** | **F5 计划外单元触碰 hard-frozen `.claude/**`**：`mj-agent-git-sync` / `mj-agent-flow-diagnose` 两个 description 缩短（1062→1002 / 1322→1003 chars，Codex discovery 预算 1024，F-P1a-1）；identity 于 F5 rev `83fe8e6` 重锚 `36f64771…`→`8c7c1e48…`（58 hard + 1 controlled 计数不变，仅 2 hash 位移；inventory 快照随之由 @`829482b` 789 文件前移至 @`83fe8e6` 801 文件） | Owner | P1a ledger F5 行修复定义含「hash freeze 复算」；PR-A0 Gate 1 拍板 option (a)；F5 Gate 内 Owner 拍板「本 PR 两 commit 闭环」重锚路径 | 本行即 closure：重锚工件随本 PR 落盘；后续单元 preflight 以新 identity `8c7c1e48…` 为准 |
 
 ## 6. Owner private attestation（§4.2 第 6 项）
 

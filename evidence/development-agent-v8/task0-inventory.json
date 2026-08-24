@@ -2,11 +2,11 @@
   "schema_version": "task0-inventory-v1",
   "epic_id": 499,
   "unit_id": "PR-0d",
-  "rev": "829482b26139f7e23af4c015d6f509d71e1524ed",
+  "rev": "83fe8e6d4acc75c51b290230d9432d625a9b5a06",
   "content_basis": "git-blob",
   "hash_algorithm": "sha256",
   "gitlink_sha256_convention": "a mode-160000 entry has no blob; its sha256 is sha256('gitlink:' + commit_sha1)",
-  "file_count": 789,
+  "file_count": 801,
   "surface_counts": {
     "archive": 28,
     "capability": 114,
@@ -16,7 +16,7 @@
     "decisions": 29,
     "docker": 9,
     "docs": 35,
-    "evidence": 86,
+    "evidence": 94,
     "generated-projection": 8,
     "hard-frozen": 58,
     "kernel-policies": 10,
@@ -24,14 +24,14 @@
     "plans": 80,
     "repo-root": 12,
     "runtime-src": 61,
-    "scripts": 55,
-    "tests": 134
+    "scripts": 57,
+    "tests": 136
   },
   "files": [
     {
       "path": ".agents.lock.json",
       "mode": "100644",
-      "sha256": "b35bd8ec86b71cfc00b6ad4c9f138999a27c6814b894cae1d3ec9063d30a672f",
+      "sha256": "c13c297b89eadc71e57d9fbf3b896ea1b701679e567609f6da8cdc6d61cfee3e",
       "surface": "generated-projection"
     },
     {
@@ -43,7 +43,7 @@
     {
       "path": ".agents/skills/mj-agent-flow-diagnose/SKILL.md",
       "mode": "100644",
-      "sha256": "0e3d2e04936c38c870880be6edf420c04d4b77667acc0e28e83f42719c63d6af",
+      "sha256": "6ef02a700b543110bd789b98ffb8c07268e05815d240789bbab5a22895007694",
       "surface": "generated-projection"
     },
     {
@@ -67,7 +67,7 @@
     {
       "path": ".agents/skills/mj-agent-git-sync/SKILL.md",
       "mode": "100644",
-      "sha256": "a23e6bcb5a62f3e2ce545469ea6f6bea933063a86b008a9d63fd75f7d7649052",
+      "sha256": "e0a227499e21afca764aa828b7ba1c356ff9947cdc620f087b2537eb64cdf050",
       "surface": "generated-projection"
     },
     {
@@ -163,7 +163,7 @@
     {
       "path": ".claude/skills/mj-agent-flow-diagnose/SKILL.md",
       "mode": "100644",
-      "sha256": "0e3d2e04936c38c870880be6edf420c04d4b77667acc0e28e83f42719c63d6af",
+      "sha256": "6ef02a700b543110bd789b98ffb8c07268e05815d240789bbab5a22895007694",
       "surface": "hard-frozen"
     },
     {
@@ -271,7 +271,7 @@
     {
       "path": ".claude/skills/mj-agent-git-sync/SKILL.md",
       "mode": "100644",
-      "sha256": "a23e6bcb5a62f3e2ce545469ea6f6bea933063a86b008a9d63fd75f7d7649052",
+      "sha256": "e0a227499e21afca764aa828b7ba1c356ff9947cdc620f087b2537eb64cdf050",
       "surface": "hard-frozen"
     },
     {
@@ -427,7 +427,7 @@
     {
       "path": ".github/PULL_REQUEST_TEMPLATE.md",
       "mode": "100644",
-      "sha256": "46465fe30be84d1de3c44e779bcb061980312e4327af3c94983d7133d78b7ec0",
+      "sha256": "210164c0381cf5c822ac72b5bdec6070f973613f49a4f97f8b1f92fc625186fd",
       "surface": "ci-workflow"
     },
     {
@@ -487,7 +487,7 @@
     {
       "path": ".github/workflows/ci.yml",
       "mode": "100644",
-      "sha256": "e47981816567835cbd334f59192e5ed6417e52e1529aee30ab2dd8fbad95e8bc",
+      "sha256": "6f71c235afb0b1fe4bb74b77b28ce732259894755afbc4dc51281b057c3c0b05",
       "surface": "ci-workflow"
     },
     {
@@ -1645,7 +1645,7 @@
     {
       "path": "docker/Dockerfile",
       "mode": "100644",
-      "sha256": "a6797d0a761d77a81c79d6dfb4aa5afc062c51a8d866c60977f24066acb005b6",
+      "sha256": "eb19c5fd5c2629505953482976f3750eeb2e7aeedcbd84e0084b5bc16b0a74b9",
       "surface": "docker"
     },
     {
@@ -1675,7 +1675,7 @@
     {
       "path": "docker/compose.yaml",
       "mode": "100644",
-      "sha256": "1004db069fc053ec9f1345a77df36a4bffe55f3ef42f727ce557875153696d78",
+      "sha256": "6a6279adce306b3cfa76d7e1fc46e43c39d4a9161a368e9523721ce4ccb34f21",
       "surface": "docker"
     },
     {
@@ -2411,6 +2411,54 @@
       "surface": "evidence"
     },
     {
+      "path": "evidence/development-agent-v8/p1a-runtime-feasibility.md",
+      "mode": "100644",
+      "sha256": "82fd5ad1b2b27bc542325ed7973a25ea5207e4f785bd2f8af85c3993dffb6e64",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/probe/deterministic-gate-v1-20260814T083847Z-33dd984fa642.json",
+      "mode": "100644",
+      "sha256": "0ef589368ffa3eae39b4bad3d79de31e6b3e24a93a9738a71da1b3e00c1c6303",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/probe/fixtures/deterministic-expected.json",
+      "mode": "100644",
+      "sha256": "90ed72a848d6502893ee561789f58ae27becf4f1ada7dcad53b80c1238fdd02a",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/probe/fixtures/prompt-corpus.json",
+      "mode": "100644",
+      "sha256": "fd4a83da44c04fdc5a5bd1d0f1abf0f84f1a247cdbd795f312cad233e856b667",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/probe/model-telemetry-v1-20260814T083913Z-33dd984fa642.json",
+      "mode": "100644",
+      "sha256": "f3bbec455d35cf14b206d77b0aca699e563cc61c52b7cd3ece7f09bb32cf37fd",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/task0-baseline.md",
+      "mode": "100644",
+      "sha256": "c136994ba37317efd83c26ec9da59f9a72d7d57130011a0695e1dfe9fcfa59af",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/task0-freeze-identity.json",
+      "mode": "100644",
+      "sha256": "97e1455b80eb6358ef7c72e9283f10e081cf3536b9457c5123ec3b01ef7e6819",
+      "surface": "evidence"
+    },
+    {
+      "path": "evidence/development-agent-v8/task0-inventory.json",
+      "mode": "100644",
+      "sha256": "11baf82aaf49a05a02b92aaf97ee5d50bda734b648aa45902fe25cebe762844c",
+      "surface": "evidence"
+    },
+    {
       "path": "evidence/metrics/2026-06-08_sdd_structure_metrics.md",
       "mode": "100644",
       "sha256": "8c9ed72e530b1dc459364151ebfc0c6cf227b5c28abfcdec585c107ffb1a671a",
@@ -2905,7 +2953,7 @@
     {
       "path": "policies/ai-agent.md",
       "mode": "100644",
-      "sha256": "ff487aebd167f25b499a90036e7feed0e30aec518ba5a827cf5ba52383b15fd5",
+      "sha256": "7aa19713d6c87698d5d77d53e34ef431abb461e76cf3069b409bd3d925be4291",
       "surface": "kernel-policies"
     },
     {
@@ -2923,7 +2971,7 @@
     {
       "path": "policies/claude-code-skill.md",
       "mode": "100644",
-      "sha256": "ee17ec5cff7b78f3157ea88111a7cfab1959401f24262e1f96525c210e6ab90a",
+      "sha256": "1a914d78bf6408f0863b873093b6c18e30b62151c8d29bc5f2d7ebe9ed00c7aa",
       "surface": "kernel-policies"
     },
     {
@@ -3281,9 +3329,21 @@
       "surface": "scripts"
     },
     {
+      "path": "scripts/sdd/run_codex_carrier_probe.py",
+      "mode": "100644",
+      "sha256": "77670392922f16461fe3728bd2cecdc56cde07ed8bac0fa512af32f198885556",
+      "surface": "scripts"
+    },
+    {
       "path": "scripts/sdd/run_offline_pytest.py",
       "mode": "100644",
       "sha256": "993446e4c6f1b6280ce7e15842ff4a8b5e18770c32d94195f4781d6ffc6fec68",
+      "surface": "scripts"
+    },
+    {
+      "path": "scripts/sdd/task0_freeze.py",
+      "mode": "100644",
+      "sha256": "3d850320ae0e4cc2466f90848eb0eb7c0e7e052f34ccd0ecb0a1fb843bb421f6",
       "surface": "scripts"
     },
     {
@@ -4631,6 +4691,12 @@
       "surface": "tests"
     },
     {
+      "path": "tests/unit/test_run_codex_carrier_probe.py",
+      "mode": "100644",
+      "sha256": "bf6d42f60e4d789aadc6b2aa5300bed8d7a60d26c2ef2327bc5c26a803aa4f83",
+      "surface": "tests"
+    },
+    {
       "path": "tests/unit/test_runtime_event_loop.py",
       "mode": "100644",
       "sha256": "12412fff319146d719a3d824dace710c19bca539c9928b767a3d651d205a8ea1",
@@ -4742,6 +4808,12 @@
       "path": "tests/unit/test_sdd_v5_subflags.py",
       "mode": "100644",
       "sha256": "55c4579a2279ef171a03cb0de5448a814e10bdc5cdaa9e19f0d8aa20f71c8fd1",
+      "surface": "tests"
+    },
+    {
+      "path": "tests/unit/test_task0_freeze.py",
+      "mode": "100644",
+      "sha256": "ef5a1717867f556100500e4deb568c1ba642a66264ffad535918f31b7d261369",
       "surface": "tests"
     },
     {
