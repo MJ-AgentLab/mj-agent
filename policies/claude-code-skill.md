@@ -5,7 +5,7 @@ state: draft
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-08-24
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -189,7 +189,7 @@ capability**：`contracts/governance.contract.yml` 承接 `a14_pr_gate`（PR bod
 
 | 面 | home |
 |---|---|
-| 必停 enum 锚点 + D-017 派生邻接面（`.codex/**` / `.agents/**` / `agents_sync.py` / manifest 的 `mcp` 与 `codex.posture` 段） | `policies/ai-agent.md` §4 `mcp-server-trust-posture-change` |
+| 必停 enum 锚点 + D-017 派生邻接面（`.codex/**` / `.agents/**` + `.agents.lock.json` / `agents_sync.py` 及 `_common` loader·renderer / manifest·workflow·translation·enforcement typed sources + preface·readme render templates——完整清单见 home 列所指 §4 A14 行） | `policies/ai-agent.md` §4 `mcp-server-trust-posture-change` |
 | A14 PR body 模板 / trust posture 分级 / credential mode 枚举 / 季度审计 cadence | 上述 capability 的 `governance.contract.yml` |
 | A14 在 in-tree skill 治理面的自检位置与载体强度 | **本 policy** §5 |
 

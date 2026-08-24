@@ -65,7 +65,7 @@
 - [ ] runtime-skill-content-change（`src/mj_agent/skills/*/SKILL.md` body）
 - [ ] prompt-version-or-body-change（`src/mj_agent/prompts/system.md` version 或 body）
 - [ ] biz-catalog-sync（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）
-- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode + 派生 `.codex/config.toml` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture` 段；A14 / D-017）
+- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode + D-017 派生面：`.codex/**` / `.agents/**` + `.agents.lock.json` / `agents_sync.py` 及 `_common` loader·renderer / manifest·workflow·translation·enforcement typed sources + preface·readme render templates——完整清单 = `policies/ai-agent.md` §4 A14 行；A14 / D-017·ADR-039）
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
 - [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml` / `docker/Dockerfile` 外部 registry 镜像引用；#413 供应链面）

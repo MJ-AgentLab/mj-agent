@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.5
+version: 0.6
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-08-24
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -91,7 +91,7 @@ of truth），LSP 仅作交互式辅助.
 | `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；propose+拍板+apply via `mj-agent-runtime-skill-doc-improve` |
 | `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
-| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode；**D-017 扩展邻接面（ADR-036）**：派生 `.codex/config.toml`、`.agents/**`、`scripts/sdd/agents_sync.py`、manifest `sdd/development-agent.yml` 的 `mcp` / `codex.posture` 段 | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template |
+| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode；**D-017 扩展邻接面（ADR-036；ADR-039 D-011/D-012/D-014 revised 扩面——PR-B/D/E typed sources 先于落地纳管）**：(a) managed outputs——派生 `.codex/config.toml`、`.agents/**`、repo-root `.agents.lock.json`（owner ledger）、declared `.codex/hooks.json` 与 `.codex/rules/*.rules`；(b) generator + shared loader——`scripts/sdd/agents_sync.py` 与其消费的 `scripts/sdd/_common/` loader/renderer 模块（`skill_renderer` · `codex_config_renderer` · PR-A1 抽出的 lock/Handoff loader；**不含** `_common/` 其余通用 validator helper）；(c) typed sources——manifest `sdd/development-agent.yml` 的 `mcp` / `codex.posture` / `codex_carrier`·`carrier_binding` 段、`sdd/workflows/development-agent-workflows.yml`、`sdd/adapters/codex-skill-translation.yml`、`sdd/adapters/codex-enforcement.yml`（含 `receipt_policy` 段，PR-E）；(d) render templates（**非** typed source——版本由 manifest `codex_readme_template_version` / translation map `preface_template_version` 所有）——`sdd/adapters/codex-skill-preface.md`、`sdd/adapters/codex-skills-readme.md` | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template；reconcile 只作用 verified lock owner 声明的 declared paths、unowned neighbors 必须保留（owned-only，ADR-039 D-012 revised） |
 | `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
 | `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
 | `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000；**#413 扩展供应链面**：`docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger；供应链面规则体 = `policies/docker-runtime.md` §4（anchor 扩展沿用 D-017 先例：**enum 数量不变**，只扩既有行的 surface anchor） |
@@ -111,8 +111,10 @@ of truth），LSP 仅作交互式辅助.
 > 落盘**，不再要求 Owner 手动转写。前 4 项 in-source 专属必停由 `.claude/settings.json`
 > `ask` 列表逐写拍板门 enforce（原 `deny` 物理硬锁已解除）；`mcp-server-trust-posture-change`
 > 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce；其 **D-017
-> 扩展邻接面**（`.codex/**` / `.agents/**` / `agents_sync.py` / manifest `mcp`·`codex.posture`
-> 段）非 harness 保护路径，由 Owner 拍板纪律 + V8/V9 gate + merge review 兜底（ADR-036）。
+> 扩展邻接面**（`.codex/**` / `.agents/**` + root `.agents.lock.json` / `agents_sync.py` 及其
+> `_common` loader·renderer / manifest·workflow·translation·enforcement typed sources 与
+> preface·readme render templates——完整清单见上表 A14 行）非 harness 保护路径，由 Owner 拍板纪律 + V8-V11
+> drift gate（V12/V13 per ADR-039 分期挂载后同列）+ merge review 兜底（ADR-036 + ADR-039）。
 > `secrets-grants-or-prod-config` 的 **#413 供应链面**（`docker/Dockerfile` 外部 registry 镜像
 > 引用）同属**非 harness 保护路径**一类：`.claude/settings.json` 无对应 `ask` 条目，亦无**审批类**
 > CI gate 读取它（`docker-build` 只验镜像可构建、V5 只 lint 契约字段，均不判拍板）。**刻意不加
@@ -159,7 +161,7 @@ canonical 10-enum 的唯一 home 是 **§4**——本节**不复制**那张表�
 | 面 | 要求 | 兜底 |
 |---|---|---|
 | `docker/Dockerfile` 的外部 registry 镜像引用（`FROM <image>` 与 `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | Owner 拍板 | 纪律 + PR 模板 Docker Impact 勾选 + merge review。无 `ask` 条目、亦无**审批类** CI gate；规则体 `policies/docker-runtime.md` §4，enum 锚点 `secrets-grants-or-prod-config` |
-| D-017 扩展邻接面（`.codex/**` · `.agents/**` · `scripts/sdd/agents_sync.py` · manifest 的 `mcp` 与 `codex.posture` 段） | Owner 拍板 | 纪律 + 投影 drift gate + merge review（ADR-036） |
+| D-017 扩展邻接面（`.codex/**` · `.agents/**` + root `.agents.lock.json` · `agents_sync.py` 及其 `_common` loader/renderer · manifest·workflow·translation·enforcement typed sources 与 preface·readme render templates——完整清单见 §4 A14 行） | Owner 拍板 | 纪律 + 投影 drift gate + merge review（ADR-036 + ADR-039） |
 | `policies/**` + `sdd/**`（kernel 元规则本身） | HITL required | merge review。**不在** canonical 10-enum 内 ⇒ PR body 的 Inventory 全填 No，并在 AI Self-Check 中说明 |
 
 ### §5.3 已知差距（如实记录；本节不预判）
@@ -423,3 +425,13 @@ precedence：`deny` > `ask` > `allow`（具体 path 在 `ask` 即使 `Edit` 在 
 > 壳一并移除，内容改从实现本体取证 —— 沿用本单 PR #483（`data-boundary.md`）确立的先例。
 > 章节编号 §1-§9 与头注行数均未变，故仓内既有的 `ai-agent.md:94` / `:98`（皆在 §4）等行号锚
 > **不受影响**。`state` 不动（per #480 / `sdd/lifecycle.md` §4.1）。*
+>
+> *v0.6（2026-08-24）：Epic #499 PR-A0（governance anchor）— §4 A14 行 D-017 扩展邻接面按
+> ADR-039（D-011/D-012/D-014 revised）扩面：新增 managed outputs（root `.agents.lock.json` /
+> declared `.codex/hooks.json` / `.codex/rules/*.rules`）、`agents_sync.py` 消费的 `_common`
+> loader·renderer 模块（不含其余通用 validator helper）与 PR-B/D/E sources——typed sources
+> （workflow registry / translation map / enforcement 含 `receipt_policy`）+ render templates
+> （preface / readme template，**非** typed source，版本由 manifest / translation map 所有），
+> Notes 列声明 owned-only reconcile ownership（ADR-039 D-012 revised）；§4 Enforce 段与 §5.2
+> D-017 行同步（含 V8/V9 → V8-V11 事实修正）。纯治理文本、无实现；PR-B/D/E sources 先于落地
+> 纳管。`state` 不动。*
