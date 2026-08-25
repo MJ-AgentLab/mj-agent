@@ -84,17 +84,43 @@ from scripts.sdd._common.codex_config_renderer import (  # noqa: E402
     ConfigRenderError,
     render_codex_config,
 )
+from scripts.sdd._common.codex_readme_renderer import (  # noqa: E402
+    ReadmeRenderError,
+    render_skills_readme,
+)
 from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
-from scripts.sdd._common.projection_loader import (  # noqa: E402
+from scripts.sdd._common.projection_loader import (  # noqa: E402  # noqa: E402
     CODEX_CONFIG_RELPATH,
     CODEX_LOCK_KEY,
     LOCK_RELPATH,
     LockVerificationError,
     VerifiedLock,
+    canonicalize,
+    classify_lock,
+    codex_posture_slice,
     load_verified_lock,
+    lock_v2_canonical_text,
+    manifest_capability_slice,
+    manifest_mcp_slice,
+    module_source_sha256,
+    sha256_of_bytes,
+    sha256_of_canonical,
+    verify_lock,
+    verify_lock_v2,
+)
+from scripts.sdd._common.skill_renderer import (  # noqa: E402
+    PREFACE_RELPATH,
+    TRANSLATION_MAP_RELPATH,
+    WORKFLOW_REGISTRY_RELPATH,
+    TranslationError,
+    expand_wildcard,
+    load_translation_map,
+    load_workflow_registry,
+    render_translated,
 )
 from scripts.sdd.check_agents_projection import (  # noqa: E402
     FatalCheckError,
+    load_manifest_raw,
     load_mcp_projection,
     load_project_set,
 )
@@ -432,6 +458,20 @@ def do_sync(repo_root: Path, project: set[str]) -> list[str]:
     deletes content it cannot prove it owns (ADR-039 D-012 revised; Epic #499
     PR-A1, AC-05/AC-06). Returns change log.
     """
+    manifest = load_manifest_raw(repo_root)
+    lock_class, lock_raw = _lock_state_tolerant(repo_root)
+    if _manifest_version(manifest) == 2:
+        if lock_class == "malformed":
+            raise FatalCheckError(
+                "lock is malformed/mixed under manifest v2 (zero delete/write)"
+            )
+        return _do_sync_v2(repo_root, manifest, lock_class, lock_raw)
+    if lock_class == "v2":
+        # Rollback row of the §2.6 matrix: v1 manifest + verified v2 lock —
+        # converge the v1 desired set using the v2 entries as a READ-ONLY
+        # owner ledger, then write back a v1 lock.
+        return _do_sync_v1_rollback(repo_root, project, lock_raw)
+
     _require_sources(repo_root, project)
     mcp_project, posture, _never = load_mcp_projection(repo_root)
     rendered: str | None = None
@@ -504,6 +544,24 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
     gate), or "all" (local one-shot). The shared lock file is checked per-key under
     a scoped surface so mcp drift never reddens the skills step and vice versa.
     """
+    manifest = load_manifest_raw(repo_root)
+    lock_class, _lock_raw = _lock_state_tolerant(repo_root)
+    version = _manifest_version(manifest)
+    if version == 2:
+        if lock_class in ("v2", None):
+            return _do_check_v2(repo_root, manifest, surface)
+        if lock_class == "v1":
+            return [
+                "lock schema v1 does not match manifest v2 (§2.6 matrix"
+                " mismatch — cutover pending; run sync)"
+            ]
+        return ["lock is malformed/mixed under manifest v2 (regenerate via sync)"]
+    if lock_class == "v2":
+        return [
+            "lock schema v2 does not match manifest v1 (§2.6 matrix mismatch —"
+            " rollback pending; run sync)"
+        ]
+
     drift: list[str] = []
     check_skills = surface in ("skills", "all")
     check_mcp = surface in ("mcp", "all")
@@ -625,24 +683,693 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
 
 
 def do_adopt(repo_root: Path, project: set[str], name: str) -> list[str]:
-    """Copy artifact bytes back over the source, then realign via sync."""
-    if name not in project:
+    """byte-copy recovery/import escape hatch (plan §2.1 invariant 7 / §2.7):
+    a legacy v1 lock's body-only digest cannot prove the frontmatter unchanged,
+    so adopt is ADOPT_REQUIRES_LOCK_V2 / exit 2 / zero source-artifact-lock
+    writes until the tree carries a verified v2 lock; under a verified v2 lock
+    the full CAS table applies. The pre-PR-B unconditional copy-back is gone
+    BY CONTRACT (dormant v2 engine; the real tree keeps its v1 lock, so adopt
+    is disabled there until the PR-C1 cutover)."""
+    manifest = load_manifest_raw(repo_root)
+    lock_class, lock_raw = _lock_state_tolerant(repo_root)
+    if lock_class == "malformed":
         raise FatalCheckError(
-            f"--adopt target '{name}' is not a manifest `projection: project` capability"
+            "lock is malformed/mixed — adopt proves nothing (zero writes)"
         )
-    artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
-    if not artifact.is_file():
-        raise FatalCheckError(f"--adopt target artifact missing: {artifact}")
-    src = _source_path(repo_root, name)
+    return _do_adopt_v2(repo_root, manifest, lock_class, lock_raw, name)
+
+
+# --------------------------------------------------------------------------- v2 engine
+# Dormant until the PR-C1 cutover (Epic #499 plan §2.6 compatibility matrix).
+# The real tree is manifest v1 + legacy v1 lock and takes the UNTOUCHED legacy
+# paths above. The v2 engine activates only on fixture/cutover trees:
+#   v2 manifest + v2/absent lock  -> full v2 deterministic converge
+#   v2 manifest + verified v1 lock -> cutover (v1 keys as read-only ledger)
+#   v1 manifest + verified v2 lock -> rollback (v2 entries as read-only ledger,
+#                                     converge v1 desired set, write v1 lock)
+#   anything malformed/mixed       -> exit 2, zero writes/deletes
+
+
+def _manifest_version(manifest: dict[str, Any]) -> int:
+    version = manifest.get("schema_version")
+    return int(version) if isinstance(version, int) else 1
+
+
+def _lock_state(repo_root: Path) -> tuple[str | None, dict[str, Any] | None]:
+    """(lock class 'v1'/'v2'/None, raw lock). Malformed/mixed -> FatalCheckError."""
+    raw = load_verified_lock_raw(repo_root)
+    if raw is None:
+        return None, None
+    try:
+        return classify_lock(raw), raw
+    except LockVerificationError as exc:
+        raise FatalCheckError(str(exc)) from exc
+
+
+def _lock_state_tolerant(repo_root: Path) -> tuple[str | None, dict[str, Any] | None]:
+    """Like _lock_state but maps any malformed/mixed/unreadable ledger to
+    ('malformed', None) so the LEGACY v1 paths keep their exact pre-PR-B
+    behavior (they re-verify and produce the identical diagnosis); the v2
+    paths treat 'malformed' as fail-closed."""
+    try:
+        return _lock_state(repo_root)
+    except FatalCheckError:
+        return "malformed", None
+
+
+def _do_sync_v1_rollback(
+    repo_root: Path, project: set[str], lock_raw: dict[str, Any] | None
+) -> list[str]:
+    """§2.6 matrix rollback row: converge the v1 desired set while treating
+    the verified v2 entries as a READ-ONLY owner ledger, then write back a v1
+    lock. Golden scenario: the old-owned translated outputs are deleted, the
+    byte-copy artifacts and every unowned neighbor survive."""
+    _require_sources(repo_root, project)
+    mcp_project, posture, _never = load_mcp_projection(repo_root)
+    rendered: str | None = None
+    if mcp_project:
+        rendered = _render_codex_config(mcp_project, posture, _load_mcp_json(repo_root))
+    desired = _expected_files(project)
+    if rendered is not None:
+        desired.add(CODEX_CONFIG_RELPATH)
+    desired.add(LOCK_RELPATH)
+    owned = _owned_paths_any("v2", lock_raw)
+    deletions = _preflight_owned_reconcile_any(repo_root, owned, desired)
+
     changes: list[str] = []
+    for rel in deletions:
+        path = repo_root / rel
+        path.unlink()
+        changes.append(f"remove {rel.as_posix()}")
+        _prune_empty_dirs(repo_root, path.parent, changes)
+
+    for name in sorted(project):
+        src = _source_path(repo_root, name)
+        dst = repo_root / SKILLS_DIR / name / "SKILL.md"
+        data = src.read_bytes()
+        if not dst.is_file() or dst.read_bytes() != data:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(data)
+            changes.append(f"write {SKILLS_DIR.as_posix()}/{name}/SKILL.md")
+
+    readme = repo_root / AGENTS_DIR / "README.md"
+    if not readme.is_file() or _read_lf(readme) != README_TEMPLATE:
+        readme.parent.mkdir(parents=True, exist_ok=True)
+        readme.write_text(README_TEMPLATE, encoding="utf-8", newline="\n")
+        changes.append(f"write {AGENTS_DIR.as_posix()}/README.md")
+
+    if rendered is not None:
+        config_path = repo_root / CODEX_CONFIG_RELPATH
+        if not config_path.is_file() or _read_lf(config_path) != rendered:
+            config_path.parent.mkdir(parents=True, exist_ok=True)
+            config_path.write_text(rendered, encoding="utf-8", newline="\n")
+            changes.append(f"write {CODEX_CONFIG_RELPATH.as_posix()}")
+
+    lock_path = repo_root / LOCK_RELPATH
+    lock_text = _lock_text(
+        _expected_lock(repo_root, project, include_codex=rendered is not None)
+    )
+    if not lock_path.is_file() or _read_lf(lock_path) != lock_text:
+        lock_path.write_text(lock_text, encoding="utf-8", newline="\n")
+        changes.append(f"write {LOCK_RELPATH.as_posix()}")
+    return changes
+
+
+def load_verified_lock_raw(repo_root: Path) -> dict[str, Any] | None:
+    from scripts.sdd._common.projection_loader import read_lock
+
+    try:
+        return read_lock(repo_root)
+    except LockVerificationError as exc:
+        raise FatalCheckError(str(exc)) from exc
+
+
+def _owned_paths_any(
+    lock_class: str | None, raw: dict[str, Any] | None
+) -> dict[str, tuple[Path, str, str]]:
+    """Owner ledger view for either lock schema: key -> (relpath, kind, expect)
+    where kind selects the on-disk ownership re-verification recipe."""
+    if lock_class is None or raw is None:
+        return {}
+    if lock_class == "v1":
+        verified = verify_lock(raw)
+        return {
+            key: (Path(rel), "v1-body-hash", verified.entries[key])
+            for key, rel in verified.owned_paths.items()
+        }
+    verified_v2 = verify_lock_v2(raw)
+    return {
+        key: (
+            Path(key),
+            entry.normalization_policy,
+            entry.output_sha256,
+        )
+        for key, entry in verified_v2.entries.items()
+    }
+
+
+def _owned_still_matches(target: Path, kind: str, expect: str) -> bool:
+    if kind == "v1-body-hash":
+        return _lock_hash(target.read_text(encoding="utf-8")) == expect
+    return sha256_of_bytes(canonicalize(target.read_bytes(), kind)) == expect
+
+
+def _preflight_owned_reconcile_any(
+    repo_root: Path,
+    owned: dict[str, tuple[Path, str, str]],
+    desired: set[Path],
+) -> list[Path]:
+    """Owned-only reconcile preflight generalized over both lock schemas —
+    same hazard battery and messages as the legacy path (AC-05/AC-06)."""
+    deletions: list[Path] = []
+    for key in sorted(owned):
+        rel, kind, expect = owned[key]
+        if rel in desired:
+            continue
+        target = repo_root / rel
+        ancestor = _reparse_ancestor(repo_root, rel)
+        if ancestor is not None:
+            raise FatalCheckError(
+                f"symlink/reparse ancestor '{ancestor}' above lock-owned"
+                f" '{rel.as_posix()}' (path hazard; zero delete/write)"
+            )
+        squat = _casefold_component_squatter(repo_root, rel)
+        if squat is not None:
+            raise FatalCheckError(
+                f"'{squat[0]}' casefold-collides with component '{squat[1]}' of"
+                f" lock-owned '{rel.as_posix()}' (owner ambiguity; zero"
+                " delete/write)"
+            )
+        if target.is_symlink() or (target.exists() and not target.is_file()):
+            raise FatalCheckError(
+                f"lock-owned '{rel.as_posix()}' is not a regular file"
+                " (path hazard; zero delete/write)"
+            )
+        if not target.exists():
+            continue
+        try:
+            matches = _owned_still_matches(target, kind, expect)
+        except (OSError, UnicodeDecodeError, LockVerificationError) as exc:
+            raise FatalCheckError(
+                f"lock-owned '{rel.as_posix()}' unreadable: {exc}"
+                " (ownership unverifiable; zero delete/write)"
+            ) from exc
+        if not matches:
+            raise FatalCheckError(
+                f"lock-owned '{rel.as_posix()}' does not match its lock hash"
+                " (owner ambiguity — possible hand edit; zero delete/write)"
+            )
+        deletions.append(rel)
+    for rel in sorted(desired, key=lambda p: p.as_posix()):
+        ancestor = _reparse_ancestor(repo_root, rel)
+        if ancestor is not None:
+            raise FatalCheckError(
+                f"symlink/reparse ancestor '{ancestor}' above managed target"
+                f" '{rel.as_posix()}' (path hazard; zero write)"
+            )
+        cur = repo_root
+        for part in rel.parts[:-1]:
+            cur = cur / part
+            if cur.exists() and not cur.is_dir():
+                raise FatalCheckError(
+                    f"managed target '{rel.as_posix()}' is blocked by"
+                    f" non-directory '{cur.relative_to(repo_root).as_posix()}'"
+                    " (path hazard; zero write — remove it manually; owned-only"
+                    " sync will not delete what it does not own)"
+                )
+        target = repo_root / rel
+        if target.is_symlink() or (target.exists() and not target.is_file()):
+            raise FatalCheckError(
+                f"managed target '{rel.as_posix()}' is squatted by a non-regular"
+                " file (path hazard; zero write — remove it manually)"
+            )
+        squat = _casefold_component_squatter(repo_root, rel)
+        if squat is not None:
+            raise FatalCheckError(
+                f"'{squat[0]}' casefold-collides with component '{squat[1]}' of"
+                f" managed target '{rel.as_posix()}' (path hazard; zero write —"
+                " remove or rename it manually)"
+            )
+    return sorted(deletions, key=lambda p: p.as_posix())
+
+
+def _read_typed_sources(repo_root: Path) -> tuple[Any, Any, str]:
+    try:
+        registry = load_workflow_registry(
+            (repo_root / WORKFLOW_REGISTRY_RELPATH).read_text(encoding="utf-8")
+        )
+        tmap = load_translation_map(
+            (repo_root / TRANSLATION_MAP_RELPATH).read_text(encoding="utf-8")
+        )
+        preface = (repo_root / PREFACE_RELPATH).read_text(encoding="utf-8")
+    except (OSError, TranslationError) as exc:
+        raise FatalCheckError(f"v2 typed sources unavailable: {exc}") from exc
+    return registry, tmap, preface
+
+
+def _translation_map_projection(tmap: Any) -> dict[str, Any]:
+    return {
+        "schema_version": 1,
+        "preface_template_version": tmap.preface_template_version,
+        "lexicon": [
+            {
+                "category": c.name,
+                "patterns": list(c.patterns),
+                "disposition": c.disposition,
+            }
+            for c in sorted(tmap.lexicon.values(), key=lambda c: c.name)
+        ],
+        "sites": [
+            {
+                "site_id": s.site_id,
+                "capability_id": s.capability_id,
+                "path": s.path,
+                "marker": s.marker,
+                "disposition": s.disposition,
+                "owner_gate_reason": s.owner_gate_reason,
+            }
+            for s in sorted(tmap.sites.values(), key=lambda s: s.site_id)
+        ],
+        "templates": dict(sorted(tmap.templates.items())),
+    }
+
+
+def _workflow_slice(
+    registry: Any, cap_id: str, all_ids: set[str]
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    wf = registry.workflow_for_capability(cap_id)
+    if wf is None:
+        raise FatalCheckError(
+            f"translated capability '{cap_id}' has no workflow record"
+        )
+    edges: list[dict[str, Any]] = []
+    expansions: list[dict[str, Any]] = []
+    for e in registry.edges_from(cap_id):
+        rec: dict[str, Any] = {
+            "id": e.edge_id, "from": e.from_id, "to": e.to_id,
+            "relation": e.relation, "activation": e.activation,
+            "closure": e.closure,
+        }
+        if e.substitute is not None:
+            rec["codex_substitute"] = {
+                k: v for k, v in (
+                    ("kind", e.substitute.kind),
+                    ("route_ref", e.substitute.route_ref),
+                    ("policy_ref", e.substitute.policy_ref),
+                    ("rationale", e.substitute.rationale),
+                ) if v is not None
+            }
+        if e.evidence is not None:
+            rec["source_evidence"] = {
+                "marker_id": e.evidence.marker_id,
+                "path": e.evidence.path,
+                "marker": e.evidence.marker,
+            }
+        edges.append(rec)
+        if e.to_id.endswith("*"):
+            expansions.append(
+                {
+                    "pattern": f"/{e.to_id}",
+                    "resolved_ids": expand_wildcard(e.to_id, all_ids),
+                }
+            )
+    expansions.sort(key=lambda x: x["pattern"])
+    slice_obj = {
+        "workflow": {
+            "workflow_id": wf.workflow_id,
+            "capability_id": wf.capability_id,
+            "codex_discovery_summary": wf.codex_discovery_summary,
+            "required_trigger_terms": list(wf.required_trigger_terms),
+        },
+        "edges": edges,
+        "wildcard_expansions": expansions,
+    }
+    return slice_obj, expansions
+
+
+def _v2_desired_state(
+    repo_root: Path, manifest: dict[str, Any]
+) -> tuple[dict[Path, bytes], dict[str, dict[str, Any]]]:
+    """All v2 desired outputs + their lock entries (plan §2.6). Every
+    derivation runs BEFORE any write; failures leave zero managed writes."""
+    import scripts.sdd._common.codex_config_renderer as config_mod
+    import scripts.sdd._common.codex_readme_renderer as readme_mod
+    import scripts.sdd._common.skill_renderer as skill_mod
+
+    caps = [c for c in manifest.get("capabilities") or [] if isinstance(c, dict)]
+    all_ids = {str(c.get("id")) for c in caps}
+    byte_copy = [c for c in caps if c.get("codex_carrier") == "byte-copy"]
+    translated = [c for c in caps if c.get("codex_carrier") == "translated"]
+    carrier_ids = {str(c["id"]) for c in byte_copy + translated}
+    registry, tmap, preface = _read_typed_sources(repo_root)
+    skill_mod_sha = module_source_sha256(Path(skill_mod.__file__))
+    readme_mod_sha = module_source_sha256(Path(readme_mod.__file__))
+    config_mod_sha = module_source_sha256(Path(config_mod.__file__))
+    map_sha = sha256_of_canonical(_translation_map_projection(tmap))
+    preface_sha = sha256_of_bytes(
+        (repo_root / PREFACE_RELPATH).read_bytes().replace(b"\r\n", b"\n")
+    )
+
+    outputs: dict[Path, bytes] = {}
+    entries: dict[str, dict[str, Any]] = {}
+
+    for cap in byte_copy:
+        cap_id = str(cap["id"])
+        src = _source_path(repo_root, cap_id)
+        if not src.is_file():
+            raise FatalCheckError(f"projection source missing for: {cap_id}")
+        data = src.read_bytes()
+        key = f".agents/skills/{cap_id}/SKILL.md"
+        outputs[Path(key)] = data
+        entries[key] = {
+            "entry_kind": "skill-byte-copy",
+            "owner": f"capability:{cap_id}",
+            "surface_members": ["skills"],
+            "strategy": "byte-copy",
+            "normalization_policy": "raw-bytes-v1",
+            "output_sha256": sha256_of_bytes(data),
+            "inputs": {
+                "source_path": f".claude/skills/{cap_id}/SKILL.md",
+                "source_sha256": sha256_of_bytes(data),
+                "manifest_slice_sha256": sha256_of_canonical(
+                    manifest_capability_slice(cap)
+                ),
+                "renderer_module": skill_mod.RENDERER_MODULE,
+                "renderer_module_sha256": skill_mod_sha,
+                "renderer_version": skill_mod.RENDERER_VERSION,
+            },
+        }
+
+    for cap in translated:
+        cap_id = str(cap["id"])
+        src = _source_path(repo_root, cap_id)
+        if not src.is_file():
+            raise FatalCheckError(f"projection source missing for: {cap_id}")
+        source_bytes = src.read_bytes()
+        try:
+            rendered = render_translated(
+                source_bytes, cap_id, registry, tmap, preface, carrier_ids
+            )
+        except TranslationError as exc:
+            raise FatalCheckError(str(exc)) from exc
+        data = rendered.encode("utf-8")
+        slice_obj, expansions = _workflow_slice(registry, cap_id, all_ids)
+        key = f".agents/skills/{cap_id}/SKILL.md"
+        outputs[Path(key)] = data
+        entries[key] = {
+            "entry_kind": "skill-translated",
+            "owner": f"capability:{cap_id}",
+            "surface_members": ["skills"],
+            "strategy": "translated",
+            "normalization_policy": "translated-utf8-lf-v1",
+            "output_sha256": sha256_of_bytes(data),
+            "inputs": {
+                "source_path": f".claude/skills/{cap_id}/SKILL.md",
+                "source_sha256": sha256_of_bytes(
+                    source_bytes.replace(b"\r\n", b"\n")
+                ),
+                "manifest_slice_sha256": sha256_of_canonical(
+                    manifest_capability_slice(cap)
+                ),
+                "workflow_slice_sha256": sha256_of_canonical(slice_obj),
+                "translation_map_sha256": map_sha,
+                "preface_sha256": preface_sha,
+                "renderer_module": skill_mod.RENDERER_MODULE,
+                "renderer_module_sha256": skill_mod_sha,
+                "renderer_version": skill_mod.RENDERER_VERSION,
+                "wildcard_expansions": expansions,
+                "wildcard_expansions_sha256": sha256_of_canonical(expansions),
+            },
+        }
+
+    template_path = repo_root / "sdd" / "adapters" / "codex-skills-readme.md"
+    template_version = manifest.get("codex_readme_template_version")
+    if isinstance(template_version, bool) or not isinstance(template_version, int) \
+            or template_version < 1:
+        raise FatalCheckError(
+            "manifest v2 requires integer codex_readme_template_version >= 1"
+        )
+    try:
+        template_text = template_path.read_text(encoding="utf-8")
+        readme_text = render_skills_readme(template_text, caps)
+    except (OSError, ReadmeRenderError) as exc:
+        raise FatalCheckError(f"README render failed: {exc}") from exc
+    readme_bytes = readme_text.encode("utf-8")
+    outputs[Path(".agents/README.md")] = readme_bytes
+    entries[".agents/README.md"] = {
+        "entry_kind": "skills-readme",
+        "owner": "system:skills-readme",
+        "surface_members": ["skills"],
+        "strategy": "rendered",
+        "normalization_policy": "generated-utf8-lf-v1",
+        "output_sha256": sha256_of_bytes(readme_bytes),
+        "inputs": {
+            "manifest_slice_sha256": sha256_of_canonical(
+                [manifest_capability_slice(c) for c in caps]
+            ),
+            "template_path": "sdd/adapters/codex-skills-readme.md",
+            "template_sha256": sha256_of_bytes(
+                template_path.read_bytes().replace(b"\r\n", b"\n")
+            ),
+            "template_version": template_version,
+            "renderer_module": readme_mod.RENDERER_MODULE,
+            "renderer_module_sha256": readme_mod_sha,
+            "renderer_version": readme_mod.RENDERER_VERSION,
+        },
+    }
+
+    mcp_project, posture, _never = load_mcp_projection(repo_root)
+    if mcp_project:
+        rendered_config = _render_codex_config(
+            mcp_project, posture, _load_mcp_json(repo_root)
+        )
+        config_bytes = rendered_config.encode("utf-8")
+        outputs[CODEX_CONFIG_RELPATH] = config_bytes
+        mcp_json_bytes = (repo_root / MCP_JSON_RELPATH).read_bytes()
+        entries[CODEX_LOCK_KEY] = {
+            "entry_kind": "codex-config-mcp",
+            "owner": "system:codex-config",
+            "surface_members": ["mcp"],
+            "strategy": "rendered",
+            "normalization_policy": "canonical-toml-v1",
+            "output_sha256": sha256_of_bytes(config_bytes),
+            "inputs": {
+                "mcp_source_path": ".mcp.json",
+                "mcp_source_sha256": sha256_of_bytes(
+                    mcp_json_bytes.replace(b"\r\n", b"\n")
+                ),
+                "manifest_mcp_slice_sha256": sha256_of_canonical(
+                    manifest_mcp_slice(
+                        (manifest.get("mcp") or {}).get("servers") or {}
+                    )
+                ),
+                "codex_posture_slice_sha256": sha256_of_canonical(
+                    codex_posture_slice(posture or {})
+                ),
+                "renderer_module": config_mod.RENDERER_MODULE,
+                "renderer_module_sha256": config_mod_sha,
+                "renderer_version": config_mod.RENDERER_VERSION,
+            },
+        }
+    return outputs, entries
+
+
+def _v2_lock_envelope(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    return {
+        "schema_version": 2,
+        "generator_protocol_version": 1,
+        "entries": {k: entries[k] for k in sorted(entries)},
+    }
+
+
+def _atomic_write(path: Path, data: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".agents-sync-tmp")
+    tmp.write_bytes(data)
+    os.replace(tmp, path)
+
+
+def _do_sync_v2(
+    repo_root: Path,
+    manifest: dict[str, Any],
+    lock_class: str | None,
+    lock_raw: dict[str, Any] | None,
+) -> list[str]:
+    """v2 converge (cutover included: a verified v1 lock acts as a read-only
+    owner ledger). No cross-file transaction is faked: every derivation runs
+    before the first write; the apply phase uses per-file tmp+atomic-replace
+    and reports completed/pending targets on failure, and the next sync
+    converges (plan §1.2)."""
+    outputs, entries = _v2_desired_state(repo_root, manifest)
+    lock_text = lock_v2_canonical_text(_v2_lock_envelope(entries))
+    owned = _owned_paths_any(lock_class, lock_raw)
+    desired = {Path(p) for p in outputs} | {LOCK_RELPATH}
+    deletions = _preflight_owned_reconcile_any(repo_root, owned, desired)
+
+    changes: list[str] = []
+    for rel in deletions:
+        path = repo_root / rel
+        path.unlink()
+        changes.append(f"remove {rel.as_posix()}")
+        _prune_empty_dirs(repo_root, path.parent, changes)
+
+    pending = sorted(outputs, key=lambda p: p.as_posix())
+    done: list[str] = []
+    try:
+        for rel in pending:
+            target = repo_root / rel
+            data = outputs[rel]
+            entry_key = rel.as_posix()
+            policy = entries.get(entry_key, {}).get(
+                "normalization_policy", "raw-bytes-v1"
+            )
+            if not target.is_file() or canonicalize(
+                target.read_bytes(), policy
+            ) != canonicalize(data, policy):
+                _atomic_write(target, data)
+                changes.append(f"write {rel.as_posix()}")
+            done.append(rel.as_posix())
+        lock_path = repo_root / LOCK_RELPATH
+        if not lock_path.is_file() or _read_lf(lock_path) != lock_text:
+            _atomic_write(lock_path, lock_text.encode("utf-8"))
+            changes.append(f"write {LOCK_RELPATH.as_posix()}")
+    except OSError as exc:
+        remaining = [p.as_posix() for p in pending if p.as_posix() not in done]
+        raise FatalCheckError(
+            f"partial apply: {exc}; completed: {done or ['(none)']};"
+            f" pending: {remaining + [LOCK_RELPATH.as_posix()]} — rerun sync to"
+            " converge (per-file atomic replace; no cross-file transaction)"
+        ) from exc
+    return changes
+
+
+def _do_check_v2(
+    repo_root: Path, manifest: dict[str, Any], surface: str
+) -> list[str]:
+    outputs, entries = _v2_desired_state(repo_root, manifest)
+    lock_text = lock_v2_canonical_text(_v2_lock_envelope(entries))
+    drift: list[str] = []
+    check_skills = surface in ("skills", "all")
+    check_mcp = surface in ("mcp", "all")
+    for rel in sorted(outputs, key=lambda p: p.as_posix()):
+        posix = rel.as_posix()
+        is_mcp = posix == CODEX_LOCK_KEY
+        if (is_mcp and not check_mcp) or (not is_mcp and not check_skills):
+            continue
+        policy = entries[posix]["normalization_policy"]
+        target = repo_root / rel
+        if not target.is_file():
+            drift.append(f"missing artifact: {posix} (run sync)")
+        elif canonicalize(target.read_bytes(), policy) != canonicalize(
+            outputs[rel], policy
+        ):
+            drift.append(
+                f"artifact != desired render for '{posix}' (hand-edited artifact"
+                " OR source edited without re-running sync)"
+            )
+    if check_skills:
+        expected = {Path(p) for p in outputs if p.as_posix() != CODEX_LOCK_KEY}
+        expected_dirs = {p.parent for p in expected} | {AGENTS_DIR, SKILLS_DIR}
+        agents_root = repo_root / AGENTS_DIR
+        if agents_root.is_dir():
+            for path in sorted(agents_root.rglob("*")):
+                rel = path.relative_to(repo_root)
+                if path.is_file() and rel not in expected:
+                    drift.append(
+                        f"unexpected file: {rel.as_posix()} (unowned neighbor —"
+                        " owned-only sync will NOT delete it; remove manually)"
+                    )
+                elif path.is_dir() and rel not in expected_dirs:
+                    drift.append(
+                        f"unexpected directory: {rel.as_posix()}/ (unowned"
+                        " neighbor — owned-only sync will NOT delete it; remove"
+                        " manually)"
+                    )
+    lock_path = repo_root / LOCK_RELPATH
+    if not lock_path.is_file():
+        drift.append(f"missing {LOCK_RELPATH.as_posix()}")
+    elif surface == "all" and _read_lf(lock_path) != lock_text:
+        drift.append(
+            f"{LOCK_RELPATH.as_posix()} out of date (v2 canonical envelope is"
+            " regenerated by sync)"
+        )
+    return drift
+
+
+def _do_adopt_v2(
+    repo_root: Path,
+    manifest: dict[str, Any],
+    lock_class: str | None,
+    lock_raw: dict[str, Any] | None,
+    name: str,
+) -> list[str]:
+    """byte-copy recovery/import escape hatch under a verified v2 lock ONLY
+    (plan §2.7 CAS table). Everything else exits 2 with zero writes."""
+    if lock_class != "v2" or lock_raw is None:
+        raise FatalCheckError(
+            "ADOPT_REQUIRES_LOCK_V2: the legacy v1 lock's body-only digest"
+            " cannot prove the frontmatter unchanged — adopt is disabled until"
+            " the tree carries a verified v2 lock (zero source/artifact/lock"
+            " writes)"
+        )
+    verified = verify_lock_v2(lock_raw)
+    caps = {
+        str(c.get("id")): c
+        for c in manifest.get("capabilities") or []
+        if isinstance(c, dict)
+    }
+    cap = caps.get(name)
+    if cap is None or cap.get("codex_carrier") != "byte-copy":
+        raise FatalCheckError(
+            f"--adopt eligible set derives from codex_carrier: byte-copy only;"
+            f" '{name}' is {((cap or {}).get('codex_carrier'))!r} (exit 2, zero"
+            " writes)"
+        )
+    key = f".agents/skills/{name}/SKILL.md"
+    entry = verified.entries.get(key)
+    if entry is None or entry.owner != f"capability:{name}" \
+            or entry.strategy != "byte-copy":
+        raise FatalCheckError(
+            f"verified v2 lock has no byte-copy owner for '{key}' (zero writes)"
+        )
+    assert entry.inputs is not None
+    base_source = str(entry.inputs["source_sha256"])
+    base_output = entry.output_sha256
+    src = _source_path(repo_root, name)
+    artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
+
+    def _digest(path: Path) -> str | None:
+        return sha256_of_bytes(path.read_bytes()) if path.is_file() else None
+
+    source_state = _digest(src)
+    artifact_state = _digest(artifact)
+    source_is_base = source_state == base_source
+    artifact_is_base = artifact_state == base_output
+    changes: list[str] = []
+    if source_is_base and artifact_is_base:
+        return changes  # no-op, exit 0, zero writes
+    adoptable = (
+        (source_is_base and artifact_state is not None and not artifact_is_base)
+        or (source_state is None and artifact_is_base)
+    )
+    if not adoptable:
+        raise FatalCheckError(
+            f"--adopt CAS failed for '{name}': source"
+            f" {'base' if source_is_base else ('missing' if source_state is None else 'changed')},"
+            f" artifact"
+            f" {'base' if artifact_is_base else ('missing' if artifact_state is None else 'changed')}"
+            " — ambiguous/mixed state; zero writes (plan §2.7)"
+        )
     data = artifact.read_bytes()
-    # A missing source is a legitimate recovery state (restore a deleted source
-    # from its committed artifact) — recreate it instead of crashing.
-    if not src.is_file() or src.read_bytes() != data:
-        src.parent.mkdir(parents=True, exist_ok=True)
-        src.write_bytes(data)
-        changes.append(f"adopt {SOURCE_DIR.as_posix()}/{name}/SKILL.md <- artifact")
-    changes += do_sync(repo_root, project)
+    # apply-time re-verification: the CAS must still hold at the write moment
+    if _digest(artifact) != artifact_state or _digest(src) != source_state:
+        raise FatalCheckError(
+            f"--adopt CAS re-check failed for '{name}' (state moved; zero writes)"
+        )
+    src.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write(src, data)
+    changes.append(f"adopt {SOURCE_DIR.as_posix()}/{name}/SKILL.md <- artifact")
+    changes += _do_sync_v2(repo_root, manifest, "v2", lock_raw)
     return changes
 
 

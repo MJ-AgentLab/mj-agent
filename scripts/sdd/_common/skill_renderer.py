@@ -1044,6 +1044,171 @@ def _collapse_blank_runs(text: str) -> str:
     return "\n".join(out)
 
 
+# ------------------------------------------------------- fidelity coverage
+# Renderer-generated coverage report (plan §2.7 item 9 / §2.8.5). The
+# INDEPENDENT closure check lives in scripts/sdd/check_fidelity_attestations.py
+# and re-derives the inventory WITHOUT importing this generator.
+
+COVERAGE_SCHEMA_VERSION = 1
+ITEM_KINDS = (
+    "heading", "owner-stop", "prohibition", "validator",
+    "frontmatter-description", "dependency-route", "level-handler",
+    "git-rule", "issue-route",
+)
+# Deterministic inventory extraction rules (shared VOCABULARY with the
+# independent checker; the code is deliberately duplicated there):
+INVENTORY_RULES: dict[str, str] = {
+    "heading": r"^#{1,6}\s\S",
+    "owner-stop": r"OWNER_APPROVAL_REQUIRED|必停",
+    "prohibition": r"❌|\*\*不要\*\*",
+    "validator": r"scripts/(?:sdd/)?[a-z0-9_]+\.py",
+    "level-handler": r"\bLevel [ABC]\b",
+    "git-rule": r"\bG[12]\b",
+    "issue-route": r"ISSUE_TEMPLATE",
+}
+
+
+def derive_inventory_lines(body: str) -> list[tuple[str, int, str]]:
+    """(item_kind, body line no, line text) for every rule hit outside dot/
+    generic fences for headings, everywhere for the other kinds."""
+    lines = body.split("\n")
+    fences = _fence_state(lines)
+    out: list[tuple[str, int, str]] = []
+    for kind in ITEM_KINDS:
+        pattern = INVENTORY_RULES.get(kind)
+        if pattern is None:
+            continue  # frontmatter-description / dependency-route are not line rules
+        compiled = re.compile(pattern)
+        for i, line in enumerate(lines):
+            if kind == "heading" and fences[i] is not None:
+                continue
+            if compiled.search(line):
+                out.append((kind, i + 1, line))
+    return out
+
+
+def _sha256_text(text: str) -> str:
+    import hashlib
+
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def generate_coverage(
+    capability_id: str,
+    source_bytes: bytes,
+    artifact_text: str,
+    registry: WorkflowRegistry,
+) -> dict[str, Any]:
+    """Machine-generated coverage report (coverage v1, §2.8.5 exact keys).
+    Raises when any inventory item has no artifact coverage — a missing item is
+    an inventory-closure failure, never a status value."""
+    doc = parse_source_document(source_bytes)
+    artifact_lines = artifact_text.split("\n")
+    items: list[dict[str, Any]] = []
+    counters: dict[str, int] = {}
+
+    def _add(kind: str, source_locator: str, source_text: str,
+             artifact_locator: str, artifact_text_slice: str,
+             transform_class: str, status: str) -> None:
+        counters[kind] = counters.get(kind, 0) + 1
+        items.append(
+            {
+                "item_id": f"{kind}-{counters[kind]:03d}",
+                "item_kind": kind,
+                "source_locator": source_locator,
+                "source_sha256": _sha256_text(source_text),
+                "artifact_locator": artifact_locator,
+                "artifact_sha256": _sha256_text(artifact_text_slice),
+                "transform_class": transform_class,
+                "status": status,
+            }
+        )
+
+    for kind, line_no, line in derive_inventory_lines(doc.body):
+        stripped = line.strip()
+        matches = [
+            i + 1 for i, a in enumerate(artifact_lines) if stripped and stripped in a
+        ]
+        if matches:
+            _add(kind, f"body-line:{line_no}", line,
+                 f"line:{matches[0]}", stripped, "NOOP", "COVERED")
+            continue
+        # transformed line: a region token was rewritten to $-form/substitute
+        transformed = [
+            i + 1 for i, a in enumerate(artifact_lines)
+            if "$mj-agent-" in a or "Codex substitute edge-" in a
+        ]
+        candidates = [
+            i for i in transformed
+            if SKILL_REF.sub("$X", stripped)[:24] and stripped[:8] in artifact_lines[i - 1]
+        ]
+        anchor = candidates[0] if candidates else (transformed[0] if transformed else None)
+        if anchor is None:
+            raise TranslationError(
+                f"coverage closure failure: {capability_id} {kind} item at body"
+                f" line {line_no} has no artifact coverage: {stripped[:80]!r}"
+            )
+        _add(kind, f"body-line:{line_no}", line,
+             f"line:{anchor}", artifact_lines[anchor - 1], "T2a", "COVERED")
+
+    # frontmatter description — replaced by the registry summary (wire format)
+    desc_line = next(
+        (i + 1 for i, a in enumerate(artifact_lines) if a.startswith("description: ")),
+        None,
+    )
+    if desc_line is None:
+        raise TranslationError(
+            f"coverage closure failure: {capability_id} artifact has no"
+            " description line"
+        )
+    _add("frontmatter-description", "frontmatter:description",
+         doc.description_raw, f"line:{desc_line}",
+         artifact_lines[desc_line - 1], "NOOP", "COVERED")
+
+    for edge in registry.edges_from(capability_id):
+        identity = f"<!-- codex-route:{edge.edge_id} -->"
+        matches = [
+            i + 1 for i, a in enumerate(artifact_lines) if identity in a
+        ]
+        if len(matches) != 1:
+            raise TranslationError(
+                f"coverage closure failure: {capability_id} edge"
+                f" {edge.edge_id} identity appears {len(matches)} times"
+            )
+        _add("dependency-route", f"edge:{edge.edge_id}", edge.edge_id,
+             f"line:{matches[0]}", identity,
+             "T2b" if edge.evidence is not None else "T2a", "COVERED")
+
+    projection = [
+        {k: item[k] for k in (
+            "item_id", "item_kind", "source_locator", "source_sha256",
+            "artifact_locator", "artifact_sha256", "transform_class", "status",
+        )}
+        for item in items
+    ]
+    return {
+        "schema_version": COVERAGE_SCHEMA_VERSION,
+        "capability_id": capability_id,
+        "source_path": f".claude/skills/{capability_id}/SKILL.md",
+        "artifact_path": f".agents/skills/{capability_id}/SKILL.md",
+        "source_sha256": _sha256_text(
+            source_bytes.decode("utf-8-sig").replace("\r\n", "\n")
+        ),
+        "artifact_sha256": _sha256_text(artifact_text),
+        "inventory_sha256": _sha256_of_canonical_local(projection),
+        "items": projection,
+    }
+
+
+def _sha256_of_canonical_local(obj: Any) -> str:
+    import hashlib
+
+    text = json.dumps(
+        obj, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False
+    ) + "\n"
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
 _HTML_COMMENT = re.compile(r"<!--.*?-->\n?", flags=re.DOTALL)
 
 

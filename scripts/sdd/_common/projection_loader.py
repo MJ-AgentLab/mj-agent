@@ -638,3 +638,73 @@ def lock_v2_canonical_text(raw: dict[str, Any]) -> str:
     any on-disk bytes differing from this are drift."""
     verify_lock_v2(raw)
     return canonical_json_text(raw)
+
+
+# ---------------------------------------------------------------------------
+# Unified desired-artifact oracle normalization (plan §2.6):
+#   canonicalize(actual, policy) == canonicalize(render_desired(inputs), policy)
+# ---------------------------------------------------------------------------
+
+NORMALIZATION_POLICIES = frozenset(
+    {"raw-bytes-v1", "translated-utf8-lf-v1", "generated-utf8-lf-v1",
+     "canonical-toml-v1", "canonical-json-v1"}
+)
+
+
+def canonicalize(data: bytes, normalization_policy: str) -> bytes:
+    """Comparison normalization per entry class. `raw-bytes-v1` is the
+    identity (byte-copy identity includes BOM/EOL — plan §2.4); every
+    generated class is UTF-8 text compared LF-normalized so a checkout EOL
+    filter cannot fabricate drift."""
+    if normalization_policy == "raw-bytes-v1":
+        return data
+    if normalization_policy not in NORMALIZATION_POLICIES:
+        raise LockVerificationError(
+            f"unknown normalization_policy {normalization_policy!r}"
+        )
+    return data.replace(b"\r\n", b"\n")
+
+
+def sha256_of_bytes(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def module_source_sha256(module_file: Path) -> str:
+    """Renderer module digest (v2 lock inputs): over LF-normalized module
+    source bytes, so the digest is stable across checkout EOL filters
+    (`* text=auto` makes raw working-tree bytes machine-dependent)."""
+    return sha256_of_bytes(module_file.read_bytes().replace(b"\r\n", b"\n"))
+
+
+# ------------------------------------------------------- §2.8.2 slice builders
+
+
+def manifest_capability_slice(cap: dict[str, Any]) -> dict[str, Any]:
+    """`manifest_slice_sha256` projection: the capability's exact
+    id/required/projection/codex_carrier/carrier_binding/codex.support_mode/
+    approval/enforcement fields (plan §2.8.2) — comments/mtime never enter."""
+    codex = cap.get("codex") if isinstance(cap.get("codex"), dict) else {}
+    return {
+        "id": cap.get("id"),
+        "required": cap.get("required"),
+        "projection": cap.get("projection"),
+        "codex_carrier": cap.get("codex_carrier"),
+        "carrier_binding": cap.get("carrier_binding"),
+        "codex.support_mode": codex.get("support_mode"),
+        "approval": codex.get("approval"),
+        "enforcement": codex.get("enforcement"),
+    }
+
+
+def manifest_mcp_slice(servers: dict[str, Any]) -> list[dict[str, Any]]:
+    """`manifest_mcp_slice_sha256` projection: server records sorted by id."""
+    out: list[dict[str, Any]] = []
+    for name in sorted(servers):
+        node = servers[name] if isinstance(servers[name], dict) else {}
+        out.append({"id": name, **{k: node[k] for k in sorted(node)}})
+    return out
+
+
+def codex_posture_slice(posture: dict[str, Any]) -> dict[str, Any]:
+    """`codex_posture_slice_sha256` projection: declared keys only."""
+    return {k: posture[k] for k in sorted(posture)}

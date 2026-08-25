@@ -254,49 +254,57 @@ def test_cross_eol_lock_hash_and_check_stable(tmp_path: Path) -> None:
 
 
 # ------------------------------------------------------------------ --adopt
+# CONTRACT FLIP (Epic #499 PR-B, plan §2.1 invariant 7 / §2.7): the legacy v1
+# lock's body-only digest cannot prove the frontmatter unchanged, so EVERY
+# adopt under a v1 lock is ADOPT_REQUIRES_LOCK_V2 / exit 2 / zero writes —
+# including the former reverse-feed and deleted-source recovery paths (those
+# now live behind the verified v2 lock CAS, tests in test_v2_engine.py).
 
 
-def test_adopt_reverse_feeds_source_and_realigns(tmp_path: Path, capsys: Any) -> None:
+def test_adopt_under_v1_lock_is_disabled_with_zero_writes(
+    tmp_path: Path, capsys: Any
+) -> None:
     root = make_projection_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     artifact = root / ".agents" / "skills" / "mj-agent-alpha" / "SKILL.md"
     edited = artifact.read_text(encoding="utf-8") + "\nadopted line\n"
     artifact.write_text(edited, encoding="utf-8")
-    assert sync_main(["--check"], repo_root=root) == 1
-    capsys.readouterr()
-    assert sync_main(["--adopt", "mj-agent-alpha"], repo_root=root) == 0
-    out = capsys.readouterr().out
-    assert "adopt .claude/skills/mj-agent-alpha/SKILL.md <- artifact" in out
-    assert "Owner" in out  # HITL reminder
     src = root / ".claude" / "skills" / "mj-agent-alpha" / "SKILL.md"
-    assert src.read_text(encoding="utf-8") == edited
-    assert sync_main(["--check"], repo_root=root) == 0  # lock realigned by adopt's sync
-
-
-def test_adopt_unknown_or_non_project_target_exits_2(tmp_path: Path, capsys: Any) -> None:
-    root = make_projection_repo(tmp_path)
-    assert sync_main(["sync"], repo_root=root) == 0
-    assert sync_main(["--adopt", "mj-agent-gamma"], repo_root=root) == 2  # never tier
-    assert "not a manifest" in capsys.readouterr().err
-
-
-def test_adopt_missing_artifact_exits_2(tmp_path: Path, capsys: Any) -> None:
-    root = make_projection_repo(tmp_path)  # pre-sync: no artifacts yet
+    before_source = src.read_bytes()
+    before_lock = (root / ".agents.lock.json").read_bytes()
     assert sync_main(["--adopt", "mj-agent-alpha"], repo_root=root) == 2
-    assert "artifact missing" in capsys.readouterr().err
+    assert "ADOPT_REQUIRES_LOCK_V2" in capsys.readouterr().err
+    # three-surface zero write: source, artifact, lock all untouched
+    assert src.read_bytes() == before_source
+    assert artifact.read_text(encoding="utf-8") == edited
+    assert (root / ".agents.lock.json").read_bytes() == before_lock
 
 
-def test_adopt_restores_deleted_source(tmp_path: Path) -> None:
-    """Recovery path (review finding #1): a deleted source is restored from its
-    committed artifact instead of crashing with FileNotFoundError."""
+def test_adopt_under_v1_lock_never_tier_target_also_exits_2(
+    tmp_path: Path, capsys: Any
+) -> None:
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert sync_main(["--adopt", "mj-agent-gamma"], repo_root=root) == 2
+    assert "ADOPT_REQUIRES_LOCK_V2" in capsys.readouterr().err
+
+
+def test_adopt_with_no_lock_at_all_exits_2(tmp_path: Path, capsys: Any) -> None:
+    root = make_projection_repo(tmp_path)  # pre-sync: no artifacts, no lock
+    assert sync_main(["--adopt", "mj-agent-alpha"], repo_root=root) == 2
+    assert "ADOPT_REQUIRES_LOCK_V2" in capsys.readouterr().err
+
+
+def test_adopt_deleted_source_recovery_requires_v2_lock(tmp_path: Path) -> None:
+    """The former v1 deleted-source recovery is gone BY CONTRACT: under a v1
+    lock the source stays deleted and nothing is written; the recovery path
+    now runs only through the verified v2 lock CAS (missing-source row)."""
     root = make_projection_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     src = root / ".claude" / "skills" / "mj-agent-alpha" / "SKILL.md"
-    expected = src.read_bytes()
     src.unlink()
-    assert sync_main(["--adopt", "mj-agent-alpha"], repo_root=root) == 0
-    assert src.read_bytes() == expected
-    assert sync_main(["--check"], repo_root=root) == 0
+    assert sync_main(["--adopt", "mj-agent-alpha"], repo_root=root) == 2
+    assert not src.exists()
 
 
 # ------------------------------------------------------------------ CLI contract

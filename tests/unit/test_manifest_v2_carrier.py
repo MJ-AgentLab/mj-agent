@@ -58,8 +58,35 @@ def test_v2_manifest_well_formed_is_green(tmp_path: Path) -> None:
         ],
         schema_version=2,
     )
+    # V9 carrier-binding closure (PJ05x) needs the workflow registry typed
+    # source once the manifest is v2.
+    registry = root / "sdd" / "workflows" / "development-agent-workflows.yml"
+    registry.parent.mkdir(parents=True, exist_ok=True)
+    registry.write_text(
+        'schema_version: 1\n'
+        'workflows:\n'
+        '  - workflow_id: b\n'
+        '    capability_id: mj-agent-b\n'
+        '    codex_discovery_summary: "Fixture workflow for b work."\n'
+        '    required_trigger_terms: ["b work"]\n'
+        'edges:\n'
+        '  - {id: edge-b-a, from: mj-agent-b, to: mj-agent-a,'
+        ' relation: handoff, activation: conditional, closure: advisory}\n'
+        'routes: []\n',
+        encoding="utf-8",
+    )
     assert v8_main(["--all"], repo_root=root) == 0
     assert v9_main(["--all"], repo_root=root) == 0
+
+
+def test_v2_manifest_without_registry_is_red(tmp_path: Path, capsys: Any) -> None:
+    root = make_repo(
+        tmp_path,
+        [_v2_cap("mj-agent-a", carrier="byte-copy", projection="project", required=True)],
+        schema_version=2,
+    )
+    assert v9_main(["--all"], repo_root=root) == 1
+    assert "PJ050" in _out(capsys)
 
 
 def test_unknown_schema_version_still_exits_2(tmp_path: Path) -> None:
