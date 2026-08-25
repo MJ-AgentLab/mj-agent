@@ -2,7 +2,8 @@
 
 Covers: sync artifact/README/lock generation + idempotency, --check drift tri-state
 (clean / hand-edited artifact / source edited without sync) with prescribed-action
-text, full-reconcile negatives (orphan projection dirs, stray files), cross-EOL
+text, owned-only reconcile negatives (Epic #499 PR-A1 matrix at the file tail:
+unowned orphans/strays/neighbors preserved, hazards fail closed), cross-EOL
 stability (F10: Windows CRLF checkout vs ubuntu LF checkout must agree on lock
 hashes and --check verdicts), --adopt reverse-feed, mode exclusivity / exit codes,
 V9 (check_agents_projection) integration on generated artifacts, and real-tree
@@ -21,13 +22,16 @@ tmp_path via `main(argv, repo_root=...)` (#217 pattern) — never mutate the liv
 from __future__ import annotations
 
 import json
+import os
 import shutil
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
 import pytest
+import yaml
 from scripts.sdd import run_offline_pytest as offline_runner
+from scripts.sdd._common import projection_loader
 from scripts.sdd.agents_sync import (
     CODEX_CONFIG_HEADER,
     PRESCRIBED_ACTION,
@@ -97,17 +101,26 @@ def test_sync_is_idempotent(tmp_path: Path, capsys: Any) -> None:
     assert _snapshot(root) == before
 
 
-def test_sync_reconciles_orphans_and_strays(tmp_path: Path) -> None:
+def test_sync_preserves_unowned_orphans_and_strays_but_check_reds(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """PR-A1 owned-only reconcile (AC-05): hand-created files under .agents/
+    have no lock owner, so sync must PRESERVE them; the strict V10 check then
+    reds with a remove-manually prescription (the checker stays strict on the
+    fully generator-owned tree — the generator just refuses to destroy what it
+    cannot prove it owns)."""
     root = make_projection_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     orphan = root / ".agents" / "skills" / "mj-agent-orphan" / "SKILL.md"
     orphan.parent.mkdir(parents=True)
     orphan.write_text("rogue\n", encoding="utf-8")
-    (root / ".agents" / "stray.txt").write_text("stray\n", encoding="utf-8")
+    stray = root / ".agents" / "stray.txt"
+    stray.write_text("stray\n", encoding="utf-8")
     assert sync_main(["sync"], repo_root=root) == 0
-    assert not orphan.parent.exists()
-    assert not (root / ".agents" / "stray.txt").exists()
-    assert sync_main(["--check"], repo_root=root) == 0
+    assert orphan.is_file() and stray.is_file()  # unowned neighbors preserved
+    assert sync_main(["--check"], repo_root=root) == 1
+    out = capsys.readouterr().out
+    assert "unexpected file" in out and "remove manually" in out
 
 
 def test_sync_missing_source_exits_2(tmp_path: Path, capsys: Any) -> None:
@@ -192,17 +205,25 @@ def test_check_red_when_artifacts_deleted_but_lock_remains(
     assert "missing artifact" in capsys.readouterr().out
 
 
-def test_sync_replaces_stray_file_squatting_on_skill_dir_path(tmp_path: Path) -> None:
-    """--check prescribes 'run sync' for a mangled tree; sync must reconcile a stray
-    FILE at .agents/skills/<name> instead of crashing on mkdir (review finding #2)."""
+def test_sync_fails_closed_on_stray_file_squatting_on_skill_dir_path(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """PR-A1 (AC-06): a stray FILE at .agents/skills/<name> blocks the managed
+    SKILL.md target. The pre-A1 behavior silently deleted the squatter to
+    self-heal (review finding #2); owned-only reconcile must instead fail
+    closed — exit 2, zero deletes/writes — because the squatter has no lock
+    owner (plan §5.5: path hazard means zero delete/write)."""
     root = make_projection_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     skill_dir = root / ".agents" / "skills" / "mj-agent-alpha"
     shutil.rmtree(skill_dir)
     skill_dir.write_text("stray\n", encoding="utf-8")
-    assert sync_main(["sync"], repo_root=root) == 0
-    assert (skill_dir / "SKILL.md").is_file()
-    assert sync_main(["--check"], repo_root=root) == 0
+    before = _snapshot(root)
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "path hazard" in err and "zero write" in err
+    assert skill_dir.read_text(encoding="utf-8") == "stray\n"  # squatter intact
+    assert _snapshot(root) == before  # zero deletes/writes
 
 
 # ------------------------------------------------------------------ F10 cross-EOL
@@ -396,18 +417,23 @@ def test_sync_emits_codex_config_golden(tmp_path: Path) -> None:
     assert sync_main(["--check"], repo_root=root) == 0
 
 
-def test_sync_codex_config_idempotent_and_reconciles_strays(tmp_path: Path, capsys: Any) -> None:
+def test_sync_codex_config_idempotent_and_preserves_unowned_neighbors(
+    tmp_path: Path, capsys: Any
+) -> None:
     root = make_mcp_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     before = _snapshot(root)
     assert sync_main(["sync"], repo_root=root) == 0
     assert "up to date" in capsys.readouterr().out
     assert _snapshot(root) == before
-    (root / ".codex" / "stray.toml").write_text("x = 1\n", encoding="utf-8")
-    (root / ".codex" / "sub").mkdir()
+    # PR-A1 (AC-05): unowned neighbors under .codex/ are preserved by sync and
+    # are NOT drift on any surface (V9 PJ045 reports them info-only).
+    stray = root / ".codex" / "stray.toml"
+    stray.write_text("x = 1\n", encoding="utf-8")
+    sub = root / ".codex" / "sub"
+    sub.mkdir()
     assert sync_main(["sync"], repo_root=root) == 0
-    assert not (root / ".codex" / "stray.toml").exists()
-    assert not (root / ".codex" / "sub").exists()
+    assert stray.is_file() and sub.is_dir()
     assert sync_main(["--check"], repo_root=root) == 0
 
 
@@ -562,19 +588,29 @@ def test_surface_requires_check(tmp_path: Path) -> None:
     assert sync_main(["--adopt", "mj-agent-alpha", "--surface", "mcp"], repo_root=root) == 2
 
 
-def test_empty_mcp_tier_removes_codex_tree(tmp_path: Path) -> None:
+def test_empty_mcp_tier_preserves_unowned_stale_config_and_check_reds(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """PR-A1: a stale config.toml with NO lock reserved key has no verified
+    owner — the pre-A1 behavior rmtree'd the whole .codex/ tree; owned-only
+    reconcile preserves it (zero owner proof = zero delete) and the mcp
+    surface reds with the stale-config prescription for the human to act on."""
     root = make_mcp_repo(
         tmp_path,
         mcp_servers={"github": {"projection_policy": "never"}},
         mcp_json_servers={"github": {"command": "x"}},
     )
     (root / ".codex").mkdir()
-    (root / ".codex" / "config.toml").write_text("# stale\n", encoding="utf-8")
+    stale = root / ".codex" / "config.toml"
+    stale.write_text("# stale\n", encoding="utf-8")
     assert sync_main(["sync"], repo_root=root) == 0
-    assert not (root / ".codex").exists()
-    assert sync_main(["--check"], repo_root=root) == 0
+    assert stale.read_text(encoding="utf-8") == "# stale\n"  # unowned -> preserved
     lock = json.loads((root / ".agents.lock.json").read_text(encoding="utf-8"))
     assert CODEX_LOCK_KEY not in lock
+    capsys.readouterr()
+    assert sync_main(["--check"], repo_root=root) == 1
+    out = capsys.readouterr().out
+    assert "stale .codex/config.toml" in out
 
 
 def test_cross_eol_codex_config_check_stable(tmp_path: Path) -> None:
@@ -632,16 +668,20 @@ def test_v9_pj040_extra_and_missing_server(tmp_path: Path, capsys: Any) -> None:
     assert "playwright" in out  # missing side reported too
 
 
-def test_v9_pj041_invalid_toml_and_pj045_stray_file(tmp_path: Path, capsys: Any) -> None:
+def test_v9_pj041_invalid_toml_and_pj045_info_neighbor(tmp_path: Path, capsys: Any) -> None:
     root = make_mcp_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     (root / ".codex" / "config.toml").write_text("not = [valid\n", encoding="utf-8")
     out = _v9_out(root, capsys)
     assert "rc=1" in out and "PJ041" in out
     assert sync_main(["sync"], repo_root=root) == 0
+    # PR-A1 narrowing: an unowned neighbor is PJ045 at info severity — visible,
+    # never gate-affecting, even at the V9 CI threshold (--fail-on warning).
     (root / ".codex" / "extra.txt").write_text("x\n", encoding="utf-8")
     out = _v9_out(root, capsys)
-    assert "rc=1" in out and "PJ045" in out
+    assert "rc=0" in out and "PJ045" in out and "[INFO]" in out
+    assert v9_main(["--all", "--fail-on", "warning"], repo_root=root) == 0
+    capsys.readouterr()
 
 
 # -------------------------------------------------------- offline pytest boundary (Epic #499)
@@ -1803,3 +1843,344 @@ def test_real_tree_mcp_projection_in_sync() -> None:
     """V11 blocking invariant (D-016 day-1; Owner record #330): the committed
     .codex/config.toml + reserved lock key must match .mcp.json x manifest tiers."""
     assert sync_main(["--check", "--surface", "mcp"], repo_root=REPO_ROOT) == 0
+
+
+# --------------------------------------------------- PR-A1 owned-only reconcile
+# Negative matrix (Epic #499 plan §5.5, AC-05/AC-06) + shared loader extraction.
+# Deletion requires verified lock owner + safe path + absence from the desired
+# set; unknown/malformed/mixed lock, owner ambiguity or path hazard = exit 2
+# with zero deletes/writes; unowned neighbors are always preserved.
+
+
+def _set_projection(root: Path, name: str, policy: str) -> None:
+    manifest_path = root / "sdd" / "development-agent.yml"
+    data = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    for c in data["capabilities"]:
+        if c["id"] == name:
+            c["projection"] = policy
+    manifest_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+
+
+def _empty_mcp_tier(root: Path) -> None:
+    manifest_path = root / "sdd" / "development-agent.yml"
+    data = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    for node in data["mcp"]["servers"].values():
+        node["projection_policy"] = "never"
+    manifest_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+
+
+def test_handoff_parser_is_the_shared_common_implementation() -> None:
+    """PR-A1 extraction: V9 must consume the _common projection_loader parser —
+    one implementation for V9 and the PR-B dependency scanner (plan §2.5)."""
+    import scripts.sdd.check_agents_projection as v9_module
+
+    assert v9_module.handoff_refs is projection_loader.handoff_refs
+    text = (
+        "## Handoff\n\n- /mj-agent-alpha then /mj-agent-doc-*\n\n"
+        "## Next\n\n/mj-agent-not-in-a-handoff-section\n"
+    )
+    assert projection_loader.handoff_refs(text) == {"mj-agent-alpha", "mj-agent-doc-*"}
+
+
+def test_verify_lock_rejects_unknown_malformed_and_mixed_schemas() -> None:
+    good = {"mj-agent-alpha": "sha256:" + "0" * 64}
+    verified = projection_loader.verify_lock(dict(good))
+    assert (
+        verified.owned_paths["mj-agent-alpha"].as_posix()
+        == ".agents/skills/mj-agent-alpha/SKILL.md"
+    )
+    assert projection_loader.artifact_relpath(CODEX_LOCK_KEY).as_posix() == CODEX_LOCK_KEY
+    bad_locks: list[dict[str, Any]] = [
+        {"../evil": "sha256:" + "0" * 64},  # path-shaped non-reserved key
+        {"Mj-Agent-Alpha": "sha256:" + "0" * 64},  # uppercase - not a skill name
+        {"mj-agent-alpha": "deadbeef"},  # malformed hash
+        {"mj-agent-alpha": 7},  # non-string value
+        {**good, "evil dir": "sha256:" + "1" * 64},  # mixed: one bad entry fails ALL
+    ]
+    for bad in bad_locks:
+        with pytest.raises(projection_loader.LockVerificationError):
+            projection_loader.verify_lock(bad)
+
+
+def test_sync_preserves_unowned_codex_hooks_rules_and_user_file(tmp_path: Path) -> None:
+    """Plan §5.5 negative fixtures: unrelated .codex/hooks.json, a rules dir and
+    a user file must survive sync (AC-05) and redden neither V11 nor V9."""
+    root = make_mcp_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    hooks = root / ".codex" / "hooks.json"
+    hooks.write_text("{}\n", encoding="utf-8")
+    rules = root / ".codex" / "rules" / "mj-agent.rules"
+    rules.parent.mkdir()
+    rules.write_text("rule\n", encoding="utf-8")
+    user_file = root / ".codex" / "NOTES.md"
+    user_file.write_text("mine\n", encoding="utf-8")
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert hooks.is_file() and rules.is_file() and user_file.is_file()
+    assert sync_main(["--check", "--surface", "mcp"], repo_root=root) == 0  # V11
+    assert v9_main(["--all", "--fail-on", "warning"], repo_root=root) == 0  # V9
+
+
+def test_sync_empty_mcp_tier_deletes_only_owned_config(tmp_path: Path) -> None:
+    """Plan §5.5 'empty MCP set': the pre-A1 behavior rmtree'd the whole .codex/
+    tree; owned-only reconcile deletes just the lock-owned config.toml and
+    preserves every unowned neighbor (which keeps the dir alive)."""
+    root = make_mcp_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    hooks = root / ".codex" / "hooks.json"
+    hooks.write_text("{}\n", encoding="utf-8")
+    _empty_mcp_tier(root)
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert not (root / ".codex" / "config.toml").exists()  # owned -> deleted
+    assert hooks.is_file()  # unowned neighbor preserved
+    lock = json.loads((root / ".agents.lock.json").read_text(encoding="utf-8"))
+    assert CODEX_LOCK_KEY not in lock
+    assert sync_main(["--check"], repo_root=root) == 0
+
+
+def test_sync_empty_mcp_tier_prunes_codex_dir_when_no_neighbors(tmp_path: Path) -> None:
+    root = make_mcp_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    _empty_mcp_tier(root)
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert not (root / ".codex").exists()  # empty after owned delete -> pruned
+    assert sync_main(["--check"], repo_root=root) == 0
+
+
+def test_sync_removed_skill_deletes_owned_artifact_and_prunes_dir(tmp_path: Path) -> None:
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    _set_projection(root, "mj-agent-beta", "never")
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert not (root / ".agents" / "skills" / "mj-agent-beta").exists()
+    lock = json.loads((root / ".agents.lock.json").read_text(encoding="utf-8"))
+    assert "mj-agent-beta" not in lock
+    assert sync_main(["--check"], repo_root=root) == 0
+
+
+def test_sync_removed_skill_keeps_dir_with_unowned_neighbor(tmp_path: Path) -> None:
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    neighbor = root / ".agents" / "skills" / "mj-agent-beta" / "notes.txt"
+    neighbor.write_text("mine\n", encoding="utf-8")
+    _set_projection(root, "mj-agent-beta", "never")
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert not (root / ".agents" / "skills" / "mj-agent-beta" / "SKILL.md").exists()
+    assert neighbor.is_file()  # unowned neighbor kept its parent dir alive
+    assert sync_main(["--check"], repo_root=root) == 1  # strict V10: remove manually
+
+
+def test_sync_without_lock_never_deletes(tmp_path: Path) -> None:
+    """No owner ledger -> nothing may be deleted (the lock is regenerated; the
+    stale extras stay for the strict checkers to flag)."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    (root / ".agents.lock.json").unlink()
+    orphan = root / ".agents" / "skills" / "mj-agent-orphan" / "SKILL.md"
+    orphan.parent.mkdir(parents=True)
+    orphan.write_text("rogue\n", encoding="utf-8")
+    assert sync_main(["sync"], repo_root=root) == 0
+    assert orphan.is_file()
+    assert (root / ".agents.lock.json").is_file()  # lock regenerated
+
+
+def test_sync_fails_closed_on_hand_edited_deletion_candidate(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """AC-06 owner ambiguity: a deletion candidate whose bytes no longer match
+    the lock hash might carry human content — exit 2, zero deletes/writes."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    artifact = root / ".agents" / "skills" / "mj-agent-beta" / "SKILL.md"
+    artifact.write_text(
+        artifact.read_text(encoding="utf-8") + "human edit\n", encoding="utf-8"
+    )
+    _set_projection(root, "mj-agent-beta", "never")
+    before = _snapshot(root)
+    assert sync_main(["sync"], repo_root=root) == 2
+    assert "owner ambiguity" in capsys.readouterr().err
+    assert _snapshot(root) == before
+
+
+def test_sync_fails_closed_on_malformed_lock(tmp_path: Path, capsys: Any) -> None:
+    """AC-06: unknown/malformed/mixed lock schemas fail BEFORE any managed
+    delete/write."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    lock_path = root / ".agents.lock.json"
+    for bad_text in (
+        '["not", "a", "dict"]\n',
+        '{"mj-agent-alpha": "deadbeef"}\n',
+        '{"../evil": "sha256:' + "0" * 64 + '"}\n',
+        "{broken\n",
+    ):
+        lock_path.write_text(bad_text, encoding="utf-8")
+        before = _snapshot(root)
+        assert sync_main(["sync"], repo_root=root) == 2
+        assert "zero delete/write" in capsys.readouterr().err
+        assert _snapshot(root) == before
+
+
+def test_sync_fails_closed_on_casefold_squatter_of_managed_target(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """Casefold collision (plan §5.5): with config.toml absent but Config.TOML
+    present, the managed path RESOLVES to the case-variant neighbor on a
+    case-insensitive filesystem — sync must fail closed on EVERY platform."""
+    root = make_mcp_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    config = root / ".codex" / "config.toml"
+    variant = root / ".codex" / "Config.TOML"
+    config.rename(variant)
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "casefold" in err
+    assert variant.is_file()  # neighbor untouched
+
+
+def test_sync_fails_closed_on_symlink_ancestor(tmp_path: Path, capsys: Any) -> None:
+    """AC-06 reparse hazard: .agents/skills replaced by a symlink must stop the
+    sync before any delete/write (owned paths would escape the managed tree)."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    skills_dir = root / ".agents" / "skills"
+    real = root / "elsewhere"
+    shutil.move(str(skills_dir), str(real))
+    try:
+        os.symlink(real, skills_dir, target_is_directory=True)
+    except OSError:
+        pytest.skip("symlink creation not permitted on this platform")
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "symlink/reparse ancestor" in err
+    assert (real / "mj-agent-alpha" / "SKILL.md").is_file()  # nothing deleted through the link
+
+
+# ------------------------------------------- Stage 11 fix round (findings F1-F6)
+
+
+def test_sync_fails_closed_on_casefold_variant_skill_dir(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F6: an unowned case-variant DIRECTORY component (MJ-AGENT-ALPHA vs the
+    managed mj-agent-alpha) absorbs managed writes on a case-insensitive
+    filesystem and gets laundered into the owner ledger. The component-level
+    casefold walk must fail closed on EVERY platform, zero writes."""
+    root = make_projection_repo(tmp_path)
+    variant_file = root / ".agents" / "skills" / "MJ-AGENT-ALPHA" / "SKILL.md"
+    variant_file.parent.mkdir(parents=True)
+    variant_file.write_text("MY CONTENT\n", encoding="utf-8")
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "casefold" in err
+    assert variant_file.read_text(encoding="utf-8") == "MY CONTENT\n"  # untouched
+    assert not (root / ".agents.lock.json").exists()  # zero writes, no laundering
+    assert not (root / ".agents" / "README.md").exists()
+
+
+def test_sync_fails_closed_on_root_casefold_variant_agents_dir(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F1: a user dir .Agents/ with no .agents/ present resolves to the managed
+    root on a case-insensitive filesystem — the old leaf-only check let sync
+    write INSIDE the user's tree and overwrite its README."""
+    root = make_projection_repo(tmp_path)
+    user_readme = root / ".Agents" / "README.md"
+    user_readme.parent.mkdir()
+    user_readme.write_text("MY PERSONAL NOTES\n", encoding="utf-8")
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "casefold" in err
+    assert user_readme.read_text(encoding="utf-8") == "MY PERSONAL NOTES\n"
+    assert not (root / ".agents.lock.json").exists()  # zero writes
+
+
+def test_sync_fails_closed_on_lock_dir_squat(tmp_path: Path, capsys: Any) -> None:
+    """F2: the lock itself is a managed write target — a directory squatting at
+    .agents.lock.json must fail the preflight BEFORE any artifact write (the
+    old code wrote 9 paths and then died with a raw PermissionError)."""
+    root = make_projection_repo(tmp_path)
+    (root / ".agents.lock.json").mkdir()
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "path hazard" in err
+    assert not (root / ".agents").exists()  # zero writes landed
+    assert not (root / ".codex").exists()
+
+
+def test_sync_fails_closed_on_dangling_symlink_ancestor(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F3: a DANGLING symlink ancestor reports exists()==False, which used to
+    bypass _reparse_ancestor entirely (exists-gate ran before lstat) — letting
+    an owned delete land before the hazard fired."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    agents = root / ".agents"
+    shutil.rmtree(agents)
+    try:
+        os.symlink(root / "gone", agents, target_is_directory=True)
+    except OSError:
+        pytest.skip("symlink creation not permitted on this platform")
+    lock_before = (root / ".agents.lock.json").read_bytes()
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "symlink/reparse ancestor" in err
+    assert (root / ".agents.lock.json").read_bytes() == lock_before  # zero writes
+
+
+def test_sync_fails_closed_on_dangling_symlink_at_managed_target(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F5: a dangling symlink AT a managed target reports exists()==False yet
+    write_bytes would write THROUGH the link outside the managed tree — the
+    lstat-based is_symlink guard must fire outside the exists() gate."""
+    root = make_projection_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    artifact = root / ".agents" / "skills" / "mj-agent-alpha" / "SKILL.md"
+    artifact.unlink()
+    try:
+        os.symlink(root / "gone.md", artifact)
+    except OSError:
+        pytest.skip("symlink creation not permitted on this platform")
+    assert sync_main(["sync"], repo_root=root) == 2
+    err = capsys.readouterr().err
+    assert "squatted by a non-regular file" in err
+    assert artifact.is_symlink()  # link left in place, nothing written through it
+
+
+def test_check_mcp_surface_consistent_with_include_codex(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F4: with an empty mcp tier and an UNOWNED stale config, the V11 surface
+    must not demand the reserved lock key (the lock correctly omits it — a key
+    would fabricate ownership); only the stale-config prescription may fire."""
+    root = make_mcp_repo(
+        tmp_path,
+        mcp_servers={"github": {"projection_policy": "never"}},
+        mcp_json_servers={"github": {"command": "x"}},
+    )
+    (root / ".codex").mkdir()
+    (root / ".codex" / "config.toml").write_text("# stale\n", encoding="utf-8")
+    assert sync_main(["sync"], repo_root=root) == 0
+    capsys.readouterr()
+    assert sync_main(["--check", "--surface", "mcp"], repo_root=root) == 1
+    out = capsys.readouterr().out
+    assert "stale .codex/config.toml" in out
+    assert "missing or out of date" not in out  # no false, sync-unfixable line
+
+
+def test_check_mcp_surface_stale_reserved_key_after_tier_emptied(
+    tmp_path: Path, capsys: Any
+) -> None:
+    """F4 companion: an OWNED config after the tier is emptied — the mcp
+    surface reports the stale key/config and sync (owner verified) heals it."""
+    root = make_mcp_repo(tmp_path)
+    assert sync_main(["sync"], repo_root=root) == 0
+    _empty_mcp_tier(root)
+    capsys.readouterr()
+    assert sync_main(["--check", "--surface", "mcp"], repo_root=root) == 1
+    out = capsys.readouterr().out
+    assert "stale lock reserved key" in out
+    assert "missing or out of date" not in out
+    assert sync_main(["sync"], repo_root=root) == 0  # owned -> deleted
+    assert sync_main(["--check", "--surface", "mcp"], repo_root=root) == 0

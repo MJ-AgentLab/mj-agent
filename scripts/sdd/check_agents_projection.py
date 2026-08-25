@@ -22,6 +22,10 @@ Rules (S0 empty-state MUST NOT false-fail; artifacts land in S1/S2):
    `body_sha256`; a TOML file has no frontmatter so this is a whole-text hash). Both
    file and reserved key absent == vacuous pass (pre-S2 / fork empty state — drift
    enforcement lives in `agents_sync.py --check --surface mcp`, V11 blocking).
+   PJ045 (narrowed at Epic #499 PR-A1, ADR-039 D-012 revised): files under
+   `.codex/` other than the generated config are UNOWNED NEIGHBORS (future
+   hooks/rules, user files) — reported info-only, never gate-affecting; the
+   generator preserves them (owned-only reconcile).
 
 Exit codes: 0 / 1 / 2 as in check_development_agent.py.
 `main(argv=None, repo_root=None)` — repo_root injectable for tests (#217 pattern).
@@ -32,7 +36,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import subprocess
 import sys
 import tomllib
@@ -48,16 +51,20 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
+from scripts.sdd._common.projection_loader import (  # noqa: E402
+    CODEX_CONFIG_RELPATH,
+    CODEX_LOCK_KEY,
+    handoff_refs,
+)
 
 MANIFEST_RELPATH = Path("sdd/development-agent.yml")
 JSON_SCHEMA_VERSION = 1
 KNOWN_MANIFEST_SCHEMA_VERSIONS = {1}
 
-# S2 MCP projection surface (#330): the generated Codex config artifact and its
-# reserved key inside .agents.lock.json (path-shaped -- cannot collide with skill
-# names, Owner 拍板 2026-07-14).
-CODEX_CONFIG_RELPATH = Path(".codex/config.toml")
-CODEX_LOCK_KEY = ".codex/config.toml"
+# S2 MCP projection surface (#330): CODEX_CONFIG_RELPATH / CODEX_LOCK_KEY are
+# canonical in _common/projection_loader.py since Epic #499 PR-A1 (re-exported
+# above for existing importers); the `## Handoff*` parser lives there too, so
+# V9 and the PR-B dependency scanner read one implementation (plan §2.5).
 
 WATCHED_PREFIXES = (
     "sdd/development-agent.yml",
@@ -66,11 +73,8 @@ WATCHED_PREFIXES = (
     ".codex/",
     ".claude/skills/",
     "scripts/sdd/check_agents_projection.py",
+    "scripts/sdd/_common/projection_loader.py",
 )
-
-_HANDOFF_HEADING = re.compile(r"^(#{2,})\s*Handoff", flags=re.IGNORECASE)
-_HEADING = re.compile(r"^(#{2,})\s")
-_SKILL_REF = re.compile(r"/(mj-agent-[a-z0-9-]+\*?)")
 
 
 @dataclass
@@ -143,27 +147,6 @@ def load_mcp_projection(
     return project_servers, posture if isinstance(posture, dict) else None, never_names
 
 
-def _handoff_refs(skill_text: str) -> set[str]:
-    """Collect /mj-agent-* refs that appear inside `## Handoff*` sections only."""
-    refs: set[str] = set()
-    in_handoff = False
-    handoff_level = 0
-    for line in skill_text.splitlines():
-        m = _HEADING.match(line)
-        if m:
-            hm = _HANDOFF_HEADING.match(line)
-            if hm:
-                in_handoff = True
-                handoff_level = len(hm.group(1))
-                continue
-            if in_handoff and len(m.group(1)) <= handoff_level:
-                in_handoff = False
-            continue
-        if in_handoff:
-            refs.update(_SKILL_REF.findall(line))
-    return refs
-
-
 def check_closure(repo_root: Path, project: set[str], all_ids: set[str]) -> list[Violation]:
     out: list[Violation] = []
     severity = "error" if (repo_root / ".agents").exists() else "warning"
@@ -175,7 +158,7 @@ def check_closure(repo_root: Path, project: set[str], all_ids: set[str]) -> list
                    "projection: project capability has no on-disk SKILL.md")
             )
             continue
-        for ref in sorted(_handoff_refs(skill_md.read_text(encoding="utf-8"))):
+        for ref in sorted(handoff_refs(skill_md.read_text(encoding="utf-8"))):
             if ref.endswith("*"):
                 prefix = ref[:-1]
                 targets = {s for s in all_ids if s.startswith(prefix)}
@@ -348,9 +331,10 @@ def check_codex_config(
             rel = path.relative_to(repo_root)
             if path.is_file() and rel != CODEX_CONFIG_RELPATH:
                 out.append(
-                    _v("PJ045", "error", "", rel.as_posix(),
-                       "unexpected file under .codex/ (full reconcile — only the"
-                       " generated config.toml may exist)")
+                    _v("PJ045", "info", "", rel.as_posix(),
+                       "unowned neighbor under .codex/ — preserved by owned-only"
+                       " reconcile (ADR-039 D-012 revised; Epic #499 PR-A1"
+                       " narrowing: info-only, never gate-affecting)")
                 )
     return out
 
