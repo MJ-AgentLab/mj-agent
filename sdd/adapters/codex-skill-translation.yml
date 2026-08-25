@@ -1,0 +1,122 @@
+# sdd/adapters/codex-skill-translation.yml — harness-primitive disposition SoT
+# for the 13 translated Codex carriers (Epic #499 plan §2.4).
+#
+# DORMANT until the PR-C1 cutover (consumed only by the dormant v2 engine in
+# scripts/sdd/_common/skill_renderer.py + tests + the PR-P1b evidence run).
+#
+# PROTECTED-ADJACENT (D-017; A14 row (c) typed source — pre-registered at PR-A0).
+# OWNER_APPROVAL_REQUIRED before modifying (`declared-contract-change`).
+#
+# Layering: this file owns HARNESS-PRIMITIVE disposition only (lexicon /
+# interaction sites / transform templates / preface version). It never
+# duplicates workflow or dependency semantics — routes live in
+# sdd/workflows/development-agent-workflows.yml and are referenced by edge ID.
+#
+# Fail-closed contract (plan §2.4): every lexicon hit in a translated source
+# (frontmatter INCLUDED) must resolve to a category disposition — and for
+# `site-classified` categories, to exactly one registered site — or the render
+# refuses with capability id, source line, category/token, this file's path and
+# the expected key, plus a remediation order.
+#
+# Dispositions:
+#   noop-preface        — pass through verbatim; the Codex preface declares how
+#                         to read these references (harness enforcement,
+#                         ask-gate vocabulary, tool names, self-references,
+#                         relative wikilinks, provenance paths).
+#   site-classified     — every hit line must be claimed by exactly one
+#                         interaction site below (t1a / t1b / noop-mention).
+#   region-edge-or-noop — hits inside the three scan regions must close against
+#                         a registry edge (T2a); hits outside the regions pass
+#                         through verbatim (prose mentions, prohibition lines).
+#   t3-or-noop          — peer carrier paths rewrite to .agents/skills/... (T3)
+#                         when the named skill is in the carrier set; all other
+#                         .claude/skills references pass through as provenance.
+
+schema_version: 1
+preface_template_version: 1
+
+lexicon:
+  - category: claude-skills-path
+    patterns: ['\.claude/skills/']
+    disposition: t3-or-noop
+  - category: claude-path-other
+    patterns: ['\.claude/(?!skills/)']
+    disposition: noop-preface
+  - category: superpowers
+    patterns: ['superpowers:']
+    disposition: noop-preface
+  - category: ask-user-question
+    patterns: ['AskUserQuestion']
+    disposition: site-classified
+  - category: harness-enforcement
+    patterns: ['PreToolUse', 'guard-git-workflow', 'permissions\.ask', 'ask-gate', 'settings\.json']
+    disposition: noop-preface
+  - category: claude-tools
+    patterns: ['\b(?:Edit|Write|Read|Bash|Glob|Grep|WebFetch|WebSearch|TodoWrite)\b']
+    disposition: noop-preface
+  - category: claude-self
+    patterns: ['\bClaude\b']
+    disposition: noop-preface
+  - category: slash-skill-token
+    patterns: ['/mj-agent-[a-z0-9-]+']
+    disposition: region-edge-or-noop
+  - category: relative-wikilink
+    patterns: ['\[\[\.\./']
+    disposition: noop-preface
+
+# Interaction sites: stable site_id + unique verbatim marker (plan §2.4 —
+# never a (heading, occurrence-index) pair; markers may span lines). The
+# renderer requires every `ask-user-question` hit line to be claimed by the
+# site whose marker's first line is that hit line; zero or multiple marker
+# matches in the file are both red.
+sites:
+  - site_id: site-flow-intake-recommended-anchor
+    capability_id: mj-agent-flow-intake
+    path: .claude/skills/mj-agent-flow-intake/SKILL.md
+    marker: "「(Recommended) 首选项放第一」惯例"
+    disposition: noop-mention
+  - site_id: site-git-issue-branch-type-table-pointer
+    capability_id: mj-agent-git-issue
+    path: .claude/skills/mj-agent-git-issue/SKILL.md
+    marker: "Step 1b AskUserQuestion 选"
+    disposition: noop-mention
+  - site_id: site-git-issue-urgency-check
+    capability_id: mj-agent-git-issue
+    path: .claude/skills/mj-agent-git-issue/SKILL.md
+    marker: "Urgency Check（AskUserQuestion）"
+    disposition: t1b
+  - site_id: site-git-issue-branch-type-choice
+    capability_id: mj-agent-git-issue
+    path: .claude/skills/mj-agent-git-issue/SKILL.md
+    marker: "Choose Branch Type（AskUserQuestion，5 options）"
+    disposition: t1b
+  - site_id: site-git-issue-preview-confirm
+    capability_id: mj-agent-git-issue
+    path: .claude/skills/mj-agent-git-issue/SKILL.md
+    marker: "展示完整 Issue（Title + Labels + Body）；AskUserQuestion 3 options："
+    disposition: t1b
+  - site_id: site-git-issue-assignee-choice
+    capability_id: mj-agent-git-issue
+    path: .claude/skills/mj-agent-git-issue/SKILL.md
+    marker: "AskUserQuestion 3 options：\n1. **Assign to me**"
+    disposition: t1b
+
+# Typed transform templates (plan §2.4). Placeholders are closed per template:
+# t1a: {site_id} {reason} — appended after the site construct, preserving
+#      prompt/options/default verbatim above it; terminates with ask-the-Owner.
+# t1b: {site_id} — appended after the site construct; terminates with
+#      ask-the-user-and-wait (never an auto-continue suggestion).
+# t2a-route / t2b-route: {edge_id} {route} — the `<!-- codex-route:<edge-id> -->`
+#      identity plus a deterministic route block, emitted AFTER the complete
+#      construct (never inside a table cell or DOT grammar).
+templates:
+  t1a: |
+    > [codex-owner-gate:{site_id}] OWNER_APPROVAL_REQUIRED({reason}) — present the prompt, options and default above verbatim, ask the Owner, stop, and wait.
+  t1b: |
+    > [codex-interaction:{site_id}] Ask the user and wait before continuing — present the prompt, options and default above verbatim; do not continue on your own.
+  t2a-route: |
+    <!-- codex-route:{edge_id} -->
+    > Codex route: {route}
+  t2b-route: |
+    <!-- codex-route:{edge_id} -->
+    > Codex dependency route: {route}
