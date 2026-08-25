@@ -34,9 +34,16 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 MANIFEST_RELPATH = Path("sdd/development-agent.yml")
 JSON_SCHEMA_VERSION = 1
-KNOWN_MANIFEST_SCHEMA_VERSIONS = {1}
+# Manifest v2 (Epic #499 plan §2.1) is accepted DORMANT since PR-B: the real tree
+# stays schema_version 1 byte-identical until the PR-C1 cutover; unknown versions
+# keep exiting 2. The v2 discriminator governs ONLY this manifest — never use it
+# to guess the schema of the lock or any other typed source.
+KNOWN_MANIFEST_SCHEMA_VERSIONS = {1, 2}
 
 SUPPORT_MODES = {"native", "adapter-backed", "script-ci", "manual", "unsupported"}
+# Manifest v2 carrier fields (plan §2.1; validated only when schema_version == 2).
+CODEX_CARRIERS = {"none", "byte-copy", "translated"}
+CAPABILITY_ID = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 APPROVAL_MODES = {"none", "owner-hitl"}
 STOP_BEFORE = {"write", "execute", "commit", "push", "pr-create", "merge"}
 EVIDENCE_REQUIRED = {"explicit-owner-message", "pr-approval-record"}
@@ -326,6 +333,101 @@ def check_capabilities(manifest: dict[str, Any], repo_root: Path) -> list[Violat
     return out
 
 
+def check_codex_carrier(manifest: dict[str, Any]) -> list[Violation]:
+    """Manifest v2 carrier schema (Epic #499 plan §2.1) — DA级 validation so the
+    blocking manifest gate is not blind to the new fields.
+
+    v1 manifests must NOT carry the v2-only fields (closed v1 schema); v2
+    manifests must carry `codex_carrier` on EVERY capability (closed v2 schema —
+    absence is not an implicit `none`). `carrier_binding` exists exactly for
+    `translated` and holds exactly one key, `workflow_id` (its registry closure —
+    exists exactly once + reverse capability match — is V9's job, plan §2.1).
+    Invariants checked here: (1) codex_carrier != none <=> projection == project;
+    (2) required == true => codex_carrier != none. The output path is NOT a
+    manifest field: it derives from the capability id as
+    `.agents/skills/<id>/SKILL.md`, so the id must satisfy the id syntax and be
+    casefold-unique (one owner per derived path on any filesystem).
+    """
+    out: list[Violation] = []
+    mpath = str(MANIFEST_RELPATH)
+    version = manifest.get("schema_version")
+    caps = [c for c in manifest.get("capabilities") or [] if isinstance(c, dict)]
+
+    if version == 1:
+        for c in caps:
+            cap_id = str(c.get("id", "<missing-id>"))
+            for field in ("codex_carrier", "carrier_binding"):
+                if field in c:
+                    out.append(
+                        _v("DA090", "error", cap_id, mpath,
+                           f"'{field}' is a manifest v2 field; schema_version 1 does"
+                           " not define it (closed schema — bump schema_version via"
+                           " the PR-C1 cutover, do not mix versions)")
+                    )
+        return out
+
+    casefolded: dict[str, str] = {}
+    for c in caps:
+        cap_id = str(c.get("id", "<missing-id>"))
+        carrier = c.get("codex_carrier")
+        if carrier not in CODEX_CARRIERS:
+            out.append(
+                _v("DA091", "error", cap_id, mpath,
+                   f"codex_carrier {carrier!r} invalid — v2 requires an explicit"
+                   f" value from {sorted(CODEX_CARRIERS)} on every capability")
+            )
+            carrier = None
+        binding = c.get("carrier_binding")
+        if carrier == "translated":
+            if not isinstance(binding, dict) or set(binding) != {"workflow_id"}:
+                out.append(
+                    _v("DA092", "error", cap_id, mpath,
+                       "translated carrier requires carrier_binding with exactly"
+                       " one key: workflow_id")
+                )
+            elif not isinstance(binding.get("workflow_id"), str) or not binding["workflow_id"]:
+                out.append(
+                    _v("DA092", "error", cap_id, mpath,
+                       "carrier_binding.workflow_id must be a non-empty string")
+                )
+        elif binding is not None or "carrier_binding" in c:
+            out.append(
+                _v("DA093", "error", cap_id, mpath,
+                   f"carrier_binding is only defined for codex_carrier: translated"
+                   f" (found on {carrier!r})")
+            )
+        projection = c.get("projection")
+        if carrier is not None and (carrier != "none") != (projection == "project"):
+            out.append(
+                _v("DA094", "error", cap_id, mpath,
+                   f"invariant 1 violated: codex_carrier {carrier!r} with projection"
+                   f" {projection!r} — codex_carrier != none <=> projection: project")
+            )
+        if c.get("required") is True and carrier == "none":
+            out.append(
+                _v("DA095", "error", cap_id, mpath,
+                   "invariant 2 violated: required capability must have a Codex"
+                   " carrier (codex_carrier != none)")
+            )
+        if CAPABILITY_ID.fullmatch(cap_id) is None:
+            out.append(
+                _v("DA096", "error", cap_id, mpath,
+                   "capability id does not satisfy the id syntax"
+                   " ^[a-z0-9][a-z0-9-]*$ — the derived artifact path"
+                   " .agents/skills/<id>/SKILL.md must stay inside its root")
+            )
+        elif cap_id.casefold() in casefolded:
+            out.append(
+                _v("DA096", "error", cap_id, mpath,
+                   f"capability id casefold-collides with"
+                   f" '{casefolded[cap_id.casefold()]}' — one owner per derived"
+                   " artifact path on any filesystem")
+            )
+        else:
+            casefolded[cap_id.casefold()] = cap_id
+    return out
+
+
 def check_agents_entries(repo_root: Path) -> list[Violation]:
     """Root + nested AGENTS.md existence and sibling CLAUDE.md @AGENTS.md import."""
     out: list[Violation] = []
@@ -527,6 +629,7 @@ def run_checks(repo_root: Path) -> list[Violation]:
     violations: list[Violation] = []
     violations += check_top_level(manifest)
     violations += check_capabilities(manifest, repo_root)
+    violations += check_codex_carrier(manifest)
     violations += check_agents_entries(repo_root)
     violations += check_canonical_count(repo_root)
     violations += check_stats(manifest, repo_root)

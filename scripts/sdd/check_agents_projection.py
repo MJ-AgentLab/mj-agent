@@ -59,7 +59,11 @@ from scripts.sdd._common.projection_loader import (  # noqa: E402
 
 MANIFEST_RELPATH = Path("sdd/development-agent.yml")
 JSON_SCHEMA_VERSION = 1
-KNOWN_MANIFEST_SCHEMA_VERSIONS = {1}
+# {1, 2} since Epic #499 PR-B (dormant v2 engine): both manifest versions are
+# readable; the real tree stays v1 until the PR-C1 cutover. Unknown versions
+# keep raising FatalCheckError (exit 2). The discriminator governs only the
+# manifest — the lock and each typed source carry their own schema_version.
+KNOWN_MANIFEST_SCHEMA_VERSIONS = {1, 2}
 
 # S2 MCP projection surface (#330): CODEX_CONFIG_RELPATH / CODEX_LOCK_KEY are
 # canonical in _common/projection_loader.py since Epic #499 PR-A1 (re-exported
