@@ -33,6 +33,7 @@ Read-only; no secrets; no network; deterministic.
 
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass, field
 from typing import Any
@@ -653,3 +654,403 @@ def expand_wildcard(pattern: str, all_ids: set[str]) -> list[str]:
             " is a defect, not an empty set)"
         )
     return resolved
+
+
+# ----------------------------------------------------------- translated wire
+# Renderer wire format (plan §2.4): opening `---` is the first byte; output
+# order frontmatter -> closing delimiter -> Codex preface -> translated body;
+# UTF-8 no BOM, LF, exactly one final newline. The frontmatter allowlist and
+# fixed key order are `name`, `description`; the emitted description is the
+# registry's codex_discovery_summary as a JSON-style double-quoted YAML scalar
+# (ensure_ascii=false). Input BOM/CRLF and quoted/folded description forms do
+# not influence the output.
+
+
+@dataclass(frozen=True)
+class SourceDocument:
+    name: str
+    description_raw: str  # verbatim frontmatter description block (unparsed)
+    body: str  # LF-normalized body AFTER the closing delimiter
+    frontmatter_lines: int  # line count of `---` .. `---` inclusive
+
+
+_FM_KEY = re.compile(r"^([A-Za-z0-9_-]+):")
+
+
+def parse_source_document(source_bytes: bytes) -> SourceDocument:
+    """Closed frontmatter parse. The live descriptions are plain scalars that
+    are NOT loadable YAML (they embed ": "), so this is a line-shape parser:
+    exactly `name` then `description`, no duplicates, no extra top-level key.
+    Continuation lines of a folded/quoted description must be indented."""
+    try:
+        text = source_bytes.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise TranslationError(f"source is not UTF-8: {exc}") from exc
+    text = text.replace("\r\n", "\n")
+    if not text.startswith("---\n"):
+        raise TranslationError("source must open with a `---` frontmatter fence")
+    end = text.find("\n---\n", 4)
+    if end < 0:
+        raise TranslationError("source frontmatter has no closing `---` fence")
+    fm_block = text[4:end]
+    body = text[end + len("\n---\n"):]
+    fm_lines = fm_block.split("\n")
+    if not fm_lines or not fm_lines[0].startswith("name:"):
+        raise TranslationError("frontmatter must start with the `name` key")
+    name = fm_lines[0][len("name:"):].strip()
+    if not name:
+        raise TranslationError("frontmatter `name` must be a non-empty scalar")
+    if len(fm_lines) < 2 or not fm_lines[1].startswith("description:"):
+        raise TranslationError(
+            "frontmatter must have exactly `name` then `description`"
+        )
+    description_raw = fm_lines[1][len("description:"):].lstrip()
+    for line in fm_lines[2:]:
+        if not line:
+            continue
+        if line[0] not in (" ", "\t"):
+            m = _FM_KEY.match(line)
+            if m:
+                raise TranslationError(
+                    f"frontmatter key {m.group(1)!r} is outside the closed"
+                    " allowlist (name, description)"
+                )
+            raise TranslationError(
+                "frontmatter description continuation lines must be indented"
+            )
+        description_raw += "\n" + line
+    return SourceDocument(
+        name=name,
+        description_raw=description_raw,
+        body=body,
+        frontmatter_lines=fm_block.count("\n") + 3,
+    )
+
+
+def _render_failure(
+    capability_id: str, source_path: str, problems: list[tuple[int, str, str, str]]
+) -> TranslationError:
+    """Fail-closed diagnostic block (plan §2.4): capability, source line text,
+    lexicon category/token, map path + expected key, remediation order."""
+    lines = [f"translation refused for {capability_id}:"]
+    for line_no, category, token, line_text in problems:
+        lines.append(f"  source: {source_path}:{line_no}: {line_text.strip()[:100]}")
+        lines.append(f"  lexicon category: {category}; token: {token!r}")
+        lines.append(
+            f"  map: {TRANSLATION_MAP_RELPATH} — add a per-site entry under"
+            " `sites:` (unique verbatim marker) or a category disposition"
+            " under `lexicon:`"
+        )
+    lines.append(
+        "  remediation order: 1) classify the token in the translation map"
+        " (Owner approval: declared-contract-change); 2) or adjust the source"
+        " through its own gate; 3) re-run the render."
+    )
+    return TranslationError("\n".join(lines))
+
+
+def _fence_state(lines: list[str]) -> list[str | None]:
+    """Per-line fence context: None (outside), 'dot', or 'other'."""
+    out: list[str | None] = []
+    fence: str | None = None
+    for line in lines:
+        stripped = line.strip()
+        if fence is None and stripped.startswith("```") and stripped != "```":
+            fence = "dot" if stripped == "```dot" else "other"
+            out.append(None)  # the opening fence line itself
+            continue
+        if fence is None and stripped == "```":
+            # An opening bare fence (plain block) — treat as 'other'.
+            fence = "other"
+            out.append(None)
+            continue
+        if fence is not None and stripped == "```":
+            fence = None
+            out.append(None)
+            continue
+        out.append(fence)
+    return out
+
+
+def _section_end(lines: list[str], start_index: int, fences: list[str | None]) -> int:
+    """Index AFTER the last line of the heading-bounded section containing
+    `start_index` (next heading outside fences, or EOF)."""
+    for i in range(start_index + 1, len(lines)):
+        if fences[i] is None and ANY_HEADING.match(lines[i]):
+            return i
+    return len(lines)
+
+
+def _construct_end(lines: list[str], index: int, fences: list[str | None]) -> int:
+    """Index AFTER the construct containing line `index` (plan §2.4 T2a):
+    inside a fence -> after the closing fence; a table line -> after the last
+    contiguous table line; a list item -> after that item's line; otherwise ->
+    after the contiguous non-blank block."""
+    if fences[index] is not None:
+        i = index
+        while i < len(lines) and lines[i].strip() != "```":
+            i += 1
+        return min(i + 1, len(lines))
+    line = lines[index]
+    if line.lstrip().startswith("|"):
+        i = index
+        while i < len(lines) and lines[i].lstrip().startswith("|"):
+            i += 1
+        return i
+    if re.match(r"^\s*(?:[-*+]\s|\d+\.\s)", line):
+        return index + 1
+    i = index
+    while i < len(lines) and lines[i].strip():
+        i += 1
+    return i
+
+
+def _route_text(edge: RegistryEdge, registry: WorkflowRegistry) -> str:
+    if edge.substitute is not None and edge.substitute.route_ref is not None:
+        return registry.routes[edge.substitute.route_ref]
+    if edge.substitute is not None:  # claude-only-by-design
+        return f"no completion path on this side: {edge.substitute.rationale}"
+    return (
+        f"invoke `${edge.to_id}` (native carrier;"
+        f" {edge.relation}, {edge.activation})"
+    )
+
+
+def render_translated(
+    source_bytes: bytes,
+    capability_id: str,
+    registry: WorkflowRegistry,
+    tmap: TranslationMap,
+    preface_template: str,
+    carrier_ids: set[str],
+) -> str:
+    """Deterministic translated render (plan §2.4). Returns canonical text
+    (UTF-8 no BOM, LF, exactly one final newline). Fail-closed on any lexicon
+    hit without a disposition, any unclassified interaction token, any site
+    marker that hits zero or multiple times, and any region token without a
+    registry edge."""
+    source_path = f".claude/skills/{capability_id}/SKILL.md"
+    doc = parse_source_document(source_bytes)
+    workflow = registry.workflow_for_capability(capability_id)
+    if workflow is None:
+        raise TranslationError(
+            f"{capability_id} has no workflow record in the registry"
+        )
+
+    full_text = "---\n" + f"name: {doc.name}\ndescription: {doc.description_raw}\n" \
+        + "---\n" + doc.body
+    # ---- interaction sites: resolve markers to full-text line numbers -----
+    sites = [s for s in tmap.sites.values() if s.capability_id == capability_id]
+    site_by_line: dict[int, InteractionSite] = {}
+    for site in sites:
+        count = marker_hit_count(full_text, site.marker)
+        if count != 1:
+            raise TranslationError(
+                f"site {site.site_id}: marker hits {count} times in"
+                f" {source_path} (need exactly 1)"
+            )
+        offset = full_text.index(site.marker)
+        line_no = full_text[:offset].count("\n") + 1
+        if line_no in site_by_line:
+            raise TranslationError(
+                f"sites {site_by_line[line_no].site_id} and {site.site_id}"
+                f" both claim line {line_no}"
+            )
+        site_by_line[line_no] = site
+
+    # ---- fail-closed lexicon census over the FULL source ------------------
+    region_tokens = {
+        (t.line_no, t.token) for t in scan_layer_a(full_text)
+    }
+    region_lines = {t.line_no for t in scan_layer_a(full_text)}
+    edges_by_pair = {
+        (e.from_id, e.to_id): e for e in registry.edges.values()
+    }
+    problems: list[tuple[int, str, str, str]] = []
+    for hit in lexicon_scan(full_text, tmap.lexicon):
+        if hit.disposition == "noop-preface":
+            continue
+        if hit.disposition == "t3-or-noop":
+            continue  # machine rule — rewrite or provenance passthrough
+        if hit.disposition == "site-classified":
+            if hit.line_no not in site_by_line:
+                problems.append(
+                    (hit.line_no, hit.category, hit.token, hit.line_text)
+                )
+            continue
+        if hit.disposition == "region-edge-or-noop":
+            token = hit.token[1:]  # strip leading slash
+            if (
+                hit.line_no in region_lines
+                and (hit.line_no, token) in region_tokens
+                and (capability_id, token) not in edges_by_pair
+            ):
+                problems.append(
+                    (hit.line_no, hit.category, hit.token, hit.line_text)
+                )
+            continue
+    if problems:
+        raise _render_failure(capability_id, source_path, problems)
+
+    # ---- body transform ----------------------------------------------------
+    body_offset = doc.frontmatter_lines  # body line i (0-based) = full line i+offset+?
+    lines = doc.body.split("\n")
+    fences = _fence_state(lines)
+    emitted_edges: set[str] = set()
+    # insertion queue: line-index-after -> list of (sort_key, block_text)
+    insertions: dict[int, list[tuple[str, str]]] = {}
+
+    def queue(index: int, sort_key: str, block: str) -> None:
+        insertions.setdefault(index, []).append((sort_key, block))
+
+    t3_pattern = re.compile(r"\.claude/skills/(mj-agent-[a-z0-9-]+)/SKILL\.md")
+
+    new_lines: list[str] = []
+    for i, line in enumerate(lines):
+        full_line_no = i + body_offset + 1
+
+        def _t3(m: re.Match[str]) -> str:
+            name = m.group(1)
+            if name in carrier_ids:
+                return f".agents/skills/{name}/SKILL.md"
+            return m.group(0)
+
+        line = t3_pattern.sub(_t3, line)
+
+        # T2a — region tokens on this line
+        if full_line_no in region_lines:
+            for token_match in list(SKILL_REF.finditer(line)):
+                token = token_match.group(1)
+                if (full_line_no, token) not in region_tokens:
+                    continue
+                edge = edges_by_pair.get((capability_id, token))
+                if edge is None:
+                    continue  # non-edge token (already validated above)
+                target_has_carrier = (
+                    not edge.to_id.endswith("*") and edge.to_id in carrier_ids
+                )
+                replacement = (
+                    f"${edge.to_id}" if target_has_carrier
+                    else f"Codex substitute {edge.edge_id}"
+                )
+                line = line.replace(f"/{token}", replacement, 1)
+                if edge.edge_id not in emitted_edges:
+                    emitted_edges.add(edge.edge_id)
+                    template = tmap.templates["t2a-route"]
+                    block = template.replace("{edge_id}", edge.edge_id).replace(
+                        "{route}", _route_text(edge, registry)
+                    ).rstrip("\n")
+                    queue(_construct_end(lines, i, fences), edge.edge_id, block)
+        new_lines.append(line)
+
+    # T2b — layer-B declared edges anchored in THIS source's body
+    for edge in registry.edges_from(capability_id):
+        if edge.evidence is None or edge.edge_id in emitted_edges:
+            continue
+        count = marker_hit_count(full_text, edge.evidence.marker)
+        if count != 1:
+            raise TranslationError(
+                f"edge {edge.edge_id}: marker hits {count} times in"
+                f" {source_path} (need exactly 1)"
+            )
+        offset = full_text.index(edge.evidence.marker)
+        marker_line_full = full_text[:offset].count("\n") + 1
+        marker_index = marker_line_full - body_offset - 1
+        if marker_index < 0:
+            raise TranslationError(
+                f"edge {edge.edge_id}: marker sits in frontmatter — description"
+                " routes use the scalar-safe identity, not a body block"
+            )
+        emitted_edges.add(edge.edge_id)
+        template = tmap.templates["t2b-route"]
+        block = template.replace("{edge_id}", edge.edge_id).replace(
+            "{route}", _route_text(edge, registry)
+        ).rstrip("\n")
+        queue(
+            _construct_end(lines, marker_index, fences), edge.edge_id, block
+        )
+
+    # T1 — interaction sites at end of their heading-bounded section
+    for line_no, site in sorted(site_by_line.items()):
+        if site.disposition == "noop-mention":
+            continue
+        index = line_no - body_offset - 1
+        if index < 0:
+            raise TranslationError(
+                f"site {site.site_id}: marker sits in frontmatter"
+            )
+        if site.disposition == "t1a":
+            template = tmap.templates["t1a"].replace(
+                "{site_id}", site.site_id
+            ).replace("{reason}", site.owner_gate_reason or "")
+        else:
+            template = tmap.templates["t1b"].replace("{site_id}", site.site_id)
+        queue(
+            _section_end(lines, index, fences),
+            f"zz-site-{site.site_id}",
+            template.rstrip("\n"),
+        )
+
+    # ---- assemble with insertions -----------------------------------------
+    out: list[str] = []
+    for i, line in enumerate(new_lines):
+        for _key, block in sorted(insertions.get(i, [])):
+            if out and out[-1] != "":
+                out.append("")
+            out.append(block)
+            out.append("")
+        out.append(line)
+    for _key, block in sorted(insertions.get(len(new_lines), [])):
+        if out and out[-1] != "":
+            out.append("")
+        out.append(block)
+        out.append("")
+    body_text = "\n".join(out)
+
+    preface_body = render_preface(preface_template)
+    summary_scalar = json.dumps(
+        workflow.codex_discovery_summary, ensure_ascii=False
+    )
+    trimmed_body = body_text.strip("\n")
+    rendered = (
+        "---\n"
+        f"name: {doc.name}\n"
+        f"description: {summary_scalar}\n"
+        "---\n"
+        "\n"
+        f"{preface_body}\n"
+        "\n"
+        f"{trimmed_body}\n"
+    )
+    # Fixed blank-line budget (goldens pin it): insertion seams never widen
+    # beyond one blank line. Fenced content is exempt — runs of blank lines
+    # inside fences are source bytes, not seams.
+    return _collapse_blank_runs(rendered)
+
+
+def _collapse_blank_runs(text: str) -> str:
+    lines = text.split("\n")
+    fences = _fence_state(lines)
+    out: list[str] = []
+    blank_run = 0
+    for i, line in enumerate(lines):
+        if line == "" and fences[i] is None:
+            blank_run += 1
+            if blank_run > 1:
+                continue
+        else:
+            blank_run = 0
+        out.append(line)
+    return "\n".join(out)
+
+
+_HTML_COMMENT = re.compile(r"<!--.*?-->\n?", flags=re.DOTALL)
+
+
+def render_preface(preface_template: str) -> str:
+    """Preface body from the raw template: LF-normalized, template provenance
+    comments stripped, no leading/trailing blank lines (the blank-line budget
+    around the preface is fixed by the assembly + goldens)."""
+    text = preface_template.replace("\r\n", "\n")
+    text = _HTML_COMMENT.sub("", text)
+    return text.strip("\n")
