@@ -25,8 +25,12 @@ Modes (exactly one):
                   (emitter B), and `.agents.lock.json` (key -> `sha256:<body_sha256>`
                   over LF-normalized artifact text — byte-compatible with V9
                   `check_agents_projection.check_lock`; the mcp artifact uses the
-                  reserved path-shaped key `.codex/config.toml`). Full reconcile on
-                  both trees. Idempotent.
+                  reserved path-shaped key `.codex/config.toml`). Owned-only
+                  reconcile on both trees (ADR-039 D-012 revised, Epic #499
+                  PR-A1): deletion requires a verified lock owner + safe path +
+                  absence from the desired set; unowned neighbors are preserved;
+                  unknown/malformed lock or path hazard exits 2 with zero
+                  deletes/writes. Idempotent.
   doctor          Read-only per-machine health report (S3a) -- Codex trust posture
                   (`~/.codex/config.toml` `[projects]`), HKCU MCP-secret env presence
                   (`setup-mcp-secrets.ps1 -Reload`, values masked), and the
@@ -55,9 +59,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import re
 import shutil
+import stat
 import subprocess
 import sys
 import tomllib
@@ -70,9 +76,15 @@ if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
 from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
-from scripts.sdd.check_agents_projection import (  # noqa: E402
+from scripts.sdd._common.projection_loader import (  # noqa: E402
     CODEX_CONFIG_RELPATH,
     CODEX_LOCK_KEY,
+    LOCK_RELPATH,
+    LockVerificationError,
+    VerifiedLock,
+    load_verified_lock,
+)
+from scripts.sdd.check_agents_projection import (  # noqa: E402
     FatalCheckError,
     load_mcp_projection,
     load_project_set,
@@ -81,7 +93,6 @@ from scripts.sdd.check_agents_projection import (  # noqa: E402
 SOURCE_DIR = Path(".claude/skills")
 AGENTS_DIR = Path(".agents")
 SKILLS_DIR = AGENTS_DIR / "skills"
-LOCK_RELPATH = Path(".agents.lock.json")
 CODEX_DIR = Path(".codex")
 MCP_JSON_RELPATH = Path(".mcp.json")
 
@@ -177,16 +188,22 @@ def _lock_hash(artifact_text: str) -> str:
     return "sha256:" + body_sha256(_lf(artifact_text))
 
 
-def _expected_lock(repo_root: Path, project: set[str]) -> dict[str, str]:
+def _expected_lock(
+    repo_root: Path, project: set[str], *, include_codex: bool
+) -> dict[str, str]:
     lock: dict[str, str] = {}
     for name in sorted(project):
         artifact = repo_root / SKILLS_DIR / name / "SKILL.md"
         if artifact.is_file():
             lock[name] = _lock_hash(artifact.read_text(encoding="utf-8"))
     config = repo_root / CODEX_CONFIG_RELPATH
-    if config.is_file():
+    if include_codex and config.is_file():
         # Reserved path-shaped key (Owner 拍板 2026-07-14); TOML has no frontmatter,
         # so body_sha256 degenerates to a whole-text hash — same recipe as V9 PJ043.
+        # `include_codex` is False when the manifest mcp project tier is empty:
+        # the lock is the OWNER LEDGER (PR-A1), and claiming a config the
+        # generator did not render would fabricate ownership over an unowned
+        # stale file — which a later sync would then wrongly "own" and delete.
         lock[CODEX_LOCK_KEY] = _lock_hash(config.read_text(encoding="utf-8"))
     return lock
 
@@ -335,36 +352,214 @@ def _expected_files(project: set[str]) -> set[Path]:
     return expected
 
 
-def do_sync(repo_root: Path, project: set[str]) -> list[str]:
-    """Regenerate artifacts + README + config.toml + lock; full reconcile.
+def _is_reparse(path: Path) -> bool:
+    """Symlink on any OS, or a Windows reparse point (junction etc.)."""
+    try:
+        st = os.lstat(path)
+    except OSError:
+        return False
+    if stat.S_ISLNK(st.st_mode):
+        return True
+    attrs = getattr(st, "st_file_attributes", 0)
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return bool(attrs & reparse_flag)
 
-    Every fail-able derivation (source presence, mcp load, emitter B render) runs
-    BEFORE the first write, so a FatalCheckError can never leave a half-updated
-    tree with a stale lock (review finding #330-3). Returns change log.
+
+def _reparse_ancestor(repo_root: Path, rel: Path) -> Path | None:
+    """First symlink/reparse directory component between repo_root and rel.
+
+    `_is_reparse` (lstat-based) runs BEFORE the exists() gate: a DANGLING
+    symlink/junction reports exists()==False (exists follows links), so the
+    old exists-first order let it bypass the hazard check entirely (Stage 11
+    finding F3 — an owned delete could land before the hazard fired)."""
+    cur = repo_root
+    for part in rel.parts[:-1]:
+        cur = cur / part
+        if _is_reparse(cur):
+            return cur
+        if not cur.exists():
+            return None
+    return None
+
+
+def _casefold_squatter(parent: Path, name: str) -> str | None:
+    """Direntry of `parent` that casefolds to `name` without being exactly it,
+    when the exact entry is absent. On a case-insensitive filesystem the exact
+    path then RESOLVES to that differently-cased neighbor, so a managed write
+    would clobber it and a managed delete would delete it — a path hazard."""
+    if not parent.is_dir():
+        return None
+    entries = {e.name for e in parent.iterdir()}
+    if name in entries:
+        return None  # exact entry exists; a case-variant is a distinct neighbor
+    for entry in entries:
+        if entry.casefold() == name.casefold():
+            return entry
+    return None
+
+
+def _casefold_component_squatter(repo_root: Path, rel: Path) -> tuple[str, str] | None:
+    """First (squatter_name, expected_component) along rel where the exact
+    entry is absent but a casefold variant exists — checked for EVERY
+    component, not just the leaf (Stage 11 finding F6: an unowned case-variant
+    DIRECTORY absorbs managed writes on a case-insensitive filesystem and gets
+    laundered into the owner ledger). Fails closed on every platform so the
+    behavior does not diverge between case-sensitive and -insensitive trees."""
+    cur = repo_root
+    for part in rel.parts:
+        squatter = _casefold_squatter(cur, part)
+        if squatter is not None:
+            return squatter, part
+        cur = cur / part
+        if not cur.exists():
+            return None  # nothing on disk from here down — no squat possible
+    return None
+
+
+def _preflight_owned_reconcile(
+    repo_root: Path, verified: VerifiedLock | None, desired: set[Path]
+) -> list[Path]:
+    """Owned-only reconcile preflight (ADR-039 D-012 revised; plan §5.5, PR-A1).
+
+    Returns the verified deletion list (relative paths, sorted). Deletion
+    requires ALL of: a verified lock owner (entry present AND on-disk bytes
+    still matching the lock hash), a safe path (regular file, no symlink or
+    reparse ancestor, no casefold squat), and absence from the desired set.
+    Every hazard raises FatalCheckError BEFORE the first delete/write —
+    unowned neighbors are never touched (AC-05); unknown/malformed lock and
+    unsafe paths fail closed with zero deletes/writes (AC-06).
+    """
+    deletions: list[Path] = []
+    if verified is not None:
+        for key in sorted(verified.owned_paths):
+            rel = Path(verified.owned_paths[key])
+            if rel in desired:
+                continue  # still a managed write target, not a deletion
+            target = repo_root / rel
+            ancestor = _reparse_ancestor(repo_root, rel)
+            if ancestor is not None:
+                raise FatalCheckError(
+                    f"symlink/reparse ancestor '{ancestor}' above lock-owned"
+                    f" '{rel.as_posix()}' (path hazard; zero delete/write)"
+                )
+            squat = _casefold_component_squatter(repo_root, rel)
+            if squat is not None:
+                raise FatalCheckError(
+                    f"'{squat[0]}' casefold-collides with component '{squat[1]}' of"
+                    f" lock-owned '{rel.as_posix()}' (owner ambiguity; zero"
+                    " delete/write)"
+                )
+            # is_symlink (lstat) runs OUTSIDE the exists() gate: a dangling
+            # symlink reports exists()==False but is still an on-disk entry
+            # we must not treat as ours (Stage 11 findings F3/F5).
+            if target.is_symlink() or (target.exists() and not target.is_file()):
+                raise FatalCheckError(
+                    f"lock-owned '{rel.as_posix()}' is not a regular file"
+                    " (path hazard; zero delete/write)"
+                )
+            if not target.exists():
+                continue  # already gone — nothing to delete
+            try:
+                on_disk = _lock_hash(target.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError) as exc:
+                raise FatalCheckError(
+                    f"lock-owned '{rel.as_posix()}' unreadable: {exc}"
+                    " (ownership unverifiable; zero delete/write)"
+                ) from exc
+            if on_disk != verified.entries[key]:
+                raise FatalCheckError(
+                    f"lock-owned '{rel.as_posix()}' does not match its lock hash"
+                    " (owner ambiguity — possible hand edit; zero delete/write)"
+                )
+            deletions.append(rel)
+    for rel in sorted(desired, key=lambda p: p.as_posix()):
+        ancestor = _reparse_ancestor(repo_root, rel)
+        if ancestor is not None:
+            raise FatalCheckError(
+                f"symlink/reparse ancestor '{ancestor}' above managed target"
+                f" '{rel.as_posix()}' (path hazard; zero write)"
+            )
+        cur = repo_root
+        for part in rel.parts[:-1]:
+            cur = cur / part
+            if cur.exists() and not cur.is_dir():
+                raise FatalCheckError(
+                    f"managed target '{rel.as_posix()}' is blocked by"
+                    f" non-directory '{cur.relative_to(repo_root).as_posix()}'"
+                    " (path hazard; zero write — remove it manually; owned-only"
+                    " sync will not delete what it does not own)"
+                )
+        target = repo_root / rel
+        # is_symlink (lstat) outside the exists() gate — a dangling symlink at
+        # a managed target would otherwise pass every guard and write THROUGH
+        # the link outside the managed tree (Stage 11 finding F5).
+        if target.is_symlink() or (target.exists() and not target.is_file()):
+            raise FatalCheckError(
+                f"managed target '{rel.as_posix()}' is squatted by a non-regular"
+                " file (path hazard; zero write — remove it manually)"
+            )
+        squat = _casefold_component_squatter(repo_root, rel)
+        if squat is not None:
+            raise FatalCheckError(
+                f"'{squat[0]}' casefold-collides with component '{squat[1]}' of"
+                f" managed target '{rel.as_posix()}' (path hazard; zero write —"
+                " remove or rename it manually)"
+            )
+    return sorted(deletions, key=lambda p: p.as_posix())
+
+
+def _prune_empty_dirs(repo_root: Path, start: Path, changes: list[str]) -> None:
+    """Remove now-empty directories left behind by an owned deletion — never
+    crossing a non-empty directory (unowned neighbors keep their parents
+    alive) and never removing the fixed tree roots."""
+    keep = {repo_root, repo_root / AGENTS_DIR, repo_root / SKILLS_DIR}
+    cur = start
+    while cur not in keep and repo_root in cur.parents:
+        try:
+            cur.rmdir()
+        except OSError:
+            return  # not empty — an unowned neighbor lives here
+        changes.append(f"remove {cur.relative_to(repo_root).as_posix()}/")
+        cur = cur.parent
+
+
+def do_sync(repo_root: Path, project: set[str]) -> list[str]:
+    """Regenerate artifacts + README + config.toml + lock; owned-only reconcile.
+
+    Every fail-able derivation (source presence, mcp load, emitter B render,
+    lock verification, deletion/write path safety) runs BEFORE the first
+    delete/write, so a FatalCheckError can never leave a half-updated tree
+    with a stale lock (review finding #330-3) — and the generator never
+    deletes content it cannot prove it owns (ADR-039 D-012 revised; Epic #499
+    PR-A1, AC-05/AC-06). Returns change log.
     """
     _require_sources(repo_root, project)
     mcp_project, posture, _never = load_mcp_projection(repo_root)
     rendered: str | None = None
     if mcp_project:
         rendered = _render_codex_config(mcp_project, posture, _load_mcp_json(repo_root))
-    changes: list[str] = []
 
-    # Full reconcile FIRST: delete anything under .agents/ outside the expected set,
-    # so a stray file/dir squatting on an expected path never crashes the copy pass.
-    expected = _expected_files(project)
-    expected_dirs = {p.parent for p in expected} | {AGENTS_DIR, SKILLS_DIR}
-    agents_root = repo_root / AGENTS_DIR
-    if agents_root.is_dir():
-        for path in sorted(agents_root.rglob("*"), reverse=True):
-            if not path.exists():
-                continue  # parent already removed earlier in the walk
-            rel = path.relative_to(repo_root)
-            if path.is_file() and rel not in expected:
-                path.unlink()
-                changes.append(f"remove {rel.as_posix()}")
-            elif path.is_dir() and rel not in expected_dirs:
-                shutil.rmtree(path)
-                changes.append(f"remove {rel.as_posix()}/")
+    # Owned-only reconcile preflight: the OLD on-disk lock is the owner ledger.
+    try:
+        verified = load_verified_lock(repo_root)
+    except LockVerificationError as exc:
+        raise FatalCheckError(str(exc)) from exc
+    desired = _expected_files(project)
+    if rendered is not None:
+        desired.add(CODEX_CONFIG_RELPATH)
+    # The lock itself is a managed write target — it gets the same hazard
+    # battery (dir squat / symlink / casefold), or its final write_text would
+    # be the one mutation that can fail AFTER others landed (Stage 11
+    # finding F2; do_sync's zero-write-on-hazard promise must include it).
+    desired.add(LOCK_RELPATH)
+    deletions = _preflight_owned_reconcile(repo_root, verified, desired)
+
+    changes: list[str] = []
+    for rel in deletions:
+        path = repo_root / rel
+        path.unlink()
+        changes.append(f"remove {rel.as_posix()}")
+        _prune_empty_dirs(repo_root, path.parent, changes)
 
     for name in sorted(project):
         src = _source_path(repo_root, name)
@@ -381,33 +576,21 @@ def do_sync(repo_root: Path, project: set[str]) -> list[str]:
         readme.write_text(README_TEMPLATE, encoding="utf-8", newline="\n")
         changes.append(f"write {AGENTS_DIR.as_posix()}/README.md")
 
-    # Emitter B: .codex/config.toml (S2 #330; rendered up top, before any write).
-    # Reconcile the .codex/ tree first, then write; an empty mcp project tier
-    # means the whole tree goes.
-    config_path = repo_root / CODEX_CONFIG_RELPATH
-    codex_dir = repo_root / CODEX_DIR
+    # Emitter B: .codex/config.toml (S2 #330; rendered up top, before any
+    # write). Unowned neighbors under .codex/ (future hooks/rules, user files)
+    # are preserved; an empty mcp project tier deletes only the lock-owned
+    # config — already handled by the owned deletion pass above.
     if rendered is not None:
-        if codex_dir.is_dir():
-            for path in sorted(codex_dir.rglob("*"), reverse=True):
-                if not path.exists():
-                    continue
-                rel = path.relative_to(repo_root)
-                if path.is_file() and rel != CODEX_CONFIG_RELPATH:
-                    path.unlink()
-                    changes.append(f"remove {rel.as_posix()}")
-                elif path.is_dir():
-                    shutil.rmtree(path)
-                    changes.append(f"remove {rel.as_posix()}/")
+        config_path = repo_root / CODEX_CONFIG_RELPATH
         if not config_path.is_file() or _read_lf(config_path) != rendered:
             config_path.parent.mkdir(parents=True, exist_ok=True)
             config_path.write_text(rendered, encoding="utf-8", newline="\n")
             changes.append(f"write {CODEX_CONFIG_RELPATH.as_posix()}")
-    elif codex_dir.exists():
-        shutil.rmtree(codex_dir)
-        changes.append(f"remove {CODEX_DIR.as_posix()}/")
 
     lock_path = repo_root / LOCK_RELPATH
-    lock_text = _lock_text(_expected_lock(repo_root, project))
+    lock_text = _lock_text(
+        _expected_lock(repo_root, project, include_codex=rendered is not None)
+    )
     if not lock_path.is_file() or _read_lf(lock_path) != lock_text:
         lock_path.write_text(lock_text, encoding="utf-8", newline="\n")
         changes.append(f"write {LOCK_RELPATH.as_posix()}")
@@ -452,14 +635,22 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
             for path in sorted(agents_root.rglob("*")):
                 rel = path.relative_to(repo_root)
                 if path.is_file() and rel not in expected:
-                    drift.append(f"unexpected file: {rel.as_posix()} (full reconcile)")
+                    drift.append(
+                        f"unexpected file: {rel.as_posix()} (unowned neighbor —"
+                        " owned-only sync will NOT delete it; remove manually)"
+                    )
                 elif path.is_dir() and rel not in expected_dirs:
-                    drift.append(f"unexpected directory: {rel.as_posix()}/ (full reconcile)")
+                    drift.append(
+                        f"unexpected directory: {rel.as_posix()}/ (unowned neighbor —"
+                        " owned-only sync will NOT delete it; remove manually)"
+                    )
 
     mcp_project, posture, _never = load_mcp_projection(repo_root)
     config_path = repo_root / CODEX_CONFIG_RELPATH
     if check_mcp:
-        codex_dir = repo_root / CODEX_DIR
+        # Unowned neighbors under .codex/ (future hooks/rules, user files) are
+        # NOT drift (owned-only reconcile, ADR-039 D-012 revised; Epic #499
+        # PR-A1) — V9 PJ045 reports them info-only for visibility.
         if mcp_project:
             rendered = _render_codex_config(
                 mcp_project, posture, _load_mcp_json(repo_root)
@@ -472,24 +663,21 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
                     " manifest (hand-edited artifact OR source changed without"
                     " re-running sync)"
                 )
-        elif codex_dir.exists():
+        elif config_path.is_file():
             drift.append(
-                f"unexpected {CODEX_DIR.as_posix()}/ tree (manifest mcp project tier"
-                " is empty; full reconcile)"
+                f"stale {CODEX_CONFIG_RELPATH.as_posix()} (manifest mcp project tier"
+                " is empty; owned-only reconcile deletes it only with a verified"
+                " lock owner — run sync, or remove it manually if unowned;"
+                " other .codex/ neighbors are always preserved)"
             )
-        if codex_dir.is_dir():
-            for path in sorted(codex_dir.rglob("*")):
-                rel = path.relative_to(repo_root)
-                if path.is_file() and rel != CODEX_CONFIG_RELPATH:
-                    drift.append(f"unexpected file: {rel.as_posix()} (full reconcile)")
-                elif path.is_dir():
-                    drift.append(f"unexpected directory: {rel.as_posix()}/ (full reconcile)")
 
     lock_path = repo_root / LOCK_RELPATH
     if not lock_path.is_file():
         drift.append(f"missing {LOCK_RELPATH.as_posix()}")
     elif surface == "all":
-        if _read_lf(lock_path) != _lock_text(_expected_lock(repo_root, project)):
+        if _read_lf(lock_path) != _lock_text(
+            _expected_lock(repo_root, project, include_codex=bool(mcp_project))
+        ):
             drift.append(
                 f"{LOCK_RELPATH.as_posix()} out of date (lock is regenerated by sync,"
                 " one sorted entry per line)"
@@ -513,16 +701,25 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
             for name in sorted(set(lock) - project - {CODEX_LOCK_KEY}):
                 drift.append(f"unknown lock entry '{name}' (regenerate via sync)")
         else:  # mcp
-            if config_path.is_file():
+            # include_codex semantics (PR-A1): the reserved key is expected
+            # ONLY when the mcp project tier is non-empty — with an empty tier
+            # the lock correctly omits it (claiming an unowned stale config
+            # would fabricate ownership), so demanding it here would emit a
+            # false, sync-unfixable diagnosis (Stage 11 finding F4).
+            if config_path.is_file() and mcp_project:
                 expected_hash = _lock_hash(config_path.read_text(encoding="utf-8"))
                 if lock.get(CODEX_LOCK_KEY) != expected_hash:
                     drift.append(
                         f"lock reserved key '{CODEX_LOCK_KEY}' missing or out of date"
                     )
             elif CODEX_LOCK_KEY in lock:
+                reason = (
+                    f"{CODEX_CONFIG_RELPATH.as_posix()} absent"
+                    if not config_path.is_file()
+                    else "manifest mcp project tier is empty"
+                )
                 drift.append(
-                    f"stale lock reserved key '{CODEX_LOCK_KEY}'"
-                    f" ({CODEX_CONFIG_RELPATH.as_posix()} absent)"
+                    f"stale lock reserved key '{CODEX_LOCK_KEY}' ({reason})"
                 )
 
     return drift
@@ -699,8 +896,9 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
     )
     parser.add_argument(
         "command", nargs="?", choices=["sync", "doctor"],
-        help="sync: regenerate artifacts + README + config.toml + lock (full"
-             " reconcile; idempotent). doctor: read-only per-machine trust/env/canary"
+        help="sync: regenerate artifacts + README + config.toml + lock"
+             " (owned-only reconcile, ADR-039 D-012 revised; idempotent)."
+             " doctor: read-only per-machine trust/env/canary"
              " report (S3a; never in CI; writes nothing, D-015)",
     )
     parser.add_argument(
