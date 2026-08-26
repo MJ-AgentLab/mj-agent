@@ -1,0 +1,782 @@
+{
+  "codex_build": "codex-cli 0.147.0",
+  "completed_at": "2026-08-26T05:30:07Z",
+  "model_id": "gpt-5.6-terra",
+  "observations": [
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-doc-validate--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-doc-validate--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-doc-validate--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-doc-validate--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-doc-validate--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-doc-validate",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-doc-validate--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-flow-diagnose--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-diagnose--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-diagnose--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-diagnose--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-diagnose--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-diagnose",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-diagnose--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-implement",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-implement--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-flow-intake--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-intake--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-intake--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-intake--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-intake--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-intake",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-intake--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-plan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-plan--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-post-merge--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-post-merge--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-post-merge--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-post-merge--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-post-merge--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-post-merge",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-post-merge--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-repo-scan--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-repo-scan--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-repo-scan--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-repo-scan--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-repo-scan--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-repo-scan",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-repo-scan--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-review-respond--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-review-respond--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-review-respond--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-review-respond--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-review-respond--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-review-respond",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-review-respond--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-scope-drift--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-flow-scope-drift--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-scope-drift--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-scope-drift--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-flow-scope-drift--positive",
+      "run_index": 2,
+      "warning_codes": [
+        "EXEC_TIMEOUT"
+      ]
+    },
+    {
+      "capability_id": "mj-agent-flow-scope-drift",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-scope-drift--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-self-review",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-self-review--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-verify--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-verify--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-flow-verify--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-verify--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-verify--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-flow-verify",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-flow-verify--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-branch--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-branch--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-branch--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-branch--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-branch--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-branch",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-branch--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-commit",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-commit--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-delete--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-delete--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-delete--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-delete--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-delete--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-delete",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-delete--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-issue--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-issue--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-issue--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-issue--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-issue--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-issue",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-issue--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-pr--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-pr--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-pr--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-pr--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-pr--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-pr",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-pr--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-git-push--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-git-push--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-git-push--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-push--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-push--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-push",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-push--positive",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-sync--near-negative",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "NOT_TRIGGERED",
+      "prompt_id": "mj-agent-git-sync--near-negative",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "TRIGGERED_OTHER",
+      "prompt_id": "mj-agent-git-sync--near-negative",
+      "run_index": 3,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-sync--positive",
+      "run_index": 1,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-sync--positive",
+      "run_index": 2,
+      "warning_codes": []
+    },
+    {
+      "capability_id": "mj-agent-git-sync",
+      "observed_class": "TRIGGERED_TARGET",
+      "prompt_id": "mj-agent-git-sync--positive",
+      "run_index": 3,
+      "warning_codes": []
+    }
+  ],
+  "probe_kind": "model-telemetry-v1",
+  "prompt_fixture_sha256": "64aa18debf2a5ee5cc2774863bd1f1b8343a2b88b082e78de347d3be9675c31f",
+  "repetitions": 3,
+  "repo_head": "36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f",
+  "run_id": "model-telemetry-v1-20260826T041829Z-36f298a9995f",
+  "sampling_config": {
+    "cli_args_sha256": "22a169ef5acf520739e90d2fc292f205aab38edc1b7ac04ad3bb56532ad110bf",
+    "project_config_sha256": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+    "reasoning_effort": null,
+    "seed": null,
+    "temperature": null
+  },
+  "schema_version": 1,
+  "started_at": "2026-08-26T04:18:29Z",
+  "warnings": [
+    "EXEC_TIMEOUT"
+  ]
+}
