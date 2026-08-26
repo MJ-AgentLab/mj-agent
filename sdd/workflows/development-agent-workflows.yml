@@ -1,0 +1,213 @@
+# sdd/workflows/development-agent-workflows.yml — workflow/dependency semantics
+# registry for the 13 translated Codex carriers (Epic #499 plan §2.4/§2.5).
+#
+# DORMANT until the PR-C1 cutover: the real manifest stays schema_version 1 and
+# no translated artifact exists on the real tree; this registry is consumed by
+# the dormant v2 engine (scripts/sdd/_common/skill_renderer.py) in tests and by
+# the PR-P1b production-renderer evidence run.
+#
+# PROTECTED-ADJACENT (D-017; A14 row (c) typed source — pre-registered at PR-A0).
+# OWNER_APPROVAL_REQUIRED before modifying (`declared-contract-change`).
+#
+# Layering: this file owns WORKFLOW/DEPENDENCY semantics only. Harness-primitive
+# disposition (lexicon / interaction sites / transform templates) lives in
+# sdd/adapters/codex-skill-translation.yml; neither file duplicates the other —
+# translation refers to edges by ID.
+#
+# Structure (schema_version 1; strict loader refuses tags/aliases/dup keys/extra
+# keys — plan §2.8.1):
+#   workflows[] — one record per translated capability: workflow_id (unique,
+#     carrier_binding.workflow_id target), capability_id (reverse-unique),
+#     codex_discovery_summary (single line, <= 1024 UTF-8 bytes — the Codex
+#     discovery budget; MUST contain every required_trigger_terms entry; must
+#     pass the translation-map lexicon), required_trigger_terms.
+#   edges[] — three orthogonal axes per plan §2.5: relation call|handoff|
+#     reference; activation always|conditional|owner-gated; closure
+#     carrier-required|substitute-required|advisory. Layer-A edges (no
+#     source_evidence) MUST be re-derivable from the three scan regions of the
+#     `from` source; layer-B edges carry a marker_id/path/marker anchor whose
+#     verbatim marker hits the path exactly once. Every edge whose target has
+#     no Codex carrier carries a non-empty codex_substitute.
+#   routes[] — deterministic substitute/route texts referenced by edges.
+
+schema_version: 1
+
+workflows:
+  - workflow_id: doc-validate
+    capability_id: mj-agent-doc-validate
+    codex_discovery_summary: "Validate mj-agent documentation compliance (A1-A14 + OB1-OB5 wikilink/frontmatter checks) and report per-check PASS/FAIL/WARN/SKIP; use when asked to validate documentation, 检查文档格式, check docs, 文档合规审计; not for authoring documents and not for the Stage 10 command matrix."
+    required_trigger_terms: ["validate documentation", "检查文档格式", "check docs"]
+  - workflow_id: flow-intake
+    capability_id: mj-agent-flow-intake
+    codex_discovery_summary: "Stage 0 task intake: convert a raw requirement into an Intake Result with risk level, scope, documentation needs and stop points; use for 评估任务, 需求评估, task intake, turning a vague description into an actionable engineering task; stops before issue creation."
+    required_trigger_terms: ["task intake", "需求评估", "评估任务"]
+  - workflow_id: flow-plan
+    capability_id: mj-agent-flow-plan
+    codex_discovery_summary: "Stage 4 plan authoring: produce the complete working-plan body with 任务拆解, execution order, risks, verification and acceptance criteria; use when asked to 写 plan, draft plan, lay out an implementation plan; the body lands on disk only after the Owner approves."
+    required_trigger_terms: ["写 plan", "draft plan", "任务拆解"]
+  - workflow_id: flow-implement
+    capability_id: mj-agent-flow-implement
+    codex_discovery_summary: "Stage 8 coding methodology: red-green-refactor TDD, root-cause-first bugfixing, fresh-evidence completion checks and 3-flavor change classification; use when asked to 开始编码, implement a confirmed plan or spec; in-source canonical (B-flavor) edits always stop for Owner approval."
+    required_trigger_terms: ["开始编码", "implement", "TDD"]
+  - workflow_id: flow-repo-scan
+    capability_id: mj-agent-flow-repo-scan
+    codex_discovery_summary: "Stage 3 repo scan: systematic 事实核查 of repo state against the issue/plan before coding, producing the Documentation Decision matrix and a plan verdict; use for repo scan, checking whether a plan still holds, stale-doc reverse scan; strictly read-only."
+    required_trigger_terms: ["repo scan", "事实核查", "Documentation Decision"]
+  - workflow_id: flow-verify
+    capability_id: mj-agent-flow-verify
+    codex_discovery_summary: "Stage 10 local verification: run the read-only check matrix (lint, types, offline tests, doc validators) and gate side-effect probes behind explicit confirmation; use for 本地验证, local verification, 跑测试 before commit; destructive operations are never auto-run."
+    required_trigger_terms: ["本地验证", "local verification", "跑测试"]
+  - workflow_id: flow-scope-drift
+    capability_id: mj-agent-flow-scope-drift
+    codex_discovery_summary: "Stage 9 scope drift check: compare the working diff against the approved plan scope and report per-file alignment with continue/amend/split recommendations; use for scope drift, 范围漂移, drift check during implementation."
+    required_trigger_terms: ["scope drift", "范围漂移", "drift check"]
+  - workflow_id: flow-self-review
+    capability_id: mj-agent-flow-self-review
+    codex_discovery_summary: "Stage 11 pre-commit self-review: verify the staged diff against the plan, run the scope-drift sub-check and the 12-item checklist, and draft the commit message; use for AI 自检, self review, commit 前检查; outputs go/no-go and never commits by itself."
+    required_trigger_terms: ["AI 自检", "self review", "commit 前检查"]
+  - workflow_id: flow-review-respond
+    capability_id: mj-agent-flow-review-respond
+    codex_discovery_summary: "Stage 15 review response on your own PR: fetch review comments, classify each (bug/suggestion/style/architecture/requirement/test), analyze CI failures, draft fixes and replies; use for 处理 review, respond to review, CI failure 分析; replies post only after Owner approval."
+    required_trigger_terms: ["处理 review", "respond to review", "CI failure 分析"]
+  - workflow_id: flow-post-merge
+    capability_id: mj-agent-flow-post-merge
+    codex_discovery_summary: "Stage 17 post-merge cleanup: close the linked issue, update the changelog, open follow-up issues, flip the plan state after Owner approval and trigger branch deletion plus mirror sync; use right after a PR is merged, for post-merge cleanup, PR 合并后收尾."
+    required_trigger_terms: ["post-merge", "PR 合并后", "post-merge cleanup"]
+  - workflow_id: git-branch
+    capability_id: mj-agent-git-branch
+    codex_discovery_summary: "Create branches for the bare-repo worktree model: pick the branch type (feature/bugfix/documentation/maintain/hotfix) and generate the worktree add command; use for 创建分支, create branch, starting new work; branches are never created in-place with checkout -b."
+    required_trigger_terms: ["创建分支", "create branch", "worktree add"]
+  - workflow_id: git-issue
+    capability_id: mj-agent-git-issue
+    codex_discovery_summary: "Create GitHub issues from the 8 in-repo templates with branch-type routing, urgency check and full body preview; use for 创建issue, create issue, report bug, filing a new task; the create command runs only after explicit confirmation."
+    required_trigger_terms: ["创建issue", "create issue", "report bug"]
+  - workflow_id: git-pr
+    capability_id: mj-agent-git-pr
+    codex_discovery_summary: "Create pull requests with the per-branch-type template, an explicit base branch and body-file discipline, including the dual-track self-check; use for 创建PR, create PR, pull request preparation; merge is never executed."
+    required_trigger_terms: ["创建PR", "create PR", "pull request"]
+
+edges:
+  # ---- layer A: from the 13 translated sources (three scan regions) --------
+  - {id: edge-doc-validate-git-commit, from: mj-agent-doc-validate, to: mj-agent-git-commit, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-doc-validate-doc-author
+    from: mj-agent-doc-validate
+    to: mj-agent-doc-author
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: inline-procedure, route_ref: route-doc-family-adapter}
+  - {id: edge-flow-intake-git-issue, from: mj-agent-flow-intake, to: mj-agent-git-issue, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-intake-git-branch, from: mj-agent-flow-intake, to: mj-agent-git-branch, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-intake-flow-repo-scan, from: mj-agent-flow-intake, to: mj-agent-flow-repo-scan, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-flow-plan-doc-author
+    from: mj-agent-flow-plan
+    to: mj-agent-doc-author
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: inline-procedure, route_ref: route-doc-family-adapter}
+  - {id: edge-flow-plan-flow-implement, from: mj-agent-flow-plan, to: mj-agent-flow-implement, relation: handoff, activation: always, closure: advisory}
+  - {id: edge-flow-implement-flow-verify, from: mj-agent-flow-implement, to: mj-agent-flow-verify, relation: handoff, activation: always, closure: advisory}
+  - id: edge-flow-implement-runtime-wildcard
+    from: mj-agent-flow-implement
+    to: mj-agent-runtime-*
+    relation: reference
+    activation: owner-gated
+    closure: advisory
+    codex_substitute: {kind: owner-manual-route, route_ref: route-runtime-owner-gated, policy_ref: runtime-skill-content-change}
+  - id: edge-flow-repo-scan-doc-author
+    from: mj-agent-flow-repo-scan
+    to: mj-agent-doc-author
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: inline-procedure, route_ref: route-doc-family-adapter}
+  - {id: edge-flow-repo-scan-flow-plan, from: mj-agent-flow-repo-scan, to: mj-agent-flow-plan, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-repo-scan-git-issue, from: mj-agent-flow-repo-scan, to: mj-agent-git-issue, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-verify-flow-self-review, from: mj-agent-flow-verify, to: mj-agent-flow-self-review, relation: handoff, activation: always, closure: advisory}
+  - {id: edge-flow-scope-drift-flow-self-review, from: mj-agent-flow-scope-drift, to: mj-agent-flow-self-review, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-flow-scope-drift-runtime-wildcard
+    from: mj-agent-flow-scope-drift
+    to: mj-agent-runtime-*
+    relation: reference
+    activation: owner-gated
+    closure: advisory
+    codex_substitute: {kind: owner-manual-route, route_ref: route-runtime-owner-gated, policy_ref: runtime-skill-content-change}
+  - {id: edge-flow-self-review-flow-scope-drift, from: mj-agent-flow-self-review, to: mj-agent-flow-scope-drift, relation: call, activation: always, closure: carrier-required}
+  - {id: edge-flow-self-review-git-commit, from: mj-agent-flow-self-review, to: mj-agent-git-commit, relation: call, activation: always, closure: carrier-required}
+  - {id: edge-flow-self-review-git-push, from: mj-agent-flow-self-review, to: mj-agent-git-push, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-flow-review-respond-doc-sync
+    from: mj-agent-flow-review-respond
+    to: mj-agent-doc-sync
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: inline-procedure, route_ref: route-doc-family-adapter}
+  - {id: edge-flow-review-respond-flow-implement, from: mj-agent-flow-review-respond, to: mj-agent-flow-implement, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-review-respond-flow-verify, from: mj-agent-flow-review-respond, to: mj-agent-flow-verify, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-flow-review-respond-git-check-merge
+    from: mj-agent-flow-review-respond
+    to: mj-agent-git-check-merge
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: owner-manual-route, route_ref: route-check-merge-owner, policy_ref: agents-git-owner-gate}
+  - {id: edge-flow-review-respond-git-commit, from: mj-agent-flow-review-respond, to: mj-agent-git-commit, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-review-respond-git-push, from: mj-agent-flow-review-respond, to: mj-agent-git-push, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-flow-review-respond-flow-scope-drift, from: mj-agent-flow-review-respond, to: mj-agent-flow-scope-drift, relation: call, activation: conditional, closure: carrier-required}
+  - {id: edge-flow-review-respond-git-issue, from: mj-agent-flow-review-respond, to: mj-agent-git-issue, relation: call, activation: conditional, closure: carrier-required}
+  - {id: edge-flow-post-merge-git-branch, from: mj-agent-flow-post-merge, to: mj-agent-git-branch, relation: call, activation: conditional, closure: carrier-required}
+  - {id: edge-flow-post-merge-git-delete, from: mj-agent-flow-post-merge, to: mj-agent-git-delete, relation: call, activation: always, closure: carrier-required}
+  - {id: edge-flow-post-merge-git-issue, from: mj-agent-flow-post-merge, to: mj-agent-git-issue, relation: call, activation: conditional, closure: carrier-required}
+  - {id: edge-flow-post-merge-git-sync, from: mj-agent-flow-post-merge, to: mj-agent-git-sync, relation: call, activation: always, closure: carrier-required}
+  - {id: edge-git-branch-git-commit, from: mj-agent-git-branch, to: mj-agent-git-commit, relation: handoff, activation: always, closure: advisory}
+  - {id: edge-git-issue-git-branch, from: mj-agent-git-issue, to: mj-agent-git-branch, relation: handoff, activation: conditional, closure: advisory}
+  - id: edge-git-pr-git-check-merge
+    from: mj-agent-git-pr
+    to: mj-agent-git-check-merge
+    relation: handoff
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: owner-manual-route, route_ref: route-check-merge-owner, policy_ref: agents-git-owner-gate}
+  # ---- layer A: from the 5 byte-copy sources (registry-classified; byte-copy
+  # carriers stay byte-identical, so no route is ever rendered into them) -----
+  - {id: edge-flow-diagnose-git-commit, from: mj-agent-flow-diagnose, to: mj-agent-git-commit, relation: handoff, activation: conditional, closure: advisory}
+  - {id: edge-git-commit-git-push, from: mj-agent-git-commit, to: mj-agent-git-push, relation: handoff, activation: always, closure: advisory}
+  - {id: edge-git-delete-git-sync, from: mj-agent-git-delete, to: mj-agent-git-sync, relation: handoff, activation: conditional, closure: advisory}
+  # ---- layer B: marker-anchored declared edges (real dependencies outside the
+  # three scan regions; checker verifies each marker hits its path exactly once)
+  - id: edge-flow-implement-flow-diagnose
+    from: mj-agent-flow-implement
+    to: mj-agent-flow-diagnose
+    relation: call
+    activation: conditional
+    closure: carrier-required
+    source_evidence:
+      marker_id: flow-implement-diagnose-delegation
+      path: .claude/skills/mj-agent-flow-implement/SKILL.md
+      marker: "委派判据（硬 bug / perf / flaky）"
+      construct: paragraph
+      placement: after-paragraph
+  - id: edge-flow-diagnose-infra-studio-probe
+    from: mj-agent-flow-diagnose
+    to: mj-agent-infra-studio-probe
+    relation: reference
+    activation: conditional
+    closure: advisory
+    codex_substitute: {kind: tool-neutral-command, route_ref: route-studio-probe-manual}
+    source_evidence:
+      marker_id: flow-diagnose-studio-probe-route
+      path: .claude/skills/mj-agent-flow-diagnose/SKILL.md
+      marker: "Studio repro（`/mj-agent-infra-studio-probe`）"
+      construct: table
+      placement: after-table
+
+routes:
+  - route_id: route-doc-family-adapter
+    text: "No native Codex carrier for the doc family: follow the shared documentation semantics (sdd/adapters/development-agent.md + docs/_templates), propose the document body in conversation, obtain Owner approval, then write it and run the repo doc validators."
+  - route_id: route-check-merge-owner
+    text: "Merge readiness and the merge itself are Owner actions: report CI/review state, stop at AWAITING_HUMAN_MERGE, and never merge."
+  - route_id: route-runtime-owner-gated
+    text: "In-source canonical runtime surfaces are Owner-gated: propose the exact diff in conversation and stop at OWNER_APPROVAL_REQUIRED (runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync per surface); apply only after the Owner approves."
+  - route_id: route-studio-probe-manual
+    text: "Run the LangGraph Studio probe manually: start `uv run langgraph dev`, execute the H1/H2/H3/R1/R2 probe matrix, and treat the results as advisory evidence."
