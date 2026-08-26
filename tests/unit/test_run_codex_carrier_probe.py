@@ -354,7 +354,13 @@ def test_deterministic_pass_on_clean_tree(synthetic_repo: Path, user_home: Path,
     )
     assert doc["probe_kind"] == "deterministic-gate-v1"
     assert doc["verdict"] == "PASS"
-    assert len(doc["cases"]) == 70
+    # 70 P1a families + det-00-fixture-pin (added at PR-P1b so a fixture pinned at
+    # another revision explains itself instead of only surfacing as det-02 noise).
+    assert len(doc["cases"]) == 71
+    pin = [c for c in doc["cases"] if c["case_id"] == "det-00-fixture-pin"]
+    assert len(pin) == 1
+    assert pin[0]["status"] == "PASS"
+    assert pin[0]["reason_code"] == "OK"
     assert {c["status"] for c in doc["cases"]} == {"PASS"}
     case_keys = [
         "case_id", "capability_id", "surface", "fixture_id", "fixture_sha256",
@@ -400,6 +406,80 @@ def test_deterministic_detects_tampered_source_digest(synthetic_repo: Path, user
     art = [c for c in doc["cases"] if c["case_id"] == "det-06-artifact-digest--mj-agent-git-push"]
     assert art[0]["status"] == "FAIL"
     assert art[0]["reason_code"] == "ARTIFACT_DIGEST_MISMATCH"
+
+
+def test_deterministic_reports_a_fixture_pinned_at_another_revision(
+    synthetic_repo: Path, user_home: Path, tmp_path: Path
+) -> None:
+    """The F6 control: a fixture pinned at an older revision must SAY so.
+
+    The commit here leaves all 18 sources untouched, so det-02 stays green —
+    that separation is the point. Before det-00 existed, a stale pin could only
+    be inferred indirectly from whichever det-02/det-05 cases happened to move,
+    which is exactly how a procedural prerequisite gets mistaken for a defect.
+    """
+    fixtures_dir = synthetic_repo / "evidence" / "development-agent-v8" / "probe" / "fixtures"
+    probe.emit_fixtures(synthetic_repo, fixtures_dir)
+    pinned = json.loads((fixtures_dir / probe.FIXTURE_NAME).read_bytes())["pinned_head"]
+
+    (synthetic_repo / "UNRELATED.md").write_bytes(b"not a carrier\n")
+    _git(synthetic_repo, "add", "-A")
+    _git(synthetic_repo, "commit", "-q", "-m", "unrelated change")
+    assert probe.git_head(synthetic_repo) != pinned
+
+    out_path, verdict = _run_det(synthetic_repo, user_home, tmp_path, "stalepin")
+    assert verdict == "FAIL"
+    doc = json.loads(out_path.read_bytes().decode("utf-8"))
+    pin = [c for c in doc["cases"] if c["case_id"] == "det-00-fixture-pin"]
+    assert pin[0]["status"] == "FAIL"
+    assert pin[0]["reason_code"] == "FIXTURE_PIN_STALE"
+    # every source-level case is still green: the pin is the only complaint
+    src_cases = [c for c in doc["cases"] if c["case_id"].startswith("det-02-")]
+    assert len(src_cases) == len(probe.REQUIRED_18)
+    assert {c["status"] for c in src_cases} == {"PASS"}
+    failures = {c["case_id"] for c in doc["cases"] if c["status"] != "PASS"}
+    assert failures == {"det-00-fixture-pin"}
+
+
+def test_deterministic_p1b_render_failure_is_recorded_not_a_traceback(
+    synthetic_repo: Path, user_home: Path, tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A candidate render that cannot run must still produce an evidence file.
+
+    Plan §1.4 requires the condition to enter a structured status, and §2.8.6
+    requires a result JSON to exist; aborting with a traceback would leave the
+    operator with nothing to read and no recorded verdict.
+    """
+    fixtures_dir = synthetic_repo / "evidence" / "development-agent-v8" / "probe" / "fixtures"
+    probe.emit_fixtures(synthetic_repo, fixtures_dir)
+    (fixtures_dir / probe.P1B_FIXTURE_NAME).write_bytes(
+        (fixtures_dir / probe.FIXTURE_NAME).read_bytes()
+    )
+
+    def _boom(*_args: object, **_kwargs: object) -> None:
+        raise RuntimeError("typed sources unavailable")
+
+    monkeypatch.setattr(probe, "build_candidate_render", _boom)
+    out_path, verdict = probe.run_deterministic(
+        repo_root=synthetic_repo,
+        out_dir=tmp_path / "out-renderfail",
+        local_dir=tmp_path / "local-renderfail",
+        fixtures_dir=fixtures_dir,
+        codex_bin="codex",
+        runner=make_fake_runner(),
+        parent_env={"PATH": "x"},
+        user_codex_home=user_home,
+        stage_parent=tmp_path / "stage-renderfail",
+        unit="p1b",
+    )
+    assert verdict == "ERROR"
+    assert out_path.is_file(), "an evidence file must exist even on a render refusal"
+    doc = json.loads(out_path.read_bytes().decode("utf-8"))
+    case = [c for c in doc["cases"] if c["case_id"] == "det-18-candidate-render"]
+    assert len(case) == 1
+    assert case[0]["status"] == "ERROR"
+    assert case[0]["reason_code"] == "CANDIDATE_RENDER_FAILED"
 
 
 def test_deterministic_blocked_when_codex_unavailable(synthetic_repo: Path, user_home: Path, tmp_path: Path) -> None:

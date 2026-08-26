@@ -1,4 +1,4 @@
-"""scripts/sdd/run_codex_carrier_probe.py — Epic #499 PR-P1a runtime feasibility probe.
+"""scripts/sdd/run_codex_carrier_probe.py — Epic #499 runtime feasibility probe.
 
 Implements the named producer of `plans/[PLAN]_codex_cross_carrier_kernel.md` §2.8.6:
 two mutually independent JSON evidence files, never aggregated with each other:
@@ -17,21 +17,41 @@ two mutually independent JSON evidence files, never aggregated with each other:
     no chain-of-thought — and it is structurally incapable of altering the
     deterministic verdict (AC-09): this schema has no verdict field at all.
 
-Design points the plan leaves to the producer (Owner-ratified at PR-P1a Gate 1):
+Two delivery units share this producer, selected with ``--unit`` (plan §5.4/§5.6):
+
+``p1a``  candidate carriers are the **raw source blobs** (the production renderer
+         did not exist yet). Merge condition was deterministic ``PASS_CANDIDATE``.
+``p1b``  candidate carriers are the output of the **exact production renderer /
+         module / version** landed by PR-B — ``agents_sync._v2_desired_state`` over
+         a derived candidate v2 manifest. Merge condition is deterministic ``PASS``.
+         P1b additionally pins renderer-module identity, render determinism and
+         per-output exact bytes, and measures the discovery budget against the
+         *rendered* description rather than the raw source description.
+
+Design points the plan leaves to the producer (Owner-ratified at Gate 1):
 
 - ``observed_class`` closed enum: ``TRIGGERED_TARGET | TRIGGERED_OTHER |
   NOT_TRIGGERED | UNPARSEABLE``. Classification parses the ``codex exec --json``
   event stream deterministically; it never uses the model's self-report.
-- description budget: a candidate PASSes when its full source frontmatter
-  description survives, uncut, into the fresh-process discovery rendering
-  (``codex debug prompt-input``) of the staged 18-candidate layout.
+- description budget: a candidate PASSes when its frontmatter description reaches
+  the fresh-process discovery rendering (``codex debug prompt-input``) in a legal
+  shape — complete, or an exact prefix truncation at ``DISCOVERY_BUDGET_CHARS``
+  with the ``...`` marker. Oversize is recorded data, not a failure.
+- frontmatter description scalars are **unquoted before comparison**: the
+  translated renderer emits ``description`` as a JSON-style double-quoted YAML
+  scalar, and Codex surfaces the *parsed* value. Comparing the quoted literal
+  against the surfaced value would report a spurious ``malformed`` (PR-P1b Stage 3).
+  No raw source uses a quoted description, so P1a semantics are unchanged.
 - raw captures (prompt-input JSON, mcp list output, exec event streams) stay in
   the gitignored local dir; the tracked evidence files carry digests only, so
   user-layer configuration details never enter the repository.
 
-Candidate bytes are taken from the **git blob** (``git show HEAD:<path>``), never
+Candidate bytes are taken from the **git blob** (``git show <rev>:<path>``), never
 the worktree file: `.gitattributes` makes Windows checkouts CRLF while the blob
-is LF, and a worktree-byte identity could not be reproduced on Linux CI.
+is LF, and a worktree-byte identity could not be reproduced on Linux CI. P1b
+therefore materializes the render inputs as blob bytes into a temporary tree and
+renders from there, so every published candidate digest is machine-independent
+(the byte-copy output class is raw-bytes-v1, i.e. EOL-sensitive — plan follow-up F9).
 
 Canonicalization follows plan §2.8.1 (canonical JSON, RFC 3339 UTC seconds,
 run ID ``<schema>-<YYYYMMDDTHHMMSSZ>-<head12>``, fail-closed on an existing
@@ -40,10 +60,14 @@ output path) and §2.7 (set digest = SHA-256 over the canonical JSON object
 
 Subcommands:
 
-``emit-fixtures``   pin the current tree's expected values into the tracked
-                    fixture file (authoring step; committed with the probe).
+``emit-fixtures``   pin the probed revision's expected values into the tracked
+                    per-unit fixture file (authoring step; committed with the probe).
 ``deterministic``   run the deterministic gate; write one evidence JSON.
 ``telemetry``       run the model-telemetry leg; write one evidence JSON.
+
+``--rev`` pins the probed revision explicitly (default ``HEAD``). P1b targets the
+frozen PR-B merge commit, which stops being ``HEAD`` as soon as the evidence branch
+takes its first commit, so the target must be stated rather than inferred.
 
 Exit codes: 0 = producer ran and wrote evidence (the verdict may still be FAIL —
 read the file); 2 = producer could not run at all (missing fixture, output
@@ -69,8 +93,19 @@ from typing import Any, NamedTuple, NoReturn
 
 import yaml
 
+# The P1b leg imports the PRODUCTION renderer modules by package path; put the
+# worktree root on sys.path the same way every other scripts/sdd entry point does.
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
 EPIC_ID = 499
 UNIT_ID = "PR-P1a"
+
+# Delivery unit selector (plan §5.4 / §5.6). Each unit owns its own fixture file
+# so a re-emit never mutates an already-published unit's expected values.
+UNITS: tuple[str, ...] = ("p1a", "p1b")
+UNIT_LABELS = {"p1a": "PR-P1a", "p1b": "PR-P1b"}
 
 DET_SCHEMA = "deterministic-gate-v1"
 TEL_SCHEMA = "model-telemetry-v1"
@@ -78,6 +113,8 @@ TEL_SCHEMA = "model-telemetry-v1"
 DEFAULT_OUT_DIR = Path("evidence/development-agent-v8/probe")
 DEFAULT_LOCAL_DIR = Path(".mj-agent-local/probe")
 FIXTURE_NAME = "deterministic-expected.json"
+P1B_FIXTURE_NAME = "p1b-deterministic-expected.json"
+FIXTURE_NAMES = {"p1a": FIXTURE_NAME, "p1b": P1B_FIXTURE_NAME}
 CORPUS_NAME = "prompt-corpus.json"
 FIXTURES_SUBDIR = "fixtures"
 
@@ -222,6 +259,12 @@ def _git(repo_root: Path, *args: str) -> bytes:
     if proc.returncode != 0:
         raise GitError(f"git {' '.join(args[:2])} failed: rc={proc.returncode}")
     return proc.stdout
+
+
+def resolve_rev(repo_root: Path, rev: str) -> str:
+    """Full commit SHA for an explicit revision. P1b probes the frozen PR-B merge
+    commit, which is no longer HEAD once the evidence branch takes a commit."""
+    return _git(repo_root, "rev-parse", f"{rev}^{{commit}}").decode().strip()
 
 
 def git_head(repo_root: Path) -> str:
@@ -376,6 +419,38 @@ def predicted_render_mode(description: str) -> str:
     return "complete" if len(description) <= DISCOVERY_BUDGET_CHARS else "truncated"
 
 
+def unquote_frontmatter_scalar(raw: str) -> str:
+    """The description VALUE behind a frontmatter scalar literal.
+
+    The translated renderer emits ``description`` as a JSON-style double-quoted
+    YAML scalar; Codex's loader surfaces the *parsed* value, so comparing the
+    quoted literal against the discovery rendering would report a spurious
+    ``malformed`` (PR-P1b Stage 3 finding). Plain scalars — every raw
+    ``.claude/skills`` source — are returned unchanged, so P1a semantics are
+    untouched. A literal that opens and closes with a quote but does not decode
+    is left alone rather than guessed at.
+    """
+    if len(raw) >= 2 and raw.startswith('"') and raw.endswith('"'):
+        try:
+            decoded = json.loads(raw)
+        except json.JSONDecodeError:
+            return raw
+        if isinstance(decoded, str):
+            return decoded
+    return raw
+
+
+def frontmatter_description(blob: bytes) -> str | None:
+    """Parsed description value of a SKILL.md blob, or None when unusable."""
+    front = parse_frontmatter(blob)
+    if front is None:
+        return None
+    raw = front.get("description")
+    if not isinstance(raw, str):
+        return None
+    return unquote_frontmatter_scalar(raw)
+
+
 # --------------------------------------------------------------------------- #
 # path safety (plan §2.1 / §2.8.1)
 # --------------------------------------------------------------------------- #
@@ -434,13 +509,27 @@ def stage_candidate_project(
     head_sha: str,
     stage_parent: Path,
     capability_ids: Iterable[str] = REQUIRED_18,
+    artifacts: Mapping[str, bytes] | None = None,
+    prefix: str = "p1a-stage-",
 ) -> StagedLayout:
-    """Materialize the 18 candidate artifacts (raw git-blob bytes) into a fresh git
-    project with nested dir + linked worktree, plus two isolated CODEX_HOME dirs.
+    """Materialize the 18 candidate artifacts into a fresh git project with nested
+    dir + linked worktree, plus two isolated CODEX_HOME dirs.
+
+    ``artifacts`` (P1b) supplies exact production-rendered bytes keyed by repo
+    relpath — the carriers Codex will actually load after cutover. Without it
+    (P1a) the candidates are the raw source git-blob bytes.
     """
     stage_parent.mkdir(parents=True, exist_ok=True)
-    root = Path(tempfile.mkdtemp(prefix="p1a-stage-", dir=str(stage_parent)))
+    root = Path(tempfile.mkdtemp(prefix=prefix, dir=str(stage_parent)))
     candidate_shas: dict[str, str] = {}
+    if artifacts is not None:
+        for relpath, data in artifacts.items():
+            target = root / relpath
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+            if relpath.startswith(f"{ARTIFACT_ROOT}/"):
+                candidate_shas[relpath.split("/")[2]] = sha256_hex(data)
+        return _finish_stage(root, candidate_shas)
     for cid in capability_ids:
         try:
             blob = git_blob_bytes(repo_root, head_sha, f"{SOURCE_ROOT}/{cid}/SKILL.md")
@@ -452,9 +541,15 @@ def stage_candidate_project(
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(blob)
         candidate_shas[cid] = sha256_hex(blob)
+    return _finish_stage(root, candidate_shas)
+
+
+def _finish_stage(root: Path, candidate_shas: dict[str, str]) -> StagedLayout:
+    """Turn a directory of staged carriers into the full probe layout: nested cwd,
+    linked worktree, and two isolated CODEX_HOME dirs (trust-less vs trusted)."""
     (root / "AGENTS.md").write_bytes(
-        b"# staged candidate project (PR-P1a probe fixture)\n\n"
-        b"Synthetic layout; carries the 18 required candidate carriers only.\n"
+        b"# staged candidate project (Epic #499 probe fixture)\n\n"
+        b"Synthetic layout; carries the required candidate carriers only.\n"
     )
     nested = root / "nested" / "inner"
     nested.mkdir(parents=True)
@@ -462,7 +557,7 @@ def stage_candidate_project(
 
     _run_git_in(root, "init", "-q")
     _run_git_in(root, "config", "user.email", "probe@localhost")
-    _run_git_in(root, "config", "user.name", "p1a-probe")
+    _run_git_in(root, "config", "user.name", "carrier-probe")
     _run_git_in(root, "config", "core.autocrlf", "false")
     _run_git_in(root, "add", "-A")
     _run_git_in(root, "commit", "-q", "-m", "stage candidates")
@@ -644,6 +739,144 @@ def trust_entry_covering(entries: Iterable[tuple[str, str]], project_root: Path)
     return None
 
 
+def _record_p1b_cases(
+    rec: CaseRecorder,
+    fixture: dict[str, Any],
+    fixture_id: str,
+    fixture_sha: str,
+    render: CandidateRender,
+) -> None:
+    """The PR-P1b exact-byte family (plan §5.6 / §6.2 "production renderer
+    exact-byte"). Every case compares the live render against the committed
+    fixture; none of them calls Codex."""
+    # det-11: the candidate v2 manifest is schema-valid under the production V8
+    # object-level checks (top-level shape + DA090-096 carrier schema + posture).
+    expected_sha, actual_sha, status = _match_case([], render.manifest_violations)
+    rec.add(
+        "det-11-candidate-manifest-v2-schema", None, "config", fixture_id, fixture_sha,
+        {"probe": "check_development_agent object-level", "schema_version": 2},
+        expected_sha, actual_sha, status,
+        digest_of(render.manifest_violations),
+        "OK" if status == "PASS" else "CANDIDATE_MANIFEST_INVALID",
+    )
+
+    # det-12: the renderer modules that actually executed are byte-equal to the
+    # modules frozen at the probed commit, at the pinned RENDERER_VERSION.
+    # Union, not just the observed set: a module that DROPS OUT of the pipeline
+    # would otherwise emit zero cases and leave the verdict green.
+    expected_modules: dict[str, Any] = fixture.get("renderer_modules") or {}
+    for module_name in sorted(set(render.renderer_identity) | set(expected_modules)):
+        observed = render.renderer_identity.get(module_name)
+        expected = expected_modules.get(module_name)
+        matches_blob = (
+            observed is not None
+            and observed["imported_sha256"] == observed["blob_sha256"]
+        )
+        expected_sha, actual_sha, status = _match_case(expected, observed)
+        if status == "PASS" and not matches_blob:
+            status = "FAIL"
+        rec.add(
+            f"det-12-renderer-identity--{module_name}", None, "config",
+            fixture_id, fixture_sha,
+            {"probe": "renderer-module-identity", "module": module_name},
+            expected_sha, actual_sha, status,
+            digest_of(observed),
+            "OK" if status == "PASS" else (
+                "RENDERER_MODULE_ABSENT" if observed is None
+                else "RENDERER_MODULE_NOT_FROZEN" if not matches_blob
+                else "RENDERER_IDENTITY_MISMATCH"
+            ),
+        )
+
+    # det-13: every candidate output reproduces its pinned bytes, exactly.
+    expected_outputs: dict[str, Any] = fixture.get("candidate_output_sha256") or {}
+    for path in sorted(set(render.outputs) | set(expected_outputs)):
+        data = render.outputs.get(path)
+        actual = sha256_hex(data) if data is not None else digest_of(None)
+        expected = expected_outputs.get(path)
+        status = "PASS" if data is not None and expected == actual else "FAIL"
+        entry = render.entries.get(path) or {}
+        capability = (
+            path.split("/")[2] if path.startswith(f"{ARTIFACT_ROOT}/") else None
+        )
+        rec.add(
+            f"det-13-render-exact-byte--{path}", capability, candidate_surface(entry),
+            fixture_id, fixture_sha,
+            {"probe": "production-render", "entry_kind": entry.get("entry_kind")},
+            expected or digest_of(None), actual, status,
+            actual,
+            "OK" if status == "PASS" else (
+                "CANDIDATE_OUTPUT_MISSING" if data is None
+                else "CANDIDATE_DIGEST_MISMATCH"
+            ),
+        )
+
+    # det-14: two independent renders of the same inputs are byte-identical.
+    expected_sha, actual_sha, status = _match_case(True, render.deterministic)
+    rec.add(
+        "det-14-render-determinism", None, "config", fixture_id, fixture_sha,
+        {"probe": "double-render", "outputs": len(render.outputs)},
+        expected_sha, actual_sha, status,
+        digest_of({"outputs": sorted(render.outputs)}),
+        "OK" if status == "PASS" else "RENDER_NON_DETERMINISTIC",
+    )
+
+    # det-15: the candidate set digest — the immutable handle PR-C0 binds its
+    # fidelity review to and PR-C1 must reproduce.
+    output_shas = {path: sha256_hex(data) for path, data in render.outputs.items()}
+    expected_sha, actual_sha, status = _match_case(
+        fixture.get("candidate_set_sha256"), set_digest(output_shas)
+    )
+    rec.add(
+        "det-15-candidate-set-digest", None, "skill", fixture_id, fixture_sha,
+        {"probe": "set-digest", "wire": "plan 2.7"},
+        expected_sha, actual_sha, status,
+        set_digest(output_shas),
+        "OK" if status == "PASS" else "CANDIDATE_SET_DIGEST_MISMATCH",
+    )
+
+    # det-16: the derived carrier partition equals the plan §2.2.1 matrix, is
+    # disjoint, and covers the required set. Derived — never a hardcoded count.
+    observed_partition = render.partition
+    union = sorted(observed_partition["byte-copy"] + observed_partition["translated"])
+    overlap = sorted(
+        set(observed_partition["byte-copy"]) & set(observed_partition["translated"])
+    )
+    observed_shape = {
+        "partition": observed_partition,
+        "union": union,
+        "overlap": overlap,
+    }
+    expected_shape = {
+        "partition": {
+            "byte-copy": sorted(BYTE_COPY_5),
+            "translated": sorted(TRANSLATED_13),
+        },
+        "union": list(REQUIRED_18),
+        "overlap": [],
+    }
+    expected_sha, actual_sha, status = _match_case(expected_shape, observed_shape)
+    rec.add(
+        "det-16-carrier-partition", None, "config", fixture_id, fixture_sha,
+        {"probe": "derived-carrier-partition", "source": "workflow-registry"},
+        expected_sha, actual_sha, status,
+        digest_of(observed_shape),
+        "OK" if status == "PASS" else "CARRIER_PARTITION_MISMATCH",
+    )
+
+    # det-17: the render inputs are the blob bytes the fixture pinned.
+    expected_sha, actual_sha, status = _match_case(
+        fixture.get("render_input_sha256"), render.input_sha256
+    )
+    rec.add(
+        "det-17-render-inputs", None, "config", fixture_id, fixture_sha,
+        {"probe": "render-input-blobs", "count": len(render.input_sha256)},
+        expected_sha, actual_sha, status,
+        digest_of(render.input_sha256),
+        "OK" if status == "PASS" else "RENDER_INPUT_MISMATCH",
+    )
+
+
 def run_deterministic(
     repo_root: Path,
     out_dir: Path,
@@ -654,13 +887,15 @@ def run_deterministic(
     parent_env: Mapping[str, str],
     user_codex_home: Path,
     stage_parent: Path,
+    unit: str = "p1a",
+    rev: str | None = None,
 ) -> tuple[Path, str]:
     started_at = utc_now_rfc3339()
-    head_sha = git_head(repo_root)
+    head_sha = rev or git_head(repo_root)
 
-    fixture_path = fixtures_dir / FIXTURE_NAME
+    fixture_path = fixtures_dir / FIXTURE_NAMES[unit]
     if not fixture_path.is_file():
-        _die(f"fixture missing: {fixture_path} (run emit-fixtures first)")
+        _die(f"fixture missing: {fixture_path} (run emit-fixtures --unit {unit} first)")
     fixture_raw = fixture_path.read_bytes()
     fixture_sha = sha256_hex(fixture_raw)
     fixture = _strict_json_loads(fixture_raw, "deterministic fixture")
@@ -686,6 +921,21 @@ def run_deterministic(
         return _finish_deterministic(
             rec, out_path, run_id, started_at, head_sha, codex_build
         )
+
+    # -- det-00: fixture pin ---------------------------------------------------
+    # Reported as a case rather than a hard exit: a fixture pinned at an older
+    # revision is exactly the F6 situation, and the run must SAY so (with the
+    # per-capability det-02 mismatches that follow) instead of aborting mute.
+    expected_sha, actual_sha, status = _match_case(
+        head_sha, fixture.get("pinned_head")
+    )
+    rec.add(
+        "det-00-fixture-pin", None, "config", fixture_id, fixture_sha,
+        {"probe": "fixture-pinned-head", "unit": unit},
+        expected_sha, actual_sha, status,
+        digest_of({"probed_rev": head_sha, "pinned_head": fixture.get("pinned_head")}),
+        "OK" if status == "PASS" else "FIXTURE_PIN_STALE",
+    )
 
     # -- det-01: manifest required inventory ---------------------------------
     manifest_ids = load_manifest_required_ids(repo_root)
@@ -785,9 +1035,45 @@ def run_deterministic(
             "OK" if status == "PASS" else "ARTIFACT_DIGEST_MISMATCH",
         )
 
+    # -- P1b: production candidate render (plan §5.6) -------------------------
+    # The candidates Codex is asked to load below are the EXACT production
+    # renderer output for the probed commit, not raw sources.
+    description_blobs: dict[str, bytes | None] = dict(source_blobs)
+    stage_artifacts: dict[str, bytes] | None = None
+    if unit == "p1b":
+        try:
+            render = build_candidate_render(
+                repo_root, head_sha, stage_parent / "render"
+            )
+        except Exception as exc:  # noqa: BLE001 - any render refusal must be recorded
+            # A render that cannot run is a RESULT, not a crash: plan §1.4 requires
+            # the condition to enter a structured status and §2.8.6 requires an
+            # evidence file to exist. Aborting with a traceback would leave the
+            # operator with nothing to read (PR-P1b Stage 11).
+            rec.add(
+                "det-18-candidate-render", None, "config", fixture_id, fixture_sha,
+                {"probe": "production-render", "error": type(exc).__name__},
+                digest_of("rendered"), digest_of(None),
+                "ERROR", digest_of(f"{type(exc).__name__}: {exc}"[:400]),
+                "CANDIDATE_RENDER_FAILED",
+            )
+            return _finish_deterministic(
+                rec, out_path, run_id, started_at, head_sha, codex_build
+            )
+        stage_artifacts = staged_skill_artifacts(render.outputs)
+        description_blobs = {
+            path.split("/")[2]: data
+            for path, data in render.outputs.items()
+            if path.startswith(f"{ARTIFACT_ROOT}/")
+        }
+        _record_p1b_cases(rec, fixture, fixture_id, fixture_sha, render)
+
     # -- staged layouts -------------------------------------------------------
-    layout = stage_candidate_project(repo_root, head_sha, stage_parent)
-    canary_server = "p1a-canary"
+    layout = stage_candidate_project(
+        repo_root, head_sha, stage_parent,
+        artifacts=stage_artifacts, prefix=f"{unit}-stage-",
+    )
+    canary_server = f"{unit}-canary"
     write_project_codex_config(layout.root, canary_server)
     env_empty = sanitized_child_env(parent_env, str(layout.home_empty))
     env_trusted = sanitized_child_env(parent_env, str(layout.home_trusted))
@@ -829,11 +1115,13 @@ def run_deterministic(
     # legal — either the complete description or an exact prefix truncation at
     # DISCOVERY_BUDGET_CHARS with the "..." marker. Oversize itself is recorded
     # data, not a failure; a malformed or mode-mismatched rendering fails.
+    # P1b measures the RENDERED carrier's description (the one Codex will load
+    # after cutover), P1a the raw source description; both go through the same
+    # scalar-unquoting read.
     predicted_modes: dict[str, Any] = fixture.get("predicted_render_mode", {})
     for cid in REQUIRED_18:
-        blob = source_blobs[cid]
-        front = parse_frontmatter(blob) if blob is not None else None
-        description = front.get("description") if front else None
+        blob = description_blobs.get(cid)
+        description = frontmatter_description(blob) if blob is not None else None
         body = (
             discovery_entry_body(staged_prompt_text, cid)
             if staged_prompt_text is not None
@@ -1110,9 +1398,11 @@ def run_telemetry(
     stage_parent: Path,
     limit_capabilities: tuple[str, ...] | None = None,
     model: str | None = None,
+    unit: str = "p1a",
+    rev: str | None = None,
 ) -> Path:
     started_at = utc_now_rfc3339()
-    head_sha = git_head(repo_root)
+    head_sha = rev or git_head(repo_root)
 
     corpus_path = fixtures_dir / CORPUS_NAME
     if not corpus_path.is_file():
@@ -1152,7 +1442,21 @@ def run_telemetry(
     run_local = local_dir / run_id
     run_local.mkdir(parents=True, exist_ok=True)
 
-    layout = stage_candidate_project(repo_root, head_sha, stage_parent)
+    # P1b observes implicit triggering against the PRODUCTION-RENDERED carriers:
+    # the 13 translated ones carry a compact codex_discovery_summary instead of
+    # the long source description P1a measured, so the two runs answer different
+    # questions and must stage different bytes.
+    stage_artifacts: dict[str, bytes] | None = None
+    if unit == "p1b":
+        stage_artifacts = staged_skill_artifacts(
+            build_candidate_render(
+                repo_root, head_sha, stage_parent / "render"
+            ).outputs
+        )
+    layout = stage_candidate_project(
+        repo_root, head_sha, stage_parent,
+        artifacts=stage_artifacts, prefix=f"{unit}-tel-stage-",
+    )
     argv_template = [
         codex_bin, "exec", "--json", "--ephemeral", "--skip-git-repo-check",
         "-s", "read-only", "--ignore-user-config",
@@ -1243,16 +1547,306 @@ def run_telemetry(
 # --------------------------------------------------------------------------- #
 
 
-def emit_fixtures(repo_root: Path, fixtures_dir: Path) -> Path:
-    head_sha = git_head(repo_root)
+# --------------------------------------------------------------------------- #
+# PR-P1b: production candidate render (plan §5.6)
+# --------------------------------------------------------------------------- #
+
+
+class ProductionModules(NamedTuple):
+    agents_sync: Any
+    skill_renderer: Any
+    readme_renderer: Any
+    config_renderer: Any
+    projection_loader: Any
+    check_development_agent: Any
+    check_agents_projection: Any
+
+
+def production_modules() -> ProductionModules:
+    """The EXACT production renderer/module/version landed by PR-B (plan §5.6).
+
+    Imported lazily: P1a mode and the offline contract tests must keep working on
+    a tree where these modules are absent or irrelevant.
+    """
+    import scripts.sdd._common.codex_config_renderer as config_mod
+    import scripts.sdd._common.codex_readme_renderer as readme_mod
+    import scripts.sdd._common.projection_loader as loader_mod
+    import scripts.sdd._common.skill_renderer as skill_mod
+    import scripts.sdd.agents_sync as sync_mod
+    import scripts.sdd.check_agents_projection as projection_mod
+    import scripts.sdd.check_development_agent as manifest_mod
+
+    return ProductionModules(
+        sync_mod, skill_mod, readme_mod, config_mod, loader_mod, manifest_mod,
+        projection_mod,
+    )
+
+
+def render_input_relpaths(mods: ProductionModules) -> tuple[str, ...]:
+    """Non-source inputs the v2 desired-state derivation reads from the tree.
+
+    Taken from the production modules' own path constants, never re-typed here,
+    so a moved typed source cannot silently drop out of the materialized set.
+    """
+    return (
+        MANIFEST_PATH,
+        mods.skill_renderer.WORKFLOW_REGISTRY_RELPATH,
+        mods.skill_renderer.TRANSLATION_MAP_RELPATH,
+        mods.skill_renderer.PREFACE_RELPATH,
+        "sdd/adapters/codex-skills-readme.md",
+        ".mcp.json",
+    )
+
+
+def materialize_render_inputs(
+    repo_root: Path,
+    rev: str,
+    dest: Path,
+    capability_ids: Iterable[str],
+    mods: ProductionModules,
+) -> dict[str, str]:
+    """Write the render inputs as GIT BLOB bytes into a scratch tree.
+
+    Rendering from blob bytes rather than the checkout is what makes every
+    published candidate digest machine-independent: `.gitattributes` `* text=auto`
+    gives Windows checkouts CRLF, and the byte-copy output class is
+    ``raw-bytes-v1`` (unnormalized), so a worktree render would publish digests
+    that Linux CI could never reproduce (plan follow-up F9).
+    Returns ``relpath -> blob sha256``.
+    """
+    shas: dict[str, str] = {}
+    relpaths = list(render_input_relpaths(mods)) + [
+        f"{SOURCE_ROOT}/{cid}/SKILL.md" for cid in capability_ids
+    ]
+    for rel in relpaths:
+        data = git_blob_bytes(repo_root, rev, rel)
+        target = dest / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        shas[rel] = sha256_hex(data)
+    return shas
+
+
+def derive_candidate_manifest(
+    manifest: dict[str, Any], registry: Any
+) -> dict[str, Any]:
+    """The candidate v2 manifest PR-C1 will write, DERIVED — never transcribed.
+
+    translated ← the workflow registry's ``capability_id`` set (the registry is the
+    §2.5 SoT for which capabilities have a workflow); byte-copy ← the capabilities
+    already at ``projection: project``; everything else ``codex_carrier: none``.
+    Counts are never hardcoded (AC-04); the derived partition is compared against
+    the plan §2.2.1 transcription as a reported CASE, not as an assertion here.
+    """
+    candidate = json.loads(json.dumps(manifest))  # deep copy, plain data only
+    candidate["schema_version"] = 2
+    candidate["codex_readme_template_version"] = 1
+    workflow_by_capability = {
+        w.capability_id: w.workflow_id for w in registry.workflows.values()
+    }
+    for cap in candidate.get("capabilities") or []:
+        if not isinstance(cap, dict):
+            continue
+        cap_id = str(cap.get("id"))
+        cap.pop("carrier_binding", None)
+        if cap_id in workflow_by_capability:
+            cap["codex_carrier"] = "translated"
+            cap["carrier_binding"] = {"workflow_id": workflow_by_capability[cap_id]}
+            cap["required"] = True
+            cap["projection"] = "project"
+        elif cap.get("projection") == "project":
+            cap["codex_carrier"] = "byte-copy"
+            cap["required"] = True
+        else:
+            cap["codex_carrier"] = "none"
+            continue
+        codex = cap.get("codex")
+        if not isinstance(codex, dict):
+            codex = {}
+            cap["codex"] = codex
+        codex["support_mode"] = "native"
+    return candidate
+
+
+def candidate_partition(candidate: dict[str, Any]) -> dict[str, list[str]]:
+    """Derived carrier partition of a candidate manifest, code-point sorted."""
+    out: dict[str, list[str]] = {"byte-copy": [], "translated": []}
+    for cap in candidate.get("capabilities") or []:
+        if not isinstance(cap, dict):
+            continue
+        carrier = cap.get("codex_carrier")
+        if carrier in out:
+            out[carrier].append(str(cap.get("id")))
+    return {key: sorted(value) for key, value in out.items()}
+
+
+def candidate_manifest_violations(
+    candidate: dict[str, Any], mods: ProductionModules
+) -> list[str]:
+    """Manifest-schema violations of the candidate, via the PRODUCTION V8 checks.
+
+    Scope is exactly the checks that decide on the manifest OBJECT alone —
+    top-level shape, the v2 carrier schema DA090-096 and the codex posture block.
+    Tree-coupled V8 checks (`.agents` entries, canonical counts, evidence paths)
+    compare a v2 manifest against a still-v1 artifact tree and would report the
+    dormant-vs-cutover gap that PR-C1 closes atomically; they are out of scope
+    here and are named as such in the evidence rather than silently skipped.
+    """
+    mod = mods.check_development_agent
+    violations = (
+        mod.check_top_level(candidate)
+        + mod.check_codex_carrier(candidate)
+        + mod.check_codex_posture(candidate)
+    )
+    return sorted(
+        f"{v.code}:{v.capability_id}:{v.message}"
+        if hasattr(v, "code")
+        else str(v)
+        for v in violations
+        if getattr(v, "severity", "error") == "error"
+    )
+
+
+def renderer_identity(
+    repo_root: Path, rev: str, mods: ProductionModules
+) -> dict[str, dict[str, Any]]:
+    """Per production module: LF-normalized digest of the imported file, the same
+    digest recomputed from the blob at ``rev``, and ``RENDERER_VERSION`` where the
+    module declares one.
+
+    Equality of the two digests is what turns "we used the production renderer"
+    from a claim into a checkable fact: the module actually executed is byte-equal
+    to the module frozen at the probed commit.
+
+    EVERY module in the render pipeline is covered, not just the three renderers
+    that declare RENDERER_VERSION. `agents_sync` owns `_v2_desired_state` and the
+    byte-copy branch that emits 5 of the 18 carriers verbatim, `projection_loader`
+    supplies the digest helpers this very check uses, `check_agents_projection`
+    supplies the MCP projection behind the config output, and
+    `check_development_agent` is det-11's checker. All of them execute from the
+    working tree, and the fixture is emitted from that same tree — so a module
+    left uncommitted would otherwise certify its own drift (PR-P1b Stage 11).
+    """
+    loader = mods.projection_loader
+    out: dict[str, dict[str, Any]] = {}
+    for module in mods:
+        module_file = Path(module.__file__).resolve()
+        try:
+            relpath = module_file.relative_to(repo_root.resolve()).as_posix()
+        except ValueError:
+            # Imported from outside the probed repo: report it rather than crash;
+            # det-12 will not find it in the fixture and fails closed.
+            relpath = module_file.as_posix()
+            out[module.__name__] = {
+                "relpath": relpath,
+                "imported_sha256": loader.module_source_sha256(module_file),
+                "blob_sha256": digest_of(None),
+                "renderer_version": getattr(module, "RENDERER_VERSION", None),
+            }
+            continue
+        blob = git_blob_bytes(repo_root, rev, relpath)
+        out[module.__name__] = {
+            "relpath": relpath,
+            "imported_sha256": loader.module_source_sha256(module_file),
+            "blob_sha256": sha256_hex(blob.replace(b"\r\n", b"\n")),
+            "renderer_version": getattr(module, "RENDERER_VERSION", None),
+        }
+    return out
+
+
+class CandidateRender(NamedTuple):
+    outputs: dict[str, bytes]  # posix relpath -> exact bytes
+    entries: dict[str, dict[str, Any]]  # posix relpath -> v2 lock entry
+    partition: dict[str, list[str]]
+    manifest_violations: list[str]
+    renderer_identity: dict[str, dict[str, Any]]
+    input_sha256: dict[str, str]
+    deterministic: bool
+    candidate_manifest_slice_sha256: str
+
+
+def build_candidate_render(
+    repo_root: Path, rev: str, work_dir: Path
+) -> CandidateRender:
+    """Render the candidate 18 carriers + README + Codex config with the exact
+    production modules, twice, from blob-materialized inputs. Writes nothing into
+    the repository."""
+    mods = production_modules()
+    loader = mods.projection_loader
+    mat = work_dir / "materialized"
+    mat.mkdir(parents=True, exist_ok=True)
+
+    manifest_blob = git_blob_bytes(repo_root, rev, MANIFEST_PATH)
+    manifest = yaml.safe_load(manifest_blob.decode("utf-8"))
+    registry_blob = git_blob_bytes(
+        repo_root, rev, mods.skill_renderer.WORKFLOW_REGISTRY_RELPATH
+    )
+    registry = mods.skill_renderer.load_workflow_registry(
+        registry_blob.decode("utf-8")
+    )
+    candidate = derive_candidate_manifest(manifest, registry)
+    partition = candidate_partition(candidate)
+    carrier_ids = partition["byte-copy"] + partition["translated"]
+
+    input_sha = materialize_render_inputs(repo_root, rev, mat, carrier_ids, mods)
+
+    outputs_raw, entries_raw = mods.agents_sync._v2_desired_state(mat, candidate)
+    second_raw, _ = mods.agents_sync._v2_desired_state(mat, candidate)
+    outputs = {path.as_posix(): data for path, data in outputs_raw.items()}
+    second = {path.as_posix(): data for path, data in second_raw.items()}
+
+    return CandidateRender(
+        outputs=outputs,
+        entries=dict(entries_raw),
+        partition=partition,
+        manifest_violations=candidate_manifest_violations(candidate, mods),
+        renderer_identity=renderer_identity(repo_root, rev, mods),
+        input_sha256=input_sha,
+        deterministic=outputs == second,
+        candidate_manifest_slice_sha256=loader.sha256_of_canonical(
+            [
+                loader.manifest_capability_slice(cap)
+                for cap in candidate.get("capabilities") or []
+                if isinstance(cap, dict)
+            ]
+        ),
+    )
+
+
+def candidate_surface(entry: dict[str, Any]) -> str:
+    """Map a v2 lock entry's surface members onto the §2.8.6 `surface` enum."""
+    members = entry.get("surface_members") or []
+    return "config" if "mcp" in members else "skill"
+
+
+def staged_skill_artifacts(outputs: Mapping[str, bytes]) -> dict[str, bytes]:
+    """The candidate outputs that belong in a staged probe project: the `.agents`
+    skills surface only.
+
+    The rendered `.codex/config.toml` is deliberately NOT staged. It declares
+    real MCP servers (including database-backed ones), and a probe has no business
+    giving a throwaway project a route to spawn them; the deterministic leg already
+    pins its exact bytes (det-13) and exercises the trust/config route with a
+    purpose-built one-server canary (det-08). Keeping it out also preserves the
+    telemetry leg's stated invariant that no project-level codex config is in
+    effect, which is what makes `project_config_sha256` honest.
+    """
+    return {
+        path: data for path, data in outputs.items() if path.startswith(".agents/")
+    }
+
+
+def emit_fixtures(
+    repo_root: Path, fixtures_dir: Path, head_sha: str | None = None
+) -> Path:
+    head_sha = head_sha or git_head(repo_root)
     source_shas: dict[str, str] = {}
     description_chars: dict[str, int | None] = {}
     predicted_modes: dict[str, str | None] = {}
     for cid in REQUIRED_18:
         blob = git_blob_bytes(repo_root, head_sha, f"{SOURCE_ROOT}/{cid}/SKILL.md")
         source_shas[cid] = sha256_hex(blob)
-        front = parse_frontmatter(blob)
-        description = front.get("description") if front else None
+        description = frontmatter_description(blob)
         if isinstance(description, str):
             description_chars[cid] = len(description)
             predicted_modes[cid] = predicted_render_mode(description)
@@ -1277,6 +1871,67 @@ def emit_fixtures(repo_root: Path, fixtures_dir: Path) -> Path:
     return out
 
 
+def emit_fixtures_p1b(
+    repo_root: Path, fixtures_dir: Path, head_sha: str | None = None
+) -> Path:
+    """Pin the PRODUCTION-RENDERED expectations at ``head_sha`` (plan §5.6).
+
+    Written to its own file: the P1a fixture pins raw-source expectations and
+    stays byte-immutable so P1a's published evidence remains recomputable.
+    """
+    head_sha = head_sha or git_head(repo_root)
+    with tempfile.TemporaryDirectory(prefix="p1b-fixture-") as tmp:
+        render = build_candidate_render(repo_root, head_sha, Path(tmp))
+
+        source_shas = {
+            cid: render.input_sha256[f"{SOURCE_ROOT}/{cid}/SKILL.md"]
+            for cid in render.partition["byte-copy"] + render.partition["translated"]
+        }
+        output_shas = {
+            path: sha256_hex(data) for path, data in render.outputs.items()
+        }
+        description_chars: dict[str, int | None] = {}
+        predicted_modes: dict[str, str | None] = {}
+        for path, data in render.outputs.items():
+            if not path.startswith(f"{ARTIFACT_ROOT}/"):
+                continue
+            cid = path.split("/")[2]
+            description = frontmatter_description(data)
+            if isinstance(description, str):
+                description_chars[cid] = len(description)
+                predicted_modes[cid] = predicted_render_mode(description)
+            else:
+                description_chars[cid] = None
+                predicted_modes[cid] = None
+
+        fixture = {
+            "fixture_id": f"p1b-production-render-expected@{head_sha[:12]}",
+            "unit": UNIT_LABELS["p1b"],
+            "pinned_head": head_sha,
+            "required_ids": sorted(source_shas),
+            "carrier_partition": render.partition,
+            "source_sha256": source_shas,
+            "source_set_sha256": set_digest(
+                {
+                    f"{SOURCE_ROOT}/{cid}/SKILL.md": sha
+                    for cid, sha in source_shas.items()
+                }
+            ),
+            "render_input_sha256": render.input_sha256,
+            "candidate_output_sha256": output_shas,
+            "candidate_set_sha256": set_digest(output_shas),
+            "candidate_manifest_slice_sha256": render.candidate_manifest_slice_sha256,
+            "renderer_modules": render.renderer_identity,
+            "discovery_budget_chars": DISCOVERY_BUDGET_CHARS,
+            "description_chars": description_chars,
+            "predicted_render_mode": predicted_modes,
+        }
+    fixtures_dir.mkdir(parents=True, exist_ok=True)
+    out = fixtures_dir / P1B_FIXTURE_NAME
+    out.write_bytes(canonical_json_bytes(fixture))
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------------- #
@@ -1293,6 +1948,12 @@ def build_parser() -> argparse.ArgumentParser:
                         help="user-layer CODEX_HOME (default: ~/.codex)")
     parser.add_argument("--stage-parent", type=Path, default=None,
                         help="parent dir for staged layouts (default: <local-dir>/stage)")
+    parser.add_argument("--unit", choices=UNITS, default="p1a",
+                        help="delivery unit: p1a = raw source candidates, "
+                             "p1b = production renderer output (default: p1a)")
+    parser.add_argument("--rev", default=None,
+                        help="revision to probe (default: HEAD). P1b pins the "
+                             "frozen PR-B merge commit explicitly.")
     parser.add_argument("--limit-capabilities", default=None,
                         help="telemetry only: comma-separated capability subset (pilot runs)")
     parser.add_argument("--model", default=None,
@@ -1309,15 +1970,19 @@ def main(argv: list[str] | None = None, runner: CodexRunner = default_codex_runn
     fixtures_dir = (args.fixtures_dir or repo_root / DEFAULT_OUT_DIR / FIXTURES_SUBDIR).resolve()
     codex_home = (args.codex_home or Path.home() / ".codex").resolve()
     stage_parent = (args.stage_parent or local_dir / "stage").resolve()
+    rev = resolve_rev(repo_root, args.rev) if args.rev else git_head(repo_root)
 
     if args.mode == "emit-fixtures":
-        out = emit_fixtures(repo_root, fixtures_dir)
+        emitter = emit_fixtures_p1b if args.unit == "p1b" else emit_fixtures
+        out = emitter(repo_root, fixtures_dir, rev)
         print(f"FIXTURES_WRITTEN {out}")
+        print(f"FIXTURES_PINNED_HEAD {rev}")
         return 0
     if args.mode == "deterministic":
         out_path, verdict = run_deterministic(
             repo_root, out_dir, local_dir, fixtures_dir, args.codex_bin,
             runner, os.environ, codex_home, stage_parent,
+            unit=args.unit, rev=rev,
         )
         print(f"DETERMINISTIC_WRITTEN {out_path}")
         print(f"DETERMINISTIC_VERDICT {verdict}")
@@ -1326,6 +1991,7 @@ def main(argv: list[str] | None = None, runner: CodexRunner = default_codex_runn
     out_path = run_telemetry(
         repo_root, out_dir, local_dir, fixtures_dir, args.codex_bin,
         runner, os.environ, codex_home, stage_parent, limit, args.model,
+        unit=args.unit, rev=rev,
     )
     print(f"TELEMETRY_WRITTEN {out_path}")
     return 0
