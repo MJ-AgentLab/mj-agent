@@ -449,7 +449,7 @@ def _fidelity_fixture(tmp_path: Path) -> Path:
     for cap in caps:
         source = (REPO_ROOT / ".claude" / "skills" / cap / "SKILL.md").read_bytes()
         artifact = render_translated(source, cap, registry, tmap, preface, required)
-        report = generate_coverage(cap, source, artifact, registry)
+        report = generate_coverage(cap, source, artifact, registry, required)
         _write(coverage_dir / f"{cap}.json",
                json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     tranches = [caps[0:5], caps[5:10], caps[10:13]]

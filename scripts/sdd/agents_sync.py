@@ -58,6 +58,7 @@ ASCII-only output (#318 lesson: Windows consoles may not be UTF-8).
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import platform
@@ -641,8 +642,18 @@ def do_check(repo_root: Path, project: set[str], surface: str = "all") -> list[s
             )
     else:
         try:
-            lock: dict[str, Any] = json.loads(lock_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+            from scripts.sdd._common.projection_loader import parse_lock_json
+
+            parsed = parse_lock_json(lock_path.read_text(encoding="utf-8"))
+            lock: dict[str, Any] = parsed if isinstance(parsed, dict) else {}
+            if not isinstance(parsed, dict):
+                drift.append(
+                    f"{LOCK_RELPATH.as_posix()} unreadable (regenerate via sync)"
+                )
+        except (OSError, LockVerificationError):
+            # Duplicate keys / invalid JSON: the same malformed ledger sync
+            # refuses with exit 2 must also redden the scoped gates
+            # (Stage 11 #10/#29).
             drift.append(f"{LOCK_RELPATH.as_posix()} unreadable (regenerate via sync)")
             lock = {}
         if surface == "skills":
@@ -805,14 +816,30 @@ def load_verified_lock_raw(repo_root: Path) -> dict[str, Any] | None:
 
 
 def _owned_paths_any(
-    lock_class: str | None, raw: dict[str, Any] | None
+    lock_class: str | None,
+    raw: dict[str, Any] | None,
+    v1_allowed_keys: set[str] | None = None,
 ) -> dict[str, tuple[Path, str, str]]:
     """Owner ledger view for either lock schema: key -> (relpath, kind, expect)
-    where kind selects the on-disk ownership re-verification recipe."""
+    where kind selects the on-disk ownership re-verification recipe.
+
+    `v1_allowed_keys` implements the §2.6 "verified old lock" mappability
+    requirement (Stage 11 #16): a legacy v1 key used as a deletion ledger must
+    be rebuildable from the manifest — a shape-valid key naming no manifest
+    capability proves nothing and fails the WHOLE ledger (ownership
+    laundering guard, same class as the A1 findings)."""
     if lock_class is None or raw is None:
         return {}
     if lock_class == "v1":
         verified = verify_lock(raw)
+        if v1_allowed_keys is not None:
+            unknown = set(verified.entries) - v1_allowed_keys - {CODEX_LOCK_KEY}
+            if unknown:
+                raise FatalCheckError(
+                    f"legacy v1 lock key(s) {sorted(unknown)} cannot be rebuilt"
+                    " from the manifest capabilities (unprovable ledger; zero"
+                    " delete/write)"
+                )
         return {
             key: (Path(rel), "v1-body-hash", verified.entries[key])
             for key, rel in verified.owned_paths.items()
@@ -984,6 +1011,8 @@ def _workflow_slice(
                 "marker_id": e.evidence.marker_id,
                 "path": e.evidence.path,
                 "marker": e.evidence.marker,
+                "construct": e.evidence.construct,
+                "placement": e.evidence.placement,
             }
         edges.append(rec)
         if e.to_id.endswith("*"):
@@ -1022,6 +1051,30 @@ def _v2_desired_state(
     translated = [c for c in caps if c.get("codex_carrier") == "translated"]
     carrier_ids = {str(c["id"]) for c in byte_copy + translated}
     registry, tmap, preface = _read_typed_sources(repo_root)
+    # Engine-level edge closure (plan §2.5 判定规则; Stage 11 #15): tests pin
+    # the committed registry, but the ENGINE itself must refuse a bad one —
+    # carrier-required needs a carrier target; every no-carrier target needs a
+    # substitute; wildcards must expand non-empty.
+    for edge in registry.edges.values():
+        if edge.to_id.endswith("*"):
+            try:
+                expand_wildcard(edge.to_id, all_ids)
+            except TranslationError as exc:
+                raise FatalCheckError(str(exc)) from exc
+            target_has_carrier = False
+        else:
+            target_has_carrier = edge.to_id in carrier_ids
+        if edge.closure == "carrier-required" and not target_has_carrier:
+            raise FatalCheckError(
+                f"edge {edge.edge_id}: carrier-required target"
+                f" {edge.to_id!r} has no Codex carrier (a substitute cannot"
+                " stand in; fail closed)"
+            )
+        if not target_has_carrier and edge.substitute is None:
+            raise FatalCheckError(
+                f"edge {edge.edge_id}: target {edge.to_id!r} has no carrier and"
+                " no codex_substitute (fail closed)"
+            )
     skill_mod_sha = module_source_sha256(Path(skill_mod.__file__))
     readme_mod_sha = module_source_sha256(Path(readme_mod.__file__))
     config_mod_sha = module_source_sha256(Path(config_mod.__file__))
@@ -1185,8 +1238,15 @@ def _v2_lock_envelope(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
 def _atomic_write(path: Path, data: bytes) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(path.name + ".agents-sync-tmp")
-    tmp.write_bytes(data)
-    os.replace(tmp, path)
+    try:
+        tmp.write_bytes(data)
+        os.replace(tmp, path)
+    except OSError:
+        # Best-effort tmp cleanup so a failed write does not strand a
+        # permanent unowned neighbor that --check flags forever (Stage 11 #12).
+        with contextlib.suppress(OSError):
+            tmp.unlink(missing_ok=True)
+        raise
 
 
 def _do_sync_v2(
@@ -1201,8 +1261,18 @@ def _do_sync_v2(
     and reports completed/pending targets on failure, and the next sync
     converges (plan §1.2)."""
     outputs, entries = _v2_desired_state(repo_root, manifest)
-    lock_text = lock_v2_canonical_text(_v2_lock_envelope(entries))
-    owned = _owned_paths_any(lock_class, lock_raw)
+    try:
+        lock_text = lock_v2_canonical_text(_v2_lock_envelope(entries))
+    except LockVerificationError as exc:
+        raise FatalCheckError(
+            f"generated lock failed its own verifier: {exc} (zero writes)"
+        ) from exc
+    manifest_ids = {
+        str(c.get("id"))
+        for c in manifest.get("capabilities") or []
+        if isinstance(c, dict)
+    }
+    owned = _owned_paths_any(lock_class, lock_raw, v1_allowed_keys=manifest_ids)
     desired = {Path(p) for p in outputs} | {LOCK_RELPATH}
     deletions = _preflight_owned_reconcile_any(repo_root, owned, desired)
 
@@ -1288,11 +1358,43 @@ def _do_check_v2(
     lock_path = repo_root / LOCK_RELPATH
     if not lock_path.is_file():
         drift.append(f"missing {LOCK_RELPATH.as_posix()}")
-    elif surface == "all" and _read_lf(lock_path) != lock_text:
-        drift.append(
-            f"{LOCK_RELPATH.as_posix()} out of date (v2 canonical envelope is"
-            " regenerated by sync)"
+    elif surface == "all":
+        if _read_lf(lock_path) != lock_text:
+            drift.append(
+                f"{LOCK_RELPATH.as_posix()} out of date (v2 canonical envelope"
+                " is regenerated by sync)"
+            )
+    else:
+        # Scoped surfaces validate THEIR lock entries too — otherwise a stale
+        # input-digest closure ships through the V10/V11 gates after the
+        # cutover (Stage 11 #4/#31). Entries outside the scope are ignored so
+        # mcp drift never reddens the skills step and vice versa.
+        from scripts.sdd._common.projection_loader import parse_lock_json
+
+        try:
+            on_disk = parse_lock_json(lock_path.read_text(encoding="utf-8"))
+        except LockVerificationError:
+            on_disk = None
+        disk_entries = (
+            on_disk.get("entries")
+            if isinstance(on_disk, dict) and isinstance(on_disk.get("entries"), dict)
+            else None
         )
+        if disk_entries is None:
+            drift.append(
+                f"{LOCK_RELPATH.as_posix()} is not a readable v2 envelope"
+                " (regenerate via sync)"
+            )
+        else:
+            for key in sorted(entries):
+                is_mcp_key = key == CODEX_LOCK_KEY
+                if (is_mcp_key and not check_mcp) or (not is_mcp_key and not check_skills):
+                    continue
+                if disk_entries.get(key) != entries[key]:
+                    drift.append(
+                        f"lock entry out of date for '{key}' (input/output"
+                        " digest closure; regenerate via sync)"
+                    )
     return drift
 
 
@@ -1361,6 +1463,12 @@ def _do_adopt_v2(
             " — ambiguous/mixed state; zero writes (plan §2.7)"
         )
     data = artifact.read_bytes()
+    # The SOURCE write target gets the full hazard battery too (plan §2.7
+    # containment/type checks; Stage 11 F2 — a junction/casefold squat at
+    # .claude/skills/<name> must never let adopt write outside the repo).
+    _preflight_owned_reconcile_any(
+        repo_root, {}, {Path(".claude") / "skills" / name / "SKILL.md"}
+    )
     # apply-time re-verification: the CAS must still hold at the write moment
     if _digest(artifact) != artifact_state or _digest(src) != source_state:
         raise FatalCheckError(
@@ -1609,6 +1717,12 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
         )
         return 0
     except FatalCheckError as exc:
+        print(f"{_SCRIPT_NAME}: {exc}", file=sys.stderr)
+        return 2
+    except LockVerificationError as exc:
+        # A malformed/mixed ledger surfacing from any depth of the v2 engine
+        # is the SAME exit-2 zero-write contract, never a traceback
+        # (Stage 11 #9/#11/#27).
         print(f"{_SCRIPT_NAME}: {exc}", file=sys.stderr)
         return 2
 

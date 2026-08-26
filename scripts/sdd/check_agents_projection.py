@@ -79,6 +79,12 @@ WATCHED_PREFIXES = (
     ".claude/skills/",
     "scripts/sdd/check_agents_projection.py",
     "scripts/sdd/_common/projection_loader.py",
+    # v2 closure inputs (Epic #499 PR-B; PJ05x reads the registry through the
+    # shared renderer-module loader):
+    "sdd/workflows/development-agent-workflows.yml",
+    "sdd/adapters/codex-skill-translation.yml",
+    "sdd/adapters/codex-skill-preface.md",
+    "scripts/sdd/_common/skill_renderer.py",
 )
 
 

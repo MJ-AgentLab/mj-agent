@@ -223,13 +223,19 @@ def check_coverage_report(
         return
     for kind, expected in sorted(expected_counts.items()):
         actual = actual_counts.get(kind, 0)
-        if actual < expected:
+        if actual != expected:
             _fail(
                 problems,
                 f"{where}: independent inventory expects {expected} {kind}"
-                f" item(s), report has {actual} (closure failure — the"
-                " renderer and its report are missing the same item)",
+                f" item(s), report has {actual} (EXACT closure — missing and"
+                " surplus items both fail)",
             )
+    for kind in sorted(set(actual_counts) - set(expected_counts)):
+        _fail(
+            problems,
+            f"{where}: report carries {actual_counts[kind]} {kind} item(s) the"
+            " independent inventory does not derive (EXACT closure)",
+        )
 
 
 def check_index(repo_root: Path, index: dict[str, Any], problems: list[str]) -> None:

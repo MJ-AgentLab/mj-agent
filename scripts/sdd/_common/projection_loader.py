@@ -131,10 +131,17 @@ def read_lock(repo_root: Path) -> dict[str, object] | None:
     if not path.is_file():
         return None
     try:
-        data = parse_lock_json(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
     except OSError as exc:
         raise LockVerificationError(
             f"{LOCK_RELPATH.as_posix()} unreadable: {exc} (zero delete/write)"
+        ) from exc
+    try:
+        data = parse_lock_json(text)
+    except LockVerificationError as exc:
+        # Keep the file-path context of the pre-PR-B diagnosis (Stage 11 #30).
+        raise LockVerificationError(
+            f"{LOCK_RELPATH.as_posix()} unreadable: {exc}"
         ) from exc
     if not isinstance(data, dict):
         raise LockVerificationError(
@@ -574,13 +581,18 @@ def verify_lock_v2(raw: dict[str, Any]) -> VerifiedLockV2:
             "v2 lock top level must have exactly"
             " {schema_version, generator_protocol_version, entries}"
         )
-    if raw.get("schema_version") != LOCK_SCHEMA_VERSION:
+    version = raw.get("schema_version")
+    # JSON integers ONLY: bool is an int subclass and 2.0 == 2, so both would
+    # slip through an equality check (Stage 11 #8).
+    if isinstance(version, bool) or not isinstance(version, int) \
+            or version != LOCK_SCHEMA_VERSION:
         raise LockVerificationError(
-            f"lock schema_version {raw.get('schema_version')!r} is not"
+            f"lock schema_version {version!r} is not the JSON integer"
             f" {LOCK_SCHEMA_VERSION}"
         )
     protocol = raw.get("generator_protocol_version")
-    if isinstance(protocol, bool) or protocol not in KNOWN_GENERATOR_PROTOCOLS:
+    if isinstance(protocol, bool) or not isinstance(protocol, int) \
+            or protocol not in KNOWN_GENERATOR_PROTOCOLS:
         raise LockVerificationError(
             f"unknown generator_protocol_version {protocol!r}; known:"
             f" {sorted(KNOWN_GENERATOR_PROTOCOLS)} (zero delete/write)"
@@ -612,7 +624,8 @@ def classify_lock(raw: dict[str, Any]) -> str:
     its own full verifier."""
     if "schema_version" in raw:
         version = raw.get("schema_version")
-        if version == LOCK_SCHEMA_VERSION:
+        if not isinstance(version, bool) and isinstance(version, int) \
+                and version == LOCK_SCHEMA_VERSION:
             return "v2"
         raise LockVerificationError(
             f"lock schema_version {version!r} unknown (known: legacy flat map"

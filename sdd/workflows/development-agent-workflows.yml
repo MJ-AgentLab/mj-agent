@@ -186,6 +186,8 @@ edges:
       marker_id: flow-implement-diagnose-delegation
       path: .claude/skills/mj-agent-flow-implement/SKILL.md
       marker: "委派判据（硬 bug / perf / flaky）"
+      construct: paragraph
+      placement: after-paragraph
   - id: edge-flow-diagnose-infra-studio-probe
     from: mj-agent-flow-diagnose
     to: mj-agent-infra-studio-probe
@@ -197,6 +199,8 @@ edges:
       marker_id: flow-diagnose-studio-probe-route
       path: .claude/skills/mj-agent-flow-diagnose/SKILL.md
       marker: "Studio repro（`/mj-agent-infra-studio-probe`）"
+      construct: table
+      placement: after-table
 
 routes:
   - route_id: route-doc-family-adapter

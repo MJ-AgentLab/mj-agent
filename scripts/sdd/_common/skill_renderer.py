@@ -74,6 +74,30 @@ LEXICON_DISPOSITIONS = frozenset(
 
 CAPABILITY_ID = re.compile(r"^mj-agent-[a-z0-9-]+$")
 WILDCARD_ID = re.compile(r"^mj-agent-[a-z0-9-]+-\*$")
+
+# T1a owner-gate reasons must be canonical (plan §2.4 T1a; Stage 11 #20).
+# Vocabulary mirrors check_development_agent.VALID_POLICY_REFS — a pinned test
+# asserts the two never drift (this module must not import the checker).
+CANONICAL_OWNER_GATE_REASONS = frozenset(
+    {
+        "sql-guardrail-relax", "runtime-skill-content-change",
+        "prompt-version-or-body-change", "biz-catalog-sync",
+        "mcp-server-trust-posture-change", "declared-contract-change",
+        "database-migration", "secrets-grants-or-prod-config",
+        "ci-blocking-gate-toggle", "bulk-content-purge-or-migration",
+        "agents-git-owner-gate",
+    }
+)
+
+# T2b closed construct/placement enums (plan §2.4; Stage 11 #14). Each
+# construct pairs with exactly one placement.
+CONSTRUCT_PLACEMENTS: dict[str, str] = {
+    "paragraph": "after-paragraph",
+    "list-item": "after-list-item",
+    "table": "after-table",
+    "fenced-block": "after-fenced-block",
+    "frontmatter-description": "replace-description-scalar",
+}
 # Sub-skill region heading (plan §2.5 region 2 — grouped alternation, anchored;
 # `## Direct Bash Calls…` is an intentional non-match).
 SUBSKILL_HEADING = re.compile(
@@ -197,6 +221,8 @@ class SourceEvidence:
     marker_id: str
     path: str
     marker: str
+    construct: str  # CONSTRUCT_PLACEMENTS key (closed enum)
+    placement: str  # the paired placement value
 
 
 @dataclass(frozen=True)
@@ -248,10 +274,11 @@ def load_workflow_registry(text: str) -> WorkflowRegistry:
         data, {"schema_version", "workflows", "edges", "routes"}, "workflow registry"
     )
     version = data["schema_version"]
-    if version not in KNOWN_WORKFLOW_SCHEMA_VERSIONS:
+    if isinstance(version, bool) or not isinstance(version, int) \
+            or version not in KNOWN_WORKFLOW_SCHEMA_VERSIONS:
         raise TranslationError(
             f"unknown workflow registry schema_version {version!r}; known:"
-            f" {sorted(KNOWN_WORKFLOW_SCHEMA_VERSIONS)}"
+            f" {sorted(KNOWN_WORKFLOW_SCHEMA_VERSIONS)} (integers only)"
         )
 
     workflows: dict[str, WorkflowRecord] = {}
@@ -385,12 +412,28 @@ def load_workflow_registry(text: str) -> WorkflowRegistry:
             if not isinstance(ev, dict):
                 raise TranslationError(f"edge {eid!r} source_evidence must be a mapping")
             _require_keys(
-                ev, {"marker_id", "path", "marker"}, f"edge {eid!r} source_evidence"
+                ev,
+                {"marker_id", "path", "marker", "construct", "placement"},
+                f"edge {eid!r} source_evidence",
             )
+            construct = ev.get("construct")
+            if construct not in CONSTRUCT_PLACEMENTS:
+                raise TranslationError(
+                    f"edge {eid!r} construct {construct!r} not in the closed"
+                    f" enum {sorted(CONSTRUCT_PLACEMENTS)}"
+                )
+            placement = ev.get("placement")
+            if placement != CONSTRUCT_PLACEMENTS[construct]:
+                raise TranslationError(
+                    f"edge {eid!r} placement {placement!r} must be"
+                    f" {CONSTRUCT_PLACEMENTS[construct]!r} for {construct}"
+                )
             evidence = SourceEvidence(
                 marker_id=_req_str(ev, "marker_id", f"edge {eid!r}"),
                 path=_req_str(ev, "path", f"edge {eid!r}"),
                 marker=_req_str(ev, "marker", f"edge {eid!r}"),
+                construct=construct,
+                placement=placement,
             )
         if eid in edges:
             raise TranslationError(f"duplicate edge id {eid!r}")
@@ -450,10 +493,11 @@ def load_translation_map(text: str) -> TranslationMap:
         "translation map",
     )
     version = data["schema_version"]
-    if version not in KNOWN_TRANSLATION_SCHEMA_VERSIONS:
+    if isinstance(version, bool) or not isinstance(version, int) \
+            or version not in KNOWN_TRANSLATION_SCHEMA_VERSIONS:
         raise TranslationError(
             f"unknown translation map schema_version {version!r}; known:"
-            f" {sorted(KNOWN_TRANSLATION_SCHEMA_VERSIONS)}"
+            f" {sorted(KNOWN_TRANSLATION_SCHEMA_VERSIONS)} (integers only)"
         )
     preface_version = data["preface_template_version"]
     if isinstance(preface_version, bool) or not isinstance(preface_version, int) \
@@ -514,9 +558,10 @@ def load_translation_map(text: str) -> TranslationMap:
             )
         reason = node.get("owner_gate_reason")
         if disposition == "t1a":
-            if not isinstance(reason, str) or not reason:
+            if reason not in CANONICAL_OWNER_GATE_REASONS:
                 raise TranslationError(
-                    f"site {sid!r}: t1a requires owner_gate_reason (canonical enum)"
+                    f"site {sid!r}: t1a owner_gate_reason {reason!r} is not in"
+                    " the canonical vocabulary (10-enum + agents-git-owner-gate)"
                 )
         elif reason is not None:
             raise TranslationError(
@@ -707,6 +752,9 @@ def parse_source_document(source_bytes: bytes) -> SourceDocument:
     description_raw = fm_lines[1][len("description:"):].lstrip()
     for line in fm_lines[2:]:
         if not line:
+            # Preserve blank lines: dropping them desynchronizes every
+            # full-text line number downstream (Stage 11 F3).
+            description_raw += "\n"
             continue
         if line[0] not in (" ", "\t"):
             m = _FM_KEY.match(line)
@@ -797,12 +845,67 @@ def _construct_end(lines: list[str], index: int, fences: list[str | None]) -> in
         while i < len(lines) and lines[i].lstrip().startswith("|"):
             i += 1
         return i
-    if re.match(r"^\s*(?:[-*+]\s|\d+\.\s)", line):
-        return index + 1
+    list_marker = re.match(r"^(\s*)(?:[-*+]\s|\d+\.\s)", line)
+    if list_marker:
+        # A wrapped list item includes its continuation lines: non-blank,
+        # indented deeper than the marker, not themselves list items
+        # (Stage 11 #7 — never insert mid-construct).
+        indent = len(list_marker.group(1))
+        i = index + 1
+        while (
+            i < len(lines)
+            and lines[i].strip()
+            and (len(lines[i]) - len(lines[i].lstrip())) > indent
+            and not re.match(r"^\s*(?:[-*+]\s|\d+\.\s)", lines[i])
+        ):
+            i += 1
+        return i
     i = index
     while i < len(lines) and lines[i].strip():
         i += 1
     return i
+
+
+def _slash_token_matches(line: str) -> list[re.Match[str]]:
+    """SKILL_REF matches that are genuine SLASH-FORM tokens: a slash command is
+    never glued to a word, so a match whose preceding character is
+    alphanumeric or '-' is a PATH SEGMENT (e.g. `.agents/skills/<id>/...`)
+    and must never be rewritten (Stage 11 F1)."""
+    out: list[re.Match[str]] = []
+    for m in SKILL_REF.finditer(line):
+        start = m.start()
+        if start > 0 and (line[start - 1].isalnum() or line[start - 1] == "-"):
+            continue
+        out.append(m)
+    return out
+
+
+def _t2a_line(
+    line: str,
+    capability_id: str,
+    edges_by_pair: dict[tuple[str, str], RegistryEdge],
+    carrier_ids: set[str],
+) -> tuple[str, list[RegistryEdge]]:
+    """Apply the T2a token rewrites to one region line by MATCH POSITION,
+    right to left (a string-level replace can consume a same-token substring
+    embedded in an earlier T3-rewritten path — Stage 11 F1). Returns the
+    rewritten line and the edges whose tokens were rewritten, in
+    left-to-right source order."""
+    hits: list[tuple[re.Match[str], RegistryEdge]] = []
+    for m in _slash_token_matches(line):
+        edge = edges_by_pair.get((capability_id, m.group(1)))
+        if edge is not None:
+            hits.append((m, edge))
+    for m, edge in sorted(hits, key=lambda h: h[0].start(), reverse=True):
+        target_has_carrier = (
+            not edge.to_id.endswith("*") and edge.to_id in carrier_ids
+        )
+        replacement = (
+            f"${edge.to_id}" if target_has_carrier
+            else f"Codex substitute {edge.edge_id}"
+        )
+        line = line[: m.start()] + replacement + line[m.end():]
+    return line, [edge for _m, edge in sorted(hits, key=lambda h: h[0].start())]
 
 
 def _route_text(edge: RegistryEdge, registry: WorkflowRegistry) -> str:
@@ -917,23 +1020,12 @@ def render_translated(
 
         line = t3_pattern.sub(_t3, line)
 
-        # T2a — region tokens on this line
+        # T2a — region tokens on this line (position-based, boundary-guarded)
         if full_line_no in region_lines:
-            for token_match in list(SKILL_REF.finditer(line)):
-                token = token_match.group(1)
-                if (full_line_no, token) not in region_tokens:
-                    continue
-                edge = edges_by_pair.get((capability_id, token))
-                if edge is None:
-                    continue  # non-edge token (already validated above)
-                target_has_carrier = (
-                    not edge.to_id.endswith("*") and edge.to_id in carrier_ids
-                )
-                replacement = (
-                    f"${edge.to_id}" if target_has_carrier
-                    else f"Codex substitute {edge.edge_id}"
-                )
-                line = line.replace(f"/{token}", replacement, 1)
+            line, rewritten_edges = _t2a_line(
+                line, capability_id, edges_by_pair, carrier_ids
+            )
+            for edge in rewritten_edges:
                 if edge.edge_id not in emitted_edges:
                     emitted_edges.add(edge.edge_id)
                     template = tmap.templates["t2a-route"]
@@ -943,7 +1035,10 @@ def render_translated(
                     queue(_construct_end(lines, i, fences), edge.edge_id, block)
         new_lines.append(line)
 
-    # T2b — layer-B declared edges anchored in THIS source's body
+    # T2b — layer-B declared edges anchored in THIS source's body or
+    # frontmatter description (construct/placement declared in the registry
+    # and verified against the actual construct — plan §2.4; Stage 11 #14)
+    fm_route_ids: list[str] = []
     for edge in registry.edges_from(capability_id):
         if edge.evidence is None or edge.edge_id in emitted_edges:
             continue
@@ -956,10 +1051,40 @@ def render_translated(
         offset = full_text.index(edge.evidence.marker)
         marker_line_full = full_text[:offset].count("\n") + 1
         marker_index = marker_line_full - body_offset - 1
+        if edge.evidence.construct == "frontmatter-description":
+            if marker_index >= 0:
+                raise TranslationError(
+                    f"edge {edge.edge_id}: declared frontmatter-description but"
+                    " the marker sits in the body"
+                )
+            if marker_hit_count(doc.description_raw, edge.evidence.marker) != 1:
+                raise TranslationError(
+                    f"edge {edge.edge_id}: marker does not hit the source"
+                    " description exactly once"
+                )
+            fm_route_ids.append(edge.edge_id)
+            emitted_edges.add(edge.edge_id)
+            continue
         if marker_index < 0:
             raise TranslationError(
-                f"edge {edge.edge_id}: marker sits in frontmatter — description"
-                " routes use the scalar-safe identity, not a body block"
+                f"edge {edge.edge_id}: marker sits in frontmatter but the"
+                " declared construct is {0!r} — description routes must"
+                " declare frontmatter-description".format(edge.evidence.construct)
+            )
+        marker_line = lines[marker_index]
+        if fences[marker_index] is not None:
+            actual = "fenced-block"
+        elif marker_line.lstrip().startswith("|"):
+            actual = "table"
+        elif re.match(r"^\s*(?:[-*+]\s|\d+\.\s)", marker_line):
+            actual = "list-item"
+        else:
+            actual = "paragraph"
+        if actual != edge.evidence.construct:
+            raise TranslationError(
+                f"edge {edge.edge_id}: declared construct"
+                f" {edge.evidence.construct!r} but the marker line is a"
+                f" {actual!r} (fail closed)"
             )
         emitted_edges.add(edge.edge_id)
         template = tmap.templates["t2b-route"]
@@ -968,6 +1093,18 @@ def render_translated(
         ).rstrip("\n")
         queue(
             _construct_end(lines, marker_index, fences), edge.edge_id, block
+        )
+
+    # Registry -> source closure at RENDER time (Stage 11 #21): every edge
+    # from this capability must have been emitted exactly here — an edge with
+    # no region hit and no valid marker never silently disappears.
+    missing_edges = {
+        e.edge_id for e in registry.edges_from(capability_id)
+    } - emitted_edges
+    if missing_edges:
+        raise TranslationError(
+            f"{capability_id}: registry edges never emitted into the carrier:"
+            f" {sorted(missing_edges)} (registry->source closure)"
         )
 
     # T1 — interaction sites at end of their heading-bounded section
@@ -1008,9 +1145,18 @@ def render_translated(
     body_text = "\n".join(out)
 
     preface_body = render_preface(preface_template)
-    summary_scalar = json.dumps(
-        workflow.codex_discovery_summary, ensure_ascii=False
+    # frontmatter-description routes: the single-line `[codex-route:<id>]`
+    # identity is appended to the registry summary and COUNTS toward the
+    # discovery budget (plan §2.4).
+    description_value = workflow.codex_discovery_summary + "".join(
+        f" [codex-route:{eid}]" for eid in sorted(fm_route_ids)
     )
+    if len(description_value.encode("utf-8")) > DISCOVERY_SUMMARY_MAX_BYTES:
+        raise TranslationError(
+            f"{capability_id}: summary + frontmatter route identities exceed"
+            f" the {DISCOVERY_SUMMARY_MAX_BYTES}-byte discovery budget"
+        )
+    summary_scalar = json.dumps(description_value, ensure_ascii=False)
     trimmed_body = body_text.strip("\n")
     rendered = (
         "---\n"
@@ -1098,6 +1244,7 @@ def generate_coverage(
     source_bytes: bytes,
     artifact_text: str,
     registry: WorkflowRegistry,
+    carrier_ids: set[str],
 ) -> dict[str, Any]:
     """Machine-generated coverage report (coverage v1, §2.8.5 exact keys).
     Raises when any inventory item has no artifact coverage — a missing item is
@@ -1124,6 +1271,24 @@ def generate_coverage(
             }
         )
 
+    edges_by_pair = {
+        (e.from_id, e.to_id): e for e in registry.edges.values()
+    }
+    t3_pattern = re.compile(r"\.claude/skills/(mj-agent-[a-z0-9-]+)/SKILL\.md")
+
+    def _expected_transform(text: str) -> str:
+        def _t3(m: re.Match[str]) -> str:
+            return (
+                f".agents/skills/{m.group(1)}/SKILL.md"
+                if m.group(1) in carrier_ids else m.group(0)
+            )
+
+        rewritten = t3_pattern.sub(_t3, text)
+        rewritten, _edges = _t2a_line(
+            rewritten, capability_id, edges_by_pair, carrier_ids
+        )
+        return rewritten
+
     for kind, line_no, line in derive_inventory_lines(doc.body):
         stripped = line.strip()
         matches = [
@@ -1133,23 +1298,22 @@ def generate_coverage(
             _add(kind, f"body-line:{line_no}", line,
                  f"line:{matches[0]}", stripped, "NOOP", "COVERED")
             continue
-        # transformed line: a region token was rewritten to $-form/substitute
-        transformed = [
+        # A missing verbatim line is COVERED only if its EXACT deterministic
+        # T3+T2a transform is present — an arbitrary transformed line never
+        # anchors a dropped item (Stage 11 #6).
+        expected = _expected_transform(stripped)
+        matches = [
             i + 1 for i, a in enumerate(artifact_lines)
-            if "$mj-agent-" in a or "Codex substitute edge-" in a
+            if expected and expected in a
         ]
-        candidates = [
-            i for i in transformed
-            if SKILL_REF.sub("$X", stripped)[:24] and stripped[:8] in artifact_lines[i - 1]
-        ]
-        anchor = candidates[0] if candidates else (transformed[0] if transformed else None)
-        if anchor is None:
+        if not matches:
             raise TranslationError(
                 f"coverage closure failure: {capability_id} {kind} item at body"
                 f" line {line_no} has no artifact coverage: {stripped[:80]!r}"
             )
         _add(kind, f"body-line:{line_no}", line,
-             f"line:{anchor}", artifact_lines[anchor - 1], "T2a", "COVERED")
+             f"line:{matches[0]}", artifact_lines[matches[0] - 1], "T2a",
+             "COVERED")
 
     # frontmatter description — replaced by the registry summary (wire format)
     desc_line = next(
@@ -1166,7 +1330,11 @@ def generate_coverage(
          artifact_lines[desc_line - 1], "NOOP", "COVERED")
 
     for edge in registry.edges_from(capability_id):
-        identity = f"<!-- codex-route:{edge.edge_id} -->"
+        if edge.evidence is not None \
+                and edge.evidence.construct == "frontmatter-description":
+            identity = f"[codex-route:{edge.edge_id}]"
+        else:
+            identity = f"<!-- codex-route:{edge.edge_id} -->"
         matches = [
             i + 1 for i, a in enumerate(artifact_lines) if identity in a
         ]

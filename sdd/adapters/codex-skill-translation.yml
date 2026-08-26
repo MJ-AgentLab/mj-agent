@@ -49,7 +49,7 @@ lexicon:
     patterns: ['AskUserQuestion']
     disposition: site-classified
   - category: harness-enforcement
-    patterns: ['PreToolUse', 'guard-git-workflow', 'permissions\.ask', 'ask-gate', 'settings\.json']
+    patterns: ['PreToolUse', 'guard-git-workflow', 'permissions\.ask', 'ask-gate', 'settings\.json', '\bhooks?\b']
     disposition: noop-preface
   - category: claude-tools
     patterns: ['\b(?:Edit|Write|Read|Bash|Glob|Grep|WebFetch|WebSearch|TodoWrite)\b']
