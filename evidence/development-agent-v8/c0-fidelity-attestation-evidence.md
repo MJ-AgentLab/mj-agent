@@ -9,9 +9,12 @@ summary: >-
   **13/13 capability 逐 kind 精确闭合**。13 项 translated 由 **4 个 tranche
   恰好分区**（3/3/3/4，item 159/184/135/139），每 tranche 的 8 个 digest
   （7 个按 §2.7 set-digest wire，`preface_sha256` 为单文件 raw blob digest）
-  计算并发布。**approval_binding 尚未落盘**：`verdict` 闭合枚举
-  只有 `approved|rejected`（无 pending 态），具名 reviewer 评审尚未执行，
-  故本单元按 §1.4 诚实状态纪律记为 **BLOCKED_PREREQUISITE**，AC-10 未达成。
+  计算并发布。评审已执行：**4/4 tranche 取得 `approved` binding**（载体
+  `github-issue-comment`，record id 全局唯一），真实树上独立 checker
+  `--all` = `rc 0`，**AC-10 达成**。⚠ 达成方式带 §0.1 的独立性削弱 ——
+  Gate 1 原定的第三方 reviewer 被 GitHub 自批禁令挡住（HTTP 422），
+  Owner 改判为自审 + issue comment，故本 attestation **不得**被引述为
+  「独立第三方已确认语义保真」。分析由 Claude Code 准备、verdict 由 Owner 拍板。
 owner: ranzuozhou
 created: 2026-08-26
 updated: 2026-08-26
@@ -45,6 +48,7 @@ track: agent
    以外的具名 collaborator 在本 PR 上逐 tranche 提交 review；GitHub 结构性禁止自批，
    因此「author 不得自签」有机器级证据而非仅靠声明。`record_system` =
    `github-pull-request-review`，`immutable_record_id` = review id。
+   —— ⚠ **本项已于实施阶段被 Owner 改判，见 §0.1**；此处保留原文以存拍板历史。
 2. **tranche 分区 = 4 个，按 HITL 阶段族**（3/3/3/4）。每个 tranche 是一次语义连贯的评审
    坐次；4 条独立 record 让「补/重做某一个 tranche 的 binding」（§5.7 rollback）代价最小。
 3. **`renderer_set_sha256` = det-12 的 7 个模块**。PR-P1b Stage 11 判例：只钉声明了
@@ -53,6 +57,34 @@ track: agent
 4. **PR 结构 = 单 PR 两阶段**。commit 1 落机器面 → 评审在本 PR 上进行 → commit 2 补
    index 与 record ID。这解开了「record ID 只有评审后才存在、却要写进被评审的 PR」的
    循环；若评审最终未到位，PR 停在 commit 1 + `BLOCKED_PREREQUISITE`，机器面成果不浪费。
+
+### 0.1 Gate 1 修订（2026-08-26，实施中 Owner 改判）
+
+Gate 1 原取「第三方 collaborator + GitHub PR review」，**实施阶段被 GitHub 硬拦而改判**。
+如实记录全过程，因为它同时改变了本单元的 assurance 等级：
+
+| 项 | 内容 |
+|---|---|
+| 触发 | Owner 指示「分配给自己」；`gh pr edit 516 --add-reviewer ranzuozhou` 实测返回 **HTTP 422 `Review cannot be requested from pull request author.`** |
+| 成因 | PR 作者与 commit 作者均为 `ranzuozhou`。GitHub 结构性禁止自请/自批 —— 这**正是** Gate 1 选该载体的理由（「author 不得自签」的机器级证据），因此该载体对 Owner 自审在物理上不可用 |
+| 改判 | `record_system` 由 `github-pull-request-review` 改为 **`github-issue-comment`**（Epic #499 上每 tranche 一条结构化 verdict 评论，comment id 即 `immutable_record_id`） |
+| 配套裁定 | Owner 裁定：就 §2.7「作者不得自签」而言，**本单元 fidelity 工件的 author = Claude Code**（AGENTS.md 的 per-PR 实施者声明；全部 commit 均带 `Co-Authored-By: Claude`），`ranzuozhou` 以人类 reviewer 身份履行判断 |
+
+**这条改判削弱了什么（不得含糊）**：
+
+1. **独立性下降**。原命题是「与工件无关的第三方复核」，现命题只到「Owner 复核 AI 撰写的
+   工件」。后者仍有实质意义（20 个文件确由 AI 撰写，Owner 未参与撰写），但**不是** Gate 1
+   当初买到的那个保证。
+2. **§2.7 的 Owner 核验步骤变成自指**。该条要求 Owner 打开**他人**的 immutable record
+   核对 reviewer 与 verdict；此处 Owner 核对的是自己创建的记录，控制强度显著低于原设计。
+3. **机器侧不再有任何自签防线**。原方案里「GitHub 拒绝自批」是硬约束；改判后**唯一**的
+   防线是本单元 producer 的两条（不默认 verdict、不接受与本树不符的 `reviewed_*`），
+   而它们**都防不住蓄意造假**（§4 已述边界）。
+
+因此本单元的 fidelity 断言在 §1.3 分层中**只能算到 Static structure + 单人复核**，
+**不得**被后续单元（尤其 PR-C1 / PR-F）引述为「独立第三方已确认语义保真」。若日后需要
+恢复原强度，须由非作者的具名 collaborator 重审并**创建新的 record ID**（§2.7：已合并记录
+不可原地改 reviewer/verdict）。
 
 ## 1. 交付面
 
@@ -63,7 +95,7 @@ track: agent
 | `evidence/development-agent-v8/fidelity/review-packet/<tranche-id>.md` × 4 | 新增 | 具名 reviewer 的评审材料（trigger judgment + 待抄录 digest） |
 | `tests/unit/test_fidelity_attestations_c0.py` | 新增 | 26 条契约测试（closure / binding / partition / producer 负控），**全部不依赖 git 历史** |
 | 本文件 | 新增 | tracked 证据摘要 |
-| `sdd/adapters/codex-skill-fidelity.yml` | **尚未创建** | 签署索引；**须待真实 reviewer record 存在后**由 `build-index --bindings` 生成（见 §4） |
+| `sdd/adapters/codex-skill-fidelity.yml` | 新增 | 签署索引（`schema_version: 1`；13 translated / 13 coverage_reports / 4 tranches / 4 approved），由 `build-index --bindings` 从真实 reviewer record 生成（见 §4） |
 
 **零变更面（实测复认）**：`.claude/**`、`.agents/**`、`.codex/**`、`.agents.lock.json`、
 `.mcp.json`、`sdd/development-agent.yml`、全部 typed sources 与 7 个 renderer/编排模块
@@ -207,29 +239,52 @@ closed canonical JSON object `path → raw_sha256`，再对其 canonical UTF-8 �
 若 C1 合法地改动了 `mcp` / `codex.posture` 等 D-017 停面，`manifest_set` 会随之变化，
 届时应当**重走 C0 binding**，而不是把差异当成 C1 的实现缺陷。
 
-## 4. Approval binding —— 状态：`BLOCKED_PREREQUISITE`
+## 4. Approval binding —— 状态：`APPROVED`（4/4 tranche）
 
 `approval_binding` 的 `verdict` 是闭合枚举 `approved | rejected`，**没有 pending 态**。
-索引一旦落盘，就是在断言评审已经发生。截至本文件写入时，Gate 1 指定的具名 reviewer
-**尚未执行评审**，因此：
+索引一旦落盘，就是在断言评审已经发生。本单元的评审**已执行**：
 
 ```text
-APPROVAL_STATE = BLOCKED_PREREQUISITE
+APPROVAL_STATE = APPROVED   (4/4 tranches, 13/13 translated carriers)
 ```
 
-按 §1.4 诚实状态纪律，**`BLOCKED_PREREQUISITE` 不是 `approved`**，也不是 `rejected`：
-它意味着评审这一步**未被执行**，而非已确认合格。任何后续消费方不得把它读作已签署。
+| tranche | record | reviewer | verdict | recorded_at |
+|---|---|---|---|---|
+| `tranche-1-flow-entry` | [`5433169546`](https://github.com/MJ-AgentLab/mj-agent/issues/499#issuecomment-5433169546) | `ranzuozhou` | `approved` | 2026-08-27T01:25:16Z |
+| `tranche-2-flow-build` | [`5433248359`](https://github.com/MJ-AgentLab/mj-agent/issues/499#issuecomment-5433248359) | `ranzuozhou` | `approved` | 2026-08-27T01:37:05Z |
+| `tranche-3-flow-close` | [`5433249270`](https://github.com/MJ-AgentLab/mj-agent/issues/499#issuecomment-5433249270) | `ranzuozhou` | `approved` | 2026-08-27T01:37:13Z |
+| `tranche-4-doc-git` | [`5433484742`](https://github.com/MJ-AgentLab/mj-agent/issues/499#issuecomment-5433484742) | `ranzuozhou` | `approved` | 2026-08-27T02:12:11Z |
+
+`record_system` = `github-issue-comment`（§0.1 改判）。4 个 `immutable_record_id` 全局唯一，
+由 producer 与独立 checker 双重校验。**已合并记录不可原地改 reviewer/verdict —— 重审必须
+创建新 ID**（§2.7）。
+
+**判断依据（谁做了什么，必须分清）**：逐 capability 的 trigger judgment 与正文抽查**分析**
+由 Claude Code 准备（13 个 per-capability 分析 agent + 26 个对抗 challenger，实测 0 失败）；
+**verdict 由 Owner 拍板**；record 正文由 Claude Code 按 Owner 指示转写并发布。每条 record
+正文内均载明这一分工。§2.7 禁止的是「作者代填 reviewer verdict」，本单元的 verdict 来自
+Owner 而非分析方；但 §0.1 的独立性削弱同时适用，两者不可互相抵消。
+
+**分析结果摘要**：13/13 首轮均被标为「非干净保留」，但对抗验证后 **26 票中仅 6 票确认真实
+损失，0 个 capability 被两名 challenger 一致确认，7 个被一致驳回**。方向**一律是 narrowed，
+从未 widened**（前者失败安全 = 找不到 skill，后者失败不安全 = 触发错 skill）。两处记录在案
+的收窄（`flow-post-merge` 的 EVAL backlog 域、`git-pr` 的 release 域）**仅发生在 discovery
+层**，正文在 carrier body 内逐字保留，故执行语义不受影响 → 立 **F12**。
 
 机器侧对此的强制：`build_fidelity_attestations.py build-index` 在缺少 `--bindings` 时
-**`exit 2` 且该路径实测零写**，错误码即 `BLOCKED_PREREQUISITE`。
+**`exit 2` 且该路径实测零写**，错误码即 `BLOCKED_PREREQUISITE`；本单元提供真实 record 后
+才产出索引，且 producer 逐条校验 record 的三个 `reviewed_*` 与本树计算值相等。
 
 **这条强制的边界必须说清楚**（否则就成了 §1.3 禁止的那类过度断言）：producer 能做到的是
 **拒绝默认出一个 verdict**、**拒绝绑定到与本树不符的 `reviewed_*`**；它**不能**判断一条
 record 是否真的出自 reviewer 之手 —— 一个执意造假的作者手写一份 bindings 文件即可通过全部
-机器检查。所以「author 不得自签」最终**不是**由机器保证的，而是由两件事承担：(1) Gate 1 选定
-的载体是 GitHub PR review，**GitHub 结构性禁止自批**；(2) §2.7 要求 Owner 在 gate 上亲自打开
-外部 immutable record 核对 reviewer 与 verdict。机器只负责让「诚实的疏忽」不可能发生，
-不负责让「蓄意造假」不可能发生。
+机器检查。机器只负责让「诚实的疏忽」不可能发生，不负责让「蓄意造假」不可能发生。
+
+**§0.1 改判后，这个边界变得更重要**：原设计里「author 不得自签」有两道承担者 ——
+(1) GitHub 结构性禁止自批（硬约束）、(2) Owner 打开他人 record 核验。改判为 Owner 自审 +
+issue comment 后，**第 (1) 道不复存在，第 (2) 道变成自指**。于是该性质的实际承担者
+**只剩 Owner 本人的诚信与本文的如实披露**。这不是缺陷掩盖，而是本单元 assurance 的真实
+等级 —— 后续单元引述本 attestation 时必须连同本段一起引。
 
 ### 4.1 评审如何进行（4 步，每 tranche 一遍）
 
@@ -307,7 +362,7 @@ _against_other_inputs` 三个参数化负控钉住）。「签署真实」最终
 | V9 `check_agents_projection --all --fail-on warning` | 0E / 0W / 0I |
 | V10/V11 `agents_sync --check --surface {skills,mcp,all}` | 全部 `in sync`，lock consistent |
 | `task0_freeze --check` | `TASK0_FREEZE_CLEAN` @ `8c7c1e48…`（未重锚） |
-| `check_fidelity_attestations --all`（真实树） | `exit 2` —— index 尚未创建，这是**设计中的 dormant 行为**（脚本 docstring 明载），不是失败 |
+| `check_fidelity_attestations --all`（真实树） | **`rc = 0`，errors: 0** —— 索引落盘后由独立 checker 在真实树上实跑通过（index schema + 3–4 tranche 精确分区 + binding exact keys + verdict 枚举 + record id 唯一性 + 13 份 coverage 的 exact inventory closure） |
 | `check_frontmatter` | `OK: 138 canonical docs`（与变更前同值）。**注意**：`SCAN_ROOTS` = `docs/` `plans/` `decisions/` `src/mj_agent/{skills,prompts}`，**不含 `evidence/`** —— 本文件的 frontmatter **不在该 gate 覆盖内**，系照 `p1a`/`p1b` 同目录既有约定（`type: evidence` / `track: agent` / 6 字段）**人工核验**。别把 138 读成「本文件已被校验」 |
 | `check_wikilinks` | 0 unresolved（A4 目标解析只覆盖 5 个根文件）。本文件自身无相对链接；4 份 review packet 共 13 条 `../coverage/<id>.json` 相对链接在 gate 外，已逐条脚本核验 **13/13 指向真实文件** |
 | producer 负路径 | 缺 `--bindings` → `exit 2`；错 `--rev` → `exit 2`；`build-coverage --check` → `rc=0` 零漂移 |
@@ -361,7 +416,9 @@ enforcement 系统的终局断言，不是对某个脚本某条路径的实测�
 - **未证明翻译的语义保真**。digest 只证 reproducibility；fidelity 走 §2.7/§5.7 的人工分层
   复核，而该复核**尚未执行**（§4）。
 - **未证明任何人类身份**。checker 无此能力；binding 为真依赖 Owner 在 gate 上打开外部
-  immutable record 核对 reviewer 与 verdict。
+  immutable record 核对 reviewer 与 verdict —— 而按 §0.1 改判，该核验为**自指**。
+- **未证明独立第三方复核**。本单元的 fidelity 判断由 Owner 本人作出（§0.1）。
+  **PR-C1 / PR-F 不得**把本 attestation 引述为「独立第三方已确认语义保真」。
 - **未证明真实树已携带这些 carrier**。真实树仍 v1，`.agents/**` 零变更，13 个
   `artifact_path` 指向的文件在本单元结束时**尚不存在**——它们绑定的是候选 commit 的渲染
   产物，C1 cutover 时才写入。
@@ -373,22 +430,43 @@ enforcement 系统的终局断言，不是对某个脚本某条路径的实测�
 
 | AC | 陈述 | 本 unit 的满足方式 |
 |---|---|---|
-| **AC-10** | fidelity inventory exact closure and immutable **approved** binding cover all 13 translated carriers | **前半达成**：13/13 exact closure 由独立 checker 实测（§2.2），4-way exact partition（§3.1）。**后半未达成**：approved binding 尚不存在，记 `BLOCKED_PREREQUISITE`（§4）。**故 AC-10 整体未达成，C0 未闭环。** |
+| **AC-10** | fidelity inventory exact closure and immutable **approved** binding cover all 13 translated carriers | **达成**。① exact closure：13/13 逐 kind 由独立 checker 实测（§2.2），真实树 `check_fidelity_attestations --all` = `rc 0`；② exact partition：4 tranche 恰好分区 13 项（§3.1）；③ immutable approved binding：4/4 tranche 各绑定一条 GitHub issue-comment record，`verdict` 全 `approved`，record id 全局唯一（§4）。**⚠ 达成方式带 §0.1 的独立性削弱**：reviewer 即 Owner，非独立第三方；AC-10 的字面要求满足，但其原本承载的「独立复核」意图**未**满足，后续单元引用时必须同时引 §0.1。 |
 
 ## 8. 与后续 unit 的接口
 
 - **PR-C1（cutover）**：§3.2 的 8 个 digest 是 C1 的复现锚点；C1 写出的真实 v2 产物必须
-  重现 `artifact_set_sha256`，否则说明引入了本单元未覆盖的语义变更。**C1 的入场前置是
-  C0 闭环**（all 13 approved），当前未满足。C1 前还须裁定 **F9**。
-- **本单元遗留**：`sdd/adapters/codex-skill-fidelity.yml` 未创建；4 条 reviewer record
-  未产生。补齐路径见 §4.1，无需重跑 coverage（`build-coverage --check` 可验证零漂移）。
+  重现 `artifact_set_sha256`，否则说明引入了本单元未覆盖的语义变更。**C1 的入场前置
+  「C0 闭环 / all 13 approved」已满足**（§4）。C1 前仍须裁定 **F9**，并注意 **F12**：
+  若随 C1 补回两处 discovery 表述，`artifact_set_sha256` 会合法变化，届时须重走 C0 binding。
+- **本单元无遗留交付物**：索引、13 份 coverage、4 份 review packet、4 条 reviewer record
+  均已就位；`build-coverage --check` 复验零漂移，真实树 `check_fidelity_attestations --all`
+  = `rc 0`。遗留的是三个 follow-up：**F11**（挂 CI gate）、**F12**（两处收窄）、**F9**（C1 前必裁）。
+
+### 8.0 F12（新增 follow-up）—— 两处 discovery 层收窄，approved 但记录在案
+
+Stage 11 之后的 fidelity 分析（§4）在 13 项中确认了两处**域级收窄**，Owner 已在知情下
+`approved`，但必须留档以免被后续单元当作「无损翻译」：
+
+| # | capability | 丢失的 discovery 信号 | 为什么不阻塞 |
+|---|---|---|---|
+| F12-a | `mj-agent-flow-post-merge` | 整个 **EVAL backlog** 域（execution-loop §7.3 Rule 11）—— 该 skill 唯一的 mj-agent 原生增量，且其 body 内是硬性反模式（`不要 跳过 Step 5`） | 义务在 carrier body 内逐字保留，执行语义不受影响；仅 discovery 侧匹配不到该表述 |
+| F12-b | `mj-agent-git-pr` | **release 域**（`发版` / `release` / `合并到main` / `merge to main`） | 同上；且 `flow-post-merge` 的 summary 正向认领了 merge 后的收尾territory |
+
+**关键事实：这两处收窄不是预算所迫**。13 项 summary 实测占用 **218–277 / 1024 字符**，
+约 75% 预算未用。因此修复无需触碰 renderer，只需在 translation map 侧补回表述并重渲。
+
+**建议时机**：C1 cutover **之前**或**随 C1**处理均可（两者都只改 discovery 面、不改
+执行语义）；若随 C1 处理，则 C1 会合法地改变 `artifact_set_sha256`，届时**必须重走 C0
+binding**（§3.2 已述同类情形），不得把 digest 变化当作 C1 的实现缺陷。
 
 ### 8.1 为什么 `check_fidelity_attestations.py` 本单元**不**挂 CI（刻意）
 
 三条理由，任一单独成立即足以推迟：
 
-1. **挂上就红**。index 尚未创建，checker 对此返回 `exit 2`（「dormant until PR-C0」是它
-   docstring 里明写的行为）。在 index 落盘前挂 CI 会把一个诚实的 BLOCKED 状态伪装成构建故障。
+1. **时序**：本 PR 的 commit 1 落盘时 index 尚不存在，checker 对此返回 `exit 2`
+   （「dormant until PR-C0」是它 docstring 里明写的行为），届时挂 CI 会把一个诚实的
+   BLOCKED 状态伪装成构建故障。commit 2 之后此条不再成立（真实树已 `rc 0`），但下面两条
+   仍然成立，故本单元维持不挂。
 2. **新增 CI gate 是治理动作**，不是实现细节。CI 里的 V1–V11 每一格都有独立的挂载与
    warning→blocking 记录；给 checker 分配 gate 编号并挂载，属 Owner 拍板面，不该由本单元
    顺手夹带（rule 7 / §3.3「职责不得合并」）。
