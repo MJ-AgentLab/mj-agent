@@ -307,7 +307,7 @@ settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新
 > 增补、step 名随重构改写，`sdd/gates.md` 已因此明令 pickaxe 用 **run 命令片段而非 step 名**），
 > 且同一事实出现两次就必有一次先陈旧。**故本节给口径 + SoT 指针 + 可复跑推导，并如实登记推导
 > 推不出来的残余。** 原 TBD 的「G1-G28」措辞本身也不准确：**`G18` 不存在**（`G1-G17` 在 §1、
-> `G19-G28` 在 §3），且它遗漏了 `V1-V11` 与 6 个具名 CI-infra gate。
+> `G19-G28` 在 §3），且它遗漏了 `V1-V12`（#499 PR-C2 起含 V12）与 6 个具名 CI-infra gate。
 
 ### §6.1 映射口径（M1-M2）
 
