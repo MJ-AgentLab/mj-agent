@@ -366,6 +366,34 @@ jobs:
 
       # ===== End of dual-agent-compat V8/V9/V10/V11 block =====
 
+      # ===== Epic #499 — V12 Cross-Carrier Structure (PR-C1 mount) =====
+      # V12 correlates manifest <-> registry <-> artifact <-> lock <-> fidelity for the
+      # Codex carrier set. It is a REPORTER: it re-implements none of those surfaces'
+      # validation and owns only the CROSS-surface joins that no single blocking gate
+      # carries end to end. FOUR of the five have a blocking owner above (V8 / V9
+      # PJ050-053 / V10 / V9 PJ030-034). The fifth does NOT: check_fidelity_attestations.py
+      # passes on the real tree but has no CI mount (follow-up F11, still open), so for the
+      # fidelity surface V12's X07 join is the only CI-visible signal — hence X07 warns,
+      # rather than passes, when the attestation index is missing.
+      # WARNING-ONLY, and deliberately so: program plan §5.8 pins V12 as warning telemetry
+      # for the whole of Epic #499 and states that a blocking flip is a SEPARATE
+      # plan/toggle. A NEW warning gate is not a posture flip (#444 判例), so no Owner
+      # `ci-blocking-gate-toggle` 拍板 applies to this mount. Flip axis, if it is ever
+      # pursued, would be this step's continue-on-error: true→false (no --fail-on
+      # threshold axis — the script has no severity flag).
+      # Registration is PR-C2's job, not this PR's: gates.md §2 row, the real first-CI
+      # anchor commit/time, applicability, threshold/epoch and self-exclusions. Until then
+      # the script reports its anchor as PENDING_PR_C1_FIRST_CI. Do NOT rename this step —
+      # policies/ci-gates.md §4.1.1 requires the gate 标识 to match the ci.yml step name
+      # one-to-one, and PR-C2 transcribes it.
+      # The status JSON lands under the gitignored `.mj-agent-local/`; the script creates
+      # that directory itself (nothing in CI mkdirs it) and also prints human-readable
+      # output, because this job uploads no artifacts and writes no step summary.
+      - name: 'V12 cross-carrier structure (WARNING per plan §5.8; anchor PENDING_PR_C1_FIRST_CI)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/check_cross_carrier.py --status-json .mj-agent-local/status/cross-carrier.json
+      # ===== End of Epic #499 V12 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. External legs are always

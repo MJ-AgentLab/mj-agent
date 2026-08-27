@@ -75,19 +75,38 @@ ai_visibility: source-of-truth
 
 > **V9 规则声明锚**：以下由 `scripts/sdd/check_agents_projection.py` 机器校验。
 
-- **引用闭包**：`projection: project` 技能 SKILL.md 的 `## Handoff*` 段 `/mj-agent-*` 出边必须
-  ∈ project 集（`.agents/` 未落地时降 warning——S0 空态；产物出现后 error）。
+- **引用闭包（PJ011；manifest schema_version 分派）**：`projection: project` 技能 SKILL.md 的
+  `## Handoff*` 段 `/mj-agent-*` 出边闭合判据按 manifest 版本分派（`.agents/` 未落地时降
+  warning——S0 空态；产物出现后 error）：
+  - **manifest v1**：出边必须 ∈ project 集（原 D-014 谓词，逐字不变）。
+  - **manifest v2（PR-C1 起）**：出边闭合 ⟺ 目标**有 carrier**，**或** dependency registry
+    为「**该 referrer** → 该目标」这条 edge 声明了可执行 `codex_substitute`（plan §2.3/§2.5：
+    「没有 carrier」不等于「依赖可以消失」）。substitute 按 `from_id` **逐 referrer** 生效，
+    不是全局目标白名单。判据与 v2 引擎 `agents_sync._v2_desired_state` 同源（复用同一
+    registry loader）。registry 缺失/损坏 ⇒ 空集 ⇒ 严格谓词照旧（fail closed）。
+- **carrier_binding 反向闭合（PJ050-053；仅 v2）**：translated capability 的
+  `carrier_binding.workflow_id` 必须唯一存在于 workflow registry，且 registry record 的
+  `capability_id` 反指同一 capability；registry 中无对应 translated capability 的 workflow 亦红。
 - **全量 reconcile**：`.agents/skills/` 现存目录 ≟ manifest project 集；多出/缺失 = FAIL；
   `.agents/` 不存在 = vacuous pass（S0 空态不假红）。
-- **lock 一致性**：`.agents.lock.json` ↔ 产物 `body_sha256`（LF 归一 canonical 算法，复用
-  `scripts/sdd/_common/frontmatter.py`）；两者均缺 = pass，仅一方存在 = FAIL。
+- **lock 一致性**：v1 树 = `.agents.lock.json` ↔ 产物 `body_sha256`（LF 归一，复用
+  `scripts/sdd/_common/frontmatter.py`）；v2 树 = 按 entry kind 的 `output_sha256` +
+  `normalization_policy`（见下）。两者均缺 = pass，仅一方存在 = FAIL。
 
-> **V10 规则声明锚（S1 #326）**：以下由 `scripts/sdd/agents_sync.py --check` 机器校验
-> （regenerate-and-diff；一切内容比较 LF 归一——`.md` 未 eol-pin、Windows/ubuntu 检出 EOL 不同）。
+> **V10 规则声明锚（S1 #326；PR-C1 v2 修订）**：以下由 `scripts/sdd/agents_sync.py --check`
+> 机器校验（regenerate-and-diff）。**比较口径按 `normalization_policy` 分派，不再一律 LF 归一**：
+> `raw-bytes-v1`（byte-copy carrier）是**恒等**比较，identity 含 BOM/EOL（plan §2.4 禁止对
+> byte-copy 暗中 LF 归一）；其余 generated class 一律 LF 归一，使 checkout EOL filter 无法伪造
+> drift。为使 byte-copy 的 raw 字节跨平台确定，`.gitattributes` 自 PR-C1 起把
+> `.claude/skills/**/SKILL.md` 与 `.agents/skills/**/SKILL.md` 钉为 `text eol=lf`（follow-up F9）。
 
-- **产物 ↔ 源一致**：`.agents/skills/<name>/SKILL.md` 与 `.claude/skills/<name>/SKILL.md`
-  LF 归一后相等（手改产物或改源未重跑 `sync` 均红，文案给规定动作 per D-012）。
-- **README ↔ 固定模板一致**；**lock ↔ 重算值一致**（排序单行条目）；`.agents/` 树内不得有
+- **产物 ↔ 源关系按 carrier strategy 分派**：`codex_carrier: byte-copy` ⇒
+  `.agents/skills/<name>/SKILL.md` 与 `.claude/skills/<name>/SKILL.md` **逐字节相等**；
+  `codex_carrier: translated` ⇒ 产物是该源经 registry + translation map + preface 的
+  **确定性渲染结果**，**与源不相等**（手改产物或改源未重跑 `sync` 均红，文案给规定动作 per D-012）。
+- **README ↔ 模板一致**（v2 起为 `sdd/adapters/codex-skills-readme.md` 渲染，版本由 manifest
+  `codex_readme_template_version` 所有）；**lock ↔ 重算值一致**（v1 排序单行条目；v2 为
+  closed-union envelope）；`.agents/` 树内不得有
   期望集之外的文件/目录（与 V9 reconcile 互补：V9 对账目录集，V10 对账内容与杂散文件）。
 - **生成器 CLI 契约**：`sync`（幂等全量再生成 + 孤儿清理）XOR `doctor`（S3a #350；只读
   per-machine trust/env/canary 报告，warning-only，永不进 CI，写零文件 per D-015）XOR

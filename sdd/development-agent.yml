@@ -2,18 +2,23 @@
 #
 # Contract: plans/[PLAN]_dual-agent-compat.md §9 (fields/enums) + §4.4 (projection tiers)
 #   + D-013 (mcp per-server tiers) + D-014 (skills projection whitelist SoT).
+#   schema_version 2 adds the Codex cross-carrier axis — `codex_carrier` +
+#   `carrier_binding.workflow_id` + top-level `codex_readme_template_version` — per
+#   plans/[PLAN]_codex_cross_carrier_kernel.md §2.1/§2.2.1 + ADR-039 (PR-C1 cutover).
 # Validated by: scripts/sdd/check_development_agent.py (V8) +
 #   scripts/sdd/check_agents_projection.py (V9); tests in
 #   tests/unit/test_sdd_development_agent.py.
 # Layering (program plan §7): this file is the DERIVED-INVENTORY layer — it records
 #   coverage/approval/evidence for both tools but never redefines policy; canonical rules
 #   live in sdd/ + policies/ + capability contracts.
-# Change discipline: the `mcp` and `codex.posture` sections are protected-adjacent
-#   surfaces (program plan §17 / D-017; anchor `mcp-server-trust-posture-change`) —
+# Change discipline: the `mcp` and `codex.posture` sections, and the v2 carrier axis
+#   (`codex_carrier` / `carrier_binding`), are protected-adjacent surfaces (program
+#   plan §17 / D-017; anchor `mcp-server-trust-posture-change`) —
 #   OWNER_APPROVAL_REQUIRED before modifying them.
 # Forbidden by contract: `owner_agent` or any tool-specific fixed-duty field (§9).
 
-schema_version: 1
+schema_version: 2
+codex_readme_template_version: 1
 snapshot: "2026-07-13"
 owners:
   - ranzuozhou
@@ -21,8 +26,12 @@ owners:
 # --- capabilities: 37 in-tree skills (groups: doc/flow/git/infra/runtime) ------------
 # required: true == the 18-item end-to-end loop set (Owner 拍板 2026-07-13:
 #   flow x10 + git x7 [branch/commit/push/pr/sync/delete/issue] + doc-validate).
-# projection: project | after-neutralization | never  (initial tiers per §4.4:
-#   green 5 / yellow 21 / red 11; final S1 whitelist decided by closure checker).
+# projection: project | after-neutralization | never. Initial §4.4 tiers were
+#   green 5 / yellow 21 / red 11; the PR-C1 cutover moved all 18 required rows to
+#   `project` (project 18 / after-neutralization 11 / never 8). Counts here are
+#   descriptive only — validators derive them and never hardcode them (AC-04).
+# codex_carrier: none | byte-copy | translated, on EVERY row (absence is not an
+#   implicit none — V8 DA091). `carrier_binding` only on translated rows (DA093).
 
 capabilities:
   # ---- doc family (6) ----
@@ -30,6 +39,7 @@ capabilities:
     group: doc
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -46,6 +56,7 @@ capabilities:
     group: doc
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -62,6 +73,7 @@ capabilities:
     group: doc
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -78,6 +90,7 @@ capabilities:
     group: doc
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -94,6 +107,7 @@ capabilities:
     group: doc
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -109,13 +123,15 @@ capabilities:
   - id: mj-agent-doc-validate
     group: doc
     required: true
-    projection: never   # script-ci equivalent: both tools run the repo validators directly
+    projection: project   # carrier reversal per ADR-039: script/CI runs the validators but cannot replace interactive validation routing, result interpretation or stop conditions
+    codex_carrier: translated
+    carrier_binding: {workflow_id: doc-validate}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [script, ci]
     codex:
-      support_mode: script-ci
+      support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [script, ci]
     evidence:
@@ -128,6 +144,7 @@ capabilities:
     group: flow
     required: true
     projection: project   # green tier: zero Claude-specific primitives (§15 recount)
+    codex_carrier: byte-copy
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -144,13 +161,15 @@ capabilities:
   - id: mj-agent-flow-intake
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-intake}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -162,13 +181,15 @@ capabilities:
   - id: mj-agent-flow-plan
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-plan}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -180,13 +201,15 @@ capabilities:
   - id: mj-agent-flow-implement
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-implement}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -198,13 +221,15 @@ capabilities:
   - id: mj-agent-flow-repo-scan
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-repo-scan}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -216,13 +241,15 @@ capabilities:
   - id: mj-agent-flow-verify
     group: flow
     required: true
-    projection: never   # script-ci equivalent: Level A command matrix runs identically
+    projection: project   # carrier reversal per ADR-039: CI cannot replace Level A/B/C, the Owner stop or evidence orchestration
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-verify}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [script, ci]
     codex:
-      support_mode: script-ci
+      support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [script, ci]
     evidence:
@@ -234,13 +261,15 @@ capabilities:
   - id: mj-agent-flow-scope-drift
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-scope-drift}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -252,13 +281,15 @@ capabilities:
   - id: mj-agent-flow-self-review
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-self-review}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -270,13 +301,15 @@ capabilities:
   - id: mj-agent-flow-review-respond
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-review-respond}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -288,13 +321,15 @@ capabilities:
   - id: mj-agent-flow-post-merge
     group: flow
     required: true
-    projection: after-neutralization
+    projection: project
+    codex_carrier: translated
+    carrier_binding: {workflow_id: flow-post-merge}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: adapter-backed
+      support_mode: native
       adapter_ref: sdd/adapters/development-agent.md
       approval: {mode: none, gates: []}
       enforcement: [adapter]
@@ -307,13 +342,15 @@ capabilities:
   - id: mj-agent-git-branch
     group: git
     required: true
-    projection: after-neutralization   # PreToolUse hook semantics absent on Codex; AGENTS.md prose covers (G1)
+    projection: project   # translated carrier; the G1 PreToolUse hook is absent on Codex — the preface + AGENTS.md carry that duty (was the after-neutralization rationale)
+    codex_carrier: translated
+    carrier_binding: {workflow_id: git-branch}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [native-permission]   # fail-closed PreToolUse hook (G1)
     codex:
-      support_mode: manual               # G1 worktree discipline self-enforced via AGENTS.md
+      support_mode: native               # G1 worktree discipline self-enforced via AGENTS.md
       approval: {mode: none, gates: []}
       enforcement: [manual]
     evidence:
@@ -325,6 +362,7 @@ capabilities:
     group: git
     required: false
     projection: after-neutralization   # yellow: pending Handoff-closure with whitelist (§4.4)
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -340,6 +378,7 @@ capabilities:
     group: git
     required: true
     projection: project
+    codex_carrier: byte-copy
     claude:
       support_mode: native
       approval:
@@ -351,7 +390,7 @@ capabilities:
             evidence_required: explicit-owner-message
       enforcement: [manual]
     codex:
-      support_mode: manual
+      support_mode: native
       approval:
         mode: owner-hitl
         gates:
@@ -368,12 +407,13 @@ capabilities:
     group: git
     required: true
     projection: project
+    codex_carrier: byte-copy
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: manual
+      support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     evidence:
@@ -382,13 +422,15 @@ capabilities:
   - id: mj-agent-git-issue
     group: git
     required: true
-    projection: never   # gh CLI equivalent on both sides (§4.4 red tier rationale)
+    projection: project   # carrier reversal per ADR-039: `gh` is transport only - it cannot replace template routing, preview, confirm, assignee or HITL
+    codex_carrier: translated
+    carrier_binding: {workflow_id: git-issue}
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: manual
+      support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     evidence:
@@ -397,7 +439,9 @@ capabilities:
   - id: mj-agent-git-pr
     group: git
     required: true
-    projection: after-neutralization   # PreToolUse hook (G2 --base) absent on Codex; AGENTS.md prose covers
+    projection: project   # translated carrier; the G2 `--base` PreToolUse hook is absent on Codex — the preface + AGENTS.md carry that duty (was the after-neutralization rationale)
+    codex_carrier: translated
+    carrier_binding: {workflow_id: git-pr}
     claude:
       support_mode: native
       approval:
@@ -409,7 +453,7 @@ capabilities:
             evidence_required: explicit-owner-message
       enforcement: [native-permission]   # fail-closed PreToolUse hook (G2)
     codex:
-      support_mode: manual
+      support_mode: native
       approval:
         mode: owner-hitl
         gates:
@@ -427,6 +471,7 @@ capabilities:
     group: git
     required: true
     projection: project
+    codex_carrier: byte-copy
     claude:
       support_mode: native
       approval:
@@ -438,7 +483,7 @@ capabilities:
             evidence_required: explicit-owner-message
       enforcement: [manual]
     codex:
-      support_mode: manual
+      support_mode: native
       approval:
         mode: owner-hitl
         gates:
@@ -455,6 +500,7 @@ capabilities:
     group: git
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -471,12 +517,13 @@ capabilities:
     group: git
     required: true
     projection: project
+    codex_carrier: byte-copy
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     codex:
-      support_mode: manual
+      support_mode: native
       approval: {mode: none, gates: []}
       enforcement: [manual]
     evidence:
@@ -488,6 +535,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -504,6 +552,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -520,6 +569,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -536,6 +586,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -552,6 +603,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -568,6 +620,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -584,6 +637,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -600,6 +654,7 @@ capabilities:
     group: infra
     required: false
     projection: never
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}
@@ -617,6 +672,7 @@ capabilities:
     group: runtime
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval:
@@ -646,6 +702,7 @@ capabilities:
     group: runtime
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval: {mode: none, gates: []}   # its AskUserQuestion is procedural, not an Owner gate
@@ -662,6 +719,7 @@ capabilities:
     group: runtime
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval:
@@ -691,6 +749,7 @@ capabilities:
     group: runtime
     required: false
     projection: after-neutralization
+    codex_carrier: none
     claude:
       support_mode: native
       approval:

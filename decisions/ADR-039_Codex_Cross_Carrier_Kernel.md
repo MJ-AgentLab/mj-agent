@@ -99,6 +99,26 @@ warning observation，D2 另行审批 identical predicate）；D-017 与 D-010 �
 审批纪律。ADR-000/006/009 数据边界、Owner human merge authority 及 ADR-036 其余未明示修订条款全部不变。
 本 disposition 不直接修改 ADR-036 文件，也不预先批准后续 A0/C1/D1a/D2 的 protected/kernel hunks。
 
+## 三项 `projection: never` 反转理由（PR-C1 cutover）
+
+v1 把 `mj-agent-doc-validate` / `mj-agent-flow-verify` / `mj-agent-git-issue` 定为
+`projection: never`，理由都是「另一侧有等价物」（前两者 script-ci、后者 `gh` CLI）。该判断在
+**只有 byte-copy 一种投影方式**时成立：既然无法翻译，能力若不能整体照搬就只能不投影。v2 引入正交的
+`codex_carrier` 轴后该前提消失——translated carrier 保留正文、编号步骤、validator、Level A/B/C、
+精确 handler 名与 HITL 停止点，因此「有等价 CLI」不再是不投影的充分理由。逐项理由：
+
+- **`mj-agent-doc-validate`** — script/CI 确实能执行 validator，但**不能**替代交互式验证路由、
+  结果解释与停止条件。可执行的是命令，不可替代的是「哪个 validator、结果怎么读、何时停」。
+- **`mj-agent-flow-verify`** — CI **不能**替代 Level A/B/C 分层、Owner stop 与 evidence
+  orchestration。CI 跑的是矩阵里的一格，skill 管的是矩阵本身与其停止语义。
+- **`mj-agent-git-issue`** — `gh` 只是 transport，**不能**替代 template routing、preview、
+  confirm、assignee 与 HITL 拍板位点。传输通道等价 ≠ 决策流程等价。
+
+三者的 manifest `projection` 行注释在同一 change tree 内改为指向本节（plan §2.2 要求二者同树，
+避免「script-ci equivalent」旧注释与 `codex_carrier: translated` 新事实并存）。carrier strategy 由
+正交字段 `codex_carrier` 表达，`codex.support_mode` 使用既有合法枚举 `native`，不发明
+`carrier-backed`。
+
 ## Consequences
 
 ### Positive

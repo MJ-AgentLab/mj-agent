@@ -41,9 +41,17 @@ Same layering rule as this file: nested files point to the kernel, they do not r
 
 `.agents/skills/**`, `.agents/README.md`, the repo-root `.agents.lock.json` **and the repo-level
 `.codex/config.toml`** are **generated artifacts** owned 100% by `scripts/sdd/agents_sync.py`
-(per ADR-036 D-011/D-012/D-013/D-014): byte-identical projections of the whitelisted
-`.claude/skills/<name>/SKILL.md` sources (whitelist SoT = manifest `sdd/development-agent.yml`
-`projection: project` entries), plus — since S2 (#330) — a Codex MCP config derived from
+(per ADR-036 D-011/D-012/D-013/D-014 + ADR-039). The manifest `sdd/development-agent.yml` is the
+SoT, and since the PR-C1 cutover (#499) it is the per-capability **`codex_carrier`** field — no
+longer `projection` — that decides HOW each skill is carried: `byte-copy` writes
+`.claude/skills/<name>/SKILL.md` through byte-identically, while `translated` renders that same
+source deterministically through the translation registry
+(`sdd/workflows/development-agent-workflows.yml` + `sdd/adapters/codex-skill-translation.yml` +
+`sdd/adapters/codex-skill-preface.md`). **A translated carrier is therefore NOT byte-identical to
+its source** — it is a generated view of it, the source stays authoritative, and its
+`carrier_binding.workflow_id` must close against the registry. **Do not re-enumerate the
+byte-copy/translated split here** — it is derived from the manifest and validators must never
+hardcode the counts (AC-04). Plus — since S2 (#330) — a Codex MCP config derived from
 `.mcp.json` filtered by the manifest's per-server `mcp.servers.<name>.projection_policy`.
 **That manifest field is the SoT for which servers get projected — do not re-enumerate the list
 here**: it grew from 3 to 8 at #353 (`c700934`, which projected `pg-mj-agent-memory-*`×5) and the

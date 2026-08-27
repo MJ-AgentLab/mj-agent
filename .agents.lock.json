@@ -1,8 +1,453 @@
 {
-  ".codex/config.toml": "sha256:0f50595b5d900b0cb0d077912126977a75a884f5325110ee4d9ef964bbb78d9f",
-  "mj-agent-flow-diagnose": "sha256:6ef02a700b543110bd789b98ffb8c07268e05815d240789bbab5a22895007694",
-  "mj-agent-git-commit": "sha256:d0d79d42fa617aaf81dc45ad300796f423a3360222705c2a95a7abc39e8e5150",
-  "mj-agent-git-delete": "sha256:47d491cd5cadaf1f102f913c5a59da87e80fb110d48ca2aba12bb7d2ce40ee05",
-  "mj-agent-git-push": "sha256:412f28ea801020f303aa397c915a56b24ad4c2e5640e3933a867d79ce388d902",
-  "mj-agent-git-sync": "sha256:e0a227499e21afca764aa828b7ba1c356ff9947cdc620f087b2537eb64cdf050"
+  "entries": {
+    ".agents/README.md": {
+      "entry_kind": "skills-readme",
+      "inputs": {
+        "manifest_slice_sha256": "1688c5c4a46a677f665ec0077c04c57ba7645672db30c0a004f0672bcb39715f",
+        "renderer_module": "scripts.sdd._common.codex_readme_renderer",
+        "renderer_module_sha256": "7af18ed60f832f669a72d4eb3f545a10c8923c7839fcfd2d42a4cbac8aba90d0",
+        "renderer_version": 1,
+        "template_path": "sdd/adapters/codex-skills-readme.md",
+        "template_sha256": "b49c0a854eccd9acd51f89da47f7ca46b39b0d96dab13a8f795946eb7b343000",
+        "template_version": 1
+      },
+      "normalization_policy": "generated-utf8-lf-v1",
+      "output_sha256": "88bda43e8977c32e13612d2488ef48cfb26172c13d27bad8dee4f6ddabb1065c",
+      "owner": "system:skills-readme",
+      "strategy": "rendered",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-doc-validate/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "7ce92aebe41ef8ec7d88945b3ae2d8889cdd24f429f25fc2238078e276b632a5",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-doc-validate/SKILL.md",
+        "source_sha256": "b6ff6c3a15b21381312a36d76d8bd1a98a352a8f3c27ba70c292a73488c767f2",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "9703248892a30fba69042d44af9c09fc47c2fab828db3cead8276e08d1de4fe1"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "4ca7c4c80b9e82bcde73718ede6880d5fe504a5858a4fb48545da228c9fe46f6",
+      "owner": "capability:mj-agent-doc-validate",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-diagnose/SKILL.md": {
+      "entry_kind": "skill-byte-copy",
+      "inputs": {
+        "manifest_slice_sha256": "c61d5a77f5c60abfd191a64314adcfbe831e5ba3658c377e5d5207cdea888a0c",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-diagnose/SKILL.md",
+        "source_sha256": "6ef02a700b543110bd789b98ffb8c07268e05815d240789bbab5a22895007694"
+      },
+      "normalization_policy": "raw-bytes-v1",
+      "output_sha256": "6ef02a700b543110bd789b98ffb8c07268e05815d240789bbab5a22895007694",
+      "owner": "capability:mj-agent-flow-diagnose",
+      "strategy": "byte-copy",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-implement/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "76a2fe898cee580be69d5c08b64d189edede36fbc58080caf4677ab0a37c50fa",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-implement/SKILL.md",
+        "source_sha256": "6aff6a74af4cc1b43d8db6c944ba4d9ca6e13e232ccb0355d0aae1e345aed629",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [
+          {
+            "pattern": "/mj-agent-runtime-*",
+            "resolved_ids": [
+              "mj-agent-runtime-biz-catalog-sync",
+              "mj-agent-runtime-eval-baseline",
+              "mj-agent-runtime-prompt-version-bump",
+              "mj-agent-runtime-skill-doc-improve"
+            ]
+          }
+        ],
+        "wildcard_expansions_sha256": "88cf8f6a047bc686a6ba504d2118589dee5cac5b2dd66c197e66a548660a8fe0",
+        "workflow_slice_sha256": "2b61cb050a2b8da864e2c5899fe37decdfdde0422ed3f1d5595b167e9237ec74"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "0b38eb853c966cc2dcdda13f2cddb75b50aa5497bccb447be0c15b695c70af71",
+      "owner": "capability:mj-agent-flow-implement",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-intake/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "e5975c520f4a9d3687479892795c567d3cbf4b82c15be134cd875cfd24c0fcad",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-intake/SKILL.md",
+        "source_sha256": "adb888e35cc06e93ac46f8e564b7ca8a497fc6ca10e92b165da0715572fe4773",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "1ccd89c834a0f3652468f1994af2f8048b20deb4fb0599c102585df2b1fd0960"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "76c2a03ce7231bac6926b00d1958b0bfcd73ca193de8c19b041fb2456c4c4cc9",
+      "owner": "capability:mj-agent-flow-intake",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-plan/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "890e9d27151cf3b44846a308e190d04425c9d2989df6ce33c81fc93ef0e38070",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-plan/SKILL.md",
+        "source_sha256": "e97a79a73d74249225ec24561970911e2f273229bc3c447f71a57c8eb12172e6",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "5375d8a032be041fa2cefe1aaabaa53a2d089995f63fe46d8fde905d3ad1b5e3"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "312b96da29f6e4ca83a7d22390c93817828ffc2119b6b783199ee1f4e84d471c",
+      "owner": "capability:mj-agent-flow-plan",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-post-merge/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "b47badcd54188ab4422d6220f306aad78a54e35650adb637706ed1bcf9f4d7af",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-post-merge/SKILL.md",
+        "source_sha256": "f4f6b397cc61075899c949751dcbb925564b71b5055ff8dbc13ef83b15675247",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "421968ef3ba1dcfa0ea39b284398971ddbd1a97d6e65fb0a8da58724a9241e35"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "13ab8b7d21fa796ff0e39124a14a0d1a97eba0ad460ef9e9e7e7243659669339",
+      "owner": "capability:mj-agent-flow-post-merge",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-repo-scan/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "073a0260d640bd38a179274716205abbe1e4982aed34a1e7ebbef286fdd291e5",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-repo-scan/SKILL.md",
+        "source_sha256": "d1dd7c1839492b4f944bb39f17a943f1db3ad42e5c905a97cf47238aefa48f25",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "f47e1f19711aea6641fbbdfd201a3d5091b887fc238095171486c1998eca63d7"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "ba160a28563d74965d72f6de618857fce1f3c06749e1464b52544aff3046fa55",
+      "owner": "capability:mj-agent-flow-repo-scan",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-review-respond/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "87dc62fe6da7da3ad4616ea7dbf73cfaafd82434a452caf6f292cd789b53705b",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-review-respond/SKILL.md",
+        "source_sha256": "d91e7fc7427f68cb4e851243d32a930013e51a3186804275a1384be4e9992436",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "8fa0ab128f5351647b0bfbeb93c054222a13592f40bf109f455b5d6f030cb9e8"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "a570008ae0eb1115a74d5c63a4a54ecb7d0992dfc8d397a7a2deec84f51cfdb3",
+      "owner": "capability:mj-agent-flow-review-respond",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-scope-drift/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "3fd188a1af1e28e063f81427780874d4c8df63af8292444df4772692353ede49",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-scope-drift/SKILL.md",
+        "source_sha256": "cf0ebee0681769948c2b044329d789dda08b59d7b5b6b42a8270e8af9c61f0c8",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [
+          {
+            "pattern": "/mj-agent-runtime-*",
+            "resolved_ids": [
+              "mj-agent-runtime-biz-catalog-sync",
+              "mj-agent-runtime-eval-baseline",
+              "mj-agent-runtime-prompt-version-bump",
+              "mj-agent-runtime-skill-doc-improve"
+            ]
+          }
+        ],
+        "wildcard_expansions_sha256": "88cf8f6a047bc686a6ba504d2118589dee5cac5b2dd66c197e66a548660a8fe0",
+        "workflow_slice_sha256": "8352b32300003c1ce7472b3fd9fc4b24f27d196d583ea668534c1b8ba22788e3"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "60aa5d06738d6ee574f5fca3f8b885b342bb384973da6709fd3361c5e7219ed5",
+      "owner": "capability:mj-agent-flow-scope-drift",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-self-review/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "20196f02f3482098e6f13c71037cbbd6a59f919d374d0e13616750aaa533656c",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-self-review/SKILL.md",
+        "source_sha256": "1864c528a4483ba5bdae363088da393a24874bd8e872755f0084bab54714cf93",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "4ccc193cdc7f0a209b9b3ded0b5e21402a2ace9945f60f12fe6f7e20cc8b4b21"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "b26b54a4a8bea1ffefb56a3282cf49600deb72a25fb60140f46b4e42c21cead2",
+      "owner": "capability:mj-agent-flow-self-review",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-flow-verify/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "9957cccbbe437fa9c241a8cd5aa90c718034993e17d64a3a660fd898019f0a5a",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-flow-verify/SKILL.md",
+        "source_sha256": "1d8fe73fb177ee631d67230b96a66a120dc29be1c259464f164652e70682d174",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "e7e58c4ce7fed026a4d4bfb1e72632e8943c36b884e3cb763bef5c65910af0ad"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "0bc413e1b5480b802042824a73f5bb8f1c5f47727844b9ccac7046e69862a4f0",
+      "owner": "capability:mj-agent-flow-verify",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-branch/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "d207955eb467bbe3ff63116c36c875bca1926fa6c8648dcaf5a7876e88142bba",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-branch/SKILL.md",
+        "source_sha256": "c75633eddbd83230025efcb505d400ecc9532af06b1dcaa402d0e50b837c2624",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "d5e04aa7fdfe18daa807086a823c077c7a3e3108d0ffb903c3913dd1a99c9018"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "bebf92d1183dafa6c31c4b54ff362710c23e9734fa1c3d36e6e31a02fba3539e",
+      "owner": "capability:mj-agent-git-branch",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-commit/SKILL.md": {
+      "entry_kind": "skill-byte-copy",
+      "inputs": {
+        "manifest_slice_sha256": "d58f157404036bd8cacad99c6b1cf20f9389a36ee487e218ece7fa626939e09e",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-commit/SKILL.md",
+        "source_sha256": "d0d79d42fa617aaf81dc45ad300796f423a3360222705c2a95a7abc39e8e5150"
+      },
+      "normalization_policy": "raw-bytes-v1",
+      "output_sha256": "d0d79d42fa617aaf81dc45ad300796f423a3360222705c2a95a7abc39e8e5150",
+      "owner": "capability:mj-agent-git-commit",
+      "strategy": "byte-copy",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-delete/SKILL.md": {
+      "entry_kind": "skill-byte-copy",
+      "inputs": {
+        "manifest_slice_sha256": "14a5e36bf20fd7c6c35d777b8174aa959e0670086766f886a89d73f24d83c87d",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-delete/SKILL.md",
+        "source_sha256": "47d491cd5cadaf1f102f913c5a59da87e80fb110d48ca2aba12bb7d2ce40ee05"
+      },
+      "normalization_policy": "raw-bytes-v1",
+      "output_sha256": "47d491cd5cadaf1f102f913c5a59da87e80fb110d48ca2aba12bb7d2ce40ee05",
+      "owner": "capability:mj-agent-git-delete",
+      "strategy": "byte-copy",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-issue/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "0a017b14c9a7ac170de862a4f4af74a6ecc7e4a93e900d1f9abd0e4d05e105e3",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-issue/SKILL.md",
+        "source_sha256": "20190f5ba05dd5694af3c1473468278ad1b163e0ad0de3f98be559c8a7712141",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "c0332434570c99165244f72f9044617dc679857faa08f25a48de0b3282521354"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "34ce7efd8431ea79fda89a974ff2de66c26c867aa9c53e40f170a19ee6d2bd2d",
+      "owner": "capability:mj-agent-git-issue",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-pr/SKILL.md": {
+      "entry_kind": "skill-translated",
+      "inputs": {
+        "manifest_slice_sha256": "7a123030b7a2ee985ebd2329165439bb1a9de45fb0cbc5e267796769fc74997f",
+        "preface_sha256": "f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-pr/SKILL.md",
+        "source_sha256": "bdbdcd4cf3136c8f0ba74e37a0134830b1e230fd5d137f6a49d64d6cce4496fa",
+        "translation_map_sha256": "1fdf3ffbc6955ff67aa08794a1bf8eab7798d1c4dbda3bec2c6973f38e1620a1",
+        "wildcard_expansions": [],
+        "wildcard_expansions_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "workflow_slice_sha256": "8bb42fc8e7e00f5623071f40d597cd2b986dd3fd5efe1335c75dc5bd3242ab10"
+      },
+      "normalization_policy": "translated-utf8-lf-v1",
+      "output_sha256": "db8df09a6e927c99ecddc328eb7af0aabea16982f42ef7cbe0b5053c9d0141cf",
+      "owner": "capability:mj-agent-git-pr",
+      "strategy": "translated",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-push/SKILL.md": {
+      "entry_kind": "skill-byte-copy",
+      "inputs": {
+        "manifest_slice_sha256": "521a62bfaf0ab32daa2a7450740ef06de22781c616e1fea8ded4fdd2b66cde7e",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-push/SKILL.md",
+        "source_sha256": "412f28ea801020f303aa397c915a56b24ad4c2e5640e3933a867d79ce388d902"
+      },
+      "normalization_policy": "raw-bytes-v1",
+      "output_sha256": "412f28ea801020f303aa397c915a56b24ad4c2e5640e3933a867d79ce388d902",
+      "owner": "capability:mj-agent-git-push",
+      "strategy": "byte-copy",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".agents/skills/mj-agent-git-sync/SKILL.md": {
+      "entry_kind": "skill-byte-copy",
+      "inputs": {
+        "manifest_slice_sha256": "a36ce3ffe9276643e24b7b67e67af39c5d37ed4798268592ec20c5876c514208",
+        "renderer_module": "scripts.sdd._common.skill_renderer",
+        "renderer_module_sha256": "6d50f964d49c7d3a17e7468c7ee2b5e34adc6f004331866cfd9e57794fbe88fd",
+        "renderer_version": 1,
+        "source_path": ".claude/skills/mj-agent-git-sync/SKILL.md",
+        "source_sha256": "e0a227499e21afca764aa828b7ba1c356ff9947cdc620f087b2537eb64cdf050"
+      },
+      "normalization_policy": "raw-bytes-v1",
+      "output_sha256": "e0a227499e21afca764aa828b7ba1c356ff9947cdc620f087b2537eb64cdf050",
+      "owner": "capability:mj-agent-git-sync",
+      "strategy": "byte-copy",
+      "surface_members": [
+        "skills"
+      ]
+    },
+    ".codex/config.toml": {
+      "entry_kind": "codex-config-mcp",
+      "inputs": {
+        "codex_posture_slice_sha256": "5dda41b55bb43f2fdebd2dac4037c1b0d8a1d6aa96cca727b1a6568f0505cad0",
+        "manifest_mcp_slice_sha256": "ef5ad54eec505a1358dac5998d162a24dc9fe4a6cb333d88f081ea551c533221",
+        "mcp_source_path": ".mcp.json",
+        "mcp_source_sha256": "cbcbcabfa700577fea7ec2c32c1689149b44ec12d228a57dd1ad1db4faeacd2f",
+        "renderer_module": "scripts.sdd._common.codex_config_renderer",
+        "renderer_module_sha256": "f26dafdd9c28ed43a2eef42411c53279e978bed0404ad1d27354e37e49863d9a",
+        "renderer_version": 1
+      },
+      "normalization_policy": "canonical-toml-v1",
+      "output_sha256": "0f50595b5d900b0cb0d077912126977a75a884f5325110ee4d9ef964bbb78d9f",
+      "owner": "system:codex-config",
+      "strategy": "rendered",
+      "surface_members": [
+        "mcp"
+      ]
+    }
+  },
+  "generator_protocol_version": 1,
+  "schema_version": 2
 }

@@ -164,9 +164,73 @@ def load_mcp_projection(
     return project_servers, posture if isinstance(posture, dict) else None, never_names
 
 
+def substituted_targets(repo_root: Path, all_ids: set[str]) -> dict[str, set[str]]:
+    """Per-referrer map: capability -> targets it may reach via a `codex_substitute`.
+
+    Keyed by the edge's `from_id` ON PURPOSE. A substitute is declared for a
+    SPECIFIC edge, so it closes that referrer's dependency and no one else's:
+    `mj-agent-doc-validate -> mj-agent-doc-author` having an inline-procedure
+    route says nothing about a byte-copy carrier that hands off to the same
+    target without declaring the edge. A flat target set would let any one
+    capability's substitute silently close every other capability's dangling
+    Handoff, which is strictly weaker than the D-014 predicate it replaces.
+
+    Manifest v2 replaces D-014's "every Handoff target must itself be projected"
+    precondition with plan §2.3/§2.5 semantics: 「没有 carrier」不等于「依赖可以
+    消失」— a no-carrier target is closed iff the dependency registry declares an
+    executable substitute, which the renderer then emits into the referring
+    carrier's body. The v2 sync engine already enforces exactly that
+    (`agents_sync._v2_desired_state`: carrier-required targets must have a
+    carrier, every no-carrier target must have a substitute, wildcards must
+    expand non-empty). V9 reads the SAME registry loader, so the gate and the
+    generator cannot drift apart.
+
+    Fail closed. Any problem loading the registry yields the EMPTY set, which
+    leaves the strict D-014 predicate fully in force; the load failure itself is
+    reported as PJ050 by `check_carrier_binding_closure`. A wildcard that does
+    not expand is dropped rather than treated as covering anything.
+    """
+    registry_path = repo_root / "sdd" / "workflows" / "development-agent-workflows.yml"
+    if not registry_path.is_file():
+        return {}
+    # Local import: the loader lives in the D-017 renderer module; V9 reads the
+    # same implementation the generator uses (one-implementation rule).
+    from scripts.sdd._common.skill_renderer import (
+        TranslationError,
+        expand_wildcard,
+        load_workflow_registry,
+    )
+
+    try:
+        registry = load_workflow_registry(registry_path.read_text(encoding="utf-8"))
+    except (TranslationError, OSError):
+        return {}
+    covered: dict[str, set[str]] = {}
+    for edge in registry.edges.values():
+        if edge.substitute is None:
+            continue
+        if edge.to_id.endswith("*"):
+            try:
+                targets = set(expand_wildcard(edge.to_id, all_ids))
+            except TranslationError:
+                continue
+        else:
+            targets = {edge.to_id}
+        covered.setdefault(edge.from_id, set()).update(targets)
+    return covered
+
+
 def check_closure(repo_root: Path, project: set[str], all_ids: set[str]) -> list[Violation]:
     out: list[Violation] = []
     severity = "error" if (repo_root / ".agents").exists() else "warning"
+    # Manifest v2 dispatch (plan §2.3/§2.5). Under v1 this set is empty and PJ011
+    # keeps its exact historical predicate, so the v1 tree is bit-for-bit
+    # unaffected — the same dormancy contract `check_carrier_binding_closure` uses.
+    substituted = (
+        substituted_targets(repo_root, all_ids)
+        if _load_manifest(repo_root).get("schema_version") == 2
+        else {}
+    )
     for name in sorted(project):
         skill_md = repo_root / ".claude" / "skills" / name / "SKILL.md"
         if not skill_md.is_file():
@@ -182,12 +246,13 @@ def check_closure(repo_root: Path, project: set[str], all_ids: set[str]) -> list
             else:
                 targets = {ref}
             for target in sorted(targets):
-                if target not in project:
+                if target not in project and target not in substituted.get(name, ()):
                     out.append(
                         _v("PJ011", severity, name,
                            f".claude/skills/{name}/SKILL.md",
                            f"Handoff out-edge '/{target}' is outside the projection"
-                           f" whitelist (closure precondition, D-014)")
+                           f" whitelist and has no registry codex_substitute"
+                           f" (closure precondition, D-014 / plan §2.5)")
                     )
     return out
 
