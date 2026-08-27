@@ -550,10 +550,17 @@ def test_fidelity_index_negatives(tmp_path: Path, capsys: Any) -> None:
 # ----------------------------------------------------------- real-tree guard
 
 
-def test_real_tree_still_takes_the_legacy_v1_paths() -> None:
-    """Zero real-tree diff: the live repo is manifest v1 + flat v1 lock, so
-    sync/--check keep the byte-for-byte legacy behavior."""
+def test_real_tree_now_takes_the_v2_paths() -> None:
+    """Post-PR-C1-cutover pin (was `..._still_takes_the_legacy_v1_paths`).
+
+    The live repo is manifest v2 + a v2 lock envelope, so sync/--check dispatch
+    to the v2 engine. The BARE `--check` (surface=all) is the load-bearing call:
+    it is the only caller that compares the WHOLE canonical lock text, which no
+    CI gate does (V10 is skills-scoped, V11 mcp-scoped).
+    """
     raw = json.loads((REPO_ROOT / ".agents.lock.json").read_text(encoding="utf-8"))
-    assert "schema_version" not in raw
+    assert raw["schema_version"] == 2
+    assert verify_lock_v2(raw).entries, "an empty ledger would make this vacuous"
+    assert sync_main(["--check"], repo_root=REPO_ROOT) == 0
     assert sync_main(["--check", "--surface", "skills"], repo_root=REPO_ROOT) == 0
     assert sync_main(["--check", "--surface", "mcp"], repo_root=REPO_ROOT) == 0

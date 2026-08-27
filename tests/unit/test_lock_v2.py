@@ -30,7 +30,6 @@ from scripts.sdd._common.projection_loader import (
     lock_v2_canonical_text,
     parse_lock_json,
     sha256_of_canonical,
-    verify_lock,
     verify_lock_v2,
 )
 
@@ -438,10 +437,36 @@ def test_classify_malformed_and_mixed(raw: dict[str, Any]) -> None:
         classify_lock(raw)
 
 
-def test_real_tree_lock_is_strict_v1() -> None:
+def test_real_tree_lock_is_strict_v2() -> None:
+    """Post-PR-C1-cutover pin (was `..._is_strict_v1` while the engine was dormant).
+
+    The live lock is now a v2 envelope whose entries verify against the closed
+    union, and every skill entry's kind matches its manifest carrier strategy —
+    counts stay derived from the manifest, never asserted as constants (AC-04).
+    """
+    import yaml
+
     raw = json.loads((REPO_ROOT / ".agents.lock.json").read_text(encoding="utf-8"))
-    assert classify_lock(raw) == "v1"
-    assert set(verify_lock(raw).entries) == set(raw)
+    assert classify_lock(raw) == "v2"
+    lock = verify_lock_v2(raw)
+
+    manifest = yaml.safe_load(
+        (REPO_ROOT / "sdd" / "development-agent.yml").read_text(encoding="utf-8")
+    )
+    expected_kind = {"byte-copy": "skill-byte-copy", "translated": "skill-translated"}
+    carriers = {
+        str(cap["id"]): str(cap["codex_carrier"])
+        for cap in manifest["capabilities"]
+        if cap.get("codex_carrier") in expected_kind
+    }
+    assert carriers, "no carriers derived from the manifest — the check would be vacuous"
+    for cap_id, strategy in carriers.items():
+        entry = lock.entries[f".agents/skills/{cap_id}/SKILL.md"]
+        assert entry.entry_kind == expected_kind[strategy], cap_id
+        assert entry.owner == f"capability:{cap_id}", cap_id
+    # README + the reserved codex config round out the ledger.
+    assert ".agents/README.md" in lock.entries
+    assert CODEX_LOCK_KEY in lock.entries
 
 
 # ------------------------------------------------------------ canonical wire

@@ -166,14 +166,38 @@ def test_duplicate_id_is_a_casefold_collision_too(tmp_path: Path, capsys: Any) -
     assert "DA096" in out  # same physical derived path — one owner per path
 
 
-def test_real_tree_stays_v1_and_green() -> None:
-    """Zero real-tree diff guard: the live manifest is still schema_version 1 and
-    both blocking gates stay green after the dormant widening."""
+def test_real_tree_is_v2_and_green() -> None:
+    """Post-PR-C1-cutover pin (was `..._stays_v1_and_green` while v2 was dormant).
+
+    The live manifest is schema_version 2, every capability carries an explicit
+    `codex_carrier` (DA091 — absence is not an implicit none), `carrier_binding`
+    appears on translated rows only (DA093), and both blocking gates stay green.
+    The carrier partition is DERIVED here, never pinned as a count (AC-04).
+    """
     import yaml
 
     manifest = yaml.safe_load(
         (REPO_ROOT / "sdd" / "development-agent.yml").read_text(encoding="utf-8")
     )
-    assert manifest["schema_version"] == 1
+    assert manifest["schema_version"] == 2
+    assert isinstance(manifest.get("codex_readme_template_version"), int)
+
+    caps = manifest["capabilities"]
+    assert caps, "empty capability list — the assertions below would be vacuous"
+    for row in caps:
+        assert row.get("codex_carrier") in {"none", "byte-copy", "translated"}, row.get("id")
+        has_binding = "carrier_binding" in row
+        assert has_binding == (row["codex_carrier"] == "translated"), row.get("id")
+        # AC-03: every carrier row ends project + native; every none row does not.
+        if row["codex_carrier"] != "none":
+            assert row["projection"] == "project", row.get("id")
+            assert row["codex"]["support_mode"] == "native", row.get("id")
+            assert row["required"] is True, row.get("id")
+
+    # AC-04: the required set is exactly the carrier set, derived both ways.
+    required = {c["id"] for c in caps if c.get("required") is True}
+    carriers = {c["id"] for c in caps if c["codex_carrier"] != "none"}
+    assert required == carriers
+
     assert v8_main(["--all"], repo_root=REPO_ROOT) == 0
     assert v9_main(["--all"], repo_root=REPO_ROOT) == 0

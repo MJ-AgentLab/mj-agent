@@ -78,11 +78,18 @@ def _required_ids() -> set[str]:
     }
 
 
-def _v1_project_ids() -> set[str]:
+def _byte_copy_ids() -> set[str]:
+    """Byte-copy carriers, derived from `codex_carrier`.
+
+    Before the PR-C1 cutover this was `projection == "project"`, which happened
+    to select exactly the byte-copy five. Under manifest v2 that selector means
+    ALL 18 carriers (V8 DA094 forces every carrier to `projection: project`), so
+    the strategy axis is the only correct discriminator.
+    """
     return {
         c["id"]
         for c in _manifest()["capabilities"]
-        if c.get("projection") == "project"
+        if c.get("codex_carrier") == "byte-copy"
     }
 
 
@@ -97,13 +104,18 @@ def test_real_typed_sources_load() -> None:
     assert PREFACE_PATH.is_file()
 
 
-def test_translated_set_partitions_required_with_v1_whitelist() -> None:
-    """registry translated caps + v1 byte-copy whitelist == v1 required set —
-    derived end to end from the two committed sources, no hardcoded count."""
+def test_translated_set_partitions_required_with_byte_copy() -> None:
+    """registry translated caps + byte-copy carriers == the required set —
+    derived end to end from the two committed sources, no hardcoded count.
+
+    This union is the only place that proves the two carrier strategies exactly
+    partition the required 18 without naming either number.
+    """
     registry = _registry()
     translated = {w.capability_id for w in registry.workflows.values()}
-    byte_copy = _v1_project_ids()
+    byte_copy = _byte_copy_ids()
     required = _required_ids()
+    assert translated and byte_copy, "an empty side would satisfy the union vacuously"
     assert translated.isdisjoint(byte_copy)
     assert translated | byte_copy == required
     for cap in translated | byte_copy:
@@ -177,7 +189,7 @@ def test_no_carrier_targets_all_carry_substitutes() -> None:
     registry = _registry()
     carrier_set = {
         w.capability_id for w in registry.workflows.values()
-    } | _v1_project_ids()
+    } | _byte_copy_ids()
     for edge in registry.edges.values():
         if edge.to_id.endswith("*"):
             expanded = expand_wildcard(

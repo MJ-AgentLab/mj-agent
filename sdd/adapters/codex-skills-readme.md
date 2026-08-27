@@ -1,13 +1,5 @@
 # GENERATED — do not edit anything under `.agents/`
 
-<!-- RAW RENDER TEMPLATE (Epic #499 plan §2.6; D-017 surface, A14 row (d)).
-     Rendered to .agents/README.md by scripts/sdd/_common/codex_readme_renderer.py
-     under the v2 engine (dormant until the PR-C1 cutover). This file is NOT a
-     typed source: its version is owned by the manifest v2 key
-     `codex_readme_template_version`; the lock records the raw template SHA-256.
-     Placeholders: {{strategy_summary}} (manifest-derived; counts are never
-     hardcoded, AC-04). -->
-
 Every file in this tree plus the repo-root `.agents.lock.json` and the generated
 `.codex/config.toml` is a **generated artifact** owned 100% by
 `scripts/sdd/agents_sync.py` (ADR-036 D-011/D-012/D-013/D-014; ADR-039 v2
@@ -30,6 +22,10 @@ How to change a projected skill:
 2. Run `python scripts/sdd/agents_sync.py sync`.
 3. Commit source + registry/map (if touched) + artifacts + `.agents.lock.json`
    together.
+
+This README is itself generated, from the raw template
+`sdd/adapters/codex-skills-readme.md` (its version is owned by the manifest key
+`codex_readme_template_version`; the lock records the raw template SHA-256).
 
 Never hand-edit these files — CI runs `agents_sync.py --check` (drift gates
 V10/V11) and `check_agents_projection.py` (V9) against them. `--adopt <name>`
