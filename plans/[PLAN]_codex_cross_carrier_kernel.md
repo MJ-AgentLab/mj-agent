@@ -7,7 +7,7 @@ summary: >-
   repository-native carrier；按单 Epic、18 个串行 PR、人工 merge barrier 实施
 owner: ranzuozhou
 created: 2026-08-12
-updated: 2026-08-13
+updated: 2026-08-27
 state: active
 version: 8.0
 track: shared
@@ -1360,14 +1360,26 @@ blocking checkers, but remains warning telemetry in this plan. A future V12 bloc
 
 | Registration field | V12 value |
 |---|---|
-| Gate ID / name | `V12 / Cross-Carrier Structure` |
+| Gate ID / name | `V12 / Cross-Carrier Structure`。**§4.1.1 要求的一一对应三元组**：`sdd/gates.md` §2 行名 `V12 Cross-Carrier-Structure` ↔ `ci.yml` step 名 `V12 cross-carrier structure (WARNING per plan §5.8; anchor PENDING_PR_C1_FIRST_CI)`。⚠ step 名里的 `PENDING_…` 是**首挂期的历史标识串，非活体断言** —— PR-C2 刻意不改 ci.yml 以守住「零 behavior diff」，真值以本表为准（残余 = F16）|
 | Exact execution | `uv run python scripts/sdd/check_cross_carrier.py --status-json .mj-agent-local/status/cross-carrier.json` |
-| Applicability | every PR; no path filter |
-| Observation anchor | PR-C2 records the first real CI run from merged PR-C1; until then `PENDING_PR_C1_FIRST_CI` |
-| Eligibility | anchor + ≥14 natural days + ≥20 consecutive head-SHA-deduplicated `EXECUTED_CLEAN` runs |
-| Streak semantics | `SKIP` is neutral; warning/error/non-clean resets the epoch |
-| Self-exclusions | PR-C1 mount, PR-C2 anchor and any future blocking-flip PR |
+| Applicability | every PR; no path filter（`ci` job 无 `paths:` 过滤器，随每个 PR 必跑 → 适用 `policies/ci-gates.md` §4.1.3 head-SHA 去重口径，**不**适用 §4.1.4 三态口径）。⚠ **`develop` 上的 merge commit 不触发任何 run** —— `ci.yml` 的 push 过滤器只含 5 个临时分支类型（不含 `develop`），`pull_request` 只对 base 为 main 或 develop 的 PR 触发；故 merged 单元的「首次真实 CI」只能取其 **PR head SHA** 上的 run（实测 `d810746` 的 `actions/runs` `total_count = 0`）|
+| Observation anchor | **CI 首挂锚 `2fbf700` 2026-08-27 14:11:11 +0900 #499**（判据 = §4.1.2 run-命令 pickaxe，单一命中；为非 merge 实现 commit）。**Epoch 起点 = 该 commit 上的首次真实 CI** —— run `33041866036`（event=push，`run_started_at 2026-08-27T05:14:15Z`），其 V12 step（job `98417034436`）`05:14:57Z`→`05:14:58Z`、`conclusion=success`、输出 `EXECUTED_CLEAN`（7/7 join）。同一 head SHA 的 run `33041907780`（event=pull_request，`05:15:04Z`；job `98417167238`，step `05:15:42Z`）输出**逐字节相同**，按去重口径与前者合计 **1 次观测**。原始实测值 → `evidence/development-agent-v8/c2-v12-anchor-evidence.md` |
+| Eligibility | **两腿 AND（合取）**：日历腿 = anchor + ≥14 natural days **AND** 计数腿 = ≥20 consecutive head-SHA-deduplicated `EXECUTED_CLEAN` runs |
+| Streak semantics | `SKIP` is neutral; warning/error/non-clean resets the epoch。执行体口径（§4.1.3「执行体输出是 SoT」）：`EXECUTED_CLEAN` 计 1 · `SKIP_MANIFEST_V1` 中性 · `EXECUTED_WITH_FINDINGS`(rc 1) 与 `ERROR_UNREADABLE`(rc 2) 重置。⚠ **run 级 conclusion 不可用作判据** —— V12 step 带 `continue-on-error: true`，且 `EXECUTED_CLEAN` 与 `SKIP_MANIFEST_V1` **同为 rc 0**，二者只能由 stdout 的 result_code 区分。⚠ **head-SHA 去重是必需而非可选**：`ci.yml` 同时挂 `pull_request` 与 `push[feature/bugfix/documentation/maintain/hotfix]`，故**分支名命中该 5 类前缀**的 PR 每个 head SHA 产生 **2 次** `ci` run；不去重会把 streak **高估近一倍**（静默失效，无 gate 可查）。⚠ **成对是「可能」不是「保证」**：`dependabot/*` 等不在 push 过滤器内的分支同样能对 develop 开 PR，只产生 **1 次**（pull_request）—— 故计数一律按 head SHA 归并，**不得**用「run 数 ÷ 2」反推观测数 |
+| Self-exclusions | PR-C1 mount, PR-C2 anchor and any future blocking-flip PR。**§4.1.3 末条（注册时须明写）**：翻转 PR **自身分支产生的 run 不计入其自身的资格证据**，计数须锚在**翻转分支之前的那个 commit** |
 | v8 disposition | warning-only; no blocking flip in this plan |
+
+**注册载体声明（PR-C2 落）**：本表即 V12 的 `policies/ci-gates.md` §4.1.1 **明文观察期注册**（该节要求
+「构成要件 = 事先在 `plans/` 注册」；本 plan 创建于 2026-08-12，早于 2026-08-27 的首挂，满足「事先」）。
+`policies/ci-gates.md` 自述为「规则 + 指针层，**不复制姿态真值**」，故**不**在该文件登记逐 gate 值；
+`sdd/gates.md` §2 承载逐 gate 真值行并回指本表。
+⚠ **耐久性缺口（明写，不掩饰）**：ADR-039 第 11 条与本 plan §5.12 规定 PR-G 在 PR-F 合并后把本 plan 翻
+`active → completed`，而 V12 的日历腿最早 2026-09-10 才到期 —— 届时注册表将位于**已闭合的项目记录**中。
+这正是 `policies/ci-gates.md` §4.1.2/§4.1.3 因 issue #403 从 `plans/[PLAN]_dual-agent-compat.md` 逐字提升为
+政策原生条文的同一失效模式。**未来的 blocking-flip 单元必须先把本表 re-home 到它自己的 M-FU 注册工件**
+（或提升为政策原生条文），不得直接引用一个 `completed` plan 作为活体注册表。
+该义务落在一个 PR-G 会关闭的 plan 里，本身就是它所描述的失效模式，故**另立 follow-up `F17` 承载**
+（见 `evidence/development-agent-v8/c2-v12-anchor-evidence.md` §8.3）；V13 在 §5.9 同构，届时一并 re-home。
 
 ### 5.9 PR-D1a / PR-D1b
 
