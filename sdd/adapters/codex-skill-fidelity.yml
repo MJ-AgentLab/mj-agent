@@ -1,0 +1,123 @@
+schema_version: 1
+translated_capabilities:
+- mj-agent-doc-validate
+- mj-agent-flow-implement
+- mj-agent-flow-intake
+- mj-agent-flow-plan
+- mj-agent-flow-post-merge
+- mj-agent-flow-repo-scan
+- mj-agent-flow-review-respond
+- mj-agent-flow-scope-drift
+- mj-agent-flow-self-review
+- mj-agent-flow-verify
+- mj-agent-git-branch
+- mj-agent-git-issue
+- mj-agent-git-pr
+coverage_reports:
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-doc-validate.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-implement.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-intake.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-plan.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-post-merge.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-repo-scan.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-review-respond.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-scope-drift.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-self-review.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-flow-verify.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-git-branch.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-git-issue.json
+- evidence/development-agent-v8/fidelity/coverage/mj-agent-git-pr.json
+tranches:
+- tranche_id: tranche-1-flow-entry
+  capability_ids:
+  - mj-agent-flow-intake
+  - mj-agent-flow-repo-scan
+  - mj-agent-flow-plan
+  candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+  manifest_set_sha256: 2fe7d95445b343eaeb90aaa3d40c77b465652ca37ab40c08d925a11dfc822f36
+  source_set_sha256: 3abcc076e932fac7be3150993b1a568ff9f7a09938f2458b2ec6a51e0e4e1595
+  artifact_set_sha256: 173e45cf5c293a2795ecc56f822eec8e4218795355484605d844921ec30feacc
+  translation_set_sha256: 285be8ce904b1eea1e859826df1c00c6952137e964a970f21834093c8af91e6c
+  workflow_set_sha256: a322e13a2925c6bf150139c64c2e7de40de7ea0f7d3a285aae31b5fcf6a18d19
+  preface_sha256: f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66
+  renderer_set_sha256: ca6b5da7b05a4fdc27b3546c7f7a1a9ae40303c7659e2448a42f8ac6265a102e
+  coverage_set_sha256: 77814ae0c6a4b130006d98500b2596c22f62599bcb42ea6b4ae26afd9d74a321
+  approval_binding:
+    record_system: github-issue-comment
+    immutable_record_id: '5433169546'
+    reviewer_identity: ranzuozhou
+    verdict: approved
+    reviewed_candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+    reviewed_source_set_sha256: 3abcc076e932fac7be3150993b1a568ff9f7a09938f2458b2ec6a51e0e4e1595
+    reviewed_artifact_set_sha256: 173e45cf5c293a2795ecc56f822eec8e4218795355484605d844921ec30feacc
+    recorded_at: '2026-08-27T01:25:16Z'
+- tranche_id: tranche-2-flow-build
+  capability_ids:
+  - mj-agent-flow-implement
+  - mj-agent-flow-verify
+  - mj-agent-flow-self-review
+  candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+  manifest_set_sha256: 2fe7d95445b343eaeb90aaa3d40c77b465652ca37ab40c08d925a11dfc822f36
+  source_set_sha256: f2a4ef57bae4bf4818bda8ce94d0f79635cdab266f55e0da4f510517dece92e3
+  artifact_set_sha256: 363a1bfb7e0e3554438980ca5f744b6e45c4917f939725cd004699996a550a23
+  translation_set_sha256: 285be8ce904b1eea1e859826df1c00c6952137e964a970f21834093c8af91e6c
+  workflow_set_sha256: a322e13a2925c6bf150139c64c2e7de40de7ea0f7d3a285aae31b5fcf6a18d19
+  preface_sha256: f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66
+  renderer_set_sha256: ca6b5da7b05a4fdc27b3546c7f7a1a9ae40303c7659e2448a42f8ac6265a102e
+  coverage_set_sha256: 0927fbaf3ef58e3d62894761a48901af33e6c01e90b540801313aa5b9c89472f
+  approval_binding:
+    record_system: github-issue-comment
+    immutable_record_id: '5433248359'
+    reviewer_identity: ranzuozhou
+    verdict: approved
+    reviewed_candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+    reviewed_source_set_sha256: f2a4ef57bae4bf4818bda8ce94d0f79635cdab266f55e0da4f510517dece92e3
+    reviewed_artifact_set_sha256: 363a1bfb7e0e3554438980ca5f744b6e45c4917f939725cd004699996a550a23
+    recorded_at: '2026-08-27T01:37:05Z'
+- tranche_id: tranche-3-flow-close
+  capability_ids:
+  - mj-agent-flow-scope-drift
+  - mj-agent-flow-review-respond
+  - mj-agent-flow-post-merge
+  candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+  manifest_set_sha256: 2fe7d95445b343eaeb90aaa3d40c77b465652ca37ab40c08d925a11dfc822f36
+  source_set_sha256: 8df53f383514568729f973ab9fe42b935356e7db3d693a0de27a9850fdb99c81
+  artifact_set_sha256: 283f1cf5081fa3a340d74142b2cd3e219dea4e1d1abd7163dd6f819692370441
+  translation_set_sha256: 285be8ce904b1eea1e859826df1c00c6952137e964a970f21834093c8af91e6c
+  workflow_set_sha256: a322e13a2925c6bf150139c64c2e7de40de7ea0f7d3a285aae31b5fcf6a18d19
+  preface_sha256: f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66
+  renderer_set_sha256: ca6b5da7b05a4fdc27b3546c7f7a1a9ae40303c7659e2448a42f8ac6265a102e
+  coverage_set_sha256: f89c8ac942014b640838ca72a3f8e70bfaff9a42366cea080554a67e205f71e7
+  approval_binding:
+    record_system: github-issue-comment
+    immutable_record_id: '5433249270'
+    reviewer_identity: ranzuozhou
+    verdict: approved
+    reviewed_candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+    reviewed_source_set_sha256: 8df53f383514568729f973ab9fe42b935356e7db3d693a0de27a9850fdb99c81
+    reviewed_artifact_set_sha256: 283f1cf5081fa3a340d74142b2cd3e219dea4e1d1abd7163dd6f819692370441
+    recorded_at: '2026-08-27T01:37:13Z'
+- tranche_id: tranche-4-doc-git
+  capability_ids:
+  - mj-agent-doc-validate
+  - mj-agent-git-branch
+  - mj-agent-git-issue
+  - mj-agent-git-pr
+  candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+  manifest_set_sha256: 2fe7d95445b343eaeb90aaa3d40c77b465652ca37ab40c08d925a11dfc822f36
+  source_set_sha256: 68d44de1877061e11bb3cada597c07f66af82257f22c168a9fdda9fc3dc4d9f9
+  artifact_set_sha256: 543c67891c8246df25b35b64dd0f70b6d6720eb070e89288f8fa504b691639d7
+  translation_set_sha256: 285be8ce904b1eea1e859826df1c00c6952137e964a970f21834093c8af91e6c
+  workflow_set_sha256: a322e13a2925c6bf150139c64c2e7de40de7ea0f7d3a285aae31b5fcf6a18d19
+  preface_sha256: f9247051a529783a12b1c61ecbf6ccfc027e1aac872a723f118db6207a496c66
+  renderer_set_sha256: ca6b5da7b05a4fdc27b3546c7f7a1a9ae40303c7659e2448a42f8ac6265a102e
+  coverage_set_sha256: fff69dc0a96f309d41cddd6e408b8d3e100ee3272de9b9de25044205c55b4a4f
+  approval_binding:
+    record_system: github-issue-comment
+    immutable_record_id: '5433484742'
+    reviewer_identity: ranzuozhou
+    verdict: approved
+    reviewed_candidate_commit_sha: 36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f
+    reviewed_source_set_sha256: 68d44de1877061e11bb3cada597c07f66af82257f22c168a9fdda9fc3dc4d9f9
+    reviewed_artifact_set_sha256: 543c67891c8246df25b35b64dd0f70b6d6720eb070e89288f8fa504b691639d7
+    recorded_at: '2026-08-27T02:12:11Z'

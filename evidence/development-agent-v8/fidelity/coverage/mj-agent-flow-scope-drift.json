@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "capability_id": "mj-agent-flow-scope-drift",
+  "source_path": ".claude/skills/mj-agent-flow-scope-drift/SKILL.md",
+  "artifact_path": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+  "source_sha256": "cf0ebee0681769948c2b044329d789dda08b59d7b5b6b42a8270e8af9c61f0c8",
+  "artifact_sha256": "60aa5d06738d6ee574f5fca3f8b885b342bb384973da6709fd3361c5e7219ed5",
+  "inventory_sha256": "807c95f82ab847b71fa4b55fe1ed67a277aa2f0b5b01e8195b3ebb2c639e35c0",
+  "items": [
+    {
+      "item_id": "heading-001",
+      "item_kind": "heading",
+      "source_locator": "body-line:2",
+      "source_sha256": "ec91023e7498ede7d59e37f4baf4c2eed9ec05f1e8e0bbc5ff2144547a64af94",
+      "artifact_locator": "line:34",
+      "artifact_sha256": "ec91023e7498ede7d59e37f4baf4c2eed9ec05f1e8e0bbc5ff2144547a64af94",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-002",
+      "item_kind": "heading",
+      "source_locator": "body-line:4",
+      "source_sha256": "7337f3d0aa29e9a82b8f1650b743a98eef90794631fa763a319686e69c546821",
+      "artifact_locator": "line:36",
+      "artifact_sha256": "7337f3d0aa29e9a82b8f1650b743a98eef90794631fa763a319686e69c546821",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-003",
+      "item_kind": "heading",
+      "source_locator": "body-line:10",
+      "source_sha256": "7136000e494604c07769c55da3f0ec4ea85eef9508d8840bc71ec8a6e745b742",
+      "artifact_locator": "line:42",
+      "artifact_sha256": "7136000e494604c07769c55da3f0ec4ea85eef9508d8840bc71ec8a6e745b742",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-004",
+      "item_kind": "heading",
+      "source_locator": "body-line:33",
+      "source_sha256": "a2a3305db3ce2e2d3c4476cef6d6f1a9ac44baf6cae5ec32ffe7a3a1e03a64c2",
+      "artifact_locator": "line:65",
+      "artifact_sha256": "a2a3305db3ce2e2d3c4476cef6d6f1a9ac44baf6cae5ec32ffe7a3a1e03a64c2",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-005",
+      "item_kind": "heading",
+      "source_locator": "body-line:45",
+      "source_sha256": "d146ea49685355dfe22f079d232fd691cb8c82166d2567b633944ed3d32e7176",
+      "artifact_locator": "line:77",
+      "artifact_sha256": "d146ea49685355dfe22f079d232fd691cb8c82166d2567b633944ed3d32e7176",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-006",
+      "item_kind": "heading",
+      "source_locator": "body-line:66",
+      "source_sha256": "4d377feae3e43f1b1d8dedc53a2e0af50db2a540965ee5fe72310c9a33264608",
+      "artifact_locator": "line:98",
+      "artifact_sha256": "4d377feae3e43f1b1d8dedc53a2e0af50db2a540965ee5fe72310c9a33264608",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-007",
+      "item_kind": "heading",
+      "source_locator": "body-line:77",
+      "source_sha256": "fac2411d107fd5f4c00cfcb5e1eea45f870a0318cc89a5ae2abe709648c21dea",
+      "artifact_locator": "line:109",
+      "artifact_sha256": "fac2411d107fd5f4c00cfcb5e1eea45f870a0318cc89a5ae2abe709648c21dea",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-008",
+      "item_kind": "heading",
+      "source_locator": "body-line:105",
+      "source_sha256": "eb6774ecae4fda030f54b6828a1a671f54e36aaf31a3a7b9c8e53784cbc01cef",
+      "artifact_locator": "line:137",
+      "artifact_sha256": "eb6774ecae4fda030f54b6828a1a671f54e36aaf31a3a7b9c8e53784cbc01cef",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-009",
+      "item_kind": "heading",
+      "source_locator": "body-line:117",
+      "source_sha256": "8426cd909eee1591fba0e76ad68025d1a53212d496180a74962983c677b68958",
+      "artifact_locator": "line:149",
+      "artifact_sha256": "8426cd909eee1591fba0e76ad68025d1a53212d496180a74962983c677b68958",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-010",
+      "item_kind": "heading",
+      "source_locator": "body-line:160",
+      "source_sha256": "b447eab1759c2896e11504c5f096a8e385194dea2b477798bedb2aed7bbdcf1c",
+      "artifact_locator": "line:192",
+      "artifact_sha256": "b447eab1759c2896e11504c5f096a8e385194dea2b477798bedb2aed7bbdcf1c",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-011",
+      "item_kind": "heading",
+      "source_locator": "body-line:168",
+      "source_sha256": "b6837d3b9aa8f149272668a0f064098f9473757e15712ae546f374eaf1f78f78",
+      "artifact_locator": "line:200",
+      "artifact_sha256": "b6837d3b9aa8f149272668a0f064098f9473757e15712ae546f374eaf1f78f78",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-012",
+      "item_kind": "heading",
+      "source_locator": "body-line:177",
+      "source_sha256": "095e0fc3eee41f1ed4b920151a5789739f7fc0f18dfc74df307ab192dac470e4",
+      "artifact_locator": "line:209",
+      "artifact_sha256": "095e0fc3eee41f1ed4b920151a5789739f7fc0f18dfc74df307ab192dac470e4",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-013",
+      "item_kind": "heading",
+      "source_locator": "body-line:184",
+      "source_sha256": "2d7b716cde65fe0b172d6533a5e686a76e8eebe67b01ea6378e15fcc7dcba2d0",
+      "artifact_locator": "line:216",
+      "artifact_sha256": "2d7b716cde65fe0b172d6533a5e686a76e8eebe67b01ea6378e15fcc7dcba2d0",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "heading-014",
+      "item_kind": "heading",
+      "source_locator": "body-line:191",
+      "source_sha256": "8eb2be3fef40a99ae74b98d516804afd9c77f1a380d3e2fa8b53860499824fd8",
+      "artifact_locator": "line:223",
+      "artifact_sha256": "8eb2be3fef40a99ae74b98d516804afd9c77f1a380d3e2fa8b53860499824fd8",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "owner-stop-001",
+      "item_kind": "owner-stop",
+      "source_locator": "body-line:8",
+      "source_sha256": "52f2cb6e6e92e06ad677ec8fdfb63e81fb0830936636707b483abc7f836de4de",
+      "artifact_locator": "line:40",
+      "artifact_sha256": "52f2cb6e6e92e06ad677ec8fdfb63e81fb0830936636707b483abc7f836de4de",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "owner-stop-002",
+      "item_kind": "owner-stop",
+      "source_locator": "body-line:93",
+      "source_sha256": "1119fc04f01fb5bf2f058a23bc8b1006a3df76e75886c4aaca59e3957ab08105",
+      "artifact_locator": "line:125",
+      "artifact_sha256": "1119fc04f01fb5bf2f058a23bc8b1006a3df76e75886c4aaca59e3957ab08105",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "owner-stop-003",
+      "item_kind": "owner-stop",
+      "source_locator": "body-line:95",
+      "source_sha256": "bae914f3977400caef2f0a7c740d5fefedf10d5b400289a2d5eb5333ba871a6a",
+      "artifact_locator": "line:127",
+      "artifact_sha256": "bae914f3977400caef2f0a7c740d5fefedf10d5b400289a2d5eb5333ba871a6a",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "owner-stop-004",
+      "item_kind": "owner-stop",
+      "source_locator": "body-line:147",
+      "source_sha256": "350f0c037aaf407af4e3288e6bdada1c576cb830f65582ab90dfb9d272e1c1e4",
+      "artifact_locator": "line:179",
+      "artifact_sha256": "5f9fde136e97e7cc99d7c6ff2b7927fbf57dd34dbbf25498ce4a37d0db734b55",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "owner-stop-005",
+      "item_kind": "owner-stop",
+      "source_locator": "body-line:179",
+      "source_sha256": "62771a50f1159c505fce453894745fdfa914d3d9625e141cdce8133b47b6e9ee",
+      "artifact_locator": "line:211",
+      "artifact_sha256": "62771a50f1159c505fce453894745fdfa914d3d9625e141cdce8133b47b6e9ee",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-001",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:162",
+      "source_sha256": "fcc29e76595ec19cff2a602046dc6ff2921703470ebd4c45e5c5f1b256cac075",
+      "artifact_locator": "line:194",
+      "artifact_sha256": "fcc29e76595ec19cff2a602046dc6ff2921703470ebd4c45e5c5f1b256cac075",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-002",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:163",
+      "source_sha256": "26f2f86ea6dfef850fa9a18ee60abff215320c1b914282c76e2768b1c55c5093",
+      "artifact_locator": "line:195",
+      "artifact_sha256": "26f2f86ea6dfef850fa9a18ee60abff215320c1b914282c76e2768b1c55c5093",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-003",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:164",
+      "source_sha256": "e603ea3d06b0da34a76b3e0a95990b8bb3bd450d3106ed70c34817e43ac014d5",
+      "artifact_locator": "line:196",
+      "artifact_sha256": "e603ea3d06b0da34a76b3e0a95990b8bb3bd450d3106ed70c34817e43ac014d5",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-004",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:165",
+      "source_sha256": "e7da50709f60a6f6e4cbd0b477c1e9d8415618d0a66969ec4e42326f94dc5acb",
+      "artifact_locator": "line:197",
+      "artifact_sha256": "e7da50709f60a6f6e4cbd0b477c1e9d8415618d0a66969ec4e42326f94dc5acb",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-005",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:166",
+      "source_sha256": "f946da5583d6e536457e537625274898d5447ca520214d19d9063a70ec91a530",
+      "artifact_locator": "line:198",
+      "artifact_sha256": "f946da5583d6e536457e537625274898d5447ca520214d19d9063a70ec91a530",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-006",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:186",
+      "source_sha256": "b33c387e8dfbeccdaabc19b5efa9f3ab2c78ffce530f5a1e0b72ee80c69651f8",
+      "artifact_locator": "line:218",
+      "artifact_sha256": "b33c387e8dfbeccdaabc19b5efa9f3ab2c78ffce530f5a1e0b72ee80c69651f8",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-007",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:187",
+      "source_sha256": "aa04236473af51fb2fb735065b57371ef19bad938c915dab10dbcb9480ecdfc9",
+      "artifact_locator": "line:219",
+      "artifact_sha256": "aa04236473af51fb2fb735065b57371ef19bad938c915dab10dbcb9480ecdfc9",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-008",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:188",
+      "source_sha256": "af9f63a22d41c53b1fee43009275a119676475343a018fb23aeca06cc26183fd",
+      "artifact_locator": "line:220",
+      "artifact_sha256": "af9f63a22d41c53b1fee43009275a119676475343a018fb23aeca06cc26183fd",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "prohibition-009",
+      "item_kind": "prohibition",
+      "source_locator": "body-line:189",
+      "source_sha256": "0addcbb80ccf7bb717c47692c80e01991fe526da120426de888e7d7fbdcc7d90",
+      "artifact_locator": "line:221",
+      "artifact_sha256": "0addcbb80ccf7bb717c47692c80e01991fe526da120426de888e7d7fbdcc7d90",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "frontmatter-description-001",
+      "item_kind": "frontmatter-description",
+      "source_locator": "frontmatter:description",
+      "source_sha256": "9030766f6e83c2dcfd0005c6e8bad9911cb4b7b57e07de4c4346811842a8ed05",
+      "artifact_locator": "line:3",
+      "artifact_sha256": "3540e07108048af437c43e4fe66bc2b2bf0e13f9c453b76fc122cce7cc87f99a",
+      "transform_class": "NOOP",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "dependency-route-001",
+      "item_kind": "dependency-route",
+      "source_locator": "edge:edge-flow-scope-drift-flow-self-review",
+      "source_sha256": "5f50ae044d70d43acba648a367608d29b78d20fe5c232773261de06a0c3be82c",
+      "artifact_locator": "line:232",
+      "artifact_sha256": "3266e9ae256b680c3dfba486dcd1feaa0e41f372bfa1c7a52c1272f6549b98c4",
+      "transform_class": "T2a",
+      "status": "COVERED"
+    },
+    {
+      "item_id": "dependency-route-002",
+      "item_kind": "dependency-route",
+      "source_locator": "edge:edge-flow-scope-drift-runtime-wildcard",
+      "source_sha256": "a25fbc81b46c85f5d0a05fb0a8dfd7934d96d1791c345b8f15aa3c7404644320",
+      "artifact_locator": "line:235",
+      "artifact_sha256": "231917320b5493cc12738149a5bb72b97f2432b7efc9c48a1ad2a9105894cbf2",
+      "transform_class": "T2a",
+      "status": "COVERED"
+    }
+  ]
+}
