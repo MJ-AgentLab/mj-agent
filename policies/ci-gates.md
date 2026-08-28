@@ -307,14 +307,14 @@ settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新
 > 增补、step 名随重构改写，`sdd/gates.md` 已因此明令 pickaxe 用 **run 命令片段而非 step 名**），
 > 且同一事实出现两次就必有一次先陈旧。**故本节给口径 + SoT 指针 + 可复跑推导，并如实登记推导
 > 推不出来的残余。** 原 TBD 的「G1-G28」措辞本身也不准确：**`G18` 不存在**（`G1-G17` 在 §1、
-> `G19-G28` 在 §3），且它遗漏了 `V1-V12`（#499 PR-C2 起含 V12）与 6 个具名 CI-infra gate。
+> `G19-G28` 在 §3），且它遗漏了 `V1-V13`（#499 PR-C2 起含 V12、PR-D1b 起含 V13）与 6 个具名 CI-infra gate。
 
 ### §6.1 映射口径（M1-M2）
 
 | # | 规则 |
 |---|---|
 | **M1** | **连接键是执行体路径，不是名字。** `sdd/gates.md` 的**脚本列** ↔ workflow step 的 `run:` 命令。step 名与 gate 行名都是**可改写的装饰**，不作判据 |
-| **M2** | **映射是多对多，不是双射**：一个执行体可承载多个 gate（`check_traceability.py` → G2 + G5；`check_archive_manifest.py` → G11 + G12；`agents_sync.py` → V10 + V11，按 `--surface` 分流）；一个 gate 可以**没有**执行体（`G4` / `G6` = `manual-canonical`，`G10`/`G13`/`G16` = `reserved`，`G27`/`G28` = `deferred`，`G26` = `withdrawn`）。**「gate 数」与「CI step 数」不可互推** |
+| **M2** | **映射是多对多，不是双射**：一个执行体可承载多个 gate（`check_traceability.py` → G2 + G5；`check_archive_manifest.py` → G11 + G12；`agents_sync.py` → V10 + V11 + V13，按 `--surface` 分流）；一个 gate 可以**没有**执行体（`G4` / `G6` = `manual-canonical`，`G10`/`G13`/`G16` = `reserved`，`G27`/`G28` = `deferred`，`G26` = `withdrawn`）。**「gate 数」与「CI step 数」不可互推** |
 
 **可复跑推导**（结果即映射，无需维护第二份表）：
 
