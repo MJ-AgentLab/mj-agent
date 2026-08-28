@@ -22,10 +22,12 @@ Rules (S0 empty-state MUST NOT false-fail; artifacts land in S1/S2):
    `body_sha256`; a TOML file has no frontmatter so this is a whole-text hash). Both
    file and reserved key absent == vacuous pass (pre-S2 / fork empty state — drift
    enforcement lives in `agents_sync.py --check --surface mcp`, V11 blocking).
-   PJ045 (narrowed at Epic #499 PR-A1, ADR-039 D-012 revised): files under
-   `.codex/` other than the generated config are UNOWNED NEIGHBORS (future
-   hooks/rules, user files) — reported info-only, never gate-affecting; the
-   generator preserves them (owned-only reconcile).
+   PJ045 (narrowed at Epic #499 PR-A1, ADR-039 D-012 revised; made lock-aware at
+   PR-D1a): files under `.codex/` that are neither the generated config nor a
+   lock-owned path are UNOWNED NEIGHBORS (user files) — reported info-only,
+   never gate-affecting; the generator preserves them (owned-only reconcile).
+   Since PR-D1a `.codex/hooks.json` and declared `.codex/rules/*.rules` are
+   lock-OWNED, so they are excluded rather than mislabelled.
 
 Exit codes: 0 / 1 / 2 as in check_development_agent.py.
 `main(argv=None, repo_root=None)` — repo_root injectable for tests (#217 pattern).
@@ -486,13 +488,27 @@ def check_codex_config(
                    " (do not hand-edit generated artifacts, D-012)")
             )
 
+    # Lock-owned paths are NOT unowned neighbors. Before Epic #499 PR-D1a the
+    # only owned path under `.codex/` was the config, so "everything else is an
+    # unowned neighbor" held by construction. PR-D1a made `.codex/hooks.json`
+    # and the declared `.codex/rules/*.rules` lock-owned, at which point the
+    # unconditional message became a factual falsehood printed by a BLOCKING
+    # gate — an induced stale repaired in the PR that caused it.
+    owned: set[str] = set()
+    entries = lock.get("entries")
+    if isinstance(entries, dict):  # v2 envelope
+        owned = {k for k in entries if isinstance(k, str)}
+    elif lock:  # legacy v1 flat map
+        owned = {k for k in lock if isinstance(k, str)}
+
     codex_dir = repo_root / ".codex"
     if codex_dir.is_dir():
         for path in sorted(codex_dir.rglob("*")):
             rel = path.relative_to(repo_root)
-            if path.is_file() and rel != CODEX_CONFIG_RELPATH:
+            posix = rel.as_posix()
+            if path.is_file() and rel != CODEX_CONFIG_RELPATH and posix not in owned:
                 out.append(
-                    _v("PJ045", "info", "", rel.as_posix(),
+                    _v("PJ045", "info", "", posix,
                        "unowned neighbor under .codex/ — preserved by owned-only"
                        " reconcile (ADR-039 D-012 revised; Epic #499 PR-A1"
                        " narrowing: info-only, never gate-affecting)")

@@ -224,6 +224,9 @@ def test_v2_sync_converges_and_is_idempotent(tmp_path: Path, capsys: Any) -> Non
 def test_v2_unowned_neighbors_survive_and_are_reported(
     tmp_path: Path, capsys: Any
 ) -> None:
+    """`make_v2_repo` declares no enforcement typed source, so .codex/hooks.json
+    is still an UNOWNED neighbour here even after Epic #499 PR-D1a made that path
+    ownable — which is exactly what keeps this an AC-05 negative."""
     root = make_v2_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     neighbor = root / ".agents" / "skills" / "user-note.md"
@@ -560,7 +563,25 @@ def test_real_tree_now_takes_the_v2_paths() -> None:
     """
     raw = json.loads((REPO_ROOT / ".agents.lock.json").read_text(encoding="utf-8"))
     assert raw["schema_version"] == 2
-    assert verify_lock_v2(raw).entries, "an empty ledger would make this vacuous"
-    assert sync_main(["--check"], repo_root=REPO_ROOT) == 0
+    verified = verify_lock_v2(raw)
+    assert verified.entries, "an empty ledger would make this vacuous"
     assert sync_main(["--check", "--surface", "skills"], repo_root=REPO_ROOT) == 0
     assert sync_main(["--check", "--surface", "mcp"], repo_root=REPO_ROOT) == 0
+
+    # The bare `--check` (surface=all) used to run here as the only caller that
+    # compares the WHOLE canonical lock text. Epic #499 PR-D1a had to drop it:
+    # `all` now includes the `enforcement` surface, whose gate V13 is
+    # WARNING-ONLY for the whole Epic (plan §5.9), and this assertion lives in
+    # the BLOCKING `Tests` step — keeping it would have made V13's predicate
+    # blocking through the back door, a blocking-scope expansion with no
+    # `ci-blocking-gate-toggle` record. PR-D2 restores it alongside that toggle.
+    #
+    # What survives without re-introducing that coupling: every lock entry must
+    # still be claimed by at least one surface, so no entry can go unowned by
+    # every scoped gate at once.
+    surfaces = ("skills", "mcp", "enforcement")
+    claimed = {k for s in surfaces for k in verified.surface_owned_keys(s)}
+    assert claimed == set(verified.entries), (
+        "every lock entry must belong to at least one surface; unclaimed="
+        f"{sorted(set(verified.entries) - claimed)}"
+    )

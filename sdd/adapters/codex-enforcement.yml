@@ -1,0 +1,184 @@
+# sdd/adapters/codex-enforcement.yml -- typed enforcement source (schema v1)
+# for the Codex-side cooperative enforcement carrier (Epic #499 plan SS2.8.7).
+#
+# PROTECTED-ADJACENT (D-017; A14 row (c) typed source -- pre-registered at PR-A0,
+# named in policies/ai-agent.md SS4). OWNER_APPROVAL_REQUIRED before modifying.
+#
+# This file is the ONLY source of the two generated enforcement artifacts:
+#   .codex/hooks.json          (canonical-json-v1, renderer codex_hook_renderer)
+#   .codex/rules/*.rules       (generated-utf8-lf-v1, renderer codex_rule_renderer)
+# Both are owned by scripts/sdd/agents_sync.py -- never hand-edit them; edit THIS
+# file, run `python scripts/sdd/agents_sync.py sync`, and commit source +
+# artifacts + .agents.lock.json together (ADR-039 D-011/D-012). There is no
+# `--adopt` path for enforcement outputs (D-012 revised).
+#
+# Cooperative scope (AGENTS.md): these hooks/rules SURFACE this repo's stop
+# points inside the Codex harness. They never write `.claude/**`, they bind only
+# Codex, and they do NOT replace the self-enforced boundaries in AGENTS.md --
+# a hook that fails to fire is not permission to proceed. Owner 拍板 is unchanged.
+#
+# Input discipline (plan SS5.9, hard): the render derives ONLY from this file plus
+# the explicitly declared `policy_refs` below. Raw transcript, assistant
+# messages, Secrets and private harness state are NEVER inputs -- not to the
+# renderers and not to the runtime guard.
+#
+# Closed top keys (plan SS2.8.7): schema_version, policy_refs, config_binding,
+# hooks, rules, receipt_policy. "Closed" here means NO UNKNOWN KEYS; it is not
+# "exact" (contrast SS2.8.5/SS2.8.6 which say "exact keys"). `config_binding` is
+# absent by Gate 1 拍板 -- PR-D1a takes the DIRECT route, so `.codex/config.toml`
+# stays a pure `codex-config-mcp` lock entry and V11's scope is untouched.
+# `receipt_policy` is absent because PR-E owns it (plan SS3.3 / SS5.11).
+
+schema_version: 1
+
+# plan SS2.8.4: explicit repo-relative paths only. Globs are rejected. The
+# renderer hashes each file's raw bytes into `policy_refs_sha256`, which is a
+# required lock input on every codex-hook / codex-rule entry -- so editing any
+# file below is a re-render trigger.
+policy_refs:
+  - AGENTS.md
+  - policies/ai-agent.md
+  - policies/git-branching.md
+
+hooks:
+  # PreToolUse is the only event used: codex evaluates it BEFORE the tool call
+  # runs ("Tool call blocked by PreToolUse hook: " / "Command blocked by
+  # PreToolUse hook: "), which is what plan SS5.9 means by "block before side
+  # effect". A PostToolUse deny would be a rollback, not a block, and is
+  # deliberately not used here.
+  handler:
+    # MUST go through `uv run`: this repo is uv-only and a bare `python` resolves
+    # NOWHERE on the reference host (verified in Git Bash / PowerShell / cmd), so
+    # a `python ...` handler is silently inert. The guard also imports PyYAML,
+    # which lives only in the uv-managed venv. `--frozen --no-sync` keeps the
+    # hook read-only: it never mutates the lockfile or the environment.
+    command: ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/codex_hook_guard.py"]
+    timeout_seconds: 30
+    status_message: "mj-agent cooperative guard"
+  events:
+    - event: PreToolUse
+      matcher: shell
+    - event: PreToolUse
+      matcher: apply_patch
+  # Each guard is evaluated by scripts/sdd/codex_hook_guard.py against ONLY the
+  # allowlisted payload fields (tool name + command tokens / file path). The
+  # guard never reads the transcript, the last assistant message, Secrets or
+  # private state.
+  #
+  # `applies_to` is a LIST of surfaces. Matching is EXPLICIT, never a bare
+  # substring test (a substring test would make `.env` match `.venv/lib/...`):
+  #   `command`     -- whitespace-normalized token-PREFIX match on the command,
+  #       so "git checkout -b" matches `git checkout -b x` but not
+  #       `git checkout --benign`.
+  #   `path`        -- a path this call would WRITE (apply_patch hunk headers,
+  #       or a declared file_path/path input). On the POSIX-normalized path:
+  #       pattern ending in `/` = directory prefix;
+  #       pattern ending in `*` = string prefix;
+  #       otherwise = exact full-path match OR exact basename match.
+  #       So `.env` blocks `.env` but NOT `.env.example` and NOT `.venv/x`.
+  #   `command_arg` -- same path matching, but against every non-flag ARGUMENT
+  #       of a shell command. Only secrets use it, because only for secrets is
+  #       READING itself the violation. Widening the edit-only surfaces to
+  #       arguments would wrongly block a harmless
+  #       `codex execpolicy check --rules .codex/rules/mj-agent.rules`.
+  guards:
+    - id: data-boundary-direct-db
+      applies_to: [command]
+      decision: block
+      deny_patterns:
+        - psql
+        - pg_dump
+        - pg_restore
+      reason: >-
+        ADR-006/ADR-009 data boundary: business-warehouse access MUST go through
+        the agent tool-chain (find_biz_context -> list_biz_tables ->
+        describe_biz_table -> execute_sql). Direct DB clients bypass the L1/L1b
+        SQL guardrails. See AGENTS.md "Self-enforced boundaries" item 1.
+    - id: secrets-read
+      applies_to: [path, command_arg]
+      decision: block
+      deny_patterns:
+        - .env
+        - config/secrets*
+      exempt_command_prefixes:
+        # CLAUDE.md documents `docker compose --env-file .env -f docker/compose.yaml
+        # ... up -d` as THE way to bring the stack up. There `.env` is handed to
+        # compose, not read into the transcript, so blocking the project's own
+        # canonical command would make this guard actively wrong.
+        - docker compose
+      reason: >-
+        AGENTS.md "Self-enforced boundaries" item 2: never open, print, log or
+        transmit .env or config/secrets*.enc. (`.env.example` is a tracked
+        ASCII template and is deliberately NOT blocked -- exact-name matching,
+        not substring, is what keeps it readable.)
+    - id: g1-branch-creation
+      applies_to: [command]
+      decision: block
+      deny_patterns:
+        - git checkout -b
+        - git switch -c
+      reason: >-
+        G1 (policies/git-branching.md): new branches ONLY via
+        `git worktree add ../<branch-name> -b <branch-name>`.
+    - id: must-stop-surfaces
+      applies_to: [path]
+      decision: block
+      deny_patterns:
+        - src/mj_agent/tools/sql/guardrail.py
+        - src/mj_agent/tools/sql/precheck.py
+        - src/mj_agent/prompts/system.md
+        - src/mj_agent/biz_catalog/qcm_catalog.yaml
+        - .claude/
+        - .mcp.json
+      reason: >-
+        OWNER_APPROVAL_REQUIRED (policies/ai-agent.md SS4 canonical 10-enum): the
+        4 in-source 必停 surfaces plus the protected .claude/** and .mcp.json
+        surfaces need explicit Owner sign-off before editing.
+    - id: generated-artifact-hand-edit
+      applies_to: [path]
+      decision: block
+      deny_patterns:
+        - .agents/
+        - .agents.lock.json
+        - .codex/
+      reason: >-
+        AGENTS.md "Generated projections": these are generated artifacts owned by
+        scripts/sdd/agents_sync.py. Edit the SOURCE and re-run sync; never
+        hand-edit or 3-way-merge the artifacts.
+
+# One entry per generated `.codex/rules/*.rules` file. Decision vocabulary is
+# codex's own (`allow` < `prompt` < `forbidden`); codex computes the STRICTEST
+# decision across every matched rule and across every --rules file, so the
+# fixtures assert the reported top-level `decision` rather than re-deriving
+# precedence (plan SS5.9 "choose the strictest decision").
+rules:
+  - output_path: .codex/rules/mj-agent.rules
+    prefix_rules:
+      - id: g1-no-checkout-b
+        pattern: ["git", "checkout", "-b"]
+        decision: forbidden
+        reason: "G1: use `git worktree add ../<name> -b <name>`."
+      - id: g1-no-switch-c
+        pattern: ["git", "switch", "-c"]
+        decision: forbidden
+        reason: "G1: use `git worktree add ../<name> -b <name>`."
+      - id: no-agent-merge
+        pattern: ["gh", "pr", "merge"]
+        decision: forbidden
+        reason: "Merge is always a human action (ADR-034); the agent never merges."
+      - id: data-boundary-psql
+        pattern: ["psql"]
+        decision: forbidden
+        reason: "ADR-006/ADR-009: no direct DB route; use the agent tool-chain."
+      - id: owner-gated-commit
+        pattern: ["git", "commit"]
+        decision: prompt
+        reason: "OWNER_APPROVAL_REQUIRED: commit is a gated action (ADR-034)."
+      - id: owner-gated-push
+        pattern: ["git", "push"]
+        decision: prompt
+        reason: "OWNER_APPROVAL_REQUIRED: push is a gated action (ADR-034)."
+      - id: owner-gated-pr-create
+        pattern: ["gh", "pr", "create"]
+        decision: prompt
+        reason: "OWNER_APPROVAL_REQUIRED: PR creation is a gated action (ADR-034)."
