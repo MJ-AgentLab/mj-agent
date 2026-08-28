@@ -394,6 +394,38 @@ jobs:
         run: uv run python scripts/sdd/check_cross_carrier.py --status-json .mj-agent-local/status/cross-carrier.json
       # ===== End of Epic #499 V12 block =====
 
+      # ===== Epic #499 — V13 Codex Enforcement Drift (PR-D1a mount) =====
+      # V13 checks that the two generated enforcement artifacts (.codex/hooks.json and
+      # the declared .codex/rules/*.rules) still match a fresh render from the typed
+      # source sdd/adapters/codex-enforcement.yml plus the files it declares in
+      # `policy_refs`, and that their lock entries close over the same digests.
+      # WARNING-ONLY, and deliberately so: plan §5.9 pins V13 as warning telemetry for
+      # the whole of Epic #499; PR-D2 later mounts the byte-identical predicate in the
+      # existing blocking Tests path after an INDEPENDENT `ci-blocking-gate-toggle`
+      # approval. A NEW warning gate is not a posture flip (#444 判例), so no Owner
+      # toggle 拍板 applies to THIS mount. `continue-on-error: true` is stated
+      # EXPLICITLY: omitting the key means BLOCKING (see V11 above).
+      # Surface isolation matters here. `--surface enforcement` routes by each lock
+      # entry's own `surface_members`, so enforcement drift reddens THIS warning step
+      # and never V10 (skills, BLOCKING) or V11 (mcp, BLOCKING). Before PR-D1a the
+      # scoped check split surfaces on `key == .codex/config.toml`, which would have
+      # swept these artifacts into the skills bucket and let a BLOCKING gate enforce
+      # V13's scope — the exact shape plan §2.6 forbids.
+      # Registration is PR-D1b's job, not this PR's: the gates.md §2 row, the real
+      # first-CI anchor commit/time, applicability, threshold/epoch and self-exclusions.
+      # This step name is deliberately anchor-free — policies/ci-gates.md §4.1.1 makes
+      # the step name the gate 标识 that PR-D1b transcribes verbatim, and V12's embedded
+      # `PENDING_…` placeholder became follow-up F16 precisely because a historical
+      # marker in the name outlives its truth. Do NOT rename this step.
+      # READ THE STDOUT, NOT THE CONCLUSION: this step exits 0 for BOTH `EXECUTED_CLEAN`
+      # and every `SKIP_*`, so the step conclusion cannot distinguish "ran clean" from
+      # "had nothing to run". PR-D1b must anchor on the printed result_code token
+      # (plan §5.9 streak semantics: SKIP is neutral; non-clean resets the epoch).
+      - name: 'V13 codex enforcement drift (WARNING per plan §5.9)'
+        continue-on-error: true
+        run: uv run python scripts/sdd/agents_sync.py --check --surface enforcement
+      # ===== End of Epic #499 V13 block =====
+
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so
         # this runs unit + eval + integration. External legs are always

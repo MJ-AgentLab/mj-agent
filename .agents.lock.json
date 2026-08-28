@@ -446,6 +446,40 @@
       "surface_members": [
         "mcp"
       ]
+    },
+    ".codex/hooks.json": {
+      "entry_kind": "codex-hook",
+      "inputs": {
+        "enforcement_source_sha256": "2dc524960b54424c4e97acc631d16f854c5b3c6cfe1895b1da809790acf4bb9e",
+        "policy_refs_sha256": "a030fa8b26f2f7019c646f1be223e2430f0b503bd771a9d4e10114140fde9a3a",
+        "renderer_module": "scripts.sdd._common.codex_hook_renderer",
+        "renderer_module_sha256": "6fcd7bdeac424b8bca3ac842aee3d15e7e0209eb649d40de0e9101fe12d62500",
+        "renderer_version": 1
+      },
+      "normalization_policy": "canonical-json-v1",
+      "output_sha256": "9ec35eda641ab32a885e6840b252f9b8e1feba17457223126e84e5d2c8773cb8",
+      "owner": "system:codex-hooks",
+      "strategy": "rendered",
+      "surface_members": [
+        "enforcement"
+      ]
+    },
+    ".codex/rules/mj-agent.rules": {
+      "entry_kind": "codex-rule",
+      "inputs": {
+        "enforcement_source_sha256": "2dc524960b54424c4e97acc631d16f854c5b3c6cfe1895b1da809790acf4bb9e",
+        "policy_refs_sha256": "a030fa8b26f2f7019c646f1be223e2430f0b503bd771a9d4e10114140fde9a3a",
+        "renderer_module": "scripts.sdd._common.codex_rule_renderer",
+        "renderer_module_sha256": "83b0cac20ec2288315131eb27e3a564d4f4394f5241ac038dc2fb813e1d3368f",
+        "renderer_version": 1
+      },
+      "normalization_policy": "generated-utf8-lf-v1",
+      "output_sha256": "7bb231e36e042897e2f2e2c3b1ab6dcc9de6e5728b915d66d52faaab7b7d2529",
+      "owner": "system:codex-rules:.codex/rules/mj-agent.rules",
+      "strategy": "rendered",
+      "surface_members": [
+        "enforcement"
+      ]
     }
   },
   "generator_protocol_version": 1,

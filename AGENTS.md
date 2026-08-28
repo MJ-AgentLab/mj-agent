@@ -70,6 +70,19 @@ the 37-skill SoT. Rules — they bind BOTH tools:
   approval) — then run `sync` and commit `.codex/config.toml` + lock together. Secrets are
   referenced BY NAME only (`env_vars` whitelists; Codex sanitizes MCP child env and inherits
   the named variables) — a literal credential in this file is always a defect (G7 scans it).
+- Change path (enforcement) = edit `sdd/adapters/codex-enforcement.yml` through its own gate (a
+  D-017 protected-adjacent typed source, per `policies/ai-agent.md` §4), then run `sync` and commit
+  source + `.codex/hooks.json` + `.codex/rules/*.rules` + lock together. Those two artifacts sit on
+  the same never-hand-edit footing as the ones above, and there is **no adopt path** for them
+  (enforcement outputs are not adoptable, D-012 revised). The render also digests every file the
+  typed source names in `policy_refs[]` — **this file is one of them**, so an authorized edit here
+  is itself a re-render trigger.
+- **Cooperative scope — the enforcement carrier does not replace this file.** `.codex/hooks.json`
+  and `.codex/rules/*.rules` surface the stop points below inside your own harness; they bind only
+  Codex, they never write `.claude/**`, and a hook or rule that fails to fire is **not** permission
+  to proceed. Owner 拍板 is unchanged and the self-enforced boundaries below remain the actual
+  boundary. Activating hooks is a per-engineer manual review step in Codex (hash-trust gated), the
+  same shape as the `~/.codex/config.toml` trust step — no repo script may perform it (D-015).
 - Reverse-feeding an artifact edit into the source goes ONLY through
   `python scripts/sdd/agents_sync.py --adopt <name>` (Owner HITL applies to the source write);
   there is NO adopt path for `.codex/config.toml` (fully derived).

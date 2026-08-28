@@ -89,10 +89,22 @@ from scripts.sdd._common.codex_readme_renderer import (  # noqa: E402
     ReadmeRenderError,
     render_skills_readme,
 )
+from scripts.sdd._common.codex_rule_renderer import (  # noqa: E402
+    RuleRenderError,
+    render_rules,
+)
+from scripts.sdd._common.enforcement_source import (  # noqa: E402
+    ENFORCEMENT_SOURCE_RELPATH,
+    EnforcementSourceError,
+    load_enforcement_source,
+    policy_ref_inventory,
+)
 from scripts.sdd._common.frontmatter import body_sha256  # noqa: E402
 from scripts.sdd._common.projection_loader import (  # noqa: E402  # noqa: E402
     CODEX_CONFIG_RELPATH,
+    CODEX_HOOKS_KEY,
     CODEX_LOCK_KEY,
+    CODEX_RULES_PREFIX,
     LOCK_RELPATH,
     LockVerificationError,
     VerifiedLock,
@@ -189,6 +201,27 @@ PRESCRIBED_ACTION_MCP = (
     " .codex/config.toml + .agents.lock.json together. Never hand-edit it; there is"
     " no --adopt path (fully derived)."
 )
+
+PRESCRIBED_ACTION_ENFORCEMENT = (
+    "For .codex/hooks.json + .codex/rules/*.rules (Epic #499 PR-D1a): the SOURCE is"
+    " sdd/adapters/codex-enforcement.yml (protected-adjacent typed source, D-017"
+    " Owner approval) plus the files it declares in `policy_refs`. Change the source"
+    " through its own gate, then run `python scripts/sdd/agents_sync.py sync` and"
+    " commit source + artifacts + .agents.lock.json together. Never hand-edit them;"
+    " there is no --adopt path (enforcement outputs are not adoptable, D-012 revised)."
+)
+
+# V13 (Codex Enforcement Drift) result codes. Emitted ONLY for
+# `--check --surface enforcement` so the V10 (skills) and V11 (mcp) BLOCKING
+# steps keep byte-identical stdout. Registered streak semantics (plan §5.9):
+# SKIP_* is neutral; EXECUTED_WITH_FINDINGS resets the epoch.
+# NOTE both EXECUTED_CLEAN and the SKIP_* codes exit 0 — the run/step conclusion
+# is therefore NOT a usable predicate; PR-D1b must read THIS stdout token.
+RESULT_EXECUTED_CLEAN = "EXECUTED_CLEAN"
+RESULT_EXECUTED_WITH_FINDINGS = "EXECUTED_WITH_FINDINGS"
+RESULT_ERROR_UNREADABLE = "ERROR_UNREADABLE"
+RESULT_SKIP_MANIFEST_V1 = "SKIP_MANIFEST_V1"
+RESULT_SKIP_NO_ENFORCEMENT_SOURCE = "SKIP_NO_ENFORCEMENT_SOURCE"
 
 
 def _lf(text: str) -> str:
@@ -726,6 +759,39 @@ def _manifest_version(manifest: dict[str, Any]) -> int:
     return int(version) if isinstance(version, int) else 1
 
 
+def _print_enforcement_error_code(args: Any) -> None:
+    """Emit V13's error result_code on the exit-2 path.
+
+    Without this the enforcement surface has a THIRD outcome its own contract
+    does not cover: a typed source that fails to load exits 2 with no token at
+    all, and because the CI step is `continue-on-error: true` the exit code is
+    swallowed — so PR-D1b's stdout anchor would see neither a clean, a findings,
+    nor a skip token, and the epoch would silently fail to reset. It has to be
+    fixed here: PR-D1b is specified as anchor-only with zero behavior diff.
+    """
+    if getattr(args, "check", False) and getattr(args, "surface", None) == "enforcement":
+        print(RESULT_ERROR_UNREADABLE)
+
+
+def _enforcement_result_code(repo_root: Path) -> str:
+    """V13's clean-run result code (plan §5.9 streak semantics).
+
+    Distinguishes "ran and found nothing" from "had nothing to run", because
+    both exit 0 and the registered streak treats them differently: a SKIP is
+    epoch-NEUTRAL while an EXECUTED_CLEAN counts toward the eligibility streak.
+    PR-D1b registers this stdout token, never the step conclusion.
+    """
+    try:
+        manifest = load_manifest_raw(repo_root)
+    except FatalCheckError:
+        return RESULT_SKIP_MANIFEST_V1
+    if _manifest_version(manifest) != 2:
+        return RESULT_SKIP_MANIFEST_V1
+    if not (repo_root / ENFORCEMENT_SOURCE_RELPATH).is_file():
+        return RESULT_SKIP_NO_ENFORCEMENT_SOURCE
+    return RESULT_EXECUTED_CLEAN
+
+
 def _lock_state(repo_root: Path) -> tuple[str | None, dict[str, Any] | None]:
     """(lock class 'v1'/'v2'/None, raw lock). Malformed/mixed -> FatalCheckError."""
     raw = load_verified_lock_raw(repo_root)
@@ -1042,7 +1108,9 @@ def _v2_desired_state(
     """All v2 desired outputs + their lock entries (plan §2.6). Every
     derivation runs BEFORE any write; failures leave zero managed writes."""
     import scripts.sdd._common.codex_config_renderer as config_mod
+    import scripts.sdd._common.codex_hook_renderer as hook_mod
     import scripts.sdd._common.codex_readme_renderer as readme_mod
+    import scripts.sdd._common.codex_rule_renderer as rule_mod
     import scripts.sdd._common.skill_renderer as skill_mod
 
     caps = [c for c in manifest.get("capabilities") or [] if isinstance(c, dict)]
@@ -1224,6 +1292,85 @@ def _v2_desired_state(
                 "renderer_version": config_mod.RENDERER_VERSION,
             },
         }
+
+    # --- enforcement surface (Epic #499 PR-D1a, plan §5.9 / §2.8.7) ----------
+    # DIRECT ROUTE (Gate 1 拍板): no `config_binding` is rendered, so
+    # `.codex/config.toml` above stays a pure `codex-config-mcp` entry and the
+    # BLOCKING V11 mcp gate keeps exactly its registered scope. The composite
+    # entry kind stays unused until/unless the explicit route is ever chosen.
+    #
+    # An ABSENT typed source means "no enforcement declared" and renders
+    # nothing — the same shape as the `if mcp_project:` empty-tier branch above.
+    # That is what keeps `.codex/hooks.json` an unowned neighbor in fixture
+    # repos that declare no enforcement source (the plan §5.5 AC-05 negatives).
+    source_path = repo_root / ENFORCEMENT_SOURCE_RELPATH
+    if source_path.is_file():
+        try:
+            enforcement = load_enforcement_source(
+                source_path.read_text(encoding="utf-8")
+            )
+            refs_inventory = policy_ref_inventory(repo_root, enforcement.policy_refs)
+            hooks_text = hook_mod.render_hooks(enforcement)
+            rules_texts = {
+                rf.output_path: render_rules(rf) for rf in enforcement.rule_files
+            }
+        except (
+            OSError,
+            EnforcementSourceError,
+            RuleRenderError,
+            ValueError,
+            # A YAML mapping with mixed-type keys reaches the validators as a
+            # heterogeneous key set; anything that still raises TypeError from
+            # that shape must become exit 2, never a traceback.
+            TypeError,
+        ) as exc:
+            raise FatalCheckError(f"enforcement render failed: {exc}") from exc
+
+        hook_mod_sha = module_source_sha256(Path(hook_mod.__file__))
+        rule_mod_sha = module_source_sha256(Path(rule_mod.__file__))
+        # Both output classes bind the SAME two inputs (plan §2.6 exact
+        # input_keys): the typed source bytes and the policy-ref inventory, so
+        # editing any declared policy_ref is a re-render trigger.
+        enforcement_source_sha = sha256_of_bytes(
+            source_path.read_bytes().replace(b"\r\n", b"\n")
+        )
+        policy_refs_sha = sha256_of_canonical(refs_inventory)
+
+        hooks_bytes = hooks_text.encode("utf-8")
+        outputs[Path(CODEX_HOOKS_KEY)] = hooks_bytes
+        entries[CODEX_HOOKS_KEY] = {
+            "entry_kind": "codex-hook",
+            "owner": "system:codex-hooks",
+            "surface_members": ["enforcement"],
+            "strategy": "rendered",
+            "normalization_policy": "canonical-json-v1",
+            "output_sha256": sha256_of_bytes(hooks_bytes),
+            "inputs": {
+                "enforcement_source_sha256": enforcement_source_sha,
+                "policy_refs_sha256": policy_refs_sha,
+                "renderer_module": hook_mod.RENDERER_MODULE,
+                "renderer_module_sha256": hook_mod_sha,
+                "renderer_version": hook_mod.RENDERER_VERSION,
+            },
+        }
+        for out_path, text in sorted(rules_texts.items()):
+            rule_bytes = text.encode("utf-8")
+            outputs[Path(out_path)] = rule_bytes
+            entries[out_path] = {
+                "entry_kind": "codex-rule",
+                "owner": f"system:codex-rules:{out_path}",
+                "surface_members": ["enforcement"],
+                "strategy": "rendered",
+                "normalization_policy": "generated-utf8-lf-v1",
+                "output_sha256": sha256_of_bytes(rule_bytes),
+                "inputs": {
+                    "enforcement_source_sha256": enforcement_source_sha,
+                    "policy_refs_sha256": policy_refs_sha,
+                    "renderer_module": rule_mod.RENDERER_MODULE,
+                    "renderer_module_sha256": rule_mod_sha,
+                    "renderer_version": rule_mod.RENDERER_VERSION,
+                },
+            }
     return outputs, entries
 
 
@@ -1320,11 +1467,24 @@ def _do_check_v2(
     lock_text = lock_v2_canonical_text(_v2_lock_envelope(entries))
     drift: list[str] = []
     check_skills = surface in ("skills", "all")
-    check_mcp = surface in ("mcp", "all")
+
+    def _in_scope(key: str) -> bool:
+        """Route by the entry's OWN `surface_members` (plan §2.6), not by an
+        `is_mcp = key == CODEX_LOCK_KEY` dichotomy.
+
+        The dichotomy was correct while `skills` and `mcp` were the only
+        surfaces, but it classifies anything that is not the reserved config key
+        as `skills` — so once PR-D1a lands `.codex/hooks.json` and
+        `.codex/rules/*.rules`, enforcement drift would be enforced by V10
+        (BLOCKING, registered scope = skills) instead of V13 (warning). That is
+        the "borrow an existing blocking gate to bypass the new one" shape the
+        plan forbids; this narrows V10 back to its registered scope.
+        """
+        return surface == "all" or surface in entries[key]["surface_members"]
+
     for rel in sorted(outputs, key=lambda p: p.as_posix()):
         posix = rel.as_posix()
-        is_mcp = posix == CODEX_LOCK_KEY
-        if (is_mcp and not check_mcp) or (not is_mcp and not check_skills):
+        if not _in_scope(posix):
             continue
         policy = entries[posix]["normalization_policy"]
         target = repo_root / rel
@@ -1338,7 +1498,14 @@ def _do_check_v2(
                 " OR source edited without re-running sync)"
             )
     if check_skills:
-        expected = {Path(p) for p in outputs if p.as_posix() != CODEX_LOCK_KEY}
+        # Only skills-surface outputs live under `.agents/`; selecting them by
+        # surface_members (rather than "everything except the config key") keeps
+        # the orphan scan honest now that enforcement outputs also exist.
+        expected = {
+            Path(p)
+            for p in outputs
+            if "skills" in entries[p.as_posix()]["surface_members"]
+        }
         expected_dirs = {p.parent for p in expected} | {AGENTS_DIR, SKILLS_DIR}
         agents_root = repo_root / AGENTS_DIR
         if agents_root.is_dir():
@@ -1387,8 +1554,7 @@ def _do_check_v2(
             )
         else:
             for key in sorted(entries):
-                is_mcp_key = key == CODEX_LOCK_KEY
-                if (is_mcp_key and not check_mcp) or (not is_mcp_key and not check_skills):
+                if not _in_scope(key):
                     continue
                 if disk_entries.get(key) != entries[key]:
                     drift.append(
@@ -1640,9 +1806,9 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
         help="read-only drift check (LF-normalized); exit 1 on drift",
     )
     parser.add_argument(
-        "--surface", choices=["skills", "mcp", "all"], default="all",
+        "--surface", choices=["skills", "mcp", "enforcement", "all"], default="all",
         help="scope --check to one projection surface (V10=skills warning,"
-             " V11=mcp blocking); default: all",
+             " V11=mcp blocking, V13=enforcement warning); default: all",
     )
     parser.add_argument(
         "--adopt", metavar="SKILL",
@@ -1685,6 +1851,10 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
                 # A scoped surface always prints its own remediation line; "all"
                 # prints the skills line plus the mcp line when mcp drift is present
                 # (review finding #330-7: never exit 1 without a prescribed action).
+                enforcement_drift = any(
+                    (CODEX_HOOKS_KEY in line) or (CODEX_RULES_PREFIX in line)
+                    for line in drift
+                )
                 if args.surface in ("skills", "all"):
                     print(PRESCRIBED_ACTION)
                 if args.surface == "mcp" or (
@@ -1692,11 +1862,23 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
                     and any(".codex" in line for line in drift)
                 ):
                     print(PRESCRIBED_ACTION_MCP)
+                # Under surface=all an enforcement-only drift used to print ONLY
+                # the skills and mcp actions, sending the reader to
+                # `.claude/skills/` and `.mcp.json` for a problem whose source is
+                # `sdd/adapters/codex-enforcement.yml`.
+                if args.surface == "enforcement" or (
+                    args.surface == "all" and enforcement_drift
+                ):
+                    print(PRESCRIBED_ACTION_ENFORCEMENT)
+                if args.surface == "enforcement":
+                    print(RESULT_EXECUTED_WITH_FINDINGS)
                 return 1
             print(
                 f"OK: projection in sync (surface={args.surface}, {len(project)}"
                 " skills, lock consistent)"
             )
+            if args.surface == "enforcement":
+                print(_enforcement_result_code(root))
             return 0
         if args.adopt is not None:
             changes = do_adopt(root, project, args.adopt)
@@ -1718,12 +1900,14 @@ def main(argv: list[str] | None = None, repo_root: Path | None = None) -> int:
         return 0
     except FatalCheckError as exc:
         print(f"{_SCRIPT_NAME}: {exc}", file=sys.stderr)
+        _print_enforcement_error_code(args)
         return 2
     except LockVerificationError as exc:
         # A malformed/mixed ledger surfacing from any depth of the v2 engine
         # is the SAME exit-2 zero-write contract, never a traceback
         # (Stage 11 #9/#11/#27).
         print(f"{_SCRIPT_NAME}: {exc}", file=sys.stderr)
+        _print_enforcement_error_code(args)
         return 2
 
 

@@ -1,0 +1,55 @@
+# GENERATED -- do not edit. Owned by scripts/sdd/agents_sync.py from
+# sdd/adapters/codex-enforcement.yml (Epic #499 ADR-039 D-011/D-012).
+# To change: edit that typed source through its own D-017 gate, run
+# `python scripts/sdd/agents_sync.py sync`, and commit source + artifact +
+# .agents.lock.json together. No --adopt path exists for enforcement outputs.
+#
+# COOPERATIVE scope: these rules surface AGENTS.md stop points inside the Codex
+# harness. They bind only Codex, never write .claude/**, and do NOT replace the
+# self-enforced boundaries in AGENTS.md -- a rule that fails to fire is not
+# permission to proceed. Owner 拍板 is unchanged.
+#
+# codex computes the STRICTEST decision across all matched rules
+# (allow < prompt < forbidden), so overlapping prefixes are intentional.
+
+# g1-no-checkout-b: G1: use `git worktree add ../<name> -b <name>`.
+prefix_rule(
+    pattern=["git", "checkout", "-b"],
+    decision="forbidden",
+)
+
+# g1-no-switch-c: G1: use `git worktree add ../<name> -b <name>`.
+prefix_rule(
+    pattern=["git", "switch", "-c"],
+    decision="forbidden",
+)
+
+# no-agent-merge: Merge is always a human action (ADR-034); the agent never merges.
+prefix_rule(
+    pattern=["gh", "pr", "merge"],
+    decision="forbidden",
+)
+
+# data-boundary-psql: ADR-006/ADR-009: no direct DB route; use the agent tool-chain.
+prefix_rule(
+    pattern=["psql"],
+    decision="forbidden",
+)
+
+# owner-gated-commit: OWNER_APPROVAL_REQUIRED: commit is a gated action (ADR-034).
+prefix_rule(
+    pattern=["git", "commit"],
+    decision="prompt",
+)
+
+# owner-gated-push: OWNER_APPROVAL_REQUIRED: push is a gated action (ADR-034).
+prefix_rule(
+    pattern=["git", "push"],
+    decision="prompt",
+)
+
+# owner-gated-pr-create: OWNER_APPROVAL_REQUIRED: PR creation is a gated action (ADR-034).
+prefix_rule(
+    pattern=["gh", "pr", "create"],
+    decision="prompt",
+)

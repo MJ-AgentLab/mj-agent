@@ -1843,8 +1843,22 @@ def test_offline_runner_error_never_prints_parent_value(
 
 
 def test_real_tree_projection_in_sync() -> None:
-    """Committed artifacts + lock must match sources (D-012: regenerate, never edit)."""
-    assert sync_main(["--check"], repo_root=REPO_ROOT) == 0
+    """Committed artifacts + lock must match sources (D-012: regenerate, never edit).
+
+    Scoped to the two BLOCKING surfaces on purpose. This assertion runs inside the
+    BLOCKING `Tests` CI step, and Epic #499 PR-D1a added a third surface,
+    `enforcement`, whose gate V13 is WARNING-ONLY for the whole of the Epic (plan
+    §5.9). A bare `--check` here defaults to `--surface all`, which would have
+    swept the enforcement surface into a blocking assertion and made V13's
+    predicate blocking through the back door — the plan puts the enforcement
+    desired-render into the blocking Tests backstop only at PR-D2, and only after
+    an independent `ci-blocking-gate-toggle` approval.
+
+    Real-tree enforcement drift is therefore V13's job, not this test's. Restore
+    the unscoped `--check` at PR-D2, together with the toggle record.
+    """
+    assert sync_main(["--check", "--surface", "skills"], repo_root=REPO_ROOT) == 0
+    assert sync_main(["--check", "--surface", "mcp"], repo_root=REPO_ROOT) == 0
 
 
 def test_real_tree_mcp_projection_in_sync() -> None:
@@ -1912,7 +1926,12 @@ def test_verify_lock_rejects_unknown_malformed_and_mixed_schemas() -> None:
 
 def test_sync_preserves_unowned_codex_hooks_rules_and_user_file(tmp_path: Path) -> None:
     """Plan §5.5 negative fixtures: unrelated .codex/hooks.json, a rules dir and
-    a user file must survive sync (AC-05) and redden neither V11 nor V9."""
+    a user file must survive sync (AC-05) and redden neither V11 nor V9.
+
+    Still a LIVE negative after Epic #499 PR-D1a made those two paths ownable:
+    this fixture repo declares no `sdd/adapters/codex-enforcement.yml`, so the
+    enforcement surface renders nothing and both paths remain unowned neighbours.
+    The owned counterpart is covered in test_codex_enforcement_d1a.py."""
     root = make_mcp_repo(tmp_path)
     assert sync_main(["sync"], repo_root=root) == 0
     hooks = root / ".codex" / "hooks.json"

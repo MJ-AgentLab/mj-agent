@@ -1,0 +1,29 @@
+{
+  "description": "GENERATED -- do not edit. Owned by scripts/sdd/agents_sync.py from sdd/adapters/codex-enforcement.yml (Epic #499 ADR-039 D-011/D-012). To change: edit that typed source through its own D-017 gate, run `python scripts/sdd/agents_sync.py sync`, and commit source + artifact + .agents.lock.json together. There is no --adopt path for enforcement outputs. These hooks are COOPERATIVE: they surface AGENTS.md stop points inside the Codex harness, they never write .claude/**, they bind only Codex, and they do not replace the self-enforced boundaries in AGENTS.md.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "uv run --frozen --no-sync python scripts/sdd/codex_hook_guard.py",
+            "statusMessage": "mj-agent cooperative guard",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "apply_patch"
+      },
+      {
+        "hooks": [
+          {
+            "command": "uv run --frozen --no-sync python scripts/sdd/codex_hook_guard.py",
+            "statusMessage": "mj-agent cooperative guard",
+            "timeout": 30,
+            "type": "command"
+          }
+        ],
+        "matcher": "shell"
+      }
+    ]
+  }
+}
