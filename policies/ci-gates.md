@@ -136,7 +136,7 @@ G21「evidence `pass_rate: 1.0` **或** runbook justification fallback」、G22�
 
 | 触发 | 频率 | 责任人 | 检查项 |
 |---|---|---|---|
-| 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 + `permissions.ask` 拍板门列表（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]，两者共同构成 §5 边界） / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
+| 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 + `permissions.ask` 拍板门列表（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034]]，两者共同构成 §5 边界） / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
 | MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` 13 server trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`） |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
@@ -290,7 +290,7 @@ gh run list --workflow ci.yml --limit 100 \
 | (a) | `permissions.allow` **不出现裸 `Bash`**（无 sub-pattern 限定） | 必须用 scoped 形式（如 `Bash(uv run *)` / `Bash(git status:*)`）；裸 `Bash` = 无界 shell 授权 | 阻塞合并；要求改 scoped pattern |
 | (b) | `permissions.deny` **必须携带 secret pattern 兜底** | 含 `.env` / `secrets.enc` / API-key glob（如 `Read(./.env)` / `Edit(./.env)` / `Write(./.env)` / `Read(**/secrets*.enc)`）；与 §5 边界表 `deny` 档定义一致 | 阻塞合并；缺失即补齐 deny 条目 |
 | (c) | `enabledPlugins` **增删需 PR body 描述用途与来源** | 任何 `enabledPlugins` add/remove 必须在 PR body 给出 justification（用途 + 来源 + trust posture） | 阻塞合并；要求补 PR body 说明 |
-| (d) | 5 项必停面**不得脱离 `ask` 档**（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]） | 任一必停面被移出 `permissions.ask`、或被 `allow` 条目覆盖 = 拍板门失效 | 阻塞合并；要求恢复 `ask` 条目 |
+| (d) | 5 项必停面**不得脱离 `ask` 档**（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034]]） | 任一必停面被移出 `permissions.ask`、或被 `allow` 条目覆盖 = 拍板门失效 | 阻塞合并；要求恢复 `ask` 条目 |
 
 **与 §4 关系**：§4 季度 / model-release 审计是 cadence 巡检（catch 漂移）；§5.1 是 PR-time
 hard gate（catch 引入）。两者共用同一 `deny` ∪ `ask` 边界定义（§5 表 + 其下注），避免双源漂移。
