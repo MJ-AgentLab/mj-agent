@@ -7,7 +7,7 @@ summary: >-
   repository-native carrier；按单 Epic、18 个串行 PR、人工 merge barrier 实施
 owner: ranzuozhou
 created: 2026-08-12
-updated: 2026-08-28
+updated: 2026-08-31
 state: active
 version: 8.0
 track: shared
@@ -59,7 +59,7 @@ track: shared
 | Required set | 18，当前只有 5 项 `projection: project` |
 | Lock | legacy flat map，无 `schema_version` |
 | Codex project surface | `.agents/skills` 5 项；`.codex/config.toml` only |
-| Sync/check surface | `skills | mcp | all`；无 enforcement |
+| Sync/check surface | `skills \| mcp \| all`；无 enforcement |
 | Reconcile | 仍会删除未声明的 `.codex` 邻居，空 MCP 时可递归删除目录 |
 | V8/V9/V10 | blocking（#399）；V11 day-1 blocking（#330） |
 | Newer gates | `check-commit-messages` warning；`kernel-section-refs` warning |
@@ -1358,28 +1358,21 @@ canary legs, and writes evidence only. `PASS_CANDIDATE` from P1a is insufficient
 V12 = **Cross-Carrier Structure**. It reports manifest↔registry↔artifact↔lock↔fidelity impact using the same underlying
 blocking checkers, but remains warning telemetry in this plan. A future V12 blocking flip is a separate plan/toggle.
 
-| Registration field | V12 value |
-|---|---|
-| Gate ID / name | `V12 / Cross-Carrier Structure`。**§4.1.1 要求的一一对应三元组**：`sdd/gates.md` §2 行名 `V12 Cross-Carrier-Structure` ↔ `ci.yml` step 名 `V12 cross-carrier structure (WARNING per plan §5.8; anchor PENDING_PR_C1_FIRST_CI)`。⚠ step 名里的 `PENDING_…` 是**首挂期的历史标识串，非活体断言** —— PR-C2 刻意不改 ci.yml 以守住「零 behavior diff」，真值以本表为准（残余 = F16）|
-| Exact execution | `uv run python scripts/sdd/check_cross_carrier.py --status-json .mj-agent-local/status/cross-carrier.json` |
-| Applicability | every PR; no path filter（`ci` job 无 `paths:` 过滤器，随每个 PR 必跑 → 适用 `policies/ci-gates.md` §4.1.3 head-SHA 去重口径，**不**适用 §4.1.4 三态口径）。⚠ **`develop` 上的 merge commit 不触发任何 run** —— `ci.yml` 的 push 过滤器只含 5 个临时分支类型（不含 `develop`），`pull_request` 只对 base 为 main 或 develop 的 PR 触发；故 merged 单元的「首次真实 CI」只能取其 **PR head SHA** 上的 run（实测 `d810746` 的 `actions/runs` `total_count = 0`）|
-| Observation anchor | **CI 首挂锚 `2fbf700` 2026-08-27 14:11:11 +0900 #499**（判据 = §4.1.2 run-命令 pickaxe，单一命中；为非 merge 实现 commit）。**Epoch 起点 = 该 commit 上的首次真实 CI** —— run `33041866036`（event=push，`run_started_at 2026-08-27T05:14:15Z`），其 V12 step（job `98417034436`）`05:14:57Z`→`05:14:58Z`、`conclusion=success`、输出 `EXECUTED_CLEAN`（7/7 join）。同一 head SHA 的 run `33041907780`（event=pull_request，`05:15:04Z`；job `98417167238`，step `05:15:42Z`）输出**逐字节相同**，按去重口径与前者合计 **1 次观测**。原始实测值 → `evidence/development-agent-v8/c2-v12-anchor-evidence.md` |
-| Eligibility | **两腿 AND（合取）**：日历腿 = anchor + ≥14 natural days **AND** 计数腿 = ≥20 consecutive head-SHA-deduplicated `EXECUTED_CLEAN` runs |
-| Streak semantics | `SKIP` is neutral; warning/error/non-clean resets the epoch。执行体口径（§4.1.3「执行体输出是 SoT」）：`EXECUTED_CLEAN` 计 1 · `SKIP_MANIFEST_V1` 中性 · `EXECUTED_WITH_FINDINGS`(rc 1) 与 `ERROR_UNREADABLE`(rc 2) 重置。⚠ **run 级 conclusion 不可用作判据** —— V12 step 带 `continue-on-error: true`，且 `EXECUTED_CLEAN` 与 `SKIP_MANIFEST_V1` **同为 rc 0**，二者只能由 stdout 的 result_code 区分。⚠ **head-SHA 去重是必需而非可选**：`ci.yml` 同时挂 `pull_request` 与 `push[feature/bugfix/documentation/maintain/hotfix]`，故**分支名命中该 5 类前缀**的 PR 每个 head SHA 产生 **2 次** `ci` run；不去重会把 streak **高估近一倍**（静默失效，无 gate 可查）。⚠ **成对是「可能」不是「保证」**：`dependabot/*` 等不在 push 过滤器内的分支同样能对 develop 开 PR，只产生 **1 次**（pull_request）—— 故计数一律按 head SHA 归并，**不得**用「run 数 ÷ 2」反推观测数 |
-| Self-exclusions | PR-C1 mount, PR-C2 anchor and any future blocking-flip PR。**§4.1.3 末条（注册时须明写）**：翻转 PR **自身分支产生的 run 不计入其自身的资格证据**，计数须锚在**翻转分支之前的那个 commit** |
-| v8 disposition | warning-only; no blocking flip in this plan |
-
-**注册载体声明（PR-C2 落）**：本表即 V12 的 `policies/ci-gates.md` §4.1.1 **明文观察期注册**（该节要求
-「构成要件 = 事先在 `plans/` 注册」；本 plan 创建于 2026-08-12，早于 2026-08-27 的首挂，满足「事先」）。
-`policies/ci-gates.md` 自述为「规则 + 指针层，**不复制姿态真值**」，故**不**在该文件登记逐 gate 值；
-`sdd/gates.md` §2 承载逐 gate 真值行并回指本表。
-⚠ **耐久性缺口（明写，不掩饰）**：ADR-039 第 11 条与本 plan §5.12 规定 PR-G 在 PR-F 合并后把本 plan 翻
-`active → completed`，而 V12 的日历腿最早 2026-09-10 才到期 —— 届时注册表将位于**已闭合的项目记录**中。
-这正是 `policies/ci-gates.md` §4.1.2/§4.1.3 因 issue #403 从 `plans/[PLAN]_dual-agent-compat.md` 逐字提升为
-政策原生条文的同一失效模式。**未来的 blocking-flip 单元必须先把本表 re-home 到它自己的 M-FU 注册工件**
-（或提升为政策原生条文），不得直接引用一个 `completed` plan 作为活体注册表。
-该义务落在一个 PR-G 会关闭的 plan 里，本身就是它所描述的失效模式，故**另立 follow-up `F17` 承载**
-（见 `evidence/development-agent-v8/c2-v12-anchor-evidence.md` §8.3）；V13 在 §5.9 同构，届时一并 re-home。
+> **注册表已 re-home（F17 / issue #522）** —— V12 的 `policies/ci-gates.md` §4.1.1 五要素注册表
+> （gate 标识 / CI 首挂锚 / 适用口径 / 阈值 + 资格公式 / 自排除规则）现由
+> **`plans/[PLAN]_m-fu-v12-v13-gate-observation.md` §2.1**（连同 §3.1 锚判据、§5.1 两腿、§5.2
+> streak 语义、§5.3 自排除）承载。迁移为**逐字 re-home**：锚 / 口径 / 阈值 / 自排除规则零变更。
+>
+> 迁出理由：ADR-039 第 11 条与本 plan §5.12 规定 PR-G 在 PR-F 合并后把本 plan 翻
+> `active → completed`，**任何在 PR-G 之后才动作的消费者**（含 §5.8 明确排除出本 plan 的 V12 flip）
+> 都会引用到一份已退休的记录 —— 同 issue #403 失效模式。
+>
+> ⚠ **本节编号不得变更**：`.github/workflows/ci.yml` 的 V12 step 名内嵌 `plan §5.8`（该文件自带
+> 「Do NOT rename this step」），`scripts/sdd/check_cross_carrier.py` 等多处 docstring 亦按本编号引用。
+> 本节标题与上方交付说明因此原样保留。
+>
+> `sdd/gates.md` §2 承载逐 gate 真值行并回指新工件。原始实测值 →
+> `evidence/development-agent-v8/c2-v12-anchor-evidence.md`。
 
 ### 5.9 PR-D1a / PR-D1b
 
@@ -1390,32 +1383,23 @@ the strictest decision. Raw transcript/assistant message/Secrets/private state a
 V13 = **Codex Enforcement Drift**. D1a mounts warning telemetry. D1b registers the real first-mount commit/time and the
 exact future blocking command; D1b contains no behavior change.
 
-| Registration field | V13 value |
-|---|---|
-| Gate ID / name | `V13 / Codex Enforcement Drift`。**§4.1.1 要求的一一对应三元组**：`sdd/gates.md` §2 行名 `V13 Codex-Enforcement-Drift` ↔ `ci.yml` step 名 `V13 codex enforcement drift (WARNING per plan §5.9)`（逐字转写）。⚠ **gates.md 行名的连字符是必需的**：`policies/ci-gates.md` §6.1 公布的「可复跑推导」左侧正则是 `V[0-9]+ [A-Za-z-]+`（数字后只允许**一个**字母/连字符 token），空格形 `V13 Codex Enforcement Drift` 实测**零输出**，而该 grep 仍 exit 0 —— 是 **fail-open 静默漏行**，不是报错。⚠ **与 V12 的关键差异**：本 step 名**刻意不含 anchor 占位串**（`ci.yml` 注释自述理由 —— V12 内嵌的 `PENDING_…` 正因「历史标识串活得比它的真值久」而成为 F16），故 **V13 不需要 F16 式 carve-out**，且本单元把全仓仅存的一处 `PENDING_PR_D1A_FIRST_CI` 字面量（本表 Observation anchor cell）彻底消除。⚠ **ID 碰撞非漂移**：`plans/[PLAN]_E_Phase0_Docs_Governance_Verification.md` 另有一个无关的历史 `V13`（CLAUDE.md 段落可读性验证），`decisions/ADR-012` 的两处 `V1-V13` 引用的正是它 —— 按 `V13` 做仓内 grep 复核本行时会命中，属预期假阳性，非漂移 |
-| Exact execution | `uv run python scripts/sdd/agents_sync.py --check --surface enforcement` |
-| Applicability | every PR; no path filter（`ci` job 无 `paths:` 过滤器，随每个 PR 必跑 → 适用 `policies/ci-gates.md` §4.1.3 head-SHA 去重口径，**不**适用 §4.1.4 三态口径）。⚠ **`develop` 上的 merge commit 不触发任何 run** —— `ci.yml` 的 push 过滤器只含 5 个临时分支类型（不含 `develop`），`pull_request` 只对 base 为 main 或 develop 的 PR 触发；本单元对入场锚 `56188fa` 独立复测得 `actions/runs` `total_count = 0`（**本 Epic 至今 3 个 merge commit —— `d810746` / `70a9db4` / `56188fa` —— 全部实测为 0 次 run**；PR-D1a ledger 已就 `56188fa` 记过一次，本单元是对同一实例的复测，不是第 4 个实例），故 merged 单元的「首次真实 CI」只能取其 **PR head SHA** 上的 run。⚠ **本 gate 排在多个 blocking 步之后**（Actions API/日志的 step 编号为 **43**，含隐式 `Set up job`；`ci.yml` 内为第 **42** 个 authored step —— 两个口径差 1，且任何插入的 step 都会推移它，**引用时须写明口径**）—— 更早的 blocking 步失败会使本步根本不执行、stdout 无任何 result_code；那种 run **不是一次可计数观测**（见 Streak semantics 末条）。⚠ **区分两个粒度**：`ci` **check run** 因无 path 过滤器而永不 `skipped`，故本 gate **不**适用 §4.1.4 的三态口径；但本 gate 的 **step** 在更早 blocking 步失败时**确实会拿到 `conclusion: skipped`**（实测先例：run `31773569400` / job `94684255167` 的 step 42 failure 之后，43/44 均为 `skipped`）。**该 `skipped` step 不是 §4.1.4 的中性桶，而是「无 token」结局 —— 须调查，不得当作中性吸收** |
-| Observation anchor | **CI 首挂锚 `c485f8d` 2026-08-28 13:49:48 +0900 #499**（PR #519 的实现 commit，非 merge commit；判据 = §4.1.2 run-命令 pickaxe，单一命中）。**pickaxe 片段取全命令** `-S "agents_sync.py --check --surface enforcement" -- .github/workflows/ci.yml`，**不**用 step 名、**也不**用脚本路径。⚠ **片段选择有判据，勿照抄 V12 的形状**：判据是「该片段在 `ci.yml` 内的**出现次数历史**是否隔离本 gate」（`git log -S` 对出现次数的**任何**变化都会触发），不是「执行体是否唯一挂载」—— `agents_sync.py` 按 `--surface` 同时承载 V10/V11/V13（per §6.1 M2），实测 `scripts/sdd/agents_sync.py` 在 ci.yml 出现 **3 次**、裸 `agents_sync.py` 出现 **5 次**（多出的两次在注释行），**两者 pickaxe 均得 3 个 commit**（`36d185d` V10 / `b8f43d3` V11 / `c485f8d` V13），会把锚提前 45 天；`--surface enforcement` 今日虽单一命中，但在 ci.yml 出现 **2 次**（`:408` 注释 + `:426` run 行），注释改写即扰动计数；**全命令片段出现 1 次且只在 run 行**，免疫。**Epoch 起点 = 该 commit 上的首次真实 CI** —— run `33144504658`（event=push，`run_started_at 2026-08-28T05:21:16Z`），其 V13 step（job `98762485194`，step #43）`05:21:57Z`→`05:21:58Z`、`conclusion=success`、stdout 两行 `OK: projection in sync (surface=enforcement, 18 skills, lock consistent)` + `EXECUTED_CLEAN`。同一 head SHA 的 run `33146015449`（event=pull_request，`05:51:07Z`；job `98767116571`，step `05:51:40Z`→`05:51:40Z`）输出**逐字节相同**，按去重口径与前者合计 **1 次观测**。⚠ **该次观测是 epoch 标记，不是计数腿的观测 #1**（计数腿起点见 Eligibility）。⚠ **push 与 PR run 的间隔非固定值**：本次 **1791 秒（29.9 分钟）**，C2 实测 **49 秒**（⚠ PR-D1a 的交接口径把 C2 那次转述为「约 45 秒」，是四舍五入而非实测；本单元按两条 run 的 `run_started_at` 重算）；稳定的只有「push run 早于 PR run」这一顺序，anchor 取 push run。原始实测值 → `evidence/development-agent-v8/d1b-v13-anchor-evidence.md` |
-| Eligibility | **两腿 AND（合取），且两腿起点不同** —— §4.1.1 要求「两腿关系须明写」，§5.10 已把两个起点分开写死：**日历腿** = mount anchor `c485f8d`（2026-08-28）+ ≥14 natural days → 最早 **2026-09-11**；**计数腿** = ≥20 consecutive head-SHA-deduplicated `EXECUTED_CLEAN` runs，**自 PR-D1b merge commit 之后**起算。⚠ **本 cell 与 §5.8 的 V12 cell 有意不同型**：V12 的 blocking flip 明确在本 plan 之外，其单起点措辞无害；V13 的 flip 是本 Epic 内的 **PR-D2**，若照抄单起点会把 mount→anchor 期间的 run 计入计数腿而提前达阈值 —— 正是 §4.1.4「vacuous streak」要防的失效模式。**实测于 2026-08-28（PR-D1b 登记时刻）：可计数 streak = 0** —— 自 `c485f8d` 起 `ci.yml` 再无任何 run，且 epoch 标记的那 1 次观测按定义不属于计数腿。⚠ 这是**时点测量**、随后必然增长，引用时须连同测量时点一并引用，不得当作恒定值|
-| Streak semantics | **按执行体源登记，不按一次 clean 输出登记** —— `scripts/sdd/agents_sync.py` 定义 **5 个字面 token**，归 **4 个登记组**（3 个 streak 类）：`EXECUTED_CLEAN`(rc 0) **计 1** · `SKIP_MANIFEST_V1`(rc 0，**中性**；仅 `schema_version == 1` 且 lock 相容时可达) · `SKIP_NO_ENFORCEMENT_SOURCE`(rc 0，**中性**；typed source **不是常规文件** —— 缺失、或被替换成目录) · `EXECUTED_WITH_FINDINGS`(rc 1) **重置** · `ERROR_UNREADABLE`(rc 2) **重置**。⚠ **两个 rc 的输入面必须分开登记，勿笼统写「不可读即 rc 2」**：`ERROR_UNREADABLE` 来自 **manifest** 加载失败（缺失 / YAML 错误 / 未知 `schema_version`）、**typed source 存在但不可解析**、任一 **`policy_ref` 不可读**、**workflow registry 缺失**、以及 desired-state 渲染所需的任一其他输入（translation map / preface / `.mcp.json` / 任一 skills 投影源）缺失；而 **lock 的任何故障态**（缺失 / 格式错误 / 信封 schema 不符 / 重复键 / BOM / 条目摘要不符）实测**一律走 `EXECUTED_WITH_FINDINGS` + rc 1**（同为重置，但诊断指向完全不同 —— 据此写「rc 2 ⇒ lock 问题」的负向测试会红）。⚠ 前三者**同为 rc 0**，且本 step 带 `continue-on-error: true` → run/step conclusion **不可作判据**，只能读 stdout token；且**两个 SKIP 是两个不同字面量**，streak 脚本必须同时匹配，只 grep 四个字面量会把 `SKIP_NO_ENFORCEMENT_SOURCE` 静默判成「无 token」。⚠ **五个 token 里有四个与 V12 共用字面量，且两个 step 在同一个 `ci` job 的日志里相隔约 1 秒先后打印**（实测 anchor job `98762485194`：V12 `05:21:57Z`、V13 `05:21:58Z`）—— streak 度量**必须按 step 切分日志**；对整个 job log 做 grep 会把 V12 的输出计成 V13 的。⚠ **优先级与 V12 相反，不得逐字复用 §5.8 该 cell**：V12 先判 manifest 版本再判 findings（SKIP 抢占）；V13 **先判 drift 再判 skip 分类**，故 v1-manifest 树上一旦有 drift，V13 打 `EXECUTED_WITH_FINDINGS`（**重置**）而非 V12 那样的中性 SKIP。⚠ **`ERROR_UNREADABLE` 可由完全在 enforcement 面之外的故障触发**（manifest / workflow registry / 任一 `policy_ref` / 任一 skills 投影源缺失），因为 desired-state 无条件渲染全部 surface —— 一次 skills 面的源缺失就会重置 V13 的 epoch。⚠ **第六种结局 = 无 token**，其成因列表是**下界而非穷举**，至少含：未捕获异常（如 manifest / lock 为非 UTF-8 字节引发的 `UnicodeDecodeError`，traceback + rc 1，被 `continue-on-error` **抹绿**）· 参数用法错误（rc 2，token 前即返回）· 本步因更早的 blocking 步失败而未执行（step `conclusion: skipped`，此时 job **是红的**、自带信号）· job 取消或超时。**无 token 的 run 一律不是可计数观测，须调查，不得按「没打印就是没事」计入**；其中**抹绿**的那几类才是真正危险的。⚠ **`SKIP_NO_ENFORCEMENT_SOURCE` 在已提交的树上是告警态而非常态**：`sdd/adapters/codex-enforcement.yml` 已入库，该 token 只可能出现在 typed source **不再是常规文件**（被删除、或被替换成目录）时；届时执行体仍逐字打印 `OK: … lock consistent` 且 rc 0，两个产物**及其 lock 条目不再被任何 CI 面校验**，streak 静默停滞。⚠ **但「破坏」不属此桶，且并非无红色信号**：typed source 存在而不可解析 → `ERROR_UNREADABLE` + rc 2；且**删除或破坏它都会让 blocking `Tests` 步变红** —— `tests/unit/test_codex_enforcement_d1a.py` 在**模块层**加载该真实文件，缺失即 collection error、不可解析即抛错 |
-| Self-exclusions | PR-D1a mount, PR-D1b anchor and PR-D2 toggle。**§4.1.3 末条（注册时须明写）**：翻转 PR **自身分支产生的 run 不计入其自身的资格证据**，计数须锚在**翻转分支之前的那个 commit**。⚠ **无 blocking 兜底的是两个具体维度，不是整个 gate**（勿写成「完全无兜底」）：(a) artifact ↔ desired-render 的**内容漂移**、(b) **输入 digest 闭合** —— V9 从不读取 `.codex/hooks.json` / `.codex/rules/*.rules` 的**内容**，且无任何测试对这两个产物做真实树钉线；PR-D1a 又把原本裸跑 `--check`（surface=all）的**那一处** real-tree 钉线收窄为 `skills`+`mcp`（F20，PR-D2 恢复；⚠ 同组另一处**本来就是** mcp-scoped，故 F20 要恢复的是**一处**调用点，不是两处）。这两个维度上 V13 的 `EXECUTED_WITH_FINDINGS` 确是**全绿 job 下的静默 epoch 重置**。**但已存在的 lock 条目其 schema 仍受两个 blocking 载体硬约束**：V9 的 **PJ031**（整锁 `verify_lock_v2`，error 级）与 blocking `Tests` 步内 `tests/unit/test_v2_engine.py` 的真实树 `verify_lock_v2`。⚠ 条目**被整条删除**则两者皆不触发（正向断言不要求 enforcement 条目存在），该情形仍无兜底。故与 §5.8 的 V12 X07 相比，正确表述是「**V13 的未覆盖维度不同且更窄**」，而非「V13 完全无兜底」|
-| blocking route | V13 remains warning; PR-D2 mounts the exact same predicate/command in the existing blocking Tests path |
-
-**注册载体声明（PR-D1b 落）**：本表即 V13 的 `policies/ci-gates.md` §4.1.1 **明文观察期注册**（该节要求
-「构成要件 = 事先在 `plans/` 注册」；本 plan 创建于 2026-08-12，早于 2026-08-28 的首挂，满足「事先」）。
-`policies/ci-gates.md` 自述为「规则 + 指针层，**不复制姿态真值**」，故**不**在该文件登记逐 gate 值；
-`sdd/gates.md` §2 承载逐 gate 真值行并回指本表。**新增 warning gate 的注册 ≠ posture 翻转**（#444 判例）
-—— `continue-on-error: true` 与 run 命令逐字未动，故本单元**不需** `ci-blocking-gate-toggle` 拍板。
-⚠ **耐久性缺口（明写，不掩饰）**：ADR-039 第 11 条与本 plan §5.12 规定 PR-G 在 PR-F 合并后把本 plan 翻
-`active → completed`，届时本表将位于**已闭合的项目记录**中；**任何在 PR-G 之后才动作的消费者**（例如把 V13
-由 warning 翻 blocking 的后继单元，或 §5.8 明确排除出本 plan 的 V12 flip）都会引用到一份已退休的记录。
-这正是 `policies/ci-gates.md` §4.1.2/§4.1.3 因 issue #403 从 `plans/[PLAN]_dual-agent-compat.md` 逐字提升为
-政策原生条文的同一失效模式。⚠ **本单元刻意不复述 §5.8 的时序措辞**：§5.8 与 `sdd/gates.md` 的 V12 行都写着
-「日历腿到期时注册表已在闭合记录中」，该陈述**经实测为假** —— PR-D2 的入场要求 V13 日历腿 ≥ 2026-09-11，
-而 PR-G 排在 D2/E/F 之后，故 PR-G 合并必 ≥ 2026-09-11，**两条日历腿（V12 2026-09-10 / V13 2026-09-11）都在
-plan 闭合之前成熟**。该措辞是**既存缺陷**（非本单元诱发），按判例不在 anchor-only 单元内改 V12 的活体注册面，
-已连同其更正一并列入 **F17** 的交接（见 `evidence/development-agent-v8/d1b-v13-anchor-evidence.md`）。
-**PR-D2 之前的消费者不受影响**：本 plan 在 PR-F 结束前保持 `active`（§5.12），PR-D2 可以合法引用本表。
+> **注册表已 re-home（F17 / issue #522）** —— V13 的 `policies/ci-gates.md` §4.1.1 五要素注册表
+> （gate 标识 / CI 首挂锚 / 适用口径 / 阈值 + 资格公式 / 自排除规则）现由
+> **`plans/[PLAN]_m-fu-v12-v13-gate-observation.md` §2.2**（连同 §3.2 锚判据、§5.1 两腿、§5.2
+> streak 语义、§5.3 自排除、§6.1 翻转执行清单）承载。迁移为**逐字 re-home**：锚 / 口径 / 阈值 /
+> 自排除规则零变更；随迁一并更正了三类**已知为错**的陈述（见新工件 §7 已知边界 (5) 与其 §1）。
+>
+> **新增 warning gate 的注册 ≠ posture 翻转**（#444 判例）—— `continue-on-error: true` 与 run 命令
+> 自 PR-D1a 起逐字未动，故首挂、PR-D1b 的登记与本次 re-home **均不需** `ci-blocking-gate-toggle` 拍板。
+>
+> ⚠ **本节编号不得变更**：`.github/workflows/ci.yml` 的 V13 step 名内嵌 `plan §5.9`（该文件自带
+> 「Do NOT rename this step」），且 `sdd/adapters/codex-enforcement.yml` 有 3 处 `plan SS5.9` 引用 ——
+> 那是 typed enforcement source，其自身字节即 lock 输入，**不可为修引用而编辑**。本节标题与上方
+> 交付说明因此原样保留。
+>
+> **PR-D2 仍可合法引用**：本 plan 在 PR-F 结束前保持 `active`（§5.12），且注册真值已在新工件上。
+> `sdd/gates.md` §2 承载逐 gate 真值行并回指新工件。原始实测值 →
+> `evidence/development-agent-v8/d1b-v13-anchor-evidence.md`。
 
 ### 5.10 Observation and PR-D2
 
