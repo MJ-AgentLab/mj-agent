@@ -71,7 +71,7 @@ HITL_Prompt §5 列出 32 skills 的目标态，但没说哪些先落地、哪�
 | `runtime` | **read-only inspect** in-source canonical（SKILL/PROMPT/biz_catalog） | stage 8 (B-flavor) sub | 4 |
 | `infra` | 项目专属基础设施（env-setup/docker-compose/storage-stack/studio-probe） | stage 8 (C-flavor) + stage 10 sub | 4 |
 
-> **补记（2026-06-22，mattpocock 采纳 P1 3.3）**：`flow` family 已增至 **10**（新增 `mj-agent-flow-diagnose`，Stage 8/10 邻接诊断子纪律；在 5 family namespace 内，**未**触发「新 family → ADR 修订」条件）。本表「数量」列是本 ADR 决策时的**目标态快照**；实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` + `docs/INDEX.md` 为权威（现 on-disk 35）。
+> **补记（2026-06-22，mattpocock 采纳 P1 3.3）**：`flow` family 已增至 **10**（新增 `mj-agent-flow-diagnose`，Stage 8/10 邻接诊断子纪律；在 5 family namespace 内，**未**触发「新 family → ADR 修订」条件）。本表「数量」列是本 ADR 决策时的**目标态快照**；实装计数（on-disk）以 `scripts/sdd/check_claude_skill_contracts.py --all` + `docs/INDEX.md` 为权威 —— **本 ADR 有意不写死该活值**（此前括注的那个数已随实装增长而失真；2026-09-01 实测为 37，#497 ③）。
 
 **(2) `<verb>`**：kebab-case 动作短词（`intake` / `commit` / `validate` / `studio-probe` / `skill-doc-improve` 等）。
 
