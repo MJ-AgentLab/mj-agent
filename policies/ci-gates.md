@@ -2,7 +2,7 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.7
+version: 0.8
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-09-01
@@ -229,6 +229,40 @@ gh run list --workflow ci.yml --limit 100 \
 # 按 headSha 去重后，自 §4.1.2 的锚点日期起，逐 SHA 核被观察 gate 执行体的输出
 ```
 
+**单 SHA 复核的谓词同样必须锚到 workflow**：核**被观察 gate 的 run 计数**时，谓词只认
+`actions/workflows/<file>/runs`；**非 0 的裸 `actions/runs?head_sha=` 值不得当作该 gate 的
+计数**，也不得据以推出全称命题。成因是**跨 workflow 污染** —— GitHub 把定时触发的 run 归属到
+**触发时刻**该分支 head 的那个 SHA，与它是不是 merge commit 无关。本仓的具体实例是 Dependabot
+的周一 cron（`.github/dependabot.yml` 的 `schedule`：`monday` `09:00` `Asia/Shanghai`
+（= 01:00 UTC）+ `target-branch: develop`），故裸值随该 SHA 任 `develop` head 期间跨过的 tick
+数**单调增长**，每个 tick 加上当时启用的 ecosystem 数（读该文件当时的配置，勿在此写死）。
+
+```bash
+S=fb7ae7d39516392c6ac8605a06bebd2d44a146e9   # 必须写满 40 位
+gh api "repos/MJ-AgentLab/mj-agent/actions/workflows/ci.yml/runs?head_sha=$S" --jq .total_count
+# → 0   本节口径的真值
+gh api "repos/MJ-AgentLab/mj-agent/actions/runs?head_sha=$S" --jq .total_count
+# → 3   混入三条 dependabot cron run（event=dynamic），均不含任何被观察 gate
+```
+
+⚠ **裸形是各 workflow 计数的严格超集，故两个方向不对称**：裸值**为 0** 时可直接推出各 workflow
+皆 0（该用法成立，既有 ledger 正是这样用的）；裸值**非 0** 时它对被观察 gate 一无所知，必须改用
+锚定形复核。禁止的是**把非 0 裸值当成该 gate 的计数**，以及**把单次测量推广成全称命题** ——
+后者属「未测量就推广」，不是「测量后变陈旧」。**建议**（非要件）：引用裸形时随手标注口径。
+
+⚠ **SHA 须写满 40 位**：缩写 SHA 不报错，而是 HTTP 200 + `total_count: 0` —— 与「裸形高估」
+方向相反的**第二种测量误差**（裸形高估偏向判「有」，缩写 SHA 低估偏向判「干净」）。
+
+**可复跑反例（2026-09-01 实测；两个 SHA 均已不再是 `develop` head，故计数已定格）**：
+`fb7ae7d39516392c6ac8605a06bebd2d44a146e9` 裸 3 / `ci.yml` 0；
+`33dd984fa64204ecdf9ec5391281415f684e0b24` 裸 6 / `ci.yml` 0（跨两个 tick）。
+**可复跑的断言是「两形不相等」本身**（连同上式推导即可自证），不是那两个整数；对**当前**
+head 取样得到的两形相等只说明尚未跨过 cron，**不**说明裸形可用。
+
+**与上方「度量命令」的关系**：那条 `gh run list --workflow ci.yml` **本就是锚定形，本条不改
+它**；本条只把同一锚定原则扩到**逐 SHA 点查**这第二种查询形态。§4.1.4 改用
+`--workflow docker-build.yml` 的 gate 同理继承，无需另抄一份。
+
 #### §4.1.4 path-triggered gate 的口径细则
 
 > **2026-08-04 Owner 拍板生效**（issue #403）—— 本节是 §4.1 提升中**唯一新增**的规则
@@ -405,3 +439,21 @@ G26 行的理由里，指的是风险条目）。同理 `sdd/gates.md` §1 的 `
 > `ci-blocking-gate-toggle`（#438/#440/#441/#447/#455 判例族）。⚠ 本条**刻意不复述**那个旧字面
 > 计数，理由同表内注记。⚠ 本文件此前**只有 v0.6 一条**版本脚注（v0.1-v0.5 无条目），故本条不是
 > 「沿用既有惯例」而是**按 #497 AC-7 的明文要求**新增。*
+>
+> *v0.8（2026-09-01）：#526（`#499-F25`）—— §4.1.3 增「**单 SHA 复核的谓词同样必须锚到
+> workflow**」一条：核被观察 gate 的 run 计数时只认 `actions/workflows/<file>/runs`，非 0 的
+> 裸值不得当作该 gate 的计数、也不得据以推出全称命题；并记**两个方向相反的测量误差** —— 裸形
+> 因跨 workflow 污染而**高估**（Dependabot 周一 cron 被归属到触发时刻的分支 head），缩写 SHA
+> 则返回 200 + 零计数而**低估**、偏向判「干净」。**主体是提升、另含三条新判据**：workflow
+> 锚定的规则正文先成于 `plans/[PLAN]_m-fu-v12-v13-gate-observation.md` §3.3；(1) SHA 须写满
+> 40 位、(2) 把锚定原则泛化到 `actions/workflows/<file>/runs`、(3) §4.1.4 的 gate 同理继承
+> —— 三条在源工件中无对应，属本条首写。该工件 `state: active` 且仍是 V12/V13 的 §4.1.1 五要素
+> 注册载体，**故原文保留不动**（与 #403 那次提升不同 —— 那次的触发条件是源工件已转
+> `completed`）。⚠ 本条只在既有「度量命令」之后追加，**未动 §4.1.3 的四条计数条目**（计数域 /
+> 计数条件 / streak 重置 / 自排除），故两个开着的观察期其 streak 算术不变。
+> ⚠ **诱发性 stale 已披露、有意不改**：本次插入令 `evidence/development-agent-v8/` 三份 ledger
+> 中指向本文件 §4.1.4 及其后各节的 **5 个行号锚值、共 10 处引用**整体下移；历史账本按体裁判定
+> 不回改（同 v0.6 条对 `§4:41` 的处置）。**姿态零 delta** —— 不改 `ci.yml`、不动任何
+> `continue-on-error`、不改任何 gate 的起点锚或阈值，故**非** `ci-blocking-gate-toggle`
+> （#438/#440/#441/#447/#455 判例族）。⚠ `updated` 本条未动 —— v0.7 已于同日（2026-09-01）
+> 落盘，该字段值已等于本次提交日。*
