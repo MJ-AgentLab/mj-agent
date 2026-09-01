@@ -2,10 +2,10 @@
 type: policy
 artifact: claude-code-skill
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-24
+updated: 2026-09-01
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -51,11 +51,9 @@ drift）；in-tree 改动**不**触发该必停、也无 freeze 义务（`mj-age
 freeze 是另一套，见 `policies/ai-agent.md` §7）。两者混在一个 PR 会让 reviewer 无法按面核对
 ⇒ 拆分。
 
-> ⚠ **指针新鲜度注记**：`sdd/constitution.md` §3.3 的 "Governance" 一列仍写作
-> "Track B（Agent_Side v1.x…）" / "Track C（Meta v2.x §3.10；**Phase M5 后并入**
-> `sdd/adapters/claude-code-skill.md`）"。该 "并入" 已于 M6 PR4 完成（ADR-031），tri-track
-> 三件已停用，故那两处未来时表述应读作**已生效**。该表的路径 / schema / loader 三列**仍准确**，
-> 只有 Governance 列的时态过期。修订另立单，不在 #482 面内。
+> ⚠ **指针新鲜度注记（已闭合，#497 ⑤）**：`sdd/constitution.md` §3.3 "Governance" 列原有两行
+> 用未来时写 "Phase M5 后并入 `sdd/adapters/…`"，而该 "并入" 已于 M6 PR4 完成（ADR-031）、
+> tri-track 三件已停用。两行**均已改为现在时**，本注记不再需要读者做时态换算。
 
 ## §2 ADR-013 Native Schema（2 字段）
 
@@ -84,13 +82,17 @@ uv run python scripts/sdd/check_claude_skill_contracts.py --all | tail -3
 ```
 
 2026-08-11 实测：全部 on-disk SKILL **PASS**，`WARN 0 / FAIL 0`，且**每一个**都带 2 字段
-frontmatter —— 早期那个 "markdown-body-only"（`name` 由目录名推断、`description` 由正文首段
-推断）的全局 deviation **已消解**。
+frontmatter。⚠ **早期记载的那个 "markdown-body-only" 全局 deviation（`name` 由目录名推断、
+`description` 由正文首段推断）从未存在** —— 它是 V4 执行体 `yaml.safe_load()` 的 parser bug
+产出的 spurious 输出（`03f1bc7` 调查 / `a5614c4` 修复），不是一个「曾经为真、后被消解」的状态
+（#497 ①；措辞更正见下方注记）。
 
-> ⚠ `sdd/adapters/claude-code-skill.md` 的 §Current mj-agent Implementation Status 与 §CI Gate
-> 两节仍在描述那个已消解的 deviation（"34/34 全员 markdown-body-only"、"预期 ~34 WARN"、
-> "M2 warning / M3 blocking"，以及待决的 Option A / Option B），与上面的实测**相反**。
-> **以实测为准**；修订该 adapter 另立单。
+> ⚠ **已闭合（#497 ①）**：`sdd/adapters/claude-code-skill.md` 的 §Current mj-agent
+> Implementation Status 与 §CI Gate 两节原在描述那个 deviation（"34/34 全员 markdown-body-only"、
+> "预期 ~34 WARN"、待决的 Option A / Option B），现已真值化。⚠ **更精确的表述是「那个 deviation
+> 从未存在」而非「已消解」** —— 它是 V4 执行体 `yaml.safe_load()` 被 `"Do not use for: "` 里的
+> `": "` 骗出的 spurious 输出（`03f1bc7` / `a5614c4`），两个 Option 都没执行；决议改判后产出
+> `decisions/ADR-032_Claude_Skill_Schema_Monitoring.md`。
 
 ## §3 Namespace Convention（ADR-016）
 
@@ -118,10 +120,10 @@ ls -d .claude/skills/*/ | sed -E 's#.*/mj-agent-([a-z]+)-.*#\1#' | sort | uniq -
 > 快照**。其自身 2026-06-22 补记已声明 SoT = 上述执行体，并把 `flow` 由 9 更正为 10；但同表
 > `infra` 一列至今未随实装更新。
 >
-> ⚠ **一处规则冲突（如实记录，本单不裁决）**：`sdd/adapters/claude-code-skill.md` §Scope 的
-> 「`.claude/` 新目录准入规则」表写「新 skill family 目录 = **普通 PR 直接新增**，无需 kernel
-> 修订……新增第 6 family 走此路径」，与 ADR-016 决策点 1 的「**不允许扩展（除非另开 ADR）**」
-> 直接相反。**实现站在 ADR-016 一侧**（正则枚举硬编码）。裁决另立单。
+> ⚠ **该规则冲突已裁决并闭合（#497 ②）**：`sdd/adapters/claude-code-skill.md` §Scope 的
+> 「`.claude/` 新目录准入规则」表原写「新 skill family 目录 = **普通 PR 直接新增**」，与 ADR-016
+> 决策点 1 的「**不允许扩展（除非另开 ADR）**」直接相反。裁决 = **改 adapter、不改 ADR**：该表
+> 已拆成两行——既有 5 family 内的新 skill 走普通 PR，新增第 6 family 须另开 ADR。
 
 ## §4 Runtime Family Propose→拍板→Apply（ADR-034）
 
@@ -209,12 +211,20 @@ uv run python -c "import json; print(len(json.load(open('.mcp.json', encoding='u
 
 - A14 **无机器载体**（§5.2）：`governance.contract.yml` 声明的 `check_a14_gate.py` 不存在。
 - 该 capability 的 `spec.yml` `lifecycle_state` 仍为 `drafting`。
-- `policies/ci-gates.md` §4 Review Cadence 表把 `.mcp.json` 写作「13 server」，与上述推导命令
-  的实测值**不符** —— 以推导命令为准；修订那一行另立单。
+- ~~`policies/ci-gates.md` §4 Review Cadence 表把 `.mcp.json` 写作「13 server」~~ ——
+  **已闭合（#497 ④）**：那一行已改为不写死 server 数、并指向同一条可复跑推导命令。
 
 ---
 
 > *`state: draft` — §1-§6 均已内容化（#482，2026-08-11），本文件不再有待填充节。*
+>
+> *v0.3（2026-09-01）：#497 —— 本文件四处「另立单」占位在同一 PR 内闭合，因为 #497 就是那个单：
+> §1 的 constitution §3.3 指针新鲜度注记（① ⑤）、§2 的 adapter deviation 注记（①）、§3 的规则
+> 冲突「裁决另立单」（②）、§5 已知差距的 ci-gates「13 server」（④）。**不改本文件的实测结论**，
+> 只把「待办指针」改成「已闭合 + 结论」。⚠ 顺带更正 §2 注记的措辞：那个 markdown-body-only
+> deviation **从未存在**（spurious validator 输出），原写「已消解」隐含它曾经为真。
+> §5 的另两条已知差距（A14 无机器载体 = #495；capability `lifecycle_state` 仍 `drafting`）
+> **未动**，仍开。*
 >
 > *v0.2（2026-08-11）：#482 — 清空本文件全部 5 个 TBD 块（§1 / §2 / §3 / §5 / §6），无一
 > decline。共同取证结论与前几份 policy 一致：**规则实体大多早已在仓内，只是从未成文**。

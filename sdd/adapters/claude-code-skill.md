@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: claude-code-skill
 state: draft
-version: 0.4
+version: 0.5
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-06-24
+updated: 2026-09-01
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -58,7 +58,8 @@ ai_visibility: source-of-truth
 
 | 新目录 / 资源 | 准入门槛 | 说明 |
 |---|---|---|
-| `.claude/skills/<group>/`（新 skill family 目录） | **普通 PR 直接新增** —— 无需 Meta / kernel 修订 | 仅需符合 ADR-016 `mj-agent-<group>-<verb>` namespace + 通过 A12 description 质量门；不触动 kernel-policy。5 family（flow / git / doc / runtime / infra）已立，新增第 6 family（如 M6 evidence）走此路径 |
+| `.claude/skills/mj-agent-<group>-<verb>/`（**既有 5 family 内**的新 skill） | **普通 PR 直接新增** —— 无需 Meta / kernel 修订 | 仅需符合 ADR-016 `mj-agent-<group>-<verb>` namespace + 通过 A12 description 质量门；不触动 kernel-policy。`flow` 由 9 增至 10 即走此路径（ADR-016 `:74` 补记明写「在 5 family namespace 内，**未**触发新 family → ADR 修订条件」） |
+| **新增第 6 个 family** | **需另开 ADR** —— 非普通 PR | `decisions/ADR-016` 决策点 1 定 `<group>` ∈ {flow, git, doc, runtime, infra} 为「5 个固定 family，不允许扩展（除非另开 ADR）」，其 `:179` 亦以未来的 `eval` family 为例说明那会「触发 ADR 修订」。实现站 ADR-016 一侧：`scripts/sdd/check_claude_skill_contracts.py` 把该 5 值枚举硬编码进 `_ADR_016_NAMESPACE_PATTERN`，第 6 family 的 skill 必产 namespace-mismatch finding。⚠ 该 finding 是 `Severity.WARN` 且 CI 调用不带 `--strict`，故它**不阻断合并** —— 真正的门是本行这条 ADR 要求，执行体只是佐证（口径差异见 issue #496） |
 | `.claude/hooks/`（**首次启用**） | **需 kernel-policy 修订** —— Meta §7.6 `.claude/` 边界子条款 | hooks 影响所有工具调用，治理强度高；首次引入 hooks 必须先修订 §7.6.x 子条款（kernel-policy 级），再落 hooks 文件；不可由普通 PR 直接引入 |
 | `.mcp.json` server 增删 | **联动 MCP_Server_Governance STANDARD（A14）** | 详见下方注；本 adapter 不重复 |
 
@@ -81,8 +82,10 @@ yml.template`）.
 M2 Stage C 新增 1 contract：
 
 - `capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml` —
-  指向 `.claude/skills/mj-agent-infra-*` family（per-SKILL 描述 `name` + `description` 字段
-  实际值 + `frozen_at`）.
+  指向 `.claude/skills/mj-agent-infra-*` family。per-SKILL 记 `name` + `file` + `frozen_at` +
+  **三个 freeze 摘要**：`description_hash`（frontmatter `description` 字符串的 sha256）、
+  `body_content_hash`（canonical regex-strip 后的 body）、`body_section_heads`。
+  ⚠ 记的是**摘要不是字段实际值** —— 原文写「`name` + `description` 字段实际值」不实（#497 ①）。
 
 ## §Standards
 
@@ -113,11 +116,14 @@ M2 Stage C 新增 1 contract：
 skills:
   - name: mj-agent-infra-llm-endpoint-probe
     file: .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
-    description_first_line: "Probe LLM endpoint health by ..."
+    description_hash: sha256:...          # frontmatter `description` 字符串的 sha256
+    body_content_hash: sha256:...         # canonical regex-strip 后的 body
     frozen_at: 2026-05-21T...Z
+    body_section_heads: ["## Overview", "## Workflow", ...]
   - name: mj-agent-infra-env-teardown
     file: .claude/skills/mj-agent-infra-env-teardown/SKILL.md
-    description_first_line: "Teardown mj-agent env with 3-level safety ..."
+    description_hash: sha256:...
+    body_content_hash: sha256:...
     frozen_at: 2026-05-21T...Z
 ```
 
@@ -141,28 +147,35 @@ prompt-version-bump / biz-catalog-sync / runtime-skill-content-change）不重�
 
 > **新节** — 不沉默 baseline deviation（per Q-A3）.
 
-**M2 实测观察**（V4 在 Stage A 末跑 `check_claude_skill_contracts.py` against 全 34 SKILL）：
+**当前状态：零 schema deviation，决议已收口。** 本节**刻意不写死计数**，判据是可复跑命令：
 
-- 34/34 SKILL **全员 "markdown-body-only convention"** — body 富文本无 YAML frontmatter
-- 与 ADR-013 2-field schema **ideal** 形成 **baseline deviation**：ADR-013 定义 `name` +
-  `description` 是 frontmatter 字段；当前实装 `name` 由 directory name 推断、`description`
-  由 body 首段或 first heading 后段落推断
+```bash
+uv run --frozen --no-sync python scripts/sdd/check_claude_skill_contracts.py --all | tail -2
+# 2026-09-01 实测 → PASS skills: 37 / WARN findings: 0 / FAIL: 0
+```
 
-**Resolution path** — 两 option，待 M3-FU ADR 决议：
+**⚠ M2 期记的「34/34 SKILL 全员 markdown-body-only convention」从来不是实况，而是一条 spurious
+validator 输出** —— 后续单元不得把它当历史事实转述。根因 = V4 执行体的 `yaml.safe_load()` 把
+`description` 里字面 `"Do not use for: "` 的 `": "` 当成嵌套映射起始而抛 `YAMLError`，于是每个
+SKILL 都被误报「no frontmatter block」（调查登记 `03f1bc7`、修复 `a5614c4`，均 2026-05-21；
+`policies/ai-agent.md` §7 Subsection A 第 1 条把它记作「V4 false-claim intercept」）。
+`.claude/skills/` 的 SKILL **自首个提交起就带 ADR-013 2-field frontmatter**（判据
+`git show 97361dd:.claude/skills/mj-agent-git-branch/SKILL.md | head -3`），仓内**从未**发生过
+frontmatter backfill migration。
 
-- **Option A — accept markdown-body-only as advisory**：保留当前 convention；ADR-013 schema
-  字段降级为 "ideal reference"；`check_claude_skill_contracts.py` 加 `--advisory-mode` flag；
-  baseline noise 可控
-- **Option B — Phase M5 backfill frontmatter**：跑一次性 migration 把 ADR-013 2-field 字段
-  backfill 到全 34 SKILL frontmatter；后续 schema 严格；M5+ 0 baseline noise
+**Resolution — 已闭合，不再是待决项**：`M3-FU-CLAUDE-SKILL-ADR` 因前提被证伪而**改判范围**
+（`f6290cc`），产出 `decisions/ADR-032_Claude_Skill_Schema_Monitoring.md`（`state: active` /
+`decision: accepted`；2026-07-23 #372 由 draft promote），目标由「修既存 deviation」改为
+「防未来 deviation」的 **3 层监控 regime**：Layer 1 = 本 adapter §CI Gate 的 V4 执行体、
+Layer 2 = A12 PR 模板自检、Layer 3 = A6 季度审计。
 
-**Cross-ref**：`plans/[PLAN]_spec_anchored_refactor.md` §M3 Task Breakdown 条目
-`M3-FU-CLAUDE-SKILL-ADR`（独立小 PR；M3 startup 后立项；resolution 决议产出独立 ADR）.
+⇒ 原 **Option A**（给执行体加 `--advisory-mode` flag）与 **Option B**（一次性 backfill
+migration）**均未执行、亦不再待决**。`--advisory-mode` 至今不存在于执行体（判据
+`grep -c advisory scripts/sdd/check_claude_skill_contracts.py` → 0）。
 
-**M2 期 contract 描述 current state** — 本 adapter 的 M2 新 contract（`mcp-server-governance/
-claude-skill.contract.yml`）描述当前 markdown-body-only convention（`description_first_line`
-作 freeze proxy 而非 frontmatter `description` 字段）；不要求 backfill；ADR 决议后回填本节
-resolution status + 必要时 contract refactor.
+**contract 侧**：`capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`
+冻结 8 个 `mj-agent-infra-*` SKILL，其 `description_hash` 取的是 **frontmatter `description`
+字段字符串**的 sha256 —— **不是** body 首行 proxy。
 
 ## §BDD Rules
 
@@ -213,11 +226,15 @@ Scenario: mj-agent-git-push refuses to run on protected branches
 
 **`_common.frontmatter` 接口在本 adapter 的特殊处理**：
 
-- markdown-body-only SKILL **不**调用 `load_frontmatter`（无 frontmatter 可加载）；走 plain
-  `Path.read_text` + 正则 fallback 提取 `name`（from dir）+ `description`（from body 首段或
-  `## Overview` 段）
-- 与 `runtime-skill` adapter 形成对比：runtime SKILL 必须走 `load_skill` strip frontmatter；
-  Claude Code SKILL 反之
+- V4 执行体 `Path.read_text` 之后走 `scripts.sdd._common.parse_native_frontmatter` 读 ADR-013
+  2-field frontmatter，**没有 markdown-body-only fallback 路径**；`name` 取自 frontmatter，
+  目录名只作**一致性交叉校验**（`name != dirname` 判 WARN），不是 `name` 的来源。
+  ⚠ 原记的「走正则 fallback 从 dir 推 `name` / 从 body 首段推 `description`」是 M2 期基于那条
+  spurious validator 输出写下的，实现从未如此 —— 判据
+  `sed -n '60,95p' scripts/sdd/check_claude_skill_contracts.py`。
+- 与 `runtime-skill` adapter 形成对比：runtime SKILL 走 `load_skill` **strip** 13-field
+  frontmatter 后把 body 拼进 system prompt；Claude Code SKILL 的 2-field frontmatter 由
+  Claude Code 主 process 自身消费，不入 `mj_agent` Python runtime。
 
 **Red-Green-Refactor 软模式 RD10=C** — 同其他 adapter；AI-generated SKILL 允许 "test
 alongside SKILL.md"（同一 PR 内含 test + 实装；不强制先 commit failing test）；人工编写仍走
@@ -226,38 +243,72 @@ alongside SKILL.md"（同一 PR 内含 test + 实装；不强制先 commit faili
 **G28 联动** — `claude-skill.contract.yml` `skills[]` 增删 / `frozen_at` 重签 → 必须配套
 `tests/contracts/<capability>/test_claude_skill_contract.py` 内 failing→green 转变.
 
-**反向 promote 候选** — M3+ 视需求把 markdown-body-only 提取逻辑（dir → name；body
-首段 → description）promote 到 `_common.discovery` 或新建 `_common.claude_skill_parse`.
+**反向 promote 候选** — 已失效（前提不成立）：原候选是把「markdown-body-only 提取逻辑
+（dir → name；body 首段 → description）」promote 到 `_common`，但该逻辑从未存在（见上一条与
+§Current mj-agent Implementation Status）。真实共享面是既有的
+`scripts.sdd._common.parse_native_frontmatter`，**已在 `_common` 内**，无需 promote.
 
 ## §CI Gate
 
 **Script gate**: `scripts/sdd/check_claude_skill_contracts.py`
 
-- **Phase**: M2 warning / **M3 blocking**（per `sdd/gates.md` G3 切换节奏；但见下方 baseline
-  noise 说明）
+- **Phase**: 首发 M2 warning，现 **blocking**（`sdd/gates.md` `:56` 的 `V4 Claude-Skill` 行记
+  `blocking@ci`）。⚠ 原文引「per `sdd/gates.md` G3 切换节奏」是**误引** —— `G3` 是
+  `check_contracts.py`（`:33`，至今 `warning@ci`），与本 gate 无关。⚠ **姿态载体与
+  行为真值须分开读**：`ci.yml` 的 V4 step 名与 `sdd/gates.md` 的 V4 行都记 `BLOCKING`、该 step
+  亦无 `continue-on-error`，但执行体的 finding 全为 `Severity.WARN` 而 CI 调用不带 `--strict`，
+  故 `Summary.exit_code(strict=False)` 恒 0。该口径差异登记在 **issue #496**，本 adapter 不代为
+  判定（`policies/ci-gates.md` §1.1「姿态载体有四种」的一个实例）
 - **Triggers**: `capabilities/*/contracts/claude-skill.contract.yml` 任一存在
 - **Modes**: `--dry-run` / `--capability <path>` / `--all`
 - **Output**: `PASS` / `WARN` / `FAIL` + 详细错误（namespace mismatch / `description` <200
   chars / 缺失 reverse trigger block / family 不在 5 enum）
-- **Implementation**: `Path.glob('.claude/skills/mj-agent-*')` 扫描 + 正则提取 description +
-  cross-check contract `skills[]` 列表
+- **Implementation**: `skills_dir.glob("*/SKILL.md")` 扫描—— 注意是 **全部** skill 目录而非
+  `mj-agent-*` 前缀子集（`name` 不合 ADR-016 namespace 正是它要报的 finding 之一，先限定
+  前缀就自我屏蔽了）；继而 `parse_native_frontmatter` 读 2-field frontmatter。
+  ⚠ 原记的「`Path.glob('.claude/skills/mj-agent-*')`」与「正则提取 description」**两项均不实**，
+  判据 `grep -n "glob" scripts/sdd/check_claude_skill_contracts.py`。
 
-**Baseline noise** — **预期 ~34 WARN**（markdown-body-only deviation；ADR-013 2-field schema
-不命中 frontmatter 字段）：
+**Baseline noise** — 已归零；原「预期 ~34 WARN」记载作废（它建立在上文被证伪的
+markdown-body-only 前提上）。当期真值以执行体输出为准，本节**刻意不写死数字**：
 
-- M2 末 CI toggle PR-M2-3 description **必须显式说明此 noise 是 expected**，per
-  `M3-FU-CLAUDE-SKILL-ADR` 待决；不算 false-positive，reviewer 不应阻 PR
-- M3+ ADR 决议后调整：
-  - 若 option A → 加 `--advisory-mode` flag；advisory mode 下 markdown-body-only 视为 PASS；
-    期望 0 WARN
-  - 若 option B → 跑一次性 backfill migration（独立 PR）；之后期望 0 WARN
+```bash
+uv run --frozen --no-sync python scripts/sdd/check_claude_skill_contracts.py --all | tail -2
+# 2026-09-01 实测 → PASS skills: 37 / WARN findings: 0 / FAIL: 0
+```
+
+- 出现非零 WARN 即是**真实 finding**，不再有「expected noise」豁免口径，reviewer 应按 A12 处理。
+- 持续合规由 `decisions/ADR-032_Claude_Skill_Schema_Monitoring.md` 的 3 层 regime 承担
+  （Layer 1 本 gate / Layer 2 A12 PR 模板 / Layer 3 A6 季度审计）。
 
 **M2 → M3 切换条件**：
 
 - Stage C 1 新 contract（`mcp-server-governance/claude-skill.contract.yml`）schema layer PASS
-- `_common` markdown-body-only 提取接口稳定（如 promote 落地）
-- `M3-FU-CLAUDE-SKILL-ADR` 决议产出（option A / B 任一）
+  —— **已满足**
+- ~~`_common` markdown-body-only 提取接口稳定（如 promote 落地）~~ —— **作废**：该接口从未存在，
+  实际共享面是 `_common.parse_native_frontmatter`（见 §TDD Rules 反向 promote 候选条）
+- `M3-FU-CLAUDE-SKILL-ADR` 决议产出（option A / B 任一）—— **已满足，但结论是第三条路**：
+  两 option 均未采纳，改判为 `decisions/ADR-032_Claude_Skill_Schema_Monitoring.md` 的
+  drift-prevention regime
 
 ---
 
 > *Phase M2 content — `state: draft`.*
+>
+> *v0.5（2026-09-01）：#497 ① + ② —— §Current mj-agent Implementation Status / §TDD Rules /
+> §CI Gate 三节停在 2026-05 的 M2 记载真值化。核心更正：「34/34 markdown-body-only convention」
+> **从来不是实况**，而是 V4 执行体 `yaml.safe_load()` 被 `"Do not use for: "` 里的 `": "` 骗出的
+> spurious 输出（`03f1bc7` 调查 / `a5614c4` 修复），故 Option A / Option B **都没执行、也不再待决**
+> —— `M3-FU-CLAUDE-SKILL-ADR` 已改判范围（`f6290cc`）并产出 `ADR-032`（active / accepted，#372）。
+> ⚠ 这条更正推翻了 issue #497 正文对本项的归因（原写「Option B 其实早已落地」）。同批清掉同一
+> 前提在本文件的**另外五处**渗漏（issue 只点名两处，实测更广）：§TDD Rules loader 接口段的
+> 「正则 fallback 从 dir 推 name」、§TDD Rules 反向 promote 候选、§CI Gate 的 M2→M3 切换条件第 2 条、
+> §CI Gate `Implementation` 行的 glob 与「正则提取 description」（实为 `glob("*/SKILL.md")` +
+> `parse_native_frontmatter`）、§Standards YAML 示例里的 `description_first_line`（全仓仅本文件出现，
+> 真实契约字段是 `description_hash` + `body_content_hash` + `body_section_heads`）。另修 §CI Gate
+> `Phase` 行的**误引** —— 原引 `sdd/gates.md` 的 `G3`，而 G3 是 `check_contracts.py`（`:33`，仍
+> `warning@ci`），本 gate 是 `:56` 的 `V4 Claude-Skill` 行（`blocking@ci`）。计数一律改为可复跑推导
+> 而非写死数。**`:25-26` 的「现 on-disk 37」有意不动**（活值且当前为真，已用 SoT 指针体裁）。
+> §Scope 准入表拆成两行以消解与 `ADR-016` 决策点 1 的直接矛盾：既有 5 family 内新增 skill 走普通
+> PR，**新增第 6 family 须另开 ADR**。**零执行体改动、零 gate 姿态 delta**；V4「记 BLOCKING 但恒
+> exit 0」的口径差异只作指针登记到 issue #496，本文件不代为判定。*

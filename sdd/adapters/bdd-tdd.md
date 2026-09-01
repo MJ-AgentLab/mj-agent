@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: bdd-tdd
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-09-01
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -264,7 +264,7 @@ REQ → CONTRACT → TEST → TASK → PR → EVIDENCE
 | `langchain-agent` | "意图 → 拒绝/接受 + tool call 顺序" 行为；`@risk:high` 绝对 BDD 必填；`agent.py` refactor must not change behavior `.feature`；middleware + `@hitl` 双标 | tool boundary test 先写；middleware 新增触发 G28；local `_extract_assign_value` / `_extract_list_items`（M3+ promote 候选） |
 | `prompt` | **schema invariant only** per C4；`@adapter:prompt` + `@hitl` 必双标；**不**为 prose typo 加 tag | schema-layer test-first 限定；M4-FU EVAL framework 待 baseline；与 `runtime-skill` 共 `_common.frontmatter` |
 | `runtime-skill` | body 加载 + system prompt 拼接 + loader strip 行为；`@adapter:runtime-skill` + `@hitl` 必双标；**不**为 frontmatter schema validation 加 tag | schema-layer test-first；body `content_hash` 双锁；与 `prompt` 共 `_common.frontmatter`；G28 联动 |
-| `claude-code-skill` | trigger fidelity（`description` 正向 + 反向）；`@risk:high` SKILL（git-commit / git-push / env-teardown）必填；**不**为 ADR-013 schema validation 加 tag | schema-layer（`name` + dir + namespace + description ≥ 200 chars）；markdown-body-only **不**调 `load_frontmatter`（走 `Path.read_text` + 正则） |
+| `claude-code-skill` | trigger fidelity（`description` 正向 + 反向）；`@risk:high` SKILL（git-commit / git-push / env-teardown）必填；**不**为 ADR-013 schema validation 加 tag | schema-layer（`name` + dir + namespace + description ≥ 200 chars）；走 `Path.read_text` + `_common.parse_native_frontmatter` 读 ADR-013 2-field frontmatter，**无** markdown-body-only fallback 路径 |
 | `docker-container` | 容器运行时 + compose 装配 + healthcheck + network attach；HITL #8 走 **workflow 层** NOT adapter 层（§CI Gate 不开 Manual HITL gate）；**不**为 Dockerfile lint 加 tag（走 hadolint） | schema-layer test-first；compose dry-run；`docker-bdd-scenario-check` + `docker-tdd-contract-test` 双 gate；`_common.yaml_io` 共享 |
 
 **Matrix sync 责任**（M3 advisory → M4+ blocking 升级路径 per Q-A 加固点 2）：
@@ -282,3 +282,11 @@ canonical 源，冲突以本节为准（M5+ 新 adapter 走 matrix sync PR 同�
 ---
 
 > *Phase M2 content — `state: draft`.* 第 7 启用 adapter；横切准则；cross-ref 手册 §25 全 8 子节（§25.1-§25.8）.
+>
+> *v0.3（2026-09-01）：#497 ① 的 **matrix sync**（触发 = 本节自有规则「修改 adapter §BDD/§TDD
+> Rules 子节 → 同步本节矩阵」，而 #497 改了 `claude-code-skill` adapter 的 §TDD Rules）。
+> ⚠ **改动面比初判窄**：该单元格原文的三条机制断言**逐条为真**且未改 —— 执行体确实不调
+> `load_frontmatter`（全仓无此函数，`_common` 提供的是 `parse_native_frontmatter`）、确实走
+> `Path.read_text`（`:63`）、确实用正则（`:55` 的 namespace pattern）。唯一更正的是**形容词主语**
+> 「markdown-body-only」—— 它暗示那些 SKILL 没有 frontmatter，而该状态从未存在（成因是 V4 执行体
+> `yaml.safe_load()` 的 parser bug，`03f1bc7` / `a5614c4`）。矩阵其余 5 行未动。*

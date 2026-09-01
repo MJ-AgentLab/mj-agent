@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.6
+version: 0.7
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-09-01
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -138,7 +138,7 @@ G21「evidence `pass_rate: 1.0` **或** runbook justification fallback」、G22�
 |---|---|---|---|
 | 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 + `permissions.ask` 拍板门列表（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034]]，两者共同构成 §5 边界） / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
-| MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` 13 server trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`） |
+| MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` **全部** server 的 trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`）。⚠ **本表有意不写死 server 数** —— 当期数量按 `uv run python -c "import json; print(len(json.load(open('.mcp.json', encoding='utf-8'))['mcpServers']))"` 复算（与 `policies/claude-code-skill.md` §5 的推导逐字同形；⚠ 裸 `python` 在参考机不解析，故取 `uv run` 形）。2026-09-01 实测 14；原文写死的那个数是 ADR-028 的决策时点值，已失真（#497 ④）。⚠ 此处**有意不复述那个旧字面量** —— 复述会让 issue #497 AC-4 的零命中判据失效 |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
 
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md`（与 `policies/documentation.md`
@@ -394,3 +394,14 @@ G26 行的理由里，指的是风险条目）。同理 `sdd/gates.md` §1 的 `
 > 判例族）。*
 >
 > *Phase M0 — §Review Cadence native（§4，含 §4.1 注册制观察期）。*
+>
+> *v0.7（2026-09-01）：#497 ④ —— §4 Review Cadence 表的「MCP server 季度审计」行不再写死
+> `.mcp.json` 的 server 数（原写死的是 ADR-028 决策时点值，实测已失真），改为「**全部** server」
+> 加一条可复跑推导命令（取 `uv run python -c …` 形，与 `policies/claude-code-skill.md` §5 逐字
+> 同形 —— 裸 `python` 在参考机不解析），与本文件 §6.1「两侧都在动，抄一张必漂移」的既定纪律
+> 一致。同批闭合
+> `policies/claude-code-skill.md` §5 里登记的那条「修订那一行另立单」占位。**姿态零 delta** ——
+> 不改 `ci.yml`、不动任何 `continue-on-error`、不改任何 gate 的起点锚或阈值，故**非**
+> `ci-blocking-gate-toggle`（#438/#440/#441/#447/#455 判例族）。⚠ 本条**刻意不复述**那个旧字面
+> 计数，理由同表内注记。⚠ 本文件此前**只有 v0.6 一条**版本脚注（v0.1-v0.5 无条目），故本条不是
+> 「沿用既有惯例」而是**按 #497 AC-7 的明文要求**新增。*
