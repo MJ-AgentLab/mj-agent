@@ -184,7 +184,7 @@ def main() -> int:
         "`docs/glossary/upstream_business_warehouse.md`); strip `派生自 ...` "
         "frontmatter / prose markers. Allow-list literals are in this script "
         "(`ALLOW_LITERAL_SUBSTRINGS`). Set MJ_AGENT_CHECK_REFS_STRICT=1 to "
-        "fail-fast in CI (currently warning-mode; 4-week observation window).",
+        "fail-fast in CI (warning-mode is the current posture, not a timed transition).",
         file=sys.stderr,
     )
     return 1 if strict else 0

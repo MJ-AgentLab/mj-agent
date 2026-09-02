@@ -11,8 +11,8 @@ The execution path is layered:
      aligned static rules: no_select_star, require_time_range, advisory
      LIMIT checks. P0 errors become ``ValueError``; P1 warnings travel
      in the response envelope.
-  3. Read-only psycopg cursor with DB-side ``statement_timeout = 60s``
-     (set by the analyst role).
+  3. L3 read-only connection via ``readonly_cursor()`` (``default_transaction_read_only=on``);
+     L4 analyst-role GRANT + DB-side ``statement_timeout = 60s``.
 
 Returned envelope (per MVP plan v2 PR2):
   - ``executed_sql`` — verbatim echo so the analyst can audit
