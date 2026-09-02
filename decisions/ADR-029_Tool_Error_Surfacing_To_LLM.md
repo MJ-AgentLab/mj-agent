@@ -4,7 +4,7 @@ domain: AGENT
 summary: SQL 工具异常（ValueError/RuntimeError）通过单个 SQLToolErrorMiddleware（wrap_tool_call + awrap_tool_call 双 hook；2026-07-07 amendment 取代原 @wrap_tool_call 装饰器形态）转换为 ToolMessage，使 LLM 能读到失败原因并自纠正；工具函数本身保留 raise 行为，保留 tests/smoke + tests/unit 现有契约
 owner: 项目负责人
 created: 2026-05-12
-updated: 2026-07-07
+updated: 2026-09-02
 state: active
 decision: accepted
 track: code
@@ -21,13 +21,13 @@ tags:
 
 ## Context
 
-mj-agent 的 SQL 工具链（`src/mj_agent/tools/sql/execute.py` + `tools/sql/introspect.py`）按 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L1（regex guardrail）/ §L1b（sqlglot 精检 precheck）/ §L3（read-only cursor + statement_timeout）分层拒绝越界 SQL：
+mj-agent 的 SQL 工具链（`src/mj_agent/tools/sql/execute.py` + `tools/sql/introspect.py`）按 [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] §L1（regex guardrail）/ §L1b（sqlglot 精检 precheck）/ §L3（read-only connection via `readonly_cursor()`）/ §L4（analyst 角色的 `statement_timeout=60s`）分层拒绝越界 SQL：
 
 | 来源 | 异常 | 出现位置 |
 |---|---|---|
 | L1 guardrail 拒绝 | `ValueError` | `execute.py:95` |
 | L1b precheck 拒绝（如 `require_time_range`） | `ValueError` | `execute.py:99` |
-| L3 statement_timeout 60s 触发 | `RuntimeError` | `execute.py:107` |
+| L4 statement_timeout 60s 触发 | `RuntimeError` | `execute.py:107` |
 | L3 其它 DB 错误 | `RuntimeError` | `execute.py:112` |
 | introspect allowlist 拒绝 | `ValueError` | `introspect.py:115` / `:128` |
 
@@ -73,7 +73,7 @@ def handle_sql_tool_errors(request, handler):
 - **正面**：
   - 前端 hang 根因消除——任何工具异常都会产生一条 `ToolMessage`，graph 推进继续
   - LLM 可在下一轮 turn 读到具体拒绝原因（"require_time_range: ..."），按系统提示词的"加 `WHERE data_date >= ...`" 模板自纠正
-  - 与现有四层 guardrail（[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）正交——L1/L1b/L3 rule 文本不动，只改"如何把拒绝告诉 LLM"
+  - 与现有四层 guardrail（[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）正交——L1/L1b/L3/L4 rule 文本不动，只改"如何把拒绝告诉 LLM"
 - **负面**：
   - 多一层间接性：tool 报错后 LLM 看到的是中间件包装过的中文文本，不是原始 traceback；调试需在 `docker logs` 或 LangSmith trace 看原始异常
   - 中文错误前缀进入 LLM 上下文意味着多语言场景下需做翻译适配（当前 mj-agent 单语 zh-CN，不阻塞）
@@ -152,7 +152,7 @@ middleware 的**装配形态**：单类双 hook，注册处 `middleware=[handle_
 
 ## References
 
-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] — L1/L1b/L3 防御层，本 ADR 决定如何把这些层的 reject 告诉 LLM
+- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] — L1/L1b/L3/L4 防御层，本 ADR 决定如何把这些层的 reject 告诉 LLM
 - [[decisions/ADR-002_Skills_As_First_Class_Citizens|ADR-002]] — `create_agent` 装配模型为何不绕开
 - LangChain 1.2.x 文档：`langchain.agents.middleware.wrap_tool_call`（`/websites/langchain_oss_python_langchain` via Context7）
 - LangGraph `ToolCallRequest` 数据结构：`.venv/Lib/site-packages/langgraph/prebuilt/tool_node.py:130`

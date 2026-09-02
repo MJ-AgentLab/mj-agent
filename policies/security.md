@@ -2,10 +2,10 @@
 type: policy
 artifact: security
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-09-02
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -110,9 +110,19 @@ ci.yml 的 `No cross-repo refs` step **没有** `continue-on-error`，但脚本�
 `continue-on-error`**，而是给该 step 加 `MJ_AGENT_CHECK_REFS_STRICT=1`。
 
 该 gate **未在 `sdd/gates.md` 登记**（2026-08-11 两种口径实测零命中；对照 `find_stale_docs`
-有 4 处登记）。故若将来追求 blocking，须**先补登记**再走 `ci-blocking-gate-toggle` 拍板
-（per `policies/ci-gates.md` §4.1.1 —— 未注册者不享 streak 吸收）。脚本 docstring 记载其
-原 "4-week-to-blocking" note 已由 #440 retired，warning 是当前姿态而非过渡态。
+有 4 处登记）。故若将来追求 blocking，证据标准**二选一**（per `policies/ci-gates.md` §1 F3，
+下述节号均指该文件）：按 §4.1.1 在 `plans/` 注册观察期（gate 标识须与 `sdd/gates.md` §2
+行名一一对应，实务上须补齐该行）以享 §4.1 的 streak 吸收，**或**不注册、回落 §4 表
+「Gate 启用前」行（切换前 1 周 DRI dry-run + violation 数量 + 影响范围，无连续次数阈值）；
+两条路都须 Owner `ci-blocking-gate-toggle` 拍板，注册与否只改变证据标准、不改变谁拍板。
+
+脚本 docstring 把自身 warning 姿态类比 `find_stale_docs.py` 的长期 warning 模式 —— 其中
+「its former 4-week-to-blocking note was retired by #440」说的是**那个** gate（#440 真值化的
+正是它），不是本 gate。本 gate 自己的 4 周窗口出自
+`plans/[INTAKE]_cross_repo_decoupling_cleanup.md`（2026-05-11，Q3 答 B，本就是 mirror
+`find_stale_docs.py` 4 周 pattern 的产物），约 2026-06-08 无翻转即失效、从未构成
+`policies/ci-gates.md` §4.1.1 明文观察期；脚本内本 gate 自己的该宣告已全部清除（docstring 处由
+#441 改写、`main()` 提示处由 #488 删除）。warning 是当前姿态而非定时过渡态。
 
 **当前残留**：**15 warnings / 11 文件**（2026-08-11 实测）—— `CLAUDE.md` · `README.md` ·
 `docs/INDEX.md` · `docs/guide/` 4 份 GUIDE · `docs/infrastructure/git/` 4 份 GUIDE。
@@ -128,6 +138,14 @@ ci.yml 的 `No cross-repo refs` step **没有** `continue-on-error`，但脚本�
 ---
 
 > *`state: draft` — §1·§3·§4 是 live SoT，§2 为 DECLINED 决策块（本文件不再有待填充节）。*
+>
+> *v0.3（2026-09-02）：#530 — §4.2 两处如实修正。(a) 「须先补登记再走拍板」改为
+> `policies/ci-gates.md` §1 F3 的证据标准二选一（已注册走 §4.1 streak 吸收 / 未注册回落 §4 表
+> 「Gate 启用前」行），补登记不是 flip 的前置、两条路都须 Owner 拍板；(b) 「原 4-week-to-blocking
+> note 已由 #440 retired」是对脚本 docstring 的误读 —— 该句先行词是 `find_stale_docs.py` 的
+> gate（#440 真值化的正是它），本 gate 自己的 4 周窗口出自 2026-05-11 的 INTAKE、约 2026-06-08
+> 无翻转即失效（脚本内宣告：docstring 处 #441 改写、`main()` 提示处 #488 删除）。v0.2 脚注里
+> 「flip 到 blocking 须先补登记」是当时记录，不回改。`state` 不动。*
 >
 > *v0.2（2026-08-11）：#482 — 处置本文件在 `M6-FU-POLICIES-TBD-SWEEP` 中的 2 个 TBD 块。
 > **§2 DECLINED**：CVE / dependency vulnerability exception 流程当前无任何输入源 —— 实测
