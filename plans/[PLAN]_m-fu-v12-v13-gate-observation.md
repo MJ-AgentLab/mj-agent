@@ -10,7 +10,7 @@ summary: >-
   与将来的独立 V12 flip 单元；两条 flip 路径均收口后闭合
 owner: ranzuozhou
 created: 2026-08-31
-updated: 2026-08-31
+updated: 2026-09-02
 state: active
 version: 1.0
 track: engineering-workflow
@@ -153,7 +153,8 @@ vacuous-streak 的风险从另一扇门进来 —— 中性桶按 stdout token �
 ```bash
 gh api "repos/MJ-AgentLab/mj-agent/actions/workflows/ci.yml/runs?head_sha=<merge-sha>" \
   --jq .total_count
-# → 0   （本 Epic 全部 19 个 merge commit 实测均为 0）
+# → 0   （⚠ `<merge-sha>` 须写满 40 位 —— 缩写形返回 HTTP 200 + `total_count: 0`，
+#        与真 0 不可分。全集口径 + 可复跑推导见下方注记，勿转抄计数）
 ```
 
 ⚠ **谓词必须锚在 `ci.yml` 这个 workflow 上；裸 `.../actions/runs?head_sha=…` 的 `total_count`
@@ -161,8 +162,22 @@ gh api "repos/MJ-AgentLab/mj-agent/actions/workflows/ci.yml/runs?head_sha=<merge
 `.github/dependabot.yml` 的 `weekly / monday / 09:00 Asia/Shanghai`（= **01:00 UTC**）+
 `target-branch: develop` 定时触发，GitHub 会把那些 `dynamic` run 归属到**当时恰为 develop 头**的
 那个 SHA。实测两个反例：`fb7ae7d` 得 **3**（一个周一 tick）、`33dd984` 得 **6**（跨两个周一
-tick：2026-08-17 与 2026-08-24）—— 19 个 merge commit 里有 **2 个**如此。
-收窄到 `ci.yml` 后**全部 19 个都是 0**。
+tick：2026-08-17 与 2026-08-24）。**勿转抄计数** —— 全集口径 = Epic 期间 `develop` 上的
+`Merge pull request #N from` 型 merge commit（起点 `c7d5e6f` = PR #500），逐 SHA 复跑：
+
+```bash
+git log --merges --grep="^Merge pull request #[0-9]* from" --format=%H c7d5e6f~1..develop
+# 对每个 SHA 跑上方两个端点；实测结论（非计数）：`ci.yml` 谓词全集为 0，裸谓词仅少数非 0
+```
+
+⚠ 三条随该口径一并成立，缺一即误读：(1) **不可用裸 `--merges`** —— 它把
+`Merge branch 'develop' into …` 与 `Merge remote-tracking branch 'origin/develop' into …`
+一并计入，是**另一个**谓词，且两者的值会在某些时点**偶然相等**（2026-09-02 实测：本口径
+@ `develop` 与裸 `--merges` @ `fb7ae7d` 同为 25）；(2) **引用任何计数必须连同口径** ——
+仓内另有以别的口径记下的 merge-commit 计数（例如
+`evidence/development-agent-v8/d1b-v13-anchor-evidence.md` 的「3 个」），两者不可互换，
+该处口径本节不复述、须回读原文；(3) 「本 Epic」是**近似标签**：该范围含 dependabot 的
+PR merge，它们不是 Epic 交付单元。
 
 ⚠ **该谓词以 SHA 钉死使用时是安全的**（C2 与 D1b 两个 ledger 正是这样用的，其记录值至今仍复现
 为 0）；**危险的是把它推广成「每个 merge commit 恒 0」的全称命题** —— 那个全称自
