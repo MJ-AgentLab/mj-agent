@@ -124,7 +124,7 @@ attempt these on retry)：
 - `statement_timeout` default `60s` set via upstream `R__analyst_permissions.sql` `ALTER ROLE analyst SET statement_timeout='60s'`; ANY adjustment 是 cross-repo change to mj-system + triggers canonical 10-enum `secrets-grants-or-prod-config` HITL (per `policies/ai-agent.md §4`)
 - `lock_timeout` `5000ms` (5s) via DSN options in `mj_system_db.py`; pool factory-level config; adjustment requires `database-migration` enum (data-LLM boundary; ADR-006/009)
 - `idle_in_transaction_session_timeout` `10000ms` (10s) via DSN options; rarely adjusted; preserves bounded resource consumption (REQ-003)
-- See `§6.2 L3 Statement Timeout & Lock Timeout Tuning SOP` for the full workflow
+- See `§6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP` for the full workflow
 
 ### Symptom: `RuntimeError: database error: ...`
 
@@ -175,8 +175,8 @@ but `qcm_catalog.yaml periods.*.time_column` still references the old name.
 - `contracts/behavior.feature` — 6 Gherkin scenarios
 - `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
 - `policies/data-boundary.md` — 数据-LLM 三原则 + 4 项必停 governance
-- `§6.1 L2 Schema/Table Whitelist Extension SOP` — cross-ref `src/mj_agent/tools/sql/guardrail.py` `allowed_tables_per_schema` + `sql-guardrail-relax` canonical 10-enum HITL (per `policies/ai-agent.md §4`)
-- `§6.2 L3 Statement Timeout & Lock Timeout Tuning SOP` — cross-ref behavior.feature REQ-003/REQ-004 + `mj_system_db.py` DSN options + upstream `R__analyst_permissions.sql`
+- `§6.1 L1 Schema/Table Whitelist Extension SOP` — cross-ref `src/mj_agent/tools/sql/guardrail.py` `allowed_tables_per_schema` + `sql-guardrail-relax` canonical 10-enum HITL (per `policies/ai-agent.md §4`)
+- `§6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP` — cross-ref behavior.feature REQ-003/REQ-004 + `mj_system_db.py` DSN options + upstream `R__analyst_permissions.sql`
 - `§6.3 L4 Upstream DB Connection & Index Tuning SOP` — cross-ref spec.yml REQ-004 `reference_contract` + mj-system biz_dws index strategy (cross-repo)
 
 ## §5 Post-mortem Trigger
@@ -200,7 +200,7 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 > B-1 establishes this §6 SOPs pattern as **candidate precedent** for B-2..B-5 capability
 > runbooks; **not mandated** per capability content needs.
 
-### §6.1 L2 Schema/Table Whitelist Extension SOP
+### §6.1 L1 Schema/Table Whitelist Extension SOP
 
 **Trigger**: New biz_dwd table (beyond current 2 dim tables) needs analyst exposure; OR new schema (beyond biz_dws + biz_dwd) needs allowlist.
 
@@ -217,7 +217,7 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 **Rollback**: Revert `config.py` allowlist change; rerun regression test → expect old behavior restored
 
-### §6.2 L3 Statement Timeout & Lock Timeout Tuning SOP
+### §6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP
 
 **Trigger**: `statement_timeout` cancellation 频繁 (§3 L4 symptom fires > 5 times in 1 day) OR query patterns systematically need > 60s; OR `lock_timeout` (5s) blocks legitimate longer-locked queries.
 
