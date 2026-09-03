@@ -46,3 +46,17 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 </details>
 
 - [ ] Commit message 仅含 `docs` 类型
+
+## AI Self-Check Checklist（per [[../../policies/ai-agent|ai-agent policy]] §6.1）
+
+- [ ] **Codex 参与情况**：`NONE` 或描述其具体贡献（§1；standalone Codex 已开 ⇒ 可为 non-NONE，non-NONE 须 Owner 拍板）
+- [ ] **HITL scenario hit**：`NONE` 或逐项列出（§4 canonical 10-enum）
+- [ ] **BDD/TDD impact**：`NONE` 或逐项列出（[[../../sdd/adapters/bdd-tdd|bdd-tdd adapter]]）
+- [ ] **Subagent dispatched**：`NONE` 或逐项列出（§2 A3 subagent split 准则）
+
+> **PR 面另附 `HITL Trigger Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。本模板
+> **不复制那张表** —— 10-enum 的唯一 home 是 [[../../policies/ai-agent|ai-agent policy]] §4
+> （同一枚举出现两次必然漂移，per §5.2）；直接取用 root 模板
+> `.github/PULL_REQUEST_TEMPLATE.md` 的同名小节整段即可。它与上列第 2 条是**不同粒度**：
+> 第 2 条是「本次是否命中」的摘要，Inventory 是逐 enum 的可查证据。
+> **不适用的行标 `— No`，不要删行。**

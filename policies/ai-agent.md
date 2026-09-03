@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.6
+version: 0.7
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-24
+updated: 2026-09-03
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -195,13 +195,13 @@ canonical 10-enum 的唯一 home 是 **§4**——本节**不复制**那张表�
 
 ### §6.2 载体与差距
 
-- **载体**：root `.github/PULL_REQUEST_TEMPLATE.md`，**唯一**。
+- **载体**：root `.github/PULL_REQUEST_TEMPLATE.md`（4 条正文 + `HITL Trigger Inventory` 全文）与
+  `.github/PULL_REQUEST_TEMPLATE/` 下的 6 个类型模板（4 条正文 + Inventory 指针；#497 ⑥ 补入）。
 - **无机器校验**：无任何 CI 执行体读取该 checklist；兜底 = merge review。
-- **差距（如实记录）**：`.github/PULL_REQUEST_TEMPLATE/` 下的 6 个类型模板
-  （bugfix / documentation / feature / hotfix / maintain / release）结构与根模板**完全不同**
-  （只有「文档变更内容 / 变更原因 / 自检结果」三段），**均不含**本节 4 条、也不含
-  `HITL Trigger Inventory`。选用类型模板的 PR 因此**不会被提示**作答本节要求。修订那 6 个模板
-  另立单。
+- **剩余差距（如实记录）**：6 个类型模板（bugfix / documentation / feature / hotfix / maintain /
+  release）结构与根模板**完全不同**（**改前**只有「文档变更内容 / 变更原因 / 自检结果」三段），故
+  4 条按 §6.1 表逐条内联、`HITL Trigger Inventory` **不复制**只留指针（同 §5.2 口径）；指针取用是
+  纯人工动作，且 agent 侧的逐模板字段表尚未同步 —— **#538**。
 
 ## §7 Pre-flight Verification Discipline
 
@@ -435,3 +435,16 @@ precedence：`deny` > `ask` > `allow`（具体 path 在 `ask` 即使 `Edit` 在 
 > Notes 列声明 owned-only reconcile ownership（ADR-039 D-012 revised）；§4 Enforce 段与 §5.2
 > D-017 行同步（含 V8/V9 → V8-V11 事实修正）。纯治理文本、无实现；PR-B/D/E sources 先于落地
 > 纳管。`state` 不动。*
+>
+> *v0.7（2026-09-03）：#497 ⑥ —— `.github/PULL_REQUEST_TEMPLATE/` 下 6 个类型模板补入 §6.1 的
+> 4 条 + `HITL Trigger Inventory` 指针后，§6.2 的三句活体断言（「载体……**唯一**」/「**均不含**
+> 本节 4 条」/「选用类型模板的 PR **不会被提示**」）连同「修订那 6 个模板另立单」同时失真 —— 本单
+> 就是那个「另立单」—— 故在同一 PR 内修正（诱发性 stale 在造成它的 PR 里修）。§6.2 **行数不变**
+> （7 行进 7 行出）。行号锚不受影响的**真实理由是首个改动落在 `:198`**、其上游整段未动 —— 仓内
+> 既有的 `ai-agent.md:94` / `:98` / `:112-114` **等**锚均在其之前；「行数不变」本身推不出这一点。*
+>
+> *同句「只有……三段」括注的成因**分两半，不可混记**：对 `documentation.md` 它在改前**逐字为真**
+> （base 恰 3 个小节），是本 PR 追加的第 4 个小节使其失真 —— 这一半**属本单诱发**，故就地加
+> 「**改前**」二字讨清；对另 5 个模板的过度概括则**先于本改动**存在（各自小节数不同，可复算
+> `grep -c '^#' .github/PULL_REQUEST_TEMPLATE/<f>.md`），非本单诱发，与 agent 侧逐模板字段表
+> 一并入 **#538**。⚠ 此处**刻意不写死小节数** —— #497 的 ①③④ 正是被写死活值打脸的三处。*

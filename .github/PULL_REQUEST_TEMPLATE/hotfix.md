@@ -53,3 +53,17 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 - [ ] **hotfix 风险面**：紧急通道下 A12 schema 校验 + A13/A14 触发的 settings.json / mcp.json 调整若临时跳过，**事后必须补 documentation/* PR 说明 + 同步进 develop**（与 §27 主同步动作配套）
 
 </details>
+
+## AI Self-Check Checklist（per [[../../policies/ai-agent|ai-agent policy]] §6.1）
+
+- [ ] **Codex 参与情况**：`NONE` 或描述其具体贡献（§1；standalone Codex 已开 ⇒ 可为 non-NONE，non-NONE 须 Owner 拍板）
+- [ ] **HITL scenario hit**：`NONE` 或逐项列出（§4 canonical 10-enum）
+- [ ] **BDD/TDD impact**：`NONE` 或逐项列出（[[../../sdd/adapters/bdd-tdd|bdd-tdd adapter]]）
+- [ ] **Subagent dispatched**：`NONE` 或逐项列出（§2 A3 subagent split 准则）
+
+> **PR 面另附 `HITL Trigger Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。本模板
+> **不复制那张表** —— 10-enum 的唯一 home 是 [[../../policies/ai-agent|ai-agent policy]] §4
+> （同一枚举出现两次必然漂移，per §5.2）；直接取用 root 模板
+> `.github/PULL_REQUEST_TEMPLATE.md` 的同名小节整段即可。它与上列第 2 条是**不同粒度**：
+> 第 2 条是「本次是否命中」的摘要，Inventory 是逐 enum 的可查证据。
+> **不适用的行标 `— No`，不要删行。**
