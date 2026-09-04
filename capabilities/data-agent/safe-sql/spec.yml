@@ -38,7 +38,7 @@ requirements:
 
   - id: REQ-002
     statement: "L1b sqlglot AST precheck enforces 5 rule IDs (no_select_star / require_time_range / require_limit / limit_too_large / sqlglot_parse_failed)"
-    rationale: "Defense layer 2 — catches semantic anti-patterns (full-table scans / missing time predicates on biz_dws fact tables) before DB execution; rule IDs are stable contract strings"
+    rationale: "Defense sub-layer L1b — catches semantic anti-patterns (full-table scans / missing time predicates on biz_dws fact tables) before DB execution; rule IDs are stable contract strings"
     priority: critical
     bdd:
       examples:
