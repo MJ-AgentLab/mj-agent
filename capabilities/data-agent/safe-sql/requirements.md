@@ -53,7 +53,7 @@ updated: 2026-05-20
 
 **Statement**：L1b sqlglot AST precheck enforces 5 stable rule IDs.
 
-**Rationale**：Defense layer 2 — catches semantic anti-patterns (full-table scans / missing time predicates on biz_dws fact tables) before DB execution. Rule IDs are stable contract strings asserted in middleware tests.
+**Rationale**：Defense sub-layer L1b — catches semantic anti-patterns (full-table scans / missing time predicates on biz_dws fact tables) before DB execution. Rule IDs are stable contract strings asserted in middleware tests.
 
 **Acceptance**：
 
