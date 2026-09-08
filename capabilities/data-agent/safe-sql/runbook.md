@@ -204,18 +204,21 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 **Trigger**: New biz_dwd table (beyond current 2 dim tables) needs analyst exposure; OR new schema (beyond biz_dws + biz_dwd) needs allowlist.
 
-**Pre-conditions**: Whitelist extension triggers canonical 10-enum **`sql-guardrail-relax`** HITL Gate-2 (per `policies/ai-agent.md §4`); Steps below MUST NOT execute before HITL Gate-2 ack obtained.
+**Pre-conditions**: Whitelist extension triggers canonical 10-enum **`sql-guardrail-relax`** HITL Gate-2 (per `policies/ai-agent.md §4`); Steps below MUST NOT execute before HITL Gate-2 ack obtained. Exposing a table is a 4-surface chain, NOT an L1-only edit — the same extension also touches L2 `src/mj_agent/skills/*/SKILL.md` visible-table lists (`runtime-skill-content-change`), L4 upstream `R__analyst_permissions.sql` SELECT GRANT (`secrets-grants-or-prod-config`; cross-repo) and the `src/mj_agent/prompts/system.md` hard-coded two-table statement (`prompt-version-or-body-change`); ADR-006 Consequences require the L2 and L4 table lists to stay in sync. Executing Step 2 alone ships a half-exposed table: L1 accepts it, the LLM does not know it exists, the analyst role cannot SELECT it, and the system prompt still says biz_dwd has two tables.
 
 **Steps**:
 
-1. **HITL Gate-2 question** — Open canonical 10-enum question; obtain user ack on enum trigger + scope + canonical surface impact
+1. **HITL Gate-2 question** — Open canonical 10-enum question naming all four enums above (`sql-guardrail-relax` + `runtime-skill-content-change` + `secrets-grants-or-prod-config` + `prompt-version-or-body-change`); obtain user ack on enum trigger + scope + canonical surface impact
 2. Edit `src/mj_agent/config.py` `biz_allowed_dwd_tables` (or `biz_allowed_schemas`) per requested expansion
-3. Regression test: `uv run pytest tests/unit/test_guardrail.py::TestTableLevelAllowlist -q`; verify new table accepted, others still rejected
-4. Update `runbook.md §3 L1 guardrail symptom block` if user-facing behavior changes
+3. L2: add the new table to the visible-table lists in `src/mj_agent/skills/*/SKILL.md` (explicit two-table statements currently live in `biz-domain-context` + `safe-sql-analysis`) — `runtime-skill-content-change`; propose→拍板→apply via `/mj-agent-runtime-skill-doc-improve`
+4. L4: file the cross-repo PR to mj-system `R__analyst_permissions.sql` adding table-level SELECT GRANT for the new table — `secrets-grants-or-prod-config`; granted set is pinned in `spec.yml` REQ-004 `reference_contract.upstream_artifact`; upstream migration MUST be deployed before Verify below
+5. System prompt: edit the `src/mj_agent/prompts/system.md` `execute_sql` enforcement bullet ("`biz_dwd` is restricted to the two dimension tables") + bump frontmatter `version` — `prompt-version-or-body-change`; propose→拍板→apply via `/mj-agent-runtime-prompt-version-bump`; post-merge EVAL-backlog issue auto-opens (per `policies/ai-agent.md §4` post-merge tail)
+6. Regression test: `uv run pytest tests/unit/test_guardrail.py::TestTableLevelAllowlist -q`; verify new table accepted, others still rejected
+7. Update `runbook.md §3 L1 guardrail symptom block` if user-facing behavior changes
 
-**Verify**: smoke test via `is_safe_select()` against new SQL referencing newly-allowlisted table → expect `(True, '')` accept tuple
+**Verify**: smoke test via `is_safe_select()` against new SQL referencing newly-allowlisted table → expect `(True, '')` accept tuple; end-to-end in Studio: `list_biz_tables` lists the new table (L4 GRANT visible through `information_schema.table_privileges`) AND `execute_sql` on it returns an envelope with `row_count` (L1 + L2 + L4 all open)
 
-**Rollback**: Revert `config.py` allowlist change; rerun regression test → expect old behavior restored
+**Rollback**: Revert `config.py` allowlist change; rerun regression test → expect old behavior restored; revert the L2 SKILL.md + system.md edits in the same PR; the upstream GRANT is reverted by a separate mj-system PR (REVOKE)
 
 ### §6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP
 
