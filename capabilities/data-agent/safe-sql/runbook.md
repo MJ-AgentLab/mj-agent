@@ -96,7 +96,7 @@ non-SELECT / empty SQL / out-of-allowlist biz_dwd table.
 - `require_time_range: ...` — biz_dws fact table without time-column predicate (rule fires on schema=biz_dws + name starts_with dws_qcm_ + NOT in signal_tables)
 - `no_select_star: ...` — `SELECT *` not allowed (use COUNT(*) if aggregation needed)
 - `require_limit: ...` — non-aggregate detail query without LIMIT clause; **warning only** (surfaces in `envelope.precheck_warnings`; not blocking; REQ-005)
-- `limit_too_large: ...` — LIMIT > threshold (currently 10000); **warning only**; tunable per query pattern
+- `limit_too_large: ...` — LIMIT > threshold (currently 1000, per `precheck.py`); **warning only**; tunable per query pattern
 - `sqlglot_parse_failed: ...` — graceful fallback when sqlglot cannot parse; not blocking but surfaces
 
 **Resolution**：
