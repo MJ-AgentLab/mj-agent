@@ -60,3 +60,7 @@ about: 纯文档变更 (documentation/*) 的 Pull Request
 > `.github/PULL_REQUEST_TEMPLATE.md` 的同名小节整段即可。它与上列第 2 条是**不同粒度**：
 > 第 2 条是「本次是否命中」的摘要，Inventory 是逐 enum 的可查证据。
 > **不适用的行标 `— No`，不要删行。**
+
+> **PR 面另附 `Docker Impact`** —— 本模板不复制该小节，直接取用 root 模板
+> `.github/PULL_REQUEST_TEMPLATE.md` 的 `## Docker Impact` 整段并作答；它是 `docker/Dockerfile`
+> 外部 registry 镜像引用必停面的兜底之一（per [[../../policies/ai-agent|ai-agent policy]] §5.2）。
