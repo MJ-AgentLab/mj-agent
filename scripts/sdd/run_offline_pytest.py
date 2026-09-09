@@ -1163,7 +1163,7 @@ def _pytest_arguments(args: argparse.Namespace, repo_root: Path) -> list[str]:
     return [*targets, *forwarded]
 
 
-def _child_environment(profile_root: Path) -> dict[str, str]:
+def _child_environment(profile_root: Path, repo_root: Path) -> dict[str, str]:
     env = _safe_parent_environment()
     for forbidden in _FORBIDDEN_PARENT_NAMES:
         env.pop(forbidden, None)
@@ -1184,6 +1184,16 @@ def _child_environment(profile_root: Path) -> dict[str, str]:
     for name, directory in directories.items():
         directory.mkdir(parents=True, exist_ok=True)
         env[name] = str(directory)
+    # Deliberately outside ``profile_root`` (#546). tiktoken re-downloads its BPE
+    # blobs (hash-verified, immutable public assets) whenever its cache directory
+    # is empty; with TEMP redirected into the fresh profile above, every run paid
+    # that download and this "offline" carrier depended on the network. A
+    # repo-local cache under the gitignored ``.mj-agent-local/`` keeps only the
+    # first run per checkout online. The path is spelled out here, inside the
+    # reviewed builder, so the boundary checker pins it.
+    tiktoken_cache = repo_root / ".mj-agent-local" / "tiktoken-cache"
+    tiktoken_cache.mkdir(parents=True, exist_ok=True)
+    env["TIKTOKEN_CACHE_DIR"] = str(tiktoken_cache)
     env.update(
         {
             "MJ_AGENT_OFFLINE_TEST": "1",
@@ -1237,7 +1247,7 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
         pytest_args = _pytest_arguments(args, root)
         with tempfile.TemporaryDirectory(prefix="mj-agent-offline-pytest-") as temp_dir:
             profile_root = Path(temp_dir)
-            env = _child_environment(profile_root)
+            env = _child_environment(profile_root, root)
             proc = subprocess.run(
                 _pytest_command(plugins, pytest_args, profile_root / "pycache"),
                 cwd=root,

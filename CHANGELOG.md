@@ -5,6 +5,16 @@
 
 ## [Unreleased]
 
+### Fixed — 离线 pytest runner 的 tiktoken BPE 每跑重下（#546）
+
+- **`maintain/546-tiktoken-offline-cache`**：hardened runner 把 `TEMP/TMP/TMPDIR` 重定向进每次
+  新建的 profile 目录，tiktoken 的 BPE 缓存在 run 内恒空，`tests/unit/test_analysis_token_estimator.py`
+  每跑都要下载 `cl100k_base`（1.68 MB）+ `o200k_base`（3.61 MB；`gpt-4o` 用例）——本地经代理瞬态
+  `ConnectionReset`、CI 恒绿。`_child_environment` 现预置 `TIKTOKEN_CACHE_DIR` 指向仓内 gitignored
+  的 `.mj-agent-local/tiktoken-cache/`（唯一刻意不随 profile 重建的路径；boundary checker 的 AST
+  钉线同步更新并新增负例），首跑联网一次、其后离线。不改运行时回退逻辑、不改 CI、不新增依赖、
+  `SAFE_PARENT_ENV_NAMES` 不扩。
+
 ### Fixed — sanitized biz snapshot boundary + agent-facing source truth-up (#499)
 
 - **PR-0c (`bugfix/499-biz-snapshot-boundary`)**：`scripts/fetch_biz_schema.py` 改为

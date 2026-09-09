@@ -72,7 +72,7 @@ def _safe_parent_environment() -> dict[str, str]:
     return env
 """,
     "_child_environment": """
-def _child_environment(profile_root: Path) -> dict[str, str]:
+def _child_environment(profile_root: Path, repo_root: Path) -> dict[str, str]:
     env = _safe_parent_environment()
     for forbidden in _FORBIDDEN_PARENT_NAMES:
         env.pop(forbidden, None)
@@ -93,6 +93,11 @@ def _child_environment(profile_root: Path) -> dict[str, str]:
     for name, directory in directories.items():
         directory.mkdir(parents=True, exist_ok=True)
         env[name] = str(directory)
+    # #546: the only path deliberately outside profile_root — tiktoken's hash-verified
+    # BPE cache, persisted under the gitignored .mj-agent-local/ so re-runs stay offline.
+    tiktoken_cache = repo_root / ".mj-agent-local" / "tiktoken-cache"
+    tiktoken_cache.mkdir(parents=True, exist_ok=True)
+    env["TIKTOKEN_CACHE_DIR"] = str(tiktoken_cache)
     env.update(
         {
             "MJ_AGENT_OFFLINE_TEST": "1",
