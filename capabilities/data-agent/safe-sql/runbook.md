@@ -122,7 +122,7 @@ attempt these on retry)：
 **Tuning parameters detail** (for §6.2 SOP reference):
 
 - `statement_timeout` default `60s` set via upstream `R__analyst_permissions.sql` `ALTER ROLE analyst SET statement_timeout='60s'`; ANY adjustment 是 cross-repo change to mj-system + triggers canonical 10-enum `secrets-grants-or-prod-config` HITL (per `policies/ai-agent.md §4`)
-- `lock_timeout` `5000ms` (5s) via DSN options in `mj_system_db.py`; pool factory-level config; adjustment requires `database-migration` enum (data-LLM boundary; ADR-006/009)
+- `lock_timeout` `5000ms` (5s) via DSN options in `mj_system_db.py`; pool factory-level config; adjustment would require HITL (data-LLM boundary 通道隔离 per `policies/data-boundary.md`; ADR-006/009) —— this L3 surface is **not explicitly anchored to any canonical 10-enum row** and has no `permissions.ask` entry; 兜底 = 纪律 + merge review (载体现状如实记载于 `policies/data-boundary.md`)
 - `idle_in_transaction_session_timeout` `10000ms` (10s) via DSN options; rarely adjusted; preserves bounded resource consumption (REQ-003)
 - See `§6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP` for the full workflow
 
@@ -224,7 +224,7 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 
 **Trigger**: `statement_timeout` cancellation 频繁 (§3 L4 symptom fires > 5 times in 1 day) OR query patterns systematically need > 60s; OR `lock_timeout` (5s) blocks legitimate longer-locked queries.
 
-**Pre-conditions**: `statement_timeout` adjustment 是 **cross-repo change to mj-system `R__analyst_permissions.sql`** + triggers canonical 10-enum `secrets-grants-or-prod-config` HITL; `lock_timeout` adjustment via `mj_system_db.py` DSN options triggers `database-migration` enum (data-LLM boundary; ADR-006/009).
+**Pre-conditions**: `statement_timeout` adjustment 是 **cross-repo change to mj-system `R__analyst_permissions.sql`** + triggers canonical 10-enum `secrets-grants-or-prod-config` HITL; `lock_timeout` adjustment via `mj_system_db.py` DSN options would require HITL (data-LLM boundary 通道隔离 per `policies/data-boundary.md`; ADR-006/009) —— this L3 surface is **not explicitly anchored to any canonical 10-enum row** and has no `permissions.ask` entry; 兜底 = 纪律 + merge review (载体现状如实记载于 `policies/data-boundary.md`).
 
 **Steps**:
 
