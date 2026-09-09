@@ -4,7 +4,7 @@ domain: SYS
 summary: marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 Agent_Side v1.0 §2 13 字段 schema 独立；两者通过 sync skill（Phase 1）做内容同步，不做 schema 同步
 owner: 项目负责人
 created: 2026-04-29
-updated: 2026-04-29
+updated: 2026-09-09
 state: draft
 decision: accepted
 track: shared
@@ -18,6 +18,8 @@ tags:
 ---
 
 # ADR 013: Plugin SKILL.md Schema Separation
+
+> *状态说明（2026-09-09，#479）*：`decision: accepted` 已生效——原生 2 字段 schema 是 A12 门禁的权威源（7 个 PR 模板、`capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml` 的 `schema_compliance: ADR-013-native`、[[decisions/ADR-032_Claude_Skill_Schema_Monitoring|ADR-032]] 的监控对象）。`state: draft` **有意保留**，按 `sdd/lifecycle.md` §4.1（#480）的定义与翻转判据：§决策点 4 与 Consequences 仍以「Phase 1 的 sync skill（`mj-agent-code-doc-sync`）」和 marketplace ↔ in-source 双 source 为前提——该 sync skill 至今未落地（[[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] 亦记其「待 Phase 1 落地」），in-tree `.claude/skills/` 路线由 ADR-016 承接并与 marketplace plugin 并行。决策正文不改写；翻 `active` 待有下游动作要求本 ADR LIVE 时再判，届时同批清理上述 phase 自述。
 
 ## Context
 

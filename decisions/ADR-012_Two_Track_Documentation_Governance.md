@@ -4,7 +4,7 @@ domain: SYS
 summary: 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架（mj-agent-agent-doc / mj-agent-code-doc）
 owner: 项目负责人
 created: 2026-04-27
-updated: 2026-04-29
+updated: 2026-09-09
 state: draft
 decision: accepted
 track: shared
@@ -17,6 +17,8 @@ tags:
 ---
 
 # ADR 012: Two-Track Documentation Governance
+
+> *状态说明（2026-09-09，#479）*：`decision: accepted` 已生效——双轨 + Meta 元层 + skeleton-first 的决策由 [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]] 在其上叠加 Track C 沿用至今。`state: draft` **有意保留**，按 `sdd/lifecycle.md` §4.1（#480）的定义与翻转判据：§决策点 3 的 Phase 0.5 / 1 / 2 节奏与 §决策点 4 的「Phase 1 末收紧为 explicit required」仍是当年的 phase 标签——marketplace 双 plugin 支线已由 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] in-tree 路线演替且从未收口，`track` 收紧悬置（`policies/documentation.md` §3 `track` 取值表）。决策正文不改写；翻 `active` 待有下游动作要求本 ADR LIVE 时再判，届时同批清理上述 phase 自述。
 
 ## Context
 
