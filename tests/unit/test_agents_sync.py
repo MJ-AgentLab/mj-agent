@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
@@ -1355,6 +1356,16 @@ def test_offline_boundary_checker_rejects_alternate_settings_construction_paths(
             ),
             "reviewed closed environment builder",
         ),
+        (
+            # #546: moving the persistent tiktoken cache back under the per-run
+            # profile silently re-introduces the download-per-run network dependency.
+            lambda source: source.replace(
+                '    tiktoken_cache = repo_root / ".mj-agent-local" / "tiktoken-cache"',
+                '    tiktoken_cache = profile_root / "tiktoken-cache"',
+                1,
+            ),
+            "reviewed closed environment builder",
+        ),
     ),
 )
 def test_offline_boundary_checker_rejects_runner_environment_expansion(
@@ -1390,7 +1401,8 @@ def test_offline_runner_child_environment_is_closed(
         monkeypatch.setenv(name, "synthetic-never-print")
 
     profile = tmp_path / "profile"
-    child = offline_runner._child_environment(profile)
+    repo = tmp_path / "repo"
+    child = offline_runner._child_environment(profile, repo)
 
     assert not set(forbidden) & child.keys()
     assert child["MJ_AGENT_OFFLINE_TEST"] == "1"
@@ -1405,6 +1417,23 @@ def test_offline_runner_child_environment_is_closed(
         "PYTHONPYCACHEPREFIX",
     ):
         assert Path(child[name]).is_relative_to(profile)
+
+    # #546: the single deliberately persistent path lives under the repo root, not the
+    # per-run profile, so tiktoken's BPE blobs survive between runs and re-runs stay offline.
+    tiktoken_cache = Path(child["TIKTOKEN_CACHE_DIR"])
+    assert tiktoken_cache == repo / ".mj-agent-local" / "tiktoken-cache"
+    assert not tiktoken_cache.is_relative_to(profile)
+    assert tiktoken_cache.is_dir()
+
+
+def test_offline_runner_tiktoken_cache_is_gitignored() -> None:
+    """#546: the persistent BPE cache must never surface as an untracked repo blob."""
+    result = subprocess.run(
+        ["git", "check-ignore", "-q", ".mj-agent-local/tiktoken-cache/blob"],
+        cwd=REPO_ROOT,
+        check=False,
+    )
+    assert result.returncode == 0
 
 
 def test_offline_runner_expands_only_tracked_test_files_and_rejects_untracked_conftest(

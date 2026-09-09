@@ -70,6 +70,8 @@ chainlit.md
 # `.mj-agent-local/biz-schema-snapshots/` 存放 Owner 背书的 sanitized biz schema
 # 快照，供 `scripts/diff_biz_schema.py` 离线做 catalog 漂移检测。快照来自业务仓
 # 元数据，**永不提交**——入库即等同把 biz schema 泄漏进公共历史（ADR-006 / ADR-009）。
+# `.mj-agent-local/tiktoken-cache/` 是离线 pytest runner（`scripts/sdd/run_offline_pytest.py`）
+# 为 tiktoken 预置的 BPE 缓存（#546）：hash 校验的公开资产，首跑联网一次、其后离线。
 .mj-agent-local/
 
 # ========== 学习材料（本地草稿，不入库） ==========
