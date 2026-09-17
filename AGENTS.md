@@ -104,6 +104,16 @@ the 37-skill SoT. Rules — they bind BOTH tools:
   hooks referenced inside projected skill bodies are NOT present under your harness — those stop
   points are AGENTS.md self-enforced duties (see "Self-enforced boundaries" below).
 
+## 会话维护
+
+用户明确要求归档本次对话、推荐标题、为本次对话命名或重命名当前任务时，读取并遵循
+[会话维护规则](sdd/workflows/session-maintenance.md)。引用、示例、否定和机制讨论不触发；
+“收尾”按实际对象处理，不自动解释为对话归档。
+
+普通归档与推荐标题默认只生成回复文字，不自动改名、保存文件或执行客户端归档；原任务已有的
+记录义务继续适用。明确重命名请求按共享规则调用可用客户端功能，已有授权不重复确认，成功后
+才报告已重命名。额外保存或客户端归档，按用户明确请求和实际工具能力处理。
+
 ## Codex participation (per ADR-035)
 
 **Codex is authorized as a full development participant.** The previous "read-only external review
