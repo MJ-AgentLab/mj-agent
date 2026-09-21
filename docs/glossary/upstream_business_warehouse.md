@@ -18,7 +18,7 @@ mj-agent 仅作为 **read-only 消费者**（per [[decisions/ADR-006_Fail_Safe_R
 
 ## 何时用本术语
 
-文档（`docs/**/*.md` + `CLAUDE.md` + `INDEX.md`）的 **prose 叙述** 中描述外部业务库时统一用 **"上游业务系统"**（中文）或 **"Upstream Business Warehouse"**（英文）。这是 PR-118 cross-repo decoupling 决策（D2）后采用的中性措辞。
+文档（`docs/**/*.md` + `AGENTS.md` + `INDEX.md`）的 **prose 叙述** 中描述外部业务库时统一用 **"上游业务系统"**（中文）或 **"Upstream Business Warehouse"**（英文）。这是 PR-118 cross-repo decoupling 决策（D2）后采用的中性措辞。
 
 **典型场景**：
 - ADR/SPEC Context 段描述 mj-agent 的数据来源
@@ -33,7 +33,7 @@ mj-agent 仅作为 **read-only 消费者**（per [[decisions/ADR-006_Fail_Safe_R
 |---|---|---|
 | Docker network 名 | `mj-system-backend-network` | 真实 network 标识；`docker network ls` / compose `external: true` 引用必须精确 |
 | pg URL env var | `MJ_AGENT_PG_BIZ_*` | 真实环境变量名；脚本 / `.env` / `.env.example` 引用必须精确 |
-| `.mcp.json` server 配置 | `mj-system-pg` 等 server 名 | MCP server 实例标识 |
+| 业务运行时 tool-chain | `mj-system` 上游实例名 | 业务访问不得借原生 MCP 绕过 |
 | `infra/docker/docker-compose*.yml` | network bridge / volume / service literal | YAML 字面值不可改写 |
 | `scripts/*.{py,ps1}` | 字符串常量、注释中的 literal | 代码层精确引用 |
 | CHANGELOG.md 历史条目 | 既有引用 | per Keep-a-Changelog 不可改写历史 |
@@ -93,7 +93,7 @@ mj-agent 大多数 active 文档**不需要** inline mj-system URL —— body �
 
 ### 跨项目文档治理结构借鉴 attribution（2026-05-18）
 
-mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同名文档（仓库见上文 §仓库定位）。借鉴边界**严格限制为结构、章节切分、表格密度、判定模式**——所有内容（具名文件清单、术语条目、命令、栈细节、申请方式措辞）均按 mj-agent 自身资产派生（`pyproject.toml` / `CLAUDE.md` / `src/mj_agent/` 结构 / `plans/[PLAN]_g1_g2_workflow_enforcement.md` / `config/README.md` 等）。
+mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同名文档（仓库见上文 §仓库定位）。借鉴边界**严格限制为结构、章节切分、表格密度、判定模式**——所有内容（具名文件清单、术语条目、命令、栈细节、申请方式措辞）均按 mj-agent 自身资产派生（`pyproject.toml` / `AGENTS.md` / `src/mj_agent/` 结构 / `plans/[PLAN]_g1_g2_workflow_enforcement.md` / `config/README.md` 等）。
 
 | mj-agent 落地物 | 借鉴 mj-system 文档 | 借鉴维度（仅结构与写法） |
 |---|---|---|
@@ -106,11 +106,11 @@ mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同�
 | `CONTRIBUTING.md`（PR-D 待新建） | `CONTRIBUTING.md` 8 段 + 「摘要+跳转」模式 | 段结构 + 顶部边界声明「环境已就绪 / 准备提交 PR」 |
 | `GLOSSARY.md`（PR-D 待新建） | `GLOSSARY.md` A-W 字母分段 + 二字段格式 | 字母分段 + 「定义 + 相关术语」二字段 + 边界声明「不作通用百科解释」 |
 
-**禁止的复制行为**（per [[../../CLAUDE|CLAUDE.md]] L269-278「跨项目借鉴边界」段）：
+**禁止的复制行为**（per [[../../AGENTS|AGENTS.md]] L269-278「跨项目借鉴边界」段）：
 
 - 不引入 mj-system 特有的栈细节（如 Java / Spring / Maven / Flyway）—— mj-agent 是 Python 3.13 + uv + LangChain
 - 不引入 mj-system 特有的 frontmatter 字段（如 `revision:`）—— mj-agent 用 `updated:` 字段
-- 不照搬段数（如 INTAKE 按 `.claude/skills/mj-agent-flow-intake/SKILL.md` §Output Format 7 段而非 mj-system 11 段）
+- 不照搬段数（如 INTAKE 按 `.agents/skills/mj-agent-flow-intake/SKILL.md` §Output Format 7 段而非 mj-system 11 段）
 - 不引用 mj-system inline URL（per 本 glossary §如何引用上游业务系统 + §例外）
 
 ## 关联文档
@@ -118,4 +118,4 @@ mj-agent 部分文档治理**结构与判定模式**借鉴 mj-system 项目同�
 - [[decisions/ADR-006_Fail_Safe_Reads|ADR-006 Fail-Safe Reads]]（4 层 guardrail；本术语在 L1-L4 层均有出现）
 - [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009 Biz Domain as Primary Data Source]]（biz 域 only / 不访问 ODS/DWD）
 - [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（co-deployment 边界）
-- `CLAUDE.md` "Data boundary" 段
+- `AGENTS.md` "Data boundary" 段

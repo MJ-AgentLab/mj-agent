@@ -262,7 +262,7 @@ uv sync
 |------|-----------|------|
 | `pyproject.toml` | `version = "0.1.0"` | **唯一权威来源** |
 | `README.md` | 标题中的版本号 | 项目文档（可选） |
-| `CLAUDE.md` | 多处引用 | Claude Code 指导（手动更新） |
+| `AGENTS.md` | 多处引用 | Claude Code 指导（手动更新） |
 
 > [!NOTE]
 > Phase 1+ 引入更多版本承载文件（如 `Dockerfile`、`docker-compose.yml`、`CHANGELOG.md`、`QUICK_STATUS_SUMMARY.txt`、`main.py` 等）后，本表会同步扩展。当前仅 3 个文件，无需批量更新脚本。
@@ -340,7 +340,7 @@ mj-agent Phase 0 暂未引入版本发布流程；待 Phase 1+ 与 `docs/runbook
 |---------|---------|---------|
 | `git push` 提示 `Permission denied` | 没有仓库写入权限 | 联系项目负责人添加 Collaborator 权限 |
 | 分支保护规则未生效 | GitHub 设置未保存 | 重新检查 Settings → Branches |
-| `pyproject.toml` 版本号未同步到 README/CLAUDE.md | 当前阶段需手工更新 | 手动搜索替换；Phase 1+ 引入脚本（见 §4.2 注） |
+| `pyproject.toml` 版本号未同步到 README/AGENTS.md | 当前阶段需手工更新 | 手动搜索替换；Phase 1+ 引入脚本（见 §4.2 注） |
 
 ---
 

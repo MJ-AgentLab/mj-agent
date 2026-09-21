@@ -20,26 +20,26 @@ owner: 项目负责人
 
 > **何时复制本模板**：
 >
-> 1. 给 17-stage 执行闭环**新增** stage（如 mj-agent 实际需要 stage 7.5）——骨架加进 [[sdd/workflows/execution-loop|execution-loop]] §1 的 stage 列表 + §4 Stage→Skill 映射表；**detailed prompt 本体落到对应 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`**
+> 1. 给 17-stage 执行闭环**新增** stage（如 mj-agent 实际需要 stage 7.5）——骨架加进 [[sdd/workflows/execution-loop|execution-loop]] §1 的 stage 列表 + §4 Stage→Skill 映射表；**detailed prompt 本体落到对应 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md`**
 > 2. **派生** 执行闭环子流程时（如新建 `sdd/workflows/<flow>.md`，每个 sub-step 用本模板）
-> 3. 复用本模板创建 `.claude/skills/mj-agent-flow-*/SKILL.md` 的 Workflow 段（不要照搬本模板进 SKILL.md frontmatter；SKILL.md frontmatter 走 ADR-013 native schema）
+> 3. 复用本模板创建 `.agents/skills/mj-agent-flow-*/SKILL.md` 的 Workflow 段（不要照搬本模板进 SKILL.md frontmatter；SKILL.md frontmatter 走 ADR-013 native schema）
 >
 > **不**用本模板：
 >
 > - 起草普通 SPEC（用 [[TEMPLATE_SPEC|TEMPLATE_SPEC]]）
 > - 起草 ADR（用 [[TEMPLATE_ADR|TEMPLATE_ADR]]）
-> - 起草 SKILL.md body 主体（参考 [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
+> - 起草 SKILL.md body 主体（参考 [[policies/development-skills|development skills policy]] §Standards 给出的 `## Overview / ## Workflow / ## Output Format` 风格）
 
 > **per-stage prompt 住在哪（#449 truth-up）**：kernel 的 [[sdd/workflows/execution-loop|execution-loop]]
 > §Kernel home note **明写不 re-port** 每个 stage 的 detailed prompt —— 它只持 stage 骨架（§1）
-> 与 stage→skill 映射（§4），prompt 本体归 `.claude/skills/mj-agent-*` SKILL 所有。本模板此前指向
+> 与 stage→skill 映射（§4），prompt 本体归 `.agents/skills/mj-agent-*` SKILL 所有。本模板此前指向
 > 的 HITL_Prompt STANDARD 已随 M6 PR4 归档冻结，照旧文操作会去改一个冻结件。
 > ⚠ 注意 **`§4` 在两处含义不同**：历史源 HITL_Prompt 的 §4.1-§4.15 是 per-stage prompt；
 > execution-loop 的 §4 是 Stage→Skill 映射表（源 HITL_Prompt §5）。
 
 ---
 
-> **使用方法**：复制下方 **fenced markdown block** 内容到目标位置（`.claude/skills/mj-agent-*/SKILL.md` 的 `## Workflow` 段，或 `sdd/workflows/<flow>.md` 的对应 stage 子节）。把占位符替换为实际内容。
+> **使用方法**：复制下方 **fenced markdown block** 内容到目标位置（`.agents/skills/mj-agent-*/SKILL.md` 的 `## Workflow` 段，或 `sdd/workflows/<flow>.md` 的对应 stage 子节）。把占位符替换为实际内容。
 
 ---
 
@@ -160,7 +160,7 @@ mj-agent 专属规则（如有；可删此段）：
 ## 关联文档
 
 - [[sdd/workflows/execution-loop|执行闭环 workflow]]（本模板的目标使用场景）
-- [[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards（in-tree workflow SKILL 的 schema 与 body 风格）
+- [[policies/development-skills|development skills policy]] §Standards（in-tree workflow SKILL 的 schema 与 body 风格）
 - [[decisions/ADR-014_Tri_Track_Documentation_Governance|ADR-014]]（v2.1 tri-track + engineering-workflow track）
 
 ## 更新记录

@@ -30,7 +30,7 @@ owner: 项目负责人
 > - Stage 0 Intake 准入（用 mj-agent-flow-intake 输出 Intake Result）
 > - Stage 9 实施中 scope drift 检测（用 mj-agent-flow-scope-drift）
 >
-> **关联**：[[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3 + `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描详细步骤）。
+> **关联**：[[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3 + `.agents/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描详细步骤）。
 
 ---
 
@@ -57,9 +57,9 @@ owner: 项目负责人
 | Data Source (biz_catalog) | `qcm_catalog.yaml` diff / `find_biz_context` 真实返回 | <镜像漂移 = §3.1 必停面 biz-catalog-sync> |
 | Database — 上游业务系统 biz pg consumer | 4-tool 链（`find_biz_context` / `list_biz_tables` / `describe_biz_table`）/ 连接配置 | <红线 ADR-006/009 检查；禁 raw PG 直读> |
 | Database — mj-agent-postgres memory | mcp pg-mj-agent-memory-* / compose exec psql | <自有 checkpointer 库，非 biz 边界对象> |
-| Config / Secrets | `.env.example` / `secrets.enc` / `.mcp.json` 一致性 | <新增 var / 漂移> |
+| Config / Secrets | `.env.example` / `secrets.enc` / `.codex/config.toml` 一致性 | <新增 var / 漂移> |
 | Tests / CI | `tests/{unit,eval,integration,smoke,contract}/` + `.github/workflows/` | <覆盖度 / 失败> |
-| Docs | `docs/**/*.md` + `INDEX.md` + `CLAUDE.md` + `CHANGELOG.md` | <反向扫描命中 / 同步需求> |
+| Docs | `docs/**/*.md` + `INDEX.md` + `AGENTS.md` + `CHANGELOG.md` | <反向扫描命中 / 同步需求> |
 
 ## Affected Areas
 
@@ -169,7 +169,7 @@ docker compose -f docker/compose.yaml up -d
 ## 关联文档
 
 - [[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 3（Repo Scan）
-- `.claude/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描完整步骤）
+- `.agents/skills/mj-agent-flow-repo-scan/SKILL.md`（承载 8-dim 扫描完整步骤）
 - [[../guide/[GUIDE]_MJ_Agent_SPEC_Authoring|SPEC Authoring GUIDE]]（如 SPEC = Create/Update 时使用）
 
 ## 更新记录

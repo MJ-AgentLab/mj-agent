@@ -5,19 +5,19 @@ description: 1-2 sentences describing what this skill does, then "Triggers on" +
 
 # TEMPLATE: Engineering-Workflow SKILL（Track C）
 
-> **此模板用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`**（in-tree workflow skill；engineering-workflow track；ADR-013 native 2-field schema）。
+> **此模板用于 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md`**（in-tree workflow skill；engineering-workflow track；ADR-013 native 2-field schema）。
 >
 > **不**用本模板：
 > - 起草 `src/mj_agent/skills/<name>/SKILL.md`（runtime SKILL；Track B；13-field schema + 五段式 body）→ 用 [[TEMPLATE_SKILL|TEMPLATE_SKILL]]
 > - 起草 marketplace plugin SKILL.md（出本仓 governance）→ 参考 ADR-013 §Decision 内嵌范本
 >
-> **规格依据**：[[sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards + ADR-013（2-field schema 决策）+ ADR-016（in-tree skill 命名 + lifecycle）。
+> **规格依据**：[[policies/development-skills|development skills policy]] §Standards + ADR-013（2-field schema 决策）+ ADR-016（in-tree skill 命名 + lifecycle）。
 
 ---
 
 ## 复制本模板的步骤
 
-1. 复制本文件到 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`
+1. 复制本文件到 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md`
 2. 删除本模板的 "TEMPLATE" header + "复制本模板的步骤" 段（即下方 fenced block 之前所有内容）
 3. 替换 frontmatter 中的 `name` 为目标 skill 命名（必须等于目录名）
 4. 替换 `description`：见下方 §1 Description 撰写规则
@@ -31,7 +31,7 @@ description: 1-2 sentences describing what this skill does, then "Triggers on" +
 
 **目标**：让 Claude Code 在用户描述触及本 skill 业务范围时**主动调用**。description 是唯一触发机制——Claude Code 只读 frontmatter，不读 body。
 
-**A12 阻塞条件**（[[sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards/§CI Gate；原 Meta §7.7）：
+**A12 阻塞条件**（[[policies/development-skills|policies/development-skills]] §Standards/§CI Gate；原 Meta §7.7）：
 
 1. ≥ 200 chars
 2. 含**正向触发短语**（What it does + When to trigger，含中英文关键词）
@@ -158,7 +158,7 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 如 SKILL.md 主体接近 500 行（参考 上游业务系统 实测 SKILL.md 平均 200-300 行；上限 500 行），把详细参考资料拆到子目录：
 
 ```
-.claude/skills/mj-agent-<group>-<verb>/
+.agents/skills/mj-agent-<group>-<verb>/
 ├── SKILL.md                  ← 主文件（≤500 行）
 ├── scripts/                  ← 可选：可执行脚本（不进 LLM 上下文）
 │   └── *.py / *.ps1
@@ -210,10 +210,10 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 ## §6 关联文档
 
 - [[sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（本类 SKILL 在 17-stage 闭环中的位置；§4 stage→skill 映射）
-- [[sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards（in-tree workflow SKILL 治理；原 Meta §3.10）
+- [[policies/development-skills|policies/development-skills]] §Standards（in-tree workflow SKILL 治理；原 Meta §3.10）
 - [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（2-field schema 决策）
 - [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（PR-B1 落地，命名空间 + lifecycle）
-- 上游业务系统 v5.0+ `.claude/skills/mj-sys-*/SKILL.md`（直接派生源）
+- 上游业务系统 v5.0+ `.agents/skills/mj-sys-*/SKILL.md`（直接派生源）
 
 ## §7 更新记录
 

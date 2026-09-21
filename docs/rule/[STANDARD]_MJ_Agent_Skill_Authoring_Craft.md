@@ -19,11 +19,11 @@ aliases:
 
 # mj-agent 技能写作工艺规范（Skill Authoring Craft）
 
-> **适用范围**：mj-agent **两类** skill 的正文（body）与触发描述（description / activation）的**写作质量**——`src/mj_agent/skills/<name>/SKILL.md`（in-source runtime，Track B）+ `.claude/skills/mj-agent-<group>-<verb>/SKILL.md`（in-tree workflow，Track C）。**不**覆盖 marketplace plugin SKILL（out of governance）。
+> **适用范围**：mj-agent **两类** skill 的正文（body）与触发描述（description / activation）的**写作质量**——`src/mj_agent/skills/<name>/SKILL.md`（in-source runtime，Track B）+ `.agents/skills/mj-agent-<group>-<verb>/SKILL.md`（in-tree workflow，Track C）。**不**覆盖 marketplace plugin SKILL（out of governance）。
 > **目标受众**：技能作者 / 文档撰写者 / AI Agent
 > **版本**：v1.0（draft 首版；从 `[ASSESSMENT]_mattpocock-skills-adoption` §3.1 落地——借「写技能的元哲学」**思路**，按 mj-agent native 规范重新设计，**不** mirror 外部模板）
 > **最后更新**：2026-06-22
-> **与既有治理的关系**：本规范治「正文 / description **写得好不好**」（质量层）；[[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] / [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] 治「**有哪些字段**」（schema 层）；**A12** 治「description **最低门**」（≥200 chars + 反向触发段）；[[../../sdd/adapters/claude-code-skill|claude-code-skill adapter]] / [[../../sdd/adapters/runtime-skill|runtime-skill adapter]] §Standards 治「body section heads + activation 字段 + 5-iteration 循环」。四者**互补不重叠**——本规范是它们之上的正文质量层。
+> **与既有治理的关系**：本规范治「正文 / description **写得好不好**」（质量层）；[[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] / [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] 治「**有哪些字段**」（schema 层）；**A12** 治「description **最低门**」（≥200 chars + 反向触发段）；[[../../sdd/adapters/development-skill|development-skill adapter]] / [[../../sdd/adapters/runtime-skill|runtime-skill adapter]] §Standards 治「body section heads + activation 字段 + 5-iteration 循环」。四者**互补不重叠**——本规范是它们之上的正文质量层。
 
 ---
 
@@ -76,7 +76,7 @@ skill 存在的目的，是**从一个随机系统里榨出确定性**。一份�
 
 ## 3 Description / activation 工艺
 
-> 本节是 **A12 最低门之上的质量层**。A12 管"≥200 chars + 含 `Do not use for:` 反向触发段"（[[../../sdd/adapters/claude-code-skill|claude-code-skill]] §Standards / §CI Gate）；本节管"这 200+ 字**写得好不好**"。
+> 本节是 **A12 最低门之上的质量层**。A12 管"≥200 chars + 含 `Do not use for:` 反向触发段"（[[../../sdd/adapters/development-skill|development-skill]] §Standards / §CI Gate）；本节管"这 200+ 字**写得好不好**"。
 
 **3.1 前置 leading word**——description 首句用一个紧凑概念锚定身份（"This skill runs mj-agent disciplined bug diagnosis …"），让 routing 第一眼判定领域。
 
@@ -129,7 +129,7 @@ leading word = 用一个**预训练里已有的紧凑概念**锚定一类行为�
 
 | Leading word | 锚定的行为 | 出处 |
 |---|---|---|
-| **必停** | 遇此面暂停、等 Owner 拍板，不单方翻转 | CLAUDE.md 必停 surfaces / [[../../policies/ai-agent|ai-agent]] |
+| **必停** | 遇此面暂停、等 Owner 拍板，不单方翻转 | AGENTS.md 必停 surfaces / [[../../policies/ai-agent|ai-agent]] |
 | **拍板** | AI 提议 → Owner 决策 → AI 落盘 | [[../../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]] |
 | **风味（A/B/C）** | 改动归属代码 / agent / 工程编排三轨 | tri-track 治理 |
 | **Level（A/B/C）** | 验证矩阵分级（ruff/mypy/pytest …） | [[../../sdd/workflows/execution-loop|execution-loop]] §5 |
@@ -167,9 +167,9 @@ leading word = 用一个**预训练里已有的紧凑概念**锚定一类行为�
 |---|---|---|
 | 本 STANDARD | 正文 / description **写得好不好**（质量层） | 本文件 |
 | ADR-013 / ADR-016 | skill **有哪些字段**（2-field schema / namespace） | [[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] / [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] |
-| A12 | description **最低门**（≥200 chars + 反向触发段） | [[../../sdd/adapters/claude-code-skill|claude-code-skill]] §Standards / §CI Gate |
+| A12 | description **最低门**（≥200 chars + 反向触发段） | [[../../sdd/adapters/development-skill|development-skill]] §Standards / §CI Gate |
 | runtime-skill §Standards | in-source body **section heads（6 段）** + `activation` + 5-iteration 循环 | [[../../sdd/adapters/runtime-skill|runtime-skill]] |
-| claude-code-skill §Standards | in-tree body 必含 `## Overview` + `## Workflow` + family enum | [[../../sdd/adapters/claude-code-skill|claude-code-skill]] |
+| development-skill §Standards | in-tree body 必含 `## Overview` + `## Workflow` + family enum | [[../../sdd/adapters/development-skill|development-skill]] |
 
 > **必停不可绕**：任何 skill 正文修改若触达 4 必停面（`tools/sql/guardrail.py` / `precheck.py` / `prompts/system.md` / `skills/*/SKILL.md` body / `qcm_catalog.yaml`），仍走 [[../../policies/ai-agent|ai-agent]] §8/§9 propose→拍板→apply，本规范不提供绕过通道。in-source SKILL body 改动属 B 风味必停（`runtime-skill-content-change`）。
 
@@ -193,7 +193,7 @@ leading word = 用一个**预训练里已有的紧凑概念**锚定一类行为�
 ## 10 参考
 
 - [[../../evidence/assessments/[ASSESSMENT]_mattpocock-skills-adoption|mattpocock-skills 采纳评估]] §3.1（本规范的思路来源 + 借鉴边界；2026-06-22 已升格入仓 `evidence/assessments/`）
-- [[../../sdd/adapters/claude-code-skill|sdd/adapters/claude-code-skill]] §Standards / §CI Gate（A12；in-tree 2-field schema）
+- [[../../sdd/adapters/development-skill|sdd/adapters/development-skill]] §Standards / §CI Gate（A12；in-tree 2-field schema）
 - [[../../sdd/adapters/runtime-skill|sdd/adapters/runtime-skill]] §Standards（in-source 13-field；`activation` + 5-iteration + 渐进披露）
 - [[../../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace schema 分离）
 - [[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]（`mj-agent-<group>-<verb>` namespace + 5 family + lifecycle）
