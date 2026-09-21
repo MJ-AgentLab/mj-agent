@@ -46,7 +46,7 @@ mj-agent is deployed independently of mj-system (per ADR-008): own compose proje
 
 **Why explicit `-f` chain even for DEV**：
 
-Compose's auto-load of `override.yml` fires only when CLI is invoked in the same dir as `docker-compose.yml`. Our compose files are in `docker/`, not repo root. CLI from repo root with `-f docker/compose.yaml` does NOT auto-load `override.yml`. Therefore even DEV requires explicit `-f override.yml`. Documentation in this capability + CLAUDE.md + `/mj-agent-infra-docker-compose` skill explicitly call this out.
+Compose's auto-load of `override.yml` fires only when CLI is invoked in the same dir as `docker-compose.yml`. Our compose files are in `docker/`, not repo root. CLI from repo root with `-f docker/compose.yaml` does NOT auto-load `override.yml`. Therefore even DEV requires explicit `-f override.yml`. Documentation in this capability + AGENTS.md + `/mj-agent-infra-docker-compose` skill explicitly call this out.
 
 **Why `--env-file .env` always required**：
 
@@ -111,7 +111,7 @@ Network topology:
 **Cross-capability dependencies (2 refs)**：
 
 - **llm-provider** (inbound)：LLM env vars (`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_API_KEY` / `ARK_API_KEY`) flow through `env_file: ../.env` into mj-agent container
-- **mcp-server-governance** (outbound)：`.mcp.json` WAN pg URLs (`MJ_AGENT_PG_*_WAN_URL`) reference the same host/port matrix as compose pg services
+- Native MCP covers memory endpoints only; SSH is excluded. Runtime LLM and business data behavior is unchanged.
 
 ## §4 Tradeoffs
 

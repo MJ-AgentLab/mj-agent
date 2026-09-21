@@ -61,7 +61,7 @@ SDD（Spec-Driven Development）治理 mj-agent 的开发与变更：**所有变
 | Source | Path | Schema | Loader | Governance |
 |---|---|---|---|---|
 | in-source（runtime） | `src/mj_agent/skills/<name>/SKILL.md` | 13-field Agent_Side | `load_skill()` strip frontmatter | Track B —— kernel home **现为** `sdd/adapters/runtime-skill.md`（并入**已完成**；Agent_Side v1.2 于 M6 PR4 归档，per ADR-031） |
-| in-tree（workflow） | `.claude/skills/mj-agent-*/SKILL.md` | 2-field ADR-013 native | Claude Code main process | Track C —— kernel home **现为** `sdd/adapters/claude-code-skill.md`（并入**已完成**；Meta v2.2 于 M6 PR4 归档，per ADR-031） |
+| in-tree（workflow） | `.agents/skills/mj-agent-*/SKILL.md` | 2-field ADR-013 native | Claude Code main process | Track C —— kernel home **现为** `policies/development-skills.md`（并入**已完成**；Meta v2.2 于 M6 PR4 归档，per ADR-031） |
 | marketplace plugin | `mj-agentlab-marketplace/plugins/*` | 2-field ADR-013 native | Claude Code plugin loader | out of mj-agent governance |
 
 ## §4 与其他 SDD Kernel 文件关系
@@ -73,7 +73,7 @@ SDD（Spec-Driven Development）治理 mj-agent 的开发与变更：**所有变
 - `sdd/archive.schema.json` — `archive.yml` 机器可读 schema
 - `sdd/workflows/` — 6 工作流（new / evolve / bugfix-drift / cross-cap / hotfix / archive）
 - `sdd/adapters/` — 7 启用 adapter（python / langchain-agent / prompt / runtime-skill /
-  claude-code-skill / docker-container / bdd-tdd）
+  development-skill / docker-container / bdd-tdd）
 - `sdd/templates/` — 标准模板套件（spec / requirements / design / tasks / runbook / trace /
   evidence / archive / tombstone / behavior.feature / bdd-scenarios / tdd-test-list +
   contracts/）
@@ -93,7 +93,7 @@ SDD（Spec-Driven Development）治理 mj-agent 的开发与变更：**所有变
 > *Phase M0 skeleton — `state: draft`. 内容填充见 `plans/[PLAN]_spec_anchored_refactor.md` Phase
 > M2 §"Content Backfill".*
 >
-> *v0.2（2026-09-01）：#497 ⑤ —— 两处失效引用真值化。(1) 文首横幅原引 root `CLAUDE.md` 的一个
+> *v0.2（2026-09-01）：#497 ⑤ —— 两处失效引用真值化。(1) 文首横幅原引 root `AGENTS.md` 的一个
 > **已不存在**的段名（对位段 = §「必停 surfaces」）。⚠ **该段名在此有意不复述** —— 复述会在本仓
 > 再造一处 grep 命中，而「全仓不再有活体指针指向那个段名」正是本次修复的验收判据（issue #497
 > AC-5）。原句还把 HITL 义务写成「promote 为 `active` 后**才**落入」的条件式 —— 实况是 `sdd/**`

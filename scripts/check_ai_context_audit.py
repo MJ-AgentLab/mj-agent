@@ -27,10 +27,10 @@ violations — see SCHEMA §2.1 durability boundary + §1 quarterly-not-cron des
 
 - Does NOT recompute ``content_hash_snapshot`` hashes vs current files.
 - Does NOT check that snapshot key-paths exist in the CURRENT repo (past write-once
-  entries legitimately reference renamed paths, e.g. Q2's ``infra/docker/CLAUDE.md``).
+  entries legitimately reference renamed paths, e.g. Q2's ``infra/docker/AGENTS.md``).
 - Does NOT do a blocking §2.1 face-set derivation match — the face-set is time-varying
   (15 surfaces in Q2, 23 in Q3), so a blocking match would false-fail on any
-  skill/CLAUDE.md change and force a re-audit every commit.
+  skill/AGENTS.md change and force a re-audit every commit.
 
 The §2.1 face-set derivation IS machine-formed via ``--derive`` (a manual authoring aid
 for the next auditor; NOT a CI gate), closing the other half of the disclosed gap: the
@@ -46,7 +46,6 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import json
 import re
 import subprocess
 import sys
@@ -61,9 +60,8 @@ import yaml
 AUDIT_DIR = Path("evidence/ai-context-audit")
 # Frozen infra-skill contract (single source for the §2.1 frozen-infra track).
 FROZEN_CONTRACT = Path(
-    "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml"
+    "capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml"
 )
-SETTINGS = Path(".claude/settings.json")
 
 AUDIT_TYPE = "ai-context-audit"
 INVESTIGATION_TYPE = "ai-context-investigation"
@@ -76,7 +74,6 @@ INVESTIGATION_FILE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}_.+\.md$")
 # or full 64-char. Canonical algo is lowercase hex (SCHEMA §2.1).
 HEX_RE = re.compile(r"^([0-9a-f]{16}|[0-9a-f]{64})$")
 # `permissions.ask` entries look like "Edit(./path/glob)".
-ASK_PATH_RE = re.compile(r"^Edit\(\./(?P<path>.+)\)$")
 
 REQUIRED_AUDIT_FIELDS: tuple[str, ...] = (
     "type",
@@ -287,10 +284,10 @@ def run(repo_root: Path) -> int:
 # ---- §2.1 face-set derivation (machine form; `--derive` aid, NOT a CI gate) ----
 
 
-def _git_tracked_claude_md(repo_root: Path) -> set[str]:
-    """CLAUDE.md track: git-tracked ``**/CLAUDE.md`` (root + each subdir)."""
+def _git_tracked_agents_md(repo_root: Path) -> set[str]:
+    """AGENTS.md track: git-tracked ``**/AGENTS.md`` (root + each subdir)."""
     proc = subprocess.run(
-        ["git", "ls-files", "*CLAUDE.md"],
+        ["git", "ls-files", "*AGENTS.md"],
         cwd=repo_root,
         capture_output=True,
         text=True,
@@ -299,33 +296,19 @@ def _git_tracked_claude_md(repo_root: Path) -> set[str]:
     return {
         line.strip()
         for line in proc.stdout.splitlines()
-        if line.strip() == "CLAUDE.md" or line.strip().endswith("/CLAUDE.md")
+        if line.strip() == "AGENTS.md" or line.strip().endswith("/AGENTS.md")
     }
 
 
 def _ask_glob_md(repo_root: Path) -> set[str]:
-    """必停 markdown (settings) track: ``.md`` files matched by ``permissions.ask`` globs.
-
-    Data-boundary ``.py`` / ``.yaml`` ask entries are excluded (not markdown; the
-    regex-strip hash algo does not apply to them) — see SCHEMA §2.1.
-    """
-    settings = json.loads((repo_root / SETTINGS).read_text(encoding="utf-8"))
-    faces: set[str] = set()
-    for entry in settings.get("permissions", {}).get("ask", []):
-        match = ASK_PATH_RE.match(entry)
-        if not match:
-            continue
-        pattern = match.group("path")
-        if not pattern.endswith(".md"):
-            continue
-        for path in repo_root.glob(pattern):
-            if path.is_file():
-                faces.add(path.relative_to(repo_root).as_posix())
-    return faces
+    """Protected Markdown faces from the native policy; no client settings read."""
+    return {p.relative_to(repo_root).as_posix()
+            for pattern in ("src/mj_agent/prompts/system.md", "src/mj_agent/skills/*/SKILL.md")
+            for p in repo_root.glob(pattern) if p.is_file()}
 
 
 def _frozen_infra(repo_root: Path) -> set[str]:
-    """Frozen-infra track: ``.claude/skills/mj-agent-infra-*/SKILL.md`` per contract ``skills[]``."""
+    """Frozen-infra track: ``.agents/skills/mj-agent-infra-*/SKILL.md`` per contract ``skills[]``."""
     contract = yaml.safe_load((repo_root / FROZEN_CONTRACT).read_text(encoding="utf-8"))
     return {s["file"] for s in contract.get("skills", []) if isinstance(s, dict) and "file" in s}
 
@@ -333,12 +316,12 @@ def _frozen_infra(repo_root: Path) -> set[str]:
 def derive_face_set(repo_root: Path) -> list[str]:
     """Derive the §2.1 ``content_hash_snapshot`` face-set from current repo state.
 
-    Union of the CLAUDE.md track and the 必停 markdown track (ask ``.md`` globs ∪
+    Union of the AGENTS.md track and the 必停 markdown track (ask ``.md`` globs ∪
     frozen infra). Returns a sorted list. The count is an OBSERVED value, not a
     spec — it changes as the repo changes (that is why this is an authoring aid,
     not a blocking gate; see module docstring).
     """
-    faces = _git_tracked_claude_md(repo_root)
+    faces = _git_tracked_agents_md(repo_root)
     faces |= _ask_glob_md(repo_root)
     faces |= _frozen_infra(repo_root)
     return sorted(faces)

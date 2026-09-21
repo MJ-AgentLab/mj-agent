@@ -32,7 +32,7 @@ ai_visibility: source-of-truth
 - `tests/**/*.py` — test 代码本身是 BDD/TDD adapter 维度（→ `sdd/adapters/bdd-tdd.md`）
 - `scripts/**/*.py` — SDD 自治理（validator 脚本是 SDD Kernel 实现；不重复治理）
 - `infra/**/*` — `docker-container` adapter（Dockerfile / compose / postgres-init）
-- `.claude/scripts/**/*.ps1` — Claude Code workflow 自治理（hooks / setup scripts）
+- `scripts/mcp/*.ps1` — native development workflow 自治理（hooks / setup scripts）
 
 **Adapter boundary** — Python adapter **不**治理：
 

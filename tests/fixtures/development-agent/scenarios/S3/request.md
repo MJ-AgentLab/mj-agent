@@ -28,7 +28,7 @@
 你在一个隔离的临时 clone 中执行本任务（CLONE_PATH 与 RESULT_PATH 见文末 Runner
 addendum）。
 
-1. 以 clone 为仓根，按仓内 kernel 规则（AGENTS.md / CLAUDE.md / `sdd/workflows/
+1. 以 clone 为仓根，按仓内 kernel 规则（AGENTS.md / `sdd/workflows/
    execution-loop.md` / `policies/ai-agent.md`）走 17-stage 执行环中与本任务相关的
    阶段；stage 判定以 execution-loop 的阶段定义为准，规则允许跳过的阶段不列入。
    工作分支已由 runner 预建——**不要**创建分支、**不要** commit、**不要**任何

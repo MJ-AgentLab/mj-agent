@@ -32,7 +32,7 @@ ai_visibility: source-of-truth
 
 **Excluded** — 其他 adapter 治理：
 
-- `.claude/skills/mj-agent-*/SKILL.md` — Claude Code workflow SKILL（→ `claude-code-skill`
+- `.agents/skills/mj-agent-*/SKILL.md` — Claude Code workflow SKILL（→ `development-skill`
   adapter；ADR-013 native 2-field schema；governance 路径完全不同）
 - SKILL.md frontmatter schema validation（→ `prompt` adapter；schema invariant 维度）
 - `load_skill` 函数本身的 Python 公开签名（→ `python` adapter；本 adapter 只管"调用 loader
@@ -139,7 +139,7 @@ Agent_Side §2.2 + §7.2（这是 kernel home；Agent_Side 后续 archive）.
   在 trajectory 中按需展开的二级资源
 
 **关键边界** — 渐进披露子目录治理**仅适用于 `src/mj_agent/skills/<name>/`**（in-source canonical）。
-`.claude/skills/mj-agent-*/` 的 bundled resource 治理是 Track C 范围（`claude-code-skill` adapter），
+`.agents/skills/mj-agent-*/` 的 bundled resource 治理是 Track C 范围（`development-skill` adapter），
 不在本 adapter scope.
 
 **触发描述质量（trigger-description quality；activation 字段 + 5-iteration 优化循环）** — ported
@@ -159,18 +159,18 @@ in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否�
 
 > **正文工艺质量（指针）**：`activation` 与 body **写得好不好**（可预测性为根、双负载权衡、信息阶梯、leading words、no-op 剪枝、五大失效模式）由 [[../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]]（正文质量层，单一真相源；本 adapter **不复制其正文**）治理。in-source SKILL body 起草 / 改写应过其 §9 作者自检清单；B 风味必停（`runtime-skill-content-change`）不变。
 
-**与 `claude-code-skill` adapter 的明确区分**（DISTINCT；不可混淆）：
+**与 `development-skill` adapter 的明确区分**（DISTINCT；不可混淆）：
 
-| 维度 | 本 adapter（runtime-skill） | `claude-code-skill` adapter |
+| 维度 | 本 adapter（runtime-skill） | `development-skill` adapter |
 |---|---|---|
-| 治理对象 | `src/mj_agent/skills/<name>/SKILL.md`（in-source canonical） | `.claude/skills/mj-agent-*/SKILL.md`（in-tree workflow） |
+| 治理对象 | `src/mj_agent/skills/<name>/SKILL.md`（in-source canonical） | `.agents/skills/mj-agent-*/SKILL.md`（in-tree workflow） |
 | schema | 13-field（Agent_Side §2）；触发字段名 `activation` | 2-field ADR-013 native（`name` + `description`） |
 | 触发优化 | `activation` 字段 + 5-iteration 循环（本节） | `description` ≥ 200 chars + `Do not use for:` 反向 trigger block（A12 gate） |
 | Loader | `load_skill()` strip frontmatter | Claude Code 主 process（不剥 frontmatter） |
 | 触发 fidelity 验证 | component-level EVAL（M4+）+ `runtime-skill-content-change` 必停 | script gate（≥200 chars / 反向 block）+ manual HITL |
 
-两者都治理"触发质量"但**对象、schema、字段名、验证机制完全不同** —— `claude-code-skill` adapter
-治理的是 ADR-013 2-field `.claude/` workflow skill 的 `description` 正/反向 trigger；本 adapter
+两者都治理"触发质量"但**对象、schema、字段名、验证机制完全不同** —— `development-skill` adapter
+治理的是 ADR-013 2-field `.agents/` development skill 的 `description` 正/反向 trigger；本 adapter
 治理的是 in-source runtime SKILL 的 `activation` 字段 + 5-iteration 循环。混用 tag / gate 会导致
 治理边界漂移（per §Scope **Excluded** + §BDD Rules 何时 NOT 用）.
 

@@ -5,7 +5,7 @@ state: draft
 version: 0.8
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-01
+updated: 2026-09-21
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -131,14 +131,14 @@ G21「evidence `pass_rate: 1.0` **或** runbook justification fallback」、G22�
 
 ## §4 Review Cadence（A6 — Anthropic 大型代码库最佳实践；native）
 
-`.claude/settings.json` + `.claude/hooks/` + `.github/workflows/ci.yml` + `.mcp.json` **每 3-6
+`.codex/config.toml` + `.codex/hooks.json` + `.codex/rules/` + `.github/workflows/ci.yml` + `.codex/config.toml` **每 3-6
 月或 model release 后强制审计**.
 
 | 触发 | 频率 | 责任人 | 检查项 |
 |---|---|---|---|
-| 定期 | 季度（每 3 月） | DRI | `permissions.deny` 红线列表 + `permissions.ask` 拍板门列表（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034]]，两者共同构成 §5 边界） / `enabledPlugins` 漂移 / hooks 健康 / ci.yml gate 状态 |
+| 定期 | 季度（每 3 月） | DRI | 原生 config/hooks/rules 的禁止与 Owner 批准边界（§5、§5.1） / 项目 MCP 清单及 env_vars 传名漂移 / hooks 实际健康 / ci.yml gate 状态；静态检查、批准与真实宿主拦截分别留证 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
-| MCP server 季度审计 | 季度 | DRI + reviewer | `.mcp.json` **全部** server 的 trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`）。⚠ **本表有意不写死 server 数** —— 当期数量按 `uv run python -c "import json; print(len(json.load(open('.mcp.json', encoding='utf-8'))['mcpServers']))"` 复算（与 `policies/claude-code-skill.md` §5 的推导逐字同形；⚠ 裸 `python` 在参考机不解析，故取 `uv run` 形）。2026-09-01 实测 14；原文写死的那个数是 ADR-028 的决策时点值，已失真（#497 ④）。⚠ 此处**有意不复述那个旧字面量** —— 复述会让 issue #497 AC-4 的零命中判据失效 |
+| MCP server 季度审计 | 季度 | DRI + reviewer | `.codex/config.toml` **全部** server 的 trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`）。当期数量按 `uv run --frozen --no-sync python -c "import pathlib,tomllib; print(len(tomllib.loads(pathlib.Path('.codex/config.toml').read_text(encoding='utf-8'))['mcp_servers']))"` 复算；原生结构校验见 `scripts/sdd/check_codex_native.py --surface mcp`。这些检查仅解析公共配置，不连接服务，也不替代工程师对信任与凭据模式的独立审阅；不在本表写死服务数量。 |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
 
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md`（与 `policies/documentation.md`
@@ -288,51 +288,18 @@ head 取样得到的两形相等只说明尚未跨过 cron，**不**说明裸形
 **注册义务**：path-triggered gate 在 §4.1.1 注册时，须**额外**载明其触发路径集，
 并在审计产物中**分列**「真实执行绿」与「未触发」两个计数，不得合并为单一数字。
 
-## §5 Settings 边界（B2 团队 vs 个人）
+## §5 原生配置边界（团队与个人分离）
 
-| 文件 | 范围 | 含义 |
-|---|---|---|
-| `.claude/settings.json` | 团队共享（commit） | **三档 permission 全在此**：`deny` 红线（AI 取不到的 secret 面 —— `.env` / `config/secrets*.enc` + 不可逆 `Bash` 破坏面）+ `ask` 拍板门（5 项必停面，逐写 HITL）+ `allow` 白名单（scoped 工具/命令面）；另含 `enabledPlugins` + hooks 配置 |
-| `.claude/settings.local.json` | 个人（gitignore） | 个人偏好覆写（如个人 Bash 豁免）；**不是 `allow` 的归属地** —— 团队 `allow` 面在 `settings.json` |
+团队直接维护 `.codex/config.toml`、`hooks.json` 与 `rules/`；个人配置和信任不由仓库修改。
+配置、规则、守卫及其保护边界变化须 Owner 审阅。Owner 批准不解锁 hook；无自动执行路线
+时按批准的人工应用路线处理。禁止自动信任项目、激活 hooks 或放宽权限来使验证通过。
 
-> **`deny` vs `ask` —— 勿混（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]，2026-06-20）**：
-> 5 项必停面（`tools/sql/{guardrail,precheck}.py` / `prompts/system.md` /
-> `skills/**/SKILL.md` / `biz_catalog/qcm_catalog.yaml`）**曾**以 `deny` 物理硬锁承载；
-> ADR-034 把 HITL 模型由「AI 出草案 → Owner 手动落盘」改为「AI 提议 → Owner 拍板 → AI 落盘」，
-> 该 5 面随之 **`deny` → `ask`**（逐写拍板门，`allow` 不可抑制）。故本表「红线」= **`deny` ∪ `ask`
-> 两档合起来**的边界，而 `deny` 档今日**不含**任何必停文件 —— 它只保留 AI 永不该取到的
-> secret 面 + 不可逆破坏面。`ask` 仅在**交互模式**成立（`auto`/`bypass` 下放宽类改动由
-> classifier 硬拦）。
+### §5.1 A13 原生保护审阅
 
-### §5.1 A13 — `.claude/settings.json` PR 阻塞条件（engineering-workflow track）
-
-> 上文 §4 Review Cadence + 本节 §5 边界表把 `permissions.deny` ∪ `permissions.ask` 边界 + 季度审计
-> 框定为 **审计** cadence；本子节把 A13 升格为 **PR 阻塞 ruleset** —— 任一 PR 触动
-> `.claude/settings.json` 时 reviewer 必须按下表**逐条**核对，任一不满足即阻塞合并。
-> 源：Meta_Framework STANDARD §7.7 A13；决策依据
-> [[../decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]]（in-tree vs marketplace
-> 配置分离，settings.json 属项目级 in-tree）+
-> [[../decisions/ADR-032_Claude_Skill_Schema_Monitoring|ADR-032]]（engineering-workflow
-> 配置漂移监控）。Phase C `[STANDARD]_MJ_Agent_Claude_Code_Settings_v1.0` 落地后本节迁为
-> cross-ref。
-
-任一 PR 变更 `.claude/settings.json` 时，下表**每一条**均为 **阻塞条件**（A13；与 §4 季度审计
-边界列表同源但语义不同 —— 审计是周期性巡检，本节是逐 PR 的 hard gate）：
-
-| # | 阻塞条件 | 判定 | 不满足后果 |
-|---|---|---|---|
-| (a) | `permissions.allow` **不出现裸 `Bash`**（无 sub-pattern 限定） | 必须用 scoped 形式（如 `Bash(uv run *)` / `Bash(git status:*)`）；裸 `Bash` = 无界 shell 授权 | 阻塞合并；要求改 scoped pattern |
-| (b) | `permissions.deny` **必须携带 secret pattern 兜底** | 含 `.env` / `secrets.enc` / API-key glob（如 `Read(./.env)` / `Edit(./.env)` / `Write(./.env)` / `Read(**/secrets*.enc)`）；与 §5 边界表 `deny` 档定义一致 | 阻塞合并；缺失即补齐 deny 条目 |
-| (c) | `enabledPlugins` **增删需 PR body 描述用途与来源** | 任何 `enabledPlugins` add/remove 必须在 PR body 给出 justification（用途 + 来源 + trust posture） | 阻塞合并；要求补 PR body 说明 |
-| (d) | 5 项必停面**不得脱离 `ask` 档**（per [[../decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034]]） | 任一必停面被移出 `permissions.ask`、或被 `allow` 条目覆盖 = 拍板门失效 | 阻塞合并；要求恢复 `ask` 条目 |
-
-**与 §4 关系**：§4 季度 / model-release 审计是 cadence 巡检（catch 漂移）；§5.1 是 PR-time
-hard gate（catch 引入）。两者共用同一 `deny` ∪ `ask` 边界定义（§5 表 + 其下注），避免双源漂移。
-
-**Cross-ref**：`.claude/skills/` 新建目录的准入规则（A13 的姊妹门，针对 skill 目录而非
-settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新目录准入规则」；
-`.mcp.json` server 增删（A14）见 `policies/ai-agent.md` §4
-`mcp-server-trust-posture-change` + `capabilities/infrastructure/mcp-server-governance/`（capability；former MCP STANDARD archived M6 X5）。
+PR review 必须核对：秘密不得读取/回显，biz 不得绕过 tool-chain，四项运行时必停面及
+Owner 动作仍阻断，异常输入 fail closed，MCP 只含八项既有项目服务并按 env_vars 传名。
+守卫的有限语法识别不等于通用 shell 沙箱；未命中不构成授权。
+所有权切换、CI 替代与必要旧测试处置须成组审批；静态 PASS 不替代实际宿主和服务证据。
 
 ## §6 CI gate 命名映射
 
@@ -348,7 +315,7 @@ settings.json）见 `sdd/adapters/claude-code-skill.md` §Scope「`.claude/` 新
 | # | 规则 |
 |---|---|
 | **M1** | **连接键是执行体路径，不是名字。** `sdd/gates.md` 的**脚本列** ↔ workflow step 的 `run:` 命令。step 名与 gate 行名都是**可改写的装饰**，不作判据 |
-| **M2** | **映射是多对多，不是双射**：一个执行体可承载多个 gate（`check_traceability.py` → G2 + G5；`check_archive_manifest.py` → G11 + G12；`agents_sync.py` → V10 + V11 + V13，按 `--surface` 分流）；一个 gate 可以**没有**执行体（`G4` / `G6` = `manual-canonical`，`G10`/`G13`/`G16` = `reserved`，`G27`/`G28` = `deferred`，`G26` = `withdrawn`）。**「gate 数」与「CI step 数」不可互推** |
+| **M2** | **映射是多对多，不是双射**：一个执行体可承载多个 gate（`check_traceability.py` → G2 + G5；`check_archive_manifest.py` → G11 + G12；原生 `check_codex_native.py` → V11 + V13，按 `--surface` 分流）；一个 gate 可以**没有**执行体（`G4` / `G6` = `manual-canonical`，`G10`/`G13`/`G16` = `reserved`，`G27`/`G28` = `deferred`，`G26` = `withdrawn`）。**「gate 数」与「CI step 数」不可互推** |
 
 **可复跑推导**（结果即映射，无需维护第二份表）：
 
@@ -386,7 +353,7 @@ grep -rhoE 'scripts/[A-Za-z0-9_/]+\.py' .github/workflows/
 | 命名空间 | 定义处 | 覆盖面 |
 |---|---|---|
 | `G<n>` / `V<n>` + 具名 CI-infra gate | `sdd/gates.md` §1 / §2 / §3 | spec gate + CI infra 守卫 |
-| `A1`-`A14` | `policies/documentation.md` §5.1（A1-A6）+ §5.3（A7-A14 分派：A7-A11 → `sdd/adapters/{runtime-skill,prompt}.md`；A12 / A13 → `sdd/adapters/claude-code-skill.md` + 本文件 §5.1；A14 → `policies/ai-agent.md` §4） | 文档 / 配置 PR 门禁 |
+| `A1`-`A14` | `policies/documentation.md` §5.1（A1-A6）+ §5.3（A7-A14 分派：A7-A11 → `sdd/adapters/{runtime-skill,prompt}.md`；A12 / A13 → `policies/development-skills.md` + 本文件 §5.1；A14 → `policies/ai-agent.md` §4） | 文档 / 配置 PR 门禁 |
 | `OB1`-`OB5` | `policies/documentation.md` §5.2 | **非阻塞观察项，无执行体** |
 
 **陷阱 1 —— `A6` 是重载的，两个义项都活着**：`policies/documentation.md` **§5.1 的 A6** =
@@ -430,7 +397,7 @@ G26 行的理由里，指的是风险条目）。同理 `sdd/gates.md` §1 的 `
 > *Phase M0 — §Review Cadence native（§4，含 §4.1 注册制观察期）。*
 >
 > *v0.7（2026-09-01）：#497 ④ —— §4 Review Cadence 表的「MCP server 季度审计」行不再写死
-> `.mcp.json` 的 server 数（原写死的是 ADR-028 决策时点值，实测已失真），改为「**全部** server」
+> `.codex/config.toml` 的 server 数（原写死的是 ADR-028 决策时点值，实测已失真），改为「**全部** server」
 > 加一条可复跑推导命令（取 `uv run python -c …` 形，与 `policies/claude-code-skill.md` §5 逐字
 > 同形 —— 裸 `python` 在参考机不解析），与本文件 §6.1「两侧都在动，抄一张必漂移」的既定纪律
 > 一致。同批闭合
@@ -457,3 +424,11 @@ G26 行的理由里，指的是风险条目）。同理 `sdd/gates.md` §1 的 `
 > `continue-on-error`、不改任何 gate 的起点锚或阈值，故**非** `ci-blocking-gate-toggle`
 > （#438/#440/#441/#447/#455 判例族）。⚠ `updated` 本条未动 —— v0.7 已于同日（2026-09-01）
 > 落盘，该字段值已等于本次提交日。*
+
+## Codex 原生所有权切换的门禁登记
+
+V4、V8–V13 的具体替代、退役、名称和姿态以同批 `sdd/gates.md` 与 `ci.yml` 为准。
+V8–V11 保持 blocking，V13 保持 warning；V12 的生成拓扑 join 随拓扑退役，必要保护先由原生检查承担。
+V4 严格失败、原生新增单测进入 Tests 的 blocking 效果和旧机制测试具名退役须单独列入 Owner 审阅集合。
+首次原生 CI 锚点仅能在正式应用后记录，不沿用历史 streak；不以 SKIP 或人工批准充当运行证据。
+远端 required-check/ruleset 未因本次本地差异自动更改。

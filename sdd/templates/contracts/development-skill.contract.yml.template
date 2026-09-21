@@ -1,0 +1,16 @@
+# Native infra skill freeze template. Owner reviews paths and recomputed values.
+contract_id: development-skill
+schema_version: 1
+adapter: development-skill
+covers_requirements: [REQ-001, REQ-002]
+namespace_pattern: ^mj-agent-infra-[a-z-]+$
+family: infra
+schema_compliance: native-name-description-v1
+hitl_required: [mcp-server-trust-posture-change]
+skills:
+  - name: mj-agent-infra-<name>
+    file: .agents/skills/mj-agent-infra-<name>/SKILL.md
+    description_hash: sha256:<recompute-parsed-description>
+    body_content_hash: sha256:<recompute-LF-body-no-trim>
+    body_section_heads: []
+    frozen_at: '<actual-approved-freeze-time-UTC>'

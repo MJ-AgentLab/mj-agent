@@ -15,7 +15,7 @@ ai_visibility: source-of-truth
 > **Kernel home note (M6 PR4a)**: 本 policy 是文档治理的 **kernel 真相源**。它收纳了
 > 三轨 STANDARD（Meta_Framework / Code_Side / Agent_Side / HITL_Prompt）中的**文档治理**内容：
 > 12 类文档分类、`track` frontmatter 字段、PR 门禁 A1-A6 + OB1-OB5、frontmatter schema
-> （含类型专属字段）、CLAUDE.md sync allowlist。这些规则的 canonical home **自本 policy 起**就是这里。
+> （含类型专属字段）、AGENTS.md sync allowlist。这些规则的 canonical home **自本 policy 起**就是这里。
 >
 > 在 M6 PR4 archive ceremony 落地前，源 STANDARD 仍 `state: active` 留在 `docs/rule/` 作为
 > **历史源**；PR4 把它们整体迁入 `archive/rule/` + `state: deprecated`，living 引用同步重指本 policy。
@@ -24,7 +24,7 @@ ai_visibility: source-of-truth
 > **不在本 policy 范围**（cross-ref，不重复 port）：
 > - A7-A11（agent-side SKILL/PROMPT/EVAL/CONTRACT 专属门禁）→ `sdd/adapters/runtime-skill.md`
 >   + `sdd/adapters/prompt.md` + [[policies/ai-agent|policies/ai-agent]] §4 canonical 10-enum（surface-anchored 子集）
-> - A12-A14（engineering-workflow `.claude/**` + `.mcp.json` 专属门禁）→ `sdd/adapters/claude-code-skill.md`
+> - A12-A14（engineering-workflow `.agents/** + .codex/**` + `.codex/config.toml` 专属门禁）→ `policies/development-skills.md`
 >   + [[policies/ai-agent|policies/ai-agent]] §4（`mcp-server-trust-posture-change`）+ Meta §7.7（历史源）
 > - EVAL authoring 完整规范（4 子类 + body 八段）→ [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]]
 >   + Agent_Side §4（历史源；Phase E EVAL framework 落地前不迁入本 policy）
@@ -70,7 +70,7 @@ ai_visibility: source-of-truth
 | STANDARD | shared | Meta（跨轨）/ Code_Side（代码规约）/ engineering-workflow（如 HITL_Prompt） |
 | ISSUE | shared | 按主题（见 §6.2 类型专属 frontmatter + §2.4 命名约定） |
 | ASSESSMENT | shared | 按评估对象（见 §6.2 类型专属 frontmatter） |
-| **SKILL** | **agent**（默认）/ **engineering-workflow**（路径 `.claude/skills/**` 时） | Agent_Side §2（in-source 13 字段）/ `sdd/adapters/claude-code-skill.md`（in-tree ADR-013 native 2 字段） |
+| **SKILL** | **agent**（默认）/ **engineering-workflow**（路径 `.agents/skills/**` 时） | Agent_Side §2（in-source 13 字段）/ `policies/development-skills.md`（in-tree ADR-013 native 2 字段） |
 | **PROMPT** | **agent** | Agent_Side §3 / `sdd/adapters/prompt.md` |
 | **EVAL** | **agent** | Agent_Side §4 / [[decisions/ADR-024_Eval_Framework_Spec|ADR-024]] |
 | **CONTRACT** | shared | Agent_Side（agent-facing tool）/ Code_Side（cross-service） |
@@ -84,8 +84,8 @@ CONTRACT（agent-facing tool）。
 
 新建 canonical 文档按以下优先级选目录（高序号让位低序号）：
 
-0. **Engineering-workflow 专属**：进入 `.claude/skills/<name>/`、`.claude/scripts/`、
-   `.claude/hooks/`、`.claude/settings.json`、`.mcp.json`（不进入 `docs/` 或 `src/`）
+0. **Engineering-workflow 专属**：进入 `.agents/skills/<name>/`、`scripts/mcp/`、
+   `.codex/rules/`、`.codex/hooks.json`、`.codex/config.toml`（不进入 `docs/` 或 `src/`）
 1. Agent 专属：`src/mj_agent/{skills,prompts}/**`
 2. 子系统专属
 3. 基础设施专属
@@ -136,22 +136,17 @@ CONTRACT（agent-facing tool）。
 | `CONTRIBUTING.md` | 协作与提交流程 |
 | `CHANGELOG.md` | 版本变更日志 |
 | `GLOSSARY.md` | 项目术语索引（不与 `docs/glossary/<topic>.md` 专题词典重叠） |
-| `CLAUDE.md` | AI 高频上下文缓存（同步策略见 §7） |
+| `AGENTS.md` | AI 高频上下文缓存（同步策略见 §7） |
 
 **治理例外条款**：项目根 5 文件**不进入 canonical 治理表**——不强制 frontmatter（A2 不适用）、
-不强制类型 body 骨架、不计入 A1-A3 PR 门禁。**但仍受**：A4 wikilink 完整性、A6 CLAUDE.md sync
+不强制类型 body 骨架、不计入 A1-A3 PR 门禁。**但仍受**：A4 wikilink 完整性、A6 AGENTS.md sync
 （§7 allowlist 触发时同步）、GitHub_Markdown §14 项目根特例。与 §3 path-to-track 决策树第 0 条衔接。
 
 **AI-agent 指令契约例外（`AGENTS.md`，根 + 4 嵌套）**：`AGENTS.md` 是 **AI agent 指令契约**（所有
-authorized agent 的 tool-neutral operating contract；per ADR-035）——与上述 5 个「项目元信息」文件
-**并列于 canonical 治理之外，但属不同类别**。自 dual-agent-compat v5 P1（#320 / ADR-036）起共 **5
+authorized agent 的 tool-neutral operating contract；per ADR-035）——与其他根操作文件共同豁免 canonical frontmatter，但承担独立的指令契约职责。自 dual-agent-compat v5 P1（#320 / ADR-036）起共 **5
 件**：根 `AGENTS.md` + 4 嵌套（`capabilities/` / `docker/` / `src/mj_agent/` / `tests/`），嵌套件
 与根件同待遇。统一处理：**不写 frontmatter**（Codex 直读该文件，frontmatter 会污染其指令语义）、
-**A1-A3 不适用**、**A4 wikilink 完整性 + A6 CLAUDE.md sync 仍适用**（根件 §Codex Status 内容与
-`CLAUDE.md` §Codex Status 同步；各层 `CLAUDE.md` 以 `@AGENTS.md` 导入同层规则、不复制正文）、
-GitHub_Markdown §14 语法特例同样覆盖；下文代偿纪律亦适用。归档 stale-ref sweep
-（[[policies/archive|policies/archive]] §1）须一并覆盖全部 5 件；存在性与 `CLAUDE.md` 引用关系由
-`scripts/sdd/check_development_agent.py`（V8）机器校验。
+**A1-A3 不适用**；A4 wikilink + A6 同步检查适用。根及四处局部 AGENTS 直接维护原生约束，存在性由 V8 验证；不再维护双客户端导入关系。
 
 > **代偿纪律（gate-light ≠ 免责）**：项目根 5 文件豁免 A1-A3、缺自动化卫生门兜底，故**不得复制易变派生事实**
 > ——如 active 技能数/名单（真值在 `agent.py:_ACTIVE_SKILLS`）、工具数、middleware 数等。这类事实**一律指向
@@ -173,7 +168,7 @@ track: code | agent | engineering-workflow | shared
 |---|---|---|
 | `code` | Track A — 代码侧文档（开发 / 部署 / 运维） | 见 §2 类型表 |
 | `agent` | Track B — 智能体侧文档（runtime 直接影响业务） | 见 §2 类型表 |
-| `engineering-workflow` | Track C — 工程流程文档（`.claude/` + `.mcp.json` + 工程流程 STANDARD） | 物理路径在 `.claude/**` 或 `.mcp.json` 时强制；`docs/rule/` 下治工程流程者按 §3.1 规则 6 判 |
+| `engineering-workflow` | Track C — 工程流程文档（`.agents/` + `.codex/config.toml` + 工程流程 STANDARD） | 物理路径在 `.agents/** + .codex/**` 或 `.codex/config.toml` 时强制；`docs/rule/` 下治工程流程者按 §3.1 规则 6 判 |
 | `shared` | 跨轨 — 多 track reviewer 都需介入 | **过渡期**默认值；原「Phase 1 末收紧为 explicit required」的指涉已悬空——该「Phase 1」锚 [[decisions/ADR-012_Two_Track_Documentation_Governance|ADR-012]]（`state: draft`）的 marketplace 双 plugin 阶段，已被 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]] in-tree 路线演替且从未收口（#451 核定）；收紧与否悬置，待另立单拍板 |
 
 ### §3.1 path-to-track 决策树（Meta §4.3.1）
@@ -182,10 +177,10 @@ track: code | agent | engineering-workflow | shared
 规则 9 路径命中即**豁免**——kernel 面的两条例外，#451）：
 
 0. 路径是项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` /
-   `CLAUDE.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
+   `AGENTS.md`）？→ **不适用 track**（per §2.6 例外条款；不写 frontmatter；A1-A3 不适用）
 1. 路径在 `src/mj_agent/{skills,prompts}/**`？→ **agent**
 2. 路径在 `src/mj_agent/{其他}/**`？→ **code**
-3. 路径在 `.claude/**` 或 `.mcp.json`？→ **engineering-workflow**
+3. 路径在 `.agents/** + .codex/**` 或 `.codex/config.toml`？→ **engineering-workflow**
 4. 路径在 `docs/evaluation/`？→ **agent**
 5. 路径在 `docs/{infrastructure,runbook,api}/`？→ **code**
 6. 路径在 `docs/rule/` 但治"engineering 流程"？→ **engineering-workflow**
@@ -207,14 +202,14 @@ track: code | agent | engineering-workflow | shared
 > | `_AI_Engineering_*` | 否 | 仓内从无对应件 —— 该名字指的是上游 mj-system 的同名 STANDARD（Lite Phase A 占位引用） |
 > | `_Claude_Code_Settings_*` | 否 | 仓内从无对应件 —— Phase C 计划件，从未落地；A13 规则体实际住在 [[policies/ci-gates|ci-gates]] §5.1 |
 >
-> 规则 3 的 `.claude/**` + `.mcp.json` 两支一直有效，故这是**分支删除而非整条规则失效**；
+> 规则 3 的 `.agents/** + .codex/**` + `.codex/config.toml` 两支一直有效，故这是**分支删除而非整条规则失效**；
 > `docs/rule/` 下若再出现治工程流程的 STANDARD，由规则 6 兜住。**删除对现存文件零行为 delta**：
 > `docs/rule/` 现有 3 个 STANDARD 的文件名与这 4 个 glob 均不匹配，其 `track` 现值
 > （`code` / `code` / `shared`）删前删后都由规则 7 判出。上表 `engineering-workflow` 行的
-> 「默认值」列曾持有同一份死枚举（且缺 `.mcp.json`，与本树互相矛盾），已同批 truth-up。
+> 「默认值」列曾持有同一份死枚举（且缺 `.codex/config.toml`，与本树互相矛盾），已同批 truth-up。
 >
 > **kernel 四目录缺口已处置（#449 存档 → #451 落规则，2026-08-07）**：规则 1-7 只对
-> `src/mj_agent/**` / `.claude/**` / `.mcp.json` / `docs/**` 强制路由，`policies/` `sdd/`
+> `src/mj_agent/**` / `.agents/** + .codex/**` / `.codex/config.toml` / `docs/**` 强制路由，`policies/` `sdd/`
 > `decisions/` `capabilities/` 曾一律落旧规则 8（默认 `shared` + 论证），与实况不符——实际落盘
 > **按主题**分流。#451 AC-1 双口径复测（逐文件 frontmatter 解析 × `grep '^track:'` 交叉互验，
 > 2026-08-07，与 #449 快照一致）：四目录 106 个 markdown = `shared` 28 / `engineering-workflow`
@@ -230,7 +225,7 @@ track: code | agent | engineering-workflow | shared
 > spec / contract / tasks / runbook / evidence；本分类只治 `docs/**` + in-source canonical），
 > frontmatter 走 `type: capability-*` 自有 schema + [[sdd/lifecycle|lifecycle]] §1 9 态，
 > 不写 `track` 不是缺漏：四件套（requirements / design / tasks / runbook）带 `type: capability-*`
-> frontmatter；`evidence/**` 依既有惯例**无 YAML frontmatter**；`AGENTS.md` / `CLAUDE.md`
+> frontmatter；`evidence/**` 依既有惯例**无 YAML frontmatter**；`AGENTS.md` / `AGENTS.md`
 > entry adapter 与 `INDEX.auto.md` 生成物同 §2.6 例外性质。⚠ 门禁事实：
 > `scripts/check_frontmatter.py` 的 `SCAN_ROOTS` 不含 `policies/` `sdd/` `capabilities/`——
 > 这三目录的 frontmatter **全程无 gate**，本条款与规则 8/9 的执行靠手工核验 + merge review
@@ -240,22 +235,22 @@ track: code | agent | engineering-workflow | shared
 
 ## §4 Review Cadence（A6 — Anthropic 大型代码库最佳实践；native）
 
-CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外条款）+ `.claudeignore` +
-`.claude/settings.json` + `.claude/plugins.json` + `.claude/hooks/` **每 3-6 月或新 Claude 模型发布
+AGENTS.md（root + 4 subdir，per §2.6 例外条款）+ `.dockerignore` +
+`.codex/hooks.json` + `.codex/config.toml` + `.codex/rules/` **每 3-6 月或新 Codex 模型发布
 后强制审计**.
 
 | 触发 | 频率 | 责任人 | 检查项 |
 |---|---|---|---|
 | 定期 | 季度（每 3 月） | DRI（ranzuozhou） | 行数 / 命令链是否过时 / HITL 边界是否合理 / 4 项必停是否仍有效 |
-| 模型 release | model major bump 1 周内 | DRI | 新模型行为变化（如 Opus 4.7 → 4.8）；旧 prompt 在新模型下是否反效果 |
-| Phase 切换 | 每 Phase 末 | DRI + reviewer | Phase 引入的新 capability / gate 是否需在 CLAUDE.md 索引 |
+| 模型 release | model major bump 1 周内 | DRI | 新模型行为变化（按当前 Codex 宿主实际模型版本）；旧 prompt 在新模型下是否反效果 |
+| Phase 切换 | 每 Phase 末 | DRI + reviewer | Phase 引入的新 capability / gate 是否需在 AGENTS.md 索引 |
 
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_audit.md`（capability 无关；属仓库级；
-由 `.claude/hooks/stop-claude-md-improver/` 产出 diff 草案，user 审后落地）.
+由 Codex 提出具体 diff，Owner 按保护面批准并通过已审阅路线应用；不自动启动维护 hook）。
 
 **触发 A6 时的产出物**：
 
-1. CLAUDE.md（root + 4 subdir）的实际行数 vs 上限
+1. AGENTS.md（root + 4 subdir）的实际行数 vs 上限
 2. 过时命令清单（运行失败的）
 3. HITL 触发条件 vs 实际触发频率（过严 / 过松）
 4. 4 项专属必停是否仍代表真实风险
@@ -270,23 +265,23 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
 
 > 源：Code_Side §7.1（A1-A6 定义，canonical 源）+ §7.2（OB1-OB5）。**这是 A1-A6 的唯一权威定义**——
 > Meta §7.1 只引用本表，不定义。约 50 个 living 文件按编号调用这些门禁（PR_TEMPLATE / CONTRIBUTING.md /
-> `.claude/skills/mj-agent-{doc,flow}-*` / docs/INDEX.md）。
+> `.agents/skills/mj-agent-{doc,flow}-*` / docs/INDEX.md）。
 
 ### §5.1 阻塞式检查 A1-A6（全部 track 共享）
 
 | 编号 | 检查项 | 定义 | 适用 track | 自动化 |
 |---|---|---|---|---|
-| **A1** | 路径与文件名合法 | `[TYPE][_Subject]_Description[_vX.Y].md` 或 type-specific 格式（如 `[ISSUE]_NNN_DomainAbbr_Description.md`、`.claude/skills/mj-agent-<group>-<verb>/`） | code / agent / engineering-workflow / shared | Phase 2 CI |
+| **A1** | 路径与文件名合法 | `[TYPE][_Subject]_Description[_vX.Y].md` 或 type-specific 格式（如 `[ISSUE]_NNN_DomainAbbr_Description.md`、`.agents/skills/mj-agent-<group>-<verb>/`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A2** | Frontmatter schema 完整 | 必填基础字段 `type / domain / summary / owner / created / updated / state`；带 `version` 的类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）也填 `version`。**kernel 面（`policies/**` + `sdd/**`）走自有键集**，见下方 kernel 例外 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
 | **A3** | state 与专属字段枚举合法 | `state ∈ {draft, active, deprecated}`（working 文档另加 `completed`；**两轴末态另加 `archived`** —— working 文档 GC 与 canonical 归档都落这个值，per [[sdd/lifecycle|lifecycle]] §2.1 / §4，#477）；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A4** | 内部 Wikilink 目标存在 | `[[...]]` 目标存在于仓库中 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_wikilinks.py`） |
 | **A5** | INDEX.md 已同步或可重建 | 必要的 `docs/INDEX.md` / `docs/**/INDEX.md` 已同步或可由生成器重建 | code / agent / engineering-workflow / shared | Phase 2 CI |
-| **A6** | allowlist 文档变更同步检查 CLAUDE.md | §7 4 类 allowlist（框架 / 架构 / 核心运行入口 / runtime 语义）变更需同步检查 `CLAUDE.md` | code / agent / engineering-workflow / shared | Phase 0 PR review |
+| **A6** | allowlist 文档变更同步检查 AGENTS.md | §7 4 类 allowlist（框架 / 架构 / 核心运行入口 / runtime 语义）变更需同步检查 `AGENTS.md` | code / agent / engineering-workflow / shared | Phase 0 PR review |
 
 > **A1-A6 是 track-shared**：通用 hygiene 检查，与 track 失败模式无关，对全部 4 track 生效（Code_Side v1.1 加注，与 Meta §7.1 一致）。
-> **engineering-workflow 专属补丁**：A2 schema 在 `track: engineering-workflow` + 路径 `.claude/skills/**` 时，
+> **engineering-workflow 专属补丁**：A2 schema 在 `track: engineering-workflow` + 路径 `.agents/skills/**` 时，
 > schema 是 ADR-013 native 2 字段（`name` + `description`），不是 13 字段。详见
-> [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + `sdd/adapters/claude-code-skill.md`。
+> [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation|ADR-013]] + `policies/development-skills.md`。
 
 > **kernel 例外（`policies/**` + `sdd/**`；#480）**：kernel 文档**不**用上表的 canonical 键集，而用
 > `type / artifact / state / version / owner / created / updated / track / ai_visibility` —— 以
@@ -318,10 +313,10 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
   非空 + `schema_ref` 存在）由 Agent_Side §7.1（历史源）；surface-anchored 子集落
   `sdd/adapters/runtime-skill.md` + `sdd/adapters/prompt.md` + [[policies/ai-agent|policies/ai-agent]] §4。
   仅对 `track: agent` 或 `shared` 触及 SKILL/PROMPT/EVAL/CONTRACT 时生效
-- **A12-A14**（engineering-workflow 专属：`.claude/skills/` ADR-013 schema + `.claude/settings.json`
-  allowlist + `.mcp.json` trust posture）由 Meta §7.7（历史源）；落 `sdd/adapters/claude-code-skill.md`
+- **A12-A14**（engineering-workflow 专属：`.agents/skills/` ADR-013 schema + `.codex/hooks.json`
+  原生 fail-closed 边界 + `.codex/config.toml` trust posture）由 Meta §7.7（历史源）；落 `policies/development-skills.md`
   + [[policies/ai-agent|policies/ai-agent]] §4（`mcp-server-trust-posture-change`）。
-  仅对 `track: engineering-workflow` 或 `shared` 触及 `.claude/**` / `.mcp.json` 时生效
+  仅对 `track: engineering-workflow` 或 `shared` 触及 `.agents/** + .codex/**` / `.codex/config.toml` 时生效
 
 ### §5.4 审阅角色
 
@@ -329,7 +324,7 @@ CLAUDE.md（root + 4 subdir）+ AGENTS.md（root + 4 subdir，per §2.6 例外�
 |---|---|
 | 纯 code-side | SWE Reviewer 一名（Code_Side §8） |
 | agent-side（SKILL/PROMPT/EVAL/CONTRACT） | Domain Expert / Prompt Engineer **+** SWE（≥ 2，Agent_Side §8） |
-| engineering-workflow（`.claude/**` / `.mcp.json`） | Tooling Reviewer + SWE |
+| engineering-workflow（`.agents/** + .codex/**` / `.codex/config.toml`） | Tooling Reviewer + SWE |
 | `track: shared` | 各触及 track 的 reviewer 都需介入 |
 
 ## §6 Frontmatter schema（通用字段 + 类型专属）
@@ -429,14 +424,14 @@ period: <daterange>               # 评估周期（如 "Phase 0" / "2026-04-01 �
 GUARDRAIL / OPS / INTEGRATION / WORKFLOW / ...`。`engineering-workflow` track 默认 domain
 `WORKFLOW`，但跨领域工作流（git / doc 流程）可保留各自原 domain（`SYS` / `OPS`）+ `track: engineering-workflow`。
 
-## §7 CLAUDE.md Sync Allowlist（A6 触发条件）
+## §7 AGENTS.md Sync Allowlist（A6 触发条件）
 
 > 源：Meta §6.4（4 类 allowlist）+ §6.4.1（三轨分段）。本节定义 A6 PR gate **何时**要求 per-PR
-> 同步 CLAUDE.md。
+> 同步 AGENTS.md。
 
 ### §7.1 4 类 allowlist
 
-以下 4 类文档变更触发 §5.1 A6 PR gate（同步检查 `CLAUDE.md`）；其余文档默认按需读取，**不要求**缓存进 CLAUDE.md：
+以下 4 类文档变更触发 §5.1 A6 PR gate（同步检查 `AGENTS.md`）；其余文档默认按需读取，**不要求**缓存进 AGENTS.md：
 
 | 类别 | mj-agent 具体例 |
 |---|---|
@@ -445,12 +440,12 @@ GUARDRAIL / OPS / INTEGRATION / WORKFLOW / ...`。`engineering-workflow` track �
 | **类 3 — 项目目录入口** | `docs/INDEX.md` + 核心运行时模块位置（`src/mj_agent/{agent,llm,config}.py` + `tools/` / `skills/` / `prompts/`） |
 | **类 4 — runtime 语义（mj-agent 特化）** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（L1 hybrid guardrail / L1b sqlglot precheck / L2 SKILL semantics / L3 read-only conn / L4 GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI） |
 
-> **类 4 理由**：CLAUDE.md 中 LLM provider + Data boundary + HITL gates 三块占比 ~40%，是 mj-agent
-> native 内容；显式列入避免 reviewer 在「这条规则改是否要 sync CLAUDE.md」上反复判断。
+> **类 4 理由**：AGENTS.md 中 LLM provider + Data boundary + HITL gates 三块占比 ~40%，是 mj-agent
+> native 内容；显式列入避免 reviewer 在「这条规则改是否要 sync AGENTS.md」上反复判断。
 
-### §7.2 CLAUDE.md 三轨分段（Meta §6.4.1）
+### §7.2 AGENTS.md 三轨分段（Meta §6.4.1）
 
-CLAUDE.md 内部按 track 分段，元规则放最顶。PR 触发 §7.1 allowlist 同步时，按文档自身
+AGENTS.md 内部按 track 分段，元规则放最顶。PR 触发 §7.1 allowlist 同步时，按文档自身
 `track` 落入对应段；`shared` 落入元规则段：
 
 - 顶部 **元规则段**：Meta_Framework 自身 + `track: shared` 的 ADR（如 ADR-011/012/013/014/017/018）
@@ -506,9 +501,9 @@ GUIDE body 骨架（CN-numbered，codified；权威模板 [[../docs/_templates/T
 ```
 
 **复用原则（Code_Side §3.1.3；load-bearing）**：GUIDE 自身**不复述**已在其它 canonical 来源
-（README / CLAUDE.md / 其它 GUIDE / STANDARD）讲过的命令、配置、字段；**命令行 / 配置优先 wikilink
-到 README / CLAUDE.md**，GUIDE 仅承担「读哪份 / 顺序怎么连」，**不复制命令**。规避点：与 README /
-CLAUDE.md 的内容漂移。
+（README / AGENTS.md / 其它 GUIDE / STANDARD）讲过的命令、配置、字段；**命令行 / 配置优先 wikilink
+到 README / AGENTS.md**，GUIDE 仅承担「读哪份 / 顺序怎么连」，**不复制命令**。规避点：与 README /
+AGENTS.md 的内容漂移。
 
 ### §8.2 RUNBOOK body authoring（ORPH-10；源 Code_Side §3.4）
 
@@ -535,14 +530,14 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 ---
 
 > *M6 PR4a — kernel home for doc-governance（12 类分类 / `track` 字段 / A1-A6+OB1-OB5 / frontmatter
-> schema / CLAUDE.md sync allowlist）；§4 Review Cadence native sustained。§8 per-type body
+> schema / AGENTS.md sync allowlist）；§4 Review Cadence native sustained。§8 per-type body
 > authoring depth（ORPH-09 GUIDE + ORPH-10 RUNBOOK；TEMPLATE_*.md designated authority）M6 PR4-OB-2
 > 迁入。源 STANDARD 在 PR4 archive 前留作历史源。*
 >
 > *v1.2（2026-08-07）：#449 — §3 值表 `engineering-workflow` 行 + §3.1 决策树规则 3 的 4 个
 > `docs/rule/` STANDARD 族 glob 删除（四者死法各异，详规则树下的核对表）。两处同出 `13605c8`
 > （M6 PR4a-1，2026-06-04）逐字搬运当时正被归档的 Meta v2.2 §4.3.1 —— 归档仪式 `11fa427` 与之
-> **同日**，即这两行落盘时已 stale；且两处枚举本身互相矛盾（表格行缺 `.mcp.json`）。行为零 delta —— 现存 3 个
+> **同日**，即这两行落盘时已 stale；且两处枚举本身互相矛盾（表格行缺 `.codex/config.toml`）。行为零 delta —— 现存 3 个
 > `docs/rule/` STANDARD 的 `track` 判定不变。同批在决策树下存档「本树不覆盖 SDD kernel 四目录」
 > 这一同源缺口（处置另立 #451）。*
 >

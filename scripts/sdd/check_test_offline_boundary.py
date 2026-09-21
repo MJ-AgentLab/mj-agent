@@ -29,15 +29,10 @@ _CANONICAL_FIXTURES = {
 
 _AGENT_INSTRUCTION_FILES = (
     Path("AGENTS.md"),
-    Path("CLAUDE.md"),
     Path("capabilities/AGENTS.md"),
-    Path("capabilities/CLAUDE.md"),
     Path("docker/AGENTS.md"),
-    Path("docker/CLAUDE.md"),
     Path("src/mj_agent/AGENTS.md"),
-    Path("src/mj_agent/CLAUDE.md"),
     Path("tests/AGENTS.md"),
-    Path("tests/CLAUDE.md"),
     Path("sdd/workflows/execution-loop.md"),
     Path(".github/PULL_REQUEST_TEMPLATE.md"),
 )
@@ -1754,7 +1749,7 @@ def _check_ci(repo_root: Path, violations: list[Violation]) -> None:
 
 def _agent_instruction_paths(repo_root: Path) -> list[Path]:
     paths = {repo_root / rel for rel in _AGENT_INSTRUCTION_FILES}
-    for root in (repo_root / ".claude", repo_root / ".agents"):
+    for root in (repo_root / ".agents",):
         if root.is_dir():
             paths.update(root.rglob("*.md"))
     return sorted(paths)

@@ -149,7 +149,7 @@ failed`。裁定与推理写在 `compose.yaml:146-159` 的注释里。⚠ `sdd/a
 > 改契约本身是 canonical `declared-contract-change`（Owner 拍板），不属本节的文档填充动作。
 
 > **审批级别——本次刻意不补 §4 行。** healthcheck 面的必停当前由两个 entry adapter 承载：
-> `docker/AGENTS.md` §Hard stops 与 `docker/CLAUDE.md` §4 项专属必停，二者均标
+> `docker/AGENTS.md` §Hard stops 与 `docker/AGENTS.md` §4 项专属必停，二者均标
 > `OWNER_APPROVAL_REQUIRED`。§4 仍无对应行，这是本次填充**有意**保留的状态：给 §4 加行会牵出
 > 「哪个 canonical enum 锚定该面」这一姿态问题——`secrets-grants-or-prod-config` 现锚的是 prod
 > compose 与 Dockerfile 外部镜像引用，而 healthcheck 字段住在 base `compose.yaml`；按 #413 先例
@@ -160,7 +160,7 @@ failed`。裁定与推理写在 `compose.yaml:146-159` 的注释里。⚠ `sdd/a
 ## §4 变更 HITL 触发条件（生产红线 + 供应链面）
 
 本节是 `docker/` 下**审批级别的 kernel SoT**。`docker/AGENTS.md` §Hard stops 与
-`docker/CLAUDE.md` §专属必停 是它的两个 entry adapter——它们**点名对象**、回指本节取级别。
+`docker/AGENTS.md` §专属必停 是它的两个 entry adapter——它们**点名对象**、回指本节取级别。
 下表列出 `docker/` 各触发面及其 HITL 级别（`docker/compose.prod.yml` 为 Phase M5 自
 `infra/docker/docker-compose.prod.yml` 平移）：
 

@@ -1,37 +1,20 @@
 ---
 name: mj-agent-git-issue
-description: "Create GitHub issues from the 8 in-repo templates with branch-type routing, urgency check and full body preview; use for 创建issue, create issue, report bug, filing a new task; the create command runs only after explicit confirmation."
+description: "适用于 mj-agent 的用8模板起草/创建GitHub Issue。输入：需求、类型、urgency、template、title/body。流程：类型→完整模板→title→preview→确认发布→实际URL。输出：模板字段完整；实际创建才报告URL。Use when：用bug模板准备一次失败的Issue草案。Do not use for：只评估任务风险，不开单；建议flow-intake，不发布Issue。授权：创建需明确授权，template硬停项不删；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Git Issue
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to create a GitHub Issue, draft an issue body, file a bug report, or start a new task in mj-agent. Make sure to use this skill whenever the user says "创建issue", "新建issue", "提issue", "报bug", "新任务", "开新工作", "create issue", "new issue", "report bug", "file issue", "open issue", "start new task" in the mj-agent context. Uses gh CLI with --body-file. Fills the matching .github/ISSUE_TEMPLATE/ file (8 templates, in-repo since 2026-05-20) selected by branch-type taxonomy + Intake Result. Do not use for: branch creation (use mj-agent-git-branch), commit message authoring (use mj-agent-git-commit), PR creation (use mj-agent-git-pr), or Issue triage on existing issues.
+
 
 ## Overview
 
@@ -39,7 +22,7 @@ Creates GitHub Issues for **mj-agent** repo (https://github.com/MJ-AgentLab/mj-a
 has **8 issue templates under `.github/ISSUE_TEMPLATE/`** (in-repo since `6c84efc`, 2026-05-20).
 This skill **fills the matching template** — it does not invent a parallel body structure — with
 the template chosen by branch-type taxonomy
-([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5) + the
+(`repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5) + the
 Intake Result from Stage 0.
 
 > **Why template-first**: the templates carry `HITL Trigger Check` checklists — including the
@@ -69,25 +52,23 @@ If not installed or not logged in → output install/login guidance and **stop**
 
 | 已知信息 | 行动 |
 |---|---|
-| 用户说"创建 issue"但 Intake Result 缺失 | 提示先跑 `/mj-agent-flow-intake`（PR-B2 落地） |
+| 用户说"创建 issue"但 Intake Result 缺失 | 提示先跑 `mj-agent-flow-intake`（PR-B2 落地） |
 | Intake Result 有，分支类型已确定 | 跳到 Step 2 直接装配 body |
-| Intake Result 有，但分支类型不明（feature vs bugfix vs maintain） | Step 1b AskUserQuestion 选 |
+| Intake Result 有，但分支类型不明（feature vs bugfix vs maintain） | Step 1b 向 Owner 询问 选 |
 | 信息完整 | 直接生成 `gh issue create` 命令 |
 
 ## Step 1: Identify Issue Type
 
-### Step 1a: Urgency Check（AskUserQuestion）
+### Step 1a: Urgency Check（向 Owner 询问）
 
 "Is this a production emergency bug requiring immediate hotfix?"
 
 - **Yes** → type = `hotfix`. 提醒：`Hotfix branches are created from main, and the PR target is also main` (H4)
 - **No** → Step 1b
 
-> [codex-interaction:site-git-issue-urgency-check] Ask the user and wait before continuing — present the prompt, options and default above verbatim; do not continue on your own.
+### Step 1b: Choose Branch Type（向 Owner 询问，5 options）
 
-### Step 1b: Choose Branch Type（AskUserQuestion，5 options）
-
-mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5)：
+mj-agent 5 branch types (`repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5)：
 
 | Option | Type | Label | When to choose |
 |---|---|---|---|
@@ -104,8 +85,6 @@ mj-agent 5 branch types ([[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message
 > because the repo carries no priority label; the `[Hotfix]` title prefix is what marks urgency.
 
 > mj-agent **不**用 `optimization/` 类型（与 mj-system 差异；详见 ADR-010 + Commit Convention v1.0）。
-
-> [codex-interaction:site-git-issue-branch-type-choice] Ask the user and wait before continuing — present the prompt, options and default above verbatim; do not continue on your own.
 
 ## Step 2: Build Issue Body（fill the matching template）
 
@@ -133,7 +112,7 @@ comes from the table above:
 
 ### Step 2b: Fill it
 
-1. Read `.github/ISSUE_TEMPLATE/<name>.md`.
+1. 读取 `.github/ISSUE_TEMPLATE/<name>.md`.
 2. **Strip the YAML frontmatter** — `name` / `about` / `title` / `labels` / `assignees` are
    GitHub form metadata and must never appear in the body.
 3. Replace every `<...>` placeholder. For checklist items that do not apply, answer them
@@ -142,11 +121,11 @@ comes from the table above:
 4. Fill `HITL Trigger Check` honestly — for several surfaces it is the **only** carrier. The
    `docker/Dockerfile` external-registry supply-chain stop has no harness gate and no CI gate
    (`policies/docker-runtime.md` §4); skipping the checkbox is how that stop goes unnoticed.
-5. Write the filled body to a temp file → `gh issue create --body-file` (Step 5). `--template`
+5. 写入 the filled body to a temp file → `gh issue create --body-file` (Step 5). `--template`
    only takes effect for interactive / web-UI creation and is silently inert in non-interactive
    use — `--body-file` is the required carrier here.
 
-> **Scope 段·纵切片归属**（承 `/mj-agent-flow-plan` Step 2 纵切纪律）：若本 issue 是某 milestone
+> **Scope 段·纵切片归属**（承 `mj-agent-flow-plan` Step 2 纵切纪律）：若本 issue 是某 milestone
 > 的一个**端到端纵切片**，In-scope 应是**自身可验、可独立 review-合**的窄完整路径；用
 > `blocked-by` 标依赖序，**不**按层水平切。
 
@@ -176,28 +155,24 @@ comes from the table above:
 
 ## Step 4: Preview & Confirm
 
-展示完整 Issue（Title + Labels + Body）；AskUserQuestion 3 options：
+展示完整 Issue（Title + Labels + Body）；向 Owner 询问 3 options：
 
 1. **Submit** → Step 5
-2. **Edit** → 询问哪个字段重填 → 回到预览
+2. **编辑** → 询问哪个字段重填 → 回到预览
 3. **Cancel** → 清理临时文件，停止 (H2)
-
-> [codex-interaction:site-git-issue-preview-confirm] Ask the user and wait before continuing — present the prompt, options and default above verbatim; do not continue on your own.
 
 ### Step 4b: Assignee（可选）
 
-AskUserQuestion 3 options：
+向 Owner 询问 3 options：
 1. **Assign to me** → `--assignee @me`
 2. **Assign to someone else** → 询问用户名 → `--assignee <username>`
 3. **Skip**
 
-> [codex-interaction:site-git-issue-assignee-choice] Ask the user and wait before continuing — present the prompt, options and default above verbatim; do not continue on your own.
-
 ## Step 5: Create Issue
 
 ```bash
-# Windows: $env:TEMP/mj-agent-issue-body-<type>.md
-# Unix: /tmp/mj-agent-issue-body-<type>.md
+# Windows: $env:TEMPmj-agent-issue-body-<type>.md
+# Unix: /tmpmj-agent-issue-body-<type>.md
 
 # 把 Step 2b 填好的模板正文（已剥 frontmatter）写入临时文件后
 gh issue create \
@@ -224,7 +199,7 @@ rm <tmp-file>  # PowerShell: Remove-Item <tmp-file>
 
 ### Next Step
 
-To start development, use `/mj-agent-git-branch` to create:
+To start development, use `mj-agent-git-branch` to create:
   <type>/<issue-number>-<short-description>
 ```
 
@@ -249,11 +224,8 @@ handoff **suggestive，不强制**——`mj-agent-git-branch` 的 issue-id 是�
 - **不要** 因为某个勾选项不适用就删掉它（标 `— No`：已回答与没人看过必须可区分）
 - **不要** 在没有 Intake Result 时直接创建 Issue（跳过 §3.1 必停 HITL trigger）
 - **不要** 在 Issue body 中塞详细实现计划（那是 Plan / SPEC 的职责）
-- **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5.1）
+- **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5.1）
 
 ## Handoff to mj-agent-git-branch
 
-Issue 创建后用 `$mj-agent-git-branch` 创建对应 worktree，分支命名 `<type>/<issue-number>-<short-description>`。
-
-<!-- codex-route:edge-git-issue-git-branch -->
-> Codex route: invoke `$mj-agent-git-branch` (native carrier; handoff, conditional)
+Issue 创建后用 `mj-agent-git-branch` 创建对应 worktree，分支命名 `<type>/<issue-number>-<short-description>`。

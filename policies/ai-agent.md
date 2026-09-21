@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.7
+version: 0.8
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-03
+updated: 2026-09-18
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -16,33 +16,12 @@ ai_visibility: source-of-truth
 > §HITL Required Scenarios）；§7-§9 亦 native。**§5 / §6 于 #482（2026-08-11）内容化，本文件不再有待填充节。**
 > ⚠ 引用本文件请用**章节号 + 行名**，勿用行号——内容增补会整体移动行号，且无任何 gate 能发现失效的行号锚。
 
-## §1 Codex 参与策略层（native；最高优先级）
+## §1 Codex 原生开发参与
 
-**当前 mj-agent 项目授权 Codex 作为完整开发参与者（per ADR-035 + 2026-07-06 amendment）。standalone
-Codex（路径 A）已开——由 `AGENTS.md`（其 operating contract）+ Codex 自身权限治理，可运行命令 + 做
-开发；仅 (B) Claude Code 调用 Codex 插件这条路径的技术 wiring 延后.**
-
-| 原则 | 含义 |
-|---|---|
-| 实施来源 | 文件修改、代码实现、测试运行、目录迁移、文档落地、验证总结可由 Claude Code 或 Codex 完成（Codex 使能后）；两者同属实施 agent. |
-| 授权对等 → 约束对等 | Codex 与 Claude Code 同一授权类；相应**同样受** HITL 必停（§4 canonical 10-enum）+ 数据边界（ADR-006 / ADR-009 / ADR-000）约束；授权不放宽任何安全面. |
-| 决策单点 | Owner 仍是唯一决策者（HITL 拍板）；实施可双 agent，决策与验收单点不变；每 PR 声明由哪个 agent 实施 + git authorship 记溯源. |
-| 两类使能须区分 | **(A) standalone Codex** 由 `AGENTS.md` + Codex 自身权限治理，**已开**——Codex 在自身 harness 下跑，mj-agent `ask` 门 / protected-path prompt / L1·L1b 代码级 guardrail **不约束它** → 5 必停 + 数据边界靠 `AGENTS.md` **self-enforced prose**（Codex 自守）enforce. **(B) Claude Code 调用 Codex 插件**（`.claude/plugins.json` + `.claude/settings.json` + MCP wiring）仍延后为独立 opt-in；(B) 延后不限制 (A). |
-| 边界文件 | 详 `AGENTS.md`（Roster + Codex 参与契约 + 使能前置）+ `CLAUDE.md` §Codex Status + `decisions/ADR-035`. |
-
-**问责模型（原「非参与」四条 rationale 的重述）**：
-
-1. **Single point of accountability** — 决策 + 验收单点在 Owner（HITL 拍板）；实施可双 agent，
-   溯源靠 per-PR 声明 + git authorship.
-2. **Tool execution surface 受控** — 两实施 agent 共用同一数据边界；Codex 在自身 harness 下靠
-   `AGENTS.md` self-enforced prose 自守（非 mj-agent 技术门）.
-3. **4 项 in-source 专属必停**（`sql-guardrail-relax` / `prompt-version-or-body-change` /
-   `biz-catalog-sync` / `runtime-skill-content-change`；per §4 canonical 10-enum）仍 Owner-HITL 门；
-   Codex 按 `AGENTS.md` self-enforced 边界自守（编辑前须 Owner 拍板）.
-4. **CLAUDE.md HITL 规则** 按 Claude Code 读写契约校准 → Codex 用自己的校准契约（`AGENTS.md`）.
-
-每次任务输出末尾须**声明 Codex 参与情况**（`Codex invocation: NONE` 或描述其具体贡献）；standalone
-Codex 已开后该声明可为 non-NONE（描述 Codex 贡献）.
+Codex 为项目开发执行者，Owner 是决策和验收单点；实施来源由任务/PR 与 git authorship 留证。
+AGENTS.md 为原生入口，政策、SDD、capability contracts 继续承载规则正文。原生资产直接维护，定向替代依据为 ADR-040。
+无需旧客户端插件或投影链。对等的安全与数据约束继续适用；授权不消除保护。
+每次任务报告 Codex 参与、HITL、BDD/TDD 与委派情况。
 
 ## §2 Subagent Split 准则（A3 — Anthropic 大型代码库最佳实践；native）
 
@@ -64,8 +43,7 @@ session context 被探索性 read 污染.
 
 ## §3 Symbol-first Search 准则（A5 — Anthropic 大型代码库最佳实践；native）
 
-mj-agent 启用 `pyright-lsp` plugin（详 `.claude/plugins.json`）→ Python 符号查询优先 LSP，
-而非 string grep.
+优先使用当前已发现的符号查询工具；未发现时采用文件搜索和 AST 等可用等价方法，不依赖个人插件。可用工具不能扩大数据或写权限。
 
 | 场景 | 旧方式（grep） | LSP 方式 |
 |---|---|---|
@@ -91,7 +69,7 @@ of truth），LSP 仅作交互式辅助.
 | `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；propose+拍板+apply via `mj-agent-runtime-skill-doc-improve` |
 | `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
 | `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
-| `mcp-server-trust-posture-change` | `.mcp.json` server inventory / trust posture / credential mode；**D-017 扩展邻接面（ADR-036；ADR-039 D-011/D-012/D-014 revised 扩面——PR-B/D/E typed sources 先于落地纳管）**：(a) managed outputs——派生 `.codex/config.toml`、`.agents/**`、repo-root `.agents.lock.json`（owner ledger）、declared `.codex/hooks.json` 与 `.codex/rules/*.rules`；(b) generator + shared loader——`scripts/sdd/agents_sync.py` 与其消费的 `scripts/sdd/_common/` loader/renderer 模块（`skill_renderer` · `codex_config_renderer` · `codex_readme_renderer` · `codex_hook_renderer` · `codex_rule_renderer`（两者 PR-D1a 落地）· PR-A1 抽出的 lock/Handoff loader · PR-D1a 抽出的 `enforcement_source` typed-source loader；**不含** `_common/` 其余通用 validator helper），以及 enforcement 运行期守卫 `scripts/sdd/codex_hook_guard.py`（`.codex/hooks.json` 声明的 handler，PR-D1a）；(c) typed sources——manifest `sdd/development-agent.yml` 的 `mcp` / `codex.posture` / `codex_carrier`·`carrier_binding` 段、`sdd/workflows/development-agent-workflows.yml`、`sdd/adapters/codex-skill-translation.yml`、`sdd/adapters/codex-enforcement.yml`（含 `receipt_policy` 段，PR-E）；(d) render templates（**非** typed source——版本由 manifest `codex_readme_template_version` / translation map `preface_template_version` 所有）——`sdd/adapters/codex-skill-preface.md`、`sdd/adapters/codex-skills-readme.md` | per `claude-skill.contract.yml hitl_required[]`；A14 PR gate template；reconcile 只作用 verified lock owner 声明的 declared paths、unowned neighbors 必须保留（owned-only，ADR-039 D-012 revised） |
+| `mcp-server-trust-posture-change` | `.codex/config.toml` 服务/trust/凭据；`.codex/hooks.json`、`.codex/rules/*.rules`、原生守卫与启动器、冻结 infra 原生技能及其契约 | 原生资产直接维护；不再经 typed source/renderer/lock。所有权切换不取消 Owner 批准。 |
 | `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
 | `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
 | `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000；**#413 扩展供应链面**：`docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger；供应链面规则体 = `policies/docker-runtime.md` §4（anchor 扩展沿用 D-017 先例：**enum 数量不变**，只扩既有行的 surface anchor） |
@@ -107,71 +85,16 @@ of truth），LSP 仅作交互式辅助.
 > （A11 transitional-waiver 期兜底；无论本 PR 是否带 EVAL 引用）。规则体见
 > `sdd/workflows/execution-loop.md §7.3`（HITL_Prompt §4.15 Rule 11 的 kernel home）。
 
-> **Enforce 机制（ADR-034；拍板即落盘）**：本 enum 触发 = **AI 提议 + Owner 拍板 + AI
-> 落盘**，不再要求 Owner 手动转写。前 4 项 in-source 专属必停由 `.claude/settings.json`
-> `ask` 列表逐写拍板门 enforce（原 `deny` 物理硬锁已解除）；`mcp-server-trust-posture-change`
-> 等 protected-path（`.mcp.json` / `.claude/**`）由 harness 强制权限 prompt enforce；其 **D-017
-> 扩展邻接面**（`.codex/**` / `.agents/**` + root `.agents.lock.json` / `agents_sync.py` 及其
-> `_common` loader·renderer / manifest·workflow·translation·enforcement typed sources 与
-> preface·readme render templates——完整清单见上表 A14 行）非 harness 保护路径，由 Owner 拍板纪律 + V8-V11
-> drift gate（V12/V13 per ADR-039 分期挂载后同列）+ merge review 兜底（ADR-036 + ADR-039）。
-> `secrets-grants-or-prod-config` 的 **#413 供应链面**（`docker/Dockerfile` 外部 registry 镜像
-> 引用）同属**非 harness 保护路径**一类：`.claude/settings.json` 无对应 `ask` 条目，亦无**审批类**
-> CI gate 读取它（`docker-build` 只验镜像可构建、V5 只 lint 契约字段，均不判拍板）。**刻意不加
-> `ask` 条目**——`ask` 只能按路径整文件匹配，会把 #408 明确排除的内部 stage 拷贝一并纳入必停面
-> （裁定见 #413）。**前两类**落盘后由 **merge review（A13 settings allowlist / A14 .mcp.json
-> trust posture）兜底**；**第三类（#413 供应链面）没有对应的 A-编号 gate**，其兜底 = Owner 拍板
-> 纪律 + PR 模板 Docker Impact 勾选 + 人工 merge review。
-> **仅交互模式成立**——`auto` / `bypass` 模式下放宽类改动被 classifier 硬拦，须切交互模式
-> （详 §9 + `sdd/workflows/execution-loop.md §3.0`）。
+> **执行机制**：AI 给具体差异，Owner 对目标/动作/关键内容/范围拍板，之后还要检查实际执行路线。原生 hook 对 OWNER_APPROVAL_REQUIRED 保持 block；聊天批准不自动解锁。无路线返回 BLOCKED_EXECUTION_ROUTE；禁止换工具、编码、改权限或建 receipt 绕过。守卫未命中不构成授权。
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 
-> **本节按现状填写，而非按原 TBD 设想（2026-08-11，issue #482）。原 TBD 的前提已失效，且其框定
-> 与实现相反**，两处都在此更正：
->
-> 1. 原 TBD 要求「与 root `CLAUDE.md` 的 §"What Claude May Edit" / §"What Claude Must Not Edit
->    Without Approval" 两段同步」——**root `CLAUDE.md` 现无这两段**，其对位内容是 §"必停 surfaces"。
-> 2. 「**可修改路径白名单**」这个框定与实现相反：`.claude/settings.json` 的 `permissions.allow`
->    含**未加路径限定的裸 `Edit` / `Write` / `Read`**，即实际模型是**默认可写 + 逐档收窄**，
->    仓内**不存在**可修改路径白名单。本节因此改写为**四档路径模型**（收窄向）。
->
-> 节标题保留原名以免打断既有引用；真值以本节正文为准。
-
-### §5.1 四档路径模型
-
-实测 `.claude/settings.json` + harness 行为（2026-08-11）。**取值随该文件变动**，判定时以文件
-本身为准：`python -c "import json;print(json.load(open('.claude/settings.json',encoding='utf-8'))['permissions'])"`。
-
-| 档 | 面 | 载体 | AI 能否落盘 |
-|---|---|---|---|
-| **D — 禁止** | `.env`（**含 Read**）· `config/secrets.enc` · `config/secrets-mcp.enc` · `rm -rf` / `Remove-Item` / `del` 类破坏命令 | `permissions.deny` | ❌ 完全不可触。AI 取不到的外部 secret 走 §8「给 Owner 的步骤」 |
-| **A — 逐写拍板** | 4 项 in-source 专属必停面（`tools/sql/{guardrail,precheck}.py` · `prompts/system.md` · `biz_catalog/qcm_catalog.yaml`）+ `src/mj_agent/skills/**/SKILL.md` | `permissions.ask` | ✅ Owner 拍板后由 AI 落盘（ADR-034 `deny`→`ask`） |
-| **P — protected（harness 硬编码）** | `.claude/**`（除 `.claude/worktrees`）· `.mcp.json` · `.claude.json` | harness 强制权限 prompt，`allow` **不可抑制** | ✅ 每写必弹 prompt = 拍板；详 §9 |
-| **F — 默认可写** | 其余全部路径 | `allow` 中的裸 `Edit` / `Write` / `Read` | ✅ 直接落盘 |
-
-**precedence**：`deny` > `ask` > `allow` —— 具体 path 落在 `ask` 时，即使 `Edit` 在 `allow` 也弹。
-**仅交互模式成立**：`auto` / `bypass` 下放宽类改动被 classifier 硬拦（详 §9）。
-
-### §5.2 「必须 HITL」清单不在本节复制
-
-canonical 10-enum 的唯一 home 是 **§4**——本节**不复制**那张表（同一枚举出现两次必然漂移）。
-本节只补 §4 之外、**落在档位 F 却仍须 Owner 拍板**的面；它们的共同特征是**没有任何 harness 载体**：
-
-| 面 | 要求 | 兜底 |
-|---|---|---|
-| `docker/Dockerfile` 的外部 registry 镜像引用（`FROM <image>` 与 `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | Owner 拍板 | 纪律 + PR 模板 Docker Impact 勾选 + merge review。无 `ask` 条目、亦无**审批类** CI gate；规则体 `policies/docker-runtime.md` §4，enum 锚点 `secrets-grants-or-prod-config` |
-| D-017 扩展邻接面（`.codex/**` · `.agents/**` + root `.agents.lock.json` · `agents_sync.py` 及其 `_common` loader/renderer · manifest·workflow·translation·enforcement typed sources 与 preface·readme render templates——完整清单见 §4 A14 行） | Owner 拍板 | 纪律 + 投影 drift gate + merge review（ADR-036 + ADR-039） |
-| `policies/**` + `sdd/**`（kernel 元规则本身） | HITL required | merge review。**不在** canonical 10-enum 内 ⇒ PR body 的 Inventory 全填 No，并在 AI Self-Check 中说明 |
-
-### §5.3 已知差距（如实记录；本节不预判）
-
-- **`deny` 与 `ask` 两档的条目全部是 `Edit(...)` / `Read(...)` 形态，无一条 `Write(...)`。**
-  这是可观察事实。但 `Edit(<path>)` 规则**是否覆盖 `Write` 工具**尚未核实，因而「是否构成真
-  旁路」本节**不下结论**——该判定是 **issue #485** 的 AC-1，其结论落地前本节不预写。
-- 档位 F 的三个 HITL 面**都没有 harness 载体**（§5.2 第三列已逐条注明），只有纪律 + review。
-- L3 数据边界面 `src/mj_agent/integrations/mj_system_db.py` 不在 `ask` 内，该面无 harness 门
-  （同 `policies/data-boundary.md` 的既有记载）。
+本节不复制 §4 枚举。秘密、biz 旁路绝对禁止；普通未保护文件按当前任务授权修改。
+`.codex/**`、原生 guard、infra 冻结及契约保留 Owner 必停；普通开发技能不再因生成物身份被 blanket 禁止。
+`policies/**`、`sdd/**` 元规则、根及局部 AGENTS 的边界变化仍需 Owner 拍板。
+Dockerfile 只有外部 registry 镜像引用是既定必停面，其余行保持至少两位 reviewer；不得借原生守卫路径粒度的保守阻断改写政策层级。
+commit/push/PR/merge 的既有决定权保持；不以静态检查、权限模式或 hook 未触发推定批准。
+技术权限、范围授权和服务凭据分别判断。个人配置与信任不由仓库工具修改。
 
 ## §6 每次任务输出要求
 
@@ -184,7 +107,7 @@ canonical 10-enum 的唯一 home 是 **§4**——本节**不复制**那张表�
 
 | # | 条目 | 取值 | 判据出处 |
 |---|---|---|---|
-| 1 | **Codex 参与情况** | `NONE` 或描述其具体贡献 | §1（standalone Codex 已开 ⇒ 可为 non-NONE；non-NONE 须 Owner 拍板） |
+| 1 | **Codex 参与情况** | `NONE` 或描述其具体贡献 | §1（记录本任务已授权的实际贡献） |
 | 2 | **HITL scenario hit** | `NONE` 或逐项列出 | §4 canonical 10-enum |
 | 3 | **BDD/TDD impact** | `NONE` 或逐项列出 | `sdd/adapters/bdd-tdd.md` |
 | 4 | **Subagent dispatched** | `NONE` 或逐项列出 | §2（A3 subagent split 准则） |
@@ -227,7 +150,7 @@ freeze anchor 解锁 / `§4` canonical 10-enum surface 修改 / declared contrac
 - Committing a declared contract `state` flip (`draft → active` / `active → deprecated`)
   — `declared-contract-change`
 - Releasing / refreshing freeze anchor `content_hash` or `frozen_at` on any of the
-  12 必停 surfaces (4 `src/mj_agent/` in-source + 8 `.claude/skills/mj-agent-infra-*`)
+  12 必停 surfaces (4 `src/mj_agent/` in-source + 8 `.agents/skills/mj-agent-infra-*`)
   — `runtime-skill-content-change` / `prompt-version-or-body-change` /
   `mcp-server-trust-posture-change`
 - Closing a M-FU plan as `state: completed`
@@ -359,46 +282,19 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 - `M3-FU-PREFLIGHT-CI-PIPELINE-PARITY` — dep-change sub-rule (resolved at Stage D D-3f;
   see §7 Sub-rule above)
 
-## §8 External-Info Handoff Discipline（native；ADR-034）
+## §8 External-Info Handoff Discipline（ADR-034）
 
-当某步骤需要 **AI 无法自取的外部信息**（ip / port / endpoint URL / API key / token /
-secret / DB 凭证 / 远程主机状态等——含被 `.claude/settings.json` `deny` 锁掉的 `.env` /
-`secrets*.enc`），AI **不得**只抛一句含糊的"请提供 X"。必须给出**具体可执行的 Owner 操作
-步骤**：
+需要 AI 不能自取的秘密或外部状态时，给 Owner 精确的占位符命令、变量名、落点、失败判据和脱敏核验步骤。
+不得让 Owner 把秘密粘贴到会话；不使用会回显秘密的 grep/config/log 命令。
+应用设置仍经 `scripts/setup-env.ps1`；MCP 凭据维护由 Owner 在自己的终端运行 `scripts/mcp/setup-mcp-secrets.ps1`，仅原定具名变量，不写入应用环境文件。
+真实解密、OS 凭据写入及平台可用性须独立留证；准备步骤不等于已经执行。
 
-1. **精确命令**：可直接复制运行的命令（PowerShell / bash / docker / curl），含占位符变量名
-   （如 `<MJ_AGENT_MEMORY_USER>`），而非"自行配置"。优先复用既有脚本（`scripts/setup-env.ps1`
-   / `.claude/scripts/setup-mcp-secrets.ps1` / `mj-agent check`）。
-2. **env 变量名 / 落点**：明确写哪个 env key、落到 `.env` 还是 HKCU OS env、是否需重启终端 +
-   Claude Code（per `config/README.md`）。
-3. **失败现象 + 校验**：给出"成功长这样 / 失败长这样"的判据（如 `curl /models` 返回码、
-   `grep -E '^LLM_PROVIDER='` 命中）。
-4. **会话内执行提示**：交互式登录类（如 `gcloud auth login`）提示用户用 `! <command>` 前缀
-   在会话内跑，输出直接进会话。
+## §9 Protected-Path 拍板与执行路线
 
-操作落点：HITL 提问的 `Owner 执行步骤` 字段（`sdd/workflows/execution-loop.md §3.3`）。
-`infra-*` skill 已是此范式样板（`mj-agent-infra-env-setup` 的 Claude vs User Execution
-Boundary 表 + `mj-agent-infra-llm-endpoint-probe` 的 curl 探针）。
-
-## §9 Protected-Path 拍板 + Merge-Review 兜底（native；ADR-034）
-
-`.claude/**`（除 `.claude/worktrees`）、`.mcp.json`、`.claude.json` 是 Claude Code **硬编码
-protected paths**——它们与 `ask` 列表面统一走"AI 改、Owner 拍板、AI 落盘"，**消灭一切手动
-编辑**：
-
-- **交互模式**（`default` / `plan` / `acceptEdits`）：写 protected path 触发 **harness 强制
-  权限 prompt**（`permissions.allow` 不可抑制，安全检查先于 allow 评估）——该 prompt **就是
-  Owner 拍板**；批准后 AI 落盘。这是比普通文件**更强**的门（每写必拍板），非更弱。
-- **合并审查兜底**：`.claude/settings.json` 改动由 **A13**（settings allowlist review）兜底；
-  `.mcp.json` trust posture 由 **A14** + `mcp-server-governance/contracts/governance.contract.yml`
-  `§a14_pr_gate` 兜底。
-- **`auto` / `bypass` 例外（harness 固定、不可禁用）**：`auto` 模式下 protected-path 的
-  privilege-escalation（放宽 `settings.json` permissions / 改 `.mcp.json` trust）被 classifier
-  **硬拦**；`bypass` 模式跳过全部检查。故此类改动 **必须在交互模式执行**，不在 `auto` 模式跑。
-
-precedence：`deny` > `ask` > `allow`（具体 path 在 `ask` 即使 `Edit` 在 `allow` 也弹）。
-仍保持 `deny` 的面：`.env`（含 Read）/ `config/secrets*.enc` / `rm -rf` 类——这些不是
-"拍板后让 AI 写"的对象（外部 secret 走 §8 给 Owner 步骤）。
+原生 config/hooks/rules、冻结技能、契约、元规则和受保护运行时代码遵循 §4/§5。
+用户批准的范围在目标不变时可复用；hook 不能认证聊天批准，继续硬阻断。
+遭技术拒绝即返回 BLOCKED_EXECUTION_ROUTE，不停用保护、不更改个人模式、不借另一工具或编码尝试同一动作。
+项目与 hook 激活是工程师独立审阅步骤，仓库脚本不得自动信任。CI 只承担结构/行为证据，不替代 Owner 决定或宿主 canary。
 
 ---
 

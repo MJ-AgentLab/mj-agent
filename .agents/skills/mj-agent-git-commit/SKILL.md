@@ -1,13 +1,24 @@
 ---
 name: mj-agent-git-commit
-description: This skill should be used when the user asks to stage files, create commits, write commit messages, check commit format, split changes into logical commits, or prepare code before push in mj-agent. Make sure to use this skill whenever the user says "git add", "git commit", "提交代码", "暂存文件", "commit message", "提交格式", "拆分提交", "准备提交", "stage files", "怎么写 commit", "提交规范" in the mj-agent context. Enforces type(scope) summary format + 35-scope closed allowlist + branch-type discipline at commit time, preventing rework at push stage. Do not use for: branch creation (use mj-agent-git-branch), push (use mj-agent-git-push), PR creation (use mj-agent-git-pr), or amending an already-pushed commit (handle via interactive rebase + force-push directly).
+description: "适用于 mj-agent 的暂存/提交/message/split。输入：branch、diff、目标文件、敏感文件元数据、scope表。流程：status→秘密/个人排除→分组→scope→拆分→message→授权执行。输出：文件集合/message/branch-type符合且实际commit有SHA。Use when：只为两份指定文件准备逻辑commit与message。Do not use for：推送已经完成的commit；建议git-push，不重新提交或扩大暂存。授权：Owner stage/commit范围；禁止秘密；不all盲加；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
+
 
 # mj-agent Git Commit
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to stage files, create commits, write commit messages, check commit format, split changes into logical commits, or prepare code before push in mj-agent. Make sure to use this skill whenever the user says "git add", "git commit", "提交代码", "暂存文件", "commit message", "提交格式", "拆分提交", "准备提交", "stage files", "怎么写 commit", "提交规范" in the mj-agent context. Enforces type(scope) summary format + 35-scope closed allowlist + branch-type discipline at commit time, preventing rework at push stage. Do not use for: branch creation (use mj-agent-git-branch), push (use mj-agent-git-push), PR creation (use mj-agent-git-pr), or amending an already-pushed commit (handle via interactive rebase + force-push directly).
+
+
 ## Overview
 
-暂存文件并创建符合 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.1]] 规范的 Git 提交。6 步 Pre-Commit 工作流覆盖文件筛选、暂存策略、commit message 格式校验、type/branch 纪律（5 branch × 7 type 矩阵）、35 scope 闭合 allowlist 推导、拆分指导。衔接 `/mj-agent-git-branch`（创建分支）与 `/mj-agent-git-push`（推送）之间的缺口。
+暂存文件并创建符合 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 规范的 Git 提交。6 步 Pre-Commit 工作流覆盖文件筛选、暂存策略、commit message 格式校验、type/branch 纪律（5 branch × 7 type 矩阵）、35 scope 闭合 allowlist 推导、拆分指导。衔接 `mj-agent-git-branch`（创建分支）与 `mj-agent-git-push`（推送）之间的缺口。
 
 **Workflow position**: Stage 12 of HITL_Prompt 17-stage flow.
 
@@ -57,7 +68,7 @@ git diff --cached    # 已暂存差异
 | `*.pem` / `*.key` / `*.p12` | 私钥 / 证书 | **H1**: 硬性阻断 |
 | 文件 > 10 MB | 大文件不宜入 git | **H2**: 询问用户 |
 | `__pycache__/` / `*.pyc` / `.venv/` | Python 运行时 | 静默跳过 |
-| `.claude/settings.local.json` | 个人配置（已 gitignore） | 静默跳过（不应在 staged 里） |
+| 用户级/个人配置（仅元数据识别，不假定特定文件存在） | 个人配置（已 gitignore） | 静默跳过（不应在 staged 里） |
 | `.worktrees/` | bare repo worktree 目录 | 静默跳过 |
 
 **暂存策略**：
@@ -115,8 +126,8 @@ git add -u
 | `pyproject.toml` / `uv.lock` | `deps` |
 | `docker/` / `.dockerignore` | `docker` |
 | `scripts/`（含 `scripts/sdd/`） | `scripts` |
-| `.claude/` / `.mcp.json` / `.claudeignore` | `claude` |
-| `AGENTS.md` / `.agents/` / `.codex/` / `.agents.lock.json` | `agents` |
+| 原生 `.codex/` / `.codex/config.toml` | `agents`（使用已有 scope；正式映射消费者待 P3 核对） |
+| `AGENTS.md` / `.agents/` / `.codex/` | `agents` |
 | **文档 / 治理（§4.2.2，10 项）** | |
 | `sdd/` | `sdd` |
 | `policies/` | `policies` |
@@ -130,13 +141,13 @@ git add -u
 | `archive/`（归档仪式本身） | `archive` |
 | **兜底（§4.2.3，1 项）** | |
 | 根 `config/`（secrets pipeline）/ `.env.example` / `langgraph.json` / `.gitignore` | `infra` |
-| **跨区域混合**（含 `.claude/**` + `.github/**`、跨多个治理目录） | **省略 scope**（§4.4） |
+| **跨区域混合**（含 `.codex/**` + `.github/**`、跨多个治理目录） | **省略 scope**（§4.4） |
 
 > **重要**：scope 是闭合 allowlist；引入新 scope 必须修订 `[STANDARD]_MJ_Agent_Commit_Message_Convention`（minor 版本号 bump），且**由引入该目录 / 子系统的那个 PR 同批更新**（v1.1 §4.5 责任归属条款）。
 >
 > **三条硬禁止**（v1.1 §4.3）：`docs` 不得作 scope（用所在区域的 scope，如 `docs(sdd)`）；不得以 **type** 作 scope（`refactor` / `test` / `feat` 属 type 命名空间）；不得以**项目阶段 / 里程碑**作 scope（如 `stage-e` / `phase0`）——阶段信息写进 summary 或 body。
 >
-> **历史别名**：读旧 commit 时参 v1.1 §4.6 映射表（如 `plan`→`plans`、`adr`→`decisions`、`skill-index`→`claude`）。注意 `skill` scope **专指** `src/mj_agent/skills/`，`.claude/skills/` 归 `claude`。
+> **历史别名**：读旧 commit 时参 v1.1 §4.6 映射表（如 `plan`→`plans`、`adr`→`decisions`、`skill-index`→`claude`）。注意 `skill` scope **专指** `src/mj_agent/skills/`，`.agents/skills/` 归 `agents`；历史 `claude` scope 只用于读取旧记录。
 
 ### Step 4 — Enforce Type/Branch Discipline
 
@@ -186,7 +197,7 @@ git commit -m "$(cat <<'EOF'
 
 <long body>
 
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Co-Authored-By: <verified contributor name> <verified contributor email>
 EOF
 )"
 
@@ -219,7 +230,7 @@ git status --short
 | **H5** | 当前分支为 `main` 或 `develop` | **硬性阻断**：拒绝提交，告知切换到工作分支 |
 | **H6** | Commit message 不符合格式（缺 type / scope 不在 allowlist / summary 含句号 / 大写 / > 72 chars） | 展示格式要求 + 修正建议 |
 | **H7** | 检测到可拆分的大变更（Step 5） | 建议拆分方案，询问是否拆分 |
-| **H8** | 暂存区含 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 改动 | 提示：B 风味 in-source canonical 改动是 §3.1 必停 HITL 项；建议先 `/mj-agent-runtime-skill-doc-improve` 或 `/mj-agent-runtime-prompt-version-bump`（PR-C2 落地）propose diff |
+| **H8** | 暂存区含 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/system.md` body 改动 | 提示：B 风味 in-source canonical 改动是 §3.1 必停 HITL 项；建议先 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2 落地）propose diff |
 
 > **H1** + **H5** 是硬性阻断（不提供"继续"选项）。其他场景允许用户覆盖。
 
@@ -234,10 +245,10 @@ git status --short
 git branch --show-current   # → feature/63-add-flow-intake-skill ✓
 
 git status --short
-# A  .claude/skills/mj-agent-flow-intake/SKILL.md
+# A  .agents/skills/mj-agent-flow-intake/SKILL.md
 
 # Step 3-4: type=docs（feature 分支允许 docs）, scope=省略（跨子系统）
-git add .claude/skills/mj-agent-flow-intake/SKILL.md
+git add .agents/skills/mj-agent-flow-intake/SKILL.md
 git commit -m "docs: add mj-agent-flow-intake workflow skill"
 ```
 
@@ -286,7 +297,7 @@ git status --short
 # Step 5 + H8 触发：
 # 「检测到 in-source SKILL.md body 改动（B 风味 implementation；
 #   §3.1 必停 HITL 项）。
-#   建议先用 /mj-agent-runtime-skill-doc-improve（PR-C2 落地）propose diff，
+#   建议先用 mj-agent-runtime-skill-doc-improve（PR-C2 落地）propose diff，
 #   由项目负责人 review 后再 commit。
 #   或者：(1) 确认例外，继续 commit  (2) 撤销暂存」
 ```
@@ -297,14 +308,16 @@ git status --short
 - **不要** 跳过 Step 4 type/branch matrix 校验（push 阶段 H3 会重新触发，浪费时间）
 - **不要** 引入未在 35 闭合 allowlist 内的 scope（应该先修订 Commit Convention §4 minor bump）
 - **不要** 用 type 当 scope（`refactor` / `test` / `feat`）或用项目阶段当 scope（`stage-e` / `phase0`）——v1.1 §4.3 已明文禁止
-- **不要** 在 commit message 中嵌入 `Generated by Claude Code` 之类自动化签名（用 `Co-Authored-By: Claude Opus ...` 标准 trailer）
+- **不要** 在 commit message 中嵌入 `Generated by Codex` 之类自动化签名（用 `Co-Authored-By: <verified contributor name> <verified contributor email>` 标准 trailer）
 - **不要** 在 in-source SKILL.md / system.md body 改动时跳过 §3.1 必停 HITL（H8 触发；这是 mj-agent 专属硬约束）
 
 ## Handoff to mj-agent-git-push
 
 ```
 提交完成
-下一步：使用 `/mj-agent-git-push` 执行 pre-push 检查（双推 gitee + origin）。
+下一步：使用 `mj-agent-git-push` 执行 pre-push 检查（双推 gitee + origin）。
   已验证项：commit message 格式 ✓、type/branch 纪律 ✓、35-scope allowlist ✓
   待检查项：CHANGELOG 更新、工作目录干净、base branch 同步、双推
 ```
+
+> 署名示例中的占位符不得写入提交；仅填已核实的协作者身份，未核实则省略可选 trailer，实际贡献在任务与 PR 正文记录。

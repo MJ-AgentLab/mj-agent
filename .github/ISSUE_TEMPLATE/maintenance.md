@@ -15,9 +15,9 @@ assignees: []
 - CI 配置（`.github/workflows/`）
 - Docker（Dockerfile / compose）
 - Dependencies（`pyproject.toml` / `uv.lock`）
-- Scripts（`scripts/` / `scripts/sdd/` / `.claude/scripts/`）
+- Scripts（`scripts/` / `scripts/sdd/` / `scripts/mcp/`）
 - Tooling（mypy / ruff / pytest 配置）
-- Claude Code config（`.claude/settings.json` / `.claudeignore` / hooks / `.mcp.json`）
+- Codex project config（`.codex/hooks.json` / `.dockerignore` / hooks / `.codex/config.toml`）
 
 ## Capability 影响
 
@@ -37,8 +37,8 @@ assignees: []
 ## HITL Trigger Check
 
 - [ ] CI blocking gate 启用 / 关闭？（必 HITL）
-- [ ] `.claude/settings.json` `permissions.deny` 红线修改？
-- [ ] `.mcp.json` 新增 server？（A14 PR gate 触发）
+- [ ] `.codex/hooks.json` 原生 hook/rules 保护边界修改？
+- [ ] `.codex/config.toml` 新增 server？（A14 PR gate 触发）
 - [ ] `pyproject.toml` 升级主版本（LangChain / LangGraph / pydantic）？
 - [ ] `docker/Dockerfile` **外部 registry 镜像引用**修改？（供应链红线；`FROM <image>` + `COPY --from=<registry image>`，内部 `COPY --from=<stage>` **不**在内 → 改前 Owner 拍板）
 - [ ] `compose.prod.yml` 修改？（生产红线）

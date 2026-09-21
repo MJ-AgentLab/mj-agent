@@ -1,9 +1,6 @@
 # docker/AGENTS.md
 
-> Tool-neutral local constraints for `docker/` — binds every AI agent working here (roster in
-> root `AGENTS.md`). Codex discovers this file hierarchically (root → cwd); Claude Code
-> imports it via the sibling `docker/CLAUDE.md`. Rules live once in the kernel
-> (`policies/docker-runtime.md` + ADR-008 / ADR-026 + docker contracts) — this file only points.
+> Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
 ## Hard stops (OWNER_APPROVAL_REQUIRED before any edit)
 
@@ -51,5 +48,9 @@ uv run python scripts/sdd/check_docker_contracts.py --all --bdd --tdd --compose-
 
 ## See also
 
-- Root `AGENTS.md` · `docker/CLAUDE.md` (same layer) · `policies/docker-runtime.md`
+- Root `AGENTS.md`
 - `sdd/adapters/docker-container.md` · ADR-026 / ADR-008 (in `decisions/`)
+
+## Runtime details
+
+DEV/TEST/PROD 均使用 base + 具名 overlay；profile 不等于操作授权。启动前确认既有 external network。teardown L1 保留卷；L2 删卷、L3 连镜像均须具名目标确认。非 root runtime 约束保持；V5/V6 与构建 gate 以 CI 注册为准。

@@ -1,7 +1,7 @@
 """scripts/sdd/check_contracts.py — G3 validator (real implementation).
 
 Replaces the Phase M0 skeleton (post-M6 completion-audit PR2;
-M6-FU-GATES-TRUTH-UP). Per sdd/gates.md §1 G3 row + capabilities/CLAUDE.md
+M6-FU-GATES-TRUTH-UP). Per sdd/gates.md §1 G3 row + capabilities/AGENTS.md
 "behavior.feature 高风险必填规则":
 
 1. `contracts/` directory exists and is non-empty per discovered capability.
@@ -37,9 +37,12 @@ from scripts.sdd._common.discovery import (  # noqa: E402
 )
 from scripts.sdd._common.yaml_io import load_contract  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 _SCRIPT_NAME = "check_contracts"
 # Same scope as check_tdd_test_list._TARGET_PRIORITIES (G23) — critical|high
-# requirements demand a behavior.feature per capabilities/CLAUDE.md rule.
+# requirements demand a behavior.feature per capabilities/AGENTS.md rule.
 _TARGET_PRIORITIES = frozenset({"critical", "high"})
 
 
@@ -72,7 +75,8 @@ def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
         summary.add(Severity.FAIL, f"{display}: contracts/ directory missing")
         return summary
 
-    contract_files = sorted(p for p in contracts_dir.iterdir() if p.is_file())
+    contract_files = sorted(p for p in contracts_dir.iterdir() if p.is_file()
+                            and not retired_client_asset(p.relative_to(repo_root)))
     if not contract_files:
         summary.add(Severity.FAIL, f"{display}: contracts/ directory is empty")
         return summary
@@ -91,7 +95,7 @@ def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
         summary.add(
             Severity.FAIL,
             f"{display}: spec.yml has critical|high REQ but contracts/behavior.feature "
-            "missing (capabilities/CLAUDE.md 高风险必填规则)",
+            "missing (capabilities/AGENTS.md 高风险必填规则)",
         )
 
     if summary.fail_count == 0:

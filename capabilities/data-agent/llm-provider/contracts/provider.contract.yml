@@ -140,7 +140,7 @@ cli_check:
     - "success output line: 'llm provider = <name> (endpoint=<url>)'"
   endpoint_probe_delegation:
     out_of_scope: true
-    delegated_to: ".claude/skills/mj-agent-infra-llm-endpoint-probe/"
+    delegated_to: ".agents/skills/mj-agent-infra-llm-endpoint-probe/"
     reason: "endpoint reachability requires network call; healthcheck stays offline"
 
 hitl_required:

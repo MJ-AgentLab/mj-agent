@@ -1,9 +1,6 @@
 # src/mj_agent/AGENTS.md
 
-> Tool-neutral local constraints for `src/mj_agent/` runtime code — binds every AI agent
-> working here (roster in root `AGENTS.md`). Codex discovers this file hierarchically
-> (root → cwd); Claude Code imports it via the sibling `src/mj_agent/CLAUDE.md`. Rules live
-> once in the kernel (`policies/` + `sdd/adapters/`) — this file only points.
+> Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
 ## The 4 mj-agent-specific hard-stop surfaces (OWNER_APPROVAL_REQUIRED)
 
@@ -14,8 +11,7 @@
 | `prompt-version-or-body-change` | `prompts/system.md` body or `version` | propose → Owner approves → apply |
 | `biz-catalog-sync` | `biz_catalog/qcm_catalog.yaml` | mirror of the upstream dictionary; sync flow only |
 
-Claude Code has these enforced by its harness (`ask` gates); Codex self-enforces per root
-`AGENTS.md` boundary 3. The stop point is identical either way (`policies/ai-agent.md` §4).
+Codex 自守必停边界；hook 保持硬阻断，批准不自动解锁执行路线。
 
 ## Data boundary (ADR-006 / ADR-009 — never bypass)
 
@@ -47,6 +43,10 @@ Human/IDE direct pytest remains supported and is forced offline by
 
 ## See also
 
-- Root `AGENTS.md` · `src/mj_agent/CLAUDE.md` (same layer) · `policies/data-boundary.md`
+- Root `AGENTS.md`
 - `policies/ai-agent.md` §4 (canonical 10-enum) + §7 (pre-flight verification discipline)
 - `sdd/adapters/python.md` · `sdd/adapters/runtime-skill.md` · `sdd/adapters/prompt.md`
+
+## Runtime structure
+
+工具注册从 `tools/__init__.py:ALL_TOOLS` 读取；middleware 从 `agent.py:make_graph()` 读取，不复制易漂移名单。新增 middleware 走跨 capability workflow；只运行相关测试。V1/V3/V7 与原有 runtime freeze 不受开发客户端迁移影响。

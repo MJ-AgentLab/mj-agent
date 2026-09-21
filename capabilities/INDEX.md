@@ -23,7 +23,7 @@ ai_visibility: source-of-truth
 | [data-agent.biz-catalog](./data-agent/biz-catalog/spec.yml) | QCM Catalog Mirror | data-agent | drafting | active | 2026-05-20 | python, runtime-skill, tdd-bdd |
 | [data-agent.llm-provider](./data-agent/llm-provider/spec.yml) | LLM Provider Abstraction (ark + local-openai-compat) | data-agent | drafting | active | 2026-05-20 | python, tdd-bdd |
 | [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | drafting | active | 2026-05-20 | docker-container, tdd-bdd |
-| [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | claude-code-skill, tdd-bdd |
+| [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | development-skill, tdd-bdd |
 | [data-agent.memory-checkpointer](./data-agent/memory-checkpointer/spec.yml) | Memory Checkpoint At-Rest Desensitization | data-agent | active | active | 2026-07-22 | python, tdd-bdd |
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
@@ -34,7 +34,7 @@ ai_visibility: source-of-truth
 | data-agent.biz-catalog | 3 | 3 high | 3 (2 .yml + 1 .feature) | 3 high | 2 (safe-sql inbound + tool-chain outbound) |
 | data-agent.llm-provider | 3 | 3 high | 3 (2 .yml + 1 .feature) | 3 high | 2 (docker-compose outbound + mcp-governance outbound) |
 | infrastructure.docker-compose | 3 | 3 high | 4 (3 .yml + 1 .feature) | 3 high | 2 (llm-provider inbound + mcp-governance outbound) |
-| infrastructure.mcp-server-governance | 2 | 2 medium | 3 (2 .yml + 1 .feature) | 2 medium | 2 (docker-compose inbound + llm-provider outbound) |
+| infrastructure.mcp-server-governance | 2 | 2 medium | 4 active (3 .yml + 1 .feature); old client contract retained pending cleanup | 2 medium | 1 (docker-compose inbound, memory only) |
 | **Total (5 pilot)** | **17** | **4 critical + 11 high + 2 medium** | **17 files** | **18 scenarios** | **9 cross-cap + 1 reference_contract** |
 
 **R-G3 budget check**：5 pilot × ≤ 5 contracts = ≤ 25 cap; actual 17. ✓
@@ -58,11 +58,9 @@ ai_visibility: source-of-truth
 | data-agent.biz-catalog | inbound (from safe-sql) | data-agent.safe-sql | `qcm_catalog.yaml + precheck.py:58-59` | safe-sql REQ-002 consumes catalog time columns |
 | data-agent.biz-catalog | outbound | data-agent.tool-chain (Phase 2+) | `agent.py:ALL_TOOLS + finder.py` | `find_biz_context` registered as LangChain tool |
 | data-agent.llm-provider | outbound | infrastructure.docker-compose | compose env_file + llm.py + config.py | LLM env vars (LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY) per compose profile |
-| data-agent.llm-provider | outbound | infrastructure.mcp-server-governance | cli.py + .mcp.json ssh-manager DGX entry | DGX-Spark host shared (192.168.0.189) |
 | infrastructure.docker-compose | inbound (from llm-provider) | data-agent.llm-provider | compose env_file injection | LLM env vars routed through compose to mj-agent service |
-| infrastructure.docker-compose | outbound | infrastructure.mcp-server-governance | .mcp.json WAN pg URLs + compose pg services | pg host/port matrix shared |
-| infrastructure.mcp-server-governance | inbound (from docker-compose) | infrastructure.docker-compose | .mcp.json pg-* + compose pg services | 10 pg-* entries connect to compose-deployed pg endpoints |
-| infrastructure.mcp-server-governance | outbound | data-agent.llm-provider | .mcp.json ssh-manager DGX + llm_base_url | DGX host trust posture coordination |
+| infrastructure.docker-compose | outbound | infrastructure.mcp-server-governance | .codex/config.toml WAN pg URLs + compose pg services | memory PG host/port matrix shared |
+| infrastructure.mcp-server-governance | inbound (from docker-compose) | infrastructure.docker-compose | .codex/config.toml pg-* + compose pg services | 5 memory pg-* entries connect to compose-deployed pg endpoints |
 
 ## Reference Contracts (cross-repo)
 
@@ -85,11 +83,11 @@ ai_visibility: source-of-truth
 
 ## Next Phase
 
-- **Phase M2**：fill in `sdd/adapters/{python,langchain-agent,prompt,runtime-skill,claude-code-skill,docker-container,bdd-tdd}.md` TBD sections; warning-mode contract validation gates (G3 / G5 / 8 stack-specific)
+- **Phase M2**：fill in `sdd/adapters/{python,langchain-agent,prompt,runtime-skill,development-skill,docker-container,bdd-tdd}.md` TBD sections; warning-mode contract validation gates (G3 / G5 / 8 stack-specific)
 - **Phase M3**：49 TBD-M3 tests landing (contract tests + BDD step definitions); G28 contract-test-first blocking; tests/contract → tests/contracts rename; tests/bdd new
 - **Phase M4**：evidence/runtime/ auto-collected freshness reports; G8 evidence required blocking; G19-G22 BDD automation thresholds
 - **Phase M5**：archive ceremony (old tri-track STANDARD → archive/; docs/adr → decisions/); infra/docker/ → docker/
-- **Phase M6**：CLAUDE.md ≤ 150 行；all adapter gates blocking; EVAL framework
+- **Phase M6**：AGENTS.md ≤ 150 行；all adapter gates blocking; EVAL framework
 
 ---
 

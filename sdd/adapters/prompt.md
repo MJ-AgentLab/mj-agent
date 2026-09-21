@@ -29,8 +29,8 @@ ai_visibility: source-of-truth
 
 **Excluded** — 其他 adapter 治理：
 
-- `.claude/skills/mj-agent-*/SKILL.md` — Claude Code workflow SKILL（ADR-013 2-field native
-  schema；→ `claude-code-skill` adapter；governance 路径完全不同）
+- `.agents/skills/mj-agent-*/SKILL.md` — Claude Code workflow SKILL（ADR-013 2-field native
+  schema；→ `development-skill` adapter；governance 路径完全不同）
 - Tool 注册 / agent graph 拼接 / middleware（→ `langchain-agent` adapter；prompt 内容是
   invariant，行为契约是 agent adapter 的职责）
 - Python 加载器实现（`load_prompt` / `load_skill`）→ `python` adapter；prompt adapter 治理

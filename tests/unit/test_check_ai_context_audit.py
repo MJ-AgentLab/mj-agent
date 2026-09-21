@@ -13,7 +13,6 @@ not an exact count — the face-set is time-varying).
 """
 from __future__ import annotations
 
-import json
 import subprocess
 from pathlib import Path
 
@@ -364,36 +363,20 @@ class TestRun:
 
 
 def _mini_repo(tmp_path: Path) -> None:
-    _write(
-        tmp_path,
-        ".claude/settings.json",
-        json.dumps(
-            {
-                "permissions": {
-                    "ask": [
-                        "Edit(./src/mj_agent/skills/**/SKILL.md)",
-                        "Edit(./src/mj_agent/prompts/system.md)",
-                        "Edit(./src/mj_agent/tools/sql/guardrail.py)",
-                        "Edit(./src/mj_agent/biz_catalog/qcm_catalog.yaml)",
-                    ]
-                }
-            }
-        ),
-    )
     _write(tmp_path, "src/mj_agent/skills/foo/SKILL.md", "x")
     _write(tmp_path, "src/mj_agent/skills/bar/SKILL.md", "x")
     _write(tmp_path, "src/mj_agent/prompts/system.md", "x")
     _write(
         tmp_path,
-        "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml",
         "skills:\n"
-        "  - file: .claude/skills/mj-agent-infra-alpha/SKILL.md\n"
+        "  - file: .agents/skills/mj-agent-infra-alpha/SKILL.md\n"
         "    name: mj-agent-infra-alpha\n"
-        "  - file: .claude/skills/mj-agent-infra-beta/SKILL.md\n"
+        "  - file: .agents/skills/mj-agent-infra-beta/SKILL.md\n"
         "    name: mj-agent-infra-beta\n",
     )
-    _write(tmp_path, "CLAUDE.md", "root")
-    _write(tmp_path, "src/mj_agent/CLAUDE.md", "sub")
+    _write(tmp_path, "AGENTS.md", "root")
+    _write(tmp_path, "src/mj_agent/AGENTS.md", "sub")
 
 
 class TestDeriveComponents:
@@ -408,8 +391,8 @@ class TestDeriveComponents:
     def test_frozen_infra_from_contract(self, tmp_path: Path) -> None:
         _mini_repo(tmp_path)
         assert _frozen_infra(tmp_path) == {
-            ".claude/skills/mj-agent-infra-alpha/SKILL.md",
-            ".claude/skills/mj-agent-infra-beta/SKILL.md",
+            ".agents/skills/mj-agent-infra-alpha/SKILL.md",
+            ".agents/skills/mj-agent-infra-beta/SKILL.md",
         }
 
 
@@ -420,13 +403,13 @@ class TestDeriveFaceSet:
         subprocess.run(["git", "add", "-A"], cwd=tmp_path, check=True)
         faces = derive_face_set(tmp_path)
         assert set(faces) == {
-            "CLAUDE.md",
-            "src/mj_agent/CLAUDE.md",
+            "AGENTS.md",
+            "src/mj_agent/AGENTS.md",
             "src/mj_agent/skills/foo/SKILL.md",
             "src/mj_agent/skills/bar/SKILL.md",
             "src/mj_agent/prompts/system.md",
-            ".claude/skills/mj-agent-infra-alpha/SKILL.md",
-            ".claude/skills/mj-agent-infra-beta/SKILL.md",
+            ".agents/skills/mj-agent-infra-alpha/SKILL.md",
+            ".agents/skills/mj-agent-infra-beta/SKILL.md",
         }
         assert faces == sorted(faces)
 
@@ -441,8 +424,8 @@ class TestRealTree:
     def test_derive_structural_invariants(self) -> None:
         faces = derive_face_set(REPO_ROOT)
         assert len(faces) > 0
-        assert "CLAUDE.md" in faces
+        assert "AGENTS.md" in faces
         assert "src/mj_agent/prompts/system.md" in faces
-        assert any(f.startswith(".claude/skills/mj-agent-infra-") for f in faces)
-        claude = [f for f in faces if f.endswith("CLAUDE.md")]
-        assert claude and all(c == "CLAUDE.md" or c.endswith("/CLAUDE.md") for c in claude)
+        assert any(f.startswith(".agents/skills/mj-agent-infra-") for f in faces)
+        claude = [f for f in faces if f.endswith("AGENTS.md")]
+        assert claude and all(c == "AGENTS.md" or c.endswith("/AGENTS.md") for c in claude)

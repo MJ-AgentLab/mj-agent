@@ -1,37 +1,20 @@
 ---
 name: mj-agent-flow-repo-scan
-description: "Stage 3 repo scan: systematic 事实核查 of repo state against the issue/plan before coding, producing the Documentation Decision matrix and a plan verdict; use for repo scan, checking whether a plan still holds, stale-doc reverse scan; strictly read-only."
+description: "适用于 mj-agent 的Stage3对Issue/Plan事实核查。输入：Issue、Plan、git身份、真实文件。流程：追踪锚→worktree→8维scan→反扫→doc矩阵→plan verdict→验证/HITL。输出：8维事实与逐项来源、文档决策/风险/下一输入齐。Use when：复核这份Plan是否仍符合仓库现状。Do not use for：修复扫描中发现的代码问题；仅报告修复建议，另行implement。授权：不编码/不改plan；受限数据只经工具链；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Repo Scan (HITL Stage 3)
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill orchestrates mj-agent Repo Scan — the systematic fact-check of repo state against an Issue / branch / Plan before entering Plan / SPEC / Implementation (HITL Stage 3). Make sure to use this skill whenever the user has an Issue + branch and is about to write Plan / SPEC / code, or says "开始执行", "按 plan 实施", "先扫一下仓库", "repo scan", "仓库事实核查", "事实核查", "verify Plan against repo", "Plan 是否成立", "文档决策", "Documentation Decision", "反向扫描", "既有文档失真", "stale doc scan", "HITL Stage 3", "阶段 3" in the mj-agent context. Runs 8-dim scan adapted for mj-agent (no n8n; adds biz catalog drift + runtime SKILL/PROMPT reverse scan), produces §7.1 Documentation Decision matrix (10 doc types × Create/Update/None) plus Plan Verdict, and surfaces HITL questions when risk re-classifies upward. Outputs structured Repo Scan Result in conversation; does NOT modify any repo-tracked file. Do not use for: Stage 0 Intake admissibility (use mj-agent-flow-intake), Stage 4 Plan body authoring (use mj-agent-flow-plan), Stage 8 Implementation (use mj-agent-flow-implement), Stage 9 scope drift detection (PR-B3+ mj-agent-flow-scope-drift), or doc-only evaluation (use mj-agent-doc-plan in PR-B4).
+
 
 ## Overview
 
@@ -46,7 +29,7 @@ Authoritative orchestrator for HITL Stage 3 — fact-check between Stage 2 (bran
 
 **Reference**:
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` v1.0（Lite Phase A 占位）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 3 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 Repo Scan prompt）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 3 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 Repo Scan prompt）
 
 ## Workflow
 
@@ -88,7 +71,7 @@ digraph repo_scan {
 | 纯文档拼写 / 格式 / 链接修正 | 扫目标文档 + 索引 + 关联规范 |
 | 低风险局部代码修正（typo / docstring / < 50 行单文件） | 扫目标模块 + 测试 + 直接关联文档 |
 | 用户只问概念 / 解释代码 | 不进入 Repo Scan |
-| PR Review 阶段 | 用 /mj-agent-git-review-pr 或 /mj-agent-flow-self-review（PR-B3+） |
+| PR Review 阶段 | 用 mj-agent-git-review-pr 或 mj-agent-flow-self-review（PR-B3+） |
 
 ## Step 1: 读取追踪锚点
 
@@ -131,21 +114,21 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 
 | § | 维度 | 检查重点 | 工具 |
 |---|---|---|---|
-| 6.2 | **mj-agent 7 模块** | agent.py / llm.py / prompts/ / skills/ / tools/{sql,biz_context} / memory / integrations / config / server / ui | Glob `src/mj_agent/**`, Read |
-| 6.3 | **API 与 Studio** | LangGraph Studio (langgraph.json) / Chainlit `src/mj_agent/ui.py` / CLI `src/mj_agent/server/cli.py` (typer) | Read |
-| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / biz_dws + biz_dwd allowlist / 可见表清单 | Read qcm_catalog + SKILL.md；漂移看 diff_biz_schema.py（offline 快照，见下） |
+| 6.2 | **mj-agent 7 模块** | agent.py / llm.py / prompts/ / skills/ / tools/{sql,biz_context} / memory / integrations / config / server / ui | 文件枚举 `src/mj_agent/**`, 读取 |
+| 6.3 | **API 与 Studio** | LangGraph Studio (langgraph.json) / Chainlit `src/mj_agent/ui.py` / CLI `src/mj_agent/server/cli.py` (typer) | 读取 |
+| 6.4 | **真实数据流（biz 域）** | qcm_catalog.yaml 镜像 / biz_dws + biz_dwd allowlist / 可见表清单 | 读取 qcm_catalog + SKILL.md；漂移看 diff_biz_schema.py（offline 快照，见下） |
 | 6.5 | **数据库** | mj-system biz pg 只读消费者（**不**有 schema 演进权；ADR-006/009 红线）；mj-agent-postgres（memory checkpointer）；mj-agent-redis（reserved） | biz 侧：scan 阶段无 live 载体（见下三层）；memory 侧：mcp pg-mj-agent-memory-*（自有 checkpointer 库，非 biz 边界对象） |
-| 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `compose.yaml` / `langgraph.json` / DEV/TEST/PROD profile | Read |
+| 6.6 | **配置/环境/部署** | `.env` / `.env.example` / `secrets.enc` / `config/secrets/*.yml` / `compose.yaml` / `langgraph.json` / DEV/TEST/PROD profile | 读取 |
 | 6.7 | ~~n8n~~ | **跳过**——mj-agent 不用 n8n（与 mj-system 差异） | — |
-| 6.8 | **测试与验证** | 5 类 pytest（unit/eval/integration/smoke/contract）+ ruff + mypy strict + python -m compileall | Glob `tests/**` |
-| 6.9 | **文档治理** | docs/{rule,adr,assessments,_templates,infrastructure,guide,runbook,issues,design,evaluation,contracts}/ + INDEX.md + CLAUDE.md + CHANGELOG.md | Glob `docs/**` + Read |
+| 6.8 | **测试与验证** | 5 类 pytest（unit/eval/integration/smoke/contract）+ ruff + mypy strict + python -m compileall | 文件枚举 `tests/**` |
+| 6.9 | **文档治理** | docs/{rule,adr,assessments,_templates,infrastructure,guide,runbook,issues,design,evaluation,contracts}/ + INDEX.md + AGENTS.md + CHANGELOG.md | 文件枚举 `docs/**` + 读取 |
 
-> **§6.4 硬规则**：涉及业务字段时 **必须** 读真实列名（`find_biz_context` 返回 / `describe_biz_table` 真实列）。**不**得仅凭"qcm_xxx 看起来像 numeric"推断。**不**得绕过 4-tool 链用 raw PostgreSQL / postgres MCP / 任何 DB 客户端直读 biz 数据（v5 §5.1 数据边界；对 Claude Code 与 Codex 同等生效）。
+> **§6.4 硬规则**：涉及业务字段时 **必须** 读真实列名（`find_biz_context` 返回 / `describe_biz_table` 真实列）。**不**得仅凭"qcm_xxx 看起来像 numeric"推断。**不**得绕过 4-tool 链用 raw PostgreSQL / postgres MCP / 任何 DB 客户端直读 biz 数据（v5 §5.1 数据边界；对 Codex 与 Codex 同等生效）。
 
 **biz schema 事实怎么拿**（§6.4 / §6.5 biz 侧）——分三层，**scan 阶段没有 live 载体**：
 
 1. **仓内可离线核对**：`src/mj_agent/biz_catalog/qcm_catalog.yaml`（镜像）与
-   `src/mj_agent/skills/*/SKILL.md`（可见表清单）直接 Read，不需要任何凭据。scan 的绝大
+   `src/mj_agent/skills/*/SKILL.md`（可见表清单）直接 读取，不需要任何凭据。scan 的绝大
    多数问题在这一层就能答。
 2. **catalog 漂移检测**：`uv run python scripts/diff_biz_schema.py` —— offline，只读
    `.mj-agent-local/biz-schema-snapshots/`（gitignored）下 Owner 背书的 sanitized 快照。
@@ -172,11 +155,11 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 
 | 改动类型 | 反向扫描动作 | grep 模板 |
 |---|---|---|
-| 函数 / 类 / 方法重命名 | grep `docs/**/*.md` + `CLAUDE.md` + **`src/mj_agent/skills/**/SKILL.md`** + **`src/mj_agent/prompts/*.md`** 中 backtick 引用 | `Grep "\`<old_name>\`" docs/ CLAUDE.md src/mj_agent/skills/ src/mj_agent/prompts/` |
-| 文件移动 / 路径重组 | grep `docs/**/*.md` + `CLAUDE.md` + INDEX.md + **`src/mj_agent/skills/**/SKILL.md`** + **`src/mj_agent/prompts/*.md`** 旧路径 | `Grep "\`<old/path/file.py>\`" ...` |
-| 列名 / 表名 / SQL 对象重命名（**触发 biz_catalog 漂移**） | grep `docs/**/*.md` + qcm_catalog.yaml + skills/safe-sql-analysis SKILL.md curated examples | `Grep "<old_col>" docs/ src/mj_agent/biz_catalog/qcm_catalog.yaml src/mj_agent/skills/` |
-| DDD 层重组 / 模块迁移（接口不变） | review SPEC §实现 + GUIDE 代码路径示例 + CLAUDE.md "Architecture" 段 | Read SPEC + Grep |
-| 性能 / 内部行为优化（接口不变） | review SPEC 性能段 + RUNBOOK 诊断步骤 + ASSESSMENT 后置评估计划 | Read SPEC + RUNBOOK |
+| 函数 / 类 / 方法重命名 | grep `docs/**/*.md` + `AGENTS.md` + **`src/mj_agent/skills/**/SKILL.md`** + **`src/mj_agent/prompts/*.md`** 中 backtick 引用 | `rg "\`<old_name>\`" docs/ AGENTS.md src/mj_agent/skills/ src/mj_agent/prompts/` |
+| 文件移动 / 路径重组 | grep `docs/**/*.md` + `AGENTS.md` + INDEX.md + **`src/mj_agent/skills/**/SKILL.md`** + **`src/mj_agent/prompts/*.md`** 旧路径 | `rg "\`<old/path/file.py>\`" ...` |
+| 列名 / 表名 / SQL 对象重命名（**触发 biz_catalog 漂移**） | grep `docs/**/*.md` + qcm_catalog.yaml + skills/safe-sql-analysis SKILL.md curated examples | `rg "<old_col>" docs/ src/mj_agent/biz_catalog/qcm_catalog.yaml src/mj_agent/skills/` |
+| DDD 层重组 / 模块迁移（接口不变） | review SPEC §实现 + GUIDE 代码路径示例 + `repo:README.md` 架构概览与 `repo:src/mj_agent/AGENTS.md` | 读取 SPEC + rg |
+| 性能 / 内部行为优化（接口不变） | review SPEC 性能段 + RUNBOOK 诊断步骤 + ASSESSMENT 后置评估计划 | 读取 SPEC + RUNBOOK |
 | **biz_catalog mirror 漂移**（mj-agent 专属） | `uv run python scripts/diff_biz_schema.py`（offline；只读 sanitized 快照。SKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT = 未验证，不是通过） | scripts/diff_biz_schema.py |
 | **runtime SKILL/system.md body 改动**（mj-agent 专属） | 触发 §3.1 必停 HITL；列出受影响 in-source canonical | Direct file diff |
 
@@ -335,10 +318,10 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 
 | Tool / Skill | 用途 |
 |---|---|
-| Bash `git status` / `diff` / `branch` | Step 2 worktree |
-| Bash `gh issue view` | Step 1 Issue |
-| Glob / Grep | Step 3 8-dim + Step 4 反向 grep |
-| Read | Step 1 anchors / Step 3 真实数据流 / Step 4 SPEC review |
+| shell `git status` / `diff` / `branch` | Step 2 worktree |
+| shell `gh issue view` | Step 1 Issue |
+| 文件枚举 / rg | Step 3 8-dim + Step 4 反向 grep |
+| 读取 | Step 1 anchors / Step 3 真实数据流 / Step 4 SPEC review |
 | `uv run python scripts/diff_biz_schema.py` | Step 4 biz_catalog drift（offline 快照；SKIP ≠ PASS） |
 | mcp pg-mj-agent-memory-* | Step 3 §6.5 memory checkpointer 侧（自有库，非 biz 边界对象） |
 
@@ -355,10 +338,9 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 ## Reference Files
 
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` v1.0（Lite Phase A 占位）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 3 映射；历史源 HITL_Prompt §4.4）
-- [[../../../policies/documentation|documentation]] §6（Documentation Decision frontmatter / state 规则）
-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）
-- mj-system `.claude/skills/mj-sys-flow-repo-scan/SKILL.md`（直接派生源）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 3 映射；历史源 HITL_Prompt §4.4）
+- `repo:policies/documentation.md` §6（Documentation Decision frontmatter / state 规则）
+- `repo:decisions/ADR-006_Fail_Safe_Reads.md` / `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（数据边界）
 
 ## Anti-patterns
 
@@ -376,16 +358,7 @@ Repo Scan 完成后输出指引：
 Repo Scan Result 已输出（对话）。
 HITL Gate（Stage 5 Plan 确认）触发条件：Plan Verdict = Need HITL 或 Risk = High
 下一步选项（用户决定）：
-  → Stage 4 $mj-agent-flow-plan（写 Plan body）
-  → Stage 6 Codex substitute edge-flow-repo-scan-doc-author（直接写 SPEC/ADR/RUNBOOK）
-  → 拆 Issue → $mj-agent-git-issue
+  → Stage 4 mj-agent-flow-plan（写 Plan body）
+  → Stage 6 mj-agent-doc-author（直接写 SPEC/ADR/RUNBOOK）
+  → 拆 Issue → mj-agent-git-issue
 ```
-
-<!-- codex-route:edge-flow-repo-scan-doc-author -->
-> Codex route: No native Codex carrier for the doc family: follow the shared documentation semantics (sdd/adapters/development-agent.md + docs/_templates), propose the document body in conversation, obtain Owner approval, then write it and run the repo doc validators.
-
-<!-- codex-route:edge-flow-repo-scan-flow-plan -->
-> Codex route: invoke `$mj-agent-flow-plan` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-repo-scan-git-issue -->
-> Codex route: invoke `$mj-agent-git-issue` (native carrier; handoff, conditional)

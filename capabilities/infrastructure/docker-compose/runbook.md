@@ -305,7 +305,7 @@ Path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per `policies/archi
   M3-FU-V5-SUBFLAGS)。
 - **替代验证手段**: V5 docker contracts validator 自动验
   `docker/compose.yaml` 结构 + DEV/TEST/PROD overlay
-  链 (BLOCKING per Stage C C-a 2P/4W/0F clean)；CLAUDE.md § Commands 已
+  链 (BLOCKING per Stage C C-a 2P/4W/0F clean)；AGENTS.md § Commands 已
   document DEV/TEST/PROD profile up 命令（含 `-f base -f override
   --env-file` 显式 chain — compose 在子目录 + `-f` 显式 base 时 auto-load
   override.yml 不生效是 quirk，必显式 `-f` 双链）；DEV up manual smoke 验证

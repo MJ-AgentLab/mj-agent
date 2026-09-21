@@ -17,12 +17,6 @@ cross_capability_refs:
     rationale: "LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars injected per compose profile"
     impact: "compose profile changes affecting LLM env vars must sync with this capability's provider.contract.yml"
 
-  - target: infrastructure.mcp-server-governance
-    direction: outbound
-    surface: ".mcp.json ssh-manager DGX host entry + src/mj_agent/config.py llm_base_url"
-    rationale: "DGX-Spark host (192.168.0.189) shared between ssh-manager MCP server entry and local-openai-compat LLM endpoint"
-    impact: "DGX host trust posture changes require review of both capabilities"
-
 links:
 
   - req: REQ-001                                  # ark provider
