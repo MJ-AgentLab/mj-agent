@@ -1730,3 +1730,86 @@ Owner对§66对应DEVELOP-SYNC-REVIEW.md两项增量回复“批准”：三文�
 执行前独立核实HEAD b2a730ddb4419cb39a767815f160115e02c2b575，分支未变、暂存为空，仅三份已具名记录未暂存。git ls-remote origin确认develop仍为指定243b13f6，迁移分支仍不存在，exit0。三记录本轮修改前字节保存至.mj-agent-local/p6-publication/base-sync-approved-before.zip；final-check追加base_sync_approval，资产表追加两列，所有旧字段/历史保留。当前准备按三具名路径暂存；实际暂存集合和检查结果由本地base-sync-record-staged.json记录，不预填commit或merge成功。
 
 Codex提交审批路线仍BLOCKED_EXECUTION_ROUTE，没有重试git commit或改权限/工具/信任绕过；Owner在个人终端先完成记录提交后，核对新HEAD再执行已批准的指定SHA合并。当前技术迁移有界验收保持，版本仅原三组本地提交完成，额外commit/merge、双推、PR、最终CI/review未执行，外部服务未验证。状态为等待合法人工执行，不重复索取已有授权。
+
+
+## 68. P6最终交付：双推/PR553/实际CI通过，待人工review；本阶段停止（2026-09-21）
+
+### 技术迁移、版本交付、外部服务分别收口
+
+技术迁移在已批准范围内通过，AC-01–AC-12保持逐项证据及覆盖边界；L1–L3增加最终原仓CI证据，L4仍是35技能身份复用+两份署名示例八维静态复核，未对新示例字节补跑模型；L5只复用已批准Windows CLI0.147.0 readOnly实际用例及未变原生保护身份，未宣称Desktop/workspace-write/Linux Codex宿主通过。U01/U02/U06真实服务/生命周期/EVAL依赖仍未满足或未测，U03真实凭据与OS写入未测，U04合法Owner人工执行不等于hook自动解锁，U05现由最终原仓push及PR CI实际证据闭合，U07原生消费者闭合保持。外部服务/L6未验证，不读取真实凭据、不连接业务服务、不执行解密、OS凭据写入或生产操作。
+
+版本交付已完成获批提交、双推和PR创建，但未合并，生命周期不是completed。五个迁移侧提交依次为e5f99c87a50ad47856a41f40c2acccf75a5534da、1eb9257f15ee250b732f5db8a7f0b4266c0d2401、b2a730ddb4419cb39a767815f160115e02c2b575、a1abd1bbe7f8cc431f02bb970342c2a17f82737d、11e24377be7588d6d68564ab9b40fe0027ba3c1e；Owner在个人终端执行，Codex实施、准备及独立核验。最后一个提交父节点为a1abd1b与243b13f61ded1b2e398b346239305ea2a1be811a，仅同步获批setup-uv v10.1.0固定SHA一行，merge diff检查exit0；其他392个交付文件与97项删除保持。两端迁移分支均独立读取为11e24377be7588d6d68564ab9b40fe0027ba3c1e；未推送任一develop、未force、未删分支或worktree。
+
+[PR #553](https://github.com/MJ-AgentLab/mj-agent/pull/553) 标题为infra: migrate to native Codex-only development，head为11e24377be7588d6d68564ab9b40fe0027ba3c1e，base明确develop / 243b13f61ded1b2e398b346239305ea2a1be811a。PR正文与发布用本地具名稿逐字核对一致，已关联当前Codex任务。相对当前base仍为原批准490路径，43项正式新文件完整，97项删除为既有81+16，无新增清理。817原生验收集合相对P5最终身份为797不变、17文档/示例、1获批政策行、1安全测试EOF-only、1获批setup-uv行；817不是完整提交清单。进入最终记录更新前暂存及已跟踪工作区均无差异；475未跟踪项全在原排除表（231候选、244历史材料），保留不清空。
+
+### 实际CI与review
+
+| 事件/检查 | 实际运行/提交 | 结论 |
+|---|---|---|
+| 最终原仓push CI | [35580906047](https://github.com/MJ-AgentLab/mj-agent/actions/runs/35580906047)，head11e24377 | SUCCESS |
+| PR事件CI | [35582227660](https://github.com/MJ-AgentLab/mj-agent/actions/runs/35582227660)，head11e24377；实际Checkout日志为测试合并SHA d441fd2553b9b5ca9bd7eeffedf90afa6d33b288 | SUCCESS |
+| PR Docker构建 | [35582227713](https://github.com/MJ-AgentLab/mj-agent/actions/runs/35582227713) | SUCCESS；不等于部署或业务服务验证 |
+| 提交信息检查 | 35582227684 | SUCCESS |
+| 文档陈旧检查 | 35582227673，既有warning mode | SUCCESS |
+
+最终push和PR主测试日志均为977 passed、15 skipped、82 deselected、24 warnings；PR BDD为13 passed、7 skipped、48 warnings，离线契约64 passed。BDD七项skip明确属于既有SKIP_POLICY_EXTERNAL_DEPENDENCY（4项biz live永久不供pytest，3项无Owner批准的非biz profile），不是新增skip或外部服务通过。P5受控265测试+22子测试、零skip仍是独立覆盖域，不能混为全套CI计数。旧私有run35564875219@40b470320ef9cf073f0d18867ca6134fa95637d2仅保留清理前历史地位，不替代新证据。G3完整cached diff检查exit2的2161项历史补丁/Markdown空白诊断继续保留，未改写历史原文或下调检查配置；CI成功不将该检查失败改标通过。
+
+GitHub当前OPEN、MERGEABLE、mergeStateStatus=BLOCKED、reviewDecision=REVIEW_REQUIRED，reviews为空。实际develop rules要求ci、strict同步、至少1审批、最后推送审批、review线程解决，且仅merge方式。所观察五个CheckRun均SUCCESS（含push及PR两次ci）；required ci已满足，但人工review条件仍未满足，不声称Ready to Merge，不自动merge或联系他人。PR测试合并SHA不是已合并提交，mergedAt仍null。
+
+### 失败轨迹、恢复与停止
+
+保留初始git commit被AskForApproval=Never拒绝的执行轨迹；后续Owner人工操作成功，不把旧BLOCKED覆盖新版本交付，也不声称Codex发布通道已解锁。读取PR期间出现GitHub连接重置、run-view/GraphQL/log TLS握手超时，随后同一路线只读查询/日志成功；实际Checkout日志证实测试SHA。没有通过修改工具、参数、编码、权限、hook/rules或创建批准凭证绕过。P6可选署名示例、政策行、EOF格式、上游CI行与各次记录都有原始备份和具名批准；所有旧记录字段/失败保留。
+
+最终六记录为累计报告、asset-map.csv及p6/{final-check.json,acceptance.json,commit-groups.json,file-inventory.csv}。修改前字节备份为.mj-agent-local/p6-publication/final-closeout-before.zip，适用HEAD11e24377；本次新观测详见final-check.json的final_publication_observation，实际命令/环境/CI摘录/父提交/身份均绑定。六记录更新留在本地未暂存，不在已发布head内；不为同步收口叙述递归增加commit/push/CI。发布head的393文件工作SHA及97缺失路径先行保存，六记录修改后的当前身份另存本地closeout-record-hashes.json。旧field含旧head/状态时属于原采集快照，最终当前结论以本节和final_publication_observation为准。
+
+HEAD恢复已提交迁移基线；P0–P4公共备份与后续增量、legacy-81-before.zip、consumer-six-before.zip、P6 before/additional/correction/policy和publication各具名备份继续保留。更早P3整组恢复须按后续增量适用顺序核对，不能直接套当前树。最终记录之前的发布head、同步前a1abd1b及G3工作字节ZIP均有明确用途；不reset/clean或清空候选。后续直接维护.agents及.codex原生资产，检查器、受控离线入口、Owner凭据/项目与hook信任边界按Onboarding §4/§6.4、根AGENTS及原生技能执行边界；新增受保护修改继续具名审阅。当前待后续人工review/merge决定，merge未获本轮授权。#499/#552、部署、分支/worktree清理均未执行。本轮更新累计记录后停止，仅完成P6。
+
+
+## 69. PR553实际合并后的核对与具名同步方案（2026-09-21）
+
+Owner报告PR已合并并要求继续后续工作，故本轮执行合并后审查，不重开P0–P6实现。GitHub实际state=MERGED，mergedAt=2026-09-21T09:30:14Z（台北17:30:14），mergeCommit=fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8；父提交为243b13f61ded1b2e398b346239305ea2a1be811a和11e24377be7588d6d68564ab9b40fe0027ba3c1e。实际review字段仍REVIEW_REQUIRED且reviews=[]，不能推断人工Approve或合并途径；实际已合并状态不被旧BLOCKED覆盖。PR无closingIssuesReferences，未关闭#499/#552。
+
+git fetch origin develop返回0后，核实origin/develop为fc85d3ce，且merge树与已验证发布head11e24377的树精确相同，既有push/PR CI证据按文件树身份复用，不重跑整套。合并SHA的run查询返回空，现有CI只匹配开发分支push及main/develop的PR事件，不把空结果解释为失败或新增成功。merge diff未涉及runtime SKILL/Prompt，EVAL backlog不触发。CHANGELOG已有Unreleased原生迁移条目，不重复改日志、不标发版/部署。未创建follow-up issue或automation。
+
+现场：原迁移工作树HEAD仍11e24377，六份§68收口记录为未提交本地成果，暂存为空；不reset/clean。D:/workspace/10-software-project/projects/mj-agent/develop仍develop@20e2f24c352cf640d9dd33234b128ca897804b99，无已跟踪修改，存在唯一未跟踪plans/[PLAN]_Codex_Only_Development_Migration.md。该文件53324字节、SHA256 7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728，与将合入的Git blob及原迁移计划逐字节相同。先备份保留，不删除/覆盖该原件；若Git快进拒绝同名未跟踪路径，停在拒绝处再核具体保留方案。Gitee/develop仍20e2f24c，属于已验证可快进祖先；两端迁移分支仍11e24377，没有自动删分支。
+
+准备具名同步方案：本地develop仅ff到fc85d3ce；Gitee develop镜像仅ff到同SHA，使用既有sync-gitee-mirror.ps1守卫，前后确认source SHA、祖先关系和两端结果，不force、不推其他ref。此前批准仅覆盖迁移分支push，未涵盖develop镜像，此目标单独待Owner确认；原Codex出版路线仍未解锁，不通过脚本封装规避既有拒绝。实际新命令在Owner合法终端执行后核验，不预填成功。
+
+迁移计划当前state仍draft，已完成任务与早期元数据不一致。按post-merge技能Step9不自动把draft改completed；已准备仅frontmatter三字段的准确补丁（updated:2026-09-21，state:completed，completed:2026-09-21），不伪造active中间历史、不批量重写正文，待Owner明确批准这份状态更正。新方案位于.mj-agent-local/post-merge-553/REVIEW.md及plan-completion-proposed.diff。六记录和计划、develop同名原件已先保存至before-postmerge-records.zip，包含原绝对身份/摘要；原所有P0–P6备份继续保留。
+
+当前技术迁移验收有界通过；版本已真实合并到origin/develop，尚未完成本地develop及Gitee develop同步；计划元数据更正待批准；外部服务/L6仍未验证。六记录继续留本地未暂存，不额外commit/push/PR。未执行删除工作树/分支/候选/备份、生产部署、秘密或OS凭据操作、业务服务访问。读取中TLS超时保留，后续成功读取的合并与linked-issue事实优先。本轮完成可审阅方案后停在新增具名动作前。
+
+
+## 70. 合并后具名动作获准；计划完成，快进遇同名文件保护（2026-09-21）
+
+Owner对§69三项方案回复“授权，执行收尾”。执行前再次核实原迁移HEAD11e24377、origin/develop=fc85d3ce、Gitee/develop=20e2f24c以及本地develop原状态。仅在原迁移工作树应用已批准的计划frontmatter补丁：state completed、updated/completed均2026-09-21；原正文不变，准确SHA256为479c361990c354699831317c1856fa4d5cda4302fde014860d9690aca526c09a，与proposed完全一致，YAML元数据校验通过。此更正留本地未提交，远端已合并计划仍为原快照。
+
+随后在真实develop工作树执行git merge --ff-only fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8，Git进程exit1：未跟踪plans/[PLAN]_Codex_Only_Development_Migration.md会被覆盖，合并中止。HEAD仍20e2f24c，原件字节未变；这是工作树同名路径保护，不是新hook批准结论。按已批准方案的碰撞停点，没有自动删除、移动、reset/clean或换工具重试。Gitee/develop快进已获授权但尚未执行；Codex已知发布审批通道仍受prompt/Never限制，不通过镜像脚本封装绕过，后续走Owner个人终端并核验实际结果。
+
+新增具名保留方案仅针对该53324字节原件：源为D:/workspace/10-software-project/projects/mj-agent/develop/plans/[PLAN]_Codex_Only_Development_Migration.md，目标为原迁移工作树.mj-agent-local/post-merge-553/preserved-develop-plan.md；目标目前不存在，源/目标绝对边界已核实，SHA256 7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728与合入Git blob一致。原件已在before-postmerge-records.zip中备份。只有这项保留移动新增范围待确认；本地ff、Gitee镜像ff与计划更正批准继续有效，不重复索取。准确差异、影响、验证与恢复见PRESERVE-PLAN-REVIEW.md；移动后再执行同一条已批准快进命令，不删其他材料。
+
+六记录本次更新前另保存before-authorized-execution-records.zip；当前累计六记录加计划共七份本地修改，均未暂存。技术迁移验收与实际PR合并保持，外部服务未测，develop本地/镜像同步仍待完成；不预填全部收尾成功。全部旧字段/失败与恢复源保留，未创建新提交、push、PR、issue或定时任务，未执行工作树/分支清理。
+
+
+## 71. 同名原件保留与本地develop快进完成；待Gitee镜像执行（2026-09-21）
+
+Owner明确批准§70的唯一新增保留移动。执行前以Resolve-Path核实源属于D:/workspace/10-software-project/projects/mj-agent/develop，目标属于原迁移工作树.mj-agent-local/post-merge-553，目标不存在；再次核实develop分支/HEAD20e2f24c和原件SHA256。用PowerShell原生Move-Item -LiteralPath保留到preserved-develop-plan.md，前后SHA均7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728，没有其他移动或删除，原ZIP备份仍在。
+
+在相同develop工作树重试原命令git merge --ff-only fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8，exit0，实际Fast-forward。HEAD已为fc85d3ce，分支develop，完整status为空。保留原件与新提交plan Git blob逐字节一致；checkout工作文件按Git既有换行策略转换，规范化内容相同且无工作差异，不把换行转换当用户改动。本次是同步已合并提交，不在原迁移树重放P5删除。原迁移树的completed计划SHA保持479c3619…，其余未提交收口记录继续保留，暂存为空。
+
+最新两端只读核对：origin/develop=fc85d3ce，gitee/develop仍20e2f24c。Gitee/develop快进授权继续有效，尚未执行；镜像脚本在原树/develop内字节一致。当前Codex已知push审批路线仍prompt/Never冲突，不通过外层脚本调用绕过；交Owner在个人终端执行既有pwsh -File ./scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin，再核对实际出口和远端SHA。只有该镜像动作未完成，不重复索取其范围批准。
+
+本轮六记录更新前备份为before-ff-completion-records.zip；具名执行记录见local-develop-synced.json。技术迁移有界通过、PR553已合并、本地develop已同步；Gitee基线待同步，外部服务仍未验证。计划completed及累计六记录共七份修改留在原迁移工作树本地未暂存，不增加发布提交。没有清理任何分支、工作树、候选或备份，不创建新PR/Issue或定时任务。
+
+
+## 72. Gitee镜像已核实；已授权合并后收尾完成并停止（2026-09-21）
+
+Owner在个人终端执行已批准的既有镜像守卫脚本pwsh -File ./scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin，输出从20e2f24向fc85d3ce快进8提交并报告OK。随后独立git ls-remote逐端读取origin/develop和gitee/develop，均exit0且精确为fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8；本地develop同SHA，完整工作区status为空。未force、未修改其他ref；原迁移分支/worktree仍保留在11e24377，未清理。
+
+技术迁移：原有有界验收通过，最终push CI35580906047与PR CI35582227660结果继续有效；合并fc85d3ce文件树与验证head11e24377相同，不无故重跑测试或派发CI。版本交付：PR553真实已合并，本地develop/GitHub develop/Gitee develop三端一致，具名同步动作已完成。外部服务：L6依然未测；没有生产部署、业务访问、真实凭据读取/解密/OS写入或个人信任操作。
+
+计划state:completed、updated/completed:2026-09-21已按Owner明确批准修正，精确SHA479c361990c354699831317c1856fa4d5cda4302fde014860d9690aca526c09a保持；该修正仅在原迁移工作树本地。已合并提交中的计划仍是原draft快照，不把本地改动声称为远端内容。累计报告、资产表及p6/{final-check.json,acceptance.json,commit-groups.json,file-inventory.csv}六记录，加上述计划，共七个未暂存本地修改，未新建提交、push或PR；后续若要发布这些收口记录，需要独立文档交付流程，本轮不递归扩展。当前待执行的已授权收尾动作已清零。
+
+具名保留的develop原计划位于.mj-agent-local/post-merge-553/preserved-develop-plan.md，SHA7dfad81d…与合并Git blob一致；所有原P0–P6公共备份/增量、legacy-81-before.zip、consumer-six-before.zip、P6和post-merge具名归档继续保留。六记录本轮改写前连同已更正计划备份至before-mirror-final-records.zip；实际最终状态见同目录final-completion.json及final-check.json的postmerge_final_observation。旧字段和拒绝/网络失败/同名文件保护轨迹保留，不用旧失败覆盖后续真实完成。
+
+本轮没有删除工作树、分支、候选、临时验收副本或备份；没有关闭#499/#552、创建后续Issue、定时任务或部署。后续日常开发可从已同步develop创建合规worktree，直接维护.agents与.codex，受保护修改仍需具名Owner决定。按当前授权范围完成收尾并停止。

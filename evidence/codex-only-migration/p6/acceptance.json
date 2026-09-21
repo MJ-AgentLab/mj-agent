@@ -1,10 +1,10 @@
 {
-  "at": "2026-09-21T07:43:01.873546+00:00",
+  "at": "2026-09-21T09:36:39.676706+00:00",
   "P5": "PASS_AUTHORIZED_NAMED_SCOPE_RETAINED",
-  "P6": "PARTIAL_EXECUTION; COMMIT_ROUTE_BLOCKED",
-  "technical_migration": "PASS_APPROVED_BOUNDED_P0_P6_TECHNICAL_ACCEPTANCE",
-  "version_delivery": "BLOCKED_EXECUTION_ROUTE; G1_255_STAGED; ZERO_NEW_COMMITS_PUSHES_PRS_CI",
-  "external_services": "L6_OUT_OF_SCOPE_NOT_TESTED",
+  "P6": "TECHNICAL_DELIVERY_AND_AUTHORIZED_POSTMERGE_ACTIONS_COMPLETE; LOCAL_RECORD_PUBLICATION_NOT_IN_SCOPE",
+  "technical_migration": "PASS_APPROVED_BOUNDED_ACCEPTANCE",
+  "version_delivery": "PR553_MERGED_LOCAL_AND_DUAL_REMOTE_DEVELOP_SYNCED",
+  "external_services": "L6_NOT_TESTED_NO_CREDENTIAL_OR_BUSINESS_OPERATIONS",
   "acceptance_criteria": {
     "AC-01": {
       "status": "PASS_SOURCE_AND_HOST_DISCOVERY",
@@ -40,26 +40,26 @@
       "evidence": "cleanup-81-result.csv; cleanup-81-after-resume.csv; final-check-resume.json"
     },
     "AC-09": {
-      "status": "PASS_REUSED_BOUNDED_TESTS_AND_P6_STATIC; FINAL_CI_NOT_TESTED",
-      "evidence": "P5 265+22 subtests/zero skip; P6 eight static commands exit0; existing inherited warnings retained"
+      "status": "PASS_P5_CONTROLLED_AND_P6_STATIC_PLUS_ACTUAL_FINAL_PUSH_PR_CI",
+      "evidence": "push35580906047@11e24377 and PR35582227660 checkout d441fd25/head11e24377; main977/skip15/deselect82, BDD13/skip7, contract64; P5 265+22 subtests zero skip separate; historical whitespace exit2 retained"
     },
     "AC-10": {
       "status": "PASS_PREPARED_HANDOFF_AND_EXACT_RECOVERY",
       "evidence": "Onboarding §4/§6.4; recovery.json and before/additional/correction archives"
     },
     "AC-11": {
-      "status": "PASS_REVIEWED_SCOPE; PROTECTED_INCREMENT_HELD",
-      "evidence": "native817 current17 docs/800 unchanged; exact81+16 absences; no executable/trust/business change"
+      "status": "PASS_EXACT_APPROVED_DELIVERY_AND_BASE_INCREMENT",
+      "evidence": "490 paths, 43 formal new, 81+16 deletions; native817 =797 unchanged+17 docs/examples+1 approved policy+1 test EOF-only+1 approved setup-uv pin; no trust/permission/business changes"
     },
     "AC-12": {
-      "status": "PASS_TRUTHFUL_GIT_STATUS; PUBLICATION_BLOCKED",
-      "evidence": "G1 staged255; commit subprocess rejected before start; HEAD unchanged, no push/PR/CI; policy-review and final-check publication_execution"
+      "status": "PASS_MERGED_AND_DEVELOP_SYNC_VERIFIED",
+      "evidence": "PR553 mergefc85d3ce; local/origin/gitee develop exact same SHA; plan completed correction and final record updates local unstaged; no external validation or cleanup claim"
     }
   },
   "layers": {
     "L1": "PASS_SOURCE_INVENTORY_AND_FINAL_DOCUMENT_CONSUMER_CLOSURE",
     "L2": "PASS_CURRENT817_INDEPENDENT_GIT_COPY_AND_TRACKED_INDEX; prior P4 clone/linked/topology bounded evidence retained, this fixture is not a substitute for prior actual topology evidence",
-    "L3": "PASS_POST_DELETE_STATIC_AND_CURRENT265_TESTS_22_SUBTESTS; ZERO_SKIPS; current CI NOT_TESTED, old run35564875219 remains pre-delta",
+    "L3": "PASS_P5_CONTROLLED265_PLUS22_SUBTESTS_ZERO_SKIP_AND_ACTUAL_FINAL_PUSH_PR_CI; actual full CI skip scopes retained; old private CI stays historical",
     "L4": "STATIC_PASS_CURRENT_TWO_SKILL_EIGHT_DIMENSIONS; 35 unchanged skill identities; old canaries bind original two skills, no new model run",
     "L5": "PASS_REQUIRED_BOUNDED_WINDOWS_CLI_CANARIES; actual hook allow/deny/protected edit and independent native-rule sentinel deny; approved restoration verified; retained unchanged native guard/config identity, no new host calls",
     "L6": "OUT_OF_SCOPE; NOT_TESTED / UNMET_DEPENDENCY historically; not a new P4 blocker"
@@ -82,8 +82,8 @@
       "scope": "P3 manual applied route retained; L5 current readOnly route now has one actual Owner chat single-request accept and successful command; does not unlock hook. R2D formal two-file normal apply_patch route actually succeeded; not a general hook unlock or trust change."
     },
     "U05": {
-      "status": "PRE_P5_CI_VERIFIED; FINAL_CI_NOT_TESTED",
-      "scope": "35564875219@40b4703 only historical private pre-cleanup; original branch unpublished"
+      "status": "FINAL_ORIGINAL_REPOSITORY_PUSH_AND_PR_CI_VERIFIED",
+      "scope": "push35580906047 head11e24377; PR35582227660 head11e24377 checkout d441fd25; exact original delivery after P5 and approved P6/base changes; no external/L6 claim"
     },
     "U06": {
       "status": "UNMET_DEPENDENCY / NOT_TESTED",
@@ -652,5 +652,418 @@
     "environment": "Windows PowerShell login:false; existing develop/.venv/Scripts/python.exe -B; no tests rerun",
     "recovery": ".mj-agent-local/p6-publication/owner-g2-records-before.zip",
     "prior_G3_changes": "Only seven section64 record files differ from prior binding; remaining205 exact"
+  },
+  "pre_final_closeout_snapshot": {
+    "at": "2026-09-21T07:43:01.873546+00:00",
+    "P6": "PARTIAL_EXECUTION; COMMIT_ROUTE_BLOCKED",
+    "technical_migration": "PASS_APPROVED_BOUNDED_P0_P6_TECHNICAL_ACCEPTANCE",
+    "version_delivery": "BLOCKED_EXECUTION_ROUTE; G1_255_STAGED; ZERO_NEW_COMMITS_PUSHES_PRS_CI",
+    "external_services": "L6_OUT_OF_SCOPE_NOT_TESTED",
+    "acceptance_criteria": {
+      "AC-01": {
+        "status": "PASS_SOURCE_AND_HOST_DISCOVERY",
+        "evidence": "37 same-name native skills, three cwd discovery against current 817 manifest"
+      },
+      "AC-02": {
+        "status": "STATIC_PASS; LIMITED_MODEL_SUPPLEMENT",
+        "evidence": "37/296/142 static retained; all five doc/flow/git/infra/runtime families now have completed bounded explicit model canaries; not 37 full model calls or real runtime EVAL."
+      },
+      "AC-03": {
+        "status": "PASS_FORMAL_STATIC_OWNERSHIP",
+        "evidence": "Native direct maintenance and consumer closure preserved; no legacy overlay replay"
+      },
+      "AC-04": {
+        "status": "PASS_CONFIG_AND_LAUNCHER_COMPONENT_SCOPE",
+        "evidence": "Existing offline allow/deny launch tests retained; eight MCP disabled during L5; real services are excluded L6"
+      },
+      "AC-05": {
+        "status": "PASS_REQUIRED_PROTECTION_EVIDENCE",
+        "evidence": "R2D formal guard compatibility fix matches actual R2C protected edit refusal; R3 hook completed then native rule declined/no process/policy-forbidden for added sentinel; prior H03/O3/O4 allows, R1 G1 hook deny, O2 one Owner approval roundtrip and S1 first-block stop retained",
+        "limits": "No per-rule full model coverage or claim of perfect model self-discipline. Old O2 rewrite failure retained; bounded client-stop verification separately passed."
+      },
+      "AC-06": {
+        "status": "PASS_BOUNDED_REQUIRED_TOPOLOGY_EVIDENCE; COVERAGE_LIMITS_RECORDED",
+        "evidence": "Existing original root/subdir/space and platform records retained; clone and linked root real commands/hook completion now verified. Linked 37 skill paths and AGENTS remain linked-local; hook source is explicitly approved shared Git parent. No actual shell command coverage claimed for every subdirectory or untested platform."
+      },
+      "AC-07": {
+        "status": "PASS_CURRENT_NATIVE_DOCUMENT_AND_EXECUTABLE_CONSUMER_CLOSURE",
+        "evidence": "Approved exact quarterly row applied; current frontmatter/wikilinks/diff checks pass; prior executable identities unchanged"
+      },
+      "AC-08": {
+        "status": "PASS_NAMED81_DELETION_AND_BOUNDED_SCOPE",
+        "evidence": "cleanup-81-result.csv; cleanup-81-after-resume.csv; final-check-resume.json"
+      },
+      "AC-09": {
+        "status": "PASS_REUSED_BOUNDED_TESTS_AND_P6_STATIC; FINAL_CI_NOT_TESTED",
+        "evidence": "P5 265+22 subtests/zero skip; P6 eight static commands exit0; existing inherited warnings retained"
+      },
+      "AC-10": {
+        "status": "PASS_PREPARED_HANDOFF_AND_EXACT_RECOVERY",
+        "evidence": "Onboarding §4/§6.4; recovery.json and before/additional/correction archives"
+      },
+      "AC-11": {
+        "status": "PASS_REVIEWED_SCOPE; PROTECTED_INCREMENT_HELD",
+        "evidence": "native817 current17 docs/800 unchanged; exact81+16 absences; no executable/trust/business change"
+      },
+      "AC-12": {
+        "status": "PASS_TRUTHFUL_GIT_STATUS; PUBLICATION_BLOCKED",
+        "evidence": "G1 staged255; commit subprocess rejected before start; HEAD unchanged, no push/PR/CI; policy-review and final-check publication_execution"
+      }
+    },
+    "layers": {
+      "L1": "PASS_SOURCE_INVENTORY_AND_FINAL_DOCUMENT_CONSUMER_CLOSURE",
+      "L2": "PASS_CURRENT817_INDEPENDENT_GIT_COPY_AND_TRACKED_INDEX; prior P4 clone/linked/topology bounded evidence retained, this fixture is not a substitute for prior actual topology evidence",
+      "L3": "PASS_POST_DELETE_STATIC_AND_CURRENT265_TESTS_22_SUBTESTS; ZERO_SKIPS; current CI NOT_TESTED, old run35564875219 remains pre-delta",
+      "L4": "STATIC_PASS_CURRENT_TWO_SKILL_EIGHT_DIMENSIONS; 35 unchanged skill identities; old canaries bind original two skills, no new model run",
+      "L5": "PASS_REQUIRED_BOUNDED_WINDOWS_CLI_CANARIES; actual hook allow/deny/protected edit and independent native-rule sentinel deny; approved restoration verified; retained unchanged native guard/config identity, no new host calls",
+      "L6": "OUT_OF_SCOPE; NOT_TESTED / UNMET_DEPENDENCY historically; not a new P4 blocker"
+    },
+    "U01_U07": {
+      "U01": {
+        "status": "UNMET_DEPENDENCY",
+        "scope": "memory backup/schema real service; L6 excluded, not new P4 blocker"
+      },
+      "U02": {
+        "status": "UNMET_DEPENDENCY",
+        "scope": "background lifecycle real environment; L6 excluded"
+      },
+      "U03": {
+        "status": "NOT_TESTED",
+        "scope": "real credentials/OS credential writes; excluded"
+      },
+      "U04": {
+        "status": "MANUAL_ROUTE_EXECUTED_VERIFIED_P3_RETAINED",
+        "scope": "P3 manual applied route retained; L5 current readOnly route now has one actual Owner chat single-request accept and successful command; does not unlock hook. R2D formal two-file normal apply_patch route actually succeeded; not a general hook unlock or trust change."
+      },
+      "U05": {
+        "status": "PRE_P5_CI_VERIFIED; FINAL_CI_NOT_TESTED",
+        "scope": "35564875219@40b4703 only historical private pre-cleanup; original branch unpublished"
+      },
+      "U06": {
+        "status": "UNMET_DEPENDENCY / NOT_TESTED",
+        "scope": "Real runtime EVAL and dataset/snapshot dependencies excluded; development skill canary is not runtime EVAL"
+      },
+      "U07": {
+        "status": "PASS_CURRENT_BOUNDED_CONSUMER_CLOSURE",
+        "scope": "One approved policy row closes P6 gap; previous failure history retained"
+      }
+    }
+  },
+  "final_publication_summary": {
+    "at": "2026-09-21T09:24:04.648641+00:00",
+    "head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+    "base": "243b13f61ded1b2e398b346239305ea2a1be811a",
+    "version_delivery": "DUAL_PUSH_VERIFIED_PR553_OPEN_CHECKS_SUCCESS_REVIEW_REQUIRED_NOT_MERGED",
+    "pr_ci": {
+      "run": 35582227660,
+      "head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+      "test_merge_sha": "d441fd2553b9b5ca9bd7eeffedf90afa6d33b288",
+      "event": "pull_request",
+      "conclusion": "success",
+      "url": "https://github.com/MJ-AgentLab/mj-agent/actions/runs/35582227660",
+      "test_evidence": {
+        "run": 35582227660,
+        "head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+        "event": "pull_request",
+        "conclusion": "success",
+        "test_summary_lines": [
+          "ci\tTests (unit + eval + integration; smoke + contract + bdd excluded by default)\t2026-09-21T09:16:32.8812346Z ========= 977 passed, 15 skipped, 82 deselected, 24 warnings in 24.43s =========",
+          "ci\tContract tests (offline; synthetic snapshot fixtures)\t2026-09-21T09:16:46.8636589Z ============================== 64 passed in 0.49s =============================="
+        ],
+        "checkout_sha_log_lines": [
+          "ci\tCheckout\t2026-09-21T09:15:29.9638434Z [command]/usr/bin/git log -1 --format=%H",
+          "ci\tCheckout\t2026-09-21T09:15:29.9680754Z d441fd2553b9b5ca9bd7eeffedf90afa6d33b288"
+        ],
+        "bdd_tail": [
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2344656Z   /home/runner/work/mj-agent/mj-agent/.venv/lib/python3.13/site-packages/gherkin/gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2345510Z     uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2345829Z ",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2346466Z -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2346945Z =========================== short test summary info ============================",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2348519Z SKIPPED [4] .venv/lib/python3.13/site-packages/pytest_bdd/scenario.py:296: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2349647Z SKIPPED [3] .venv/lib/python3.13/site-packages/pytest_bdd/scenario.py:296: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists",
+          "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T09:16:43.2350341Z 13 passed, 7 skipped, 48 warnings in 6.07s"
+        ],
+        "prior_log_fetch_error": "TLS handshake timeout; same-route retry"
+      }
+    },
+    "push_ci": {
+      "run": 35580906047,
+      "head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+      "event": "push",
+      "conclusion": "success",
+      "url": "https://github.com/MJ-AgentLab/mj-agent/actions/runs/35580906047"
+    },
+    "readiness": "NOT_READY_TO_MERGE_REVIEW_REQUIRED; no conflict; required ci successful; review approvals 0/1, last-push approval and thread resolution still required",
+    "closeout_record_delivery": "LOCAL_UNSTAGED_NOT_IN_PUBLISHED_HEAD; no recursive commit/push/CI cycle",
+    "lifecycle": "OPEN_NOT_COMPLETED_NO_MERGE"
+  },
+  "pre_postmerge_snapshot": {
+    "at": "2026-09-21T09:24:04.648641+00:00",
+    "version_delivery": "DUAL_PUSH_VERIFIED_PR553_OPEN_CHECKS_SUCCESS_REVIEW_REQUIRED_NOT_MERGED",
+    "P6": "P6_ONLY_STOP_AFTER_AUTHORIZED_DELIVERY_AND_CUMULATIVE_RECORDS",
+    "acceptance_criteria": {
+      "AC-01": {
+        "status": "PASS_SOURCE_AND_HOST_DISCOVERY",
+        "evidence": "37 same-name native skills, three cwd discovery against current 817 manifest"
+      },
+      "AC-02": {
+        "status": "STATIC_PASS; LIMITED_MODEL_SUPPLEMENT",
+        "evidence": "37/296/142 static retained; all five doc/flow/git/infra/runtime families now have completed bounded explicit model canaries; not 37 full model calls or real runtime EVAL."
+      },
+      "AC-03": {
+        "status": "PASS_FORMAL_STATIC_OWNERSHIP",
+        "evidence": "Native direct maintenance and consumer closure preserved; no legacy overlay replay"
+      },
+      "AC-04": {
+        "status": "PASS_CONFIG_AND_LAUNCHER_COMPONENT_SCOPE",
+        "evidence": "Existing offline allow/deny launch tests retained; eight MCP disabled during L5; real services are excluded L6"
+      },
+      "AC-05": {
+        "status": "PASS_REQUIRED_PROTECTION_EVIDENCE",
+        "evidence": "R2D formal guard compatibility fix matches actual R2C protected edit refusal; R3 hook completed then native rule declined/no process/policy-forbidden for added sentinel; prior H03/O3/O4 allows, R1 G1 hook deny, O2 one Owner approval roundtrip and S1 first-block stop retained",
+        "limits": "No per-rule full model coverage or claim of perfect model self-discipline. Old O2 rewrite failure retained; bounded client-stop verification separately passed."
+      },
+      "AC-06": {
+        "status": "PASS_BOUNDED_REQUIRED_TOPOLOGY_EVIDENCE; COVERAGE_LIMITS_RECORDED",
+        "evidence": "Existing original root/subdir/space and platform records retained; clone and linked root real commands/hook completion now verified. Linked 37 skill paths and AGENTS remain linked-local; hook source is explicitly approved shared Git parent. No actual shell command coverage claimed for every subdirectory or untested platform."
+      },
+      "AC-07": {
+        "status": "PASS_CURRENT_NATIVE_DOCUMENT_AND_EXECUTABLE_CONSUMER_CLOSURE",
+        "evidence": "Approved exact quarterly row applied; current frontmatter/wikilinks/diff checks pass; prior executable identities unchanged"
+      },
+      "AC-08": {
+        "status": "PASS_NAMED81_DELETION_AND_BOUNDED_SCOPE",
+        "evidence": "cleanup-81-result.csv; cleanup-81-after-resume.csv; final-check-resume.json"
+      },
+      "AC-09": {
+        "status": "PASS_P5_CONTROLLED_AND_P6_STATIC_PLUS_ACTUAL_FINAL_PUSH_PR_CI",
+        "evidence": "push35580906047@11e24377 and PR35582227660 checkout d441fd25/head11e24377; main977/skip15/deselect82, BDD13/skip7, contract64; P5 265+22 subtests zero skip separate; historical whitespace exit2 retained"
+      },
+      "AC-10": {
+        "status": "PASS_PREPARED_HANDOFF_AND_EXACT_RECOVERY",
+        "evidence": "Onboarding §4/§6.4; recovery.json and before/additional/correction archives"
+      },
+      "AC-11": {
+        "status": "PASS_EXACT_APPROVED_DELIVERY_AND_BASE_INCREMENT",
+        "evidence": "490 paths, 43 formal new, 81+16 deletions; native817 =797 unchanged+17 docs/examples+1 approved policy+1 test EOF-only+1 approved setup-uv pin; no trust/permission/business changes"
+      },
+      "AC-12": {
+        "status": "PASS_TRUTHFUL_DELIVERY_OBSERVATION_PR_OPEN_REVIEW_REQUIRED",
+        "evidence": "5 Owner commits, dual remote SHA verified, PR553 develop/base243b13f6 head11e24377, all visible checks success; no merge, lifecycle not completed; local final records uncommitted"
+      }
+    }
+  },
+  "postmerge_observation": {
+    "at": "2026-09-21T09:36:39.676706+00:00",
+    "PR": 553,
+    "url": "https://github.com/MJ-AgentLab/mj-agent/pull/553",
+    "state": "MERGED",
+    "mergedAt": "2026-09-21T09:30:14Z",
+    "merge_commit": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+    "published_head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+    "merge_parents": [
+      "243b13f61ded1b2e398b346239305ea2a1be811a",
+      "11e24377be7588d6d68564ab9b40fe0027ba3c1e"
+    ],
+    "merge_tree_equals_verified_head_tree": true,
+    "closingIssuesReferences": [],
+    "review_observation": {
+      "reviewDecision": "REVIEW_REQUIRED",
+      "reviews": [],
+      "note": "MERGED is observed; do not infer an approval or bypass method from missing reviews"
+    },
+    "postmerge_run_query": "gh run list --repo MJ-AgentLab/mj-agent --commit fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8 --limit 10; exit0 result []",
+    "CI": "Prior push35580906047 and PR35582227660 success retained against identical tree; workflow does not trigger push on develop; no new CI triggered",
+    "technical_migration": "PASS_BOUNDED_WITH_PRIOR_LIMITS",
+    "version_delivery": "MERGED_IN_ORIGIN_DEVELOP; LOCAL_DEVELOP_AND_GITEE_DEVELOP_NOT_SYNCED",
+    "external_services": "NOT_TESTED_L6_OUT_OF_SCOPE",
+    "local_develop": {
+      "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop",
+      "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "branch": "develop",
+      "tracked_changes": 0,
+      "untracked_collision": "plans/[PLAN]_Codex_Only_Development_Migration.md",
+      "untracked_sha256": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+      "incoming_exact_same_bytes": true,
+      "state": "PREPARED_FAST_FORWARD_NOT_EXECUTED"
+    },
+    "gitee_develop": {
+      "url": "https://gitee.com/ranzuozhou/mj-agent.git",
+      "observed_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "desired_head": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "state": "NEW_PUSH_TARGET_REQUIRES_NAMED_AUTHORIZATION"
+    },
+    "origin_develop": {
+      "url": "https://github.com/MJ-AgentLab/mj-agent",
+      "head": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8"
+    },
+    "plan": {
+      "path": "plans/[PLAN]_Codex_Only_Development_Migration.md",
+      "current_state": "draft",
+      "before_sha256": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+      "proposed_sha256": "479c361990c354699831317c1856fa4d5cda4302fde014860d9690aca526c09a",
+      "proposed_state": "completed",
+      "updated": "2026-09-21",
+      "completed": "2026-09-21",
+      "state_change": "PROPOSED_NOT_APPLIED; explicit Owner correction of lagging draft state needed"
+    },
+    "CHANGELOG": "Existing Unreleased native migration entry retained; no duplicate release entry or version bump",
+    "followups": "No issue creation; #499/#552 excluded and not closed; no runtime SKILL/Prompt changes so EVAL backlog not triggered; no automation",
+    "cleanup": "No deletion of migration/local/remote branches, worktrees, candidates, backups or temp copies; original retention boundary remains",
+    "publication_records": "Six original local uncommitted closeout records updated; no extra commit/push/new PR inferred",
+    "recovery": ".mj-agent-local/post-merge-553/before-postmerge-records.zip",
+    "commands": [
+      "gh pr view 553 (successful MERGED observation; later raw capture TLS failure retained)",
+      "git ls-remote origin/gitee develop and migration branch",
+      "git worktree list --porcelain",
+      "git -C develop status --porcelain=v1 --untracked-files=all",
+      "git fetch origin develop exit0",
+      "tree/parent comparison, public plan SHA256 comparison; no real secrets read"
+    ],
+    "failed_reads": [
+      "Initial linked-issue/run-list request TLS timeout; same read later confirmed empty closingIssuesReferences and merged SHA",
+      "Later full merged-PR snapshot capture TLS timeout; does not overwrite earlier successful MERGED observation"
+    ],
+    "new_authorization_proposal": "Fast-forward exact local develop and Gitee develop to fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8; retain same-byte untracked plan (backed up), stop on Git collision; explicitly correct named migration plan draft->completed with exact frontmatter-only patch; no deletion or extra publication"
+  },
+  "postmerge_authorized_execution": {
+    "at": "2026-09-21T09:41:26.086123+00:00",
+    "authorization": "Owner explicitly authorized all three named postmerge actions",
+    "merge_target": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+    "plan": {
+      "path": "plans/[PLAN]_Codex_Only_Development_Migration.md",
+      "state": "completed",
+      "sha256": "479c361990c354699831317c1856fa4d5cda4302fde014860d9690aca526c09a",
+      "exact_approved_patch": true,
+      "frontmatter_validation": "PASS"
+    },
+    "local_develop_ff": {
+      "command": "git merge --ff-only fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "cwd": "D:/workspace/10-software-project/projects/mj-agent/develop",
+      "exit": 1,
+      "error": "untracked working tree file would be overwritten by merge: plans/[PLAN]_Codex_Only_Development_Migration.md",
+      "state": "BLOCKED_UNTRACKED_PATH_COLLISION",
+      "head_after": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "source_unchanged": true
+    },
+    "gitee_develop": {
+      "authorization": "APPROVED",
+      "state": "NOT_EXECUTED_OWNER_TERMINAL_ROUTE_REQUIRED",
+      "observed_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "target": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "reason": "Existing Codex publication prompt/Never conflict; do not wrap push in helper to evade control"
+    },
+    "preserve_move_proposal": {
+      "source": "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\plans\\[PLAN]_Codex_Only_Development_Migration.md",
+      "destination": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\preserved-develop-plan.md",
+      "sha256": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+      "bytes": 53324,
+      "destination_absent": true,
+      "source_and_destination_bounds_verified": true,
+      "state": "NOT_EXECUTED_REQUIRES_NAMED_OWNER_CONSENT_PER_APPROVED_COLLISION_STOP",
+      "scope": "Move only this exact original, preserve bytes; then repeat unchanged approved ff command; no deletion/reset/clean"
+    },
+    "backups": [
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\before-postmerge-records.zip",
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\before-authorized-execution-records.zip"
+    ],
+    "record_state": "LOCAL_UNSTAGED; no additional commit/push/PR",
+    "technical": "BOUNDED_PASS",
+    "version": "PR553_MERGED_ORIGIN; LOCAL_AND_GITEE_DEVELOP_PENDING",
+    "external": "NOT_TESTED"
+  },
+  "local_develop_synced_observation": {
+    "at": "2026-09-21T09:50:02.651335+00:00",
+    "authorization": "Owner approved exact single-file preserve move; earlier three-action postmerge approval remains valid",
+    "preserve_move": {
+      "state": "DONE",
+      "source": "D:/workspace/10-software-project/projects/mj-agent/develop/plans/[PLAN]_Codex_Only_Development_Migration.md",
+      "destination": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\preserved-develop-plan.md",
+      "sha256": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+      "method": "Native PowerShell Move-Item -LiteralPath; exact absolute source/destination bounds and destination absence checked; before/after hashes equal"
+    },
+    "local_develop": {
+      "state": "FAST_FORWARD_COMPLETE_CLEAN",
+      "head": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "command": "git merge --ff-only fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "exit": 0,
+      "source_original_equals_new_git_blob": true,
+      "working_plan_raw_bytes": "Git normal checkout newline conversion; normalized content equal; git status clean"
+    },
+    "origin_develop": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+    "gitee_develop": {
+      "observed_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "approved_target": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "state": "APPROVED_PENDING_OWNER_TERMINAL_EXECUTION",
+      "command": "pwsh -File ./scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin"
+    },
+    "plan": "COMPLETED_IN_ORIGINAL_MIGRATION_WORKTREE_LOCAL_UNCOMMITTED",
+    "record_delivery": "SEVEN_LOCAL_UNSTAGED_FILES; no new commit/push/PR",
+    "version_delivery": "PR553_MERGED; LOCAL_DEVELOP_SYNCED; GITEE_DEVELOP_PENDING",
+    "external_services": "NOT_TESTED",
+    "recovery": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\before-ff-completion-records.zip",
+    "agent_publication_route": "BLOCKED_EXECUTION_ROUTE_UNCHANGED; do not execute script as alternative route around push prompt/Never gate"
+  },
+  "pre_local_develop_sync_status": "MERGED_IN_ORIGIN_DEVELOP; LOCAL_DEVELOP_AND_GITEE_DEVELOP_NOT_SYNCED",
+  "pre_postmerge_final_status": "PR553_MERGED; LOCAL_DEVELOP_SYNCED; GITEE_DEVELOP_PENDING",
+  "postmerge_final_observation": {
+    "at": "2026-09-21T09:52:27.177431+00:00",
+    "state": "AUTHORIZED_POSTMERGE_ACTIONS_COMPLETE_STOP",
+    "PR": 553,
+    "PR_url": "https://github.com/MJ-AgentLab/mj-agent/pull/553",
+    "merge_commit": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+    "published_head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+    "develop_identity": {
+      "local": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "origin": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "gitee": "fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8",
+      "local_worktree_clean": true
+    },
+    "mirror_execution": {
+      "actor": "Owner personal terminal",
+      "command": "pwsh -File ./scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin",
+      "reported_result": "OK gitee/develop fast-forwarded; eight commits from 20e2f24 to fc85d3c",
+      "independent_verification": "git ls-remote origin/gitee develop each exit0, exact same SHA; no force"
+    },
+    "technical_migration": "PASS_APPROVED_BOUNDED_ACCEPTANCE",
+    "version_delivery": "PR553_MERGED_LOCAL_AND_DUAL_REMOTE_DEVELOP_SYNCED",
+    "external_services": "NOT_TESTED_L6_OUT_OF_SCOPE",
+    "plan_status": {
+      "state": "completed",
+      "location": "Original migration worktree only; local unstaged",
+      "sha256": "479c361990c354699831317c1856fa4d5cda4302fde014860d9690aca526c09a",
+      "published_plan_metadata": "Original draft snapshot remains in merged commit; local correction not published"
+    },
+    "preserved_original": {
+      "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\preserved-develop-plan.md",
+      "sha256": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+      "original_equals_merged_git_blob": true
+    },
+    "CI": "Existing final push35580906047 and PR35582227660 passed; merge tree identical to verified head; no new test run or CI dispatch",
+    "local_uncommitted_records": [
+      "plans/[REPORT]_Codex_Only_Migration_Progress.md",
+      "evidence/codex-only-migration/asset-map.csv",
+      "evidence/codex-only-migration/p6/final-check.json",
+      "evidence/codex-only-migration/p6/acceptance.json",
+      "evidence/codex-only-migration/p6/commit-groups.json",
+      "evidence/codex-only-migration/p6/file-inventory.csv",
+      "plans/[PLAN]_Codex_Only_Development_Migration.md"
+    ],
+    "record_delivery": "SEVEN_FILES_LOCAL_UNSTAGED_NOT_IN_PR553; no recursive commit/push/newPR",
+    "migration_worktree_head": "11e24377be7588d6d68564ab9b40fe0027ba3c1e",
+    "worktree_branch_backup_cleanup": "NOT_EXECUTED_RETAIN_ALL",
+    "issues": "No linked closing issues; #499/#552 unchanged",
+    "other_exclusions": "No deployment, business/credential access, decrypt, OS secret writes, personal config/trust changes or automation",
+    "authorization": "Original P6 delivery; approved exact base merge; approved three postmerge actions; approved one-file preservation move; all executed within named scope",
+    "prior_execution_failures": "Original prompt/Never publication refusal, Git untracked collision, transient read/network failures retained; none overwrite later verified completion",
+    "backup": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\post-merge-553\\before-mirror-final-records.zip",
+    "recovery": "Merged Git baseline plus all original P0-P6 public/increment backups, legacy-81-before.zip, consumer-six-before.zip, named P6/postmerge archives; retained original plan copy; no reset/clean",
+    "stop": "No pending authorized action in current postmerge scope; future publication of local closeout records needs separate delivery workflow"
+  },
+  "pre_postmerge_final_P6": "TECHNICAL_DELIVERY_MERGED; POSTMERGE_LOCAL_MIRROR_PLAN_HANDOFF_PENDING",
+  "pre_postmerge_final_AC12": {
+    "status": "PASS_MERGED_VERSION_DELIVERY_TRUTHFUL_POSTMERGE_STATE",
+    "evidence": "PR553 MERGED at 2026-09-21T09:30:14Z, mergefc85d3ce; tree exactly equals verifiedhead11e24377; no Approve review inferred; local/Gitee develop sync and plan-state correction pending"
   }
 }
