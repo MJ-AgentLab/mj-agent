@@ -1726,5 +1726,92 @@
     "environment": "Windows PowerShell login:false; existing develop/.venv/Scripts/python.exe -B; no tests rerun",
     "recovery": ".mj-agent-local/p6-publication/owner-g2-records-before.zip",
     "prior_G3_changes": "Only seven section64 record files differ from prior binding; remaining205 exact"
+  },
+  "owner_g3_observation": {
+    "at": "2026-09-21T08:24:28.387397+00:00",
+    "head": "b2a730ddb4419cb39a767815f160115e02c2b575",
+    "parent": "1eb9257f15ee250b732f5db8a7f0b4266c0d2401",
+    "original_base": "20e2f24c352cf640d9dd33234b128ca897804b99",
+    "G1_G2_G3": "OWNER_COMMITTED_INDEPENDENTLY_VERIFIED",
+    "G3_paths_exact": 212,
+    "G3_working_hashes_exact": true,
+    "all_approved_paths_exact": 490,
+    "staged_at_entry": 0,
+    "tracked_unstaged_at_entry": 0,
+    "untracked": {
+      "count": 475,
+      "RETAIN_LOCAL_CANDIDATE": 231,
+      "RETAIN_LOCAL_HISTORY": 244,
+      "unmapped": 0
+    },
+    "remote_heads": {
+      "gitee/develop": "20e2f24c352cf640d9dd33234b128ca897804b99",
+      "origin/develop": "243b13f61ded1b2e398b346239305ea2a1be811a",
+      "migration_branch": "ABSENT_BOTH_REMOTES"
+    },
+    "PR_query": "gh pr list --repo MJ-AgentLab/mj-agent --head maintain/codex-dev-mode-migration --state all --json number,state,url,headRefOid,baseRefName",
+    "PR_result": [],
+    "base_drift": {
+      "commits": 2,
+      "PR": 551,
+      "files": [
+        ".github/workflows/ci.yml"
+      ],
+      "change": "setup-uv 10.0.1 -> 10.1.0; action SHA pin only",
+      "current_line_matches_upstream_before": true,
+      "local_ci_before_sha256": "6bda81da924225007d7923ee58f61580673019b8730075a09bb2c4de14954977",
+      "proposed_ci_sha256": "1473e8ed3fb0bfc756a11b9abc611c0ad45f0b129e5ab0cd009676cbebbf6cc5",
+      "state": "PROPOSED_NOT_APPLIED_NO_FETCH_MERGE"
+    },
+    "next_authorization": "Two additional commits: named three-file observation commit, then merge exact origin/develop SHA into migration branch. Existing dual-push/PR approval retained; protected new CI delta and merge need scoped approval.",
+    "proposed_record_commit": {
+      "message": "docs: record final migration commits and base drift",
+      "paths": [
+        "plans/[REPORT]_Codex_Only_Migration_Progress.md",
+        "evidence/codex-only-migration/asset-map.csv",
+        "evidence/codex-only-migration/p6/final-check.json"
+      ]
+    },
+    "proposed_merge_commit": {
+      "message": "infra: sync develop setup-uv update",
+      "source": "243b13f61ded1b2e398b346239305ea2a1be811a",
+      "target": "maintain/codex-dev-mode-migration",
+      "expected_new_working_delta": ".github/workflows/ci.yml one SHA/version pin line"
+    },
+    "technical_acceptance": "PASS_EXISTING_BOUNDED_MIGRATION; new setup-uv runner version not yet validated for migration",
+    "version_delivery": "THREE_LOCAL_COMMITS_VERIFIED; PUSH_PAUSED_NEW_BASE_REVIEW",
+    "external_services": "NOT_TESTED",
+    "CI": "FINAL_NOT_TRIGGERED_OR_OBSERVED; historic precleanup CI unchanged",
+    "review": "NO_PR_NO_REVIEW",
+    "merge_PR": "NOT_EXECUTED",
+    "agent_publication_route": "BLOCKED_EXECUTION_ROUTE_UNCHANGED_NO_RETRY",
+    "recovery": ".mj-agent-local/p6-publication/owner-g3-records-before.zip",
+    "read_commands": [
+      "git rev-parse HEAD/HEAD^; diff-tree and SHA256 against g3-staged-snapshot",
+      "git diff --name-only --no-renames 20e2f24c352cf640d9dd33234b128ca897804b99 HEAD",
+      "git ls-remote --heads gitee/origin refs/heads/develop refs/heads/maintain/codex-dev-mode-migration",
+      "gh api repos/MJ-AgentLab/mj-agent/compare/20e2f24c352cf640d9dd33234b128ca897804b99...243b13f61ded1b2e398b346239305ea2a1be811a"
+    ],
+    "environment": "Windows PowerShell login:false; existing develop/.venv/Scripts/python.exe -B; read-only Git/GitHub exit0; no tests rerun"
+  },
+  "base_sync_approval": {
+    "at": "2026-09-21T08:26:43.958904+00:00",
+    "source": "Owner replies approved to named DEVELOP-SYNC-REVIEW.md two-commit increment",
+    "head": "b2a730ddb4419cb39a767815f160115e02c2b575",
+    "origin_develop_rechecked": "243b13f61ded1b2e398b346239305ea2a1be811a",
+    "record_paths": [
+      "plans/[REPORT]_Codex_Only_Migration_Progress.md",
+      "evidence/codex-only-migration/asset-map.csv",
+      "evidence/codex-only-migration/p6/final-check.json"
+    ],
+    "record_message": "docs: record final migration commits and base drift",
+    "merge_target": "maintain/codex-dev-mode-migration",
+    "merge_source": "243b13f61ded1b2e398b346239305ea2a1be811a",
+    "merge_message": "infra: sync develop setup-uv update",
+    "expected_merge_delta": ".github/workflows/ci.yml setup-uv pin one line only",
+    "prior_dual_push_PR_CI_authorization": "REMAINS_VALID",
+    "execution": "RECORDS_PREPARED; COMMIT_MERGE_NOT_EXECUTED",
+    "agent_commit_route": "BLOCKED_EXECUTION_ROUTE_UNCHANGED_NO_RETRY",
+    "recovery": ".mj-agent-local/p6-publication/base-sync-approved-before.zip"
   }
 }

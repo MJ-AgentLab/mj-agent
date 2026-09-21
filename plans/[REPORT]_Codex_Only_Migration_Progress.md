@@ -1710,3 +1710,23 @@ G3保持原批准212路径，未增加证据目录或CSV行批量选择；全部
 
 
 G3实际暂存：git add --pathspec-from-file=.mj-agent-local/p6-publication/G3.paths --pathspec-file-nul返回0，准确212路径，无额外文件。Git提示既有文本换行转换，工作字节未被重写。git diff --cached --check返回2，2161条诊断集中于20份原已批准的历史证据：17份.diff共2158条、3份P2 Markdown各1条EOF空行。20文件逐项SHA256与原批准绑定一致。补丁作为文本入库时，补丁空白上下文/原始内容会被外层diff检查诊断；三份历史文档末尾空行同样保留。遵守不批量重写历史记录的要求，本轮不改证据原文、不修改whitespace配置、检查脚本或CI门禁，不将该失败改标PASS。当前CI workflow没有git diff --check步骤；这不证明CI会通过，最终CI仍未运行。完整输出留在.mj-agent-local/p6-publication/g3-cached-check.txt，逐文件诊断计数与边界见final-check.json的owner_g2_observation.G3。G1/G2检查结果不被该新覆盖域覆盖；G3携带已披露的历史空白检查失败等待Owner人工提交。
+
+
+## 66. P6三组提交全部核实；发布前发现develop新基线（2026-09-21）
+
+Owner终端G3结果已独立核实：HEAD b2a730ddb4419cb39a767815f160115e02c2b575，父提交1eb9257f15ee250b732f5db8a7f0b4266c0d2401；G1为e5f99c87a50ad47856a41f40c2acccf75a5534da。原绝对根/分支/Git目录一致。G3准确212路径及全部工作SHA256与提交前g3-staged-snapshot.json一致；相对20e2f24c的最终490路径与原G1/G2/G3并集完全一致，没有漏项或额外纳入。进入本轮暂存为空、已跟踪工作区无差异。475未跟踪项全在原排除清单：231候选、244历史材料，未清理或纳入。三组由Owner提交，Codex实施与审查来源保持。§65的G3待提交状态为历史时点，不覆盖本次真实提交。
+
+只读远端核查发现新差异：Gitee develop仍20e2f24c352cf640d9dd33234b128ca897804b99；GitHub develop已为243b13f61ded1b2e398b346239305ea2a1be811a。GitHub compare确认基线前进两提交，由#551将.github/workflows/ci.yml第39行setup-uv固定SHA从20cfd1b(v10.0.1)更新为bec219d(v10.1.0)，仅一行。当前迁移树该行精确匹配升级前内容；未fetch/merge、未改CI。两端迁移分支均不存在，gh pr list --state all返回空；未push、创建PR、触发最终CI或review。
+
+形成具名增量方案：先把本节、asset-map.csv新增两列与p6/final-check.json的owner_g3_observation作为三文件记录提交（docs: record final migration commits and base drift）；再将确切243b13f61ded1b2e398b346239305ea2a1be811a合入当前迁移分支，保留原三提交，不rebase，不改develop或双远端配置。预计合并后工作差异只有上述CI固定SHA一行，原生gate命令及所有迁移成果不变；冲突或其他差异须先停查。合并消息建议infra: sync develop setup-uv update。此额外合并/新受保护CI增量不假设由原三组批准覆盖；待Owner具名决定，原双推/指定develop-base PR及CI触发批准继续有效。
+
+完整差异/验证/恢复与命令顺序见本地.mj-agent-local/p6-publication/DEVELOP-SYNC-REVIEW.md及develop-sync-proposed.diff。本轮三记录及CI原字节在修改前备份为owner-g3-records-before.zip，适用HEAD b2a730d。记录修改尚未暂存。恢复保留b2a730d及所有P0–P6具名备份，HEAD不恢复排除材料；不reset/clean，不自动合并PR、部署、关闭#499/#552或清理工作树。技术迁移既有有界验收保持通过；新setup-uv运行环境对迁移尚未验证；版本仅三组本地提交完成，外部服务L6仍NOT_TESTED。Codex发布路线仍BLOCKED_EXECUTION_ROUTE，没有重试或绕过。
+
+
+## 67. P6新增记录提交与指定develop合并获准（2026-09-21）
+
+Owner对§66对应DEVELOP-SYNC-REVIEW.md两项增量回复“批准”：三文件记录提交docs: record final migration commits and base drift，以及将243b13f61ded1b2e398b346239305ea2a1be811a合入maintain/codex-dev-mode-migration（infra: sync develop setup-uv update）。合并工作差异限CI setup-uv固定SHA/版本一行；冲突或其他差异先核查，不扩大授权。原双推、develop-base PR及其CI触发批准继续有效；不包括PR合并、develop推送、部署、清理或L6。
+
+执行前独立核实HEAD b2a730ddb4419cb39a767815f160115e02c2b575，分支未变、暂存为空，仅三份已具名记录未暂存。git ls-remote origin确认develop仍为指定243b13f6，迁移分支仍不存在，exit0。三记录本轮修改前字节保存至.mj-agent-local/p6-publication/base-sync-approved-before.zip；final-check追加base_sync_approval，资产表追加两列，所有旧字段/历史保留。当前准备按三具名路径暂存；实际暂存集合和检查结果由本地base-sync-record-staged.json记录，不预填commit或merge成功。
+
+Codex提交审批路线仍BLOCKED_EXECUTION_ROUTE，没有重试git commit或改权限/工具/信任绕过；Owner在个人终端先完成记录提交后，核对新HEAD再执行已批准的指定SHA合并。当前技术迁移有界验收保持，版本仅原三组本地提交完成，额外commit/merge、双推、PR、最终CI/review未执行，外部服务未验证。状态为等待合法人工执行，不重复索取已有授权。
