@@ -11,9 +11,9 @@ aliases:
   - mj-agent SPEC Authoring Guide
   - mj-agent SPEC 撰写指南
 created: 2026-05-11
-updated: 2026-08-10
+updated: 2026-09-21
 state: draft
-version: v0.3
+version: v0.4
 track: shared
 owner: 项目负责人
 ---
@@ -22,7 +22,7 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 仓内所有 `docs/design/<module>/[SPEC]_*.md` 起草与更新（HITL Stage 6）
 > **目标受众**：SPEC 起草者（开发 / AI Agent / Reviewer）
-> **版本**：v0.3
+> **版本**：v0.4
 > **关联文档**：[[../_templates/TEMPLATE_SPEC|TEMPLATE_SPEC]]、[[sdd/workflows/execution-loop|执行闭环 workflow]]（Stage 6 SPEC 起草）
 
 ---
@@ -78,9 +78,9 @@ git diff --name-only HEAD
 │  └─ #5 CI/CD + scripts 自动化
 ├─ .env.example  OR  config/secrets*.{enc,conf,yml}  OR  pyproject.toml  OR  uv.lock
 │  └─ #6 Config / secrets / dependencies
-├─ .claude/skills/mj-agent-*/SKILL.md  OR  .mcp.json
+├─ .agents/skills/mj-agent-*/SKILL.md  OR  .codex/config.toml
 │  └─ #7 Engineering-workflow infra（mj-agent 专属）
-└─ docs/**/*.md  OR  CLAUDE.md  OR  INDEX.md
+└─ docs/**/*.md  OR  AGENTS.md  OR  INDEX.md
    └─ #8 文档治理
 ```
 
@@ -143,7 +143,7 @@ git diff --name-only HEAD
 - **可选 / 多数 N/A 段**：§3 Contract（脚本类一般无契约；如有 stdout schema 则填）；§6 Rollback（脚本可幂等重跑则 N/A）；§8 Observability（CI 自带日志）
 - **常见 anti-pattern**：
   - ❌ §1 Context 跳过 "为什么本脚本不能放到 mj-agent CLI"（避免 scripts/ 与 src/mj_agent/server/cli.py 职责混淆）
-  - ❌ §4 漏标 secret 依赖（如 `MJ_AGENT_SSH_*` 是否需要 `.claude\scripts\setup-mcp-secrets.ps1`）
+  - ❌ §4 漏标 secret 依赖（如 `MJ_AGENT_SSH_*` 是否需要 `scripts\mcp\setup-mcp-secrets.ps1`）
   - ❌ Verification 仅写 "CI 跑过"，不给出本地 reproduce 命令
 
 ### §4.6 Config / secrets / dependencies
@@ -153,29 +153,29 @@ git diff --name-only HEAD
 - **可选 / 多数 N/A 段**：§3 Contract（schema 类一般 N/A）；§8 Observability（secret 不能 log；除非是非敏感 var）
 - **常见 anti-pattern**：
   - ❌ §4 新增 var 漏同步 `setup-env.ps1` 的 `[DRIFT]` 检测清单（导致 dev 已有 .env 永远漏 var）
-  - ❌ §6 Rollback 漏 `.claude\scripts\setup-mcp-secrets.ps1 -Reload` 流程（HKCU env var 不会自动刷新到运行中进程）
-  - ❌ §7 Verification 把 `-Reload` 的 `N / N set` 当成「配置可用」的证据（空值键照样计 `[SET]`；判据是掩码 `****` vs 真实前缀，见 `config/README.md` §6.4）
+  - ❌ §6 Rollback 漏 `scripts\mcp\setup-mcp-secrets.ps1 -Reload` 流程（HKCU env var 不会自动刷新到运行中进程）
+  - ❌ §7 Verification 把 `-Reload` 的 `N / N set` 当成「配置可用」的证据（原生脚本报告 SET/MISSING 且不回显值；状态只证明变量存在性，不证明服务连接，见 `config/README.md` §6.4）
   - ❌ §7 Verification 跳过 cross-profile（dev / test / prod）的 var 集合差异说明
 
 ### §4.7 Engineering-workflow infra（mj-agent 专属）
 
-- **适用范围**：`.claude/skills/mj-agent-*/SKILL.md`（5 family：flow / git / doc / runtime / infra）+ `.mcp.json` server 配置 + `.claude/settings.json`
+- **适用范围**：`.agents/skills/mj-agent-*/SKILL.md`（5 family：flow / git / doc / runtime / infra）+ `.codex/config.toml` server 配置 + `.codex/hooks.json`
 - **必填段**：§1 Context + §2 Scope + §3 Contract（SKILL frontmatter schema：name + description；ADR-013 native 2-field schema；description ≥ 200 chars + 反向触发段）+ §7 Verification（A12-A14 PR 门禁通过 + skill triggering 5-iteration eval 推荐但非阻塞）
-- **可选 / 多数 N/A 段**：§4 Configuration（除非引入新 settings.json 字段）；§5 Error handling（skill 失败由用户重试，无系统级 error handling）；§6 Rollback（git revert 即可）；§8 Observability（无 telemetry）
+- **可选 / 多数 N/A 段**：§4 Configuration（原生 config/hooks/rules 字段变更时必填）；§5 Error handling（skill 失败由用户重试，无系统级 error handling）；§6 Rollback（已提交变更按评审 revert；未提交工作字节依具名备份恢复）；§8 Observability（无 telemetry）
 - **常见 anti-pattern**：
   - ❌ §3 Contract 漏 description "Do not use for:" 反向触发段（A12 阻塞门禁）
   - ❌ runtime 类目 SKILL 缺 "Anti-patterns" 段的 "Do NOT modify src/mj_agent/..." 硬约束
-  - ❌ §7 Verification 漏 `.mcp.json` 改动后的 `/doctor` Missing-env 验证
+  - ❌ §7 Verification 漏 `.codex/config.toml` 改动后的原生检查、Owner 脱敏凭据完整性核对及实际宿主证据（静态检查不证明服务可用）
 
 ### §4.8 文档治理
 
-- **适用范围**：`docs/**/*.md` canonical（STANDARD / SPEC / ADR / GUIDE / RUNBOOK / POSTMORTEM / ASSESSMENT / EVAL / CONTRACT / ISSUE）+ `docs/INDEX.md` + `docs/**/INDEX.md` + `CLAUDE.md`
+- **适用范围**：`docs/**/*.md` canonical（STANDARD / SPEC / ADR / GUIDE / RUNBOOK / POSTMORTEM / ASSESSMENT / EVAL / CONTRACT / ISSUE）+ `docs/INDEX.md` + `docs/**/INDEX.md` + `AGENTS.md`
 - **必填段**：§1 Context + §2 Scope + §7 Verification（必跑 `scripts/check_frontmatter.py` + `scripts/check_wikilinks.py`；如改 STANDARD/SPEC/ADR 触 A1-A6 全检；如改 in-source canonical 触 A7-A10）
 - **可选 / 多数 N/A 段**：§3 Contract（文档不是 runtime 实体）；§4 Configuration（除非新增 frontmatter 字段）；§5 Error handling（N/A）；§6 Rollback（git revert）；§8 Observability（N/A）
 - **常见 anti-pattern**：
   - ❌ §7 跳过人读端到端验证（自动化校验过 ≠ 阅读体验过；尤其 STANDARD / GUIDE 类）
   - ❌ INDEX.md 改动漏 cross-ref 一致性（新增 entry 但未更新 ADR/RUNBOOK 入口）
-  - ❌ allowlist 文档（per [[policies/documentation|documentation policy]] §7.1）改动跳过 CLAUDE.md 同步检查（A6 阻塞）
+  - ❌ allowlist 文档（per [[policies/documentation|documentation policy]] §7.1）改动跳过 AGENTS.md 同步检查（A6 阻塞）
 
 ---
 
@@ -217,8 +217,8 @@ SPEC Delta:
 | #4 Docker compose + storage stack | secrets-grants-or-prod-config（`docker/compose.prod.yml`；**及 `docker/Dockerfile` 外部 registry 镜像引用**，per #413）/ database-migration（mj_agent_memory schema） |
 | #5 CI/CD + scripts | ci-blocking-gate-toggle（gate blocking flip 时） |
 | #6 Config / secrets / deps | secrets-grants-or-prod-config（secret / GRANT / prod 配置）；新依赖属 execution-loop §3.1 执行期暂停，非 §4 enum |
-| #7 Engineering-workflow infra | mcp-server-trust-posture-change（`.mcp.json` 面）；A12-A14 PR 门禁阻塞 |
-| #8 文档治理 | bulk-content-purge-or-migration（≥10 文件迁移/归档）；其余一般无 §4 enum（framework STANDARD 触 A6 CLAUDE.md 同步） |
+| #7 Engineering-workflow infra | mcp-server-trust-posture-change（`.codex/config.toml` 面）；A12-A14 PR 门禁阻塞 |
+| #8 文档治理 | bulk-content-purge-or-migration（≥10 文件迁移/归档）；其余一般无 §4 enum（framework STANDARD 触 A6 AGENTS.md 同步） |
 
 **SPEC §1 Context 必须显式标注本 SPEC 触发的 ai-agent §4 必停项**，让 reviewer 一眼判定 HITL 强度。
 

@@ -28,7 +28,7 @@ Four checks:
     writes one — its presence means a hand edit / literal injection), any URL
     userinfo password (`://user:pass@`), or any `password/token/secret/api_key=`
     literal inside a string value FAILs. File absent == PASS (pre-S2 / fork
-    state); the first line of defense is the V11 blocking drift gate — this
+    state); the first line of defense is the V11 blocking native MCP gate — this
     content scan is defense in depth.
 
 WARNING mode (`continue-on-error: true` in ci.yml); expected baseline
@@ -202,9 +202,9 @@ def _iter_strings(node: object) -> list[str]:
 def _check_codex_config(config_text: str | None) -> Summary:
     """Check (4): .codex/config.toml carries no literal credentials (FAIL).
 
-    The emitter (agents_sync.py emitter B) references secrets BY NAME via
+    Native project configuration references secrets BY NAME via
     `env_vars`; it never writes an `env` table. Defense in depth behind the V11
-    blocking drift gate.
+    blocking native MCP gate.
     """
     summary = Summary()
     if config_text is None:
@@ -215,11 +215,11 @@ def _check_codex_config(config_text: str | None) -> Summary:
         return summary
     try:
         parsed = tomllib.loads(config_text.replace("\r\n", "\n"))
-    except tomllib.TOMLDecodeError as exc:
+    except tomllib.TOMLDecodeError:
         summary.add(
             Severity.WARN,
-            f".codex/config.toml is not valid TOML ({exc}) — content scan skipped"
-            " (the V11 blocking drift gate rejects any deviation from the generator)",
+            ".codex/config.toml is not valid TOML — content scan skipped"
+            " (the V11 blocking native MCP gate rejects any invalid native config)",
         )
         return summary
 
@@ -229,7 +229,7 @@ def _check_codex_config(config_text: str | None) -> Summary:
         for name, node in servers.items():
             if isinstance(node, dict) and "env" in node:
                 findings.append(
-                    f"mcp_servers.{name} has an `env` table — the emitter never writes"
+                    f"mcp_servers.{name} has an `env` table — the native config must never include"
                     " one; literal credential risk (secrets go BY NAME via env_vars)"
                 )
     # NEVER echo flagged value content — the checker must not become the leak

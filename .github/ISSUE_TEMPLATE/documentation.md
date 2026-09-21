@@ -24,7 +24,7 @@ assignees: []
 ## Cross-Reference Impact
 
 - 是否需更新 `docs/INDEX.md` / `decisions/INDEX.md` / `capabilities/INDEX.md`？
-- 是否需更新 `CLAUDE.md`（root / 4 subdir）？
+- 是否需更新 `AGENTS.md`（root / 4 subdir）？
 - 是否触发 A1-A6 + A7-A10 + A12-A14 PR gate？
 
 ## Acceptance Criteria
@@ -39,6 +39,6 @@ assignees: []
 
 - [ ] 修改 `policies/**`？（HITL required；business policy 元规则）
 - [ ] 修改 `AGENTS.md`？（AI 协作边界）
-- [ ] 修改 `CLAUDE.md` > 50 行？（AI 主入口）
+- [ ] 修改 `AGENTS.md` > 50 行？（AI 主入口）
 - [ ] 修改 ADR `state` 字段（draft → active / active → deprecated）？
 - [ ] 触发 archive ceremony（≥ 10 文件迁移）？

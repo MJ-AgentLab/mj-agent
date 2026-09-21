@@ -1,0 +1,126 @@
+--- a/tests/unit/test_sdd_development_agent.py
++++ b/tests/unit/test_sdd_development_agent.py
+@@ -580,7 +580,7 @@
+             "--scenario",
+             "S1",
+             "--tool",
+-            "codex",
++            "claude",
+             "--run",
+             str(run),
+             "--runs-root",
+@@ -596,7 +596,7 @@
+         repo_root=tmp_path,
+     )
+     assert rc == 0
+-    return runs / f"codex-S1-run{run}"
++    return runs / f"claude-S1-run{run}"
+ 
+ 
+ def test_fixture_runner_setup_builds_isolated_run_dir(tmp_path: Path) -> None:
+@@ -761,7 +761,7 @@
+             "--scenario",
+             "S1",
+             "--tool",
+-            "codex",
++            "claude",
+             "--run",
+             "1",
+             "--runs-root",
+@@ -777,4 +777,4 @@
+         repo_root=tmp_path,
+     )
+     assert rc == 2
+-    assert not (runs / "codex-S1-run1").exists()  # orphan removed, retryable
++    assert not (runs / "claude-S1-run1").exists()  # orphan removed, retryable
+--- a/GLOSSARY.md
++++ b/GLOSSARY.md
+@@ -55,7 +55,7 @@
+ 
+ ### Canonical 文档
+ 
+-**定义**：[policies/documentation.md](policies/documentation.md) 定义的「权威层」；路径在 `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/{skills,prompts}/**` + `.agents/skills/**` + `.codex/**`。各类文件按对应 schema 和治理规则维护；A1-A14 PR 门禁按适用范围检查。
++**定义**：[policies/documentation.md](policies/documentation.md) 定义的「权威层」；路径在 `docs/**`（排除 `archive/legacy/`）+ `src/mj_agent/{skills,prompts}/**` + `.claude/skills/**` + `.claude/settings.json` + `.mcp.json`。受强治理；frontmatter 必填；A1-A14 PR 门禁适用。
+ **相关术语**：Working 文档 / Legacy 文档 / Frontmatter / Track
+ 
+ ### Chainlit
+@@ -65,7 +65,7 @@
+ 
+ ### CLAUDE.md
+ 
+-**定义**：历史开发客户端入口；原职责已由 [AGENTS.md](AGENTS.md) 承接，依据 [ADR-040](decisions/ADR-040_Codex_Only_Development.md)。旧文件仅待具名清理，不参与当前执行。现行入口同步策略见 [policies/documentation.md](policies/documentation.md)。
++**定义**：项目根 markdown 之一；定位为 AI 高频上下文缓存。**非信息源**，是从各 canonical STANDARD / 关键 GUIDE 摘录的副本，目的是提升 AI 单上下文窗口的信息密度。同步策略见 [policies/documentation.md](policies/documentation.md)（CLAUDE.md sync allowlist）。
+ **相关术语**：Project root markdown / A6 / Meta_Framework
+ 
+ ### Commit type
+@@ -102,7 +102,7 @@
+ 
+ ### Engineering-workflow（Track C）
+ 
+-**定义**：三轨道治理中的「工程编排侧」轨道；治理 `.agents/skills/mj-agent-*/SKILL.md`、`.codex/**` 及工程流程 STANDARDs。主治理：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)。失败模式**流程漂移**（HITL 跳过 / 错 skill / 配置退化）。
++**定义**：三轨道治理中的「工程编排侧」轨道；治理 `.claude/skills/mj-agent-*/SKILL.md` + `.claude/settings.json` + `.mcp.json` + HITL_Prompt + 工程流程 STANDARDs。主治理：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)。失败模式**流程漂移**（HITL 跳过 / 错 skill / settings 退化）。
+ **相关术语**：Track / Code Side / Agent Side / HITL gates
+ 
+ ---
+@@ -116,7 +116,7 @@
+ 
+ ### Frontmatter
+ 
+-**定义**：受治理 markdown 文件开头的 YAML 元数据块。canonical 必填 `type / domain / summary / owner / created / updated / state`；带 `version` 类（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）还需 `version`；agent track SKILL 用 13 字段 schema；engineering-workflow `.agents/skills/` 用 native 2 字段。项目根 5 文件**不要求** frontmatter（[policies/documentation.md](policies/documentation.md)）。
++**定义**：受治理 markdown 文件开头的 YAML 元数据块。canonical 必填 `type / domain / summary / owner / created / updated / state`；带 `version` 类（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）还需 `version`；agent track SKILL 用 13 字段 schema；engineering-workflow `.claude/skills/` 用 ADR-013 native 2 字段。项目根 5 文件**不要求** frontmatter（[policies/documentation.md](policies/documentation.md)）。
+ **相关术语**：Canonical / track / Project root markdown
+ 
+ ---
+@@ -130,7 +130,7 @@
+ 
+ ### G1 / G2（PreToolUse hook 规则）
+ 
+-**定义**：[policies/git-branching.md](policies/git-branching.md) 的两条 Git 工作流规则，由 `.codex/rules/`、`scripts/sdd/codex_hook_guard.py` 和执行者自守共同承担。G1 worktree-required（禁止 `git checkout -b`，使用 `git worktree add`）；G2 base=develop-except-hotfix（PR 必须显式 `--base`）。原生守卫识别范围有限，实际宿主激活须另行验证；事故起源 PR #158 / #154。
++**定义**：`.claude/scripts/guard-git-workflow.ps1` PreToolUse hook 强制的两条 git 工作流规则。G1 worktree-required（拦 `git checkout -b`，引导 `git worktree add`）；G2 base=develop-except-hotfix（拦 `gh pr create` 不带 `--base`）。事故起源 PR #158 / #154。
+ **相关术语**：Worktree / Hook / Branch type
+ 
+ ---
+@@ -234,7 +234,7 @@
+ 
+ ### Project root markdown
+ 
+-**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `AGENTS.md`。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
++**定义**：项目根 5 个具名 markdown：`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`（外加 `AGENTS.md`——AI agent 指令契约，同为根操作文件例外，per ADR-035）。**不进入 canonical 治理表**；不写 frontmatter；A1-A3 不适用；A4 + A6 仍适用。详见 [policies/documentation.md](policies/documentation.md) + [GitHub_Markdown §14](docs/rule/[STANDARD]_GitHub_Markdown.md)。
+ **相关术语**：Canonical / Frontmatter / track
+ 
+ ---
+@@ -266,7 +266,7 @@
+ 
+ ### SKILL（三类区分）
+ 
+-**定义**：需区分 3 类同名同形的 SKILL.md：(1) **in-source runtime**（`src/mj_agent/skills/`；13 字段；Python loader 剥 frontmatter）；(2) **in-tree workflow**（`.agents/skills/mj-agent-*/`；native 2 字段；由 Codex 发现）；(3) **marketplace plugin**（外部插件资产，不是本项目开发技能源，也不是迁移运行依赖）。**严格区分**——混淆会施加错误约束 / 套错 schema。
++**定义**：mj-agent 共有 3 类同名同形的 SKILL.md：(1) **in-source runtime**（`src/mj_agent/skills/`；13 字段；Python loader 剥 frontmatter）；(2) **in-tree workflow**（`.claude/skills/mj-agent-*/`；ADR-013 native 2 字段；Claude Code 主进程加载）；(3) **marketplace plugin**（`mj-agentlab-marketplace/`；2 字段；plugin loader）。**严格区分**——混淆会施加错误约束 / 套错 schema。
+ **相关术语**：Runtime skill / Workflow skill / ADR-013
+ 
+ ### Stable path（active canonical）
+@@ -276,8 +276,8 @@
+ 
+ ### setup-env.ps1 / setup-mcp-secrets.ps1（PowerShell 脚本）
+ 
+-**定义**：mj-agent 两条 secrets 维护脚本（[ADR-030](decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) 2-bundle trust-boundary split）。`scripts/setup-env.ps1` 维护 app 凭据；`scripts/mcp/setup-mcp-secrets.ps1` 维护 MCP 的具名 OS 环境变量，MCP secrets 不写入应用 `.env`。真实解密及凭据写入由 Owner 在自己的终端执行。
+-**相关术语**：Secrets bundle / .env / .codex/config.toml
++**定义**：mj-agent 两条 secrets 解密脚本（[ADR-030](decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md) 2-bundle trust-boundary split）。`setup-env.ps1` 解密 `config/secrets.enc` 写 `.env`（app 凭据）；`.claude/scripts/setup-mcp-secrets.ps1` 解密 `config/secrets-mcp.enc` 直写 OS env（MCP secrets，bypass `.env`）。
++**相关术语**：Secrets bundle / .env / .mcp.json
+ 
+ ### SQL execute（envelope）
+ 
+@@ -290,12 +290,12 @@
+ 
+ ### track（frontmatter 字段）
+ 
+-**定义**：[policies/documentation.md](policies/documentation.md) 的 4 值 enum 字段：`code` / `agent` / `engineering-workflow` / `shared`。决定 reviewer + PR 门禁子集 + AGENTS.md sync 段位。`scripts/check_frontmatter.py` 强制枚举值。项目根 markdown 不适用 track（§2.6 + §4.3.1 决策树第 0 条）。
++**定义**：[policies/documentation.md](policies/documentation.md) 的 4 值 enum 字段：`code` / `agent` / `engineering-workflow` / `shared`。决定 reviewer + PR 门禁子集 + CLAUDE.md sync 段位。`scripts/check_frontmatter.py` 强制枚举值。项目根 markdown 不适用 track（§2.6 + §4.3.1 决策树第 0 条）。
+ **相关术语**：Track A / Track B / Track C / Frontmatter
+ 
+ ### Three-source SKILL distinction
+ 
+-**定义**：3 类 SKILL.md 来源严格区分的简称；见上文 [SKILL](#skill三类区分)。当前项目开发与 runtime 技能入口见 [AGENTS.md](AGENTS.md) 的 Documentation and workflow 节。
++**定义**：mj-agent 3 类 SKILL.md 来源严格区分的简称；见上文 [SKILL](#skill三类区分)。完整速查表见 [CLAUDE.md](CLAUDE.md) §"Three-source SKILL distinction"。
+ **相关术语**：SKILL / Runtime skill / Workflow skill
+ 
+ ---

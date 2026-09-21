@@ -1,0 +1,880 @@
+{
+  "phase": "P2",
+  "status": "DRAFT_NOT_APPLIED",
+  "algorithm": "description=SHA256(UTF8 scalar text); body=strip first frontmatter regex, normalize CRLF/lone CR to LF, SHA256 UTF8; no trim",
+  "contract_container": "原契约文件暂留原址；P3仅针对本契约adapter/schema/命名消费者做定向草案，不全目录重构。",
+  "drafts": [
+    {
+      "name": "mj-agent-infra-app-start",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-app-start/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-app-start/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-start/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-app-start/SKILL.md",
+        "name": "mj-agent-infra-app-start",
+        "description_hash": "sha256:ac3dcb53efc27c435888c886272594b798ca87f49a6d8573ed7b025f8c7e0c07",
+        "body_content_hash": "sha256:9ab21e612642ee925a9e3340777f3d2c77aadc9f498a904a38ea5828b0786170",
+        "frozen_at": "2026-07-08 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §Runtime Matrix",
+          "## §HITL 介入场景",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Output Format",
+          "## App Start Report",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:ac3dcb53efc27c435888c886272594b798ca87f49a6d8573ed7b025f8c7e0c07",
+        "body_content_hash": "sha256:9ab21e612642ee925a9e3340777f3d2c77aadc9f498a904a38ea5828b0786170"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-app-start/SKILL.md",
+        "name": "mj-agent-infra-app-start",
+        "description_hash": "sha256:5a80607da91bac49f466fabc210e5fb8f16921d5ca537945b9873a7ea40809d2",
+        "body_content_hash": "sha256:344f85c860f0a6be29b418263a2fa200bc4f078b571c7a0dbaf7d073f3884c59",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §Runtime Matrix",
+          "## §HITL 介入场景",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Output Format",
+          "## App Start Report",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill orchestrates the ordered START of the mj-agent local-dev app runtime as one motion — a prerequisite gate via the default `mj-agent check` (delegates to /mj-agent-infra-env-setup when creds / .env / uv sync are missing), an already-running short-circuit, storage/stack bring-up before the live gate (delegates to /mj-agent-infra-docker-compose), a default-run-but-skippable `mj-agent check --live` gate (async memory #283 + biz DB SELECT 1 + one-token LLM round-trip), HITL runtime selection (default = container compose stack; else LangGraph Studio `langgraph dev` / Chainlit `mj-agent serve`), a launch-mode choice for foreground servers (you run it in your terminal / Claude runs it in the background), the launch, and `curl --noproxy '*'` root-URL health verification. Make sure to use this skill whenever the user says \"启动 mj-agent\", \"把 app 跑起来\", \"start the app\", \"launch the agent\", \"起本地开发环境\", \"run mj-agent locally\", \"serve the UI\", \"拉起本地服务栈\". Do not use for: secret/.env bootstrap + uv sync + offline check (use mj-agent-infra-env-setup); the low-level compose up/ps/logs/down primitive (use mj-agent-infra-docker-compose); the interactive Studio data-boundary walkthrough H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); DGX endpoint probing (use mj-agent-infra-llm-endpoint-probe); stopping the running app (use mj-agent-infra-app-stop); destructive docker cleanup / volume+image wipe (use mj-agent-infra-env-teardown).",
+        "new_text": "适用于 mj-agent 的有序启动本地dev runtime。输入：worktree、provider状态、runtime选择、已有端口/compose。流程：cwd/provider→prereq→already-running→runtime→storage→live→launch→verify。输出：根URL/容器状态/覆盖检查真实，未验证不填绿。Use when：启动当前dev容器栈并报告就绪状态。Do not use for：只要compose ps输出；建议docker-compose，不启动app。授权：缺凭据Owner终端；live单列授权；后台未验证不假造；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:ac3dcb53efc27c435888c886272594b798ca87f49a6d8573ed7b025f8c7e0c07",
+        "new_hash": "sha256:5a80607da91bac49f466fabc210e5fb8f16921d5ca537945b9873a7ea40809d2"
+      },
+      "body_change": {
+        "old_hash": "sha256:9ab21e612642ee925a9e3340777f3d2c77aadc9f498a904a38ea5828b0786170",
+        "new_hash": "sha256:344f85c860f0a6be29b418263a2fa200bc4f078b571c7a0dbaf7d073f3884c59",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §Runtime Matrix",
+          "## §HITL 介入场景",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Output Format",
+          "## App Start Report",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §Runtime Matrix",
+          "## §HITL 介入场景",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Output Format",
+          "## App Start Report",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-app-start/SKILL.md\n+++ .agents/skills/mj-agent-infra-app-start/SKILL.md\n@@ -1,10 +1,21 @@\n+\n \n # mj-agent Infra — App Start\n \n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill orchestrates the ordered START of the mj-agent local-dev app runtime as one motion — a prerequisite gate via the default `mj-agent check` (delegates to mj-agent-infra-env-setup when creds / .env / uv sync are missing), an already-running short-circuit, storage/stack bring-up before the live gate (delegates to mj-agent-infra-docker-compose), a default-run-but-skippable `mj-agent check --live` gate (async memory #283 + biz DB SELECT 1 + one-token LLM round-trip), HITL runtime selection (default = container compose stack; else LangGraph Studio `langgraph dev` / Chainlit `mj-agent serve`), a launch-mode choice for foreground servers (you run it in your terminal / Codex runs it in the background), the launch, and `curl --noproxy '*'` root-URL health verification. Make sure to use this skill whenever the user says \"启动 mj-agent\", \"把 app 跑起来\", \"start the app\", \"launch the agent\", \"起本地开发环境\", \"run mj-agent locally\", \"serve the UI\", \"拉起本地服务栈\". Do not use for: secret/.env bootstrap + uv sync + offline check (use mj-agent-infra-env-setup); the low-level compose up/ps/logs/down primitive (use mj-agent-infra-docker-compose); the interactive Studio data-boundary walkthrough H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); DGX endpoint probing (use mj-agent-infra-llm-endpoint-probe); stopping the running app (use mj-agent-infra-app-stop); destructive docker cleanup / volume+image wipe (use mj-agent-infra-env-teardown).\n+\n+\n ## Overview\n \n Ordered **START** orchestrator for the mj-agent local-dev app runtime — the reversible\n-counterpart to `/mj-agent-infra-app-stop`. **Stage 10 sub** of the 17-stage 执行闭环（本地拉起\n+counterpart to `mj-agent-infra-app-stop`. **Stage 10 sub** of the 17-stage 执行闭环（本地拉起\n runtime 做验证 / 演示）；也可作为纯 dev 起服的独立入口。\n \n **infra 家族分工**：原 6 个 infra skill 供给/销毁 **capacity**（secrets / containers / storage /\n@@ -13,26 +24,26 @@\n \n ```text\n [env-setup 已就绪] -> THIS-SKILL -> {container stack up-d | langgraph dev | mj-agent serve}\n-                       ├─ (缺 creds) -> /mj-agent-infra-env-setup\n-                       ├─ (DGX provider) -> /mj-agent-infra-llm-endpoint-probe\n-                       ├─ (storage) -> /mj-agent-infra-docker-compose\n-                       └─ verify -> /mj-agent-infra-studio-probe | /mj-agent-infra-app-stop\n+                       ├─ (缺 creds) -> mj-agent-infra-env-setup\n+                       ├─ (DGX provider) -> mj-agent-infra-llm-endpoint-probe\n+                       ├─ (storage) -> mj-agent-infra-docker-compose\n+                       └─ verify -> mj-agent-infra-studio-probe | mj-agent-infra-app-stop\n ```\n \n > **Native origin（非 mj-system 镜像）**：mj-system 的 `ops-*` 家族在 mj-agent 被 ADR-016\n > §Decision 1 有意去掉；本 skill 只借鉴\"需要一个统一起服动作\"这一问题识别，方案（步骤 / HITL\n > 粒度 / 端口 / 命令）全按 mj-agent 自身栈 native 设计，归入既有 `infra` 家族（名字匹配\n-> `check_claude_skill_contracts.py` 硬编码的 5-family regex → 0 WARN，无需 ADR / validator 改动）。\n+> 原生 schema/命名按共用说明检查；冻结契约变更需另行批准）。\n \n **Reference**:\n-- [[../../../src/mj_agent/server/cli.py|server/cli.py]]（`serve` / `check [--live]` 实现；`serve` 用\n+- `repo:src/mj_agent/server/cli.py`（`serve` / `check [--live]` 实现；`serve` 用\n   `subprocess.call` spawn 一个 chainlit **子进程**——`app-stop` 的 tree-kill 依据）\n-- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]（`ark` vs `local-openai-compat`；DGX 前置）\n-- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile；容器栈 -f 链）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5（Level A/B 验证矩阵；\n-  Level C 破坏性见 `/mj-agent-flow-verify`）+ [[../../../policies/ai-agent|policies/ai-agent]] §4\n+- `repo:decisions/ADR-027_LLM_Provider_Abstraction.md`（`ark` vs `local-openai-compat`；DGX 前置）\n+- `repo:decisions/ADR-026_Multi_Environment_Compose_Profile.md`（4-file profile；容器栈 -f 链）\n+- `repo:sdd/workflows/execution-loop.md` §5（Level A/B 验证矩阵；\n+  Level C 破坏性见 `mj-agent-flow-verify`）+ `repo:policies/ai-agent.md` §4\n   （破坏性操作必触 HITL；本 skill 全非破坏 → slim HITL）+\n-  [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（harness Bash 权限 prompt = 执行拍板）\n+  `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（Owner 授权与执行路线分开）\n \n ## When to Use\n \n@@ -41,17 +52,17 @@\n - 需要按顺序拉起 runtime（prereq → storage → check → launch → verify）而不是记一串命令\n \n **MAY skip when**：\n-- 只想跑单条 compose 命令（`up -d` / `ps` / `logs`）→ 直接 `/mj-agent-infra-docker-compose`\n-- 只做数据边界 walkthrough（H1/H2/H3/R1/R2）→ Studio 已起时直接 `/mj-agent-infra-studio-probe`\n-- 环境尚未 setup（无 `.env` / 无 `uv sync`）→ 先 `/mj-agent-infra-env-setup`（本 skill Step 1 会兜住并回导）\n+- 只想跑单条 compose 命令（`up -d` / `ps` / `logs`）→ 直接 `mj-agent-infra-docker-compose`\n+- 只做数据边界 walkthrough（H1/H2/H3/R1/R2）→ Studio 已起时直接 `mj-agent-infra-studio-probe`\n+- 环境尚未 setup（无 `.env` / 无 `uv sync`）→ 先 `mj-agent-infra-env-setup`（本 skill Step 1 会兜住并回导）\n \n **MUST NOT use for**：\n-- ❌ secret / `.env` bootstrap + `uv sync` + offline check → /mj-agent-infra-env-setup\n-- ❌ 低层 compose up/ps/logs/down primitive → /mj-agent-infra-docker-compose\n-- ❌ Studio 数据边界 walkthrough H1/H2/H3/R1/R2 → /mj-agent-infra-studio-probe\n-- ❌ DGX endpoint 探针 → /mj-agent-infra-llm-endpoint-probe\n-- ❌ 停止运行中的 app → /mj-agent-infra-app-stop\n-- ❌ 破坏性 docker 清理 / volume+image wipe → /mj-agent-infra-env-teardown\n+- ❌ secret / `.env` bootstrap + `uv sync` + offline check → mj-agent-infra-env-setup\n+- ❌ 低层 compose up/ps/logs/down primitive → mj-agent-infra-docker-compose\n+- ❌ Studio 数据边界 walkthrough H1/H2/H3/R1/R2 → mj-agent-infra-studio-probe\n+- ❌ DGX endpoint 探针 → mj-agent-infra-llm-endpoint-probe\n+- ❌ 停止运行中的 app → mj-agent-infra-app-stop\n+- ❌ 破坏性 docker 清理 / volume+image wipe → mj-agent-infra-env-teardown\n \n ## Workflow\n \n@@ -86,25 +97,22 @@\n }\n ```\n \n-> **Shell 说明**：下方 `powershell` 块里的 **PS cmdlet**（`Get-NetTCPConnection` / `Get-Process` /\n-> `Select-String`）须在 user 的 PowerShell 终端跑，或 Claude 的 Bash tool（git-bash）用\n-> `powershell.exe -NoProfile -Command '…'`（单引号包裹避免 `$var` 提前展开）执行；`docker` / `curl` /\n-> `uv` / `taskkill` / `netstat` 是 exe，git-bash 可直跑（同 `mj-agent-infra-env-setup` §\"Bash tool 调用 PowerShell\"）。\n+> **Shell 说明**：用已发现的 PowerShell 执行 PS cmdlet；外部程序逐条核对参数。无法验证的后台能力不使用，选择 Owner 终端模式。\n \n ### Step 0 — cwd + provider pre-check *(Level A)*\n \n ```powershell\n # 必须在 mj-agent worktree 根（非 bare repo 根）\n-git rev-parse --is-inside-work-tree     # 期望 true；false → /mj-agent-git-branch §Bare Worktree Health Check\n+git rev-parse --is-inside-work-tree     # 期望 true；false → mj-agent-git-branch §Bare Worktree Health Check\n \n # provider 检测（决定是否需要 DGX 隧道前置）\n-Select-String \"^LLM_PROVIDER=\" .env\n+powershell.exe -NoProfile -File scripts/check_env_keys.ps1\n+# 仅读取脚本脱敏 provider/键状态；不直接打开 .env\n ```\n \n 如 `.env` 中 `LLM_PROVIDER=local-openai-compat`（DGX vLLM/SGLang/Ollama）→ **必须先**跑\n-`/mj-agent-infra-llm-endpoint-probe` 验证 endpoint 可达。DGX endpoint 只绑 loopback，消费侧必须由\n-**owner 在自己终端**起 SSH 隧道（`host.docker.internal:18000`；ssh-manager tunnel 有 bug——转发即\n-reset，Claude 起不了）。隧道不通时 `check --live` / launch 全 fail，浪费时间。\n+`mj-agent-infra-llm-endpoint-probe` 验证 endpoint 可达。DGX endpoint 只绑 loopback，消费侧必须由\n+**owner 在自己终端**起 SSH 隧道（`host.docker.internal:18000`；本技能不承接 SSH 服务，隧道由 Owner 管理）。隧道不通时 `check --live` / launch 全 fail，浪费时间。\n \n 如 `LLM_PROVIDER=ark`（默认）→ 跳过；Ark endpoint 由 lazy init + `mj-agent check` 覆盖。\n \n@@ -119,8 +127,8 @@\n \n - **creds/config 缺口**（`POSTGRES_ANALYST_USER not set` / `ARK_API_KEY not set` /\n   `MJ_AGENT_MEMORY_USER not set` / `[DRIFT]` / `[MISSING]`）→ **[H1] Redirect（info）**：引导\n-  `/mj-agent-infra-env-setup`。两个解密脚本 `scripts/setup-env.ps1` +\n-  `.claude/scripts/setup-mcp-secrets.ps1` 需 **交互口令（TTY）**，Claude 的 Bash tool 供不了——**必须\n+  `mj-agent-infra-env-setup`。两个解密脚本 `scripts/setup-env.ps1` +\n+  `scripts/mcp/setup-mcp-secrets.ps1` 需 **交互口令（TTY）**，Codex 的 shell 执行工具 供不了——**必须\n   user 在自己 PowerShell 终端跑**。修好前 **不 launch**。\n - **`memory DB unreachable` 但 creds 齐**（cold start / 刚 `app-stop` 完，postgres 还没起）→ **预期、非\n   缺口**：不 halt、不去 env-setup，直接进 Step 4 起 storage（Studio in-memory 则连 memory pg 都不需要）。\n@@ -137,15 +145,15 @@\n docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml ps\n ```\n \n-目标已在跑 → 报 \"already running at :<port>\" + offer `curl` verify（Step 7）/ `/mj-agent-infra-app-stop`；\n+目标已在跑 → 报 \"already running at :<port>\" + offer `curl` verify（Step 7）/ `mj-agent-infra-app-stop`；\n **不 double-launch**（重复起会 `Address already in use` / `port is already allocated`）。\n \n ### Step 3 — Runtime choice *([H2] Choice)*\n \n 若用户措辞已点名运行时（\"起 Studio\" / \"serve\" / \"compose up\"）→ 跳过，直接用该运行时。否则\n-**[H2] AskUserQuestion**，**默认 = 容器栈**（见 §Runtime Matrix）。\n-\n-### Step 4 — Storage / stack bring-up *(just RUN；Bash prompt gates)*\n+**[H2] 向 Owner 询问**，**默认 = 容器栈**（见 §Runtime Matrix）。\n+\n+### Step 4 — Storage / stack bring-up *(目标与授权核验后执行；hook block 时停止)*\n \n **必须在 Step 5 `check --live` 之前**（否则 memory/biz 探针对着没起的 storage 必 FAIL）：\n \n@@ -153,7 +161,7 @@\n |---|---|\n | LangGraph Studio | 无——in-memory checkpointer + 直连 biz pg（不需 compose；连 memory pg 都不用） |\n | Chainlit `serve`（host） | `docker compose … up -d mj-agent-postgres`（`AsyncPostgresSaver` 依赖 memory pg） |\n-| Container stack（默认） | **全栈 `up -d`**（= 容器栈的 launch；起 postgres + mj-agent；或委托 `/mj-agent-infra-docker-compose`） |\n+| Container stack（默认） | **全栈 `up -d`**（= 容器栈的 launch；起 postgres + mj-agent；或委托 `mj-agent-infra-docker-compose`） |\n \n > 容器栈在**本步**就 `up -d` 起全栈（**不留到 Step 6**）——这样 Step 5 `check --live` 能对着已起的 stack 跑。\n \n@@ -179,7 +187,7 @@\n \n **容器栈**：**已在 Step 4 `up -d` 起了**——本步跳过（无 [H4]；`up -d` 即容器栈的 launch）。\n \n-**前台服务器（Studio / Chainlit serve）**：**[H4] AskUserQuestion** 选启动模式：\n+**前台服务器（Studio / Chainlit serve）**：**[H4] 向 Owner 询问** 选启动模式：\n \n - **Mode A（你的终端跑）**：skill 打印命令交 user 在自己终端执行 → skill 轮询端口 verify。\n   持久（不随会话结束）、user 拥有日志 + Ctrl-C。命令：\n@@ -187,9 +195,9 @@\n   uv run langgraph dev            # Studio → :2024\n   uv run mj-agent serve           # Chainlit → :8000（或 --host / --port 覆写；见 check 打印的端口）\n   ```\n-- **Mode B（Claude 后台起）**：`Bash run_in_background` 起服 → Claude 自动 verify。**记录 bg-shell id\n-  + 绑定端口**，交给 `/mj-agent-infra-app-stop`（它用此 id/端口精准定位，再以端口 owner `taskkill /T /F`\n-  树杀——单停 bg-shell 未必连带 kill chainlit 子进程）。短命——绑定会话，会话结束即随之而去。\n+- **Mode B（宿主后台进程）**：只有当前宿主提供且已验证进程生命周期、日志和停止接口时采用。\n+  记录实际 session id、PID、启动时间、命令、端口和工作树；不能假定会话结束必然终止子进程。\n+  当前候选没有该宿主验证，记 `UNMET_DEPENDENCY: background lifecycle`，回到 Mode A。\n \n > `mj-agent serve` 是 typer→`subprocess.call([python, -m, chainlit, run, …])`，即父 typer 进程\n > spawn 一个 chainlit **子进程**——所以 Mode B 停止需 **tree-kill**（`app-stop` 负责），单 PID kill\n@@ -208,9 +216,9 @@\n ```\n \n 轮询直到 200 或超时。发 Startup Report（见 §Output Format）。handoff：**若起的是 Studio** →\n-`/mj-agent-infra-studio-probe`（深度 H1/H2/H3/R1/R2 走查；Studio-specific @ `:2024/studio`）；**容器栈 /\n+`mj-agent-infra-studio-probe`（深度 H1/H2/H3/R1/R2 走查；Studio-specific @ `:2024/studio`）；**容器栈 /\n Chainlit serve** → 同套 H1-R2 问题可直接在 Chainlit UI（`:8001` / `:8000`）手动走（studio-probe 绑\n-`langgraph dev`，对 Chainlit 不适用）；停止 → `/mj-agent-infra-app-stop`。\n+`langgraph dev`，对 Chainlit 不适用）；停止 → `mj-agent-infra-app-stop`。\n \n ## §Runtime Matrix\n \n@@ -228,40 +236,36 @@\n \n | ID | 类型 | 触发 | 行为 |\n |---|---|---|---|\n-| **H1** | Redirect（info） | Step 1 `mj-agent check` 报 **creds/.env 缺口**（≠ memory-unreachable） | 报缺口 + 引导 `/mj-agent-infra-env-setup`；password 脚本交 user 自跑；不 launch（memory-unreachable 则进 Step 4 起 storage，不触 H1） |\n-| **H2** | Choice | Step 3 运行时未由措辞确定 | `AskUserQuestion` 选运行时（默认 = 容器栈） |\n+| **H1** | Redirect（info） | Step 1 `mj-agent check` 报 **creds/.env 缺口**（≠ memory-unreachable） | 报缺口 + 引导 `mj-agent-infra-env-setup`；password 脚本交 user 自跑；不 launch（memory-unreachable 则进 Step 4 起 storage，不触 H1） |\n+| **H2** | Choice | Step 3 运行时未由措辞确定 | `向 Owner 询问` 选运行时（默认 = 容器栈） |\n | **H3** | Confirm（conditional） | Step 5 `check --live` 出现 FAIL | 报 FAIL + 问先修还是照样 launch |\n-| **H4** | Choice | Step 6 且选了前台服务器 | `AskUserQuestion` 选启动模式 A（你终端跑）/ B（Claude 后台） |\n-\n-> **slim HITL**：非破坏性命令（`compose up` / `check --live` / launch）**不加**额外\n-> AskUserQuestion——由 harness Bash 权限 prompt 当执行拍板（随 `docker-compose` / `studio-probe`\n-> 惯例；ADR-034 + `sdd/workflows/execution-loop` §5 Level B）。AskUserQuestion 只保留给**真选择**\n-> （H2 运行时 / H4 启动模式）+ **条件确认**（H3 `check --live` FAIL）。本 skill 全程 **无 Level C\n-> 破坏性操作**。\n+| **H4** | Choice | Step 6 且选了前台服务器 | `向 Owner 询问` 选启动模式 A（你终端跑）/ B（Codex 后台） |\n+\n+> **执行授权**：普通非破坏动作按明确任务范围执行；多目标不明先询问。涉及 Owner 停点或宿主 block 时停止，不把权限弹窗当作批准，也不因聊天批准重试绕过。\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不替代 `/mj-agent-infra-env-setup`（secret / `.env` / `uv sync`；本 skill 只在 Step 1 兜住并回导）\n-- ❌ 不替代 `/mj-agent-infra-docker-compose`（低层 up/ps/logs/down；本 skill 委托它做 storage）\n-- ❌ 不替代 `/mj-agent-infra-studio-probe`（H1/H2/H3/R1/R2 数据边界走查；本 skill 只拉起 + 根路径 verify）\n-- ❌ 不替代 `/mj-agent-infra-llm-endpoint-probe`（DGX 4 步探针；本 skill Step 0 只做路由）\n-- ❌ 不停止 app（用 `/mj-agent-infra-app-stop`）\n-- ❌ 不做任何破坏性清理（`down -v` / `--rmi local` 归 `/mj-agent-infra-env-teardown`）\n-- ❌ 不改 `src/mj_agent/**` / `docker/compose.*` 结构（C 风味 infra 改动 → `/mj-agent-flow-implement`）\n-- ❌ 不替 owner 起 DGX SSH 隧道（owner 终端专属；Claude 起不了）\n+- ❌ 不替代 `mj-agent-infra-env-setup`（secret / `.env` / `uv sync`；本 skill 只在 Step 1 兜住并回导）\n+- ❌ 不替代 `mj-agent-infra-docker-compose`（低层 up/ps/logs/down；本 skill 委托它做 storage）\n+- ❌ 不替代 `mj-agent-infra-studio-probe`（H1/H2/H3/R1/R2 数据边界走查；本 skill 只拉起 + 根路径 verify）\n+- ❌ 不替代 `mj-agent-infra-llm-endpoint-probe`（DGX 4 步探针；本 skill Step 0 只做路由）\n+- ❌ 不停止 app（用 `mj-agent-infra-app-stop`）\n+- ❌ 不做任何破坏性清理（`down -v` / `--rmi local` 归 `mj-agent-infra-env-teardown`）\n+- ❌ 不改 `src/mj_agent/**` / `docker/compose.*` 结构（C 风味 infra 改动 → `mj-agent-flow-implement`）\n+- ❌ 不替 owner 起 DGX SSH 隧道（owner 终端专属；Codex 起不了）\n \n ## Sub-skill / Tool Calls\n \n | Tool | 用途 |\n |---|---|\n-| Bash `git rev-parse --is-inside-work-tree` | Step 0 cwd |\n-| Bash `uv run mj-agent check [--live]` | Step 1 creds/.env gate / Step 5 live gate |\n-| Bash `Get-NetTCPConnection -LocalPort … -State Listen` | Step 2 host 端口探测 |\n-| Bash `docker compose … ps` | Step 2 容器探测 / Step 7 verify |\n-| Bash `docker compose … up -d [mj-agent-postgres]` | Step 4 storage + 容器栈 launch |\n-| Bash `uv run langgraph dev` / `uv run mj-agent serve`（Mode B：`run_in_background`） | Step 6 前台 launch |\n-| Bash `curl --noproxy '*' -fsS http://localhost:<port>/` | Step 7 根路径 verify |\n-| AskUserQuestion | H2 运行时选择 / H3 `check --live` FAIL 决策 / H4 启动模式 |\n+| shell `git rev-parse --is-inside-work-tree` | Step 0 cwd |\n+| shell `uv run mj-agent check [--live]` | Step 1 creds/.env gate / Step 5 live gate |\n+| shell `Get-NetTCPConnection -LocalPort … -State Listen` | Step 2 host 端口探测 |\n+| shell `docker compose … ps` | Step 2 容器探测 / Step 7 verify |\n+| shell `docker compose … up -d [mj-agent-postgres]` | Step 4 storage + 容器栈 launch |\n+| shell `uv run langgraph dev` / `uv run mj-agent serve`（Mode B 需实际生命周期验证，否则 Owner 终端） | Step 6 前台 launch |\n+| shell `curl --noproxy '*' -fsS http://localhost:<port>/` | Step 7 根路径 verify |\n+| 向 Owner 询问 | H2 运行时选择 / H3 `check --live` FAIL 决策 / H4 启动模式 |\n \n ## Output Format\n \n@@ -274,7 +278,7 @@\n \n ### Runtime\n - Chosen: <container stack / Studio / Chainlit serve>\n-- Launch mode（前台时）: <A 你的终端 / B Claude 后台（bg-shell id=<id>, port=<port>）>\n+- Launch mode（前台时）: <A 你的终端 / B Codex 后台（bg-shell id=<id>, port=<port>）>\n - Storage: <none / mj-agent-postgres up / full stack up>\n \n ### check --live（如跑）\n@@ -286,22 +290,22 @@\n - container: <ps healthy 摘要>\n \n ### Next Action\n-- 深度数据边界走查：Studio → /mj-agent-infra-studio-probe ；容器/Chainlit → 同套 H1-R2 在 Chainlit UI 手动走\n-- 停止 → /mj-agent-infra-app-stop\n+- 深度数据边界走查：Studio → mj-agent-infra-studio-probe ；容器/Chainlit → 同套 H1-R2 在 Chainlit UI 手动走\n+- 停止 → mj-agent-infra-app-stop\n ```\n \n ## Reference Files\n \n-- [[../../../src/mj_agent/server/cli.py|server/cli.py]]（`serve` chainlit 子进程 + `check [--live]` 探针）\n-- [[../../../src/mj_agent/config.py|config.py]]（`chainlit_host=127.0.0.1` / `chainlit_port=8000` 默认）\n-- [[../../../docker/compose.yaml|docker/compose.yaml]] + `.override.yml`（容器栈 -f 链 + 8001→8000 映射）\n-- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project）\n-- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile -f 链）\n-- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]（ark / local-openai-compat；DGX 前置）\n-- [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（harness Bash prompt = 执行拍板）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5（Level A/B 验证矩阵；Level C 见 `/mj-agent-flow-verify`）+\n-  [[../../../policies/ai-agent|policies/ai-agent]] §4（破坏性必触 HITL；本 skill slim）\n-- 上下游 skill：`/mj-agent-infra-env-setup`（prereq）/ `-docker-compose`（storage）/\n+- `repo:src/mj_agent/server/cli.py`（`serve` chainlit 子进程 + `check [--live]` 探针）\n+- `repo:src/mj_agent/config.py`（`chainlit_host=127.0.0.1` / `chainlit_port=8000` 默认）\n+- `repo:docker/compose.yaml` + `.override.yml`（容器栈 -f 链 + 8001→8000 映射）\n+- `repo:decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（独立 compose project）\n+- `repo:decisions/ADR-026_Multi_Environment_Compose_Profile.md`（4-file profile -f 链）\n+- `repo:decisions/ADR-027_LLM_Provider_Abstraction.md`（ark / local-openai-compat；DGX 前置）\n+- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（harness Owner 授权与执行路线分开）\n+- `repo:sdd/workflows/execution-loop.md` §5（Level A/B 验证矩阵；Level C 见 `mj-agent-flow-verify`）+\n+  `repo:policies/ai-agent.md` §4（破坏性必触 HITL；本 skill slim）\n+- 上下游 skill：`mj-agent-infra-env-setup`（prereq）/ `-docker-compose`（storage）/\n   `-llm-endpoint-probe`（DGX）/ `-studio-probe`（深度验证）/ `-app-stop`（对偶停止）\n \n ## Anti-patterns\n@@ -309,18 +313,18 @@\n - ❌ 不在 Step 2 探测到已运行时仍 double-launch（会 `Address already in use` / `port is already allocated`）\n - ❌ 不跳过 Step 0 provider 检测就在 DGX 模式 launch（endpoint 不通 → 全 fail）\n - ❌ 不替 owner 起 DGX SSH 隧道（owner 终端专属；ssh-manager tunnel 转发即 reset）\n-- ❌ 不给非破坏性命令（`up -d` / `check --live` / launch）加多余 AskUserQuestion（Bash prompt 已是拍板）\n+- ❌ 不给非破坏性命令（`up -d` / `check --live` / launch）加多余 向 Owner 询问（Owner 决策与宿主可执行性必须分别核对）\n - ❌ 不用裸 `curl`（漏 `--noproxy '*'`）验 localhost（Clash/v2ray 会 502）\n - ❌ 不把 host Chainlit serve 的 `:8000` 与容器栈的 `:8001` 混同（一个 host 直起、一个端口映射）\n-- ❌ 不在本 skill 内做 `down -v` / `--rmi local`（破坏性 → `/mj-agent-infra-env-teardown`）\n+- ❌ 不在本 skill 内做 `down -v` / `--rmi local`（破坏性 → `mj-agent-infra-env-teardown`）\n \n ## Handoff\n \n ```\n App 已拉起（<runtime> @ :<port>）。\n 下一步：\n-- 深度数据边界走查（H1/H2/H3/R1/R2）：Studio → /mj-agent-infra-studio-probe（@ `:2024`）；容器/Chainlit → 同套问题在 Chainlit UI 手动走\n-- 停止（非破坏性）→ /mj-agent-infra-app-stop\n-- 破坏性清理（删 volume/镜像）→ /mj-agent-infra-env-teardown\n-- 进入 17-stage 闭环 → /mj-agent-flow-intake\n-```\n+- 深度数据边界走查（H1/H2/H3/R1/R2）：Studio → mj-agent-infra-studio-probe（@ `:2024`）；容器/Chainlit → 同套问题在 Chainlit UI 手动走\n+- 停止（非破坏性）→ mj-agent-infra-app-stop\n+- 破坏性清理（删 volume/镜像）→ mj-agent-infra-env-teardown\n+- 进入 17-stage 闭环 → mj-agent-flow-intake\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-app-start/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "66276af6f6656161d8fb5b217b410f7fd430152e6ba90398f158a275a3228c0c",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-app-stop",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-app-stop/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-app-stop/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-stop/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-app-stop/SKILL.md",
+        "name": "mj-agent-infra-app-stop",
+        "description_hash": "sha256:2181768f5aefd448aa1b0bd6f65865ab86b887897b85016f7d766ecdae613301",
+        "body_content_hash": "sha256:2ed0c015e41e97aac5e7564b752b2a5d38e371a8c4f7f193b485224c3cff591a",
+        "frozen_at": "2026-07-08 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:2181768f5aefd448aa1b0bd6f65865ab86b887897b85016f7d766ecdae613301",
+        "body_content_hash": "sha256:2ed0c015e41e97aac5e7564b752b2a5d38e371a8c4f7f193b485224c3cff591a"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-app-stop/SKILL.md",
+        "name": "mj-agent-infra-app-stop",
+        "description_hash": "sha256:e877e20924484e642937a21c622a6ffdb65a5b81d949e179a0ab16ef7893f9b0",
+        "body_content_hash": "sha256:2a785bc1efe9b498634f45c600eed60df9485b780e94b221632588f42c367c0e",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill gracefully STOPS the running mj-agent local-dev app runtime — non-destructive, all data preserved — as the reversible counterpart to /mj-agent-infra-app-start. Its net-new capability is stopping host-run processes (LangGraph Studio on :2024 / Chainlit on its configured port) via port-owner tree-kill (taskkill /T /F, since `mj-agent serve` spawns a chainlit child); it also runs Level-1 `docker compose … down` (keeps volumes + images) for the container stack, verifies everything stopped, and hands destructive cleanup off to /mj-agent-infra-env-teardown. Note graceful stop is best-effort on Windows (force-kill; container down may need a docker kill fallback). Make sure to use this skill whenever the user says \"停掉 mj-agent\", \"关掉 app\", \"stop the app\", \"stop mj-agent\", \"关闭本地开发环境\", \"把 Studio 停了\", \"停掉 serve\", \"shut down the agent\". Do not use for: destructive docker cleanup / volume wipe / local image removal (use mj-agent-infra-env-teardown Level 2/3); the low-level compose down primitive (use mj-agent-infra-docker-compose); starting the app (use mj-agent-infra-app-start); pg_dump backup before a wipe (use mj-agent-infra-storage-stack).",
+        "new_text": "适用于 mj-agent 的非破坏停止app并保留数据。输入：app-start身份、PID/start time/port、project/profile/-f。流程：现状→无目标早退→多目标选择→身份核验停止→verify→销毁边界。输出：目标确已停止、volume/image保留，其他监听不误杀。Use when：停记录中的Studio进程，保留数据。Do not use for：停后清掉所有volume；只提供停止/销毁分界，销毁另走teardown批准。授权：只停已确认目标；删数据转teardown停点；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:2181768f5aefd448aa1b0bd6f65865ab86b887897b85016f7d766ecdae613301",
+        "new_hash": "sha256:e877e20924484e642937a21c622a6ffdb65a5b81d949e179a0ab16ef7893f9b0"
+      },
+      "body_change": {
+        "old_hash": "sha256:2ed0c015e41e97aac5e7564b752b2a5d38e371a8c4f7f193b485224c3cff591a",
+        "new_hash": "sha256:2a785bc1efe9b498634f45c600eed60df9485b780e94b221632588f42c367c0e",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-app-stop/SKILL.md\n+++ .agents/skills/mj-agent-infra-app-stop/SKILL.md\n@@ -1,10 +1,21 @@\n+\n \n # mj-agent Infra — App Stop\n \n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill gracefully STOPS the running mj-agent local-dev app runtime — non-destructive, all data preserved — as the reversible counterpart to mj-agent-infra-app-start. Its net-new capability is stopping host-run processes (LangGraph Studio on :2024 / Chainlit on its configured port) via port-owner tree-kill (taskkill /T /F, since `mj-agent serve` spawns a chainlit child); it also runs Level-1 `docker compose … down` (keeps volumes + images) for the container stack, verifies everything stopped, and hands destructive cleanup off to mj-agent-infra-env-teardown. Note graceful stop is best-effort on Windows (force-kill; container-down timeout requires target reconciliation and Owner decision, never an automatic kill fallback). Make sure to use this skill whenever the user says \"停掉 mj-agent\", \"关掉 app\", \"stop the app\", \"stop mj-agent\", \"关闭本地开发环境\", \"把 Studio 停了\", \"停掉 serve\", \"shut down the agent\". Do not use for: destructive docker cleanup / volume wipe / local image removal (use mj-agent-infra-env-teardown Level 2/3); the low-level compose down primitive (use mj-agent-infra-docker-compose); starting the app (use mj-agent-infra-app-start); pg_dump backup before a wipe (use mj-agent-infra-storage-stack).\n+\n+\n ## Overview\n \n Graceful, **non-destructive STOP** of the running mj-agent local-dev app runtime — the reversible\n-counterpart to `/mj-agent-infra-app-start`. **Stage 17 sub** of the 17-stage 执行闭环（收工释放本地\n+counterpart to `mj-agent-infra-app-start`. **Stage 17 sub** of the 17-stage 执行闭环（收工释放本地\n runtime）；也可随时独立停服。**所有数据保留**（volumes / 镜像 / checkpointer 历史全在）。\n \n **净新能力 = 停 host-run 进程**：`app-start` 的 Mode B（或 user 手动）起的 `langgraph dev`（:2024）/\n@@ -14,20 +25,20 @@\n \n ```text\n [app-start 起的 runtime] -> THIS-SKILL(非破坏停止) -> stopped\n-                                     └─ (要删数据/镜像) -> /mj-agent-infra-env-teardown（Level 2/3, 破坏性）\n-                                     └─ (删前想备份) -> /mj-agent-infra-storage-stack（pg_dump）\n+                                     └─ (要删数据/镜像) -> mj-agent-infra-env-teardown（Level 2/3, 破坏性）\n+                                     └─ (删前想备份) -> mj-agent-infra-storage-stack（Owner备份方案；执行依赖未满足）\n ```\n \n > **`env-teardown` 边界**：本 skill 只做 Level-1 停止（`down` 保留 volume+镜像 / host 进程 kill）。\n > **删 volume（`down -v`）/ 删本地镜像（`--rmi local`）= 破坏性**，本 skill **拒做**，转\n-> `/mj-agent-infra-env-teardown`（它自带 Level 2/3 + H3 hard-confirm）。\n+> `mj-agent-infra-env-teardown`（它自带 Level 2/3 + H3 hard-confirm）。\n \n **Reference**:\n-- [[../../../src/mj_agent/server/cli.py|server/cli.py]]（`serve` = typer `subprocess.call` spawn 一个\n+- `repo:src/mj_agent/server/cli.py`（`serve` = typer `subprocess.call` spawn 一个\n   chainlit **子进程**——单 PID kill 会遗留孤儿；必须 tree-kill）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §7（Stage 17 收尾）+ §5（Level A/B 验证矩阵；Level C 破坏性见 `/mj-agent-flow-verify`）\n-- [[../../../policies/ai-agent|policies/ai-agent]] §4（破坏性操作必触 HITL——本 skill 用 STOP 节点把\n-  破坏性动作挡在 `env-teardown`）+ [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（Bash prompt = 执行拍板）\n+- `repo:sdd/workflows/execution-loop.md` §7（Stage 17 收尾）+ §5（Level A/B 验证矩阵；Level C 破坏性见 `mj-agent-flow-verify`）\n+- `repo:policies/ai-agent.md` §4（破坏性操作必触 HITL——本 skill 用 STOP 节点把\n+  破坏性动作挡在 `env-teardown`）+ `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（Owner 授权与执行路线分开）\n \n ## When to Use\n \n@@ -37,13 +48,13 @@\n \n **MAY skip when**：\n - 没有任何 runtime 在跑（Step 0 检测到干净 → [H1] 直接告知\"无需停止\"）\n-- 想彻底重置 / 删数据 / 删镜像 → 直接 `/mj-agent-infra-env-teardown`（Level 2/3）\n+- 想彻底重置 / 删数据 / 删镜像 → 直接 `mj-agent-infra-env-teardown`（Level 2/3）\n \n **MUST NOT use for**：\n-- ❌ 破坏性 docker 清理 / volume wipe / 本地镜像删除 → /mj-agent-infra-env-teardown Level 2/3\n-- ❌ 低层 compose down primitive → /mj-agent-infra-docker-compose\n-- ❌ 启动 app → /mj-agent-infra-app-start\n-- ❌ 删数据前的 pg_dump 备份 → /mj-agent-infra-storage-stack\n+- ❌ 破坏性 docker 清理 / volume wipe / 本地镜像删除 → mj-agent-infra-env-teardown Level 2/3\n+- ❌ 低层 compose down primitive → mj-agent-infra-docker-compose\n+- ❌ 启动 app → mj-agent-infra-app-start\n+- ❌ 删数据前的 pg_dump 备份 → mj-agent-infra-storage-stack\n \n ## Workflow\n \n@@ -58,7 +69,7 @@\n   s3 [label=\"Step 3: execute stop (just RUN)\\nhost: taskkill /T /F\\ncontainer: down (Level 1)\" shape=box];\n   s4 [label=\"Step 4: verify stopped\\nports free + ps empty\" shape=box];\n   h3 [label=\"Step 5: [H3] STOP 节点\\nuser 要删数据/镜像?\" shape=diamond];\n-  teardown [label=\"→ /mj-agent-infra-env-teardown\\n(Level 2/3, H3 hard-confirm)\\n先 offer pg_dump\" shape=box];\n+  teardown [label=\"→ mj-agent-infra-env-teardown\\n(Level 2/3, H3 hard-confirm)\\n先提供Owner备份方案\" shape=box];\n   done [label=\"Stopped (数据保留)\" shape=doublecircle];\n \n   start -> s0 -> h1;\n@@ -71,8 +82,8 @@\n ```\n \n > **Shell 说明**：下方 `powershell` 块里的 **PS cmdlet**（`Get-NetTCPConnection` / `Get-Process`）须在\n-> user 的 PowerShell 终端跑，或 Claude 的 Bash tool（git-bash）用 `powershell.exe -NoProfile -Command '…'`\n-> 包裹；`taskkill` / `docker` 是 exe，git-bash 可直跑（同 `mj-agent-infra-env-setup` §\"Bash tool 调用 PowerShell\"）。\n+> user 的 PowerShell 终端跑，或 Codex 的 shell 执行工具（git-bash）用 `powershell.exe -NoProfile -Command '…'`\n+> 包裹；`taskkill` / `docker` 是 exe，git-bash 可直跑（同 `mj-agent-infra-env-setup` §\"shell 执行工具 调用 PowerShell\"）。\n \n ### Step 0 — Detect running *(Level A)*\n \n@@ -99,10 +110,10 @@\n \n ### Step 2 — [H2] stop-target choice *(only if ambiguous)*\n \n-若同时有 **多个** 可停目标（如 Studio 进程 + 容器栈都在跑）→ **[H2] AskUserQuestion** 选：host 进程 /\n+若同时有 **多个** 可停目标（如 Studio 进程 + 容器栈都在跑）→ **[H2] 向 Owner 询问** 选：host 进程 /\n 容器 Level-1 `down` / both。若**只有一个**目标 → 跳过，直接进 Step 3。\n \n-### Step 3 — Execute stop *(just RUN；Bash prompt gates)*\n+### Step 3 — Execute stop *(目标与授权核验后执行；hook block 时停止)*\n \n **host 进程 → tree-kill**（`/T` 连子进程，`/F` 强杀）：\n \n@@ -121,8 +132,7 @@\n ```powershell\n docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml down\n #   ⚠ 不带 -v（保留 mj-agent-postgres-data → checkpointer 历史安全）；不带 --rmi\n-#   若 down 卡住（healthcheck 进程未优雅退出）→ 60s 后 docker kill 兜底：\n-#   docker kill mj-agent mj-agent-postgres mj-agent-redis ; 再 down\n+#   down 超时：记录容器身份和部分完成状态，停等 Owner，不自动强杀或重跑。\n ```\n \n ### Step 4 — Verify stopped *(Level A)*\n@@ -142,12 +152,12 @@\n \n ```\n STOP 节点 — 删 volume（down -v）/ 删本地镜像（--rmi local）是破坏性、不可逆操作，本 skill 不做。\n-建议：(a) 若在意 memory checkpointer 数据 → 先 /mj-agent-infra-storage-stack 跑 pg_dump 备份（**仅 dev profile**；prod 备份走 volume snapshot，见 storage-stack）；\n-      (b) 再 /mj-agent-infra-env-teardown（Level 2/3，自带 H3 hard-confirm 明示丢失项）。\n+建议：(a) 若在意 memory checkpointer 数据 → 先 mj-agent-infra-storage-stack 准备 Owner 备份方案（agent不执行dump）（**仅 dev profile**；prod 备份走 volume snapshot，见 storage-stack）；\n+      (b) 再 mj-agent-infra-env-teardown（Level 2/3，自带 H3 hard-confirm 明示丢失项）。\n 确认继续（转交 env-teardown）？(yes / no)\n ```\n \n-> 本 skill **只**负责非破坏停止；破坏性 teardown 由 `/mj-agent-infra-env-teardown` 拥有其自己的\n+> 本 skill **只**负责非破坏停止；破坏性 teardown 由 `mj-agent-infra-env-teardown` 拥有其自己的\n > H3 hard-confirm（Level 2 删 volume / Level 3 删镜像），不在本 skill 内执行。\n \n ## §HITL 介入场景\n@@ -155,12 +165,10 @@\n | ID | 类型 | 触发 | 行为 |\n |---|---|---|---|\n | **H1** | Info | 无运行进程 / 容器 | 报干净，结束 |\n-| **H2** | Choice | 多个可停目标 | `AskUserQuestion` 选停 host / 容器 / both（仅一个目标时跳过） |\n-| **H3** | STOP-node / Redirect | user 要删数据 / 镜像 | 拒做破坏性 → `/mj-agent-infra-env-teardown`（含 H3 hard-confirm）；先 offer pg_dump 备份 |\n-\n-> **slim HITL**：Step 3 的 `taskkill` / Level-1 `down` 是非破坏（数据保留），**不加**额外\n-> AskUserQuestion——由 harness Bash 权限 prompt 当执行拍板（ADR-034；随 `env-teardown` /\n-> `docker-compose` 惯例）。AskUserQuestion 只保留给 H2（多目标歧义）；H3 是破坏性边界的 STOP 节点。\n+| **H2** | Choice | 多个可停目标 | `向 Owner 询问` 选停 host / 容器 / both（仅一个目标时跳过） |\n+| **H3** | STOP-node / Redirect | user 要删数据 / 镜像 | 拒做破坏性 → `mj-agent-infra-env-teardown`（含 H3 hard-confirm）；先提供Owner备份方案 备份 |\n+\n+> **执行授权**：普通非破坏动作按明确任务范围执行；多目标不明先询问。涉及 Owner 停点或宿主 block 时停止，不把权限弹窗当作批准，也不因聊天批准重试绕过。\n \n ## §Troubleshooting\n \n@@ -169,16 +177,16 @@\n | `taskkill` 报 `ERROR: The process \"<pid>\" not found` | 进程已退（或 bg-shell 已随会话结束） | 无害；Step 4 verify 端口已释放即可 |\n | 杀了 typer 父进程但端口仍占 | 漏了 `/T`——chainlit 子进程成孤儿 | 用 `taskkill /PID <pid> /T /F`；或按端口重找 owner 再杀 |\n | `Access is denied`（taskkill） | 进程属别的用户 / 需提权 | 在 owner 自己的终端跑 `taskkill`（本机进程）；勿盲目提权 |\n-| `docker compose down` 卡在 stopping | mj-agent healthcheck 进程未优雅退出 | 60s 后 `docker kill mj-agent`（+ postgres/redis）再 `down`（同 env-teardown §Troubleshooting） |\n+| `docker compose down` 卡在 stopping | mj-agent healthcheck 进程未优雅退出 | 超时后记录实际 project/container/PID 身份及状态，交 Owner 决定；不自动强杀（同 env-teardown §Troubleshooting） |\n | `network mj-system-backend-network: removing` 警告 | 该 external network 归 mj-system | 忽略（compose 自动跳过 external network；ADR-008 边界） |\n | down 后端口仍 LISTENING | -f 链与 up 时不一致 → 部分停止 | 用与 up 相同的 profile -f 链重跑 `down` |\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不做 `down -v`（删 volume）/ `--rmi local`（删镜像）——破坏性，归 `/mj-agent-infra-env-teardown`\n-- ❌ 不替代 `/mj-agent-infra-docker-compose`（低层 down primitive；本 skill 是 runtime 停止编排）\n-- ❌ 不启动 app（用 `/mj-agent-infra-app-start`）\n-- ❌ 不做 pg_dump 备份（Step 5 只 offer 转交 `/mj-agent-infra-storage-stack`）\n+- ❌ 不做 `down -v`（删 volume）/ `--rmi local`（删镜像）——破坏性，归 `mj-agent-infra-env-teardown`\n+- ❌ 不替代 `mj-agent-infra-docker-compose`（低层 down primitive；本 skill 是 runtime 停止编排）\n+- ❌ 不启动 app（用 `mj-agent-infra-app-start`）\n+- ❌ 不做 pg_dump 备份（Step 5 只 offer 转交 `mj-agent-infra-storage-stack`）\n - ❌ 不删 mj-system 的 mj-system-backend-network（external；归 mj-system）\n - ❌ 不改 `src/mj_agent/**` / `docker/compose.*` 结构\n \n@@ -186,21 +194,21 @@\n \n | Tool | 用途 |\n |---|---|\n-| Bash `Get-NetTCPConnection -LocalPort … -State Listen` + `Get-Process` | Step 0 host 进程探测 / Step 4 verify |\n-| Bash `docker compose … ps` | Step 0 容器探测 / Step 4 verify |\n-| Bash `taskkill /PID <pid> /T /F` | Step 3 host tree-kill |\n-| Bash `docker compose … down`（+ `docker kill` 兜底） | Step 3 容器 Level-1 停止 |\n-| AskUserQuestion | H2 多目标选择（H3 STOP 节点用文案 + yes/no，不必 AskUserQuestion） |\n+| shell `Get-NetTCPConnection -LocalPort … -State Listen` + `Get-Process` | Step 0 host 进程探测 / Step 4 verify |\n+| shell `docker compose … ps` | Step 0 容器探测 / Step 4 verify |\n+| shell `taskkill /PID <pid> /T /F` | Step 3 host tree-kill |\n+| shell `docker compose … down`（+ `docker kill` 兜底） | Step 3 容器 Level-1 停止 |\n+| 向 Owner 询问 | H2 多目标选择（H3 STOP 节点用文案 + yes/no，不必 向 Owner 询问） |\n \n ## Reference Files\n \n-- [[../../../src/mj_agent/server/cli.py|server/cli.py]]（`serve` chainlit 子进程 → tree-kill 依据）\n-- [[../../../docker/compose.yaml|docker/compose.yaml]] + `.override.yml`（-f 链 + 8001→8000 映射）\n-- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；external network 边界）\n-- [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model|ADR-034]]（Bash prompt = 执行拍板）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §7（Stage 17）+ §5（Level A/B；Level C 见 `/mj-agent-flow-verify`）\n-  + [[../../../policies/ai-agent|policies/ai-agent]] §4（破坏性必触 HITL）\n-- 对偶 / 下游 skill：`/mj-agent-infra-app-start`（起服）/ `-env-teardown`（破坏性 Level 2/3）/\n+- `repo:src/mj_agent/server/cli.py`（`serve` chainlit 子进程 → tree-kill 依据）\n+- `repo:docker/compose.yaml` + `.override.yml`（-f 链 + 8001→8000 映射）\n+- `repo:decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（独立 compose project；external network 边界）\n+- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（Owner 授权与执行路线分开）\n+- `repo:sdd/workflows/execution-loop.md` §7（Stage 17）+ §5（Level A/B；Level C 见 `mj-agent-flow-verify`）\n+  + `repo:policies/ai-agent.md` §4（破坏性必触 HITL）\n+- 对偶 / 下游 skill：`mj-agent-infra-app-start`（起服）/ `-env-teardown`（破坏性 Level 2/3）/\n   `-storage-stack`（pg_dump 备份）/ `-docker-compose`（低层 down）\n \n ## Anti-patterns\n@@ -210,14 +218,14 @@\n - ❌ 不在本 skill 内跑 `down -v` / `--rmi local`（破坏性 → STOP 节点转 `env-teardown`）\n - ❌ 不忘 profile -f 链一致（错 -f 链 = 部分停止 / 端口仍占）\n - ❌ 不删 `mj-system-backend-network`（external；归 mj-system；compose 自动跳过但要告知）\n-- ❌ 不删前不 offer 备份（Step 5 破坏性转交前先 offer pg_dump，防误丢 checkpointer 数据）\n+- ❌ 不删前不 offer 备份（Step 5 破坏性转交前先提供Owner备份方案，防误丢 checkpointer 数据）\n \n ## Handoff\n \n ```\n App 已停（数据保留：volumes + 镜像 + checkpointer 历史全在）。\n 下一步：\n-- 重新起 → /mj-agent-infra-app-start（volumes 在，秒起）\n-- 彻底重置 / 删数据 / 删镜像 → /mj-agent-infra-env-teardown（Level 2/3，含 H3 hard-confirm）\n-- 删前备份 memory checkpointer → /mj-agent-infra-storage-stack（pg_dump）\n-```\n+- 重新起 → mj-agent-infra-app-start（volumes 在，秒起）\n+- 彻底重置 / 删数据 / 删镜像 → mj-agent-infra-env-teardown（Level 2/3，含 H3 hard-confirm）\n+- 删前备份 memory checkpointer → mj-agent-infra-storage-stack（Owner备份方案；执行依赖未满足）\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-app-stop/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "59148197413d9c3b371b21ccbecc6c763ba5a691c9cd7a20c10b1cd88b602374",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-docker-compose",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-docker-compose/SKILL.md",
+        "name": "mj-agent-infra-docker-compose",
+        "description_hash": "sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002",
+        "body_content_hash": "sha256:3c68d460960e8f406068f19df16d9a7bb807f9f892019ea2d801f5fce716929f",
+        "frozen_at": "2026-07-13 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## Step 0: cwd Check",
+          "## Step 1: Pre-check（compose up 前）",
+          "## §Profile Matrix（PR-1 / ADR-026 4-file 分层）",
+          "## Step 2: Action",
+          "## Step 3: Verify（up 后）",
+          "## §Troubleshooting",
+          "## Output Format",
+          "## Compose Lifecycle Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002",
+        "body_content_hash": "sha256:3c68d460960e8f406068f19df16d9a7bb807f9f892019ea2d801f5fce716929f"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-docker-compose/SKILL.md",
+        "name": "mj-agent-infra-docker-compose",
+        "description_hash": "sha256:edc35321cc8397e459f3c2c66f884f6ff1321fa5a3b25a366e0109a211db8dc3",
+        "body_content_hash": "sha256:3480751bdacf2eceff202fa0479b74e69634f23f4cbb193e433ae7a7b9726018",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## Step 0: cwd Check",
+          "## Step 1: Pre-check（compose up 前）",
+          "## §Profile Matrix（PR-1 / ADR-026 4-file 分层）",
+          "## Step 2: Action",
+          "## Step 3: Verify（up 后）",
+          "## §Troubleshooting",
+          "## Output Format",
+          "## Compose Lifecycle Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill walks through the mj-agent compose stack lifecycle (up/ps/logs/down) across 4 profiles (dev / test / prod) for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-026 4-file layering: base + override + test + prod). Profile selection via -f chain (dev override.yml auto-loaded; test/prod -f explicit; mirror mj-system v3.2.2 pattern). Pre-requirement validation (mj-system biz pg + mj-system-backend-network exist on the SAME host), port map (8001/5433/6379 host → 8000/5432/6379 container), troubleshooting common failures (port conflict / healthcheck timeout / network not found / volume permission / Harbor pull / profile mis-load). Make sure to use this skill whenever the user says \"compose up\", \"compose down\", \"compose ps\", \"compose logs\", \"起 mj-agent compose\", \"停 mj-agent compose\", \"docker compose --env-file .env -f docker/compose.yaml\", \"mj-agent stack 启动\", \"mj-agent 容器\", \"mj-agent 部署 local/test/prod\", \"compose lifecycle\", \"mj-agent infra docker\", \"compose troubleshoot\", \"test profile\", \"prod profile\", or \"compose 4-file 分层\" in the mj-agent context. Do not use for: env setup + secrets decryption (use mj-agent-infra-env-setup); Studio probe + H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); the orchestrated ordered start/stop of the whole app runtime as one motion — prereq `mj-agent check` gate → storage bring-up → `--live` gate → launch/verify (use mj-agent-infra-app-start / mj-agent-infra-app-stop; this skill is the low-level compose up/ps/logs/down primitive those orchestrators delegate to); storage stack internals (postgres init / redis schema — use mj-agent-infra-storage-stack); LLM endpoint probe for DGX vLLM (use mj-agent-infra-llm-endpoint-probe); modifying docker-compose.{mj-agent,override,test,prod}.yml structure (that's C flavor infra change; use /mj-agent-flow-implement); or modifying mj-system biz pg (out of mj-agent governance — biz pg lifecycle owned by mj-system).",
+        "new_text": "适用于 mj-agent 的低层compose up/ps/logs/down。输入：cwd、profile、-f链、project、脱敏key状态。流程：cwd→precheck/network/env→profile→action→verify→报告。输出：实际ps/health/URL按覆盖记录，memory无工具未测。Use when：查看dev栈状态与最近50行脱敏日志。Do not use for：改prod镜像地址并上线；停保护面/部署动作，提出差异交Owner。授权：prod/外部镜像/删卷保留停点；配置quiet不泄密；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002",
+        "new_hash": "sha256:edc35321cc8397e459f3c2c66f884f6ff1321fa5a3b25a366e0109a211db8dc3"
+      },
+      "body_change": {
+        "old_hash": "sha256:3c68d460960e8f406068f19df16d9a7bb807f9f892019ea2d801f5fce716929f",
+        "new_hash": "sha256:3480751bdacf2eceff202fa0479b74e69634f23f4cbb193e433ae7a7b9726018",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## Step 0: cwd Check",
+          "## Step 1: Pre-check（compose up 前）",
+          "## §Profile Matrix（PR-1 / ADR-026 4-file 分层）",
+          "## Step 2: Action",
+          "## Step 3: Verify（up 后）",
+          "## §Troubleshooting",
+          "## Output Format",
+          "## Compose Lifecycle Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## Step 0: cwd Check",
+          "## Step 1: Pre-check（compose up 前）",
+          "## §Profile Matrix（PR-1 / ADR-026 4-file 分层）",
+          "## Step 2: Action",
+          "## Step 3: Verify（up 后）",
+          "## §Troubleshooting",
+          "## Output Format",
+          "## Compose Lifecycle Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-docker-compose/SKILL.md\n+++ .agents/skills/mj-agent-infra-docker-compose/SKILL.md\n@@ -1,5 +1,16 @@\n+\n \n # mj-agent Infra — Docker Compose\n+\n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill walks through the mj-agent compose stack lifecycle (up/ps/logs/down) across 4 profiles (dev / test / prod) for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-026 4-file layering: base + override + test + prod). Profile selection via -f chain (dev override.yml auto-loaded; test/prod -f explicit; mirror mj-system v3.2.2 pattern). Pre-requirement validation (mj-system biz pg + mj-system-backend-network exist on the SAME host), port map (8001/5433/6379 host → 8000/5432/6379 container), troubleshooting common failures (port conflict / healthcheck timeout / network not found / volume permission / Harbor pull / profile mis-load). Make sure to use this skill whenever the user says \"compose up\", \"compose down\", \"compose ps\", \"compose logs\", \"起 mj-agent compose\", \"停 mj-agent compose\", \"docker compose --env-file .env -f docker/compose.yaml\", \"mj-agent stack 启动\", \"mj-agent 容器\", \"mj-agent 部署 local/test/prod\", \"compose lifecycle\", \"mj-agent infra docker\", \"compose troubleshoot\", \"test profile\", \"prod profile\", or \"compose 4-file 分层\" in the mj-agent context. Do not use for: env setup + secrets decryption (use mj-agent-infra-env-setup); Studio probe + H1/H2/H3/R1/R2 (use mj-agent-infra-studio-probe); the orchestrated ordered start/stop of the whole app runtime as one motion — prereq `mj-agent check` gate → storage bring-up → `--live` gate → launch/verify (use mj-agent-infra-app-start / mj-agent-infra-app-stop; this skill is the low-level compose up/ps/logs/down primitive those orchestrators delegate to); storage stack internals (postgres init / redis schema — use mj-agent-infra-storage-stack); LLM endpoint probe for DGX vLLM (use mj-agent-infra-llm-endpoint-probe); modifying docker-compose.{mj-agent,override,test,prod}.yml structure (that's C flavor infra change; use mj-agent-flow-implement); or modifying mj-system biz pg (out of mj-agent governance — biz pg lifecycle owned by mj-system).\n+\n \n ## Overview\n \n@@ -29,14 +40,14 @@\n - compose 启动失败需 troubleshoot\n \n **MAY skip when**：\n-- 仅本地 dev mode（uv run langgraph dev）—— 不需要 compose stack（直接连 mj-system biz pg；用 /mj-agent-infra-studio-probe）\n-- mj-agent check 仅 creds 健康探针 → /mj-agent-infra-env-setup\n+- 仅本地 dev mode（uv run langgraph dev）—— 不需要 compose stack（直接连 mj-system biz pg；用 mj-agent-infra-studio-probe）\n+- mj-agent check 仅 creds 健康探针 → mj-agent-infra-env-setup\n \n **MUST NOT use for**：\n-- ❌ env / secret 配置 → /mj-agent-infra-env-setup\n-- ❌ Studio probe → /mj-agent-infra-studio-probe\n-- ❌ postgres init script / redis schema 修改 → /mj-agent-infra-storage-stack\n-- ❌ 修改 compose.yaml 结构（A 风味纯代码；C 风味 infra Step 3c per ADR-015 §决策点 3 → /mj-agent-flow-implement）\n+- ❌ env / secret 配置 → mj-agent-infra-env-setup\n+- ❌ Studio probe → mj-agent-infra-studio-probe\n+- ❌ postgres init script / redis schema 修改 → mj-agent-infra-storage-stack\n+- ❌ 修改 compose.yaml 结构（A 风味纯代码；C 风味 infra Step 3c per ADR-015 §决策点 3 → mj-agent-flow-implement）\n - ❌ mj-system biz pg 操作（lifecycle 归 mj-system）\n \n ## Workflow\n@@ -100,7 +111,7 @@\n # 2. .env 已配置（required keys 核对走脱敏脚本：只回键名+状态，永不回值；\n #    Agent 不得直接解析 .env —— v5 §5.2 secrets 边界）\n powershell.exe -NoProfile -File scripts/check_env_keys.ps1\n-# exit 1（存在 EMPTY / MISSING）→ 先跑 /mj-agent-infra-env-setup\n+# exit 1（存在 EMPTY / MISSING）→ 先跑 mj-agent-infra-env-setup\n \n # 3. host ports 8001 / 5433 / 6379 不被占用\n netstat -ano | findstr \"8001 5433 6379\"\n@@ -121,7 +132,7 @@\n \n > **重要**：dev 也用显式 `-f base -f override` 链。原因：本仓 compose 文件在 `docker/` 子目录 + 用 `-f` 显式 base，docker compose 的 `override.yml` auto-load 行为**不生效**（auto-load 仅在 cwd default 模式 `docker compose up`/`docker-compose.yml` 同目录场景触发）。让 dev/test/prod 命令保持一致 `-f base -f overlay`，反而更可读。\n >\n-> **DGX 算力消费侧**：不需要新 compose 文件；任一 profile 下在 `.env` 设 `LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL=http://192.168.0.189:8000/v1` 即可；DGX endpoint 健康用 `/mj-agent-infra-llm-endpoint-probe`。\n+> **DGX 算力消费侧**：不需要新 compose 文件；任一 profile 下在 `.env` 设 `LLM_PROVIDER=local-openai-compat` + `LLM_BASE_URL=http://192.168.0.189:8000/v1` 即可；DGX endpoint 健康用 `mj-agent-infra-llm-endpoint-probe`。\n \n ## Step 2: Action\n \n@@ -146,7 +157,7 @@\n > **不**带 `--build`（默认；dev override 已声明 build；如改 Dockerfile 才加 `--build`）\n > **不**带 env var（standalone pattern；project_directory 自动 = compose 文件所在目录 `docker/`）\n > dev 显式 `-f override`：本仓 compose 文件在 `docker/` 子目录 + 用 `-f` 指定 base，override.yml auto-load 不生效（per docker compose 默认行为）\n-> **lint 验证**（不实际 up）：`docker compose -f ... -f ... config` 解析配置无报错\n+> **lint 验证**（不实际 up）：`docker compose -f ... -f ... config --quiet` 解析配置无报错\n \n ### PS（状态）\n \n@@ -200,7 +211,7 @@\n                -f docker/compose.override.yml down -v\n ```\n \n-⚠️ **STOP 节点**：不允许自动跑 `down -v`（per /mj-agent-flow-verify Level C）；必须 user 显式确认。建议 prompt：\n+⚠️ **STOP 节点**：不允许自动跑 `down -v`（per mj-agent-flow-verify Level C）；必须 user 显式确认。建议 prompt：\n \n ```\n Level C 破坏性操作 — `down -v` 会删 mj-agent-postgres + mj-agent-redis volume，langgraph memory checkpointer 数据全部丢失。\n@@ -224,7 +235,7 @@\n # 期望 HTTP 200；如 5xx 且容器内 `python urllib` 200 → 走 §Troubleshooting \"host curl 502 但浏览器正常\"行\n \n # 4. mj-agent-postgres 可连\n-docker exec mj-agent-postgres psql -U mj_agent_app -d mj_agent_memory -c \"\\dt\"\n+# 直接数据库客户端路径不提供给 agent；需已发现且获授权的项目 memory 接口，否则 `UNMET_DEPENDENCY`。biz 仅走业务工具链。\n # 期望：langgraph AsyncPostgresSaver tables（如 checkpoints / writes）\n ```\n \n@@ -232,16 +243,16 @@\n \n | 症状 | 可能原因 | 修复 |\n |---|---|---|\n-| `network mj-system-backend-network not found` | mj-system stack 没起 | 先去 mj-system 仓 `docker compose up -d` 起 mj-system 栈 |\n-| `port is already allocated` (8001/5433/6379) | 之前 mj-agent stack 没干净 down，或其他进程占端口 | `netstat -ano \\| findstr <port>` → kill 占用进程；或先 `down` 当前 stack |\n+| `network mj-system-backend-network not found` | mj-system stack 没起 | 通知 Owner 处理 mj-system 依赖，本技能不操作另一项目 起 mj-system 栈 |\n+| `port is already allocated` (8001/5433/6379) | 之前 mj-agent stack 没干净 down，或其他进程占端口 | `netstat -ano \\| findstr <port>` → 核对进程归属并交 Owner 决策，不自动 kill；或先 `down` 当前 stack |\n | `mj-agent-postgres unhealthy` | postgres-init 脚本失败 / volume 状态损坏 | `docker compose logs mj-agent-postgres`；如 init failed → `down -v` + 重 up（**HITL**：确认愿意丢数据） |\n-| `mj-agent unhealthy` | analyst RO creds 错 / Ark API key 错 / mj-system biz pg 不可达 | `docker compose logs mj-agent`；如 creds 错 → 重跑 /mj-agent-infra-env-setup；如 biz pg 不可达 → 检查 mj-system 是否 up |\n-| `mj-agent: Permission denied (postgres-init)` | Linux 上 init 脚本无 exec 权限 | `chmod +x docker/postgres-init/*.sh` |\n+| `mj-agent unhealthy` | analyst RO creds 错 / Ark API key 错 / mj-system biz pg 不可达 | `docker compose logs mj-agent`；如 creds 错 → 重跑 mj-agent-infra-env-setup；如 biz pg 不可达 → 检查 mj-system 是否 up |\n+| `mj-agent: Permission denied (postgres-init)` | Linux 上 init 脚本无 exec 权限 | 提出具名文件权限差异，交 implement 审阅；本技能不修改 init 脚本 |\n | `mj-agent: ImportError mj_agent` | image 没含 src/ | `docker compose build mj-agent` 重建 |\n-| `mj-system-backend-network: unable to attach` | mj-system network 没标 `external: true` 或 mj-system 没起 | 检查 compose.yaml 的 networks 段；先起 mj-system |\n-| `error: pull access denied for 8.135.38.175/mj-agent/mj-agent` | TEST/PROD profile 拉 Harbor 失败：镜像未推 / Harbor namespace 未创建 / docker login 缺 | (a) 先 `docker login 8.135.38.175`；(b) 确认 Harbor 上有 `mj-agent/mj-agent:0.1` tag；(c) 必要时改 image tag 到实际可用 tag |\n-| dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml config` 看合并结果；确认 dev `-f` 链含 override.yml |\n-| test/prod profile 起来后 mj-agent 报 `connection refused mj-postgres:5432` | mj-system 栈没在同主机 up；或 mj-system-backend-network 不存在 | TEST/PROD 主机必须先起 mj-system 栈（mj-postgres healthy + mj-system-backend-network 存在）；mj-agent 只是 consumer |\n+| `mj-system-backend-network: unable to attach` | mj-system network 没标 `external: true` 或 mj-system 没起 | 检查 compose.yaml 的 networks 段；请 Owner 处理 mj-system 依赖 |\n+| `error: pull access denied for 8.135.38.175/mj-agent/mj-agent` | TEST/PROD profile 拉 Harbor 失败：镜像未推 / Harbor namespace 未创建 / docker login 缺 | (a) 先 `docker login 8.135.38.175`；(b) 确认 Harbor 上有 `mj-agent/mj-agent:0.1` tag；(c) 必要时提出具体 tag 差异并停等 Owner |\n+| dev profile env 没生效（如 `MJ_CONFIG_PROFILE` 仍是 .env 值） | dev 也必须显式 `-f override`；遗漏会导致 profile 配置不注入 | 用 `docker compose --env-file .env -f docker/compose.yaml -f docker/compose.override.yml config --quiet` 只验证合并配置合法，不打印展开内容；确认 dev `-f` 链含 override.yml |\n+| test/prod profile 起来后 mj-agent 报 `connection refused mj-postgres:5432` | mj-system 栈没在同主机 up；或 mj-system-backend-network 不存在 | TEST/PROD 主机必须请 Owner 处理 mj-system 依赖 栈（mj-postgres healthy + mj-system-backend-network 存在）；mj-agent 只是 consumer |\n | host curl 502 但浏览器正常 + 容器内 `python urllib` 200 | host shell `HTTP_PROXY` / `HTTPS_PROXY` / `ALL_PROXY` 未排除 localhost（Clash / v2ray 系统代理常见）；浏览器有 implicit localhost bypass、curl 无条件走代理 | 单次：`curl --noproxy '*' http://localhost:8001/`；持久：`$env:NO_PROXY=\"localhost,127.0.0.1,::1\"`（PowerShell）/ `export NO_PROXY=localhost,127.0.0.1,::1`（bash）；mj-agent 容器健康，不需 restart；详见 `capabilities/infrastructure/docker-compose/runbook.md` §3 |\n \n ## Output Format\n@@ -266,43 +277,42 @@\n - <问题 + 修复指引>\n \n ### Next Action\n-- 进入 dev → /mj-agent-infra-studio-probe（uv run langgraph dev 直连 biz pg；不一定需要 compose）\n+- 进入 dev → mj-agent-infra-studio-probe（uv run langgraph dev 直连 biz pg；不一定需要 compose）\n - compose-based dev → http://localhost:8001（Chainlit UI）\n-- 进入 17-stage 闭环 → /mj-agent-flow-intake\n+- 进入 17-stage 闭环 → mj-agent-flow-intake\n ```\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不替代 /mj-agent-infra-env-setup（env / secret 配置）\n-- ❌ 不替代 /mj-agent-infra-studio-probe（uv run langgraph dev + H1/H2/H3/R1/R2 矩阵；与 compose 互补）\n-- ❌ 不替代 /mj-agent-infra-storage-stack（postgres init script / redis schema 内部）\n-- ❌ 不修改 `docker/compose.yaml` 结构（C 风味；用 /mj-agent-flow-implement Step 3c）\n+- ❌ 不替代 mj-agent-infra-env-setup（env / secret 配置）\n+- ❌ 不替代 mj-agent-infra-studio-probe（uv run langgraph dev + H1/H2/H3/R1/R2 矩阵；与 compose 互补）\n+- ❌ 不替代 mj-agent-infra-storage-stack（postgres init script / redis schema 内部）\n+- ❌ 不修改 `docker/compose.yaml` 结构（C 风味；用 mj-agent-flow-implement Step 3c）\n - ❌ 不操作 mj-system biz pg（lifecycle 归 mj-system；ADR-008 + ADR-009 边界）\n - ❌ 不自动跑 Level C `down -v`（HITL-confirm only）\n-- ❌ 不替代 mj-agent check（health probe；用 /mj-agent-infra-env-setup Step 5）\n+- ❌ 不替代 mj-agent check（health probe；用 mj-agent-infra-env-setup Step 5）\n \n ## Sub-skill / Tool Calls\n \n | Tool | 用途 |\n |---|---|\n-| Bash `docker compose -f ...` | Step 2 lifecycle |\n-| Bash `docker network ls` / `docker ps` | Step 1 pre-check |\n-| Bash `netstat -ano \\| findstr` | Step 1 + Step 3 port check |\n-| Bash `docker exec mj-agent-postgres psql` | Step 3 verify postgres |\n-| Bash `docker compose logs` | Troubleshooting |\n-| AskUserQuestion | `down -v` Level C HITL-confirm |\n+| shell `docker compose -f ...` | Step 2 lifecycle |\n+| shell `docker network ls` / `docker ps` | Step 1 pre-check |\n+| shell `netstat -ano \\| findstr` | Step 1 + Step 3 port check |\n+# 直接数据库客户端路径不提供给 agent；需已发现且获授权的项目 memory 接口，否则 `UNMET_DEPENDENCY`。biz 仅走业务工具链。\n+| shell `docker compose logs` | Troubleshooting |\n+| 向 Owner 询问 | `down -v` Level C HITL-confirm |\n \n ## Reference Files\n \n-- [[../../../docker/compose.yaml|docker/compose.yaml]]（target file，含 services / networks / volumes / healthcheck 全配置）\n-- [[../../../docker/Dockerfile|Dockerfile]]（mj-agent service build context）\n-- [[../../../docker/entrypoint.sh|entrypoint.sh]]\n-- [[../../../docker/postgres-init/01-bootstrap-mj-agent-memory.sh|postgres-init/01-bootstrap-mj-agent-memory.sh]]（mj-agent-postgres 启动 hook；详见 /mj-agent-infra-storage-stack）\n-- [[../../../docker/README.md|docker/README.md]]（compose 详细说明，如有）\n-- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + mj-system-backend-network external 边界）\n-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（dev mode 替代方案：uv run langgraph dev，不依赖 compose）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（17-stage 执行闭环；compose 改动后排练 up/down + 记录 PR；§5/§6 命令矩阵；原 HITL_Prompt §4.7 Rule 13 / §4.8，M6 PR4 archived → kernel）\n-- mj-system upstream `mj-sys-ops-env-{setup,teardown}/SKILL.md`（间接派生源；mj-agent 简化为本 skill 的 lifecycle 段 + 独立 compose 项目；不实现 ETL 编排）\n+- `repo:docker/compose.yaml`（target file，含 services / networks / volumes / healthcheck 全配置）\n+- `repo:docker/Dockerfile`（mj-agent service build context）\n+- `repo:docker/entrypoint.sh`\n+- `repo:docker/postgres-init/01-bootstrap-mj-agent-memory.sh`（mj-agent-postgres 启动 hook；详见 mj-agent-infra-storage-stack）\n+- `repo:docker/README.md`（compose 详细说明，如有）\n+- `repo:decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（独立 compose project + mj-system-backend-network external 边界）\n+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7（dev mode 替代方案：uv run langgraph dev，不依赖 compose）\n+- `repo:sdd/workflows/execution-loop.md`（17-stage 执行闭环；compose 改动后排练 up/down + 记录 PR；§5/§6 命令矩阵；原 HITL_Prompt §4.7 Rule 13 / §4.8，M6 PR4 archived → kernel）\n \n ## Anti-patterns\n \n@@ -319,8 +329,8 @@\n Compose lifecycle 完成。\n 下一步：\n - compose-based dev → http://localhost:8001 (Chainlit UI)\n-- dev-mode dev → /mj-agent-infra-studio-probe (uv run langgraph dev；不依赖 compose)\n-- storage 内部操作 → /mj-agent-infra-storage-stack\n-- 进入 17-stage 闭环 → /mj-agent-flow-intake\n-- compose 改动（结构）→ /mj-agent-flow-implement Step 3c (C 风味)\n-```\n+- dev-mode dev → mj-agent-infra-studio-probe (uv run langgraph dev；不依赖 compose)\n+- storage 内部操作 → mj-agent-infra-storage-stack\n+- 进入 17-stage 闭环 → mj-agent-flow-intake\n+- compose 改动（结构）→ mj-agent-flow-implement Step 3c (C 风味)\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-docker-compose/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "667f51d2f8df07d10f71b9d22b044a75c2b5f64a5fc5f83baf986567b0e18aef",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-env-setup",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-env-setup/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-env-setup/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-setup/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-env-setup/SKILL.md",
+        "name": "mj-agent-infra-env-setup",
+        "description_hash": "sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745",
+        "body_content_hash": "sha256:402d9b748cdee70bc8eb2134bcedb4cecc380fc20390df36d3c6dc97116e8e0f",
+        "frozen_at": "2026-08-13 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Claude vs User Execution Boundary",
+          "## Workflow",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Anti-patterns",
+          "## Output Format",
+          "## Env Setup Result",
+          "## Reference Files",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745",
+        "body_content_hash": "sha256:402d9b748cdee70bc8eb2134bcedb4cecc380fc20390df36d3c6dc97116e8e0f"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-env-setup/SKILL.md",
+        "name": "mj-agent-infra-env-setup",
+        "description_hash": "sha256:38d8b4a0cf75f1eae01f44dff9ddc2306472635533f95c4a9d5394e53e2c0c06",
+        "body_content_hash": "sha256:248f84f521fa564544bd8cf963fcdf04f78dd6166ecfe6f48a70b0259e7f5e4f",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Codex vs User Execution Boundary",
+          "## Workflow",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Anti-patterns",
+          "## Output Format",
+          "## Env Setup Result",
+          "## Reference Files",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says \"环境配置\", \"env setup\", \".env 配置\", \"设置环境\", \"解密 secrets\", \"decrypt secrets.enc\", \"team password\", \"团队口令\", \"POSTGRES_ANALYST_USER\", \"ARK_API_KEY\", \"LANGSMITH_API_KEY\", \"uv sync\", \"first time setup\", \"新机器搭建\", \"本地环境\", \"scripts/setup-env.ps1\", \"setup-mcp-secrets\" in the mj-agent context. Wraps two ADR-030 setup scripts: (1) scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt config/secrets.enc; 8 app secrets: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory passwords + pg superuser; merged into .env), and (2) .claude/scripts/setup-mcp-secrets.ps1 (decrypt config/secrets-mcp.enc; 15 MCP secrets: 5 SSH passwords + 10 PG URL placeholders; written directly to OS User-level env, never to .env). Plus uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify the setup scripts, secrets bundles, or write .env directly (only invokes the scripts with proper params). Note: both decrypt steps require interactive password (TTY); Claude's Bash tool cannot supply it — user must run setup scripts in their own PowerShell terminal. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).",
+        "new_text": "适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。授权：口令/秘密不入agent；只6项目变量；P1工具未真实运行；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745",
+        "new_hash": "sha256:38d8b4a0cf75f1eae01f44dff9ddc2306472635533f95c4a9d5394e53e2c0c06"
+      },
+      "body_change": {
+        "old_hash": "sha256:402d9b748cdee70bc8eb2134bcedb4cecc380fc20390df36d3c6dc97116e8e0f",
+        "new_hash": "sha256:248f84f521fa564544bd8cf963fcdf04f78dd6166ecfe6f48a70b0259e7f5e4f",
+        "old_heads": [
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Claude vs User Execution Boundary",
+          "## Workflow",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Anti-patterns",
+          "## Output Format",
+          "## Env Setup Result",
+          "## Reference Files",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Codex vs User Execution Boundary",
+          "## Workflow",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Anti-patterns",
+          "## Output Format",
+          "## Env Setup Result",
+          "## Reference Files",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-env-setup/SKILL.md\n+++ .agents/skills/mj-agent-infra-env-setup/SKILL.md\n@@ -1,27 +1,38 @@\n+\n \n # mj-agent Infra — Env Setup\n \n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says \"环境配置\", \"env setup\", \".env 配置\", \"设置环境\", \"解密 secrets\", \"decrypt secrets.enc\", \"team password\", \"团队口令\", \"POSTGRES_ANALYST_USER\", \"ARK_API_KEY\", \"LANGSMITH_API_KEY\", \"uv sync\", \"first time setup\", \"新机器搭建\", \"本地环境\", \"scripts/setup-env.ps1\", \"setup-mcp-secrets\" in the mj-agent context. Wraps two ADR-030 setup scripts: (1) scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt config/secrets.enc; 8 app secrets: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory passwords + pg superuser; merged into .env), and (2) scripts/mcp/setup-mcp-secrets.ps1 (decrypt config/secrets-mcp.enc; 6 permitted project variables: GitHub token and memory URLs for five environments; written directly to OS User-level env, never to .env). Plus uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify the setup scripts, secrets bundles, or write .env directly (only invokes the scripts with proper params). Note: both decrypt steps require interactive password (TTY); Codex does not collect passwords or execute decryption/OS credential writes — user must run setup scripts in their own PowerShell terminal. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).\n+\n+\n ## Overview\n \n 包装 mj-agent 已有的 2 个 secrets setup 脚本（ADR-030 起 2-bundle 拆分）：\n \n 1. `scripts/setup-env.ps1` — 解密 `config/secrets.enc`，注入 8 app secrets（+ §2c LLM profile）到 `.env`\n-2. `.claude/scripts/setup-mcp-secrets.ps1` — 解密 `config/secrets-mcp.enc`，写入 15 MCP secrets 到 OS User-level env（不入 `.env`）\n+2. `scripts/mcp/setup-mcp-secrets.ps1` — 解密 `config/secrets-mcp.enc`，写入 6 项项目变量（GitHub + memory×5） 到 OS User-level env（不入 `.env`）\n \n 加上 `uv sync` 依赖安装 + 最小 `.env` validation。**Stage 8 (C-flavor) sub** of the 17-stage 执行闭环。\n \n 新机器 / 新贡献者上手时第一个调用的 infra skill。\n \n **Reference**:\n-- [[../../../scripts/setup-env.ps1|scripts/setup-env.ps1]]（app bundle 解密脚本）\n-- [[../../../.claude/scripts/setup-mcp-secrets.ps1|setup-mcp-secrets.ps1]]（MCP bundle 解密脚本；ADR-030 新增）\n-- [[../../../config/README.md|config/README.md]]（rotation / onboarding flow + ADR-030 2-bundle 模型）\n-- [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation|ADR-030]]（bundle 拆分决策）\n-- [[../../../CLAUDE.md|CLAUDE.md]] \"Environment variables\" 段（secret 列表）\n+- `repo:scripts/setup-env.ps1`（app bundle 解密脚本）\n+- `repo:scripts/mcp/setup-mcp-secrets.ps1`（MCP bundle 解密脚本；ADR-030 新增）\n+- `repo:config/README.md`（rotation / onboarding flow + ADR-030 2-bundle 模型）\n+- `repo:decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md`（bundle 拆分决策）\n+- `repo:config/README.md`（应用配置）与 `repo:.env.example`（仅公开变量名）（secret 列表）\n \n ## 前置条件\n \n-- Windows PowerShell（`scripts/setup-env.ps1` 是 .ps1）\n+- 应用脚本按其支持环境由 Owner 执行；MCP 候选需要 PowerShell 7（pwsh，P1测试环境），不能把 5.1 当作已验证支持\n - mj-agent 仓已 clone（含 `.bare` + `develop/`）\n - 团队分发的解密口令（联系项目负责人或 onboarding mentor）\n - Python 3.13 + uv（`uv --version` 验证；缺 → 见 Step 1 install 指引）\n@@ -36,28 +47,17 @@\n | 用户在新机器从 0 起 | 完整 5 步 |\n | stack 之前用 OS user env 起过（`setup-mcp-env.ps1` 镜像到 HKCU\\Environment），仓内无 `.env` | 仍走完整 5 步：`mj-agent serve` / `mj-agent check` 通过 python-dotenv 读 `.env`，不读 process env；docker compose `${VAR}` 用 process env 可起栈但 Python 入口不可 |\n \n-## Claude vs User Execution Boundary\n-\n-| Step | 谁执行 | 原因 |\n-|---|---|---|\n-| Step 1 prereq check | Claude or User | 只读探测；Claude 走 Bash tool 时见 §\"Bash tool 调用 PowerShell\" |\n-| **Step 2 decrypt** | **User only** | `Read-Host -AsSecureString` 需 TTY；Claude 的 Bash tool 无 TTY 无法供口令；harness `!` 前缀走 bash 也无法供 SecureString |\n-| Step 3 .env 完整性 | Claude or User | 经 `scripts/check_env_keys.ps1`（脱敏：只回键名 + PRESENT/EMPTY/MISSING，永不回值）；Agent **不**得直接 grep / `Get-Content` 解析 `.env` |\n-| Step 4 `uv sync` | Claude or User | 非交互 |\n-| Step 5 healthcheck | Claude or User | 非交互 |\n-\n-### `!` 前缀路径陷阱（Step 2 走 `!` 前缀时必须避开）\n-\n-- ❌ `! .\\scripts\\setup-env.ps1` — bash 把 `\\s` 当转义 → 命令名变成 `.scriptssetup-env.ps1` not found\n-- ✅ user 在自己 PowerShell 终端直接跑 `.\\scripts\\setup-env.ps1`（**推荐**；本机 PS 原生 SecureString 路径）\n-- ✅ 若坚持 `!` 前缀：`! powershell.exe -NoProfile -File scripts/setup-env.ps1`（用正斜杠避免反斜杠转义）\n-\n-### Bash tool 调用 PowerShell（Step 1 / Step 3 only）\n-\n-Claude 的 Bash tool 在 Windows 上是 **git-bash**，不是 PowerShell。`$PSVersionTable / Write-Warning` 等 PS cmdlet 在 Bash tool 下直跑必然 `command not found`。处理：\n-\n-- **A（推荐）**：`powershell.exe -NoProfile -Command 'SCRIPT'` 或 `powershell.exe -NoProfile -File <script.ps1>` — `-Command` 时必须**单引号**包住 SCRIPT（双引号会让 bash 提前展开 `$var`）\n-- **B（secrets 边界）**：涉及 `.env` 的核对一律走 `scripts/check_env_keys.ps1`（脱敏输出）；Agent **不**用 bash 等价物（`grep` / `cut`）直接解析 `.env`（v5 §5.2）\n+## Codex vs User Execution Boundary\n+\n+| Step | 谁执行 | 边界 |\n+|---|---|---|\n+| Step 1 前置 | Codex 或 Owner | 仅检查工具版本；不自动安装 |\n+| Step 2 解密/OS 注入 | Owner 自己的终端 | 不向 agent 提供口令，不回传秘密值 |\n+| Step 3 完整性 | 已授权时 Codex 可用脱敏脚本 | 仅键名/状态，禁止直接读取 .env |\n+| Step 4 依赖 | 当前任务授权范围内 | 固定版本与 lock，不为验收擅自升级 |\n+| Step 5 验证 | 离线与真实探针分开 | `mj-agent check` 含 memory ping，真实执行需明确范围 |\n+\n+Windows 使用实际 PowerShell；Bash 示例只在相应 shell 可用时采用，不使用旧客户端 `!` 前缀。\n \n ## Workflow\n \n@@ -71,7 +71,7 @@\n $PSVersionTable        # 期望 PSVersion 5.1+\n ```\n \n-Claude 走 Bash tool 时（git-bash）：\n+可用 Bash shell 的等价前置检查（未发现时使用上方 PowerShell）：\n \n ```bash\n uv --version                                                       # 跨 shell 可用\n@@ -83,6 +83,8 @@\n \n ### Step 2 — 解密两个 bundle（app → .env；MCP → OS env）\n \n+以下是**最终部署后 Owner 自己终端的命令**；P2 仅候选路径存在，不执行，也不把秘密包复制进候选根。MCP 维护需要 PowerShell 7/pwsh；5.1 不算该候选已验证平台。\n+\n ```powershell\n # 在 mj-agent 仓 develop/（或任意 worktree）根执行\n # 2a. App bundle → .env（-LlmProfile 选 LLM 套装：无 DGX 隧道的机器一律 ark）\n@@ -90,8 +92,8 @@\n #     有 DGX 隧道 + Docker Desktop 的机器：.\\scripts\\setup-env.ps1 -Force -LlmProfile dgx\n \n # 2b. MCP bundle → OS User-level env（同一口令；不写 .env）\n-.\\.claude\\scripts\\setup-mcp-secrets.ps1\n-#     ⚠ 跑完必须【完全重启】终端 + Claude Code（User env 只对新进程可见）\n+pwsh -NoProfile -File scripts/mcp/setup-mcp-secrets.ps1\n+#     ⚠ 跑完必须【完全重启】终端 + Codex（User env 只对新进程可见）\n ```\n \n 脚本会询问团队解密口令（**不**回显 / **不**记录）；两 bundle 同口令、同 AES-256-CBC + PBKDF2 算法，注入目标不同（ADR-030）：\n@@ -108,16 +110,15 @@\n | `MJ_AGENT_MEMORY_USER` / `MJ_AGENT_MEMORY_PASSWORD` | §4 | mj-agent-postgres `mj_agent_app` role RW（postgres-init 用此值建 role） |\n | `MJ_AGENT_PG_SUPERUSER_PASSWORD` | §4b | mj-agent-postgres 容器超管（compose-only；Python 不读） |\n \n-**2b. `secrets-mcp.enc` → `HKCU\\Environment`（15 MCP secrets；永不入 `.env`）**：\n-`MJ_AGENT_SSH_SERVER_{CLOUD,RUNNER,TEST,PROD,DGX}_PASSWORD` ×5 +\n-`MJ_AGENT_PG_{MEMORY,BIZ}_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL` ×10，\n-供 `.mcp.json` `${VAR}` 在 claude.exe 启动时解析；诊断用\n-`.\\.claude\\scripts\\setup-mcp-secrets.ps1 -Reload`（详见 `config/README.md` §6.4）。\n+**2b. MCP 维护由 Owner 终端执行 `scripts/mcp/setup-mcp-secrets.ps1`**：仅 `GITHUB_PERSONAL_ACCESS_TOKEN` 与\n+`MJ_AGENT_PG_MEMORY_{DEV,TEST_LAN,TEST_WAN,PROD_LAN,PROD_WAN}_URL`。按变量名交给原生项目配置；\n+不迁移 biz/SSH/个人来源。诊断 `-Reload` 也由 Owner 执行；不打印值或前缀。\n+重启相关进程后只回报状态。P1 只验证了合成输入，不保证真实凭据或服务可用。\n \n > **失败模式**：\n > - 口令错 → 脚本失败，无残留 .env 改动；让用户重试 / 联系负责人\n > - `secrets.enc` 缺失（git fetch 不全）→ `git fetch origin` 后重试\n-> - PowerShell 执行策略限制 → `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` 后重试\n+> - PowerShell 执行策略限制 → 交 Owner 审阅本机执行策略，不由 agent 自动修改\n \n ### Step 3 — `.env` 完整性核对\n \n@@ -125,9 +126,9 @@\n > - `LLM_PROVIDER=ark`（默认）→ 必须 `ARK_API_KEY` 非空（或新通用 `LLM_API_KEY`）\n > - `LLM_PROVIDER=local-openai-compat`（DGX-Spark 本地 vLLM/SGLang/Ollama）→ 必须 `LLM_BASE_URL` 非空；`LLM_API_KEY` 可填 `EMPTY`；端点经 owner SSH 隧道 + `host.docker.internal:18000`（ADR-027 D.3 Amendment——LAN 直连不通）\n > - provider 切换推荐走 `.\\scripts\\setup-env.ps1 -Force -LlmProfile <ark|dgx>`（bundle §2c 携带整套值含 `NO_PROXY`；见 config/README.md），不手工拼 .env\n-> - 切换到 local-openai-compat 后，**必须**跑 `/mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康\n-\n-任一执行者（Claude Bash tool / Codex / user 终端）统一走脱敏脚本：\n+> - 切换到 local-openai-compat 后，**必须**跑 `mj-agent-infra-llm-endpoint-probe` 确认 endpoint 健康\n+\n+任一执行者（Codex shell 执行工具 / Codex / user 终端）统一走脱敏脚本：\n \n ```bash\n powershell.exe -NoProfile -File scripts/check_env_keys.ps1\n@@ -141,9 +142,9 @@\n \n 如缺非 secret 字段（`MJ_CONFIG_PROFILE` / `POSTGRES_DEV_HOST` / `LLM_MODEL_ID` / `LLM_PROVIDER` 等）→ user 手动从 `.env.example` 拷贝填写（**不**自动改 .env；secret 字段 + 配置字段拼装策略由 user 控制）。\n \n-如 `LLM_PROVIDER=local-openai-compat` → 跑 `/mj-agent-infra-llm-endpoint-probe` 验证 DGX vLLM endpoint 可达 + model 加载 + chat smoke。\n-\n-> **重要**：`.env.example` 是 ASCII-only（python-dotenv 在中文 Windows 上对 UTF-8 非 ASCII 内容会失败；详见 CLAUDE.md \"Environment variables\" 段）。\n+如 `LLM_PROVIDER=local-openai-compat` → 跑 `mj-agent-infra-llm-endpoint-probe` 验证 DGX vLLM endpoint 可达 + model 加载 + chat smoke。\n+\n+> **重要**：`.env.example` 是 ASCII-only（python-dotenv 在中文 Windows 上对 UTF-8 非 ASCII 内容会失败；详见 `repo:config/README.md`（应用配置）与 `repo:.env.example`（仅公开变量名））。\n \n ### Step 4 — uv sync 依赖安装\n \n@@ -167,7 +168,7 @@\n ```powershell\n # 1. 健康探针（DB + LLM creds + .env.example drift）\n uv run mj-agent check\n-# 期望：✅ DB connection OK + ✅ Ark LLM call OK\n+# 按真实输出记录；默认 check 不证明 biz/LLM live 成功\n # 失败 → 检查 .env / secret / 网络\n # 若额外出现 [DRIFT] / [MISSING] 段：.env.example 含但 .env 缺的 key 列表\n #   （warn-only，不影响 exit code；与 setup-env.ps1 的 [DRIFT] 算法一致）。\n@@ -187,7 +188,7 @@\n # uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke\n ```\n \n-`uv run mj-agent check` 通过 = 环境就绪。\n+`mj-agent check` 的通过仅证明该次检查覆盖项；biz/LLM live、MCP连接与宿主加载分别记录未验证或真实结果。\n \n ## What This Skill DOES NOT DO\n \n@@ -195,20 +196,20 @@\n - ❌ 不修改 `scripts/setup-env.ps1` / `secrets.enc`（**read-only invoke**）\n - ❌ 不分发解密口令（必须线下 / IM 接收，不在仓库内）\n - ❌ 不安装 uv / Python / PowerShell（仅输出 install 指引；user 决定）\n-- ❌ 不替代 `/mj-agent-infra-studio-probe`（Studio E2E 探针；mj-agent check 仅 creds 健康）\n-- ❌ 不替代 `/mj-agent-infra-docker-compose`（compose lifecycle）\n-- ❌ 不替代 `/mj-agent-infra-storage-stack`（mj-agent-postgres + mj-agent-redis）\n+- ❌ 不替代 `mj-agent-infra-studio-probe`（Studio E2E 探针；mj-agent check 仅 creds 健康）\n+- ❌ 不替代 `mj-agent-infra-docker-compose`（compose lifecycle）\n+- ❌ 不替代 `mj-agent-infra-storage-stack`（mj-agent-postgres + mj-agent-redis）\n \n ## Sub-skill / Tool Calls\n \n | Tool | 谁调 | 用途 |\n |---|---|---|\n-| Bash `uv python list` / `uv --version` / `powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'` | Claude or User | Step 1 prereq |\n-| **User 终端** `.\\scripts\\setup-env.ps1`（**不**通过 Claude Bash tool；TTY required） | **User only** | Step 2 解密注入 |\n-| Bash `powershell.exe -NoProfile -File scripts/check_env_keys.ps1`（脱敏：只回键名+状态，永不回值） | Claude or User | Step 3 .env 完整性 |\n-| Bash `uv sync` / `uv lock` | Claude or User | Step 4 依赖 |\n-| Bash `uv run mj-agent check` | Claude or User | Step 5 健康探针 |\n-| Bash `uv run ruff` / `mypy` / `pytest` | Claude or User | Step 5 验证 |\n+| shell `uv python list` / `uv --version` / `powershell.exe -NoProfile -Command '$PSVersionTable.PSVersion'` | Codex or User | Step 1 prereq |\n+| **User 终端** `.\\scripts\\setup-env.ps1`（**不**通过 Codex shell 执行工具；TTY required） | **User only** | Step 2 解密注入 |\n+| shell `powershell.exe -NoProfile -File scripts/check_env_keys.ps1`（脱敏：只回键名+状态，永不回值） | Codex or User | Step 3 .env 完整性 |\n+| shell `uv sync` / `uv lock` | Codex or User | Step 4 依赖 |\n+| shell `uv run mj-agent check` | Codex or User | Step 5 健康探针 |\n+| shell `uv run ruff` / `mypy` / `pytest` | Codex or User | Step 5 验证 |\n \n ## Anti-patterns\n \n@@ -217,7 +218,7 @@\n - **不要** 把团队口令写进 SKILL.md / 文档 / commit message\n - **不要** 自动 install Python / uv / PowerShell（user 决定）\n - **不要** 跳过 Step 5 healthcheck（缺验证可能 .env 字段错但脚本无报）\n-- **不要** 在 `.env.example` 加非 ASCII 内容（python-dotenv UTF-8 编码失败；详见 CLAUDE.md）\n+- **不要** 在 `.env.example` 加非 ASCII 内容（python-dotenv UTF-8 编码失败；详见 AGENTS.md）\n - **不要** 让 Agent 直接 grep / `Get-Content` 解析 `.env`（一律走 `scripts/check_env_keys.ps1` 脱敏输出；v5 §5.2 secrets 边界）\n \n ## Output Format\n@@ -228,12 +229,12 @@\n ### Prerequisite Check\n - ✅ Python 3.13.5\n - ✅ uv 0.4.18\n-- ✅ PowerShell 5.1.22000.282\n+- <实际版本；MCP需pwsh 7，未测版本标未验证>\n \n ### Decrypt bundles\n - ✅ scripts/setup-env.ps1 完成（8 app secrets 已注入 .env；LLM profile = ark）\n-- ✅ .claude/scripts/setup-mcp-secrets.ps1 完成（15 MCP secrets → HKCU；已提示重启终端）\n-- 注入字段：详见 Step 2 表（§1 analyst pg + §2/§2b LLM keys + §2c profile 组 + §3 LangSmith + §4/§4b storage-stack；SSH×5 + PG URL×10 走 MCP bundle → OS env）\n+- ✅ scripts/mcp/setup-mcp-secrets.ps1 完成（6 项项目变量（GitHub + memory×5） → HKCU；已提示重启终端）\n+- 注入字段：详见 Step 2 表（§1 analyst pg + §2/§2b LLM keys + §2c profile 组 + §3 LangSmith + §4/§4b storage-stack；GitHub + memory×5 走项目 MCP 维护入口 → OS env）\n \n ### .env Completeness（scripts/check_env_keys.ps1 脱敏输出）\n - ✅ provider-aware required secrets 全 PRESENT（LLM_PROVIDER=ark → 含 ARK_API_KEY；=local-openai-compat → 含 LLM_BASE_URL）\n@@ -245,15 +246,15 @@\n - ✅ Dependencies synced (87 packages, 0 conflicts)\n \n ### Healthcheck\n-- ✅ uv run mj-agent check — DB OK + LLM OK\n+- ✅ uv run mj-agent check — 按实际覆盖项记录，不能推定 LLM live OK\n - ✅ uv run ruff check — All checks passed!\n - ✅ uv run mypy src/mj_agent — Success: no issues\n - ✅ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit — 87 passed\n \n ### Next Steps\n-- 进入开发：/mj-agent-flow-intake\n-- 启 Studio：/mj-agent-infra-studio-probe\n-- compose 起 storage：/mj-agent-infra-docker-compose\n+- 进入开发：mj-agent-flow-intake\n+- 启 Studio：mj-agent-infra-studio-probe\n+- compose 起 storage：mj-agent-infra-docker-compose\n ```\n \n ## Reference Files\n@@ -262,17 +263,17 @@\n - `config/README.md`（rotation / onboarding flow）\n - `config/secrets.enc`（加密 secret 包）\n - `.env.example`（非 secret 字段模板；ASCII-only）\n-- `CLAUDE.md` \"Environment variables\" 段\n+- `repo:config/README.md`（应用配置）与 `repo:.env.example`（仅公开变量名）\n - `pyproject.toml` / `uv.lock`（依赖）\n-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（Studio 探针前置）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（C 风味 secret 同步硬约束；原 HITL_Prompt §4.7 Rule 15，M6 PR4 archived → kernel）\n+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7（Studio 探针前置）\n+- `repo:sdd/workflows/execution-loop.md`（C 风味 secret 同步硬约束；原 HITL_Prompt §4.7 Rule 15，M6 PR4 archived → kernel）\n \n ## Handoff\n \n ```\n Env setup 完成 ✓\n 下一步：\n-- 启 Studio: /mj-agent-infra-studio-probe\n-- 起 compose: /mj-agent-infra-docker-compose\n-- 进开发: /mj-agent-flow-intake → 17-stage 闭环\n-```\n+- 启 Studio: mj-agent-infra-studio-probe\n+- 起 compose: mj-agent-infra-docker-compose\n+- 进开发: mj-agent-flow-intake → 17-stage 闭环\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-env-setup/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "a3ee532da5609742f80cd38f5ca20629329dc13f233811fc05ef4fcc8b7d5c7e",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-env-teardown",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-env-teardown/SKILL.md",
+        "name": "mj-agent-infra-env-teardown",
+        "description_hash": "sha256:388b327abd3b9d833be0977e4d39cd5e5a25d4ef534edfded030da2d207516a1",
+        "body_content_hash": "sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a",
+        "frozen_at": "2026-07-08 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:388b327abd3b9d833be0977e4d39cd5e5a25d4ef534edfded030da2d207516a1",
+        "body_content_hash": "sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-env-teardown/SKILL.md",
+        "name": "mj-agent-infra-env-teardown",
+        "description_hash": "sha256:4c96cbdf48388759c44edf7f7c1530333d1672a126fe7b031f42b593ed0d67ea",
+        "body_content_hash": "sha256:d6f1c48d67802fadcf3392eaf158000785d0926cd975c329c8d0dc3dd6f17bb8",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill provides 3-level Docker environment cleanup for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-026 4-file layering). Profile-aware Step 0 picks which `-f` chain to teardown (dev `-f base -f override` / test `-f base -f test` / prod `-f base -f prod`). Three levels with safety confirmation: Level 1 `down` (containers + networks; volumes preserved → langgraph checkpointer data safe), Level 2 `down -v` (also wipes mj-agent-postgres-data + mj-agent-redis-data volumes — **all checkpointer + redis data lost permanently**), Level 3 `down -v --rmi local --remove-orphans` (also wipes locally-built images including mj-agent:0.1 → next `up` requires full rebuild ~3-5 minutes; Harbor-pulled test/prod images stay). Mirror of mj-system mj-sys-ops-env-teardown adapted to mj-agent's 3-service stack and 4-profile layering. Use this skill whenever the user says \"停止 mj-agent compose\", \"清理 mj-agent 环境\", \"重置 mj-agent\", \"docker compose down\", \"mj-agent teardown\", \"拆 mj-agent 栈\", \"mj-agent compose down\", \"mj-agent 清空\", \"释放 mj-agent 资源\", \"重置 langgraph checkpointer 数据\", \"清掉 mj-agent volumes\", \"重新构建 mj-agent 镜像\", or after compose-related troubleshooting wants a clean slate. Do not use for: env setup + secret 配置 (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); LLM endpoint probe (use mj-agent-infra-llm-endpoint-probe); compose lifecycle up/ps/logs (use mj-agent-infra-docker-compose); a plain non-destructive stop of the running app runtime — host `langgraph dev` / `serve` processes or Level-1 `down` with all data preserved (use mj-agent-infra-app-stop; this teardown skill is for destructive Level 2/3 volume/image wipe + clean-slate reset); storage stack internals like postgres init script / redis schema (use mj-agent-infra-storage-stack); modifying compose files structure (that is C-flavor infra change; use /mj-agent-flow-implement); mj-system biz pg lifecycle (out of mj-agent governance — owned by mj-system stack).",
+        "new_text": "适用于 mj-agent 的明确重置/销毁dev资源。输入：context/host/project/profile/-f、精确volume/image、level、备份。流程：profile→资源清单→level→损失+批准→执行→逐项verify。输出：level目标逐项完成；残留和不可恢复数据诚实报告。Use when：准备清理dev两个已确认volume的Level2方案。Do not use for：只停Studio，保留数据；建议app-stop，不进入volume清理。授权：Level2/3硬批准；prod单独停；外部网络/他人资源禁止；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:388b327abd3b9d833be0977e4d39cd5e5a25d4ef534edfded030da2d207516a1",
+        "new_hash": "sha256:4c96cbdf48388759c44edf7f7c1530333d1672a126fe7b031f42b593ed0d67ea"
+      },
+      "body_change": {
+        "old_hash": "sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a",
+        "new_hash": "sha256:d6f1c48d67802fadcf3392eaf158000785d0926cd975c329c8d0dc3dd6f17bb8",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## §HITL 介入场景",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-env-teardown/SKILL.md\n+++ .agents/skills/mj-agent-infra-env-teardown/SKILL.md\n@@ -1,5 +1,16 @@\n+\n \n # mj-agent Infra — Env Teardown\n+\n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill provides 3-level Docker environment cleanup for the mj-agent independent compose project (3 services — mj-agent / mj-agent-postgres / mj-agent-redis; per ADR-008 standalone pattern + ADR-026 4-file layering). Profile-aware Step 0 picks which `-f` chain to teardown (dev `-f base -f override` / test `-f base -f test` / prod `-f base -f prod`). Three levels with safety confirmation: Level 1 `down` (containers + networks; volumes preserved → langgraph checkpointer data safe), Level 2 `down -v` (also wipes mj-agent-postgres-data + mj-agent-redis-data volumes — **all checkpointer + redis data lost permanently**), Level 3 `down -v --rmi local --remove-orphans` (also wipes locally-built images including mj-agent:0.1 → next `up` requires full rebuild ~3-5 minutes; Harbor-pulled test/prod images stay). Mirror of mj-system mj-sys-ops-env-teardown adapted to mj-agent's 3-service stack and 4-profile layering. Use this skill whenever the user says \"停止 mj-agent compose\", \"清理 mj-agent 环境\", \"重置 mj-agent\", \"docker compose down\", \"mj-agent teardown\", \"拆 mj-agent 栈\", \"mj-agent compose down\", \"mj-agent 清空\", \"释放 mj-agent 资源\", \"重置 langgraph checkpointer 数据\", \"清掉 mj-agent volumes\", \"重新构建 mj-agent 镜像\", or after compose-related troubleshooting wants a clean slate. Do not use for: env setup + secret 配置 (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); LLM endpoint probe (use mj-agent-infra-llm-endpoint-probe); compose lifecycle up/ps/logs (use mj-agent-infra-docker-compose); a plain non-destructive stop of the running app runtime — host `langgraph dev` / `serve` processes or Level-1 `down` with all data preserved (use mj-agent-infra-app-stop; this teardown skill is for destructive Level 2/3 volume/image wipe + clean-slate reset); storage stack internals like postgres init script / redis schema (use mj-agent-infra-storage-stack); modifying compose files structure (that is C-flavor infra change; use mj-agent-flow-implement); mj-system biz pg lifecycle (out of mj-agent governance — owned by mj-system stack).\n+\n \n ## Overview\n \n@@ -25,15 +36,15 @@\n \n **MAY skip when**：\n - 仅 stop 单个 container（用 `docker stop <name>`，不走本 skill 全栈）\n-- 没有 .env / 没有起过 stack（直接告知\"无需清理\"）\n+- 缺 .env 时仅停止依赖配置的动作；仍核对已知 project 的容器、volume 和镜像，不据此断言无需清理\n \n **MUST NOT use for**：\n-- ❌ env / secrets 配置 → /mj-agent-infra-env-setup\n-- ❌ Studio probe → /mj-agent-infra-studio-probe\n-- ❌ LLM endpoint probe → /mj-agent-infra-llm-endpoint-probe\n-- ❌ compose lifecycle up/ps/logs → /mj-agent-infra-docker-compose\n-- ❌ postgres init / redis schema → /mj-agent-infra-storage-stack\n-- ❌ 修改 compose 文件结构 → /mj-agent-flow-implement\n+- ❌ env / secrets 配置 → mj-agent-infra-env-setup\n+- ❌ Studio probe → mj-agent-infra-studio-probe\n+- ❌ LLM endpoint probe → mj-agent-infra-llm-endpoint-probe\n+- ❌ compose lifecycle up/ps/logs → mj-agent-infra-docker-compose\n+- ❌ postgres init / redis schema → mj-agent-infra-storage-stack\n+- ❌ 修改 compose 文件结构 → mj-agent-flow-implement\n - ❌ mj-system biz pg 操作（lifecycle 归 mj-system；ADR-008 边界）\n \n ## Workflow\n@@ -64,11 +75,11 @@\n docker volume ls --filter name=mj-agent\n ```\n \n-**[H1] 早退**：无运行容器 + 无 volume → \"环境已干净，无需清理\"，结束。\n+**[H1] 早退**：目标清单中无容器（含已停止）、无 volume，且 Level 3 无待清本地镜像 → \"环境已干净，无需清理\"，结束。\n \n ### Step 2 — Choose Cleanup Level\n \n-**[H2] AskUserQuestion** 让 user 选 1/2/3：\n+**[H2] 向 Owner 询问** 让 user 选 1/2/3：\n \n | Level | 名称 | 命令 | 销毁 | 保留 | 恢复成本 |\n |---|---|---|---|---|---|\n@@ -76,7 +87,7 @@\n | 2 | 清除数据 | `down -v` | 容器、网络、**mj-agent-postgres-data + mj-agent-redis-data volumes** | 镜像 | `up -d` 触发 postgres-init script 重建 mj_agent_memory DB + role；checkpointer history **全丢** |\n | 3 | 彻底重置 | `down -v --rmi local --remove-orphans` | 容器、网络、volumes、**本地构建的 mj-agent 镜像**（dev profile：`mj-agent:0.1`）| Harbor-pulled 镜像（test/prod profile） | `up -d --build` 重建本地镜像（~3-5 分钟）+ Step 2 后续 |\n \n-**[H3] Hard Confirm（Level 2/3 only）** AskUserQuestion 二次确认明确丢失项：\n+**[H3] Hard Confirm（Level 2/3 only）** 向 Owner 询问 二次确认明确丢失项：\n \n - **Level 2 文案**：\"将删除 `mj-agent-postgres-data` + `mj-agent-redis-data` volumes，**所有 langgraph checkpointer 历史 + redis appendonly 数据将永久丢失**。继续？\"\n - **Level 3 文案**：\"将删除所有 volumes + **本地构建的 `mj-agent:0.1` 镜像**。下次 `up` 需 `--build` 重建（~3-5 分钟）。Harbor-pulled 镜像（test/prod profile）不受影响。继续？\"\n@@ -106,7 +117,7 @@\n | ID | 类型 | 触发条件 | 行为 |\n |----|------|---------|------|\n | **H1** | Info | 环境已干净 | 提示无需清理，结束 |\n-| **H2** | Choice | Step 2 开始 | AskUserQuestion 选 Level 1/2/3 |\n+| **H2** | Choice | Step 2 开始 | 向 Owner 询问 选 Level 1/2/3 |\n | **H3** | Hard Confirm | Level 2 / 3 | 二次确认明示丢失项 |\n \n > H3 是保护性阻断 — Level 2 删 langgraph checkpointer 数据是不可逆操作。\n@@ -116,33 +127,32 @@\n | 症状 | 可能原因 | 修复 |\n |---|---|---|\n | `network mj-system-backend-network: removing` 警告 | 该 external network 由 mj-system 拥有；mj-agent down 不应 remove | 忽略警告（compose 会自动跳过 external network；ADR-008 边界） |\n-| Level 2 后再 up 报 `password authentication failed for user mj_agent_app` | postgres-init script 用 .env 当前的 `MJ_AGENT_MEMORY_PASSWORD` 重建 role；如 .env 中此密码与之前不一致，会出错 | 检查 `.env` 的 `MJ_AGENT_MEMORY_PASSWORD` 与 user 期望一致；或重跑 `/mj-agent-infra-env-setup` 重新注入 secrets |\n+| Level 2 后再 up 报 `password authentication failed for user mj_agent_app` | postgres-init script 用 .env 当前的 `MJ_AGENT_MEMORY_PASSWORD` 重建 role；如 .env 中此密码与之前不一致，会出错 | 检查 `.env` 的 `MJ_AGENT_MEMORY_PASSWORD` 与 user 期望一致；或重跑 `mj-agent-infra-env-setup` 重新注入 secrets |\n | Level 3 后 `up` 报 `pull access denied for 8.135.38.175/mj-agent/mj-agent` | test/prod profile 用 Harbor 镜像；本地未 docker login | `docker login 8.135.38.175` 后 retry |\n-| `down` hang 在 mj-agent stop | mj-agent healthcheck 进程未优雅退出 | 60s 后强制 `docker kill mj-agent` 后再 `down` |\n+| `down` hang 在 mj-agent stop | mj-agent healthcheck 进程未优雅退出 | 超时后记录实际 project/container/PID 身份及状态，交 Owner 决定；不自动强杀 |\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不替代 `/mj-agent-infra-env-setup`（env / secret 配置）\n-- ❌ 不替代 `/mj-agent-infra-docker-compose`（up/ps/logs lifecycle；本 skill 仅 down/clean）\n+- ❌ 不替代 `mj-agent-infra-env-setup`（env / secret 配置）\n+- ❌ 不替代 `mj-agent-infra-docker-compose`（up/ps/logs lifecycle；本 skill 仅 down/clean）\n - ❌ 不删 mj-system 的 mj-postgres / mj-system-backend-network（external 资源；归 mj-system）\n - ❌ 不强制 Level 3（除非 user 明确选；默认建议从 Level 1 开始）\n-- ❌ 不带 user 重新 `up`（Handoff 提示去 `/mj-agent-infra-docker-compose`）\n+- ❌ 不带 user 重新 `up`（Handoff 提示去 `mj-agent-infra-docker-compose`）\n \n ## Sub-skill / Tool Calls\n \n | Tool | 用途 |\n |---|---|\n-| Bash `docker compose ps / down [-v] [--rmi local]` | Step 1/3 lifecycle |\n-| Bash `docker volume ls / images` | Step 1/3 verify |\n-| AskUserQuestion | H2 level 选择 + H3 hard confirm |\n+| shell `docker compose ps / down [-v] [--rmi local]` | Step 1/3 lifecycle |\n+| shell `docker volume ls / images` | Step 1/3 verify |\n+| 向 Owner 询问 | H2 level 选择 + H3 hard confirm |\n \n ## Reference Files\n \n-- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project；mj-agent down 不影响 mj-system）\n-- [[decisions/ADR-026_Multi_Environment_Compose_Profile|ADR-026]]（4-file profile 分层；teardown 必须与 up 用相同 -f 链）\n-- [[../../../docker/compose.yaml|compose.yaml]] / `.override.yml` / `.test.yml` / `.prod.yml`\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §7（Stage 17 post-merge cleanup）+ [[../../../policies/ai-agent|policies/ai-agent]] §4（破坏性操作必触 HITL）；原 HITL_Prompt §3.1 / §4.15，M6 PR4 archived → kernel\n-- mj-system upstream `.claude/skills/mj-sys-ops-env-teardown/SKILL.md`（直接派生源；mj-agent 适配 3 服务栈 + 4 profile）\n+- `repo:decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（独立 compose project；mj-agent down 不影响 mj-system）\n+- `repo:decisions/ADR-026_Multi_Environment_Compose_Profile.md`（4-file profile 分层；teardown 必须与 up 用相同 -f 链）\n+- `repo:docker/compose.yaml` / `.override.yml` / `.test.yml` / `.prod.yml`\n+- `repo:sdd/workflows/execution-loop.md` §7（Stage 17 post-merge cleanup）+ `repo:policies/ai-agent.md` §4（破坏性操作必触 HITL）；原 HITL_Prompt §3.1 / §4.15，M6 PR4 archived → kernel\n \n ## Anti-patterns\n \n@@ -157,5 +167,5 @@\n 按执行的 Level 输出：\n \n - **Level 1**：\"服务已停。volumes 保留 → `docker compose -f ... -f ... up -d` 秒起。\"\n-- **Level 2**：\"服务停 + volumes 清。下次 up 触发 postgres-init 重建 role + DB；checkpointer 历史已不可恢复。重新搭建：`/mj-agent-infra-env-setup` → `/mj-agent-infra-docker-compose` up。\"\n-- **Level 3**：\"环境彻底重置。下次 up 需 `--build`（dev profile）；Harbor 镜像（test/prod）需 `docker login` + pull。重新搭建：`/mj-agent-infra-env-setup` → `/mj-agent-infra-docker-compose` up --build。\"\n+- **Level 2**：\"服务停 + volumes 清。下次 up 触发 postgres-init 重建 role + DB；checkpointer 历史已不可恢复。重新搭建：`mj-agent-infra-env-setup` → `mj-agent-infra-docker-compose` up。\"\n+- **Level 3**：\"环境彻底重置。下次 up 需 `--build`（dev profile）；Harbor 镜像（test/prod）需 `docker login` + pull。重新搭建：`mj-agent-infra-env-setup` → `mj-agent-infra-docker-compose` up --build。\"\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-env-teardown/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "ba8d0e15bfb6620c0ed47e0f8eb241c0151da95d0a39139708d19f575f433ca5",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-llm-endpoint-probe",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+        "name": "mj-agent-infra-llm-endpoint-probe",
+        "description_hash": "sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff",
+        "body_content_hash": "sha256:5e53851599a3e3dc623028e3d02be2c1a72272562c24e28a2ad2be5898d09531",
+        "frozen_at": "2026-07-13 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## LLM Endpoint Probe Report",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff",
+        "body_content_hash": "sha256:5e53851599a3e3dc623028e3d02be2c1a72272562c24e28a2ad2be5898d09531"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+        "name": "mj-agent-infra-llm-endpoint-probe",
+        "description_hash": "sha256:bd4a60e9b2b0a53fc23646645b79d74ba3a9993726c32ac70644b7c178e993ed",
+        "body_content_hash": "sha256:a8101c179ffa9e51c14a34445e7d3f1d2998de74f8fea37f90266978beea61a4",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## LLM Endpoint Probe Report",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill performs a 4-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-027 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) 1-token chat completion smoke, (4) tool-calling smoke — minimal tools array via default auto tool choice plus one named tool_choice discriminating retry, asserting finish_reason=tool_calls + parseable function arguments (mj-agent binds ALL_TOOLS into create_agent, so tool-calling is a hard dependency). Reports endpoint reachability + model-list match + chat smoke result + tool-calling capability verdict + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / missing tool parser flags / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says \"DGX endpoint check\", \"vLLM healthcheck\", \"SGLang healthcheck\", \"Ollama healthcheck\", \"local LLM probe\", \"/v1/models 探针\", \"DGX vLLM 是否可达\", \"LLM_BASE_URL 验证\", \"local-openai-compat 探活\", \"endpoint reachable\", \"LLM probe DGX\", \"DGX vLLM endpoint test\", \"本地 LLM 探针\", or \"LLM provider 切换后探活\" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is probed implicitly by ChatOpenAI lazy init + `mj-agent check`; no /v1/models probe needed because ARK_API_KEY validation is sufficient); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use /mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).",
+        "new_text": "适用于 mj-agent 的local-openai-compat兼容探针。输入：provider/模型配置状态、已授权endpoint、脱敏脚本。流程：precheck→models/reachability→model id→1token chat→tool calling→verdict。输出：4步输出与toolcalling结论各有真实证据。Use when：已切local-openai-compat，核验4步兼容性。Do not use for：重启DGX vLLM容器修tool parser；越本技能，交服务Owner，不SSH部署。授权：live明确授权；无秘密组curl；部署/SSH不承接；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff",
+        "new_hash": "sha256:bd4a60e9b2b0a53fc23646645b79d74ba3a9993726c32ac70644b7c178e993ed"
+      },
+      "body_change": {
+        "old_hash": "sha256:5e53851599a3e3dc623028e3d02be2c1a72272562c24e28a2ad2be5898d09531",
+        "new_hash": "sha256:a8101c179ffa9e51c14a34445e7d3f1d2998de74f8fea37f90266978beea61a4",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## LLM Endpoint Probe Report",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Workflow",
+          "## LLM Endpoint Probe Report",
+          "## §Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md\n+++ .agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md\n@@ -1,5 +1,16 @@\n+\n \n # mj-agent Infra — LLM Endpoint Probe\n+\n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill performs a 4-step healthcheck against an OpenAI-compatible local LLM endpoint hosted on DGX-Spark (192.168.0.189) — for the mj-agent local-openai-compat provider path (ADR-027 / PR-2 of multi-env+DGX+MCP bundle). It probes (1) LLM_BASE_URL env present + non-empty, (2) GET /v1/models returns ≥1 model with id matching LLM_MODEL_ID (or Ollama /api/tags fallback), (3) 1-token chat completion smoke, (4) tool-calling smoke — minimal tools array via default auto tool choice plus one named tool_choice discriminating retry, asserting finish_reason=tool_calls + parseable function arguments (mj-agent binds ALL_TOOLS into create_agent, so tool-calling is a hard dependency). Reports endpoint reachability + model-list match + chat smoke result + tool-calling capability verdict + actionable troubleshooting (DNS / firewall / wrong base URL / missing model / missing tool parser flags / Ollama vs vLLM endpoint shape difference). Make sure to use this skill whenever the user says \"DGX endpoint check\", \"vLLM healthcheck\", \"SGLang healthcheck\", \"Ollama healthcheck\", \"local LLM probe\", \"/v1/models 探针\", \"DGX vLLM 是否可达\", \"LLM_BASE_URL 验证\", \"local-openai-compat 探活\", \"endpoint reachable\", \"LLM probe DGX\", \"DGX vLLM endpoint test\", \"本地 LLM 探针\", or \"LLM provider 切换后探活\" in the mj-agent context. Do not use for: Ark endpoint healthcheck (Ark is outside this local-openai-compat probe; default mj-agent check does not establish a live LLM round-trip); Studio probe + 5-walkthrough matrix (use mj-agent-infra-studio-probe); biz pg connectivity check (use mj-agent-infra-storage-stack troubleshooting or `mj-agent check`); Docker compose lifecycle (use mj-agent-infra-docker-compose); env / secret 配置 (use mj-agent-infra-env-setup); modifying LLM provider code in src/mj_agent/llm.py (that is C-flavor infra change; use mj-agent-flow-implement); deploying or operating the LLM serving container itself (out of mj-agent governance — LLM serving deployment 责任另议).\n+\n \n ## Overview\n \n@@ -16,25 +27,25 @@\n - `.env` 中 `LLM_PROVIDER` 从 `ark` 切到 `local-openai-compat` 时（首次切换必须探活）\n - DGX vLLM 容器重启后 / 新镜像部署后\n - mj-agent runtime 报 `OpenAIError: Connection refused` / `model not found` / `extra_body unsupported`\n-- `/mj-agent-infra-studio-probe` 失败且根因可能是 LLM endpoint\n+- `mj-agent-infra-studio-probe` 失败且根因可能是 LLM endpoint\n \n **MAY skip when**：\n-- `LLM_PROVIDER=ark`（Ark 通过 ChatOpenAI lazy init 自动报错；`mj-agent check` 已覆盖）\n+- `LLM_PROVIDER=ark`（Ark 通过 ChatOpenAI lazy init 自动报错；默认 `mj-agent check` 只覆盖其声明的检查，不能证明 LLM live 成功；本技能不覆盖）\n - LLM endpoint 已用 `mj-agent check` 通过且最近未改动\n \n **MUST NOT use for**：\n - ❌ Ark endpoint 探活（Ark 只需 `mj-agent check` 验证 `ARK_API_KEY`；无 `/v1/models` 端点契约）\n-- ❌ Studio + R1/R2 数据边界测试 → `/mj-agent-infra-studio-probe`\n-- ❌ biz pg 连通 → `/mj-agent-infra-storage-stack` 或 `mj-agent check`\n-- ❌ docker compose 启停 → `/mj-agent-infra-docker-compose`\n-- ❌ 修改 `src/mj_agent/llm.py` factory 逻辑 → `/mj-agent-flow-implement`\n+- ❌ Studio + R1/R2 数据边界测试 → `mj-agent-infra-studio-probe`\n+- ❌ biz pg 连通 → `mj-agent-infra-storage-stack` 或 `mj-agent check`\n+- ❌ docker compose 启停 → `mj-agent-infra-docker-compose`\n+- ❌ 修改 `src/mj_agent/llm.py` factory 逻辑 → `mj-agent-flow-implement`\n - ❌ 部署 / 运维 LLM serving 容器（out-of-scope；mj-agent 仅消费侧）\n \n ## Workflow\n \n ### 执行：脱敏脚本探针（Step 0-3b 一次跑全）\n \n-任一执行者（Claude Bash tool / Codex / user 终端）统一调用：\n+任一执行者（Codex shell 执行工具 / Codex / user 终端）统一调用：\n \n ```powershell\n powershell.exe -NoProfile -File scripts/probe_llm_endpoint.ps1\n@@ -47,8 +58,8 @@\n \n ### Step 0: Pre-check（脚本 STEP0 行）\n \n-- `STEP0 NOT-APPLICABLE` → `LLM_PROVIDER=ark`，无需 endpoint 探活（`mj-agent check` 已覆盖）\n-- `STEP0 FAIL LLM_BASE_URL/LLM_MODEL_ID EMPTY/MISSING` → STOP；先 `/mj-agent-infra-env-setup` 或手填 `.env` 后重跑\n+- `STEP0 NOT-APPLICABLE` → `LLM_PROVIDER=ark`，无需 endpoint 探活（默认 `mj-agent check` 只覆盖其声明的检查，不能证明 LLM live 成功；本技能不覆盖）\n+- `STEP0 FAIL LLM_BASE_URL/LLM_MODEL_ID EMPTY/MISSING` → STOP；先 `mj-agent-infra-env-setup` 或手填 `.env` 后重跑\n \n ### Step 1: Endpoint Reachability + /v1/models（脚本 STEP1 行）\n \n@@ -138,8 +149,8 @@\n - (or) ❌ FAIL at Step <n> — see Troubleshooting\n \n ### Next\n-- → /mj-agent-infra-studio-probe (verify graph behavior end-to-end)\n-- → mj-agent serve (Chainlit UI on host:8001)\n+- → mj-agent-infra-studio-probe (verify graph behavior end-to-end)\n+- → mj-agent serve (Chainlit UI on host:<实际端口>)\n ```\n \n ## §Troubleshooting\n@@ -159,11 +170,11 @@\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不替代 /mj-agent-infra-env-setup（env / secret 配置）\n-- ❌ 不替代 /mj-agent-infra-studio-probe（graph 行为 + R1/R2 数据边界）\n+- ❌ 不替代 mj-agent-infra-env-setup（env / secret 配置）\n+- ❌ 不替代 mj-agent-infra-studio-probe（graph 行为 + R1/R2 数据边界）\n - ❌ 不替代 mj-agent check（biz DB + memory DB + provider creds 完整 healthcheck）\n - ❌ 不修改 `.env` LLM_PROVIDER / LLM_BASE_URL（仅 read-only 探针）\n-- ❌ 不修改 `src/mj_agent/llm.py` factory（C 风味 infra；用 /mj-agent-flow-implement Step 3c）\n+- ❌ 不修改 `src/mj_agent/llm.py` factory（C 风味 infra；用 mj-agent-flow-implement Step 3c）\n - ❌ 不操作 LLM serving 容器（out-of-scope；deployment 责任另议）\n - ❌ 不在 ark provider 模式下生效（Ark 无 /v1/models 端点契约；用 mj-agent check 替代）\n \n@@ -171,22 +182,21 @@\n \n | Tool | 用途 |\n |---|---|\n-| Bash `powershell.exe -NoProfile -File scripts/probe_llm_endpoint.ps1` | Step 0-3b 全量探针（脚本内部读 `.env` + 组装请求；对外只回脱敏诊断） |\n-| Bash `powershell.exe -NoProfile -Command 'Test-NetConnection ...'` | Step 1 FAIL 后的端口连通性排障 |\n+| shell `powershell.exe -NoProfile -File scripts/probe_llm_endpoint.ps1` | Step 0-3b 全量探针（脚本内部读 `.env` + 组装请求；对外只回脱敏诊断） |\n+| shell `powershell.exe -NoProfile -Command 'Test-NetConnection ...'` | Step 1 FAIL 后的端口连通性排障 |\n \n ## Reference Files\n \n-- [[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]（PR-Γ 落地；LLM provider 抽象决策）\n-- [[../../../src/mj_agent/llm.py|src/mj_agent/llm.py]]（make_llm() factory；ark vs local-openai-compat 分支）\n-- [[../../../src/mj_agent/config.py|src/mj_agent/config.py]]（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）\n-- [[../../../src/mj_agent/tools/__init__.py|src/mj_agent/tools/__init__.py]]（ALL_TOOLS 清单；Step 3b tool-calling 硬依赖的事实源）\n-- [[../../../src/mj_agent/server/cli.py|cli.py]]（mj-agent check provider-aware；与本 skill 互补）\n-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（端到端 5 项验证；LLM 是 H1/H2/H3 happy path 前置条件）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]]（Stage 10 Local Verification；原 HITL_Prompt §4.10，M6 PR4 archived → kernel）\n+- `repo:decisions/ADR-027_LLM_Provider_Abstraction.md`（PR-Γ 落地；LLM provider 抽象决策）\n+- `repo:src/mj_agent/llm.py`（make_llm() factory；ark vs local-openai-compat 分支）\n+- `repo:src/mj_agent/config.py`（llm_provider / llm_base_url / llm_api_key + effective_llm_* cached_property）\n+- `repo:src/mj_agent/tools/__init__.py`（ALL_TOOLS 清单；Step 3b tool-calling 硬依赖的事实源）\n+- `repo:src/mj_agent/server/cli.py`（mj-agent check provider-aware；与本 skill 互补）\n+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7（端到端 5 项验证；LLM 是 H1/H2/H3 happy path 前置条件）\n+- `repo:sdd/workflows/execution-loop.md`（Stage 10 Local Verification；原 HITL_Prompt §4.10，M6 PR4 archived → kernel）\n - vLLM docs: https://docs.vllm.ai/en/latest/serving/openai_compatible_server.html\n - vLLM tool calling: https://docs.vllm.ai/en/stable/features/tool_calling.html\n - Ollama OpenAI compat: https://github.com/ollama/ollama/blob/main/docs/openai.md\n-- mj-system upstream `.claude/skills/mj-sys-ops-env-setup`（间接派生源；mj-agent 简化为单一 endpoint 探针，不含 mj-system 多 SSH 编排）\n \n ## Anti-patterns\n \n@@ -203,10 +213,10 @@\n ```\n LLM endpoint probe 完成\n 下一步：\n-- 全 pass → /mj-agent-infra-studio-probe (graph 行为 + R1/R2)\n+- 全 pass → mj-agent-infra-studio-probe (graph 行为 + R1/R2)\n - Step 1 fail → SSH DGX 排查 vLLM 容器 / 网络\n - Step 2 fail → 改 .env LLM_MODEL_ID 或对齐 vLLM --model\n - Step 3 fail → 检查 src/mj_agent/llm.py local 分支不带 extra_body\n - Step 3b warning → serving 侧加 tool parser flag（vLLM --enable-auto-tool-choice --tool-call-parser）或换模型（dgx-mlops HITL-MODEL）\n-- 准备 dev → mj-agent serve (Chainlit on host:8001)\n-```\n+- 准备 dev → mj-agent serve (Chainlit on host:<实际端口>)\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "0600a50891e107acb180683a83228689c8cbc52430b75e5d28717ca4214a281d",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-storage-stack",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-storage-stack/SKILL.md",
+        "name": "mj-agent-infra-storage-stack",
+        "description_hash": "sha256:d1a7c9bc66b5a1369f94d0d43ce3ab8acd1c86aa3a5e269bd9034035abff97d1",
+        "body_content_hash": "sha256:b4e4ec4dce74f04c011d3e1accd5d838e59ca7d6f9fba7da9d05431b45b63572",
+        "frozen_at": "2026-06-08 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Architecture（per ADR-008 + storage-stack PR）",
+          "## Workflow",
+          "## Postgres Init Inspection",
+          "## Schema Inspection（langgraph AsyncPostgresSaver tables）",
+          "## Backup / Restore（dev 调试 / PR 验证）",
+          "## Redis Status / Wiring Guidance",
+          "## Storage-specific Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:d1a7c9bc66b5a1369f94d0d43ce3ab8acd1c86aa3a5e269bd9034035abff97d1",
+        "body_content_hash": "sha256:b4e4ec4dce74f04c011d3e1accd5d838e59ca7d6f9fba7da9d05431b45b63572"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-storage-stack/SKILL.md",
+        "name": "mj-agent-infra-storage-stack",
+        "description_hash": "sha256:bf2b3ec55ed335baa2b26f098bc272f45aa3907b12c7efe81ab2004ccda56562",
+        "body_content_hash": "sha256:5f0939fd0f32863aea912614cd0d78aa84bfdc316ea4bb997a0a2f8a95b312b6",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Architecture（per ADR-008 + storage-stack PR）",
+          "## Workflow",
+          "## Postgres Init Inspection",
+          "## Schema Inspection（langgraph AsyncPostgresSaver tables）",
+          "## Backup / Restore（dev 调试 / PR 验证）",
+          "## Redis Status / Wiring Guidance",
+          "## Storage-specific Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill walks through mj-agent owned storage stack (mj-agent-postgres + mj-agent-redis containers; per ADR-008 standalone) — postgres init bootstrap (`docker/postgres-init/01-bootstrap-mj-agent-memory.sh` auto-creates mj_agent_memory database for langgraph AsyncPostgresSaver), schema inspection, redis client status (no Python client wired yet — reserved for session cache / streaming buffer / rate limit), backup/restore guidance, and storage-only troubleshooting (separate from compose lifecycle). Make sure to use this skill whenever the user says \"mj-agent-postgres\", \"mj-agent-redis\", \"memory checkpointer\", \"AsyncPostgresSaver\", \"langgraph memory\", \"mj_agent_memory database\", \"postgres init\", \"01-bootstrap-mj-agent-memory.sh\", \"storage stack\", \"storage 备份\", \"checkpointer schema\", \"redis future use\", \"session cache wiring\" in the mj-agent context. Do not use for: full compose lifecycle (use mj-agent-infra-docker-compose); env / secret setup (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); modifying mj-agent-postgres init script structure (A flavor pure code; use /mj-agent-flow-implement); or accessing mj-system biz pg (out of scope — mj-agent is consumer-only per ADR-009).",
+        "new_text": "适用于 mj-agent 的自有memory/redis结构与维护指导。输入：dev目标、源码/版本、授权memory接口、备份状态。流程：选init/schema/backup/redis/trouble→证据→方案→返回。输出：结构解释有依据；未执行backup/restore明确缺依赖。Use when：解释memory表并准备dev备份恢复方案。Do not use for：直接查biz_ods或恢复prod数据库；拒绝越数据/生产边界，不用memory服务代查。授权：禁直接DB客户端；biz链路独立；restore/migration硬停；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:d1a7c9bc66b5a1369f94d0d43ce3ab8acd1c86aa3a5e269bd9034035abff97d1",
+        "new_hash": "sha256:bf2b3ec55ed335baa2b26f098bc272f45aa3907b12c7efe81ab2004ccda56562"
+      },
+      "body_change": {
+        "old_hash": "sha256:b4e4ec4dce74f04c011d3e1accd5d838e59ca7d6f9fba7da9d05431b45b63572",
+        "new_hash": "sha256:5f0939fd0f32863aea912614cd0d78aa84bfdc316ea4bb997a0a2f8a95b312b6",
+        "old_heads": [
+          "## Overview",
+          "## When to Use",
+          "## Architecture（per ADR-008 + storage-stack PR）",
+          "## Workflow",
+          "## Postgres Init Inspection",
+          "## Schema Inspection（langgraph AsyncPostgresSaver tables）",
+          "## Backup / Restore（dev 调试 / PR 验证）",
+          "## Redis Status / Wiring Guidance",
+          "## Storage-specific Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## When to Use",
+          "## Architecture（per ADR-008 + storage-stack PR）",
+          "## Workflow",
+          "## Postgres Init Inspection",
+          "## Schema Inspection（langgraph AsyncPostgresSaver tables）",
+          "## Backup / Restore（dev 调试 / PR 验证）",
+          "## Redis Status / Wiring Guidance",
+          "## Storage-specific Troubleshooting",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-storage-stack/SKILL.md\n+++ .agents/skills/mj-agent-infra-storage-stack/SKILL.md\n@@ -1,5 +1,16 @@\n+\n \n # mj-agent Infra — Storage Stack\n+\n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill walks through mj-agent owned storage stack (mj-agent-postgres + mj-agent-redis containers; per ADR-008 standalone) — postgres init bootstrap (`docker/postgres-init/01-bootstrap-mj-agent-memory.sh` auto-creates mj_agent_memory database for langgraph AsyncPostgresSaver), schema inspection, redis client status (no Python client wired yet — reserved for session cache / streaming buffer / rate limit), backup/restore guidance, and storage-only troubleshooting (separate from compose lifecycle). Make sure to use this skill whenever the user says \"mj-agent-postgres\", \"mj-agent-redis\", \"memory checkpointer\", \"AsyncPostgresSaver\", \"langgraph memory\", \"mj_agent_memory database\", \"postgres init\", \"01-bootstrap-mj-agent-memory.sh\", \"storage stack\", \"storage 备份\", \"checkpointer schema\", \"redis future use\", \"session cache wiring\" in the mj-agent context. Do not use for: full compose lifecycle (use mj-agent-infra-docker-compose); env / secret setup (use mj-agent-infra-env-setup); Studio probe (use mj-agent-infra-studio-probe); modifying mj-agent-postgres init script structure (A flavor pure code; use mj-agent-flow-implement); or accessing mj-system biz pg (out of scope — mj-agent is consumer-only per ADR-009).\n+\n \n ## Overview\n \n@@ -8,7 +19,7 @@\n - **mj-agent-postgres** — langgraph `AsyncPostgresSaver` 后端 store（memory checkpointer）\n - **mj-agent-redis** — reserved（未 wire Python client；候选用途：session cache / streaming buffer / rate limit）\n \n-**Stage 8 sub C-flavor** of the 17-stage 执行闭环；与 `/mj-agent-infra-docker-compose`（lifecycle）+ `/mj-agent-infra-env-setup`（creds）+ `/mj-agent-infra-studio-probe`（runtime）互补。\n+**Stage 8 sub C-flavor** of the 17-stage 执行闭环；与 `mj-agent-infra-docker-compose`（lifecycle）+ `mj-agent-infra-env-setup`（creds）+ `mj-agent-infra-studio-probe`（runtime）互补。\n \n **Why this skill exists**：\n \n@@ -27,14 +38,14 @@\n - 用户问 \"AsyncPostgresSaver 数据 schema 长什么样\"\n \n **MAY skip when**：\n-- 仅 lifecycle（up / down / ps / logs）→ /mj-agent-infra-docker-compose\n-- 仅 env / creds → /mj-agent-infra-env-setup\n-- 仅 Studio probe → /mj-agent-infra-studio-probe\n+- 仅 lifecycle（up / down / ps / logs）→ mj-agent-infra-docker-compose\n+- 仅 env / creds → mj-agent-infra-env-setup\n+- 仅 Studio probe → mj-agent-infra-studio-probe\n \n **MUST NOT use for**：\n-- ❌ 修改 `01-bootstrap-mj-agent-memory.sh` 结构 / Dockerfile / compose.yaml（C 风味；/mj-agent-flow-implement Step 3c）\n+- ❌ 修改 `01-bootstrap-mj-agent-memory.sh` 结构 / Dockerfile / compose.yaml（C 风味；mj-agent-flow-implement Step 3c）\n - ❌ 操作 mj-system biz pg（ADR-006 / ADR-009 红线；mj-agent 仅 consumer）\n-- ❌ Wire 新 Redis Python client（A 风味纯代码；/mj-agent-flow-implement Step 3a；本 skill 仅说明 wiring 缺口 + 候选方案）\n+- ❌ Wire 新 Redis Python client（A 风味纯代码；mj-agent-flow-implement Step 3a；本 skill 仅说明 wiring 缺口 + 候选方案）\n \n ## Architecture（per ADR-008 + storage-stack PR）\n \n@@ -106,87 +117,34 @@\n \n ### 验证 init 成功\n \n-```bash\n-# 1. 容器启动后 logs 含 init 完成\n-docker compose -f docker/compose.yaml logs mj-agent-postgres | grep -E \"01-bootstrap|database system is ready\"\n-\n-# 2. 数据库存在\n-docker exec mj-agent-postgres psql -U postgres -c \"\\l\" | grep mj_agent_memory\n-\n-# 3. RW user 存在\n-docker exec mj-agent-postgres psql -U postgres -c \"\\du\" | grep <MJ_AGENT_MEMORY_USER>\n-\n-# 4. 用 RW user 连\n-docker exec mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> -d mj_agent_memory -c \"\\dt\"\n-```\n+先审阅 init 脚本结构及经脱敏的容器状态。禁止直接 psql 或从应用变量构造连接。\n+已确认项目 memory MCP 可用且用途获授权时，先发现其真实工具/schema，再只读确认数据库、角色和表；\n+本候选没有真实服务验证，缺工具时记 `UNMET_DEPENDENCY: memory inspection`，不假造调用名或结果。\n+业务库不能通过该服务访问。\n \n ### Init failure 处理\n \n | 症状 | 原因 | 修复 |\n |---|---|---|\n-| `permission denied: ./01-bootstrap-mj-agent-memory.sh` | Linux 上 init 脚本无 exec 权限 | `chmod +x docker/postgres-init/*.sh` |\n+| `permission denied: ./01-bootstrap-mj-agent-memory.sh` | Linux 上 init 脚本无 exec 权限 | 提出具名文件权限差异，交 implement 审阅；本技能不修改 init 脚本 |\n | `database \"mj_agent_memory\" does not exist` | init 没跑 / volume 残留旧状态 | `docker compose down -v`（**HITL-confirm**！丢数据）+ 重 up |\n-| `password authentication failed for user <MJ_AGENT_MEMORY_USER>` | .env 中 `MJ_AGENT_MEMORY_PASSWORD` 与容器内 user 密码不一致；通常因 vol 残留旧密码 | `docker compose down -v`（**HITL**）+ 改 .env + 重 up |\n-| `01-bootstrap-mj-agent-memory.sh` 报 syntax error | 编辑脚本时换行符 CRLF / Linux 不识 | `dos2unix docker/postgres-init/*.sh`（或用 git config core.autocrlf input） |\n-\n-> init 脚本只在**首次启动**（volume 空）跑；vol 已存在时跳过 → 改 init 脚本后必须 `down -v` 重建 vol（HITL-confirm；丢数据）。\n+| `password authentication failed for user <MJ_AGENT_MEMORY_USER>` | .env 中 `MJ_AGENT_MEMORY_PASSWORD` 与容器内 user 密码不一致；通常因 vol 残留旧密码 | `docker compose down -v`（**HITL**）+ 由 Owner 核对凭据状态 + 重 up |\n+| `01-bootstrap-mj-agent-memory.sh` 报 syntax error | 编辑脚本时换行符 CRLF / Linux 不识 | 提出换行符差异并交 implement 审阅，不在本技能改脚本或 Git 配置 |\n+\n+> init 脚本只在**首次启动**（volume 空）跑；vol 已存在时跳过 → 改 init 脚本后先评估 migration/备份方案；不得自动用删卷重建代替恢复。\n \n ## Schema Inspection（langgraph AsyncPostgresSaver tables）\n \n-```bash\n-docker exec mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> -d mj_agent_memory -c \"\\dt\"\n-```\n-\n-期望表（langgraph `AsyncPostgresSaver` v1.x 标准 schema）：\n-\n-| Table | 用途 |\n-|---|---|\n-| `checkpoints` | agent 对话 state snapshot；按 thread_id / checkpoint_id |\n-| `checkpoint_writes` | step writes（每个 LangGraph node 输出） |\n-| `checkpoint_blobs` | 大对象 blob（如适用 v1.1.8+）|\n-\n-> **schema 演进归 langgraph 项目**：mj-agent **不**自己定义 schema；升级 langgraph 版本（pyproject.toml）时 schema 可能变化（首次连接自动 `CREATE TABLE`）。\n-\n-### 查 thread 状态\n-\n-```bash\n-docker exec mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> -d mj_agent_memory -c \"\n-SELECT thread_id, COUNT(*) AS checkpoint_count, MAX(created_at) AS last_checkpoint\n-FROM checkpoints\n-GROUP BY thread_id\n-ORDER BY last_checkpoint DESC\n-LIMIT 10;\n-\"\n-```\n+通过已发现、已授权的项目 memory 接口核对实际 schema，预期概念为 checkpoints、checkpoint_writes、checkpoint_blobs；版本不同先核对 `repo:src/mj_agent/memory/checkpointer.py` 与锁定依赖。\n+查 thread 聚合前确认列名、时间列和输出范围；不假设 `created_at` 存在，不打印会话正文或业务派生结果。缺等价只读工具时返回未满足依赖，禁止转 shell/DB 客户端。\n \n ## Backup / Restore（dev 调试 / PR 验证）\n \n-### Backup（mj-agent-postgres → host）\n-\n-```bash\n-# 全 dump\n-docker exec mj-agent-postgres pg_dump -U <MJ_AGENT_MEMORY_USER> mj_agent_memory > mj-agent-memory-backup-$(date +%Y%m%d).sql\n-\n-# Or 仅特定 thread\n-docker exec mj-agent-postgres pg_dump -U <MJ_AGENT_MEMORY_USER> mj_agent_memory \\\n-  --table=checkpoints --table=checkpoint_writes \\\n-  --where=\"thread_id='<id>'\" \\\n-  > thread-<id>.sql\n-```\n-\n-### Restore（host → mj-agent-postgres）\n-\n-```bash\n-# 1. clear 现有 schema（**HITL**：丢现有 checkpointer 数据）\n-docker exec -i mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> mj_agent_memory \\\n-  -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\"\n-\n-# 2. restore\n-cat mj-agent-memory-backup-XXXXXXXX.sql | \\\n-  docker exec -i mj-agent-postgres psql -U <MJ_AGENT_MEMORY_USER> mj_agent_memory\n-```\n-\n-> **不**用于 prod；仅 dev profile / PR 验证 / debug。Prod backup 走 mj-agent-postgres-data volume snapshot（基础设施层）。\n+保留能力目标：备份 mj-agent 自有 memory，恢复前核对数据库/环境/备份身份并防止丢失现有 checkpointer 数据。\n+Agent 不执行 pg_dump/psql/pg_restore，不获取数据库凭据；当前 8 项 MCP 未验证等价备份恢复能力，登记 `UNMET_DEPENDENCY: backup/restore execution`。\n+交 Owner 基础设施流程处理：确认 dev 目标、备份时间与完整性、恢复演练记录、数据损失范围和回退来源，再由 Owner 决策执行。\n+不能把源码恢复当作数据恢复；不承诺按 thread 的 pg_dump 过滤选项或未经实测的 SQL 列。生产只交基础设施 snapshot 流程，不由本技能执行。\n+返回备份/恢复计划、已收到的脱敏证据与未执行状态。部分恢复失败时保留现场，对账后再由 Owner 处理，不能自动 DROP/重灌/重复恢复。\n \n ## Redis Status / Wiring Guidance\n \n@@ -199,7 +157,7 @@\n \n ### 候选用途（待 Phase 1+ 决议）\n \n-per CLAUDE.md \"Storage\" 段：\n+per `repo:docker/compose.yaml` 与 `repo:src/mj_agent/memory/checkpointer.py`：\n \n 1. **session cache** — Chainlit / Studio 多会话状态\n 2. **streaming buffer** — LangGraph astream / async generator 中间结果\n@@ -211,27 +169,27 @@\n - **触发 2（streaming buffer）**：长 reply 频繁断流 / 重连需求\n - **触发 3（rate limit）**：Ark API 限流告警出现\n \n-任一触发 → 开 issue / PR 设计 → /mj-agent-flow-implement Step 3a wire 客户端 + 配置加 .env 字段（`MJ_AGENT_REDIS_HOST/PORT/PASSWORD`，已在 .env.example 占位）+ src/mj_agent/integrations/ 加 redis client。\n-\n-> **Profile 注解（ADR-026 + ADR-027）**：mj-agent-postgres + mj-agent-redis 在所有 4 profile (dev/test/prod) 下都是 mj-agent-owned；本 skill 操作与 profile **无关**（不需要按 profile 切 -f 链）— 仅 docker-compose lifecycle 命令需要按 profile 选 -f 链（详见 /mj-agent-infra-docker-compose）。DGX 不部署 mj-agent，故无 DGX-specific storage 操作。\n+任一触发 → 开 issue / PR 设计 → mj-agent-flow-implement Step 3a wire 客户端 + 配置加 .env 字段（`MJ_AGENT_REDIS_HOST/PORT/PASSWORD`，已在 .env.example 占位）+ src/mj_agent/integrations/ 加 redis client。\n+\n+> **Profile 注解（ADR-026 + ADR-027）**：mj-agent-postgres + mj-agent-redis 在所有 4 profile (dev/test/prod) 下都是 mj-agent-owned；每次操作都必须确认实际 profile、资源所有者和 -f 链— 仅 docker-compose lifecycle 命令需要按 profile 选 -f 链（详见 mj-agent-infra-docker-compose）。DGX 不部署 mj-agent，故无 DGX-specific storage 操作。\n \n ## Storage-specific Troubleshooting\n \n | 症状 | 修复 |\n |---|---|\n | Studio 报 `langgraph: aget_tuple not implemented` | 检查 checkpointer 类型：必须是 `AsyncPostgresSaver`，**不**是 `PostgresSaver`（同步版无 aget_tuple，Chainlit 异步驱动会失败）。详见 src/mj_agent/memory/checkpointer.py + bugfix/async-checkpointer commit |\n-| `mj-agent: connection refused on mj-agent-postgres:5432` | mj-agent-postgres 没起 / 没 healthy → /mj-agent-infra-docker-compose ps 检查 |\n+| `mj-agent: connection refused on mj-agent-postgres:5432` | mj-agent-postgres 没起 / 没 healthy → mj-agent-infra-docker-compose ps 检查 |\n | `psycopg.OperationalError: SSL connection has been closed` | mj-agent-postgres OOM / 重启 → docker logs 看 / 增 host memory |\n-| volume 数据 corrupt | `down -v` + 重 up（**HITL**：丢数据）；推荐用 `/mj-agent-infra-env-teardown` Level 2 走 H3 hard-confirm；prod 场景走 vol snapshot 还原 |\n-| DGX-mode session 报 connection refused 但 mj-agent-postgres 健康 | DGX 不部署 mj-agent；用户实际跑的是 dev/test/prod profile + LLM_BASE_URL 指向 DGX vLLM。storage 与 DGX 无关；此处 connection refused 是 mj-system biz pg 路径问题（per ADR-027 §D.2）→ /mj-agent-infra-llm-endpoint-probe 检查 LLM endpoint，或 /mj-agent-infra-docker-compose ps 检查 mj-system biz pg |\n+| volume 数据 corrupt | `down -v` + 重 up（**HITL**：丢数据）；推荐用 `mj-agent-infra-env-teardown` Level 2 走 H3 hard-confirm；prod 场景走 vol snapshot 还原 |\n+| DGX-mode session 报 connection refused 但 mj-agent-postgres 健康 | DGX 不部署 mj-agent；用户实际跑的是 dev/test/prod profile + LLM_BASE_URL 指向 DGX vLLM。storage 与 DGX 无关；此处 connection refused 是 mj-system biz pg 路径问题（per ADR-027 §D.2）→ mj-agent-infra-llm-endpoint-probe 检查 LLM endpoint，或 mj-agent-infra-docker-compose ps 检查 mj-system biz pg |\n \n ## What This Skill DOES NOT DO\n \n-- ❌ 不替代 /mj-agent-infra-docker-compose（compose lifecycle up/ps/logs/down）\n-- ❌ 不替代 /mj-agent-infra-env-setup（env / secret）\n-- ❌ 不替代 /mj-agent-infra-studio-probe（H1/H2/H3/R1/R2 矩阵）\n-- ❌ 不修改 `01-bootstrap-mj-agent-memory.sh` / Dockerfile / compose.yaml 结构（C 风味 → /mj-agent-flow-implement Step 3c）\n-- ❌ 不 wire Redis Python client（A 风味纯代码 → /mj-agent-flow-implement Step 3a）\n+- ❌ 不替代 mj-agent-infra-docker-compose（compose lifecycle up/ps/logs/down）\n+- ❌ 不替代 mj-agent-infra-env-setup（env / secret）\n+- ❌ 不替代 mj-agent-infra-studio-probe（H1/H2/H3/R1/R2 矩阵）\n+- ❌ 不修改 `01-bootstrap-mj-agent-memory.sh` / Dockerfile / compose.yaml 结构（C 风味 → mj-agent-flow-implement Step 3c）\n+- ❌ 不 wire Redis Python client（A 风味纯代码 → mj-agent-flow-implement Step 3a）\n - ❌ 不操作 mj-system biz pg（ADR-006 / ADR-009 红线）\n - ❌ 不替代 langgraph 项目本身的 checkpointer schema 演进（schema 归 langgraph upstream）\n - ❌ 不自动 `down -v`（HITL-confirm only；丢 checkpointer 数据）\n@@ -240,24 +198,23 @@\n \n | Tool | 用途 |\n |---|---|\n-| Bash `docker exec mj-agent-postgres psql` | Schema inspection / Backup / Restore |\n-| Bash `docker compose logs mj-agent-postgres` | Init / runtime troubleshooting |\n-| Bash `pg_dump` / `pg_restore` (via docker exec) | Backup / Restore |\n-| Read | `01-bootstrap-mj-agent-memory.sh` / `compose.yaml` 结构理解 |\n-| AskUserQuestion | `down -v` Level C HITL-confirm |\n+| 已发现且获授权的项目 memory 只读接口 | Schema inspection；不可用则未满足依赖 |\n+| shell `docker compose logs mj-agent-postgres` | Init / runtime troubleshooting |\n+| Owner 基础设施备份恢复流程 | 只交计划与证据，不由 agent 执行 |\n+| 读取 | `01-bootstrap-mj-agent-memory.sh` / `compose.yaml` 结构理解 |\n+| 向 Owner 询问 | `down -v` Level C HITL-confirm |\n \n ## Reference Files\n \n-- [[../../../docker/compose.yaml|docker/compose.yaml]]（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）\n-- [[../../../docker/postgres-init/01-bootstrap-mj-agent-memory.sh|01-bootstrap-mj-agent-memory.sh]]（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）\n+- `repo:docker/compose.yaml`（mj-agent-postgres + mj-agent-redis 服务定义；mj-agent-storage network）\n+- `repo:docker/postgres-init/01-bootstrap-mj-agent-memory.sh`（postgres 首次启动 hook；自动创建 mj_agent_memory 数据库 + RW user）\n - src/mj_agent/memory/checkpointer.py（langgraph AsyncPostgresSaver 接入；bugfix/async-checkpointer 引入）\n-- [[decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse|ADR-008]]（独立 compose project + 双隔离边界）\n-- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）\n-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 guardrail；mj-agent-postgres 与 biz pg 双隔离）\n-- [[../../../CLAUDE.md|CLAUDE.md]] \"Storage\" 段（mj-agent-postgres + mj-agent-redis 职责说明）\n-- [[../../../CLAUDE.md|CLAUDE.md]] \"Environment variables\" 段（MJ_AGENT_MEMORY_HOST/PORT + MJ_AGENT_REDIS_HOST/PORT/PASSWORD 字段）\n+- `repo:decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md`（独立 compose project + 双隔离边界）\n+- `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（mj-agent 仅 consumer mj-system biz pg；不可跨写 schema）\n+- `repo:decisions/ADR-006_Fail_Safe_Reads.md`（4 层 guardrail；mj-agent-postgres 与 biz pg 双隔离）\n+- `repo:docker/compose.yaml` 与 `repo:src/mj_agent/memory/checkpointer.py`（mj-agent-postgres + mj-agent-redis 职责说明）\n+- `repo:config/README.md`（应用配置）与 `repo:.env.example`（仅公开变量名）（MJ_AGENT_MEMORY_HOST/PORT + MJ_AGENT_REDIS_HOST/PORT/PASSWORD 字段）\n - `.env.example`（MJ_AGENT_MEMORY_* + MJ_AGENT_REDIS_* 字段占位）\n-- mj-system upstream `mj-sys-ops-env-setup/SKILL.md`（间接派生源；mj-agent 简化为 storage 层 inspection + 不实现 ETL pipeline）\n \n ## Anti-patterns\n \n@@ -266,16 +223,16 @@\n - ❌ 不 expose mj-agent-postgres 到 mj-system-backend-network（双隔离硬约束）\n - ❌ 不在 init script 写硬编码密码（用 env var；详见 .env.example）\n - ❌ 不修改 langgraph upstream schema（schema 归 langgraph；mj-agent 不自定义）\n-- ❌ 不替代 langgraph version bump（pyproject.toml 改归 A 风味；通过 /mj-agent-flow-implement + Step 3a A flavor）\n+- ❌ 不替代 langgraph version bump（pyproject.toml 改归 A 风味；通过 mj-agent-flow-implement + Step 3a A flavor）\n \n ## Handoff\n \n ```\n Storage 操作完成。\n 下一步：\n-- compose lifecycle → /mj-agent-infra-docker-compose\n-- Studio probe（验证 mj-agent 服务行为）→ /mj-agent-infra-studio-probe\n-- Redis wiring（如触发条件达标）→ /mj-agent-flow-implement Step 3a A flavor\n-- init script 修改 → /mj-agent-flow-implement Step 3c C flavor\n-- 进入 17-stage 闭环 → /mj-agent-flow-intake\n-```\n+- compose lifecycle → mj-agent-infra-docker-compose\n+- Studio probe（验证 mj-agent 服务行为）→ mj-agent-infra-studio-probe\n+- Redis wiring（如触发条件达标）→ mj-agent-flow-implement Step 3a A flavor\n+- init script 修改 → mj-agent-flow-implement Step 3c C flavor\n+- 进入 17-stage 闭环 → mj-agent-flow-intake\n+```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-storage-stack/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "90081d0fac8e391b2347e6ea5a77b16f6ba62cbb13d1273ef0c32ee67421b99f",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    },
+    {
+      "name": "mj-agent-infra-studio-probe",
+      "status": "DRAFT_NOT_APPLIED",
+      "formal_contract_path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "old_skill_path": ".claude/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "new_skill_path": ".agents/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "candidate_path": ".migration/codex-only/project/.agents/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "recorded_old_entry": {
+        "file": ".claude/skills/mj-agent-infra-studio-probe/SKILL.md",
+        "name": "mj-agent-infra-studio-probe",
+        "description_hash": "sha256:3b01bf7bc5b2c9f7671bbb97cfe6ba0ddf8cb7d9a96a9d27fcd896bfc77e9edd",
+        "body_content_hash": "sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6",
+        "frozen_at": "2026-08-13 00:00:00+00:00",
+        "body_section_heads": [
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Workflow",
+          "## Studio Probe Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "recomputed_old_hashes": {
+        "description_hash": "sha256:3b01bf7bc5b2c9f7671bbb97cfe6ba0ddf8cb7d9a96a9d27fcd896bfc77e9edd",
+        "body_content_hash": "sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6"
+      },
+      "old_hash_match": true,
+      "proposed_entry_without_freeze_date": {
+        "file": ".agents/skills/mj-agent-infra-studio-probe/SKILL.md",
+        "name": "mj-agent-infra-studio-probe",
+        "description_hash": "sha256:810dcc24cf5037855e61309971df9a8826a96d2457b21ebe9302455d50559104",
+        "body_content_hash": "sha256:c801f70334899d34d50230ee7c2c00c709e2061bcb0f9b14b7b1f26cd9f582ff",
+        "body_section_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Workflow",
+          "## Studio Probe Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ]
+      },
+      "description_change": {
+        "old_text": "This skill should be used when the user asks to start LangGraph Studio, run Studio walkthrough, verify mj-agent end-to-end behavior, or check the H1/H2/H3/R1/R2 verification matrix in mj-agent. Make sure to use this skill whenever the user says \"Studio 探针\", \"studio probe\", \"langgraph dev\", \"起 Studio\", \"Studio 验证\", \"H1 H2 H3\", \"R1 R2\", \"verify Studio\", \"agent 闭环验证\", \"试用 mj-agent\", \"biz_dws 查询测试\", \"boundary 验证\", \"ADR-006 测试\", \"data boundary test\" in the mj-agent context. Wraps `uv run langgraph dev` startup + interactive H1/H2/H3 happy-path probes (biz_dws table list / 7-day trend / Top-N institution) + R1/R2 red-line probes (biz_ods refusal / unbounded export). Outputs a Probe Report aligned with the H1/H2/H3/R1/R2 verification matrix in docs/guide/[GUIDE]_Developer_Onboarding.md §7.1. Pre-requirement: env setup done (use mj-agent-infra-env-setup first if not). Do not use for: env setup itself (use mj-agent-infra-env-setup), Docker compose lifecycle (use mj-agent-infra-docker-compose), an orchestrated app-runtime launch / a bare \"起 Studio\" start with no walkthrough intent (use mj-agent-infra-app-start; this skill is the interactive H1/H2/H3/R1/R2 data-boundary walkthrough, not a launcher), or pytest regression runs (use the hardened offline runner).",
+        "new_text": "适用于 mj-agent 的dev Studio H1/H2/H3/R1/R2走查。输入：dev工具链/Studio、endpoint、授权、trace收集范围。流程：endpoint前置→Studio→H1表→H2趋势→H3top→R1拒绝→R2限量→报告。输出：每例轨迹/拒绝/限量有证据，未做项明确。Use when：在dev做五项数据边界walkthrough并留脱敏证据。Do not use for：只启动Studio不做走查；建议app-start，不发起五项请求。授权：biz仅应用工具链；R1异常停；不得放宽runtime；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。",
+        "old_hash": "sha256:3b01bf7bc5b2c9f7671bbb97cfe6ba0ddf8cb7d9a96a9d27fcd896bfc77e9edd",
+        "new_hash": "sha256:810dcc24cf5037855e61309971df9a8826a96d2457b21ebe9302455d50559104"
+      },
+      "body_change": {
+        "old_hash": "sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6",
+        "new_hash": "sha256:c801f70334899d34d50230ee7c2c00c709e2061bcb0f9b14b7b1f26cd9f582ff",
+        "old_heads": [
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Workflow",
+          "## Studio Probe Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "new_heads": [
+          "## 本技能的执行约定",
+          "## 触发与职责详述",
+          "## Overview",
+          "## 前置条件",
+          "## 快速开始（交互模式）",
+          "## Workflow",
+          "## Studio Probe Report",
+          "## What This Skill DOES NOT DO",
+          "## Sub-skill / Tool Calls",
+          "## Reference Files",
+          "## Anti-patterns",
+          "## Handoff"
+        ],
+        "unified_diff": "--- .claude/skills/mj-agent-infra-studio-probe/SKILL.md\n+++ .agents/skills/mj-agent-infra-studio-probe/SKILL.md\n@@ -1,29 +1,41 @@\n+\n \n # mj-agent Infra — LangGraph Studio Probe\n \n+## 本技能的执行约定\n+\n+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。\n+\n+\n+## 触发与职责详述\n+\n+This skill should be used when the user asks to start LangGraph Studio, run Studio walkthrough, verify mj-agent end-to-end behavior, or check the H1/H2/H3/R1/R2 verification matrix in mj-agent. Make sure to use this skill whenever the user says \"Studio 探针\", \"studio probe\", \"langgraph dev\", \"起 Studio\", \"Studio 验证\", \"H1 H2 H3\", \"R1 R2\", \"verify Studio\", \"agent 闭环验证\", \"试用 mj-agent\", \"biz_dws 查询测试\", \"boundary 验证\", \"ADR-006 测试\", \"data boundary test\" in the mj-agent context. Wraps `uv run langgraph dev` startup + interactive H1/H2/H3 happy-path probes (biz_dws table list / 7-day trend / Top-N institution) + R1/R2 red-line probes (biz_ods refusal / unbounded export). Outputs a Probe Report aligned with the H1/H2/H3/R1/R2 verification matrix in docs/guide/[GUIDE]_Developer_Onboarding.md §7.1. Pre-requirement: env setup done (use mj-agent-infra-env-setup first if not). Do not use for: env setup itself (use mj-agent-infra-env-setup), Docker compose lifecycle (use mj-agent-infra-docker-compose), an orchestrated app-runtime launch / a bare \"起 Studio\" start with no walkthrough intent (use mj-agent-infra-app-start; this skill is the interactive H1/H2/H3/R1/R2 data-boundary walkthrough, not a launcher), or pytest regression runs (use the hardened offline runner).\n+\n+\n ## Overview\n \n `uv run langgraph dev` 启 Studio + 跑 5 项 walkthrough 验证矩阵（H1/H2/H3 happy path + R1/R2 数据边界 red line）。**Stage 10 sub** of the 17-stage 执行闭环；典型在 self-review 前用作 LLM 行为对比 / 数据边界回归测试。\n \n **Reference**:\n-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7.1 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）\n-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（R1/R2 数据边界依据）\n-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §6（本地验证段；Studio probe 是 HITL-confirm 后跑的）；原 HITL_Prompt §4.8 Level B，M6 PR4 archived → kernel\n+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7.1 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）\n+- `repo:decisions/ADR-006_Fail_Safe_Reads.md` / `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（R1/R2 数据边界依据）\n+- `repo:sdd/workflows/execution-loop.md` §6（本地验证段；Studio probe 是 HITL-confirm 后跑的）；原 HITL_Prompt §4.8 Level B，M6 PR4 archived → kernel\n \n ## 前置条件\n \n-- `.env` 已配置（用 `/mj-agent-infra-env-setup` 完成）\n+- dev 业务工具链可用，biz pg 仅由应用工具链访问；不通过 agent 直连验证。若只给 test/prod 目标，先停止并确认专门授权，不直接运行 R1/R2。\n+\n+- `.env` 已配置（用 `mj-agent-infra-env-setup` 完成）\n   - 必填：`MJ_CONFIG_PROFILE` / `POSTGRES_*HOST/PORT` / `POSTGRES_ANALYST_USER` / `POSTGRES_ANALYST_PASSWORD` / `ARK_API_KEY` / `LLM_MODEL_ID`\n - `uv sync` 完成\n - `uv run mj-agent check` 通过（DB + LLM creds 健康）\n - 浏览器（Studio 默认在 http://127.0.0.1:2024/studio）\n-- mj-system biz pg 可达（dev profile；DEV/TEST/PROD 任一）\n \n ## 快速开始（交互模式）\n \n | 已知 | 行动 |\n |---|---|\n-| 用户说\"起 Studio\" 但 .env 未配 | 提示先 `/mj-agent-infra-env-setup` |\n+| 用户说\"起 Studio\" 但 .env 未配 | 提示先 `mj-agent-infra-env-setup` |\n | 用户说\"试用 mj-agent\" | 完整 5 步：start → H1 → H2 → H3 → R1 → R2 |\n | 用户说\"只验数据边界\" | 跳到 R1 + R2 |\n | 用户说\"system.md 改了，回归\" | 完整 5 步 + 对比 Developer_Onboarding §7.1 已捕获快照 |\n@@ -33,7 +45,7 @@\n \n ### Step 0 — LLM endpoint pre-check（PR-2 / ADR-027）\n \n-如 `.env` 中 `LLM_PROVIDER=local-openai-compat`（DGX vLLM/SGLang/Ollama 模式）→ **必须先**跑 `/mj-agent-infra-llm-endpoint-probe` 验证 endpoint 可达 + model 加载 + chat smoke。如 endpoint 不通，Studio 起来后 H1/H2/H3 全会 fail，浪费时间。\n+如 `.env` 中 `LLM_PROVIDER=local-openai-compat`（DGX vLLM/SGLang/Ollama 模式）→ **必须先**跑 `mj-agent-infra-llm-endpoint-probe` 验证 endpoint 可达 + model 加载 + chat smoke。如 endpoint 不通，Studio 起来后 H1/H2/H3 全会 fail，浪费时间。\n \n 如 `LLM_PROVIDER=ark`（默认） → 跳过本 step；Ark endpoint 由 ChatOpenAI lazy init + `mj-agent check` 已覆盖。\n \n@@ -62,9 +74,9 @@\n |---|---|---|\n | `LLMConfigError: ARK_API_KEY 缺失` | `.env` 未读到 | 检查 cwd（必须 worktree 根；非 bare repo 根） + `Test-Path .env` |\n | `psycopg.OperationalError: ... no password supplied` | analyst 凭据空 | `scripts\\setup-env.ps1` 重跑 |\n-| `Address already in use` (port 2024) | 之前 Studio 实例未停 | `Get-Process \\| ? Name -like \"*langgraph*\"` → kill；或换端口 |\n-| `ImportError` mj_agent | `uv sync` 未完成 / .venv 损坏 | `Remove-Item -Recurse .venv` + `uv sync` |\n-| `langgraph` 未识别 | uv 没装 / PATH | `uv --version` 验证；缺则参 `/mj-agent-infra-env-setup` Step 1 |\n+| `Address already in use` (port 2024) | 之前 Studio 实例未停 | `Get-Process \\| ? Name -like \"*langgraph*\"` → 核对进程归属并交 Owner 决策（不自动 kill）；或换端口 |\n+| `.venv` 依赖异常 | 保留现状，定位 lock/解释器差异；仅提出具名修复方案，不递归删除环境 |\n+| `langgraph` 未识别 | uv 没装 / PATH | `uv --version` 验证；缺则参 `mj-agent-infra-env-setup` Step 1 |\n \n > **不要** 杀 Studio 进程时 force-kill 还在跑的 query；先在 Studio UI 上 stop 当前 session。\n \n@@ -167,16 +179,16 @@\n - ❌ 任一 fail → 触发 §3.1 必停 HITL；建议 root-cause 分析（system.md / SKILL / SQL guardrail / precheck 哪一层失败）\n \n ### Next Steps\n-- 通过 → /mj-agent-flow-self-review 接续 Stage 11\n-- 失败 → /mj-agent-runtime-{prompt-version-bump,skill-doc-improve}（PR-C2）propose diff 修 in-source canonical\n+- 通过 → mj-agent-flow-self-review 接续 Stage 11\n+- 失败 → mj-agent-runtime-{prompt-version-bump,skill-doc-improve}（PR-C2）propose diff 修 in-source canonical\n ```\n \n ## What This Skill DOES NOT DO\n \n - ❌ 不修改 `src/mj_agent/` 任何文件（read-only probe）\n-- ❌ 不替代 `/mj-agent-infra-env-setup`（env 设置；本 skill 是其下游）\n-- ❌ 不替代 `/mj-agent-flow-verify`（verify 跑命令矩阵；本 skill 是 verify Level B Studio probe 子集）\n-- ❌ 不替代 `/mj-agent-runtime-prompt-version-bump`（B 风味 system.md 改 propose；本 skill 仅验当前 system.md 行为）\n+- ❌ 不替代 `mj-agent-infra-env-setup`（env 设置；本 skill 是其下游）\n+- ❌ 不替代 `mj-agent-flow-verify`（verify 跑命令矩阵；本 skill 是 verify Level B Studio probe 子集）\n+- ❌ 不替代 `mj-agent-runtime-prompt-version-bump`（B 风味 system.md 改 propose；本 skill 仅验当前 system.md 行为）\n - ❌ 不自动 kill Studio 进程（如要换 port 或重启，user 手动处理）\n - ❌ 不绕过 ADR-006 / ADR-009 数据边界（R1/R2 触发 fail 是设计意图，非 skill 缺陷）\n \n@@ -184,18 +196,18 @@\n \n | Tool | 用途 |\n |---|---|\n-| Bash `uv run langgraph dev` | Step 1 启 Studio |\n-| Bash `uv run mj-agent check` | Step 0 prerequisite verify |\n+| shell `uv run langgraph dev` | Step 1 启 Studio |\n+| shell `uv run mj-agent check` | Step 0 prerequisite verify |\n | Browser（user 手动） | Step 2-6 在 Studio UI 上跑 H1/H2/H3/R1/R2 |\n-| Read `docs/guide/[GUIDE]_Developer_Onboarding.md` §7.1 | 验证矩阵参考 |\n-| Bash `python scripts/capture_walkthrough_evidence.py` | 自动捕获 evidence 快照（已存在脚本，可选刷新 walkthrough_evidence.md） |\n+| 读取 `docs/guide/[GUIDE]_Developer_Onboarding.md` §7.1 | 验证矩阵参考 |\n+| shell `python scripts/capture_walkthrough_evidence.py` | 自动捕获 evidence 快照（已存在脚本，可选刷新 walkthrough_evidence.md） |\n \n ## Reference Files\n \n-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（H1/H2/H3/R1/R2 矩阵权威源 + LangSmith trace 开关 + 常见诊断）\n-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]（4 层 SQL guardrail；R1/R2 验证依据）\n-- [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（biz 域 only / 不访问 ODS；R1 边界依据）\n-- [[decisions/ADR-000_Data_LLM_Boundary_Principles|ADR-000]]（最小必要出网；R2 反询依据）\n+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7（H1/H2/H3/R1/R2 矩阵权威源 + LangSmith trace 开关 + 常见诊断）\n+- `repo:decisions/ADR-006_Fail_Safe_Reads.md`（4 层 SQL guardrail；R1/R2 验证依据）\n+- `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only / 不访问 ODS；R1 边界依据）\n+- `repo:decisions/ADR-000_Data_LLM_Boundary_Principles.md`（最小必要出网；R2 反询依据）\n - `src/mj_agent/prompts/system.md`（system prompt 当前 version；R1/R2 行为由 v1.3+ rule 2/3 决定）\n - `src/mj_agent/skills/{biz-domain-context,qcm-analysis,safe-sql-analysis}/SKILL.md`（H1/H2/H3 trajectory 涉及的 skill body）\n - `scripts/capture_walkthrough_evidence.py`（自动捕获 evidence 快照工具）\n@@ -205,7 +217,7 @@\n \n - **不要** 跳过 R1/R2 数据边界 probe（这是 mj-agent 安全红线唯一的 manual 验证）\n - **不要** 在 R1 / R2 fail 时给 GO（强制 §3.1 必停 HITL；可能是 system.md / SQL guardrail / GRANT 任一层失守）\n-- **不要** 用本 skill 改 system.md（B 风味；用 `/mj-agent-runtime-prompt-version-bump` PR-C2）\n+- **不要** 用本 skill 改 system.md（B 风味；用 `mj-agent-runtime-prompt-version-bump` PR-C2）\n - **不要** 在 prod / test profile 上跑 R1（red line probe 会显式发起 ODS query 试图穿透；只在 dev profile 跑）\n - **不要** 关 LangSmith trace 后跑边界 probe（缺 trace 难追溯穿透 root cause）\n \n@@ -214,8 +226,8 @@\n ```\n Studio Probe 完成（5/5 通过 / N fail）\n 下一步：\n-- 5/5 通过 → /mj-agent-flow-self-review 接续 Stage 11\n-- R1/R2 fail → 立即 §3.1 必停 HITL；root-cause（system.md vs SQL guardrail vs GRANT）+ /mj-agent-runtime-prompt-version-bump（如 system.md 问题，PR-C2）\n+- 5/5 通过 → mj-agent-flow-self-review 接续 Stage 11\n+- R1/R2 fail → 立即 §3.1 必停 HITL；root-cause（system.md vs SQL guardrail vs GRANT）+ mj-agent-runtime-prompt-version-bump（如 system.md 问题，PR-C2）\n - H1/H2/H3 fail → 检查 SKILL.md / system.md / qcm_catalog.yaml（B 风味；用 mj-agent-runtime-* PR-C2 propose diff）\n - 生产事故级穿透（R1 真访问 ODS）→ 立即停服 + 触发 POSTMORTEM-code 流程\n ```\n"
+      },
+      "reason": "P2原生入口/资源/工具与P1硬阻断原生化；方法步骤保留，具体差异可审阅。缺依赖不虚构执行。",
+      "recovery": {
+        "source": "20e2f24c352cf640d9dd33234b128ca897804b99:.claude/skills/mj-agent-infra-studio-probe/SKILL.md",
+        "contract": "20e2f24c352cf640d9dd33234b128ca897804b99:capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+        "working_source_sha256": "925605d3fa2fbf99c0c53fa2ed224eec9e32792b13276173dd92ced0f913bf89",
+        "formal_contract_sha256": "3f18901a819eb0625b5eb303bd79938715312af8737aca33c46343d786e062f4"
+      },
+      "p3_preconditions": [
+        "Owner批准具体技能正文/description/契约条目成组变化",
+        "P3复核候选摘要未变化并确定真实frozen_at",
+        "契约头部旧adapter/schema消费者需同批最小调整；本草案不声称已符合最终契约schema",
+        "未应用正式冻结摘要；无候选激活"
+      ]
+    }
+  ]
+}

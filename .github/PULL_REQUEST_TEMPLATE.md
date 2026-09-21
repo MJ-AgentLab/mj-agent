@@ -2,7 +2,7 @@
 
 > Replaced by spec-anchored-refactor Phase M0 (per ADR-031).
 > 旧 tri-track A1-A14 self-check 在 Phase M5 时整体迁入 `policies/documentation.md` +
-> `policies/claude-code-skill.md` 段；过渡期保留 `<details>` block 作 backward-compat.
+> `policies/development-skills.md` 段；过渡期保留 `<details>` block 作 backward-compat.
 
 ## Summary
 
@@ -28,7 +28,7 @@
 - [ ] `langchain-agent`
 - [ ] `prompt`
 - [ ] `runtime-skill`
-- [ ] `claude-code-skill`
+- [ ] `development-skill`
 - [ ] `docker-container`
 - [ ] `bdd-tdd`
 - [ ] N/A（纯文档 / 元规则）
@@ -54,7 +54,7 @@
 
 ## AI Self-Check Checklist（per `policies/ai-agent.md` §4 + §6）
 
-- [ ] Codex 参与情况: **NONE / 描述贡献**（per ADR-035；standalone Codex 已开 → 可 non-NONE；non-NONE 须 Owner 拍板）
+- [ ] Codex 参与情况: **NONE / 描述贡献**（说明本次已授权的实际贡献）
 - [ ] HITL scenario hit: **NONE / 列出**（per `policies/ai-agent.md` §4 canonical 10-enum）
 - [ ] BDD/TDD impact: **NONE / 列出**（per blueprint §11.6 #11）
 - [ ] Subagent dispatched: **NONE / 列出**（per `policies/ai-agent.md` §2 A3）
@@ -65,7 +65,7 @@
 - [ ] runtime-skill-content-change（`src/mj_agent/skills/*/SKILL.md` body）
 - [ ] prompt-version-or-body-change（`src/mj_agent/prompts/system.md` version 或 body）
 - [ ] biz-catalog-sync（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）
-- [ ] mcp-server-trust-posture-change（`.mcp.json` inventory / trust / credential mode + D-017 派生面：`.codex/**` / `.agents/**` + `.agents.lock.json` / `agents_sync.py` 及 `_common` loader·renderer / manifest·workflow·translation·enforcement typed sources + preface·readme render templates——完整清单 = `policies/ai-agent.md` §4 A14 行；A14 / D-017·ADR-039）
+- [ ] mcp-server-trust-posture-change（原生 `.codex/**` 配置/守卫、MCP 启动器、冻结 infra 技能与契约；维护权切换不取消 Owner 必停）
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
 - [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml` / `docker/Dockerfile` 外部 registry 镜像引用；#413 供应链面）
@@ -97,7 +97,7 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contrac
 
 - [ ] A1-A3：新增/修改 canonical 文档（含 `src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md`）路径/命名合法、frontmatter schema 完整、state 与专属字段枚举合法
 - [ ] A4-A5：内部 Wikilink 目标存在；必要的 `docs/**/INDEX.md` 已同步
-- [ ] A6：allowlist 文档（框架/架构/运行入口）变更已同步检查 `CLAUDE.md`
+- [ ] A6：allowlist 文档（框架/架构/运行入口）变更已同步检查 `AGENTS.md`
 - [ ] OB1-OB5：非阻塞观察项
 
 </details>
@@ -115,8 +115,8 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contrac
 <details>
 <summary><b>Legacy Engineering-Workflow checklist</b> (A12-A14) — Phase M5 末迁入 policies/</summary>
 
-- [ ] A12：`.claude/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
-- [ ] A13：`.claude/settings.json` allowlist diffs reviewed；无 bare `Bash` in `permissions.allow`；secrets 在 `permissions.deny`
-- [ ] A14：`.mcp.json` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
+- [ ] A12：`.agents/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
+- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] A14：`.codex/config.toml` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
 
 </details>

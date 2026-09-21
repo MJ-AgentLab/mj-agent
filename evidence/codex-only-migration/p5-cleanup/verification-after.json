@@ -1,0 +1,127 @@
+{
+  "at": "2026-09-21T06:43:21.225483+00:00",
+  "status": "BLOCKED_EXECUTION_ROUTE_OR_PREFLIGHT",
+  "commands": [
+    {
+      "label": "source_entries",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "entries"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"entries\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.068
+    },
+    {
+      "label": "source_consumers",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.21
+    },
+    {
+      "label": "source_skills",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "skills"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.12
+    },
+    {
+      "label": "source_resources",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "resources"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.135
+    },
+    {
+      "label": "source_config_enforcement",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_codex_native.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.081
+    },
+    {
+      "label": "source_frontmatter",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_frontmatter.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 142 canonical docs all pass frontmatter schema check\n",
+      "stderr": "",
+      "elapsed_seconds": 0.139
+    },
+    {
+      "label": "source_wikilinks",
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_wikilinks.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 0 archive-ref violations (13 archived files auto-discovered)\nOK: A4 link resolution — 0 unresolved targets in 5 root files\n",
+      "stderr": "",
+      "elapsed_seconds": 0.156
+    }
+  ],
+  "source_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+  "post_cleanup_CI": "NOT_TESTED; existing35564875219 predates this delta",
+  "post_cleanup_host": "NOT_REPEATED; native executable/config/37 skills unchanged; bounded prior actual evidence retained",
+  "error_type": "PermissionError",
+  "error": "[WinError 5] Access is denied: 'C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\p5-x95ag_4r\\\\r'",
+  "source_index_after": "b568c93beaebfec11f59da8bff0b39ef214dc066828c29d4f291f9ca35ca1382",
+  "source_delivery_identity_preserved": true,
+  "deleted81_still_absent": true
+}

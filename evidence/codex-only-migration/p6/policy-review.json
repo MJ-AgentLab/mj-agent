@@ -1,0 +1,70 @@
+{
+  "status": "PENDING_OWNER_APPROVAL_NOT_APPLIED",
+  "path": "policies/ci-gates.md",
+  "before_sha256": "3a588352753fbdba3245badc9ed483db3185f3dae23399ea1f2109f08998f55a",
+  "proposed_sha256": "729d085965e848c5e572e6f3879e20f76a79f2e202d42e7c2a722d8df4f2fc06",
+  "scope": "§4 quarterly audit single row only; no guard/config/CI gate changes",
+  "reason": "Active consumer still asks to inspect retired permissions.deny/ask and enabledPlugins; AC-07/U07 closure requires exact native wording",
+  "authorization": "Prior §55 approval limited count command and pointer, no extension; current P6 excludes unapproved protected metadata edits",
+  "verification": [
+    "frontmatter",
+    "wikilinks",
+    "exact one-row diff and current guard/config identities"
+  ],
+  "recovery": ".mj-agent-local/p6/policy-before.zip",
+  "approved_execution": {
+    "at": "2026-09-21T08:00:07.007892+00:00",
+    "owner_response": "批准",
+    "scope": "Exact P6 DELIVERY-REVIEW and490 paths/3groups; not a guard approval receipt",
+    "status": "APPLIED_EXACT_AND_VERIFIED",
+    "verification": {
+      "at": "2026-09-21T07:58:37.239057+00:00",
+      "status": "APPLIED_EXACT_APPROVED_ONE_ROW; VERIFICATION_PASS",
+      "sha256": "729d085965e848c5e572e6f3879e20f76a79f2e202d42e7c2a722d8df4f2fc06",
+      "commands": [
+        {
+          "argv": [
+            "D:/workspace/10-software-project/projects/mj-agent/develop/.venv/Scripts/python.exe",
+            "-B",
+            "scripts/check_frontmatter.py"
+          ],
+          "exit": 0,
+          "stdout": "OK: 142 canonical docs all pass frontmatter schema check\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "D:/workspace/10-software-project/projects/mj-agent/develop/.venv/Scripts/python.exe",
+            "-B",
+            "scripts/check_wikilinks.py"
+          ],
+          "exit": 0,
+          "stdout": "OK: 0 archive-ref violations (13 archived files auto-discovered)\nOK: A4 link resolution — 0 unresolved targets in 5 root files\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "--no-optional-locks",
+            "diff",
+            "--check"
+          ],
+          "exit": 0,
+          "stdout": "",
+          "stderr": "warning: in the working copy of 'GLOSSARY.md', LF will be replaced by CRLF the next time Git touches it\n"
+        }
+      ],
+      "critical_unchanged": true
+    },
+    "line_ending_observation": {
+      "at": "2026-09-21T07:58:36.378920+00:00",
+      "initial_hash_assertion": "FAILED_RAW_SHA_AFTER_SUCCESSFUL_APPLY_PATCH",
+      "actual_sha256": "fa10c92c9a889a70ff6437153a4e6e57c474642f22dd4d9cb8fd411edf5d9800",
+      "expected_sha256": "729d085965e848c5e572e6f3879e20f76a79f2e202d42e7c2a722d8df4f2fc06",
+      "cause": "apply_patch changed line terminator; normalized text exactly matches approved one-row candidate; no content drift or protection rejection",
+      "before_CRLF": 434,
+      "actual_CRLF": 433,
+      "action": "restore approved exact line-ending bytes, preserve all approved content"
+    }
+  }
+}

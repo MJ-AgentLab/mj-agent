@@ -6,7 +6,7 @@ Its ``§4`` **changed meaning** during the M6 PR4 refactor: in the historical
 source (HITL_Prompt STANDARD, now under ``archive/rule/``) ``§4.1``-``§4.15``
 were the *per-stage prompts*; in the live kernel ``§4`` is the *Stage → Skill
 映射表* (ported from HITL_Prompt ``§5``). The kernel explicitly does **not**
-re-port the per-stage prompts -- they are owned by ``.claude/skills/mj-agent-*``.
+re-port the per-stage prompts -- they are owned by ``.agents/skills/mj-agent-*``.
 
 Cross-references written before / across that rename therefore point at
 sections that do not exist (``§4.3`` ``§4.4`` ``§4.5`` ``§4.6`` ``§4.7``
@@ -71,12 +71,15 @@ import re
 import sys
 from pathlib import Path
 
-# Scan face -- living instruction surfaces. ``.claude`` carries the in-tree
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
+# Scan face -- living instruction surfaces. ``.agents`` carries the in-tree
 # workflow skills where these cross-references live; the rest mirrors
 # check_wikilinks.py WALK_DIRS / find_stale_docs.py so the gates share one
 # mental model. ``plans`` is deliberately ABSENT (see module docstring).
 WALK_DIRS = (
-    ".claude",
+    ".agents",
     "capabilities",
     "decisions",
     "docs",
@@ -89,15 +92,14 @@ WALK_FILES = (
     "README.md",
     "CONTRIBUTING.md",
     "GLOSSARY.md",
-    "CLAUDE.md",
     "AGENTS.md",
 )
 
 # ``archive/`` is frozen by policies/archive.md -- its section numbers describe
 # the archived documents themselves. ``.agents/`` holds byte-identical
-# projections of whitelisted sources, so scanning it would double-report.
+# native development skills and must be scanned once.
 SKIP_PATH_PARTS = frozenset(
-    {".venv", ".git", "archive", "node_modules", ".agents", "__pycache__"}
+    {".venv", ".git", "archive", "node_modules", "__pycache__"}
 )
 
 # A line naming any of these plausibly cites that (archived) document's own
@@ -166,7 +168,7 @@ def iter_scanned_files(repo_root: Path) -> list[Path]:
         if not base.is_dir():
             continue
         for path in base.rglob("*.md"):
-            if SKIP_PATH_PARTS & set(path.relative_to(repo_root).parts):
+            if SKIP_PATH_PARTS & set(path.relative_to(repo_root).parts) or retired_client_asset(path.relative_to(repo_root)):
                 continue
             found.append(path)
     for rel_file in WALK_FILES:

@@ -23,7 +23,7 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 <details>
 <summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../policies/documentation|documentation policy]] §5.1</summary>
 
-- [ ] 若变更影响运行入口、关键环境变量、依赖版本，`CLAUDE.md` 已同步检查（A6）
+- [ ] 若变更影响运行入口、关键环境变量、依赖版本，`AGENTS.md` 已同步检查（A6）
 - [ ] 若新增/修改 PR 模板或 CI 工作流涉及 A1-A11 校验，文档治理 kernel home（[[../../policies/documentation|documentation policy]] §5 门禁 + [[../../sdd/adapters/runtime-skill|runtime-skill adapter]] / [[../../sdd/adapters/prompt|prompt adapter]] / [[../../sdd/adapters/contract|contract adapter]]）已同步
 - [ ] OB1-OB5：非阻塞观察项（Code_Side §7.2；Phase 1 填充阈值）
 
@@ -38,12 +38,12 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 </details>
 
 <details>
-<summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+<summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
 
-- [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
-- [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
-- [ ] **A14** `.mcp.json` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
-- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核 `permissions.deny`
+- [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核原生秘密保护与 Owner 批准边界
 
 </details>
 

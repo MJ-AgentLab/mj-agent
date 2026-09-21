@@ -3,7 +3,7 @@
 Purpose: after the 2026-05 cross-repo decoupling cleanup (PR #118, #121, plus
 the PR landing this script), mj-agent docs should not reintroduce `mj-system`
 or `派生自` markers in active prose. This script scans `docs/**/*.md` and
-`CLAUDE.md` for forbidden patterns, with a narrow allow-list for legitimate
+`AGENTS.md` for forbidden patterns, with a narrow allow-list for legitimate
 code-layer literals (Docker network names, env var namespaces, MCP server
 identifiers) and the glossary file (which intentionally defines the
 upstream-system relationship).
@@ -16,7 +16,7 @@ fail-fast (exit 1) on any forbidden pattern; flip the workflow gate to require
 this once cleanup tail is complete.
 
 Scope:
-- Scans `docs/**/*.md` + repo-root `CLAUDE.md` + `README.md`
+- Scans `docs/**/*.md` + repo-root `AGENTS.md` + `README.md`
 - **Skips** `docs/archive/**` (frozen snapshots per ADR-019)
 - **Skips** `plans/**` (working docs; historical references preserved)
 - **Skips** `CHANGELOG.md` (Keep-a-Changelog: do not rewrite history)
@@ -50,10 +50,13 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 # Roots to scan.
 SCAN_ROOTS = (
     Path("docs"),
-    Path("CLAUDE.md"),
+    Path("AGENTS.md"),
     Path("README.md"),
 )
 
@@ -142,7 +145,7 @@ def find_target_files(repo_root: Path) -> list[Path]:
             continue
         for md in abs_root.rglob("*.md"):
             rel = md.relative_to(repo_root)
-            if is_skipped(rel):
+            if is_skipped(rel) or retired_client_asset(rel):
                 continue
             out.append(rel)
     return sorted(out)

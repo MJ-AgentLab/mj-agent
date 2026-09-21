@@ -1,0 +1,67 @@
+{
+  "at": "2026-09-21T03:08:27.098070+00:00",
+  "status": "PROPOSED_NOT_EXECUTED_OWNER_DECISION_REQUIRED",
+  "linked": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+  "shared_source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+  "frozen_files": {
+    ".codex/config.toml": "7f1016969634c1a16d0c23707a1d02b6797eeb9d028616250313d7582b170655",
+    ".codex/hooks.json": "538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a",
+    ".codex/rules/mj-agent.rules": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5",
+    "scripts/sdd/run_codex_hook.ps1": "9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0",
+    "scripts/sdd/codex_hook_guard.py": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608"
+  },
+  "three_root_hash_comparison": {
+    ".codex/config.toml": {
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration": "7f1016969634c1a16d0c23707a1d02b6797eeb9d028616250313d7582b170655",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked": "7f1016969634c1a16d0c23707a1d02b6797eeb9d028616250313d7582b170655",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance": "7f1016969634c1a16d0c23707a1d02b6797eeb9d028616250313d7582b170655"
+    },
+    ".codex/hooks.json": {
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration": "538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked": "538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance": "538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a"
+    },
+    ".codex/rules/mj-agent.rules": {
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5"
+    },
+    "scripts/sdd/run_codex_hook.ps1": {
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration": "9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked": "9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance": "9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0"
+    },
+    "scripts/sdd/codex_hook_guard.py": {
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608"
+    }
+  },
+  "old_driver_sha256": "103de7b67f4021c6d76b0710c2696206269cc8ef0865acf218e86a080daf7133",
+  "new_driver_sha256": "9b79d4f66b073d744a515cd93b55df66b4febe5ee3ab0ef7dc86b5406ff53ee9",
+  "diff_sha256": "9bdac26ea6ac6f529b24c795f8baa6be551780cba7ba6cc1ecdf25801d48f976",
+  "current_hook_hash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+  "skill_discovery": "37 exact linked-local paths for root/src/tests; reused actual metadata, not rerun",
+  "local_source_availability": "Installed npm package contains compiled host and README; Rust implementation source not available at inspected package path",
+  "documentation": {
+    "url": "https://learn.chatgpt.com/docs/config-file/config-advanced?translationFallback=zh-Hans",
+    "supports": "Hooks load alongside active configuration layers; project configuration and hook trust are distinct requirements",
+    "does_not_establish": "CLI 0.147.0 linked shared-source selection algorithm or intended guarantee"
+  },
+  "root_cause_limit": "Shared Git parent and observed hook source coincide; selection mechanism not proven. Proposed route validates actual bounded topology, not a claim that this is officially guaranteed behavior.",
+  "validation": "AST parse and static diff review only; no new metadata/model execution, no simulated trust",
+  "writes_after_approval": [
+    "linked/.venv/** only using approved offline no-pip Python command",
+    "named result logs",
+    "Owner-chosen single-hook trust in existing isolated Codex home"
+  ],
+  "no_writes": [
+    "shared source files",
+    "original delivery/index",
+    "hook/rule/config definitions",
+    "permissions",
+    "other worktrees"
+  ],
+  "canary": "one git status --short through CLI0.147.0/gpt-5.6-sol official provider; strict config, eight MCP disabled, readOnly/networkAccess=false, 180 seconds; first refusal/unexpected request stops",
+  "recovery": "Original driver and definitions retained; new proposed file can remain unused. No trust reversal or cleanup performed. Before-model environment manifest required; prior linked/.venv absent."
+}

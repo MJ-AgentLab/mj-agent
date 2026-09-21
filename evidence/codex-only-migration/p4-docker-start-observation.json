@@ -1,0 +1,42 @@
+{
+  "at": "2026-09-18T12:30:40.600044+00:00",
+  "authorization": "User explicitly requested 启动 docker",
+  "scope": "Normal installed Docker Desktop startup and read-only inventory; no test container, pull, Compose or project service action",
+  "start_command": [
+    "docker",
+    "desktop",
+    "start",
+    "--timeout",
+    "45"
+  ],
+  "start_command_status": "FAILED_STARTUP_DEADLINE",
+  "commands": [
+    {
+      "argv": [
+        "docker",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ],
+      "status": "TIMEOUT_15S",
+      "not_a_test_result": true
+    }
+  ],
+  "status": "DESKTOP_PROCESSES_STARTED_ENGINE_UNREADY; NORMAL_START_ATTEMPT_FAILED; LINUX_NOT_TESTED",
+  "observed_processes": {
+    "Docker Desktop.exe": [
+      72900,
+      80388,
+      91288,
+      48696
+    ],
+    "com.docker.backend.exe": [
+      47896,
+      85408
+    ],
+    "at": "2026-09-18T12:29:05Z",
+    "source": "Read-only tasklist exact image-name queries"
+  },
+  "start_exit_code": 1,
+  "start_output": "Failed to start Docker Desktop\nDocker Desktop is still starting: context deadline exceeded"
+}

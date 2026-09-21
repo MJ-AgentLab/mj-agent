@@ -1,0 +1,12 @@
+{
+  "scope": "test driver only; no source/config/permission/trust change",
+  "changes": [
+    "resolve frozen canaries from original review package",
+    "add read-only model/list mode using exported schema; no thread or turn"
+  ],
+  "recovery": "host-v2.py preserved byte-for-byte; v2.1 separate file, no restoration executed",
+  "old_sha256": "6572b8418063c2c1e8219440c5b9bddaaafd71c50cccd2b14a4510e52584bf8a",
+  "new_sha256": "57a020dba3ada3cb2997204bf78f1a79392f994324a6e62dc530cf22dc3d1745",
+  "canaries_sha256": "d00b0c50cfe2af5b7e2082af04d5c4e0aef27968533bda8a70df0930e34d1170",
+  "validation": "AST_PASS; runtime pending"
+}

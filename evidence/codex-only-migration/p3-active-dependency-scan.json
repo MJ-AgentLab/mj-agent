@@ -1,0 +1,10 @@
+{
+  "status": "CANDIDATE_STATIC_PASS_FORMAL_UNCHANGED",
+  "executable_inventory": "sdd/native-consumers.json",
+  "executable_roots": 45,
+  "method": "Python import/string AST including transitive scripts imports; explicit denial vocabulary has no file-reading calls; native skill repo/peer resources; reviewed direct-document differences",
+  "retired_selection": "scripts/sdd/_common/native_assets.py: named client files only; non-client adapters remain in place and covered",
+  "semantics": "Residual historical strings are not active file reads; this is not full-program dynamic analysis or a shell sandbox",
+  "formal_status": "Still legacy active until actual manual group application and verification",
+  "residuals": "p3-consumer-residuals.json"
+}

@@ -1,0 +1,2964 @@
+{
+  "skills": [
+    {
+      "name": "mj-agent-doc-author",
+      "p2_candidate_sha256": "c7f75f551f5f91b0a0a437c77d43b451b3ec0099f40d04256130eade2ee93dcd",
+      "proposed_sha256": "c7f75f551f5f91b0a0a437c77d43b451b3ec0099f40d04256130eade2ee93dcd",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-doc-migrate",
+      "p2_candidate_sha256": "ed70a74c5dfba07273d27feb3359c019a393489c7c599417f1cdfe6e5bb0ee4b",
+      "proposed_sha256": "201602f84f68172944d13ca6396c175c80cb5682079d65a87e66ba826b94b1e4",
+      "semantic_change": "INDEX/CLAUDE label -> INDEX/AGENTS only",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": [
+        "S02-positive",
+        "S02-near_negative"
+      ]
+    },
+    {
+      "name": "mj-agent-doc-plan",
+      "p2_candidate_sha256": "0cdd9d513c9770b81b08a4bbd0c334a19facda6366277524dabc22c27a12bcc2",
+      "proposed_sha256": "0cdd9d513c9770b81b08a4bbd0c334a19facda6366277524dabc22c27a12bcc2",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-doc-review",
+      "p2_candidate_sha256": "a5b5d3715756875da1cda37bd5abbc5f248c625087bfabf3c5b88824ff5d3c54",
+      "proposed_sha256": "a5b5d3715756875da1cda37bd5abbc5f248c625087bfabf3c5b88824ff5d3c54",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-doc-sync",
+      "p2_candidate_sha256": "6dff5e9db0b4e5503f08a4893488fe4c7fd26548cb6bc847d84e76a3f3663a10",
+      "proposed_sha256": "6dff5e9db0b4e5503f08a4893488fe4c7fd26548cb6bc847d84e76a3f3663a10",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-doc-validate",
+      "p2_candidate_sha256": "8e19d494c1da9312047410c278ff7ca8d0f4aa48693833f1f80368ad033978aa",
+      "proposed_sha256": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "semantic_change": "INDEX/CLAUDE label -> INDEX/AGENTS only",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": [
+        "S06-positive",
+        "S06-near_negative"
+      ]
+    },
+    {
+      "name": "mj-agent-flow-diagnose",
+      "p2_candidate_sha256": "744d35e05af4d3b229e7018b6f8f0b58212f7c6a30cd2b1f306e8048787c808a",
+      "proposed_sha256": "744d35e05af4d3b229e7018b6f8f0b58212f7c6a30cd2b1f306e8048787c808a",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-implement",
+      "p2_candidate_sha256": "41f6664ebbdbd7686fe42a9a5a0dd115c67d6f96937a9c780152ef3431c1bdb0",
+      "proposed_sha256": "41f6664ebbdbd7686fe42a9a5a0dd115c67d6f96937a9c780152ef3431c1bdb0",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-intake",
+      "p2_candidate_sha256": "7d025638e87a8ded34bff11f4e08ca2db1579539a50c6038e7e02f775c344849",
+      "proposed_sha256": "7d025638e87a8ded34bff11f4e08ca2db1579539a50c6038e7e02f775c344849",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-plan",
+      "p2_candidate_sha256": "3f7a8dd96b4e1d32b516fe954e9a7569b9039f7c5e1fb64cc18345feb28d16dd",
+      "proposed_sha256": "3f7a8dd96b4e1d32b516fe954e9a7569b9039f7c5e1fb64cc18345feb28d16dd",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-post-merge",
+      "p2_candidate_sha256": "6f7dadf9dc124803c63f50cc33cd6755370506962d21875e163a0cb325003ae3",
+      "proposed_sha256": "6f7dadf9dc124803c63f50cc33cd6755370506962d21875e163a0cb325003ae3",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-repo-scan",
+      "p2_candidate_sha256": "2d86be92a1694f649bc4682c0ef6a639a94021e3a69f8598c2e299e7370a2ee5",
+      "proposed_sha256": "2d86be92a1694f649bc4682c0ef6a639a94021e3a69f8598c2e299e7370a2ee5",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-review-respond",
+      "p2_candidate_sha256": "cc56413c39197a23e8c1bc1e90725f4f8b0e36cc816090abab4d7d2a3d67d4db",
+      "proposed_sha256": "cc56413c39197a23e8c1bc1e90725f4f8b0e36cc816090abab4d7d2a3d67d4db",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-scope-drift",
+      "p2_candidate_sha256": "977ea2e454f46d563778e8a431065e727d509f5bd701b992f9c06b920ad65b13",
+      "proposed_sha256": "977ea2e454f46d563778e8a431065e727d509f5bd701b992f9c06b920ad65b13",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-self-review",
+      "p2_candidate_sha256": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+      "proposed_sha256": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-flow-verify",
+      "p2_candidate_sha256": "1cb4280f7b9e657cd3cd5cb8d1916329e4d1a4a815ccb80e2a26f7eaf2297cf1",
+      "proposed_sha256": "1cb4280f7b9e657cd3cd5cb8d1916329e4d1a4a815ccb80e2a26f7eaf2297cf1",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-branch",
+      "p2_candidate_sha256": "c97a80996266308b1dd93936dbae13e135170450e5fb661db893daf5b797ff8e",
+      "proposed_sha256": "c97a80996266308b1dd93936dbae13e135170450e5fb661db893daf5b797ff8e",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-check-merge",
+      "p2_candidate_sha256": "b2eaaf952fd6cc82798a0aaf06796fe5779e2e8c1762e0c0fef42489bca7849f",
+      "proposed_sha256": "b2eaaf952fd6cc82798a0aaf06796fe5779e2e8c1762e0c0fef42489bca7849f",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-commit",
+      "p2_candidate_sha256": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+      "proposed_sha256": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-delete",
+      "p2_candidate_sha256": "cb6e212add39780793aa49956cfc63ca5762b4cfa92e903e6da31550935a16c0",
+      "proposed_sha256": "cb6e212add39780793aa49956cfc63ca5762b4cfa92e903e6da31550935a16c0",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-issue",
+      "p2_candidate_sha256": "8bd6bd5004f3e3ef4a816ea086f9893965809f817ec370b4a2b1177ee456cfbc",
+      "proposed_sha256": "8bd6bd5004f3e3ef4a816ea086f9893965809f817ec370b4a2b1177ee456cfbc",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-pr",
+      "p2_candidate_sha256": "a77ecf3cf710f1a55aa1d7aeffd67d5bcdc52842e92e66acf2b162f0d341e48f",
+      "proposed_sha256": "a77ecf3cf710f1a55aa1d7aeffd67d5bcdc52842e92e66acf2b162f0d341e48f",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-push",
+      "p2_candidate_sha256": "d4331b183dc7cf2ca253f7d75a305efec76b7d621dfc04a1185ef5bc629d560c",
+      "proposed_sha256": "d4331b183dc7cf2ca253f7d75a305efec76b7d621dfc04a1185ef5bc629d560c",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-review-pr",
+      "p2_candidate_sha256": "9de6d011fa8ed63dd6a7c532613a4a6d76e944adaded4c9e1bbef71e3c84a439",
+      "proposed_sha256": "9de6d011fa8ed63dd6a7c532613a4a6d76e944adaded4c9e1bbef71e3c84a439",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-git-sync",
+      "p2_candidate_sha256": "216336c3570ebc8cc34155519935c3826ca9402cb5dd12f1447cd9a43e9c8bae",
+      "proposed_sha256": "216336c3570ebc8cc34155519935c3826ca9402cb5dd12f1447cd9a43e9c8bae",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-app-start",
+      "p2_candidate_sha256": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+      "proposed_sha256": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-app-stop",
+      "p2_candidate_sha256": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+      "proposed_sha256": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-docker-compose",
+      "p2_candidate_sha256": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+      "proposed_sha256": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-env-setup",
+      "p2_candidate_sha256": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+      "proposed_sha256": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-env-teardown",
+      "p2_candidate_sha256": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+      "proposed_sha256": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-llm-endpoint-probe",
+      "p2_candidate_sha256": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+      "proposed_sha256": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-storage-stack",
+      "p2_candidate_sha256": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+      "proposed_sha256": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-infra-studio-probe",
+      "p2_candidate_sha256": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+      "proposed_sha256": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-biz-catalog-sync",
+      "p2_candidate_sha256": "ed8c3307cd2f7a58766aa887d96255587af5182f3ca3cff91d3f1f1e5848b2cb",
+      "proposed_sha256": "ed8c3307cd2f7a58766aa887d96255587af5182f3ca3cff91d3f1f1e5848b2cb",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-eval-baseline",
+      "p2_candidate_sha256": "74dda7dd4418689d7aa31d52454c7d778a8db2829740f468f4e51440efb37b59",
+      "proposed_sha256": "74dda7dd4418689d7aa31d52454c7d778a8db2829740f468f4e51440efb37b59",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-prompt-version-bump",
+      "p2_candidate_sha256": "9db99ee8f1b57cac6163109396b751e1a37070947b41347820b032f87af1f77e",
+      "proposed_sha256": "9db99ee8f1b57cac6163109396b751e1a37070947b41347820b032f87af1f77e",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-skill-doc-improve",
+      "p2_candidate_sha256": "ac692b2b5acef7bbd04b612abd4c37c7b86db811de003eec113e79f1f1a1c30e",
+      "proposed_sha256": "ac692b2b5acef7bbd04b612abd4c37c7b86db811de003eec113e79f1f1a1c30e",
+      "semantic_change": "P2 skill body/description preserved",
+      "dimensions": {
+        "触发": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "输入": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "读写目标": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "顺序": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "授权": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "异常恢复": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "完成判据": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence",
+        "交接返回": "P2 result preserved; final-root resources checked in static fixture; no host/model evidence"
+      },
+      "affected_cases": []
+    }
+  ],
+  "shared_resource": "Final root paths and Owner/manual-route boundary; all37 callers preserved. No P2 review script becomes CI.",
+  "resource_counts": {
+    "total": 387,
+    "required": 381,
+    "example_only": 6
+  },
+  "resources": [
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/archive.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/contract.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/prompt.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/_templates/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/glossary/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/guide/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/workflows/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "src/mj_agent/prompts/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "policies/archive.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "scripts/check_frontmatter.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".codex/hooks.json",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/INDEX.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/guide/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/rule/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "plans/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "tests/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".agents/references/execution-boundaries.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/ci-gates.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/contract.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/prompt.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".codex/hooks.json",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".github/PULL_REQUEST_TEMPLATE/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".github/workflows/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "config/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "scripts/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "src/mj_agent/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "tests/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".env.example",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "policies/data-boundary.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/AGENTS.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".codex/hooks.json",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".github/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".github/workflows/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "scripts/diff_biz_schema.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/agent.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/config.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/llm.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "...",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": ".agents/references/execution-boundaries.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/ci-gates.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_frontmatter.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_wikilinks.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/contract.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/prompt.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "docs/INDEX.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_frontmatter.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_wikilinks.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "tests/eval/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-plan/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-verify/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "policies/docker-runtime.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "scripts/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "scripts/encrypt-secrets.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "tests/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/glossary/upstream_business_warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": ".github/ISSUE_TEMPLATE/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/_templates/TEMPLATE_ISSUE.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "policies/docker-runtime.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/agent.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/config.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/llm.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "sdd/lifecycle.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-doc-author/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-doc-plan/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-flow-repo-scan/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "plans/[PLAN]_mj-agent-data-agent-mvp-framework.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "tests/eval",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "tests/unit",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "sdd/lifecycle.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-delete/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-sync/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "plans/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "src/mj_agent/prompts/system.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/AGENTS.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "docs/INDEX.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "docs/guide/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "scripts/fetch_biz_schema.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/server/cli.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/ui.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-git-review-pr/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "plans/[PLAN]_xxx.md",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": ".codex/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "plans/[PLAN]_xxx.md",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "policies/docker-runtime.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "scripts/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "src/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "tests/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "policies/data-boundary.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": ".agents/skills/mj-agent-git-commit/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docs/INDEX.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".github/workflows/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "scripts/check_wikilinks.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "scripts/diff_biz_schema.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/agent.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/config.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/llm.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "plans/[PLAN]_g1_g2_workflow_enforcement.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "scripts/sdd/codex_hook_guard.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-check-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-check-merge",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".agents/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".codex/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".github/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "capabilities/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "config/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "decisions/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/_baselines/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/_templates/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/glossary/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/guide/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/rule/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "plans/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "policies/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "scripts/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "scripts/sdd/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "sdd/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/prompts/system.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/bdd/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/contract/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/eval/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": ".agents/skills/mj-agent-flow-post-merge/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": ".github/ISSUE_TEMPLATE/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docs/_templates/TEMPLATE_ISSUE.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "policies/docker-runtime.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".codex/hooks.json",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".github/PULL_REQUEST_TEMPLATE/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/archive/rule/",
+      "result": "EXAMPLE_ONLY_NOT_COUNTED_AS_PASS"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "scripts/sdd/codex_hook_guard.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-push",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".agents/references/execution-boundaries.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/ci-gates.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/AGENTS.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".agents/skills/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".codex/config.toml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".codex/hooks.json",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docs/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/docker-runtime.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/agent.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "src/mj_agent/config.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "src/mj_agent/server/cli.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "scripts/setup-env.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "src/mj_agent/server/cli.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/Dockerfile",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/entrypoint.sh",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "capabilities/infrastructure/docker-compose/runbook.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": ".env.example",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/setup-env.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/check_env_keys.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/setup-env.ps1",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "policies/ai-agent.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/config.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/llm.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/server/cli.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/tools/__init__.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/llm.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/tools/__init__.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": ".env.example",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "config/README.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/compose.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "src/mj_agent/memory/checkpointer.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "scripts/capture_walkthrough_evidence.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "src/mj_agent/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "src/mj_agent/prompts/system.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "scripts/diff_biz_schema.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "scripts/fetch_biz_schema.py",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-024_Eval_Framework_Spec.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/_templates/TEMPLATE_EVAL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/_templates/TEMPLATE_EVAL.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/evaluation/",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "src/mj_agent/prompts/system.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "tests/eval/golden_seed.jsonl",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "sdd/adapters/prompt.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "src/mj_agent/prompts/system.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "policies/documentation.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "sdd/workflows/execution-loop.md",
+      "result": "EXISTS_IN_NON_GIT_STATIC_FIXTURE",
+      "formal_status": "NOT_APPLIED"
+    }
+  ],
+  "u07": "PREPARED_ONLY_FORMAL_NOT_CLOSED"
+}

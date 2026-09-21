@@ -5,6 +5,12 @@
 
 ## [Unreleased]
 
+### Changed — Codex 原生独立开发迁移
+
+- 开发入口切至 AGENTS、37 个同名 `.agents/skills/` 与直接维护的 `.codex/`；必要 MCP 工具迁至 `scripts/mcp/`，允许服务与凭据隔离边界保持。
+- 原生检查承接技能、配置、消费者及安全回归；按具名批准删除81项旧客户端/适配资产，保留业务规范、安全断言、历史证据和恢复材料。
+- 上手指南补充受控离线测试、Owner 信任/凭据维护和恢复入口。本条位于 Unreleased，不表示已推送、合并、发布或外部服务已验证。
+
 ### Fixed — 离线 pytest runner 的 tiktoken BPE 每跑重下（#546）
 
 - **`maintain/546-tiktoken-offline-cache`**：hardened runner 把 `TEMP/TMP/TMPDIR` 重定向进每次

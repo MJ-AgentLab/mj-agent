@@ -17,7 +17,7 @@
 | [data-agent.memory-checkpointer](./data-agent/memory-checkpointer/spec.yml) | Memory Checkpoint At-Rest Desensitization | data-agent | active | active | 2026-07-22 | python, tdd-bdd |
 | [data-agent.safe-sql](./data-agent/safe-sql/spec.yml) | Safe SQL 4-Layer Guardrails | data-agent | active | active | 2026-06-03 | python, langchain-agent, tdd-bdd |
 | [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | active | active | 2026-06-03 | docker-container, tdd-bdd |
-| [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | claude-code-skill, tdd-bdd |
+| [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | development-skill, tdd-bdd |
 
 ## Cross-Capability References
 
@@ -28,11 +28,9 @@
 | data-agent.biz-catalog | inbound | data-agent.safe-sql | `src/mj_agent/biz_catalog/qcm_catalog.yaml (periods.*.time_column) + src/mj_agent/tools/sql/precheck.py:58-59` | safe-sql REQ-002 require_time_range rule reads our catalog's periods.*.time_column to determine what time predicate columns are valid for biz_dws fact tables |
 | data-agent.biz-catalog | outbound | data-agent.tool-chain | `src/mj_agent/agent.py:ALL_TOOLS + src/mj_agent/biz_catalog/finder.py (find_biz_context registered as tool)` | find_biz_context is a LangChain tool; tool schema contract owned by Phase 2+ tool-chain capability |
 | data-agent.llm-provider | outbound | infrastructure.docker-compose | `docker/compose.*.yml env_file + src/mj_agent/llm.py + src/mj_agent/config.py` | LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars injected per compose profile |
-| data-agent.llm-provider | outbound | infrastructure.mcp-server-governance | `.mcp.json ssh-manager DGX host entry + src/mj_agent/config.py llm_base_url` | DGX-Spark host (192.168.0.189) shared between ssh-manager MCP server entry and local-openai-compat LLM endpoint |
 | data-agent.memory-checkpointer | inbound | data-agent.tool-chain | `src/mj_agent/tools/sql/execute.py (execute_sql envelope) + src/mj_agent/memory/redaction.py (shape guard)` | REQ-001 targets the execute_sql result envelope (executed_sql / columns / rows / row_count); the redacting saver identifies execute_sql ToolMessages by name + JSON-envelope shape. The envelope is owned by data-agent.tool-chain (Phase 2+); a key rename there would require re-checking the shape guard. |
 | data-agent.safe-sql | outbound | data-agent.biz-catalog | `src/mj_agent/tools/sql/precheck.py:58-59 (_all_time_columns)` | REQ-002 require_time_range rule reads qcm_catalog.yaml periods.*.time_column |
 | infrastructure.docker-compose | inbound | data-agent.llm-provider | `compose env_file: ../../.env + service environment LLM_*` | LLM_PROVIDER / LLM_BASE_URL / LLM_API_KEY / ARK_API_KEY env vars flow from .env through compose CLI substitution + container env into mj-agent service |
-| infrastructure.docker-compose | outbound | infrastructure.mcp-server-governance | `.mcp.json WAN pg URLs reference deployed pg endpoints` | compose-deployed pg hosts (mj-agent-postgres at 5433, biz pg via mj-system-backend-network at 5432) are referenced by .mcp.json wrapped pg server entries |
-| infrastructure.mcp-server-governance | inbound | infrastructure.docker-compose | `.mcp.json pg-* entries + docker/compose.*.yml services` | 5 pg-mj-agent-memory-* entries connect to docker-compose-deployed mj-agent-postgres (port 5433); 5 pg-mj-system-biz-* entries connect to mj-system biz pg via mj-system-backend-network |
-| infrastructure.mcp-server-governance | outbound | data-agent.llm-provider | `.mcp.json ssh-manager DGX host entry (192.168.0.189) + llm-provider local-openai-compat endpoint` | DGX-Spark host serves both ssh-manager MCP entry AND local-openai-compat LLM endpoint |
+| infrastructure.docker-compose | outbound | infrastructure.mcp-server-governance | `.codex/config.toml WAN pg URLs reference deployed pg endpoints` | compose-deployed memory PG hosts (mj-agent-postgres at 5433) are referenced by .codex/config.toml wrapped pg server entries |
+| infrastructure.mcp-server-governance | inbound | infrastructure.docker-compose | `.codex/config.toml memory entries` | Memory endpoints only |
 

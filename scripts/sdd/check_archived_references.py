@@ -20,7 +20,7 @@ unless permitted. Permitted =
 Behavior:
 
 - Scan active text files across docs/, capabilities/, sdd/, policies/,
-  decisions/, plans/, CLAUDE.md — SKIP the ``archive/`` tree itself.
+  decisions/, plans/, AGENTS.md — SKIP the ``archive/`` tree itself.
 - For each literal ``archive/`` path reference, resolve the target archive
   unit + its ``archive.yml`` ``ai_visibility``; ``reference`` → OK,
   otherwise WARN (G14/G15 are WARNING in this PR).
@@ -45,13 +45,16 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.sdd._common.cli import Severity, Summary, build_argparser  # noqa: E402
 from scripts.sdd._common.discovery import resolve_display_path  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 _SCRIPT_NAME = "check_archived_references"
 _MANIFEST_NAME = "archive.yml"
 
 # Active trees scanned for archive/ references. The archive/ tree itself is
 # deliberately excluded (we don't flag the archived files referencing siblings).
 _WALK_DIRS = ("docs", "capabilities", "sdd", "policies", "decisions", "plans")
-_WALK_FILES = ("CLAUDE.md",)
+_WALK_FILES = ("AGENTS.md",)
 _TEXT_SUFFIXES = {
     ".md",
     ".markdown",
@@ -87,7 +90,7 @@ def _iter_target_files(repo_root: Path):
         if not base.exists():
             continue
         for path in sorted(base.rglob("*")):
-            if not path.is_file():
+            if not path.is_file() or retired_client_asset(path.relative_to(repo_root)):
                 continue
             if not _is_text_file(path):
                 continue

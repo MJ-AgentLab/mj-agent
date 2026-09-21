@@ -1,0 +1,181 @@
+{
+  "status": "PUSHED_REMOTE_HEAD_VERIFIED",
+  "at": "2026-09-21T05:32:03.611307+00:00",
+  "repo": "ranzuozhou/mj-agent-p4-acceptance-20260920",
+  "branch": "maintain/p4-acceptance-20260920",
+  "head": "40b470320ef9cf073f0d18867ca6134fa95637d2",
+  "tree": "8d800f400092f57e0d894b64dc36dbbe5a378c3c",
+  "files": [
+    "tests/fixtures/development-agent/scenarios/S5/expected.yml",
+    "tests/fixtures/development-agent/scenarios/S5/request.md",
+    "tests/unit/test_sdd_development_agent.py",
+    "docs/INDEX.md",
+    "policies/ci-gates.md",
+    "src/mj_agent/env_drift.py"
+  ],
+  "source_index_unchanged": true,
+  "new_branches_PRs": 0,
+  "commands": [
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "--absolute-git-dir"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "--git-common-dir"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "remote",
+        "get-url",
+        "--all",
+        "--push",
+        "acceptance"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "ls-tree",
+        "-r",
+        "HEAD"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\GitHub CLI\\gh.exe",
+        "api",
+        "repos/ranzuozhou/mj-agent-p4-acceptance-20260920/git/ref/heads/maintain/p4-acceptance-20260920"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "push",
+        "acceptance",
+        "HEAD:refs/heads/maintain/p4-acceptance-20260920"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\GitHub CLI\\gh.exe",
+        "api",
+        "repos/ranzuozhou/mj-agent-p4-acceptance-20260920/git/ref/heads/maintain/p4-acceptance-20260920"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "branch",
+        "--show-current"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "C:\\Program Files\\Git\\cmd\\git.exe",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0
+    }
+  ]
+}

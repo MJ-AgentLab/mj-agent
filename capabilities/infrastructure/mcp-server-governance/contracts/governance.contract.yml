@@ -1,133 +1,107 @@
-# capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml
-#
-# A14 PR gate logic + quarterly audit process.
-# Phase M1 informational (manual reviewer check); Phase M2 warning; Phase M3 blocking.
-
 contract_id: governance
 covers_requirements:
-  - REQ-001                                       # A14 PR gate declaration
-  - REQ-002                                       # wrapper consistency check
-
-# A14 PR Gate definition
+- REQ-001
+- REQ-002
 a14_pr_gate:
-  meta_framework_ref: "Meta v2.1 §7.7 A14"
-  # M6 X5: the former MCP STANDARD (docs/infrastructure/mcp/[STANDARD]_MJ_Agent_MCP_Server_Governance.md)
-  # was archived; this contract + design.md are now the authoritative governance home.
-  governance_doc: "this capability (contracts/governance.contract.yml §a14_pr_gate + design.md); former STANDARD §4 archived → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md"
-
+  meta_framework_ref: Meta v2.1 §7.7 A14
+  governance_doc: this capability (contracts/governance.contract.yml §a14_pr_gate + design.md); former STANDARD
+    §4 archived → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md
   trigger_files:
-    - .mcp.json
-    - .claude/scripts/pg-server-start.cmd
-    - .claude/scripts/pg-server-wrapper.mjs
-
-  # Full §4 template (M6 X5: folded from former MCP STANDARD §4 — all 3 sub-blocks:
-  # server-entries table + trust-posture-change declaration + credential-safety checklist).
+  - .codex/config.toml
+  - scripts/mcp/pg-server-start.ps1
+  - scripts/mcp/pg-server-wrapper.mjs
+  - scripts/mcp/setup-mcp-secrets.ps1
   pr_body_required_block:
-    format: |
-      ## MCP Server Governance (A14)
+    format: '## MCP Server Governance (A14)
+
 
       ### Added / removed / changed server entries
 
+
       | Server name | Change | Trust posture | Credential mode | Rationale |
+
       |---|---|---|---|---|
-      | <name> | added/removed/changed | first-party / third-party / first-party-wrapper / community | none / OAuth / api_key_via_env / wrapped_script_url_override / template_var | <≥ 1 sentence> |
+
+      | <name> | added/removed/changed | first-party / third-party / first-party-wrapper / community | none / OAuth
+      / api_key_via_env / wrapped_script_env_name_resolution | <≥ 1 sentence> |
+
 
       ### Trust posture changes
 
+
       - any third-party → community downgrade → linked issue / mitigation
+
       - any new community-tier server → upstream URL + last-commit date + 3-commit review summary
+
 
       ### Credential safety review
 
-      - [ ] no plaintext credential written into .mcp.json
-      - [ ] ${VAR} placeholder added to .env.example
+
+      - [ ] no plaintext credential written into .codex/config.toml
+
+      - [ ] env_vars contains only approved variable names; no application env import
+
       - [ ] wrapper script (if any) Read-verified to contain no hard-coded credential
 
+      '
     minimum_fields:
-      - server_name
-      - change_type (added | removed | changed)
-      - trust_posture
-      - credential_mode
-      - rationale
-      - trust_posture_change_declaration (downgrade → issue/mitigation; new community → upstream URL + last-commit + 3-commit review)
-      - credential_safety_checklist (no plaintext in .mcp.json / ${VAR} in .env.example / wrapper no hard-coded credential)
-
+    - server_name
+    - change_type (added | removed | changed)
+    - trust_posture
+    - credential_mode
+    - rationale
+    - trust_posture_change_declaration (downgrade → issue/mitigation; new community → upstream URL + last-commit
+      + 3-commit review)
+    - credential_safety_checklist (no literal value / approved env_vars names / no hard-coded credential)
   reviewer_action:
-    M1: "Reviewer manually checks PR body has block before approving"
-    M2: "scripts/sdd/check_a14_gate.py emits CI warning if block missing"
-    M3: "scripts/sdd/check_a14_gate.py blocks PR if block missing"
-
-# §2 trust posture downgrade rule (folded from former MCP STANDARD §2, M6 X5)
+    M1: Reviewer manually checks PR body has block before approving
+    M2: scripts/sdd/check_a14_gate.py emits CI warning if block missing
+    M3: scripts/sdd/check_a14_gate.py blocks PR if block missing
 trust_posture_downgrade:
   third_party_to_community:
-    - trigger: maintainer_unreachable
-      condition: "no upstream commit in 90 days"
-      action: "downgrade third-party → community; open PR review"
-    - trigger: security_issue_unresponsive
-      condition: "reported security issue with no maintainer response in 30 days"
-      action: "downgrade third-party → community; open PR review"
-  community_tier_requirement: "strongly recommend wrapping in .claude/scripts/ as a fallback"
-
-# Quarterly audit process (§6 of MCP STANDARD)
+  - trigger: maintainer_unreachable
+    condition: no upstream commit in 90 days
+    action: downgrade third-party → community; open PR review
+  - trigger: security_issue_unresponsive
+    condition: reported security issue with no maintainer response in 30 days
+    action: downgrade third-party → community; open PR review
+  community_tier_requirement: review scripts/mcp wrapper and upstream separately; no trust escalation by migration
 quarterly_audit:
   cycle: every_3_months
   dri: ranzuozhou
   trigger:
-    - calendar_quarter_end
-    - new_claude_model_release (per A6 review cadence; per policies/documentation.md)
-
+  - calendar_quarter_end
+  - new_codex_model_release (manual review; no automatic activation)
   tasks:
-    - id: re_evaluate_trust_posture
-      action: |
-        For each of 14 servers, check:
-        - first-party: still Anthropic-published? (still on Anthropic's MCP server registry)
-        - third-party: still maintained? (last commit < 6 months on upstream repo)
-        - first-party-wrapper: baseline still aligned with community pg MCP? (diff)
-        - community: still maintained? trust posture upgrade/downgrade if needed
-      output: "evidence/runtime/<YYYY-Q>_mcp_trust_audit.md"
+  - id: re_evaluate_trust_posture
+    action: For each of the eight native inventory entries, review publisher ownership, upstream maintenance and
+      declared trust posture. This migration does not attest current upstream/service health.
+    output: evidence/runtime/<YYYY-Q>_mcp_trust_audit.md
+  - id: diff_wrapper_baseline
+    action: Review scripts/mcp/pg-server-wrapper.mjs behavior and public upstream changes; keep the historical baseline
+      as provenance, not a second maintained implementation.
+    output: evidence/runtime/<YYYY-Q>_pg_wrapper_baseline_diff.md
+  - id: check_unmaintained_servers
+    action: 'For each third-party / community server, check upstream last commit + open issues.
 
-    - id: diff_wrapper_baseline
-      action: |
-        diff -u docs/_baselines/pg_server_baseline.md <(community-pg-mcp-fetch-latest)
-        If drift detected → file [ISSUE] to refresh baseline or propose wrapper change.
-      output: "evidence/runtime/<YYYY-Q>_pg_wrapper_baseline_diff.md"
+      Flag servers with no commits in 6+ months for review.
 
-    - id: check_unmaintained_servers
-      action: |
-        For each third-party / community server, check upstream last commit + open issues.
-        Flag servers with no commits in 6+ months for review.
-      output: "evidence/runtime/<YYYY-Q>_unmaintained_check.md"
-
-    - id: check_secret_sentinel_overrides
-      action: |
-        Verify setup-mcp-secrets.ps1 still populates all 6 sentinel env overrides
-        + 4 WAN URL overrides correctly. Test on a clean .env baseline.
-      output: "evidence/security/<YYYY-Q>_secret_override_validation.md"
-
-# Cross-capability governance touchpoints
+      '
+    output: evidence/runtime/<YYYY-Q>_unmaintained_check.md
+  - id: check_secret_sentinel_overrides
+    action: Use synthetic isolated tests to verify only the six approved names are accepted and values are never
+      printed. Actual platform credential setup requires separate approval and evidence.
+    output: evidence/security/<YYYY-Q>_secret_override_validation.md
 cross_capability_governance:
   with_docker_compose:
-    sync_point: "compose-deployed pg endpoint host/port matrix"
-    action: "if compose changes pg port (e.g. 5433 → 5434), update .mcp.json + URL env names"
-    coordination: "single PR touching both .mcp.json + compose YAML triggers A14 + prod compose HITL"
-
-  with_llm_provider:
-    sync_point: "DGX-Spark host (192.168.0.189) appears in both ssh-manager + llm_base_url"
-    action: "if DGX host moves, update both ssh-manager env + llm-provider docs"
-    coordination: "cross-cap PR touches both"
-
-  with_secrets_pipeline:                          # Phase 2+ capability
-    sync_point: "secrets-mcp.enc bundle (per ADR-030) decrypts to OS env vars"
-    action: "setup-mcp-secrets.ps1 must populate all env vars referenced in .mcp.json"
-    coordination: "secrets-pipeline owns bundle decryption; this capability owns .mcp.json consumption"
-
+    sync_point: memory endpoints only
+    action: review native config by-name mappings when memory host/port changes
+    coordination: A14 and production compose HITL remain independent requirements
+  with_secrets_pipeline:
+    sync_point: MCP bundle versus application bundle isolation
+    action: scripts/mcp/setup-mcp-secrets.ps1 accepts only approved native names
+    coordination: decryption/User env writes separately authorized; never auto-run in migration checks
 hitl_required:
-  - mcp_inventory_change                          # any .mcp.json modification
-  - wrapper_script_change                         # baseline-tracked
-  - quarterly_audit_lapse                         # if cycle missed by > 1 month, escalate
-
-# TBD Phase M3:
-#   - scripts/sdd/check_a14_gate.py (CI gate; PR body parser)
-#   - scripts/sdd/check_mcp_quarterly_audit.py (cron-friendly; flags overdue audit)
-# TBD Phase M4:
-#   - evidence/runtime/<YYYY-Q>_*.md auto-generated by quarterly audit script
+- mcp_inventory_change
+- wrapper_script_change
+- quarterly_audit_lapse

@@ -1,0 +1,177 @@
+# Native development skill contract. Proposed P3 re-freeze; not applied.
+# Owner approval and an available execution route are prerequisites to publication.
+# description = SHA256(UTF8 parsed scalar); body = strip only the first frontmatter
+# with (?ms)^---\r?\n.*?\r?\n---\r?\n, normalize CRLF/lone CR to LF; do not trim.
+# body_section_heads = every ^## line. Checker enforces all three freeze values.
+# Old 8 x 2 hashes reproduced in p3-entry.json before proposing these values.
+# frozen_at below is a proposed value, not an approval/execution record.
+contract_id: development-skill
+schema_version: 1
+adapter: development-skill
+covers_requirements:
+- REQ-001
+- REQ-002
+namespace_pattern: ^mj-agent-infra-[a-z-]+$
+family: infra
+schema_compliance: native-name-description-v1
+hitl_required:
+- mcp-server-trust-posture-change
+skills:
+- file: .agents/skills/mj-agent-infra-app-start/SKILL.md
+  name: mj-agent-infra-app-start
+  description_hash: sha256:5a80607da91bac49f466fabc210e5fb8f16921d5ca537945b9873a7ea40809d2
+  body_content_hash: sha256:344f85c860f0a6be29b418263a2fa200bc4f078b571c7a0dbaf7d073f3884c59
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Workflow'
+  - '## §Runtime Matrix'
+  - '## §HITL 介入场景'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Output Format'
+  - '## App Start Report'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-app-stop/SKILL.md
+  name: mj-agent-infra-app-stop
+  description_hash: sha256:e877e20924484e642937a21c622a6ffdb65a5b81d949e179a0ab16ef7893f9b0
+  body_content_hash: sha256:2a785bc1efe9b498634f45c600eed60df9485b780e94b221632588f42c367c0e
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Workflow'
+  - '## §HITL 介入场景'
+  - '## §Troubleshooting'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-docker-compose/SKILL.md
+  name: mj-agent-infra-docker-compose
+  description_hash: sha256:edc35321cc8397e459f3c2c66f884f6ff1321fa5a3b25a366e0109a211db8dc3
+  body_content_hash: sha256:3480751bdacf2eceff202fa0479b74e69634f23f4cbb193e433ae7a7b9726018
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Workflow'
+  - '## Step 0: cwd Check'
+  - '## Step 1: Pre-check（compose up 前）'
+  - '## §Profile Matrix（PR-1 / ADR-026 4-file 分层）'
+  - '## Step 2: Action'
+  - '## Step 3: Verify（up 后）'
+  - '## §Troubleshooting'
+  - '## Output Format'
+  - '## Compose Lifecycle Report'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-env-setup/SKILL.md
+  name: mj-agent-infra-env-setup
+  description_hash: sha256:38d8b4a0cf75f1eae01f44dff9ddc2306472635533f95c4a9d5394e53e2c0c06
+  body_content_hash: sha256:248f84f521fa564544bd8cf963fcdf04f78dd6166ecfe6f48a70b0259e7f5e4f
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## 前置条件'
+  - '## 快速开始（交互模式）'
+  - '## Codex vs User Execution Boundary'
+  - '## Workflow'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Anti-patterns'
+  - '## Output Format'
+  - '## Env Setup Result'
+  - '## Reference Files'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-env-teardown/SKILL.md
+  name: mj-agent-infra-env-teardown
+  description_hash: sha256:4c96cbdf48388759c44edf7f7c1530333d1672a126fe7b031f42b593ed0d67ea
+  body_content_hash: sha256:d6f1c48d67802fadcf3392eaf158000785d0926cd975c329c8d0dc3dd6f17bb8
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Workflow'
+  - '## §HITL 介入场景'
+  - '## §Troubleshooting'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md
+  name: mj-agent-infra-llm-endpoint-probe
+  description_hash: sha256:bd4a60e9b2b0a53fc23646645b79d74ba3a9993726c32ac70644b7c178e993ed
+  body_content_hash: sha256:a8101c179ffa9e51c14a34445e7d3f1d2998de74f8fea37f90266978beea61a4
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Workflow'
+  - '## LLM Endpoint Probe Report'
+  - '## §Troubleshooting'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-storage-stack/SKILL.md
+  name: mj-agent-infra-storage-stack
+  description_hash: sha256:bf2b3ec55ed335baa2b26f098bc272f45aa3907b12c7efe81ab2004ccda56562
+  body_content_hash: sha256:5f0939fd0f32863aea912614cd0d78aa84bfdc316ea4bb997a0a2f8a95b312b6
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## When to Use'
+  - '## Architecture（per ADR-008 + storage-stack PR）'
+  - '## Workflow'
+  - '## Postgres Init Inspection'
+  - '## Schema Inspection（langgraph AsyncPostgresSaver tables）'
+  - '## Backup / Restore（dev 调试 / PR 验证）'
+  - '## Redis Status / Wiring Guidance'
+  - '## Storage-specific Troubleshooting'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'
+- file: .agents/skills/mj-agent-infra-studio-probe/SKILL.md
+  name: mj-agent-infra-studio-probe
+  description_hash: sha256:810dcc24cf5037855e61309971df9a8826a96d2457b21ebe9302455d50559104
+  body_content_hash: sha256:c801f70334899d34d50230ee7c2c00c709e2061bcb0f9b14b7b1f26cd9f582ff
+  body_section_heads:
+  - '## 本技能的执行约定'
+  - '## 触发与职责详述'
+  - '## Overview'
+  - '## 前置条件'
+  - '## 快速开始（交互模式）'
+  - '## Workflow'
+  - '## Studio Probe Report'
+  - '## What This Skill DOES NOT DO'
+  - '## Sub-skill / Tool Calls'
+  - '## Reference Files'
+  - '## Anti-patterns'
+  - '## Handoff'
+  frozen_at: '2026-09-18T00:00:00Z'

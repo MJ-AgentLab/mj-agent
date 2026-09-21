@@ -1,0 +1,227 @@
+{
+  "at": "2026-09-18T12:50:16.748115+00:00",
+  "phase": "P4 environment prerequisite diagnosis; not P5 cleanup",
+  "authorization": [
+    "User requested 启动 docker",
+    "User then authorized continuing local execution"
+  ],
+  "classification": "INHERITED_ENVIRONMENT_BLOCKER; not a proven migration defect",
+  "result": "BLOCKED_EXECUTION_ROUTE",
+  "docker_final_state": "STOPPED; startup failed twice at the same runtime endpoint",
+  "linux_behavior": "NOT_TESTED / UNMET_DEPENDENCY",
+  "root_observation": "Docker Inference manager cannot remove its existing dockerInference endpoint; Windows reports error 1920. Deeper filesystem cause unproven.",
+  "startup_error_excerpts": [
+    "[2026-09-18T12:27:03.085079500Z][com.docker.backend.exe] backend cancelling with error: starting services: initializing Inference manager: listening on unix://<HOME>\\AppData\\Local\\Docker\\run\\dockerInference: remove <HOME>\\AppData\\Local\\Docker\\run\\dockerInference: The file cannot be accessed by the system.",
+    "[2026-09-18T12:27:05.299122900Z][com.docker.backend.exe] backend crashed, dumping error to file and reporting to user: starting services: initializing Inference manager: listening on unix://<HOME>\\AppData\\Local\\Docker\\run\\dockerInference: remove <HOME>\\AppData\\Local\\Docker\\run\\dockerInference: The file cannot be accessed by the system.",
+    "[2026-09-18T12:44:18.012373300Z][com.docker.backend.exe] backend cancelling with error: starting services: initializing Inference manager: listening on unix://<HOME>\\AppData\\Local\\Docker\\run\\dockerInference: remove <HOME>\\AppData\\Local\\Docker\\run\\dockerInference: The file cannot be accessed by the system.",
+    "[2026-09-18T12:44:20.131162100Z][com.docker.backend.exe] backend crashed, dumping error to file and reporting to user: starting services: initializing Inference manager: listening on unix://<HOME>\\AppData\\Local\\Docker\\run\\dockerInference: remove <HOME>\\AppData\\Local\\Docker\\run\\dockerInference: The file cannot be accessed by the system."
+  ],
+  "commands_observed_in_this_turn": [
+    {
+      "argv": [
+        "docker",
+        "desktop",
+        "status"
+      ],
+      "exit_code": 1,
+      "output": "Could not retrieve status. Is Docker Desktop running?",
+      "note": "Completion of previously pending session 52225"
+    },
+    {
+      "argv": [
+        "wsl.exe",
+        "--list",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "observation": "docker-desktop Stopped; WSL2"
+    },
+    {
+      "argv": [
+        "wsl.exe",
+        "--status"
+      ],
+      "exit_code": 0,
+      "observation": "Default Distribution docker-desktop; Default Version 2"
+    },
+    {
+      "argv": [
+        "fsutil",
+        "reparsepoint",
+        "query",
+        "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference"
+      ],
+      "exit_code": 1,
+      "output": "Error 1920: The file cannot be accessed by the system."
+    },
+    {
+      "argv": [
+        "sc.exe",
+        "query",
+        "afunix"
+      ],
+      "exit_code": 0,
+      "observation": "RUNNING; exit codes 0"
+    },
+    {
+      "argv": [
+        "sc.exe",
+        "qc",
+        "afunix"
+      ],
+      "exit_code": 0,
+      "observation": "SYSTEM_START; kernel driver afunix.sys"
+    },
+    {
+      "argv": [
+        "docker",
+        "desktop",
+        "stop",
+        "--timeout",
+        "30"
+      ],
+      "exit_code": 1,
+      "output": "Failed to stop Docker Desktop; processes still running; context deadline exceeded"
+    },
+    {
+      "argv": [
+        "docker",
+        "desktop",
+        "stop",
+        "--force",
+        "--timeout",
+        "20"
+      ],
+      "exit_code": 0,
+      "output": "Forcing Docker Desktop to stop",
+      "postcondition": "No Desktop/backend/vmmemWSL processes"
+    },
+    {
+      "argv": [
+        "docker",
+        "desktop",
+        "start",
+        "--timeout",
+        "30"
+      ],
+      "exit_code": null,
+      "status": "CLIENT_TIMEOUT_45S",
+      "output": "Failed to start Docker Desktop; Docker Desktop is still starting: context deadline exceeded",
+      "note": "Client wrapper reached timeout; subprocess output drained after failed Desktop was stopped. Wrapper exit 0 is not startup success."
+    },
+    {
+      "argv": [
+        "docker",
+        "desktop",
+        "stop",
+        "--force",
+        "--timeout",
+        "20"
+      ],
+      "exit_code": 0,
+      "output": "Forcing Docker Desktop to stop",
+      "postcondition": "No Desktop/backend/vmmemWSL processes"
+    },
+    {
+      "argv": [
+        "Move-Item",
+        "-LiteralPath",
+        "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference",
+        "-Destination",
+        "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference.p4-held-20260918",
+        "-ErrorAction",
+        "Stop"
+      ],
+      "exit_code": 1,
+      "status": "BLOCKED_EXECUTION_ROUTE",
+      "output": "The file cannot be accessed by the system.",
+      "error_id": "MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand",
+      "postcondition": "Source metadata unchanged; destination absent. No alternative mutation attempted."
+    }
+  ],
+  "socket_attempt": {
+    "at": "2026-09-18T12:46:18.3552315Z",
+    "source": "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference",
+    "target": "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference.p4-held-20260918",
+    "before": {
+      "length": 0,
+      "attributes": 1056,
+      "creationUtc": "2026-09-16T12:59:56.2534385Z",
+      "lastWriteUtc": "2026-09-16T12:59:56.2534385Z"
+    },
+    "purpose": "Preserve one inaccessible Docker runtime endpoint by a same-directory rename; no deletion/configuration change",
+    "recovery": "Only while Docker is stopped, verify retained object identity and that original pathname is vacant before normal reverse Move-Item; never overwrite a newly generated endpoint",
+    "status": "BLOCKED_EXECUTION_ROUTE",
+    "error": "The file cannot be accessed by the system.",
+    "errorId": "MoveFileInfoItemIOError,Microsoft.PowerShell.Commands.MoveItemCommand"
+  },
+  "final_snapshot": {
+    "at": "2026-09-18T12:47:02.2265737Z",
+    "processes": [],
+    "services": [
+      {
+        "Name": "com.docker.service",
+        "Status": "Stopped"
+      },
+      {
+        "Name": "vmcompute",
+        "Status": "Running"
+      },
+      {
+        "Name": "WslService",
+        "Status": "Running"
+      }
+    ],
+    "socket": {
+      "path": "C:\\Users\\Admin\\AppData\\Local\\Docker\\run\\dockerInference",
+      "length": 0,
+      "attributes": 1056,
+      "creationUtc": "2026-09-16T12:59:56.2534385Z",
+      "lastWriteUtc": "2026-09-16T12:59:56.2534385Z"
+    },
+    "targetExists": false,
+    "wsl": " \u0000 \u0000N\u0000A\u0000M\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000S\u0000T\u0000A\u0000T\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000V\u0000E\u0000R\u0000S\u0000I\u0000O\u0000N\u0000\r\n\u0000\r\n\u0000*\u0000 \u0000d\u0000o\u0000c\u0000k\u0000e\u0000r\u0000-\u0000d\u0000e\u0000s\u0000k\u0000t\u0000o\u0000p\u0000 \u0000 \u0000 \u0000 \u0000S\u0000t\u0000o\u0000p\u0000p\u0000e\u0000d\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\r\n\u0000\r\n\u0000\r\n",
+    "afunix": "\r\nSERVICE_NAME: afunix \r\n        TYPE               : 1  KERNEL_DRIVER  \r\n        STATE              : 4  RUNNING \r\n                                (STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)\r\n        WIN32_EXIT_CODE    : 0  (0x0)\r\n        SERVICE_EXIT_CODE  : 0  (0x0)\r\n        CHECKPOINT         : 0x0\r\n        WAIT_HINT          : 0x0\r\n",
+    "wsl_decoded_display": "  NAME              STATE           VERSION\r\n\r\n* docker-desktop    Stopped         2\r\n\r\n\r\n"
+  },
+  "permission_context": "Non-elevated; no escalation, ACL/driver/configuration changes or alternative filesystem API",
+  "runtime_moves_completed": [],
+  "deletions": [],
+  "project_source_edits": [],
+  "services_started_by_agent_commands": [
+    "Installed Docker Desktop; engine did not become ready"
+  ],
+  "containers_created": [],
+  "images_pulled": [],
+  "compose_actions": [],
+  "network_evidence_limit": "Docker-owned startup logs include remote feature-flag and telemetry HTTP 200 entries. Desktop startup is not evidence of an offline host. No project MCP/business service, documentation fetch, model canary, or CI dispatch was invoked by the agent.",
+  "sensitive_scope": "Read bounded local diagnostic logs/metadata; no credential file, container environment, real credential, encrypted secret or personal configuration file opened. No raw settings/proxy log copied into evidence.",
+  "linux_package": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-linux\\p4-linux-offline-input.tar",
+    "sha256": "a19eee0f96cb21f432e3295cdf8ec93ea42a7c8d5edf5262ddd578b73c5a2186",
+    "status": "PREPARED_NOT_EXECUTED"
+  },
+  "L5": "BLOCKED_EXECUTION_ROUTE / NOT_TESTED",
+  "actual_CI": "NOT_TESTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "U01": "UNMET_DEPENDENCY",
+  "U02": "UNMET_DEPENDENCY",
+  "U03": "NOT_TESTED",
+  "U04": "MANUAL_ROUTE_EXECUTED_VERIFIED (P3 scope; unchanged)",
+  "U05": "NOT_TESTED",
+  "U06": "UNMET_DEPENDENCY / NOT_TESTED",
+  "U07": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS (limited scope; unchanged)",
+  "missing_inputs": [
+    "An engineer-restored local Docker engine or another explicitly approved ready Linux runtime; another chat approval alone cannot resolve Windows error 1920.",
+    "Known local image with Python 3.13/git/locked offline test dependencies; image/container inventory has not run.",
+    "Engineer-reviewed L5 host and hook execution route, with explicit exception for any required external model call.",
+    "Actual CI evidence bound to the current delivery, or a separately authorized execution route."
+  ],
+  "record_backup": {
+    "path": ".mj-agent-local/p4-docker-diagnosis-records-before.zip",
+    "sha256": "e625c2cb77277632826ddfc292cc6336e788cafe2549a8a83b305b0505eb59df"
+  },
+  "recovery": "No runtime path move succeeded, so no rename restoration is required. The source endpoint remains present. HEAD restores committed baseline only; public P0-P4 backups and the G19 recovery ZIP/diff retain their documented scopes.",
+  "subagents": "NONE",
+  "new_project_tests": 0
+}

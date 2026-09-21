@@ -1,9 +1,20 @@
 ---
 name: mj-agent-git-sync
-description: This skill should be used when the user asks to sync the latest develop or main changes into the current working branch, or sync main back to develop after a hotfix merge in mj-agent. Make sure to use this skill whenever the user mentions their branch is behind, has conflicts with develop, wants to update their branch, pulling or merging upstream changes, or says "同步分支", "拉取最新", "sync branch", "pull develop", "merge develop", "update branch", "rebase", "分支落后", "branch behind", "合并最新代码", "develop 有新代码", "branch outdated", "catch up with develop", "同步 main 到 develop", "hotfix 合并后同步", "sync main to develop", "自更新", "origin 有新提交", "协作者推了代码", "self-update" in the mj-agent context. Three modes: dev-time sync (work branch ← origin/develop), hotfix回sync (develop ← origin/main), self-update (any branch ← origin/<same>). Forces merge over rebase per project policy. Do not use for: branch creation (use mj-agent-git-branch), branch deletion (use mj-agent-git-delete), or push (use mj-agent-git-push).
+description: "适用于 mj-agent 的开发期/热修回同步/同分支自更新。输入：branch/base、remote状态、dirty、模式。流程：precheck→模式→fetch→差异→merge按意图解冲突→验证。输出：目标ref纳入，冲突清零且工作树一致。Use when：同步origin/develop到当前feature分支。Do not use for：把已合并分支及worktree删掉；建议git-delete，不把sync当cleanup。授权：保持merge不用rebase；冲突/dirty/写目标核授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
+
 # mj-agent Git Sync
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to sync the latest develop or main changes into the current working branch, or sync main back to develop after a hotfix merge in mj-agent. Make sure to use this skill whenever the user mentions their branch is behind, has conflicts with develop, wants to update their branch, pulling or merging upstream changes, or says "同步分支", "拉取最新", "sync branch", "pull develop", "merge develop", "update branch", "rebase", "分支落后", "branch behind", "合并最新代码", "develop 有新代码", "branch outdated", "catch up with develop", "同步 main 到 develop", "hotfix 合并后同步", "sync main to develop", "自更新", "origin 有新提交", "协作者推了代码", "self-update" in the mj-agent context. Three modes: dev-time sync (work branch ← origin/develop), hotfix回sync (develop ← origin/main), self-update (any branch ← origin/<same>). Forces merge over rebase per project policy. Do not use for: branch creation (use mj-agent-git-branch), branch deletion (use mj-agent-git-delete), or push (use mj-agent-git-push).
+
 
 ## Overview
 
@@ -136,7 +147,7 @@ git merge origin/<current>
 ```
 
 - 无冲突 → Step 5
-- 有冲突 → **H2**（Claude 提案 → user 选择 → 执行）
+- 有冲突 → **H2**（Codex 提案 → user 选择 → 执行）
 
 ### Step 5 — 同步后验证
 
@@ -147,7 +158,7 @@ git log --oneline -3
 
 **开发中同步**：
 - 若 Step 1 stash → `git stash pop`（pop 冲突 → H3）
-- Handoff："同步完成 ✓ 可继续开发，完成后 → /mj-agent-git-commit → /mj-agent-git-push"
+- Handoff："同步完成 ✓ 可继续开发，完成后 → mj-agent-git-commit → mj-agent-git-push"
 
 **Hotfix 回同步**（额外）：
 ```bash
@@ -165,7 +176,7 @@ git pushall   # 推 develop 到 gitee + origin
 | # | 触发 | 行为 | 级别 |
 |---|---|---|---|
 | **H1** | git status 有未提交修改 | ⚠️ 三选：commit / stash / 取消 | Soft |
-| **H2** | merge 冲突 | ⚠️ Claude 提案→用户选→执行（详见 H2 流程） | Soft |
+| **H2** | merge 冲突 | ⚠️ Codex 提案→用户选→执行（详见 H2 流程） | Soft |
 | **H3** | stash pop 冲突 | ⚠️ 告知 stash vs 合并冲突，需手动解后 `git stash drop` | Soft |
 | **H4** | 当前 main + 跨分支合并意图 | 🚫 硬阻断：main 不允跨分支 merge | Hard |
 | **H4a** | main + 意图模糊 | ⚠️ "你在 main。要从 origin/main 拉最新（如 release PR 合并后）还是误操作？" 选 (1) 自更新 (2) 取消 | Soft |
@@ -179,22 +190,22 @@ git pushall   # 推 develop 到 gitee + origin
 
 ### H2 冲突解决流程
 
-> Claude 是"提案者"非"决策者"，每个冲突区域最终方案需 user 确认。
+> Codex 是"提案者"非"决策者"，每个冲突区域最终方案需 user 确认。
 
 1. 展示冲突概况：`git diff --name-only --diff-filter=U`
-2. 🔴 人工选：(1) Claude 分析提方案（推荐）/ (2) 用户自解 / (3) 放弃 `git merge --abort`
-4. Claude 提案（仅路径 1）：逐文件读冲突区，分析双方语义（按 H2a「按意图」纪律），提方案 + 理由
+2. 🔴 人工选：(1) Codex 分析提方案（推荐）/ (2) 用户自解 / (3) 放弃 `git merge --abort`
+4. Codex 提案（仅路径 1）：逐文件读冲突区，分析双方语义（按 H2a「按意图」纪律），提方案 + 理由
 5. 🔴 用户确认：每区选 接受 / 修改 / 跳过
 6. 执行：`git add <files>` → `git commit -m "merge: 合并 <base> 最新内容，解决冲突"` → 交付前跑 Level A（H2a 第 4 点）
 
 #### H2a 按意图解冲突纪律
 
-> 借「resolving-merge-conflicts」思路、按 mj-agent native 承载（与 evidence-before-assertion + 留痕文化同构；正文工艺过 [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §9）。**默认解冲突、按原始意图保真**——`git merge --abort` 是 user 显式选的安全出口，**不是 AI 默认动作**。
+> 借「resolving-merge-conflicts」思路、按 mj-agent native 承载（与 evidence-before-assertion + 留痕文化同构；正文工艺过 `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §9）。**默认解冲突、按原始意图保真**——`git merge --abort` 是 user 显式选的安全出口，**不是 AI 默认动作**。
 
 1. **先找 why**：每段冲突 hunk，读相关 commit message / 关联 PR / issue，弄清两侧改动各自**意图**（非只看语法谁覆盖谁）。
 2. **保留双方意图**：能并存则并存；冲突时选**匹配本次 sync 目标**的一侧，merge commit body **文档化取舍**（选哪侧、为何）。
 3. **绝不发明**：只解既有冲突，不引入两侧都没有的新行为。
-4. **续行前跑 Level A**：解完（或 `git stash pop` 后）先跑 `uv run ruff check` / `uv run mypy src/mj_agent` / `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit`（矩阵见 [[../../../sdd/workflows/execution-loop|execution-loop]] §5）确认绿，再交付 / 续 rebase 链。
+4. **续行前跑 Level A**：解完（或 `git stash pop` 后）先跑 `uv run ruff check` / `uv run mypy src/mj_agent` / `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit`（矩阵见 `repo:sdd/workflows/execution-loop.md` §5）确认绿，再交付 / 续 rebase 链。
 5. **承诺解完**：AI 默认把冲突解到底（含 stacked-PR rebase 链续到底），**不主动** `--abort` 逃避。
 
 **安全出口（user-only）**：任何步骤 **user** 说"放弃" → `git merge --abort`，告知"合并已中止，分支恢复同步前状态"。此为 HITL 安全阀，**AI 不主动触发**。
@@ -210,7 +221,7 @@ git rev-parse --git-common-dir  # 应返回 .bare
 
 告知"当前 worktree 缺 `config.worktree`，git 回退读 `.bare/config` 的 `core.bare = true`，导致工作树命令被拒"。
 
-🔴 人工选：(1) 自动修复（推荐）(2) 手动（参 `/mj-agent-git-branch` §Bare Worktree Health Check）(3) 取消
+🔴 人工选：(1) 自动修复（推荐）(2) 手动（参 `mj-agent-git-branch` §Bare Worktree Health Check）(3) 取消
 
 自动修复（PowerShell，仅路径 1）：
 
@@ -234,7 +245,7 @@ $cfgPath = "$bareDir/worktrees/$wtName/config.worktree"
 1. **禁止 main 上跨分支 merge**：H4 硬拒；自更新（origin/main → main）例外
 2. **develop 上允许自更新和 hotfix 回同步**：非两者触 H4b
 3. **merge 策略强制**：rebase 引导 merge (H5)
-4. **冲突保护**：Claude 修改前展示方案等 user 确认
+4. **冲突保护**：Codex 修改前展示方案等 user 确认
 
 ## Anti-patterns
 
@@ -246,7 +257,6 @@ $cfgPath = "$bareDir/worktrees/$wtName/config.worktree"
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §1（Stage 13 Push / Stage 17 hotfix → develop 同步在 17-stage loop 的位置；base branch 同步 + hotfix sync 引用本 skill）
-- [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]]（pushall 双推依据）
-- [[../../../docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy|Git_Branch_Strategy]]（Bare Worktree Health Check H8 依据）
-- mj-system `.claude/skills/mj-sys-git-sync/SKILL.md`（直接派生源；mj-agent 改 5 branch type，去 optimization）
+- `repo:sdd/workflows/execution-loop.md` §1（Stage 13 Push / Stage 17 hotfix → develop 同步在 17-stage loop 的位置；base branch 同步 + hotfix sync 引用本 skill）
+- `repo:docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md`（pushall 双推依据）
+- `repo:docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`（Bare Worktree Health Check H8 依据）

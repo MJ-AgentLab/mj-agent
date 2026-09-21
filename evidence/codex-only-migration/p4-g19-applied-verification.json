@@ -1,0 +1,247 @@
+{
+  "at": "2026-09-18T12:16:01.572591+00:00",
+  "status": "APPLIED_AND_VERIFIED; G19_FAIL_CLOSED",
+  "authorization": "Exact two-tag delta already approved; user then explicitly instructed 你来执行, replacing manual-application-only route",
+  "target": "capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature",
+  "before_sha256": "586fe2a078748f9fe362008bcfaac47b60fd44afae0917d946e942b49e7da1bf",
+  "after_sha256": "da0ecc2a8a49c46548386cf4bf31cfc8fbec09dd5610dfeef492d19d486928bd",
+  "application": {
+    "method": "Normal git apply of the reviewed patch",
+    "roots": [
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked"
+    ],
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "source_command": [
+      "git",
+      "apply",
+      "--",
+      "evidence/codex-only-migration/p4-supplement-g19-proposed.diff"
+    ],
+    "copy_command": [
+      "git",
+      "apply",
+      "--",
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\evidence\\codex-only-migration\\p4-supplement-g19-proposed.diff"
+    ],
+    "no_protection_rejection_observed": true,
+    "no_guard_config_permissions_or_trust_change": true,
+    "not_proof_of_host_hook_activation": true
+  },
+  "backup": ".mj-agent-local\\p4-supplement\\g19-before.zip",
+  "backup_sha256": "4c75bd754cb6d4271d60c362a7e2f81620b02bb5b62f52ae030de93579787e69",
+  "git_state": "One uncommitted file delta on existing authorized test snapshot; no stage/commit/amend/remote change; original index untouched",
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_scenario_trace.py",
+        "--all",
+        "--scope",
+        "full"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Redaction clones the message so the live in-process state is untouched' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'The digested envelope retains executed_sql for recoverable-by-refetch' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Both on-disk write paths carry no verbatim biz cell value' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Evicting stale threads removes only threads older than the TTL' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'A dry run reports stale threads without deleting' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'Adding a new MCP server triggers A14 PR gate body declaration' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'All 5 memory pg entries reference the same native wrapper script' REQ+CTR tags bound + trace cross-ref OK\r\ncheck_bdd_scenario_trace: 24P / 0W / 0F (scope=full; over 6 capabilities)\r\n",
+      "seconds": 0.119,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_traceability.py",
+        "--all"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit_code": 0,
+      "output": "check_traceability.py — validating 6 trace.yml (G2/G5; schema v1.2)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\trace.yml: schema valid (3 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\trace.yml: schema valid (5 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\trace.yml: schema valid (6 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\trace.yml: schema valid (2 REQ links; 1 cross_capability_refs)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "seconds": 0.117,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit_code": 0,
+      "output": "..                                                                       [100%]\r\n============================== warnings summary ===============================\r\n..\\..\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n..\\..\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n..\\..\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n..\\..\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n  D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument\r\n    uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n2 passed, 4 warnings in 0.07s\r\n",
+      "seconds": 1.898,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_scenario_trace.py",
+        "--all",
+        "--scope",
+        "full"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Redaction clones the message so the live in-process state is untouched' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'The digested envelope retains executed_sql for recoverable-by-refetch' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Both on-disk write paths carry no verbatim biz cell value' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Evicting stale threads removes only threads older than the TTL' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'A dry run reports stale threads without deleting' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'Adding a new MCP server triggers A14 PR gate body declaration' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'All 5 memory pg entries reference the same native wrapper script' REQ+CTR tags bound + trace cross-ref OK\r\ncheck_bdd_scenario_trace: 24P / 0W / 0F (scope=full; over 6 capabilities)\r\n",
+      "seconds": 0.118,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_traceability.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_traceability.py — validating 6 trace.yml (G2/G5; schema v1.2)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\trace.yml: schema valid (3 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\trace.yml: schema valid (5 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\trace.yml: schema valid (6 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\trace.yml: schema valid (2 REQ links; 1 cross_capability_refs)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "seconds": 0.112,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "..                                                                       [100%]\r\n============================== warnings summary ===============================\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n  D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument\r\n    uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n2 passed, 4 warnings in 0.07s\r\n",
+      "seconds": 1.871,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_scenario_trace.py",
+        "--all",
+        "--scope",
+        "full"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Redaction clones the message so the live in-process state is untouched' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'The digested envelope retains executed_sql for recoverable-by-refetch' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Both on-disk write paths carry no verbatim biz cell value' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Evicting stale threads removes only threads older than the TTL' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'A dry run reports stale threads without deleting' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'Adding a new MCP server triggers A14 PR gate body declaration' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'All 5 memory pg entries reference the same native wrapper script' REQ+CTR tags bound + trace cross-ref OK\r\ncheck_bdd_scenario_trace: 24P / 0W / 0F (scope=full; over 6 capabilities)\r\n",
+      "seconds": 0.12,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_traceability.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "exit_code": 0,
+      "output": "check_traceability.py — validating 6 trace.yml (G2/G5; schema v1.2)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\trace.yml: schema valid (3 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\trace.yml: schema valid (5 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\trace.yml: schema valid (6 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\trace.yml: schema valid (2 REQ links; 1 cross_capability_refs)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "seconds": 0.113,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "exit_code": 0,
+      "output": "..                                                                       [100%]\r\n============================== warnings summary ===============================\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n  D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument\r\n    uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n2 passed, 4 warnings in 0.06s\r\n",
+      "seconds": 1.896,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_scenario_trace.py",
+        "--all",
+        "--scope",
+        "full"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Redaction clones the message so the live in-process state is untouched' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'The digested envelope retains executed_sql for recoverable-by-refetch' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Both on-disk write paths carry no verbatim biz cell value' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Evicting stale threads removes only threads older than the TTL' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'A dry run reports stale threads without deleting' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'Adding a new MCP server triggers A14 PR gate body declaration' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: scenario 'All 5 memory pg entries reference the same native wrapper script' REQ+CTR tags bound + trace cross-ref OK\r\ncheck_bdd_scenario_trace: 24P / 0W / 0F (scope=full; over 6 capabilities)\r\n",
+      "seconds": 0.121,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_traceability.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+      "exit_code": 0,
+      "output": "check_traceability.py — validating 6 trace.yml (G2/G5; schema v1.2)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\trace.yml: schema valid (3 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\trace.yml: schema valid (5 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\trace.yml: schema valid (6 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\trace.yml: schema valid (2 REQ links; 1 cross_capability_refs)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "seconds": 0.118,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+      "exit_code": 0,
+      "output": "..                                                                       [100%]\r\n============================== warnings summary ===============================\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79\r\n  D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument\r\n    uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n2 passed, 4 warnings in 0.06s\r\n",
+      "seconds": 2.027,
+      "evidence_level": "WINDOWS_OFFLINE_CHECKER_OR_CONTROLLED_PYTEST"
+    }
+  ],
+  "source_identity_override": {
+    "path": "capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature",
+    "sha256": "da0ecc2a8a49c46548386cf4bf31cfc8fbec09dd5610dfeef492d19d486928bd"
+  },
+  "scope": "Only approved two-tag repair applied; no change to steps/assertions/checkers/gates or business behavior",
+  "topology_binding": "Existing commit e25cda790f881e7986122e94a8597c7acf3d1bbc plus one explicitly uncommitted G19 file delta on all three copies; not a new committed delivery",
+  "prior_red_evidence": "p4-supplement-local-checks.json; G19 22P/0W/2F retained",
+  "remaining": "L5 host route and Linux/actual CI remain unverified; P5 BLOCKED_PREREQUISITE; no external services or P5 cleanup"
+}

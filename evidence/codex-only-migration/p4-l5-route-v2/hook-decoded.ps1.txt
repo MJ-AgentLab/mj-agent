@@ -1,0 +1,1 @@
+$ErrorActionPreference = 'Stop'; try { $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { throw 'root' }; $p = Join-Path $r 'scripts/sdd/run_codex_hook.ps1'; if (-not (Test-Path -LiteralPath $p)) { throw 'handler' }; & $p } catch { [Console]::Out.WriteLine('{"decision":"block","reason":"UNKNOWN: project hook unavailable"}') }

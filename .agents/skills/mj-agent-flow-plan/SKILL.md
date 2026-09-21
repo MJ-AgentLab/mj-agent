@@ -1,37 +1,20 @@
 ---
 name: mj-agent-flow-plan
-description: "Stage 4 plan authoring: produce the complete working-plan body with 任务拆解, execution order, risks, verification and acceptance criteria; use when asked to 写 plan, draft plan, lay out an implementation plan; the body lands on disk only after the Owner approves."
+description: "适用于 mj-agent 的Stage4完整working-plan正文。输入：Issue、repo-scan事实、SPEC、AC。流程：context→任务拆分→doc-plan→风险→验证→完成标准关联。输出：任务/顺序/风险/验证/AC/文档矩阵完整。Use when：为已核验Issue起草完整实施Plan。Do not use for：只评估文档需求；建议doc-plan，不生成开发Plan正文。授权：Plan正文落盘需Owner；B及保护面单列；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Plan Body Authoring (HITL Stage 4)
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill orchestrates mj-agent working Plan body authoring (HITL Stage 4) — produces complete `plans/[PLAN]_*.md` content with 8 sections (linked artifacts / context / scope / 任务拆解 / 执行顺序 / 风险 / 验证 / AC / 关联), sub-calling mj-agent-doc-plan (PR-B4) for §7.1 Documentation Decision matrix and optionally mj-agent-flow-repo-scan when fact-check missing. Make sure to use this skill whenever the user says "写 plan", "写 plan body", "执行计划", "draft plan", "task breakdown", "任务拆解", "怎么推进", "Plan §X 步骤", "实施计划", "Stage 4 plan", "plan body 主体", or has Repo Scan output in hand and is ready to lay out the working plan in mj-agent. Direction-distinct from mj-agent-doc-plan which only evaluates **what documentation is needed**; this skill handles the **full Plan body**. Outputs the Plan body, then after Owner 拍板 (Stage 5 Gate 1) writes it to plans/[PLAN]_*.md directly via 写入 (ADR-034 propose→拍板→apply; approval does not unlock hooks). Do not use for: Stage 0 Intake (use mj-agent-flow-intake), Stage 3 Repo Scan (use mj-agent-flow-repo-scan), Stage 6 SPEC/ADR/RUNBOOK authoring (use mj-agent-doc-author in PR-B4), or Stage 8 Implementation (use mj-agent-flow-implement).
+
 
 ## Overview
 
@@ -44,7 +27,7 @@ Authors full mj-agent working Plan body — `plans/[PLAN]_*.md` content covering
 | `mj-agent-doc-plan`（PR-B4） | **WHAT documentation is needed** | Doc evaluation only — Action=Create/Update/None per type |
 | `mj-agent-flow-plan`（本 skill） | **HOW the work proceeds** (full Plan body) | Stage 4 — orchestrates 8 plan sections; sub-calls doc-plan for doc-decision sub-section |
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 4 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.5 Plan Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
+**Reference**: `repo:sdd/workflows/execution-loop.md` §4.1（Stage 4 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.5 Plan Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
 
 > mj-agent 当前**没有 TEMPLATE_PLAN.md**（Phase D 起首份；当前用现存 plans/ 范例作为 reference style）。
 
@@ -99,9 +82,9 @@ issue=$(echo "$branch" | grep -oE '[0-9]+' | head -1)
 ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 ```
 
-如 Stage 3 Repo Scan **未运行** → 提示先用 `/mj-agent-flow-repo-scan`，再回本 skill；或低风险任务下显式跳过（记录跳过理由）。
+如 Stage 3 Repo Scan **未运行** → 提示先用 `mj-agent-flow-repo-scan`，再回本 skill；或低风险任务下显式跳过（记录跳过理由）。
 
-**逼问回流（leading word「逼问」）**：若 context 里仍有**未决分支 / 真歧义**（Stage 0 未逼清，或 plan 期才浮现）→ 先回 `/mj-agent-flow-intake` Step 2b 的逼问纪律（**一次一问 + 推荐答案锚点**）逼清，再进 Step 2 拆解。**校准**：逼问只对前期真歧义；方向已明确 → 直接进 Step 2，不加门（与 `/mj-agent-flow-scope-drift` Stage 9「实现中查偏离」分工不同）。**术语锐化回流**：plan 期遇术语与 glossary/catalog 冲突或模糊 → 回 `/mj-agent-flow-intake` Step 2c 主动锐化（挑战 + 边界场景压测 + 即时更新工件；catalog 改动走 biz-catalog-sync 必停）。
+**逼问回流（leading word「逼问」）**：若 context 里仍有**未决分支 / 真歧义**（Stage 0 未逼清，或 plan 期才浮现）→ 先回 `mj-agent-flow-intake` Step 2b 的逼问纪律（**一次一问 + 推荐答案锚点**）逼清，再进 Step 2 拆解。**校准**：逼问只对前期真歧义；方向已明确 → 直接进 Step 2，不加门（与 `mj-agent-flow-scope-drift` Stage 9「实现中查偏离」分工不同）。**术语锐化回流**：plan 期遇术语与 glossary/catalog 冲突或模糊 → 回 `mj-agent-flow-intake` Step 2c 主动锐化（挑战 + 边界场景压测 + 即时更新工件；catalog 改动走 biz-catalog-sync 必停）。
 
 ## Step 2: Task Breakdown
 
@@ -114,11 +97,11 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 | **风味识别**（mj-agent 专属） | 标注每子任务属于哪个实现风味（execution-loop §5 实现 3 风味）：A 纯代码 / B in-source canonical 永远 HITL / C infra |
 | **纵切优先**（leading word「纵切」/ tracer-bullet） | 拆多 PR/issue 时优先**端到端纵切**而非按层水平切——见下「纵切纪律」 |
 
-**纵切纪律（leading word「纵切」，per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）**：
+**纵切纪律（leading word「纵切」，per `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6）**：
 - 每片**端到端穿透相关层**且**自身可验、可独立 review-合**（如新增一业务指标：`qcm_catalog.yaml` 条目 → `find_biz_context`/tool → guardrail/precheck 放行 → 一条 eval case），按 **blocked-by 依赖序**发布。
 - 先 **prefactoring**：make the change easy（必要预重构单独成片），then make the easy change。
 - ❌ **水平切**（先全 catalog → 再全 tool → 再全 test）——单片不可独立验、强层间耦合。
-- 切片落 issue 时继承该片 AC + blocked-by 序（→ `/mj-agent-git-issue` Scope 纵切片归属）。
+- 切片落 issue 时继承该片 AC + blocked-by 序（→ `mj-agent-git-issue` Scope 纵切片归属）。
 
 **输出格式**（写入 Plan §3 任务拆解）：
 
@@ -137,7 +120,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 
 **Delegate to mj-agent-doc-plan**：根据 scope 评估 10 类文档（Plan / SPEC / ADR / RUNBOOK / GUIDE / STANDARD / Local ISSUE / ASSESSMENT / CHANGELOG / INDEX）每类 Action（Create / Update / None） + Path + Reason。
 
-PR-B4 之前：手工填 §7.1 矩阵，参 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 3 / Stage 4 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.5）+ Stage 3 Repo Scan §7.1 同款表。
+PR-B4 之前：手工填 §7.1 矩阵，参 `repo:sdd/workflows/execution-loop.md` §4.1（Stage 3 / Stage 4 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.5）+ Stage 3 Repo Scan §7.1 同款表。
 
 输出嵌入 Plan §3 任务拆解末尾或单独 §3.X 子段。**不**直接写 doc 内容（那是 Stage 6 / Stage 8 by mj-agent-doc-author / mj-agent-flow-implement）。
 
@@ -201,7 +184,7 @@ docker compose -f docker/compose.yaml up -d / down
 - [ ] <每条 = scope §2 包含的一项动作 + 验证证据>
 - [ ] PR 通过 CI + review + merge
 - [ ] CHANGELOG.md [Unreleased] 已更新（feat/fix 时）
-- [ ] B 风味改动同步 EVAL backlog ticket（in-source canonical 改动；execution-loop §7.3 Rule 11 自动开单）
+- [ ] B 风味改动同步 EVAL backlog ticket（in-source canonical 改动；execution-loop §7.3 Rule 11 开单草案及明确发布授权）
 ```
 
 **关联**（Plan §8）：
@@ -273,11 +256,11 @@ state: "active"
 
 ## What This Skill DOES NOT DO
 
-- ❌ 未经 Owner 拍板（Stage 5 Gate 1）就写 `plans/[PLAN]_*.md`（拍板后 AI 直接 Write）
+- ❌ 未经 Owner 拍板（Stage 5 Gate 1）就写 `plans/[PLAN]_*.md`（拍板后 AI 直接 写入）
 - ❌ 不替代 `mj-agent-doc-plan`（doc-plan 仅 §7.1 子集；本 skill 上位）
 - ❌ 不替代 `mj-agent-flow-repo-scan`（repo-scan 是 Stage 3 事实核查；本 skill 是 Stage 4 plan 编写，需 repo-scan 输出）
 - ❌ 不替代 `mj-agent-doc-author`（author 是 Stage 6 SPEC/ADR/RUNBOOK；本 skill 仅产 working Plan body）
-- ❌ 不实施 Plan（Stage 8 by mj-agent-flow-implement / Edit / Write）
+- ❌ 不实施 Plan（Stage 8 by mj-agent-flow-implement / 编辑 / 写入）
 - ❌ 不修改 Issue / branch / SPEC / ADR
 - ❌ 不跑测试 / 验证（仅在 Plan §6 列命令；Stage 10 才执行）
 
@@ -285,25 +268,24 @@ state: "active"
 
 | Tool / Skill | 用途 |
 |---|---|
-| Bash `gh issue view` | Step 1 fetch Issue body |
-| Bash `git branch` / `ls plans/` | Step 1 locate context |
-| Read | Step 1 Plan / Repo Scan Result |
+| shell `gh issue view` | Step 1 fetch Issue body |
+| shell `git branch` / `ls plans/` | Step 1 locate context |
+| 读取 | Step 1 Plan / Repo Scan Result |
 | `mj-agent-doc-plan`（PR-B4） | **Step 3 sub-call**：§7.1 Documentation Decision matrix |
 | `mj-agent-flow-repo-scan` | Step 1 prerequisite（建议先 Stage 3） |
 | `mj-agent-doc-author`（PR-B4） | 后续 Stage 6 接力（Documentation Decision Action=Create 时） |
 | `mj-agent-flow-implement` | 后续 Stage 8 接力 |
-| Write | Owner 拍板（Stage 5 Gate 1）后 AI 把 Plan body 落盘到 plans/ |
+| 写入 | Owner 拍板（Stage 5 Gate 1）后 AI 把 Plan body 落盘到 plans/ |
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 4 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.5 Plan Rules + Output 字段）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 4 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.5 Plan Rules + Output 字段）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Repo_Scan.md` §7.1（Lite Phase A 占位）
 - 现存 `plans/[PLAN]_*.md` 范例（mj-agent 当前 Plan 风格 reference）
-- [[../../../sdd/lifecycle|lifecycle]] §2（working vs canonical 边界）
-- `.claude/skills/mj-agent-doc-plan/SKILL.md`（PR-B4 落地，Step 3 子例程）
+- `repo:sdd/lifecycle.md` §2（working vs canonical 边界）
+- `.agents/skills/mj-agent-doc-plan/SKILL.md`（PR-B4 落地，Step 3 子例程）
 - `.agents/skills/mj-agent-flow-repo-scan/SKILL.md`（Stage 3 前置）
-- `.claude/skills/mj-agent-doc-author/SKILL.md`（PR-B4 落地，Stage 6 接力）
-- mj-system `.claude/skills/mj-sys-flow-plan/SKILL.md`（直接派生源）
+- `.agents/skills/mj-agent-doc-author/SKILL.md`（PR-B4 落地，Stage 6 接力）
 
 ## Anti-patterns
 
@@ -317,14 +299,8 @@ state: "active"
 
 ```
 Plan body 已输出（对话）。
-Owner 拍板（HITL Gate 1 / Stage 5）后由 AI Write 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
+Owner 拍板（HITL Gate 1 / Stage 5）后由 AI 写入 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
 HITL Gate 1（Stage 5）通过后下一步：
-  → Stage 6 Codex substitute edge-flow-plan-doc-author 写 SPEC/ADR/RUNBOOK（PR-B4 落地）
-  → Stage 8 $mj-agent-flow-implement 直接实施（如不需新 SPEC）
+  → Stage 6 mj-agent-doc-author 写 SPEC/ADR/RUNBOOK（PR-B4 落地）
+  → Stage 8 mj-agent-flow-implement 直接实施（如不需新 SPEC）
 ```
-
-<!-- codex-route:edge-flow-plan-doc-author -->
-> Codex route: No native Codex carrier for the doc family: follow the shared documentation semantics (sdd/adapters/development-agent.md + docs/_templates), propose the document body in conversation, obtain Owner approval, then write it and run the repo doc validators.
-
-<!-- codex-route:edge-flow-plan-flow-implement -->
-> Codex route: invoke `$mj-agent-flow-implement` (native carrier; handoff, always)

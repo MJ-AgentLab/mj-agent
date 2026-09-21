@@ -58,7 +58,7 @@ from scripts.sdd.fixture_comparators import (  # noqa: E402
 
 FIXTURES_RELPATH = Path("tests/fixtures/development-agent/scenarios")
 SCENARIO_IDS = ("S1", "S2", "S3", "S4", "S5", "S6")
-TOOLS = ("claude", "codex")
+TOOLS = ("codex",)
 INPUT_PATCH_ROLES = ("pre-applied", "expected-diff")
 FIXTURE_BASE_PLACEHOLDER = "<fixture-base>"
 
@@ -303,23 +303,11 @@ def _setup_body(
     # bash on both platforms, and — critically — the codex `-c` value is a TOML
     # basic string where a Windows backslash path would inject invalid escapes
     # (\f, \c) and corrupt the parse.
-    clone_posix = clone.resolve().as_posix()
-    run_posix = run_dir.resolve().as_posix()
-    prompt_posix = (run_dir / "prompt.md").resolve().as_posix()
     print(f"[setup] run dir ready: {run_dir}")
     print(f"[setup] clone: {clone}")
     print(f"[setup] prompt: {run_dir / 'prompt.md'}")
-    print("[setup] invoke (claude):")
-    print(
-        f'  cd "{clone_posix}" && claude -p "$(cat \'{prompt_posix}\')" '
-        f'--permission-mode acceptEdits --add-dir "{run_posix}"'
-    )
-    print("[setup] invoke (codex, non-interactive; </dev/null in bash):")
-    print(
-        f'  cd "{clone_posix}" && codex exec '
-        f"-c 'sandbox_workspace_write.writable_roots=[\"{run_posix}\"]' "
-        f"\"$(cat '{prompt_posix}')\" </dev/null"
-    )
+    print("[setup] Review prompt and exact project root manually before host execution.")
+    print("[setup] No trust, hook activation, model run or permission override is performed.")
     return 0
 
 

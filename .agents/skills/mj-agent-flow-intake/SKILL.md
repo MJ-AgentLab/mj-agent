@@ -1,37 +1,20 @@
 ---
 name: mj-agent-flow-intake
-description: "Stage 0 task intake: convert a raw requirement into an Intake Result with risk level, scope, documentation needs and stop points; use for 评估任务, 需求评估, task intake, turning a vague description into an actionable engineering task; stops before issue creation."
+description: "适用于 mj-agent 的Stage0原始需求受理。输入：用户目标、现状、影响对象与约束。流程：类型→scope→真歧义→术语→7模块→可测AC→风险→拆分文档→HITL→草案。输出：Intake含风险/边界/文档/停点/可验证AC。Use when：评估给查询工具增加一个参数的任务。Do not use for：已确认方案请直接编码；建议implement，不重新扩写需求或开issue。授权：模糊关键scope先问；10停点及Docker镜像显式勾选；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Task Intake (HITL Stage 0)
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill performs mj-agent task Intake (HITL Stage 0) — converts user requirements into a structured Intake Result with risk-level / scope / documentation needs / HITL decision points, and decides whether to write `plans/[INTAKE]_*.md`. Make sure to use this skill whenever the user says "评估任务", "intake", "Issue 创建前", "task admissibility", "需求收口", "新任务评估", "task intake", "需求评估", or asks to convert a vague description / existing plan / chat / spec into an actionable engineering task in the mj-agent repo. mj-agent-specific risk taxonomy adds 4 §3.1 必停 triggers: runtime-skill-content-change (src/mj_agent/skills/**/SKILL.md body) / prompt-version-bump (system.md version) / biz-catalog-sync (qcm_catalog.yaml) / sql-guardrail-relax (tools/sql/{guardrail,precheck}.py). Outputs Intake Result + Issue Draft + HITL Questions and stops. Do not use for: GitHub Issue creation (use mj-agent-git-issue), branch creation (use mj-agent-git-branch), repo fact-check (use mj-agent-flow-repo-scan, Stage 3), or full Plan body authoring (use mj-agent-flow-plan, Stage 4).
+
 
 ## Overview
 
@@ -47,7 +30,7 @@ Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flo
 
 **Reference**:
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位；mj-agent 调版 Phase B+ 派生）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 → 本 skill 映射；⚠ §4.1 是 Stage→Skill 映射表**不是** Stage 0 prompt——per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
+- `repo:sdd/workflows/execution-loop.md` §3.1（必停规则，含 4 项 mj-agent 专属）+ §4.1（Stage 0 → 本 skill 映射；⚠ §4.1 是 Stage→Skill 映射表**不是** Stage 0 prompt——per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
 
 ## Workflow
 
@@ -67,7 +50,7 @@ digraph intake {
 
   落盘判定 [label="§2.1 落盘判定\nrisk=High OR\n多模块/in-source canonical/biz catalog OR\nHITL点≥3 OR\n多迭代周期" shape=diamond];
 
-  落盘 [label="Write plans/[INTAKE]_<id>_<brief>.md" shape=box];
+  落盘 [label="写入 plans/[INTAKE]_<id>_<brief>.md" shape=box];
   对话输出 [label="对话输出 Intake Result" shape=box];
 
   s9 [label="Step 9: 输出 Issue Draft\n(mj-agent 5 类 type → 填 .github/ISSUE_TEMPLATE/)" shape=box];
@@ -105,7 +88,7 @@ digraph intake {
 
 ## Step 1: 识别任务类型
 
-mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]] §5）：
+mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5）：
 
 | Type | Description | Base Branch | PR Target |
 |---|---|---|---|
@@ -126,13 +109,13 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 ## Step 2b: Grilling 逼问纪律（仅前期真歧义）
 
-> **leading word「逼问」**（per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）。**仅对前期真歧义开**、用于把模糊需求逼清——**不是执行门**。
+> **leading word「逼问」**（per `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6）。**仅对前期真歧义开**、用于把模糊需求逼清——**不是执行门**。
 
 **何时触发**（任一）：需求含**未决分支** / **新颖**（无既有 ADR/SPEC/catalog 对位） / **真歧义**（同一描述 ≥2 种合理解读）。已定方向的任务**不触发** → 直接进 Step 3。
 
 **逼问纪律**：
 - **一次一问** —— 一次抛多问令人迷失；逐题推进。
-- **每问附推荐答案锚点** —— 给出你的首选答案 + 理由，用户只需 同意 / 改正（对齐 mj-agent `AskUserQuestion`「(Recommended) 首选项放第一」惯例；离散单点用 `AskUserQuestion`，连续追问走对话）。
+- **每问附推荐答案锚点** —— 给出你的首选答案 + 理由，用户只需 同意 / 改正（对齐 mj-agent `向 Owner 询问`「(Recommended) 首选项放第一」惯例；离散单点用 `向 Owner 询问`，连续追问走对话）。
 - **沿 design tree 逐依赖下钻** —— 上层决定锁定后再问其依赖项。
 - **能查代码 / glossary / catalog 就别臆测** —— 先 `find_biz_context` / 读 `qcm_catalog.yaml` / glossary，查不到再问。
 - **停止判据（checkable）** —— design-tree 每分支标 `resolved` 或 `defer(M-FU)`；全标完即停，进 Step 3。
@@ -148,9 +131,9 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 > 借「domain-modeling」**主动**锐化领域语言的思路、按 mj-agent native 承载（**不引入 `CONTEXT.md`**——挂既有分布式工件：glossary / catalog / decisions）。
 
-- **当场挑战**：intake 遇术语与既有 [[../../../docs/glossary/upstream_business_warehouse|glossary]] / `qcm_catalog.yaml` **冲突或模糊** → 不放过，当场厘清。
+- **当场挑战**：intake 遇术语与既有 `repo:docs/glossary/upstream_business_warehouse.md` / `qcm_catalog.yaml` **冲突或模糊** → 不放过，当场厘清。
 - **边界场景压测**：用具体 edge case 逼出概念边界（"X 算不算 Y？这种情况归哪类？"）。
-- **即时更新工件**：术语一旦敲定**立即** inline 更新对应工件——术语 → glossary；指标 / 维度 → `qcm_catalog.yaml`（**4 必停面之一**，改动走 `/mj-agent-runtime-biz-catalog-sync` propose→拍板→apply，**不被本纪律绕过**）；难逆决策 → `decisions/` ADR（开列判据见 `/mj-agent-doc-author`）。
+- **即时更新工件**：术语一旦敲定**立即** inline 更新对应工件——术语 → glossary；指标 / 维度 → `qcm_catalog.yaml`（**4 必停面之一**，改动走 `mj-agent-runtime-biz-catalog-sync` propose→拍板→apply，**不被本纪律绕过**）；难逆决策 → `decisions/` ADR（开列判据见 `mj-agent-doc-author`）。
 - 跨上游仓术语：走 attribution → glossary 元文档 wikilink（跨仓解耦规约）。
 
 ## Step 3: 影响范围（mj-agent 7 模块 + 跨边界）
@@ -169,7 +152,7 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 | 跨边界 | mj-agent-postgres / mj-agent-redis 容器（storage stack） | Medium 起 |
 | infra | `docker/` / `pyproject.toml` / `langgraph.json` | Low / Medium |
 | **docker 供应链** | `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **High** + 改前 Owner 拍板（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4。**不在** execution-loop §3.1 的 4 项 in-source 必停之列——那 4 项是 `src/mj_agent/` 面）。Dockerfile 其余行仍 Low / Medium |
-| docs | `docs/` / `CLAUDE.md` / `INDEX.md` | Low（纯 docs）/ Medium（含 STANDARD/ADR） |
+| docs | `docs/` / `AGENTS.md` / `INDEX.md` | Low（纯 docs）/ Medium（含 STANDARD/ADR） |
 
 ## Step 4: AC 可验证性（gate）
 
@@ -206,11 +189,11 @@ mj-agent 5 type（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Co
 
 ### 文档需求
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 3 → /mj-agent-flow-repo-scan · Stage 6 → /mj-agent-doc-author；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.6）+ Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
+按 `repo:sdd/workflows/execution-loop.md` §4.1（Stage 3 → mj-agent-flow-repo-scan · Stage 6 → mj-agent-doc-author；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.6）+ Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
 
 ## Step 8: HITL 触发
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停规则（通用 12 + mj-agent 专属 4；条数以 kernel §3.1 与 `policies/ai-agent.md` §4 canonical enum 为准，勿硬记位号）：
+按 `repo:sdd/workflows/execution-loop.md` §3.1 必停规则（通用 12 + mj-agent 专属 4；条数以 kernel §3.1 与 `policies/ai-agent.md` §4 canonical enum 为准，勿硬记位号）：
 
 通用必停：
 1. 任务目标/范围/AC 不清楚
@@ -235,7 +218,7 @@ mj-agent 专属（按 canonical enum 名引用，不用位号）：
 ## Step 9: Issue Draft
 
 Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84efc` / 2026-05-20 起在仓）
-——intake **不另造结构**。按 branch type 路由到模板，填好后交 `/mj-agent-git-issue` Step 2 落盘：
+——intake **不另造结构**。按 branch type 路由到模板，填好后交 `mj-agent-git-issue` Step 2 落盘：
 
 | Branch type | Template | Title prefix | Label |
 |---|---|---|---|
@@ -248,7 +231,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 专题模板（无 1:1 分支类型，按主题选；分支类型仍取上表）：`agent.md` → `[Agent]` /
 `runtime.md` → `[Runtime]` / `archive.md` → `[Archive]`。
 
-填写要点（完整规则见 `/mj-agent-git-issue` Step 2b）：
+填写要点（完整规则见 `mj-agent-git-issue` Step 2b）：
 
 - 剥掉模板 YAML frontmatter；`<...>` 占位全部替换。
 - **`HITL Trigger Check` 必逐条作答** —— Step 8 的必停判定在这里落成可查证据；不适用标 `— No`，
@@ -297,43 +280,42 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 - 建议路径: plans/[INTAKE]_<id>_<brief>.md
 
 ### Next Step
-- HITL 确认后调 /mj-agent-git-issue 创建 GitHub Issue
-- 或调 /mj-agent-git-branch 直接进 Stage 2（issue-id optional）
+- HITL 确认后调 mj-agent-git-issue 创建 GitHub Issue
+- 或调 mj-agent-git-branch 直接进 Stage 2（issue-id optional）
 ```
 
 ## What This Skill DOES NOT DO
 
-- ❌ 不创建 GitHub Issue（那是 `/mj-agent-git-issue` Stage 1）
-- ❌ 不创建 branch / worktree（那是 `/mj-agent-git-branch` Stage 2）
+- ❌ 不创建 GitHub Issue（那是 `mj-agent-git-issue` Stage 1）
+- ❌ 不创建 branch / worktree（那是 `mj-agent-git-branch` Stage 2）
 - ❌ 不写代码 / 改 src/ / 改 docs/
 - ❌ 不进入 Repo Scan / Plan / SPEC（那些是 Stage 3 / 4 / 6）
-- ❌ 不替代 `/mj-agent-flow-repo-scan`（intake 是 Stage 0 准入；repo-scan 是 Stage 3 事实核查）
-- ❌ 不自动落盘 plans/[INTAKE]_*.md（仅在 §2.1 触发 + 用户确认后由用户用 Write 落盘）
+- ❌ 不替代 `mj-agent-flow-repo-scan`（intake 是 Stage 0 准入；repo-scan 是 Stage 3 事实核查）
+- ❌ 不自动落盘 plans/[INTAKE]_*.md（仅在 §2.1 触发 + 用户确认后由用户用 写入 落盘）
 
 ## Sub-skill / Tool Calls
 
 | Tool | 用途 |
 |---|---|
-| Read | 用户提供的描述 / 现有 Plan / Issue 链接 |
-| Bash `gh issue view <num>` | 用户引用已有 Issue 时核对 |
-| Bash `git status` / `git branch --show-current` | Step 1 当前上下文 |
-| Glob / Grep | Step 3 影响范围粗扫（不深入；深度扫给 Stage 3 Repo Scan） |
+| 读取 | 用户提供的描述 / 现有 Plan / Issue 链接 |
+| shell `gh issue view <num>` | 用户引用已有 Issue 时核对 |
+| shell `git status` / `git branch --show-current` | Step 1 当前上下文 |
+| 文件枚举 / rg | Step 3 影响范围粗扫（不深入；深度扫给 Stage 3 Repo Scan） |
 
 无 sub-skill；本 skill 是 17-stage 闭环的源头，不调用其他 skill。
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 + §4.1（Stage 0 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
+- `repo:sdd/workflows/execution-loop.md` §3.1 + §4.1（Stage 0 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.1 Intake Prompt）
 - `mj-system@docs/rule/[STANDARD]_AI_Engineering_Intake.md` v1.0（Lite Phase A 占位上游）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]（type/scope）
-- [[decisions/ADR-006_Fail_Safe_Reads|ADR-006]] / [[decisions/ADR-009_Biz_Domain_As_Primary_Data_Source|ADR-009]]（数据边界）
-- mj-system `.claude/skills/mj-sys-flow-intake/SKILL.md`（直接派生源）
+- `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`（type/scope）
+- `repo:decisions/ADR-006_Fail_Safe_Reads.md` / `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（数据边界）
 
 ## Anti-patterns
 
 - **不要** 跳过 Step 5 风险评估（缺少风险信息会让下游 Stage 5/7/9/11 HITL Gate 误放过）
 - **不要** 在 Intake 阶段写完整 SPEC / 实现计划（那是 Stage 4/6 的职责）
-- **不要** 自动调用 /mj-agent-git-issue（HITL Gate 1 在 Stage 5；intake 后必须等用户确认）
+- **不要** 自动调用 mj-agent-git-issue（HITL Gate 1 在 Stage 5；intake 后必须等用户确认）
 - **不要** 为 in-source canonical 改动跳过 §3.1 trigger 10/11/12/13（mj-agent 专属硬约束）
 
 ## Handoff to mj-agent-git-issue
@@ -341,16 +323,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 ```
 Intake 完成
 HITL Gate（用户确认）通过后：
-  → $mj-agent-git-issue 创建 GitHub Issue（用 Step 9 Issue Draft）
-  → $mj-agent-git-branch 创建 worktree（issue-id 可选）
-  → $mj-agent-flow-repo-scan 进 Stage 3 事实核查
+  → mj-agent-git-issue 创建 GitHub Issue（用 Step 9 Issue Draft）
+  → mj-agent-git-branch 创建 worktree（issue-id 可选）
+  → mj-agent-flow-repo-scan 进 Stage 3 事实核查
 ```
-
-<!-- codex-route:edge-flow-intake-flow-repo-scan -->
-> Codex route: invoke `$mj-agent-flow-repo-scan` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-intake-git-branch -->
-> Codex route: invoke `$mj-agent-git-branch` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-intake-git-issue -->
-> Codex route: invoke `$mj-agent-git-issue` (native carrier; handoff, conditional)

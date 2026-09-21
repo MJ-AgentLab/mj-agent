@@ -1,43 +1,26 @@
 ---
 name: mj-agent-flow-self-review
-description: "Stage 11 pre-commit self-review: verify the staged diff against the plan, run the scope-drift sub-check and the 12-item checklist, and draft the commit message; use for AI 自检, self review, commit 前检查; outputs go/no-go and never commits by itself."
+description: "适用于 mj-agent 的Stage11提交前自检。输入：staged/实际指定diff、Plan、验证结果。流程：context→scope-drift→双段→12项→5a-d反扫→message→风险。输出：12项和scope/反扫/证据齐，GO仅自检结论。Use when：对未暂存实现做提交前自检并拟message。Do not use for：立即提交全部文件；仅自检，实际stage/commit转git-commit授权范围。授权：自检不含git add/commit；B批记录缺失NO-GO；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — AI Self-review (HITL Stage 11)
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill performs mj-agent AI self-review (HITL Stage 11) before commit — verifies the staged diff matches the linked Plan / SPEC, runs scope-drift sub-call, and produces the execution-loop §6 (实操矩阵见 §5) dual-section report (本地验证 / AI 自检) plus a 12-item mj-agent-tuned checklist (kernel execution-loop §6 is an 11-item list; these 12 are the mj-agent-specific tuning) plus a commit message draft via mj-agent-git-commit. Make sure to use this skill whenever the user says "AI 自检", "self review", "commit 前检查", "diff 自审", "本地验证后", "提交前自查", "pre-commit review", "Stage 11", "11-item checklist", "12-item checklist", or after running tests / lint / typecheck and before `git commit` in the mj-agent context. Includes mj-agent-specific 5a/5b/5c/5d reverse scan extending to src/mj_agent/{skills,prompts}/ + qcm_catalog.yaml. Outputs go/no-go recommendation with HITL questions for medium/high risk; does NOT auto-commit. Do not use for: Stage 9 scope drift detection only (use mj-agent-flow-scope-drift, sub-called here), Stage 10 command matrix execution (use mj-agent-flow-verify), Stage 13 review response on others' comments (use mj-agent-flow-review-respond), or commit message format only (use mj-agent-git-commit, sub-called here).
+
+
 ## Overview
 
-Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `/mj-agent-flow-scope-drift` (Stage 9) with execution-loop §6 dual-section discipline（本地验证 / AI 自检 严格不混用；实操矩阵见 §5）+ mj-agent 12-item checklist + commit message draft via `/mj-agent-git-commit`。
+Pre-commit gate — verifies generated changes are correct, scoped, ready。Combines `mj-agent-flow-scope-drift` (Stage 9) with execution-loop §6 dual-section discipline（本地验证 / AI 自检 严格不混用；实操矩阵见 §5）+ mj-agent 12-item checklist + commit message draft via `mj-agent-git-commit`。
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §6（11 项清单；含 item 5 的 5a/5b/5c/5d 反向扫描 + item 10 system.md version bump check + item 11 commit type/scope） + [[../../../sdd/workflows/execution-loop|execution-loop]] §6（双段约束；实操矩阵见 §5）.
+**Reference**: `repo:sdd/workflows/execution-loop.md` §6（11 项清单；含 item 5 的 5a/5b/5c/5d 反向扫描 + item 10 system.md version bump check + item 11 commit type/scope） + `repo:sdd/workflows/execution-loop.md` §6（双段约束；实操矩阵见 §5）.
 
 ## Workflow
 
@@ -47,11 +30,11 @@ digraph self_review {
   start [label="User triggers: 'self review'\nor pre-commit gate" shape=doublecircle];
 
   s1 [label="Step 1: Capture context\n• git diff --staged\n• Linked Plan/SPEC/Issue (Stage 9 output if available)" shape=box];
-  s2 [label="Step 2: Run scope-drift\n→ delegate to $mj-agent-flow-scope-drift" shape=box];
+  s2 [label="Step 2: Run scope-drift\n→ delegate to mj-agent-flow-scope-drift" shape=box];
   s3 [label="Step 3: execution-loop §6 dual-section verify\n• 本地验证段 (人工客观)\n• AI 自检段 (生成内容可信度)" shape=box];
   s4 [label="Step 4: 12-item checklist\n(mj-system 11 + item 12 = system.md version bump)" shape=box];
   s5 [label="Step 5: 5a/5b/5c/5d 反向扫描\n(扩展到 src/mj_agent/{skills,prompts}/ + qcm_catalog.yaml)" shape=box];
-  s6 [label="Step 6: Commit message draft\n→ delegate to $mj-agent-git-commit" shape=box];
+  s6 [label="Step 6: Commit message draft\n→ delegate to mj-agent-git-commit" shape=box];
   s7 [label="Step 7: Risk classification" shape=diamond];
 
   go [label="Output: GO\n+ commit message\n+ checklist (all ✅)" shape=box];
@@ -63,18 +46,12 @@ digraph self_review {
 }
 ```
 
-<!-- codex-route:edge-flow-self-review-flow-scope-drift -->
-> Codex route: invoke `$mj-agent-flow-scope-drift` (native carrier; call, always)
-
-<!-- codex-route:edge-flow-self-review-git-commit -->
-> Codex route: invoke `$mj-agent-git-commit` (native carrier; call, always)
-
 ## When to Run This Skill
 
 **MUST run before**：
 - `git commit` for non-trivial changes（>5 files OR >100 lines OR API/DB/secret/in-source canonical 改动）
 - Push to PR（pre-push gate）
-- After running 本地验证（`/mj-agent-flow-verify` Stage 10 完成后紧接动作）
+- After running 本地验证（`mj-agent-flow-verify` Stage 10 完成后紧接动作）
 
 **MAY skip**：
 - Single-file trivial change（rename / typo）
@@ -96,7 +73,7 @@ git log -1 --format=%s 2>/dev/null    # 上次 commit 标题（避免重复）
 
 ## Step 2: Run Scope-Drift Check
 
-**Delegate to `/mj-agent-flow-scope-drift`**（嵌套调用）：
+**Delegate to `mj-agent-flow-scope-drift`**（嵌套调用）：
 
 输入：当前 staged diff + linked artifacts。
 输出：drift report（per-file classification + Severity）。
@@ -122,7 +99,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | Health probe | ✅ | `uv run mj-agent check` 通过 |
 | biz_catalog drift | ✅ | `uv run python scripts/diff_biz_schema.py` 的 **result code**（`PASS_NO_DRIFT` / `DRIFT_DETECTED`）。两个 SKIP 码**不是**验证证据——`SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT` 只能记为「未验证」 |
 | **「代码看起来正常」** | ❌（属 AI 自检） | — |
-| **「Claude 已检查」** | ❌（属 AI 自检） | — |
+| **「Codex 已检查」** | ❌（属 AI 自检） | — |
 
 ### 「AI 自检」段（生成内容可信度自查）
 
@@ -146,21 +123,21 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | # | 检查项 | 来源 |
 |---|---|---|
 | 1 | 改动符合 mj-agent 模块边界（agent/llm/prompt/skill/sql/db/config + tests/eval/ci/deps/infra） | mj-agent Architecture |
-| 2 | 已读真实数据来源 / 列名 / 数据流（biz_catalog + find_biz_context），未加未要求的预处理 | mj-agent CLAUDE.md "Data boundary" |
+| 2 | 已读真实数据来源 / 列名 / 数据流（biz_catalog + find_biz_context），未加未要求的预处理 | mj-agent `repo:policies/data-boundary.md` |
 | 3 | 无硬编码敏感信息 / IP / 密码 / 绝对路径 / 残留调试代码 / `.env` / `secrets.enc` | 通用 |
-| 4 | 文档同步：canonical / working / INDEX / CLAUDE.md allowlist | documentation §7.1（4 类 allowlist）+ §7.2（tri-track 三段分组） |
+| 4 | 文档同步：canonical / working / INDEX / AGENTS.md allowlist | documentation §7.1（4 类 allowlist）+ §7.2（tri-track 三段分组） |
 | 5 | Commit message 符合 `<type>(<scope>): <summary>` v1.1 规范 + 35 scope 闭合 allowlist（且未用 type / 项目阶段当 scope，per §4.3） | Commit Convention v1.1 |
 | 6 | Branch × commit type 矩阵正确（5 branch × 7 type；mj-agent 不含 optimization） | Commit Convention §5.2 |
 | 7 | scope-drift Severity = None / Low（如 ≥ Medium，必先 HITL） | mj-agent-flow-scope-drift 输出 |
 | 8 | 本地验证段 ≠ AI 自检段（execution-loop §6 严格不混用） | self-review §3 |
 | 9 | 用户可感知变更 → CHANGELOG `[Unreleased]` 区块更新（feat/fix/perf 必更；docs/test/infra 视情） | Commit Convention 规则 |
 | 10 | 无 PR description 字段缺失 | mj-agent-git-pr / 5 PR templates |
-| 11 | 已 grep 文档大改后 stale references（CLAUDE.md "Documentation Maintenance" 规则；mj-agent 扩展含 src/mj_agent/{skills,prompts}/） | execution-loop §6 Rule 5a |
+| 11 | 已 grep 文档大改后 stale references（AGENTS.md "Documentation Maintenance" 规则；mj-agent 扩展含 src/mj_agent/{skills,prompts}/） | execution-loop §6 Rule 5a |
 | **12**（mj-agent 专属） | system.md `version` bump 时 `eval_references` 同步审查；in-source canonical 改动同步开 EVAL backlog ticket（execution-loop §7.3 Rule 11） | execution-loop §6 item 10 + §7.3 Rule 11 |
 
 ## Step 5: 5a/5b/5c/5d 反向扫描（mj-agent 扩展）
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §6 Rule 5（拆 5a/5b/5c/5d）+ mj-agent 扩展（5a 反扫目标含 in-source canonical）：
+按 `repo:sdd/workflows/execution-loop.md` §6 Rule 5（拆 5a/5b/5c/5d）+ mj-agent 扩展（5a 反扫目标含 in-source canonical）：
 
 ### 5a: 既有文档失真扫描
 
@@ -169,7 +146,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 ```bash
 # 扫描目标（mj-agent 扩展）
 docs/**/*.md
-CLAUDE.md
+AGENTS.md
 src/mj_agent/skills/**/SKILL.md         # mj-agent 扩展
 src/mj_agent/prompts/*.md               # mj-agent 扩展
 src/mj_agent/biz_catalog/qcm_catalog.yaml  # mj-agent 扩展（biz_catalog drift）
@@ -177,10 +154,10 @@ src/mj_agent/biz_catalog/qcm_catalog.yaml  # mj-agent 扩展（biz_catalog drift
 
 ```bash
 # 例：函数 / 类 / 列名重命名
-Grep "`<old_name>`" docs/ CLAUDE.md src/mj_agent/skills/ src/mj_agent/prompts/
+rg "`<old_name>`" docs/ AGENTS.md src/mj_agent/skills/ src/mj_agent/prompts/
 
 # 例：文件路径重组
-Grep "`<old/path/file.py>`" docs/ CLAUDE.md src/mj_agent/skills/
+rg "`<old/path/file.py>`" docs/ AGENTS.md src/mj_agent/skills/
 
 # 例：biz_catalog drift（offline 快照；SKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT = 未验证，非通过）
 uv run python scripts/diff_biz_schema.py
@@ -192,10 +169,10 @@ uv run python scripts/diff_biz_schema.py
 
 比对 Repo Scan §7.1 Documentation Decision 表 Action=Create 行，确认对应 Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT 已创建并填 frontmatter（schema 按 documentation §6；项目根 markdown 5 件按 documentation §2.6 例外不要求 frontmatter）。
 
-### 5c: INDEX / CLAUDE.md / CHANGELOG 同步
+### 5c: INDEX / AGENTS.md / CHANGELOG 同步
 
 - `docs/INDEX.md` 同步：A5 校验
-- `CLAUDE.md` allowlist 检查：documentation §7.1（4 类 allowlist：全局高频标准 / 高频运行信息 / 项目目录入口 / mj-agent 特化 runtime 语义）
+- `AGENTS.md` allowlist 检查：documentation §7.1（4 类 allowlist：全局高频标准 / 高频运行信息 / 项目目录入口 / mj-agent 特化 runtime 语义）
 - `CHANGELOG.md` `[Unreleased]`：feat/fix/perf 必更
 
 ### 5d: SPEC Delta Check
@@ -209,7 +186,7 @@ uv run python scripts/diff_biz_schema.py
 
 ## Step 6: Commit Message Draft
 
-**Delegate to `/mj-agent-git-commit`**（PR-B1 落地），输出：
+**Delegate to `mj-agent-git-commit`**（PR-B1 落地），输出：
 - 单 commit / 多 commit 拆分建议
 - 每个 commit message：`<type>(<scope>): <一句话摘要>` + body（如需）
 - 排除文件检查（.env / secrets.enc / `*.pem` / 临时调试文件）
@@ -222,7 +199,7 @@ uv run python scripts/diff_biz_schema.py
 | **Medium** | 1-2 项 checklist ⚠️；或 scope-drift = Low/Medium；或多模块影响 | GO + 提示重点核对 ⚠️ 项 |
 | **High** | 任一 checklist ❌；或 scope-drift = High；或 §3.1 必停 4 项触发；或 in-source canonical 改动未走 §3.1 HITL；或 `docker/Dockerfile` 外部 registry 镜像引用改动未走 Owner 拍板（canonical `secrets-grants-or-prod-config`；内部 `COPY --from=<stage>` 不在内） | **HITL pause** + 3-5 questions |
 
-**HITL questions 格式**：参 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.3 7-段格式。
+**HITL questions 格式**：参 `repo:sdd/workflows/execution-loop.md` §3.3 7-段格式。
 
 ## Output Format Example
 
@@ -239,7 +216,7 @@ uv run python scripts/diff_biz_schema.py
 - Lines: +145 / -22
 - Branch: feature/<id>-<desc>
 
-### Scope-Drift（from /mj-agent-flow-scope-drift）
+### Scope-Drift（from mj-agent-flow-scope-drift）
 - Severity: Low
 - 8/9 in-scope, 1 unclassified（CHANGELOG note）
 
@@ -280,11 +257,11 @@ uv run python scripts/diff_biz_schema.py
 ### Risk: Low
 ### Recommendation: GO
 
-### Commit Message Draft（from /mj-agent-git-commit）
+### Commit Message Draft（from mj-agent-git-commit）
 \`\`\`
 feat(skill): add mj-agent-flow-self-review (Stage 11 self-review skill)
 
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+Co-Authored-By: <verified contributor name> <verified contributor email>
 \`\`\`
 
 ### HITL Questions
@@ -294,27 +271,26 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ## What This Skill DOES NOT DO
 
 - ❌ 不 auto-commit（仅输出 commit message draft；user 决定 commit 时机）
-- ❌ 不 push（push = Stage 13 by /mj-agent-git-push）
+- ❌ 不 push（push = Stage 13 by mj-agent-git-push）
 - ❌ 不替代 PR review（PR review = Stage 15-16）
 - ❌ 不修复发现的问题（仅报告；user 决定后调对应 skill）
-- ❌ 不调 /mj-agent-flow-post-merge（post-merge = Stage 17）
+- ❌ 不调 mj-agent-flow-post-merge（post-merge = Stage 17）
 
 ## Sub-skill Calls
 
 | Sub-skill | 何时调用 |
 |---|---|
-| `$mj-agent-flow-scope-drift` | Step 2 嵌套调，获取 drift report |
-| `$mj-agent-git-commit` | Step 6 生成 commit message draft（按 v1.0 规范） |
+| `mj-agent-flow-scope-drift` | Step 2 嵌套调，获取 drift report |
+| `mj-agent-git-commit` | Step 6 生成 commit message draft（按 v1.0 规范） |
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §6（item 5 的 5a/5b/5c/5d + item 10 version bump + item 11 commit type/scope）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §6（双段约束；实操矩阵见 §5）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.1]]（type/scope 矩阵）
+- `repo:sdd/workflows/execution-loop.md` §6（item 5 的 5a/5b/5c/5d + item 10 version bump + item 11 commit type/scope）
+- `repo:sdd/workflows/execution-loop.md` §6（双段约束；实操矩阵见 §5）
+- `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`（type/scope 矩阵）
 - `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
 - `.agents/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）
 - `.agents/skills/mj-agent-git-commit/SKILL.md`（Stage 12 子例程）
-- mj-system `.claude/skills/mj-sys-flow-self-review/SKILL.md`（直接派生源）
 
 ## Anti-patterns
 
@@ -328,9 +304,8 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 ```
 Self-Review GO 后：
-  → $mj-agent-git-commit 用 Step 6 commit message draft 落 commit
-  → $mj-agent-git-push（Stage 13）pre-push checklist + 双推
+  → mj-agent-git-commit 用 Step 6 commit message draft 落 commit
+  → mj-agent-git-push（Stage 13）pre-push checklist + 双推
 ```
 
-<!-- codex-route:edge-flow-self-review-git-push -->
-> Codex route: invoke `$mj-agent-git-push` (native carrier; handoff, conditional)
+> 署名示例中的占位符不得写入提交；仅填已核实的协作者身份，未核实则省略可选 trailer，实际贡献在任务与 PR 正文记录。

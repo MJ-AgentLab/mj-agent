@@ -10,9 +10,9 @@ aliases:
   - mj-agent Quick Start
   - mj-agent 5 分钟启动
 created: 2026-05-18
-updated: 2026-07-08
+updated: 2026-09-21
 state: draft
-version: v0.2
+version: v0.3
 track: code
 owner: 项目负责人
 ---
@@ -21,12 +21,14 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 仓库环境从零到 Studio 首问跑通的赶时间版速查清单
 > **目标受众**：demo / 培训 / hotfix 现场赶时间的开发者；已熟悉 mj-agent 仅作 refresh 的回归者
-> **版本**：v0.2
-> **最后更新**：2026-07-08
+> **版本**：v0.3
+> **最后更新**：2026-09-21
 > **派生自**：mj-agent 原生（参考 mj-system 仓库 `[GUIDE]_Quick_Start_Setup.md` 9 步速查 + Troubleshooting 表的结构与写法；命令与术语均按 mj-agent 自身资产派生）
-> **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../CLAUDE|CLAUDE.md]]
+> **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../AGENTS|AGENTS.md]]
 
 ---
+
+> 原生开发维护、受控离线检查与恢复入口见 [[[GUIDE]_Developer_Onboarding|Developer Onboarding §4 / §6.4]]。下列凭据、服务启动和 live 步骤由 Owner 按环境单独授权；不是迁移验收默认动作。
 
 ## TL;DR
 
@@ -65,7 +67,7 @@ owner: 项目负责人
 本 GUIDE 是「**赶时间版**」——只列命令 + 验证；**不讲概念 / 不讲为什么**。若需要：
 
 - 理解仓库结构 / 双远端 / 分支模型 / 三轨道文档 / 提交推送 → [[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]
-- 理解 LLM provider 切换 / 数据边界 4 层 / 测试矩阵 → [[../../README|README]] + [[../../CLAUDE|CLAUDE.md]]
+- 理解 LLM provider 切换 / 数据边界 4 层 / 测试矩阵 → [[../../README|README]] + [[../../AGENTS|AGENTS.md]]
 - 故障诊断 / LangSmith trace / Studio H1-R2 验证矩阵 → [[[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7
 
 读完本份后下一站：跑通后回到 Developer Onboarding 补背景知识。
@@ -132,9 +134,9 @@ uv run python -c "import mj_agent; print('ok')"   # 期望：ok
 .\scripts\setup-env.ps1 -LlmProfile ark
 # 提示输入团队口令 → 自动解密 config/secrets.enc 注入 .env
 
-# MCP bundle → OS User env（Claude Code 的 .mcp.json ${VAR} 消费；同一口令）
-.\.claude\scripts\setup-mcp-secrets.ps1
-# ⚠ 跑完必须【完全重启】终端 + Claude Code（User env 只对新进程可见）
+# MCP bundle → OS User env（Codex 按 env_vars 白名单继承变量（独立授权操作）；同一口令）
+.\scripts\mcp\setup-mcp-secrets.ps1
+# ⚠ 跑完必须【完全重启】终端 + Codex（User env 只对新进程可见）
 ```
 
 无团队口令的 fallback：
@@ -142,7 +144,7 @@ uv run python -c "import mj_agent; print('ok')"   # 期望：ok
 ```bash
 cp .env.example .env
 # 编辑 .env 手工填 ARK_API_KEY + POSTGRES_ANALYST_USER / PASSWORD（向项目负责人申请）
-# 此路径没有 MCP secrets——Claude Code 的 ssh-manager / WAN pg MCP 起不来（app 本体不受影响）
+# 此路径未配置 MCP 凭据；memory MCP 是否可用另行验证。biz/ssh-manager 永不进入原生 MCP。
 ```
 
 ## §7 Step 7 — mj-agent check 验 DB + LLM 凭据
@@ -190,7 +192,7 @@ biz_dws 里有哪些日度总量表？
 | 启 Studio | `uv run langgraph dev` |
 | Lint | `uv run ruff check` |
 | Type-check | `uv run mypy src/mj_agent` |
-| 单元测试 | `uv run pytest tests/unit` |
+| 单元测试 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q` |
 
 ---
 
@@ -201,7 +203,7 @@ biz_dws 里有哪些日度总量表？
 | `ARK_API_KEY` 缺失 / `LLMConfigError` | 跑 `setup-env.ps1`，或 `cp .env.example .env` 后手填 |
 | 2024 端口占用 | `uv run langgraph dev --port 2025` |
 | `psycopg.OperationalError` 连接超时 | 检查 `POSTGRES_*_HOST/PORT` + 上游业务系统 pg 网络可达 |
-| `.env` 中文报错（python-dotenv UnicodeDecodeError） | `.env` 去中文注释；`.env.example` 保持 ASCII（[详见 CLAUDE.md §Environment](../../CLAUDE.md)）|
+| `.env` 中文报错（python-dotenv UnicodeDecodeError） | `.env` 去中文注释；`.env.example` 保持 ASCII（[详见 AGENTS.md §Environment](../../AGENTS.md)）|
 | `pytest tests/smoke` 全 skip | 预期；`conftest.py` 在凭据缺失时 skip 不 fail；smoke 默认排除 |
 | PowerShell `ExecutionPolicy` 阻 | `powershell -ExecutionPolicy Bypass -File ...` 或临时 `Set-ExecutionPolicy -Scope Process Bypass` |
 | `uv sync` 卡 deepseek/torch 包 | 公网代理 / 镜像源问题；可设 `UV_INDEX_URL` 切国内镜像 |
@@ -215,7 +217,7 @@ biz_dws 里有哪些日度总量表？
 - [[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]] — 概念 + 顺序 + 文档体系
 - [[[GUIDE]_Analyst_Day_One|Analyst Day-One]] — 分析师角色 day-1（非开发者）
 - [[../../README|README]] — 技术栈 / 命令矩阵 / 文档导航
-- [[../../CLAUDE|CLAUDE.md]] — AI 高频上下文 / Commands / Architecture
+- [[../../AGENTS|AGENTS.md]] — AI 高频上下文 / Commands / Architecture
 
 ## 更新记录
 

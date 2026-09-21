@@ -262,14 +262,14 @@ git status --short
 
 ```bash
 # 如果文件已被 Git 追踪，需先移除缓存再提交
-git rm --cached .claude/settings.local.json
+# 历史命令（不执行；旧客户端清理仅在 P5 获批后）: git rm --cached .claude/settings.local.json
 git add .gitignore
-git commit -m "infra(ci): 将 .claude/settings.local.json 加入 .gitignore"
+# 历史提交示例；本迁移不提交
 ```
 
 > [!TIP]
 > Claude Code 协作规则
-> 在 `CLAUDE.md` 中可加入以下规则，确保 Claude Code 在辅助提交时自动执行检查：
+> 在 `AGENTS.md` 中维护提交前规则，由 Codex 按现行授权执行检查：
 > - 每次 `git push` 前必须先执行 `git status --short`，确认工作目录为空
 > - 如有残留修改，逐项确认是否应纳入当前提交
 > - 不得提交 `.gitignore` 中列出的文件

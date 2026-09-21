@@ -1,10 +1,6 @@
 # capabilities/AGENTS.md
 
-> Tool-neutral local constraints for `capabilities/<domain>/<slug>/` — binds every AI agent
-> working here (Claude Code, Codex, any future authorized agent; roster in root `AGENTS.md`).
-> Codex discovers this file hierarchically (root → cwd); Claude Code imports it via the
-> sibling `capabilities/CLAUDE.md`. Rules live once in the project kernel (`sdd/` +
-> `policies/` + capability contracts) — this file only points.
+> Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
 ## Structure obligations
 
@@ -20,7 +16,7 @@
 - **Declared contract change** — semantic changes to `contracts/*.contract.yml` consumed
   across capabilities hit the canonical enum `declared-contract-change`
   (`policies/ai-agent.md` §4); stop and obtain Owner sign-off before editing.
-- **Frozen skill contracts** — `infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml`
+- **Frozen skill contracts** — `infrastructure/mcp-server-governance/contracts/development-skill.contract.yml`
   freezes 8 infra skills by content hash. Editing a frozen SKILL.md body requires Owner
   approval + re-freeze per the canonical algorithm documented in that contract's header
   (reproduce the old hash first to prove the algorithm, then record the new hash and bump
@@ -37,7 +33,11 @@ uv run python scripts/sdd/generate_index.py   # after adding/removing a capabili
 
 ## See also
 
-- Root `AGENTS.md` (roster + self-enforced boundaries) · `capabilities/CLAUDE.md`
+- Root `AGENTS.md` (roster + self-enforced boundaries)
   (Claude-specific working notes, same layer)
 - `sdd/constitution.md` · `sdd/lifecycle.md` · `sdd/gates.md` · `sdd/workflows/` (task routing)
 - `policies/ai-agent.md` §4 (canonical 10-enum) + §7 (pre-flight verification discipline)
+
+## Authoring details
+
+spec.yml 字段与 suite 以 `sdd/templates/` 为准；保留 adapter_coverage 现有 schema。高风险 REQ 必有 bdd.examples、behavior.feature 及 trace BDD automation_status。工作流见 `sdd/workflows/{new-capability,evolve-capability,bugfix-drift,cross-capability-change,archive-capability}.md`。gate 姿态以 CI 实况为准，不复制旧时点计数。

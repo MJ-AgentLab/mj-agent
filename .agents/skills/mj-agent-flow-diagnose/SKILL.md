@@ -1,17 +1,28 @@
 ---
 name: mj-agent-flow-diagnose
-description: This skill runs mj-agent disciplined diagnosis of hard / flaky / perf bugs (feedback-loop-first, HITL Stage 8/10 邻接) — build a tight red-capable deterministic signal BEFORE hypotheses, minimise the repro, rank 3-5 falsifiable hypotheses, instrument one variable at a time, write the regression test at the right seam BEFORE fixing, then post-mortem "what structure would have prevented it". Make sure to use this skill whenever the user says "排查 bug", "复现", "诊断", "diagnose", "debug this", "为什么失败", "为什么报错", "性能回归", "perf regression", "flaky", "时好时坏", "查不出原因", "find root cause" in the mj-agent context. mj-agent red-signal maps to a minimal pytest / eval case, `uv run mj-agent check`, a Studio / SQL repro, or git bisect. Do not use for: Stage 8 coding methodology incl. simple obvious bug fixes (use mj-agent-flow-implement Step 3b), Stage 10 verification matrix (use mj-agent-flow-verify), or Stage 11 self-review (use mj-agent-flow-self-review). 触达 4 必停面的修复仍走 §3.1 必停 propose→拍板→apply，不被本 skill 绕过。
+description: "适用于 mj-agent 的难复现/flaky/perf根因诊断。输入：失败输入、环境、最小反馈、目标代码。流程：先红信号→最小化→3-5可证伪假设→单变量→回归先行→修复→清理归因。输出：原红信号与回归双绿，根因有证据。Use when：同输入偶发失败，先帮我最小复现。Do not use for：明显拼写错误已有失败断言；建议implement简单bug路径，不强制完整诊断。授权：4专属面先propose；live repro须明确授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
+
 
 # mj-agent Flow — Diagnose (HITL Stage 8/10 邻接)
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill runs mj-agent disciplined diagnosis of hard / flaky / perf bugs (feedback-loop-first, HITL Stage 8/10 邻接) — build a tight red-capable deterministic signal BEFORE hypotheses, minimise the repro, rank 3-5 falsifiable hypotheses, instrument one variable at a time, write the regression test at the right seam BEFORE fixing, then post-mortem "what structure would have prevented it". Make sure to use this skill whenever the user says "排查 bug", "复现", "诊断", "diagnose", "debug this", "为什么失败", "为什么报错", "性能回归", "perf regression", "flaky", "时好时坏", "查不出原因", "find root cause" in the mj-agent context. mj-agent red-signal maps to a minimal pytest / eval case, `uv run mj-agent check`, a Studio / SQL repro, or git bisect. Do not use for: Stage 8 coding methodology incl. simple obvious bug fixes (use mj-agent-flow-implement Step 3b), Stage 10 verification matrix (use mj-agent-flow-verify), or Stage 11 self-review (use mj-agent-flow-self-review). 触达 4 必停面的修复仍走 §3.1 必停 propose→拍板→apply，不被本 skill 绕过。
+
+
 ## Overview
 
-硬 bug / 性能回归 / flaky 的**纪律化诊断**子流程。工作位置：被 `/mj-agent-flow-implement` Step 3b 委派（难复现 / perf / flaky / 查不出根因），或用户直接触发。核心信条——**90% 在于先建一个会对"这个 bug"变红的 tight / 确定性反馈环（红信号），再谈假设**；修复后红信号转绿即闭环。与 `evidence-before-assertion` 同源：红信号就是实证。
+硬 bug / 性能回归 / flaky 的**纪律化诊断**子流程。工作位置：被 `mj-agent-flow-implement` Step 3b 委派（难复现 / perf / flaky / 查不出根因），或用户直接触发。核心信条——**90% 在于先建一个会对"这个 bug"变红的 tight / 确定性反馈环（红信号），再谈假设**；修复后红信号转绿即闭环。与 `evidence-before-assertion` 同源：红信号就是实证。
 
-> **leading word「红信号」**（per [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6）= 会对当前 bug 确定性变红、修复后转绿的最小信号。
+> **leading word「红信号」**（per `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6）= 会对当前 bug 确定性变红、修复后转绿的最小信号。
 
-**Reference**：[[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A/B 矩阵——红信号常落在 Level A 一条最小检查）。
+**Reference**：`repo:sdd/workflows/execution-loop.md` §5（Level A/B 矩阵——红信号常落在 Level A 一条最小检查）。
 
 ## Workflow
 
@@ -43,7 +54,7 @@ digraph diagnose {
 | 判定 | 场景 |
 |---|---|
 | **MUST** | 难复现 bug / 性能回归 / flaky（时好时坏）/ 查不出根因；被 flow-implement Step 3b 委派 |
-| **MAY skip** | 简单显见 bug（typo / 明确单点）→ 仍在 `/mj-agent-flow-implement` Step 3b 内按 Rule 7 解决 |
+| **MAY skip** | 简单显见 bug（typo / 明确单点）→ 仍在 `mj-agent-flow-implement` Step 3b 内按 Rule 7 解决 |
 | **MUST NOT** | 当通用编码方法论（用 flow-implement）/ 当验证矩阵（用 flow-verify）/ 当自检（用 flow-self-review） |
 
 ## Step 1: 建"会变红"的反馈环（红信号）
@@ -55,7 +66,7 @@ digraph diagnose {
 | 最小 `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/...::test_x` | 逻辑 / guardrail / precheck / 工具行为 bug |
 | `uv run mj-agent check` | DB / LLM 凭证 / 连接 / 配置 drift |
 | 最小 eval case（`tests/eval/`） | SQL 生成 / skill routing / LLM 行为质量 bug |
-| Studio repro（`/mj-agent-infra-studio-probe`）/ curl | 端到端 graph / 中间件 / envelope bug |
+| Studio repro（`mj-agent-infra-studio-probe`）/ curl | 端到端 graph / 中间件 / envelope bug |
 | 最小 SQL repro（只读账号） | 数据边界 / 时间谓词 / row_count bug |
 | `git bisect` | "之前好、现在坏"的回归——二分定位引入 commit |
 
@@ -67,7 +78,7 @@ digraph diagnose {
 
 ## Step 3: 排序可证伪假设（3-5 条）
 
-列 3-5 条**可证伪**假设，每条写成"若 X 是因，则改 Y 信号转绿 / 改 Z 更糟"。按"最可能 × 最易验"排序，**展示给 user 可重排**（一次一问式，对齐 `/mj-agent-flow-intake` 逼问纪律）。❌ 不要不建红信号就直接跳到某个假设动手改。
+列 3-5 条**可证伪**假设，每条写成"若 X 是因，则改 Y 信号转绿 / 改 Z 更糟"。按"最可能 × 最易验"排序，**展示给 user 可重排**（一次一问式，对齐 `mj-agent-flow-intake` 逼问纪律）。❌ 不要不建红信号就直接跳到某个假设动手改。
 
 ## Step 4: 插桩（一次一变量）
 
@@ -77,18 +88,18 @@ digraph diagnose {
 
 定位 root cause 后，**先在正确架构缝写一条会红的回归测试**（缝优先复用既有、放最高合理层——常 = 一条 unit 或一条 eval），再从根修复（不加掩盖症状的防御层；遵 flow-implement Rule 7）。修后跑 Step 1 红信号 + 新回归测试**双双转绿**。
 
-> **必停不可绕**：若修复触达 4 必停面（`tools/sql/guardrail.py` / `precheck.py` / `prompts/system.md` / `src/mj_agent/skills/*` body / `qcm_catalog.yaml`）→ 走 [[../../../policies/ai-agent|ai-agent]] §8/§9 propose→拍板→apply（经对应 `/mj-agent-runtime-*`），不被本 skill 绕过。
+> **必停不可绕**：若修复触达 4 必停面（`tools/sql/guardrail.py` / `precheck.py` / `prompts/system.md` / `src/mj_agent/skills/*` body / `qcm_catalog.yaml`）→ 走 `repo:policies/ai-agent.md` §8/§9 propose→拍板→apply（经对应 `mj-agent-runtime-*`），不被本 skill 绕过。
 
 ## Step 6: 清理 + 事后归因
 
-删除全部 `[DEBUG-*]` 插桩；commit message 写明中选假设 + root cause；问一句"**什么结构能预防它**"——若答案是结构性的（缺测试缝 / 缺守卫 / 缺类型），**回 `/mj-agent-flow-plan` 立 follow-up**（不在本次强行扩 scope）。
+删除全部 `[DEBUG-*]` 插桩；commit message 写明中选假设 + root cause；问一句"**什么结构能预防它**"——若答案是结构性的（缺测试缝 / 缺守卫 / 缺类型），**回 `mj-agent-flow-plan` 立 follow-up**（不在本次强行扩 scope）。
 
 ## What This Skill DOES NOT DO
 
-- ❌ 不替代 `/mj-agent-flow-implement`（编码方法论 + 简单 bug 的 Step 3b）。
-- ❌ 不替代 `/mj-agent-flow-verify`（Stage 10 完整验证矩阵）。
-- ❌ 不直接改 4 必停面（走 `/mj-agent-runtime-*` propose→拍板→apply）。
-- ❌ 不 auto-commit（修复 commit 由 `/mj-agent-git-commit`）。
+- ❌ 不替代 `mj-agent-flow-implement`（编码方法论 + 简单 bug 的 Step 3b）。
+- ❌ 不替代 `mj-agent-flow-verify`（Stage 10 完整验证矩阵）。
+- ❌ 不直接改 4 必停面（走 `mj-agent-runtime-*` propose→拍板→apply）。
+- ❌ 不 auto-commit（修复 commit 由 `mj-agent-git-commit`）。
 
 ## Anti-patterns
 
@@ -100,10 +111,10 @@ digraph diagnose {
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|sdd/workflows/execution-loop]] §5（Level A/B 矩阵）+ §6（AI Self-review 检查清单；Stage 11 tie-in）
-- [[../../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]] §6（leading word「红信号」）
-- [[../../../policies/ai-agent|policies/ai-agent]] §8/§9（4 必停面 propose→拍板→apply）
-- [CLAUDE.md "Commands"](../../../CLAUDE.md)（uv-based 红信号命令）
+- `repo:sdd/workflows/execution-loop.md` §5（Level A/B 矩阵）+ §6（AI Self-review 检查清单；Stage 11 tie-in）
+- `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6（leading word「红信号」）
+- `repo:policies/ai-agent.md` §8/§9（4 必停面 propose→拍板→apply）
+- `repo:sdd/workflows/execution-loop.md` §5（uv-based 红信号命令）
 
 ## Direction Matrix vs Companion mj-agent-flow-* Skills
 
@@ -120,5 +131,5 @@ digraph diagnose {
 诊断闭环（红信号转绿 + 回归测试绿）。下一步：
 - 进 Stage 10 本地验证（sdd/workflows/execution-loop.md §5 验证矩阵）跑完整验证确认无回归
 - 结构性预防项 → Stage 4 计划环节（execution-loop §4 映射表）立 follow-up
-- 修复 commit → /mj-agent-git-commit
+- 修复 commit → mj-agent-git-commit
 ```

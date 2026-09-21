@@ -1,0 +1,17 @@
+{
+  "case": "O3",
+  "pid": 28012,
+  "start_time_utc": "2026-09-21T02:28:51.2366401Z",
+  "launcher": "evidence/codex-only-migration/p4-owner-actions/T_clone.ps1",
+  "target": "C:/Users/Admin/AppData/Local/Temp/mj-agent-p4-20260918-ij3anyxq/topology clone",
+  "window_title": "P4 clone - Owner project/hook review",
+  "status": "VISIBLE_TERMINAL_STARTED; OWNER_START_AND_TRUST_NOT_OBSERVED",
+  "auto_trust": false,
+  "model_task_sent": false,
+  "recorded_at": "2026-09-21T02:30:07.868632+00:00",
+  "scope": "O3 visible review terminal only; no automatic project/hook trust or model turn",
+  "preflight": "source 817 and clone 816 + explicit GLOSSARY newline mapping verified; CLI/launchers unchanged",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED"
+}

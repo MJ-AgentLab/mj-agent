@@ -1,0 +1,46 @@
+{
+  "mode": "lint",
+  "copy_root": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "ruff",
+        "check"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.182,
+      "at": "2026-09-18T10:18:14.651111+00:00",
+      "output": "All checks passed!\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "mypy",
+        "src/mj_agent"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 27.494,
+      "at": "2026-09-18T10:18:42.145788+00:00",
+      "output": "Success: no issues found in 48 source files\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": null
+    }
+  ],
+  "runner_unchanged": true,
+  "environment": "Closed non-secret parent names; unchanged runner creates isolated child profile and locked plugins. No real credentials."
+}

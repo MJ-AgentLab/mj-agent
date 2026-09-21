@@ -17,7 +17,7 @@ name: check-stale-docs (warning mode)
 # backtick-quoted refs to renamed / deleted files in:
 #   - docs/**/*.md, plans/**/*.md
 #   - SDD kernel (#441): capabilities/ decisions/ policies/ sdd/ (*.md only)
-#   - root: README.md CONTRIBUTING.md CHANGELOG.md GLOSSARY.md CLAUDE.md
+#   - root: README.md CONTRIBUTING.md CHANGELOG.md GLOSSARY.md AGENTS.md
 #     plus AGENTS.md
 #
 # Output goes to GitHub Actions step summary as `::warning::` annotations.
@@ -40,14 +40,14 @@ on:
       - 'docs/**'
       - 'plans/**'
       - 'src/**'
-      - '.claude/**'
+      - '.agents/**'
+      - '.codex/**'
       - 'capabilities/**'
       - 'decisions/**'
       - 'policies/**'
       - 'sdd/**'
       - 'scripts/**'
       - '.github/**'
-      - 'CLAUDE.md'
       - 'CHANGELOG.md'
       - 'README.md'
       - 'CONTRIBUTING.md'

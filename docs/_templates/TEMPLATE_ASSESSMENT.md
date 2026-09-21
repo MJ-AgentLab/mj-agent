@@ -135,7 +135,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 ### D3.2 开发流程
 
-<优化对开发流程的影响：17-stage 执行闭环（execution-loop）/ .claude/skills/ 编排 / dual-track A1-A11 / tri-track A12-A14 PR 门禁>
+<优化对开发流程的影响：17-stage 执行闭环（execution-loop）/ .agents/skills/ 编排 / dual-track A1-A11 / tri-track A12-A14 PR 门禁>
 
 ### D3.3 运维影响
 
@@ -232,7 +232,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 
 ## D8 工程编排技能体系覆盖（mj-agent 专属）
 
-> 仅当本 optimization 涉及 .claude/skills/ 或工程流程演进时填本节。
+> 仅当本 optimization 涉及 .agents/skills/ 或工程流程演进时填本节。
 
 ### D8.1 17-stage 闭环覆盖度
 

@@ -54,7 +54,7 @@ class TestScanFaceConfig:
             "CONTRIBUTING.md",
             "CHANGELOG.md",
             "GLOSSARY.md",
-            "CLAUDE.md",
+            "AGENTS.md",
         } <= set(WALK_FILES)
 
     def test_agents_md_is_in_the_scan_face(self) -> None:

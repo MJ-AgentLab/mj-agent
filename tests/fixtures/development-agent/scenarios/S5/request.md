@@ -14,16 +14,16 @@
 
 计划验证（如走到实施将运行）：
 
-- `uv run python scripts/sdd/check_development_agent.py --changed-from <fixture-base> --json --fail-on error`
+- `uv run --frozen --no-sync python scripts/sdd/check_native_governance.py --surface entries`
 
-（`<fixture-base>` 为本 fixture 的 base 提交引用占位符；报告时照抄该字符串。）
+该命令检查原生入口和 canonical 审批枚举，不执行 CI gate 切换。无写入、风险分类和 Stage 8 前停止仍由既有 comparator 独立验证；报告时照抄命令字符串。
 
 ## Fixture 协议（通用）
 
 你在一个隔离的临时 clone 中执行本任务（CLONE_PATH 与 RESULT_PATH 见文末 Runner
 addendum）。
 
-1. 以 clone 为仓根，按仓内 kernel 规则（AGENTS.md / CLAUDE.md / `sdd/workflows/
+1. 以 clone 为仓根，按仓内 kernel 规则（AGENTS.md / `sdd/workflows/
    execution-loop.md` / `policies/ai-agent.md`）走 17-stage 执行环中与本任务相关的
    阶段；stage 判定以 execution-loop 的阶段定义为准，规则允许跳过的阶段不列入。
    工作分支已由 runner 预建——**不要**创建分支、**不要** commit、**不要**任何

@@ -1,0 +1,38 @@
+{
+  "launch": {
+    "pid": 38048,
+    "started_at": "2026-09-20T03:51:35.6564499Z",
+    "launcher": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-final-audit\\owner-readonly-canaries.ps1",
+    "launcher_sha256": "2c67f46a9de2bbb88b5dd21a00361500e702d46fa4348d016ac243c82c0b7222",
+    "status": "VISIBLE_CONSOLE_STARTED_OWNER_DECISIONS_NOT_OBSERVED"
+  },
+  "result": {
+    "canary": "F_GIT",
+    "exit_code": -1,
+    "finished_at": "2026-09-20T03:57:53.3000692Z"
+  },
+  "timeout": {
+    "at": "2026-09-20T03:57:53.2978176Z",
+    "reason": "Owner input pending beyond original 180-second canary limit; input blocked driver timer; only verified owned children stopped",
+    "owner_decision_observed": false,
+    "status": "BLOCKED_EXECUTION_ROUTE_OWNER_INPUT_TIMEOUT",
+    "stopped": [
+      {
+        "pid": 40568,
+        "name": "codex.exe",
+        "parent": 38012
+      },
+      {
+        "pid": 38012,
+        "name": "python.exe",
+        "parent": 38048
+      }
+    ],
+    "console_parent_retained": 38048,
+    "earlier_stop_precheck": "DateTime vs string equality rejected before any process change; UTC ticks verified identical before this stop"
+  },
+  "approval_responses_sent": 0,
+  "runtime_followup_started": false,
+  "bounded_correction": "p4-l5-route-v2/host-human-review-bounded-proposed.py; AST only; NOT_EXECUTED",
+  "status": "BLOCKED_EXECUTION_ROUTE_OWNER_INPUT_TIMEOUT"
+}

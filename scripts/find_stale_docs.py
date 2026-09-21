@@ -35,6 +35,9 @@ import sys
 from collections.abc import Iterable
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 # Scan face (grep TARGET dirs). ``docs`` + ``plans`` are the original
 # ADR-023 face; the four SDD-kernel dirs follow the M5 Spec-Anchored
 # Refactor, which moved governance prose there while this face stayed
@@ -49,7 +52,6 @@ WALK_FILES = (
     "CONTRIBUTING.md",
     "CHANGELOG.md",
     "GLOSSARY.md",
-    "CLAUDE.md",
     "AGENTS.md",
 )
 
@@ -98,7 +100,8 @@ def iter_target_files(root: Path) -> Iterable[Path]:
         base = root / d
         if base.exists():
             for p in base.rglob("*.md"):
-                yield p
+                if not retired_client_asset(p.relative_to(root)):
+                    yield p
     for f in WALK_FILES:
         p = root / f
         if p.is_file():

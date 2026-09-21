@@ -1,0 +1,102 @@
+{
+  "at": "2026-09-21T03:15:33.752162+00:00",
+  "case": "O4_ROOT_STATUS",
+  "status": "PASS_ACTUAL_LINKED_ROOT_SHARED_HOOK_AND_TOOL",
+  "driver_exit": 0,
+  "driver_sha256": "9b79d4f66b073d744a515cd93b55df66b4febe5ee3ab0ef7dc86b5406ff53ee9",
+  "approval": "Owner approved shared-source revision (call_2zz2rj2ZgUUFTQQMrPjxqcqp A), personally trusted and reported 已执行; API independently verified",
+  "result_dir": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-111246-O4-shared-source-root-status",
+  "actual_command": {
+    "type": "commandExecution",
+    "id": "exec-e2a84e84-0dcd-4049-bf68-c9d0cd0b160d",
+    "pluginId": null,
+    "scriptPath": null,
+    "command": "\"C:\\\\Users\\\\Admin\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\native\\\\powershell\\\\pwsh.exe\" -Command 'git status --short'",
+    "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+    "processId": null,
+    "source": "agent",
+    "status": "completed",
+    "commandActions": [
+      {
+        "type": "unknown",
+        "command": "git status --short"
+      }
+    ],
+    "aggregatedOutput": " M .agents/skills/mj-agent-doc-validate/SKILL.md\n M capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature\n",
+    "exitCode": 0,
+    "durationMs": 484
+  },
+  "hook_run": {
+    "id": "pre-tool-use:0:C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json:exec-e2a84e84-0dcd-4049-bf68-c9d0cd0b160d",
+    "eventName": "preToolUse",
+    "handlerType": "command",
+    "executionMode": "sync",
+    "scope": "turn",
+    "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+    "source": "project",
+    "displayOrder": 0,
+    "status": "completed",
+    "statusMessage": null,
+    "startedAt": 1789960374,
+    "completedAt": 1789960375,
+    "durationMs": 1201,
+    "entries": []
+  },
+  "model_final": [
+    {
+      "type": "agentMessage",
+      "id": "msg_04c728eae3585563016ab0a0bbdca487d0b964f43e0af72c62",
+      "text": "Canary 执行成功，退出码 `0`。真实输出显示两个已修改文件：\n\n```text\n M .agents/skills/mj-agent-doc-validate/SKILL.md\n M capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature\n```\n\n未执行其他命令，未修改任何状态或文件。",
+      "phase": "final_answer",
+      "memoryCitation": null
+    }
+  ],
+  "instruction_sources": [
+    "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked\\AGENTS.md"
+  ],
+  "model": "gpt-5.6-sol",
+  "provider": "openai",
+  "sandbox": {
+    "type": "readOnly",
+    "networkAccess": false
+  },
+  "approval_requests": 0,
+  "model_turns": 1,
+  "original_and_main_copy_817_unchanged": true,
+  "linked_816_and_GLOSSARY_mapping_unchanged": true,
+  "git_before": {
+    "head": "e25cda790f881e7986122e94a8597c7acf3d1bbc",
+    "branch": "",
+    "index_path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.git\\worktrees\\topology-linked\\index",
+    "index_sha256": "4b0d5ae6dde58d49870666754ad6b8b39d43a0ba593da61325c2315a797be85e",
+    "status": "M .agents/skills/mj-agent-doc-validate/SKILL.md\n M capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature"
+  },
+  "git_after": {
+    "head": "e25cda790f881e7986122e94a8597c7acf3d1bbc",
+    "branch": "",
+    "index_path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.git\\worktrees\\topology-linked\\index",
+    "index_sha256": "4b0d5ae6dde58d49870666754ad6b8b39d43a0ba593da61325c2315a797be85e",
+    "status": "M .agents/skills/mj-agent-doc-validate/SKILL.md\n M capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature"
+  },
+  "linked_index_unchanged": true,
+  "shared_frozen_5_files_unchanged": true,
+  "venv_created_files": 9,
+  "venv_files_after": 9,
+  "first_block_termination": "NOT_EXERCISED; successful turn contained no block",
+  "evidence_files": {
+    "canary-completion.json": "123ef8e5bf1a7ba415d126ddd801fedcc518dc23e91141929ba06e4428d4a7a5",
+    "canary-input.json": "c1e773d0ba423b7b0a7fede0412c0be9b2c66c0d9a8a70028dae0e7d7d7328bb",
+    "events.jsonl": "731cc8dfa6c794a37f755dce40287e91553a502701d6b826405bfeebaac183a8",
+    "hooks-list.json": "d388a55b72f3fca804135b3415ef2e03311179cd153e919329da99edef01d483",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "integrity.json": "a060d4165ba6977c719f98776df0bdf27e300eef134cf17459939c64052d9713",
+    "invocation.json": "be8d0871bc270236d8c56a1ca2c8d60311a266a790d0f9aba79f522c15b2d7e0",
+    "skills-list.json": "38da52843cd186e568b0bd57de223d54053cb8859c49c086120ca7d40fdbd609",
+    "thread-start.json": "9778e9b8fdb3143a429bd4d58d659bd735702fd6faf392e07f445451f65cd2cf",
+    "turn-start.json": "adabcd21ff2733076fb28ccc31a00bb98cdadab54f3ba6caf06f47b114f87afd"
+  },
+  "limits": "Linked root actual shell cwd/instructions and shared-source hook event verified. Hook-internal process cwd/interpreter not directly captured. No rule/edit-deny, all-subdir tool, source-divergence or other-platform inference.",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED"
+}

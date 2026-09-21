@@ -40,7 +40,7 @@ ai_visibility: source-of-truth
 - Tool 内部 Python 实现（如 `is_safe_select` 函数体 / `execute_sql` 实现）→ `python` adapter
 - Tool 注册 / agent graph 拼接 / middleware（→ `langchain-agent` adapter；CONTRACT 治理的是
   接口 invariant，行为契约是 agent adapter 的职责）
-- cross-service / MCP server CONTRACT 的 **trust posture 维度**（→ `claude-code-skill` /
+- cross-service / MCP server CONTRACT 的 **trust posture 维度**（→ `development-skill` /
   infra adapter + MCP server governance STANDARD）；本 adapter 治理 agent-facing tool 维度
 - SKILL / PROMPT body invariant（→ `runtime-skill` / `prompt` adapter）
 

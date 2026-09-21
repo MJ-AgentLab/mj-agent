@@ -33,8 +33,11 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 # The 5 project-root markdown files (gate-light per documentation.md §2.6).
-ROOT_FILES = ("README.md", "CONTRIBUTING.md", "CHANGELOG.md", "GLOSSARY.md", "CLAUDE.md")
+ROOT_FILES = ("README.md", "CONTRIBUTING.md", "CHANGELOG.md", "GLOSSARY.md", "AGENTS.md")
 
 # Walk roots and per-file targets for the archive forward-guard. ``plans/``
 # is excluded — working documents naturally describe past migrations using
@@ -122,7 +125,7 @@ def iter_target_files(root: Path):
             if not p.is_file():
                 continue
             rel = p.relative_to(root)
-            if is_skipped(rel):
+            if is_skipped(rel) or retired_client_asset(rel):
                 continue
             if not is_text_file(p):
                 continue

@@ -1,0 +1,160 @@
+{
+  "phase": "P3",
+  "status": "PARTIAL_BLOCKED",
+  "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "route": "BLOCKED_EXECUTION_ROUTE; Owner confirmed no reviewed route in current conversation",
+  "prepared_targets": 70,
+  "p0_p2_preserved": {
+    ".migration/codex-only/project/.agents/references/execution-boundaries.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-author/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-migrate/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-plan/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-review/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-sync/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-validate/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-diagnose/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-implement/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-intake/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-plan/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-post-merge/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-repo-scan/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-review-respond/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-scope-drift/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-verify/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-branch/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-check-merge/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-commit/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-delete/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-issue/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-pr/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-push/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-review-pr/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-sync/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-start/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-stop/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-docker-compose/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-setup/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-teardown/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-storage-stack/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-studio-probe/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-eval-baseline/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md": true,
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md": true,
+    ".migration/codex-only/project/.codex/config.toml": true,
+    ".migration/codex-only/project/.codex/hooks.json": true,
+    ".migration/codex-only/project/.codex/rules/mj-agent.rules": true,
+    ".migration/codex-only/project/scripts/mcp/pg-server-start.ps1": true,
+    ".migration/codex-only/project/scripts/mcp/pg-server-wrapper.mjs": true,
+    ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1": true,
+    ".migration/codex-only/project/scripts/sdd/check_codex_native.py": true,
+    ".migration/codex-only/project/scripts/sdd/codex_hook_guard.py": true,
+    ".migration/codex-only/project/scripts/sdd/run_codex_hook.ps1": true,
+    ".migration/codex-only/project/tests/unit/test_codex_native.py": true,
+    "evidence/codex-only-migration/p1-verification.json": true,
+    "evidence/codex-only-migration/p2-infra-contract-drafts.json": true,
+    "evidence/codex-only-migration/p2-infra-contract-drafts.md": true,
+    "evidence/codex-only-migration/p2-resource-closure.json": true,
+    "evidence/codex-only-migration/p2-semantic-cases.json": true,
+    "evidence/codex-only-migration/p2-semantic-cases.md": true,
+    "evidence/codex-only-migration/p2-skill-comparison.json": true,
+    "evidence/codex-only-migration/p2-skill-comparison.md": true,
+    "evidence/codex-only-migration/p2-source-candidate.diff": true,
+    "evidence/codex-only-migration/p2-verification.json": true,
+    "plans/[PLAN]_Codex_Only_Development_Migration.md": true,
+    "tests/unit/test_agents_sync.py": true,
+    "tests/unit/test_offline_execution_boundary.py": true
+  },
+  "native_skill_structure": {
+    "count": 37,
+    "errors": [],
+    "level": "STATIC_OVERLAY_REVIEW"
+  },
+  "freeze": {
+    "entries": 8,
+    "new_description_body_hashes": 16,
+    "errors": [],
+    "level": "DRAFT_ONLY"
+  },
+  "resource_identity": {
+    "p2_records": 387,
+    "missing_previous_paths": [],
+    "formal_closure": "NOT_CLOSED"
+  },
+  "formal_group_unchanged": [
+    {
+      "path": "AGENTS.md",
+      "same_as_head_normalized": true
+    },
+    {
+      "path": ".codex/config.toml",
+      "same_as_head_normalized": true
+    },
+    {
+      "path": ".codex/hooks.json",
+      "same_as_head_normalized": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "same_as_head_normalized": true
+    },
+    {
+      "path": "capabilities/infrastructure/mcp-server-governance/contracts/claude-skill.contract.yml",
+      "same_as_head_normalized": true
+    }
+  ],
+  "tests": [
+    {
+      "command": "../../develop/.venv/Scripts/python.exe -I -B .migration/codex-only/p3-proposal/tests/unit/test_native_migration_guards.py",
+      "result": "6 unittest tests PASS; initial 2 subcases RED for Git global-option bypass"
+    },
+    {
+      "command": "../../develop/.venv/Scripts/python.exe -I -B .migration/codex-only/p3-proposal/tests/unit/test_native_skill_contracts.py",
+      "result": "15 unittest tests PASS; initial missing implementation RED; unknown contract property RED then GREEN; CRLF fixture corrected"
+    },
+    {
+      "command": "../../develop/.venv/Scripts/python.exe -B .mj-agent-local/codex-only-p1-validation/scripts/sdd/run_offline_pytest.py tests/unit/test_codex_native.py tests/unit/test_offline_execution_boundary.py -q",
+      "result": "122 passed in 14.77s; existing P1 scoped fixture, not P4 independent deployment"
+    },
+    {
+      "command": "../../develop/.venv/Scripts/python.exe -m ruff check <four named new/changed P3 Python files>",
+      "result": "PASS after 3 import-order fixes"
+    },
+    {
+      "command": "../../develop/.venv/Scripts/python.exe -B .migration/codex-only/project/scripts/sdd/check_codex_native.py --effective-approval-policy never",
+      "result": "config STATIC_PASS; session INCOMPATIBLE; owner NOT_ASSESSED; host NOT_TESTED"
+    }
+  ],
+  "limitations": [
+    "Not a complete atomic cutover patch",
+    "V8-V10 replacement and V12/V13 registration not proven",
+    "No full pytest under candidate root: tracked-only contract unchanged; no staging",
+    "No official config/skills/policy/contract/CI publication",
+    "No host activation/model/P4/external services"
+  ],
+  "initial_failure_history": [
+    {
+      "first_attempt": "16 body comparisons failed because review helper used whitespace-consuming regex instead of canonical exact newline regex; source/candidates unchanged",
+      "correction": "Use exact contract regex; preserve blank lines"
+    }
+  ],
+  "asset_map_preservation": {
+    "old_rows": 299,
+    "old_columns": 24,
+    "all_old_values_preserved": true,
+    "new_rows": 25,
+    "total_rows": 324
+  },
+  "active_dependency_scan": {
+    "files": 97,
+    "lines": 663,
+    "result": "NOT_CLOSED"
+  },
+  "export_failure_history": [
+    "Initial exporter expected candidate_review_path on 6 EXAMPLE_ONLY records; corrected to retain their non-resource classification."
+  ],
+  "current_status": "P3_PREPARATION_FROZEN; FORMAL_NOT_APPLIED",
+  "superseded_by": "p3-completion-verification.json; cumulative report §14"
+}

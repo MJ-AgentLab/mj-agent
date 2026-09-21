@@ -56,7 +56,7 @@ owner: 项目负责人
 
 ## §1 <主体 1 标题>
 
-正文。复用原则：命令行说明 / 配置字段说明优先 wikilink 到 README / CLAUDE.md
+正文。复用原则：命令行说明 / 配置字段说明优先 wikilink 到 README / AGENTS.md
 / 现有 GUIDE，**避免与其它来源漂移**；GUIDE 自身仅承担"该读哪一份 / 顺序怎么连"。
 
 ## §2 <主体 2 标题>

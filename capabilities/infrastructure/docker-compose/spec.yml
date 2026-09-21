@@ -62,7 +62,7 @@ cross_capability_refs:
 
   - target: infrastructure.mcp-server-governance
     direction: outbound                            # we depend on mcp for trust posture
-    surface: ".mcp.json wrapper scripts for pg connections share host/port matrix with compose profiles"
-    reason: "WAN URLs in .mcp.json (test-wan / prod-wan) must align with compose-deployed pg endpoints"
+    surface: ".codex/config.toml wrapper scripts for memory PG connections share host/port matrix with compose profiles"
+    reason: "WAN URLs in .codex/config.toml (test-wan / prod-wan) must align with compose-deployed pg endpoints"
 
 # Phase M5 (M5-PR2, 2026-06-03): infra/docker/ → docker/ done; compose files renamed compose*.yml

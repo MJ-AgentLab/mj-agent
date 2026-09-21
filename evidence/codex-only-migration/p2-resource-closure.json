@@ -1,0 +1,4066 @@
+{
+  "layout": "explicit candidate overlay; retained root public resources read in place; final paths relative to deployment root",
+  "references": [
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/",
+      "candidate_review_path": "decisions",
+      "deployment_path": "decisions/",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_review_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "deployment_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_review_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "deployment_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "deployment_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/archive.md",
+      "candidate_review_path": "policies/archive.md",
+      "deployment_path": "policies/archive.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/contract.md",
+      "candidate_review_path": "sdd/adapters/contract.md",
+      "deployment_path": "sdd/adapters/contract.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/prompt.md",
+      "candidate_review_path": "sdd/adapters/prompt.md",
+      "deployment_path": "sdd/adapters/prompt.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "candidate_review_path": "sdd/adapters/runtime-skill.md",
+      "deployment_path": "sdd/adapters/runtime-skill.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "decisions/",
+      "candidate_review_path": "decisions",
+      "deployment_path": "decisions/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/_templates/",
+      "candidate_review_path": "docs/_templates",
+      "deployment_path": "docs/_templates/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/glossary/",
+      "candidate_review_path": "docs/glossary",
+      "deployment_path": "docs/glossary/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/guide/",
+      "candidate_review_path": "docs/guide",
+      "deployment_path": "docs/guide/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "docs/rule/",
+      "candidate_review_path": "docs/rule",
+      "deployment_path": "docs/rule/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/",
+      "candidate_review_path": "policies",
+      "deployment_path": "policies/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "sdd/workflows/",
+      "candidate_review_path": "sdd/workflows",
+      "deployment_path": "sdd/workflows/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-author",
+      "reference": "src/mj_agent/prompts/",
+      "candidate_review_path": "src/mj_agent/prompts",
+      "deployment_path": "src/mj_agent/prompts/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_review_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "deployment_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_review_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "deployment_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "policies/archive.md",
+      "candidate_review_path": "policies/archive.md",
+      "deployment_path": "policies/archive.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0.md",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1.md",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "docs/archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0.md",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "reference": "scripts/check_frontmatter.py",
+      "candidate_review_path": "scripts/check_frontmatter.py",
+      "deployment_path": "scripts/check_frontmatter.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_review_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "deployment_path": "decisions/ADR-014_Tri_Track_Documentation_Governance.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "deployment_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": ".codex/hooks.json",
+      "candidate_review_path": ".migration/codex-only/project/.codex/hooks.json",
+      "deployment_path": ".codex/hooks.json",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/INDEX.md",
+      "candidate_review_path": "docs/INDEX.md",
+      "deployment_path": "docs/INDEX.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/guide/",
+      "candidate_review_path": "docs/guide",
+      "deployment_path": "docs/guide/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "docs/rule/",
+      "candidate_review_path": "docs/rule",
+      "deployment_path": "docs/rule/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "plans/",
+      "candidate_review_path": "plans",
+      "deployment_path": "plans/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "reference": "tests/",
+      "candidate_review_path": ".migration/codex-only/project/tests",
+      "deployment_path": "tests/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".agents/references/execution-boundaries.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/references/execution-boundaries.md",
+      "deployment_path": ".agents/references/execution-boundaries.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "deployment_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/ci-gates.md",
+      "candidate_review_path": "policies/ci-gates.md",
+      "deployment_path": "policies/ci-gates.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/contract.md",
+      "candidate_review_path": "sdd/adapters/contract.md",
+      "deployment_path": "sdd/adapters/contract.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/prompt.md",
+      "candidate_review_path": "sdd/adapters/prompt.md",
+      "deployment_path": "sdd/adapters/prompt.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "candidate_review_path": "sdd/adapters/runtime-skill.md",
+      "deployment_path": "sdd/adapters/runtime-skill.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".codex/hooks.json",
+      "candidate_review_path": ".migration/codex-only/project/.codex/hooks.json",
+      "deployment_path": ".codex/hooks.json",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".github/PULL_REQUEST_TEMPLATE/",
+      "candidate_review_path": ".github/PULL_REQUEST_TEMPLATE",
+      "deployment_path": ".github/PULL_REQUEST_TEMPLATE/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": ".github/workflows/",
+      "candidate_review_path": ".github/workflows",
+      "deployment_path": ".github/workflows/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "config/",
+      "candidate_review_path": "config",
+      "deployment_path": "config/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "scripts/",
+      "candidate_review_path": ".migration/codex-only/project/scripts",
+      "deployment_path": "scripts/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "src/mj_agent/",
+      "candidate_review_path": "src/mj_agent",
+      "deployment_path": "src/mj_agent/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "reference": "tests/",
+      "candidate_review_path": ".migration/codex-only/project/tests",
+      "deployment_path": "tests/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".env.example",
+      "candidate_review_path": ".env.example",
+      "deployment_path": ".env.example",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "README.md",
+      "candidate_review_path": "README.md",
+      "deployment_path": "README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "deployment_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "policies/data-boundary.md",
+      "candidate_review_path": "policies/data-boundary.md",
+      "deployment_path": "policies/data-boundary.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/AGENTS.md",
+      "candidate_review_path": "src/mj_agent/AGENTS.md",
+      "deployment_path": "src/mj_agent/AGENTS.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".codex/hooks.json",
+      "candidate_review_path": ".migration/codex-only/project/.codex/hooks.json",
+      "deployment_path": ".codex/hooks.json",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".github/",
+      "candidate_review_path": ".github",
+      "deployment_path": ".github/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": ".github/workflows/",
+      "candidate_review_path": ".github/workflows",
+      "deployment_path": ".github/workflows/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "scripts/diff_biz_schema.py",
+      "candidate_review_path": "scripts/diff_biz_schema.py",
+      "deployment_path": "scripts/diff_biz_schema.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/agent.py",
+      "candidate_review_path": "src/mj_agent/agent.py",
+      "deployment_path": "src/mj_agent/agent.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/config.py",
+      "candidate_review_path": "src/mj_agent/config.py",
+      "deployment_path": "src/mj_agent/config.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_review_path": "src/mj_agent/integrations/mj_system_db.py",
+      "deployment_path": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "reference": "src/mj_agent/llm.py",
+      "candidate_review_path": "src/mj_agent/llm.py",
+      "deployment_path": "src/mj_agent/llm.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "...",
+      "candidate_review_path": ".migration/codex-only/project/...",
+      "deployment_path": "...",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": ".agents/references/execution-boundaries.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/references/execution-boundaries.md",
+      "deployment_path": ".agents/references/execution-boundaries.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "deployment_path": "docs/rule/[STANDARD]_GitHub_Markdown.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/ci-gates.md",
+      "candidate_review_path": "policies/ci-gates.md",
+      "deployment_path": "policies/ci-gates.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_frontmatter.py",
+      "candidate_review_path": "scripts/check_frontmatter.py",
+      "deployment_path": "scripts/check_frontmatter.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_wikilinks.py",
+      "candidate_review_path": "scripts/check_wikilinks.py",
+      "deployment_path": "scripts/check_wikilinks.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/contract.md",
+      "candidate_review_path": "sdd/adapters/contract.md",
+      "deployment_path": "sdd/adapters/contract.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/prompt.md",
+      "candidate_review_path": "sdd/adapters/prompt.md",
+      "deployment_path": "sdd/adapters/prompt.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "candidate_review_path": "sdd/adapters/runtime-skill.md",
+      "deployment_path": "sdd/adapters/runtime-skill.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "docs/INDEX.md",
+      "candidate_review_path": "docs/INDEX.md",
+      "deployment_path": "docs/INDEX.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_frontmatter.py",
+      "candidate_review_path": "scripts/check_frontmatter.py",
+      "deployment_path": "scripts/check_frontmatter.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "reference": "scripts/check_wikilinks.py",
+      "candidate_review_path": "scripts/check_wikilinks.py",
+      "deployment_path": "scripts/check_wikilinks.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "reference": "tests/eval/",
+      "candidate_review_path": "tests/eval",
+      "deployment_path": "tests/eval/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-plan/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-plan/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-plan/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": ".agents/skills/mj-agent-flow-verify/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-verify/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-verify/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "policies/docker-runtime.md",
+      "candidate_review_path": "policies/docker-runtime.md",
+      "deployment_path": "policies/docker-runtime.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "scripts/",
+      "candidate_review_path": ".migration/codex-only/project/scripts",
+      "deployment_path": "scripts/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "scripts/encrypt-secrets.ps1",
+      "candidate_review_path": "scripts/encrypt-secrets.ps1",
+      "deployment_path": "scripts/encrypt-secrets.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "reference": "tests/",
+      "candidate_review_path": ".migration/codex-only/project/tests",
+      "deployment_path": "tests/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/glossary/upstream_business_warehouse.md",
+      "candidate_review_path": "docs/glossary/upstream_business_warehouse.md",
+      "deployment_path": "docs/glossary/upstream_business_warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": ".github/ISSUE_TEMPLATE/",
+      "candidate_review_path": ".github/ISSUE_TEMPLATE",
+      "deployment_path": ".github/ISSUE_TEMPLATE/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "decisions/",
+      "candidate_review_path": "decisions",
+      "deployment_path": "decisions/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "docs/_templates/TEMPLATE_ISSUE.md",
+      "candidate_review_path": "docs/_templates/TEMPLATE_ISSUE.md",
+      "deployment_path": "docs/_templates/TEMPLATE_ISSUE.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "policies/docker-runtime.md",
+      "candidate_review_path": "policies/docker-runtime.md",
+      "deployment_path": "policies/docker-runtime.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/",
+      "candidate_review_path": "src/mj_agent",
+      "deployment_path": "src/mj_agent/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/agent.py",
+      "candidate_review_path": "src/mj_agent/agent.py",
+      "deployment_path": "src/mj_agent/agent.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/config.py",
+      "candidate_review_path": "src/mj_agent/config.py",
+      "deployment_path": "src/mj_agent/config.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_review_path": "src/mj_agent/integrations/mj_system_db.py",
+      "deployment_path": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "reference": "src/mj_agent/llm.py",
+      "candidate_review_path": "src/mj_agent/llm.py",
+      "deployment_path": "src/mj_agent/llm.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "sdd/lifecycle.md",
+      "candidate_review_path": "sdd/lifecycle.md",
+      "deployment_path": "sdd/lifecycle.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-doc-author/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-doc-author/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-doc-author/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-doc-plan/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-doc-plan/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-doc-plan/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": ".agents/skills/mj-agent-flow-repo-scan/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-repo-scan/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-repo-scan/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "plans/[PLAN]_mj-agent-data-agent-mvp-framework.md",
+      "candidate_review_path": "plans/[PLAN]_mj-agent-data-agent-mvp-framework.md",
+      "deployment_path": "plans/[PLAN]_mj-agent-data-agent-mvp-framework.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "tests/eval",
+      "candidate_review_path": "tests/eval",
+      "deployment_path": "tests/eval",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "reference": "tests/unit",
+      "candidate_review_path": ".migration/codex-only/project/tests/unit",
+      "deployment_path": "tests/unit",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "sdd/lifecycle.md",
+      "candidate_review_path": "sdd/lifecycle.md",
+      "deployment_path": "sdd/lifecycle.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-delete/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-delete/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-delete/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-issue/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": ".agents/skills/mj-agent-git-sync/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-sync/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-sync/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "plans/",
+      "candidate_review_path": "plans",
+      "deployment_path": "plans/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "reference": "src/mj_agent/prompts/system.md",
+      "candidate_review_path": "src/mj_agent/prompts/system.md",
+      "deployment_path": "src/mj_agent/prompts/system.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "README.md",
+      "candidate_review_path": "README.md",
+      "deployment_path": "README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/AGENTS.md",
+      "candidate_review_path": "src/mj_agent/AGENTS.md",
+      "deployment_path": "src/mj_agent/AGENTS.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "docs/INDEX.md",
+      "candidate_review_path": "docs/INDEX.md",
+      "deployment_path": "docs/INDEX.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "docs/guide/",
+      "candidate_review_path": "docs/guide",
+      "deployment_path": "docs/guide/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "scripts/fetch_biz_schema.py",
+      "candidate_review_path": "scripts/fetch_biz_schema.py",
+      "deployment_path": "scripts/fetch_biz_schema.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/server/cli.py",
+      "candidate_review_path": "src/mj_agent/server/cli.py",
+      "deployment_path": "src/mj_agent/server/cli.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "reference": "src/mj_agent/ui.py",
+      "candidate_review_path": "src/mj_agent/ui.py",
+      "deployment_path": "src/mj_agent/ui.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-issue/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": ".agents/skills/mj-agent-git-review-pr/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-review-pr/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-review-pr/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "reference": "plans/[PLAN]_xxx.md",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": ".codex/",
+      "candidate_review_path": ".migration/codex-only/project/.codex",
+      "deployment_path": ".codex/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "plans/[PLAN]_xxx.md",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "policies/docker-runtime.md",
+      "candidate_review_path": "policies/docker-runtime.md",
+      "deployment_path": "policies/docker-runtime.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "scripts/",
+      "candidate_review_path": ".migration/codex-only/project/scripts",
+      "deployment_path": "scripts/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "src/",
+      "candidate_review_path": "src",
+      "deployment_path": "src/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "reference": "tests/",
+      "candidate_review_path": ".migration/codex-only/project/tests",
+      "deployment_path": "tests/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "policies/data-boundary.md",
+      "candidate_review_path": "policies/data-boundary.md",
+      "deployment_path": "policies/data-boundary.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": ".agents/skills/mj-agent-git-commit/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-git-commit/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-git-commit/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "reference": "docs/INDEX.md",
+      "candidate_review_path": "docs/INDEX.md",
+      "deployment_path": "docs/INDEX.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": ".github/workflows/",
+      "candidate_review_path": ".github/workflows",
+      "deployment_path": ".github/workflows/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "scripts/check_wikilinks.py",
+      "candidate_review_path": "scripts/check_wikilinks.py",
+      "deployment_path": "scripts/check_wikilinks.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "scripts/diff_biz_schema.py",
+      "candidate_review_path": "scripts/diff_biz_schema.py",
+      "deployment_path": "scripts/diff_biz_schema.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/agent.py",
+      "candidate_review_path": "src/mj_agent/agent.py",
+      "deployment_path": "src/mj_agent/agent.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/config.py",
+      "candidate_review_path": "src/mj_agent/config.py",
+      "deployment_path": "src/mj_agent/config.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_review_path": "src/mj_agent/integrations/mj_system_db.py",
+      "deployment_path": "src/mj_agent/integrations/mj_system_db.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "reference": "src/mj_agent/llm.py",
+      "candidate_review_path": "src/mj_agent/llm.py",
+      "deployment_path": "src/mj_agent/llm.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "plans/[PLAN]_g1_g2_workflow_enforcement.md",
+      "candidate_review_path": "plans/[PLAN]_g1_g2_workflow_enforcement.md",
+      "deployment_path": "plans/[PLAN]_g1_g2_workflow_enforcement.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "reference": "scripts/sdd/codex_hook_guard.py",
+      "candidate_review_path": ".migration/codex-only/project/scripts/sdd/codex_hook_guard.py",
+      "deployment_path": "scripts/sdd/codex_hook_guard.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-check-merge",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-check-merge",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".agents/",
+      "candidate_review_path": ".migration/codex-only/project/.agents",
+      "deployment_path": ".agents/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".codex/",
+      "candidate_review_path": ".migration/codex-only/project/.codex",
+      "deployment_path": ".codex/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": ".github/",
+      "candidate_review_path": ".github",
+      "deployment_path": ".github/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "capabilities/",
+      "candidate_review_path": "capabilities",
+      "deployment_path": "capabilities/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "config/",
+      "candidate_review_path": "config",
+      "deployment_path": "config/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "decisions/",
+      "candidate_review_path": "decisions",
+      "deployment_path": "decisions/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/_baselines/",
+      "candidate_review_path": "docs/_baselines",
+      "deployment_path": "docs/_baselines/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/_templates/",
+      "candidate_review_path": "docs/_templates",
+      "deployment_path": "docs/_templates/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/glossary/",
+      "candidate_review_path": "docs/glossary",
+      "deployment_path": "docs/glossary/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/guide/",
+      "candidate_review_path": "docs/guide",
+      "deployment_path": "docs/guide/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "docs/rule/",
+      "candidate_review_path": "docs/rule",
+      "deployment_path": "docs/rule/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "plans/",
+      "candidate_review_path": "plans",
+      "deployment_path": "plans/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "policies/",
+      "candidate_review_path": "policies",
+      "deployment_path": "policies/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "scripts/",
+      "candidate_review_path": ".migration/codex-only/project/scripts",
+      "deployment_path": "scripts/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "scripts/sdd/",
+      "candidate_review_path": ".migration/codex-only/project/scripts/sdd",
+      "deployment_path": "scripts/sdd/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "sdd/",
+      "candidate_review_path": "sdd",
+      "deployment_path": "sdd/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/",
+      "candidate_review_path": "src/mj_agent",
+      "deployment_path": "src/mj_agent/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/prompts/system.md",
+      "candidate_review_path": "src/mj_agent/prompts/system.md",
+      "deployment_path": "src/mj_agent/prompts/system.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "src/mj_agent/skills/",
+      "candidate_review_path": "src/mj_agent/skills",
+      "deployment_path": "src/mj_agent/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/bdd/",
+      "candidate_review_path": "tests/bdd",
+      "deployment_path": "tests/bdd/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/contract/",
+      "candidate_review_path": "tests/contract",
+      "deployment_path": "tests/contract/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "reference": "tests/eval/",
+      "candidate_review_path": "tests/eval",
+      "deployment_path": "tests/eval/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "reference": ".agents/skills/mj-agent-flow-post-merge/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-flow-post-merge/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-flow-post-merge/SKILL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": ".github/ISSUE_TEMPLATE/",
+      "candidate_review_path": ".github/ISSUE_TEMPLATE",
+      "deployment_path": ".github/ISSUE_TEMPLATE/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "docs/_templates/TEMPLATE_ISSUE.md",
+      "candidate_review_path": "docs/_templates/TEMPLATE_ISSUE.md",
+      "deployment_path": "docs/_templates/TEMPLATE_ISSUE.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "reference": "policies/docker-runtime.md",
+      "candidate_review_path": "policies/docker-runtime.md",
+      "deployment_path": "policies/docker-runtime.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".codex/hooks.json",
+      "candidate_review_path": ".migration/codex-only/project/.codex/hooks.json",
+      "deployment_path": ".codex/hooks.json",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": ".github/PULL_REQUEST_TEMPLATE/",
+      "candidate_review_path": ".github/PULL_REQUEST_TEMPLATE",
+      "deployment_path": ".github/PULL_REQUEST_TEMPLATE/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "docs/archive/rule/",
+      "candidate_status": "EXAMPLE_ONLY",
+      "deployment_status": "NOT_A_REQUIRED_RESOURCE",
+      "basis": "doc-migrate historical/example paths or working-plan placeholders"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "reference": "scripts/sdd/codex_hook_guard.py",
+      "candidate_review_path": ".migration/codex-only/project/scripts/sdd/codex_hook_guard.py",
+      "deployment_path": "scripts/sdd/codex_hook_guard.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-push",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".agents/references/execution-boundaries.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/references/execution-boundaries.md",
+      "deployment_path": ".agents/references/execution-boundaries.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "README.md",
+      "candidate_review_path": "README.md",
+      "deployment_path": "README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/ci-gates.md",
+      "candidate_review_path": "policies/ci-gates.md",
+      "deployment_path": "policies/ci-gates.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/AGENTS.md",
+      "candidate_review_path": "src/mj_agent/AGENTS.md",
+      "deployment_path": "src/mj_agent/AGENTS.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".agents/skills/",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills",
+      "deployment_path": ".agents/skills/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".codex/config.toml",
+      "candidate_review_path": ".migration/codex-only/project/.codex/config.toml",
+      "deployment_path": ".codex/config.toml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": ".codex/hooks.json",
+      "candidate_review_path": ".migration/codex-only/project/.codex/hooks.json",
+      "deployment_path": ".codex/hooks.json",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "docs/",
+      "candidate_review_path": "docs",
+      "deployment_path": "docs/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "policies/docker-runtime.md",
+      "candidate_review_path": "policies/docker-runtime.md",
+      "deployment_path": "policies/docker-runtime.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/",
+      "candidate_review_path": "src/mj_agent",
+      "deployment_path": "src/mj_agent/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/agent.py",
+      "candidate_review_path": "src/mj_agent/agent.py",
+      "deployment_path": "src/mj_agent/agent.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "candidate_review_path": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "deployment_path": "docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_review_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "deployment_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "candidate_review_path": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "deployment_path": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "candidate_review_path": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "deployment_path": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "src/mj_agent/config.py",
+      "candidate_review_path": "src/mj_agent/config.py",
+      "deployment_path": "src/mj_agent/config.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "src/mj_agent/server/cli.py",
+      "candidate_review_path": "src/mj_agent/server/cli.py",
+      "deployment_path": "src/mj_agent/server/cli.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_review_path": ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1",
+      "deployment_path": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "reference": "scripts/setup-env.ps1",
+      "candidate_review_path": "scripts/setup-env.ps1",
+      "deployment_path": "scripts/setup-env.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_review_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "deployment_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "reference": "src/mj_agent/server/cli.py",
+      "candidate_review_path": "src/mj_agent/server/cli.py",
+      "deployment_path": "src/mj_agent/server/cli.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_review_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "deployment_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/Dockerfile",
+      "candidate_review_path": "docker/Dockerfile",
+      "deployment_path": "docker/Dockerfile",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/README.md",
+      "candidate_review_path": "docker/README.md",
+      "deployment_path": "docker/README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/entrypoint.sh",
+      "candidate_review_path": "docker/entrypoint.sh",
+      "deployment_path": "docker/entrypoint.sh",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_review_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "deployment_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "capabilities/infrastructure/docker-compose/runbook.md",
+      "candidate_review_path": "capabilities/infrastructure/docker-compose/runbook.md",
+      "deployment_path": "capabilities/infrastructure/docker-compose/runbook.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/",
+      "candidate_review_path": "docker",
+      "deployment_path": "docker/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": ".env.example",
+      "candidate_review_path": ".env.example",
+      "deployment_path": ".env.example",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md",
+      "candidate_review_path": "decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md",
+      "deployment_path": "decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_review_path": ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1",
+      "deployment_path": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/setup-env.ps1",
+      "candidate_review_path": "scripts/setup-env.ps1",
+      "deployment_path": "scripts/setup-env.ps1",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/check_env_keys.ps1",
+      "candidate_review_path": "scripts/check_env_keys.ps1",
+      "deployment_path": "scripts/check_env_keys.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_review_path": ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1",
+      "deployment_path": "scripts/mcp/setup-mcp-secrets.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "reference": "scripts/setup-env.ps1",
+      "candidate_review_path": "scripts/setup-env.ps1",
+      "deployment_path": "scripts/setup-env.ps1",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_review_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "deployment_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "candidate_review_path": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "deployment_path": "decisions/ADR-026_Multi_Environment_Compose_Profile.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "policies/ai-agent.md",
+      "candidate_review_path": "policies/ai-agent.md",
+      "deployment_path": "policies/ai-agent.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "candidate_review_path": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "deployment_path": "decisions/ADR-027_LLM_Provider_Abstraction.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/config.py",
+      "candidate_review_path": "src/mj_agent/config.py",
+      "deployment_path": "src/mj_agent/config.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/llm.py",
+      "candidate_review_path": "src/mj_agent/llm.py",
+      "deployment_path": "src/mj_agent/llm.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/server/cli.py",
+      "candidate_review_path": "src/mj_agent/server/cli.py",
+      "deployment_path": "src/mj_agent/server/cli.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/tools/__init__.py",
+      "candidate_review_path": "src/mj_agent/tools/__init__.py",
+      "deployment_path": "src/mj_agent/tools/__init__.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/llm.py",
+      "candidate_review_path": "src/mj_agent/llm.py",
+      "deployment_path": "src/mj_agent/llm.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "reference": "src/mj_agent/tools/__init__.py",
+      "candidate_review_path": "src/mj_agent/tools/__init__.py",
+      "deployment_path": "src/mj_agent/tools/__init__.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": ".env.example",
+      "candidate_review_path": ".env.example",
+      "deployment_path": ".env.example",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "config/README.md",
+      "candidate_review_path": "config/README.md",
+      "deployment_path": "config/README.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_review_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "deployment_path": "decisions/ADR-008_Co_Deployment_With_Upstream_Warehouse.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/compose.yaml",
+      "candidate_review_path": "docker/compose.yaml",
+      "deployment_path": "docker/compose.yaml",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_review_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "deployment_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "src/mj_agent/memory/checkpointer.py",
+      "candidate_review_path": "src/mj_agent/memory/checkpointer.py",
+      "deployment_path": "src/mj_agent/memory/checkpointer.py",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": false
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "reference": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_review_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "deployment_path": "docker/postgres-init/01-bootstrap-mj-agent-memory.sh",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "candidate_review_path": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "deployment_path": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+      "candidate_review_path": "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+      "deployment_path": "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "scripts/capture_walkthrough_evidence.py",
+      "candidate_review_path": "scripts/capture_walkthrough_evidence.py",
+      "deployment_path": "scripts/capture_walkthrough_evidence.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "src/mj_agent/",
+      "candidate_review_path": "src/mj_agent",
+      "deployment_path": "src/mj_agent/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "reference": "src/mj_agent/prompts/system.md",
+      "candidate_review_path": "src/mj_agent/prompts/system.md",
+      "deployment_path": "src/mj_agent/prompts/system.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "scripts/diff_biz_schema.py",
+      "candidate_review_path": "scripts/diff_biz_schema.py",
+      "deployment_path": "scripts/diff_biz_schema.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "scripts/fetch_biz_schema.py",
+      "candidate_review_path": "scripts/fetch_biz_schema.py",
+      "deployment_path": "scripts/fetch_biz_schema.py",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "reference": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_review_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "deployment_path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": ".agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+      "candidate_review_path": ".migration/codex-only/project/.agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+      "deployment_path": ".agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+      "candidate_layout": "candidate override",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_review_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "deployment_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-024_Eval_Framework_Spec.md",
+      "candidate_review_path": "decisions/ADR-024_Eval_Framework_Spec.md",
+      "deployment_path": "decisions/ADR-024_Eval_Framework_Spec.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/_templates/TEMPLATE_EVAL.md",
+      "candidate_review_path": "docs/_templates/TEMPLATE_EVAL.md",
+      "deployment_path": "docs/_templates/TEMPLATE_EVAL.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/_templates/TEMPLATE_EVAL.md",
+      "candidate_review_path": "docs/_templates/TEMPLATE_EVAL.md",
+      "deployment_path": "docs/_templates/TEMPLATE_EVAL.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "docs/evaluation/",
+      "candidate_review_path": "docs/evaluation",
+      "deployment_path": "docs/evaluation/",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "src/mj_agent/prompts/system.md",
+      "candidate_review_path": "src/mj_agent/prompts/system.md",
+      "deployment_path": "src/mj_agent/prompts/system.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "reference": "tests/eval/golden_seed.jsonl",
+      "candidate_review_path": "tests/eval/golden_seed.jsonl",
+      "deployment_path": "tests/eval/golden_seed.jsonl",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "candidate_review_path": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "deployment_path": "decisions/ADR-000_Data_LLM_Boundary_Principles.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_review_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "deployment_path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "sdd/adapters/prompt.md",
+      "candidate_review_path": "sdd/adapters/prompt.md",
+      "deployment_path": "sdd/adapters/prompt.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "reference": "src/mj_agent/prompts/system.md",
+      "candidate_review_path": "src/mj_agent/prompts/system.md",
+      "deployment_path": "src/mj_agent/prompts/system.md",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS mapping; deployment NOT_TESTED"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_review_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "deployment_path": "decisions/ADR-006_Fail_Safe_Reads.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_review_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "deployment_path": "decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_review_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "deployment_path": "decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_review_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "deployment_path": "decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_review_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "deployment_path": "docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "policies/documentation.md",
+      "candidate_review_path": "policies/documentation.md",
+      "deployment_path": "policies/documentation.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "sdd/adapters/runtime-skill.md",
+      "candidate_review_path": "sdd/adapters/runtime-skill.md",
+      "deployment_path": "sdd/adapters/runtime-skill.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "reference": "sdd/workflows/execution-loop.md",
+      "candidate_review_path": "sdd/workflows/execution-loop.md",
+      "deployment_path": "sdd/workflows/execution-loop.md",
+      "candidate_layout": "retained public root resource",
+      "candidate_status": "STATIC_PASS",
+      "deployment_status": "STATIC_PASS path mapping; NOT_DEPLOYED for candidate overrides",
+      "content_read_required": "on demand; not proof of semantics of every referenced section"
+    }
+  ],
+  "peer_closure": [
+    {
+      "skill": "mj-agent-doc-author",
+      "peers": [
+        "mj-agent-doc-plan",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-plan",
+        "mj-agent-git-commit",
+        "mj-agent-runtime-biz-catalog-sync",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-doc-migrate",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-doc-plan",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-repo-scan"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-doc-review",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-sync",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-review-respond",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-check-merge",
+        "mj-agent-git-review-pr"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-doc-sync",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-migrate",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-push",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-doc-validate",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-git-commit",
+        "mj-agent-git-review-pr"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-diagnose",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-git-commit",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-implement",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-sync",
+        "mj-agent-flow-diagnose",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-repo-scan",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-git-commit",
+        "mj-agent-git-push",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-intake",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-repo-scan",
+        "mj-agent-git-branch",
+        "mj-agent-git-issue",
+        "mj-agent-runtime-biz-catalog-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-plan",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-plan",
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-repo-scan",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-git-issue"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-post-merge",
+      "peers": [
+        "mj-agent-flow-review-respond",
+        "mj-agent-git-branch",
+        "mj-agent-git-check-merge",
+        "mj-agent-git-delete",
+        "mj-agent-git-issue",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-repo-scan",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-plan",
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-issue",
+        "mj-agent-git-review-pr"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-review-respond",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-sync",
+        "mj-agent-flow-implement",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-git-check-merge",
+        "mj-agent-git-commit",
+        "mj-agent-git-issue",
+        "mj-agent-git-push",
+        "mj-agent-git-review-pr",
+        "mj-agent-runtime-prompt-version-bump"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-scope-drift",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-git-branch",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-self-review",
+      "peers": [
+        "mj-agent-flow-post-merge",
+        "mj-agent-flow-review-respond",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-flow-verify",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-flow-verify",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-flow-review-respond",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-flow-self-review"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-branch",
+      "peers": [
+        "mj-agent-git-commit",
+        "mj-agent-git-delete",
+        "mj-agent-git-issue",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-check-merge",
+      "peers": [
+        "mj-agent-flow-post-merge",
+        "mj-agent-flow-review-respond",
+        "mj-agent-git-delete",
+        "mj-agent-git-review-pr",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-commit",
+      "peers": [
+        "mj-agent-flow-intake",
+        "mj-agent-git-branch",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-delete",
+      "peers": [
+        "mj-agent-flow-post-merge",
+        "mj-agent-git-branch",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-issue",
+      "peers": [
+        "mj-agent-flow-intake",
+        "mj-agent-flow-plan",
+        "mj-agent-flow-scope-drift",
+        "mj-agent-git-branch",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-pr",
+      "peers": [
+        "mj-agent-flow-intake",
+        "mj-agent-flow-post-merge",
+        "mj-agent-flow-review-respond",
+        "mj-agent-git-check-merge",
+        "mj-agent-git-push",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-push",
+      "peers": [
+        "mj-agent-git-commit",
+        "mj-agent-git-delete",
+        "mj-agent-git-pr",
+        "mj-agent-git-sync"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-review-pr",
+      "peers": [
+        "mj-agent-doc-review",
+        "mj-agent-flow-review-respond",
+        "mj-agent-git-check-merge",
+        "mj-agent-git-delete",
+        "mj-agent-git-sync",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-git-sync",
+      "peers": [
+        "mj-agent-git-branch",
+        "mj-agent-git-commit",
+        "mj-agent-git-delete",
+        "mj-agent-git-push"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-app-start",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-verify",
+        "mj-agent-git-branch",
+        "mj-agent-infra-app-stop",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-env-teardown",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-app-stop",
+      "peers": [
+        "mj-agent-flow-verify",
+        "mj-agent-infra-app-start",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-env-teardown",
+        "mj-agent-infra-storage-stack"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-docker-compose",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-flow-verify",
+        "mj-agent-git-branch",
+        "mj-agent-infra-app-start",
+        "mj-agent-infra-app-stop",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-infra-storage-stack",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-env-setup",
+      "peers": [
+        "mj-agent-flow-intake",
+        "mj-agent-git-commit",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-infra-storage-stack",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-env-teardown",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-infra-app-stop",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-infra-storage-stack",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-llm-endpoint-probe",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-storage-stack",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-storage-stack",
+      "peers": [
+        "mj-agent-flow-implement",
+        "mj-agent-flow-intake",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-env-teardown",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-infra-studio-probe"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-infra-studio-probe",
+      "peers": [
+        "mj-agent-flow-self-review",
+        "mj-agent-flow-verify",
+        "mj-agent-infra-app-start",
+        "mj-agent-infra-docker-compose",
+        "mj-agent-infra-env-setup",
+        "mj-agent-infra-llm-endpoint-probe",
+        "mj-agent-runtime-prompt-version-bump"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-runtime-biz-catalog-sync",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-implement",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-infra-studio-probe",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-runtime-eval-baseline",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-runtime-biz-catalog-sync",
+        "mj-agent-runtime-prompt-version-bump",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-runtime-prompt-version-bump",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-infra-studio-probe",
+        "mj-agent-runtime-biz-catalog-sync",
+        "mj-agent-runtime-eval-baseline",
+        "mj-agent-runtime-skill-doc-improve"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    },
+    {
+      "skill": "mj-agent-runtime-skill-doc-improve",
+      "peers": [
+        "mj-agent-doc-author",
+        "mj-agent-doc-validate",
+        "mj-agent-flow-self-review",
+        "mj-agent-git-commit",
+        "mj-agent-git-pr",
+        "mj-agent-git-push",
+        "mj-agent-infra-studio-probe",
+        "mj-agent-runtime-biz-catalog-sync",
+        "mj-agent-runtime-eval-baseline",
+        "mj-agent-runtime-prompt-version-bump"
+      ],
+      "status": "STATIC_PASS",
+      "semantics": "same-stage calls return; downstream suggestions do not execute"
+    }
+  ],
+  "status": "STATIC_PASS",
+  "not_proven": [
+    "standalone candidate root completeness",
+    "actual host discovery",
+    "final deployed consumer integration",
+    "every historical section anchor"
+  ],
+  "unmet_dependencies": [
+    {
+      "id": "U01",
+      "skills": [
+        "infra-storage-stack",
+        "infra-docker-compose"
+      ],
+      "dependency": "authorized project memory tools / backup restore execution",
+      "status": "UNMET_DEPENDENCY; no live service test",
+      "fallback": "read code/schema evidence; Owner backup plan, never direct DB client"
+    },
+    {
+      "id": "U02",
+      "skills": [
+        "infra-app-start"
+      ],
+      "dependency": "background process lifecycle on actual Codex host",
+      "status": "UNMET_DEPENDENCY",
+      "fallback": "Owner foreground terminal; no invented background API"
+    },
+    {
+      "id": "U03",
+      "skills": [
+        "infra-env-setup"
+      ],
+      "dependency": "real decryption/OS credential injection/pwsh platform",
+      "status": "NOT_TESTED; Owner-only; PS5.1 not supported claim",
+      "fallback": "state-only report; P1 public candidate reuse"
+    },
+    {
+      "id": "U04",
+      "skills": [
+        "all protected mutations"
+      ],
+      "dependency": "approved action plus compatible reviewed execution route",
+      "status": "BLOCKED_EXECUTION_ROUTE where P1 hook blocks",
+      "fallback": "concrete drafts; no receipts, bypass or hook changes"
+    },
+    {
+      "id": "U05",
+      "skills": [
+        "infra probes",
+        "git remote actions"
+      ],
+      "dependency": "authenticated network/service/host access",
+      "status": "NOT_TESTED",
+      "fallback": "offline/static material and exact missing dependency"
+    },
+    {
+      "id": "U06",
+      "skills": [
+        "runtime-biz-catalog-sync",
+        "runtime-eval-baseline"
+      ],
+      "dependency": "Owner sanitized snapshot / actual EVAL framework & measurements",
+      "status": "NOT_TESTED or UNMET when missing",
+      "fallback": "SKIP is not PASS; baseline null/draft, never invent data"
+    },
+    {
+      "id": "U07",
+      "skills": [
+        "doc/flow/git consumers"
+      ],
+      "dependency": "formal root AGENTS/doc/template/CI/checker cutover",
+      "status": "P3_NOT_APPLIED",
+      "fallback": "candidate native procedure; retained non-client kernel remains in place"
+    }
+  ]
+}

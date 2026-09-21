@@ -1,0 +1,47 @@
+{
+  "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "index_sha256": "b568c93beaebfec11f59da8bff0b39ef214dc066828c29d4f291f9ca35ca1382",
+  "archive": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p6\\before.zip",
+  "archive_sha256": "24e5ec55d6755a9e89ae995b03627f2495475077da6b710fc06b3a6502ee706a",
+  "members": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "d4e21b7c851ee127eebcdf33fd0c0b5bb10184eddd4a5c4421cceae8dd04060c"
+    },
+    {
+      "path": "README.md",
+      "sha256": "9bc6afec28aaac269c6b9515a9136f14ad601a78700eb8a665bc2c60c45ac6c8"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "0b3ba493b57cb599723b12bf376924b8322ada81652efe384da4b41a54e4f7c4"
+    },
+    {
+      "path": "config/README.md",
+      "sha256": "5e677199325efe16a820dcceefaa4f038d60f0ebd4e1364633922c9cd0f473f7"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "sha256": "4488e7ed2388670e3c1cc71dcb38643960e9f57b3bab9e82304a2c7f7f064b81"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "sha256": "95dbcee945f991f6b7e3996f63ef31e1cef73a5429ed6c5034c9b3b23ab0c44c"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_Quick_Start_Setup.md",
+      "sha256": "181b55776fee877025c78b1838067747d07132669c9b3c40887b3e3d293f8ba0"
+    },
+    {
+      "path": "plans/[REPORT]_Codex_Only_Migration_Progress.md",
+      "sha256": "5d280cf6b1a2b77a937964479f19b3b87de19c8b340743536b26fe8d429f0e75"
+    },
+    {
+      "path": "evidence/codex-only-migration/asset-map.csv",
+      "sha256": "6b90c02c3c2fee44f081e9f467b700c41b3af884ade0419f5d99aca39b19d26f"
+    }
+  ],
+  "prior": "../p5-cleanup/recovery-after-resume.json",
+  "order": "HEAD only restores committed baseline. Restore selected P5 legacy81 from its exact ZIP, six P5 public docs from consumer-six-before.zip. Broader rollback requires reverse chronological P4 consumer/R2C increments first, then p4-minimal-fixes two-file delta (including GLOSSARY outside P3 group), verify p3-postformat-group-recovery.diff expected188 identities, then compare p3-preapply-public.zip; preserve/reapply P1 split from exact public backups. No restore executed; old P3/P4 patches do not apply directly to current later identities.",
+  "restored": false
+}

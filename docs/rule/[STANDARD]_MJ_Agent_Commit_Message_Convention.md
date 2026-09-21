@@ -174,8 +174,8 @@ aliases:
 | `deps` | `pyproject.toml`、`uv.lock` | `infra(deps): 升 langgraph 到 1.1.9` |
 | `docker` | `docker/`、`.dockerignore` | `infra(docker): compose 增加 test overlay` |
 | `scripts` | `scripts/`（含 `scripts/sdd/`） | `infra(scripts): 新增 setup-env.ps1` |
-| `claude` | `.claude/`（`settings.json` / `skills/` / `hooks/` / `scripts/`）、`.mcp.json`、`.claudeignore` | `docs(claude): flow-intake skill 补 grilling 段` |
-| `agents` | AI-agent 契约与生成投影面：`AGENTS.md`（根 + 嵌套）、`.agents/`、`.codex/`、`.agents.lock.json` | `docs(agents): 投影清单改指 manifest` |
+| `claude` | 历史客户端记录的保留 scope；原生开发不再使用 | 读取既有提交用 |
+| `agents` | 原生开发入口：`AGENTS.md`（根 + 嵌套）、`.agents/`、`.codex/` | `docs(agents): 更新原生技能索引` |
 
 #### 4.2.2 文档与治理（10 项）
 
@@ -217,7 +217,7 @@ mj-agent 通用约束（后三条为 v1.1 新增，各附实测证据）：
 | 所有文件在同一子系统 | 使用该子系统 scope |
 | 跨子系统但同一层（如多个 SQL 工具） | 使用层 scope（如 `sql`） |
 | 基础设施 + 关联文档 | 使用基础设施 scope（如 `ci` / `deps`） |
-| `.claude/**` 与 `.github/**` 混合面 | 省略 scope |
+| `.agents/**` 与 `.github/**` 混合面 | 省略 scope |
 | 文档跨多个治理目录（如同时改 `sdd/` 与 `policies/`） | 省略 scope |
 | 真正混合，无主导 scope | 省略 scope：`feat: <summary>` |
 
@@ -245,13 +245,13 @@ v1.0 时期产生的野生 scope 按下表归并。**新提交一律使用右列
 | `adr` | `decisions` | 目录名为 `decisions/`（4 : 1） |
 | `skills`、`safe-sql` | `skill` | 指 `src/mj_agent/skills/` 下的 runtime skill |
 | `prompts` | `prompt` | |
-| `mcp`、`hooks`、`setup`、`skill-index` | `claude` | 均落在 `.claude/` 或 `.mcp.json` 面。**注意 `skill-index` 指 `.claude/skills` 索引，不是 `skill`** —— `skill` scope 专指 `src/mj_agent/skills/` |
+| `mcp`、`hooks`、`setup`、`skill-index` | `agents` / `scripts` | 原生配置/技能索引用 agents；scripts/mcp 工具用 scripts；跨域可省略。skill 仍专指运行时技能。历史 claude 提交保持原样。 |
 | `unit` | `tests` | |
 | `guardrail` | `sql` | |
 | `runbook` | `guide` | `docs/runbook/` 并不存在；RUNBOOK 实住 `docs/infrastructure/**` |
 | `governance` | `policies` | 文档治理规则面（个别历史用例实际落在 `docs/infrastructure/`，按实际路径取 `guide`） |
 | `adapter`、`sdd-adapter`、`metrics`、`meta` | `sdd` | `metrics` 指 SDD 结构度量报告；`meta` 指已归档的 Meta framework，其治理内容已并入 kernel |
-| `workflow` | `ci` **或** `claude` | **该别名一词两义**：`ci(workflow)` 指 `.github/workflows/`；`docs(workflow)` 指 `.claude/skills/` 的 flow 家族。按实际改动路径二选一 |
+| `workflow` | `ci` **或** `agents` | CI workflow 用 ci；原生 flow 技能用 agents。既有 scope 闭集不扩张。 |
 | `template` | `rule` | `docs/_templates/`，已并入 `rule` 覆盖路径 |
 | `env`、`scaffold` | `infra` | `.env.example` / `.gitignore` 等根级基础设施 |
 | `changelog` | 省略 scope | 项目根 5 文件不构成 scope 区域 |
@@ -403,7 +403,7 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 提升为 `active` 时同步更新：
 - 本文 frontmatter `state: draft → state: active` + bump `updated`
-- `CLAUDE.md` §Repo conventions 段补一行指向本规范
+- `AGENTS.md` 的 Git 约束指向本规范
 - `docs/INDEX.md` 同步状态
 
 ---
@@ -414,9 +414,9 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 - [[../adr/[ADR]_010_Git_And_Commit_Conventions_From_MJ_System|ADR-010 Git and Commit Conventions Adopted from 上游业务系统]] —— 历史决策记录（保留原 ADR 编号 + 文件名以稳定 wikilink；ADR-010 在 PR-Γ 候选 archive）
 - [[capabilities/infrastructure/evidence/assessments/[ASSESSMENT]_MJ_System_Git_Conventions_Adoption_v1.0|配套适配评估 v1.0]] —— 决策依据
-- [[policies/documentation|policies/documentation]] §7（CLAUDE.md sync allowlist；§7.2 三轨分段）—— CLAUDE.md 同步触发条件（原 Meta §6.4/§6.4.1；tri-track trio 已 M6 PR4 archive）
+- [[policies/documentation|policies/documentation]] §7（AGENTS.md sync allowlist；§7.2 三轨分段）—— AGENTS.md 同步触发条件（原 Meta §6.4/§6.4.1；tri-track trio 已 M6 PR4 archive）
 - [[[STANDARD]_GitHub_Markdown|GitHub-Flavored Markdown 编写规范 v1.0]] —— 本文 Markdown/YAML 语法依据
-- `CLAUDE.md §Repo conventions` —— 仓库级 commit 约定（待与本规范同步）
+- `AGENTS.md` 的 Git workflow discipline / Documentation and workflow —— 当前仓库级提交与分支约束；提交格式以本规范为准
 
 ### 10.3 行业规范
 

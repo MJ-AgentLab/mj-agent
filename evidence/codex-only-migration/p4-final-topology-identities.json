@@ -1,0 +1,26 @@
+{
+  "topology clone": {
+    "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+    "matched": 816,
+    "mismatches": [
+      {
+        "path": "GLOSSARY.md",
+        "actual_sha256": "eaf4c6a6697ab660fdc67c4fd8589b21344fb94e249686ad35dfe83a7175181e",
+        "expected_sha256": "d0ba1c26cd2779476e56129e064a75f3e71a8d06493eb0c6d5dd2c4afb40b28c",
+        "newline_only": true
+      }
+    ]
+  },
+  "topology linked": {
+    "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+    "matched": 816,
+    "mismatches": [
+      {
+        "path": "GLOSSARY.md",
+        "actual_sha256": "eaf4c6a6697ab660fdc67c4fd8589b21344fb94e249686ad35dfe83a7175181e",
+        "expected_sha256": "d0ba1c26cd2779476e56129e064a75f3e71a8d06493eb0c6d5dd2c4afb40b28c",
+        "newline_only": true
+      }
+    ]
+  }
+}

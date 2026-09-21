@@ -95,7 +95,7 @@ mj-agent 的文档治理框架在 bootstrap 阶段曾参考上游业务仓库的
 - 规则 2 —— `check_frontmatter.py` 的 `SCAN_ROOTS` = `docs/` `plans/` `decisions/`
   `src/mj_agent/{skills,prompts}`。**`policies/` `sdd/` `capabilities/` `config/` `.github/`
   不在内**：这些目录的 frontmatter 若回写 `derives_from`，无 gate 拦截，须人工核。
-- 规则 1/3/4 —— 扫 `docs/**/*.md` + 仓根 `CLAUDE.md` + `README.md`；**跳过**
+- 规则 1/3/4 —— 扫 `docs/**/*.md` + 仓根 `AGENTS.md` + `README.md`；**跳过**
   `docs/archive/**`（冻结快照；active 归档规约见 `policies/archive.md` —— 脚本 docstring
   里的 `ADR-019` 归因已随该 ADR superseded 到 `archive/decisions/superseded/` 而过时）、
   `CHANGELOG.md`（Keep-a-Changelog 不改历史）、
@@ -124,7 +124,7 @@ ci.yml 的 `No cross-repo refs` step **没有** `continue-on-error`，但脚本�
 `policies/ci-gates.md` §4.1.1 明文观察期；脚本内本 gate 自己的该宣告已全部清除（docstring 处由
 #441 改写、`main()` 提示处由 #488 删除）。warning 是当前姿态而非定时过渡态。
 
-**当前残留**：**15 warnings / 11 文件**（2026-08-11 实测）—— `CLAUDE.md` · `README.md` ·
+**当前残留**：**15 warnings / 11 文件**（2026-08-11 实测）—— `AGENTS.md` · `README.md` ·
 `docs/INDEX.md` · `docs/guide/` 4 份 GUIDE · `docs/infrastructure/git/` 4 份 GUIDE。
 清理无日程绑定。
 

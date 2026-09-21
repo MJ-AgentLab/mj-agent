@@ -1,0 +1,107 @@
+{
+  "at": "2026-09-20T03:12:05.810151+00:00",
+  "record_integrity": "PASS",
+  "source_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "source_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+  "delivery_unchanged": 817,
+  "cleanup_rows": 387,
+  "cleanup_allowed": 0,
+  "prior_asset_rows_preserved": 466,
+  "asset_rows": 468,
+  "backup": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-l5-preflight\\records-before.zip",
+    "sha256": "04395824fde963d16ee33b811bc12c36b07ec23ae66282ea4ff24e6b8f5146b5"
+  },
+  "prior_report_bytes_preserved": 162941,
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "20e2f24c352cf640d9dd33234b128ca897804b99\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "maintain/codex-dev-mode-migration\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree D:/workspace/10-software-project/projects/mj-agent/.bare\nbare\n\nworktree D:/workspace/10-software-project/projects/mj-agent/develop\nHEAD 20e2f24c352cf640d9dd33234b128ca897804b99\nbranch refs/heads/develop\n\nworktree D:/workspace/10-software-project/projects/mj-agent/documentation/session-maintenance\nHEAD b2fa9dab9e1562ec365ead1f8b35c72e00daecc2\nbranch refs/heads/documentation/session-maintenance\n\nworktree D:/workspace/10-software-project/projects/mj-agent/maintain/499-enforcement-blocking\nHEAD 20e2f24c352cf640d9dd33234b128ca897804b99\nbranch refs/heads/maintain/499-enforcement-blocking\n\nworktree D:/workspace/10-software-project/projects/mj-agent/maintain/552-codex-approval-preflight\nHEAD 20e2f24c352cf640d9dd33234b128ca897804b99\nbranch refs/heads/maintain/552-codex-approval-preflight\n\nworktree D:/workspace/10-software-project/projects/mj-agent/maintain/codex-dev-mode-migration\nHEAD 20e2f24c352cf640d9dd33234b128ca897804b99\nbranch refs/heads/maintain/codex-dev-mode-migration\n\nworktree D:/workspace/10-software-project/projects/mj-agent/tmp-control-20e2f24c\nHEAD 20e2f24c352cf640d9dd33234b128ca897804b99\ndetached\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--check",
+        "--",
+        "plans/[REPORT]_Codex_Only_Migration_Progress.md",
+        "evidence/codex-only-migration/asset-map.csv"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "identities": {
+    "plans/[REPORT]_Codex_Only_Migration_Progress.md": "b8c4c4f266f7bcedd118fe9f766679eeaf6020f0e492ab43dafa7c6cff64c135",
+    "evidence/codex-only-migration/asset-map.csv": "aa38b5d7c8703e3b6e477248fe396a05ef50af5564145d874f8112bca9311a60",
+    "evidence/codex-only-migration/p4-l5-preflight-blocked.json": "0c30900a97fe4e6a84eec46c441d932dd54b2919843caca285771583576bdb9d"
+  },
+  "review_package_unchanged": {
+    "evidence/codex-only-migration/p4-host-ci-review/canaries.json": "d00b0c50cfe2af5b7e2082af04d5c4e0aef27968533bda8a70df0930e34d1170",
+    "evidence/codex-only-migration/p4-host-ci-review/ci.py": "847094f041e07bcc1b3c3f7d642cc6b3d9cdf909ef50cf73cf61d4629dec8486",
+    "evidence/codex-only-migration/p4-host-ci-review/common.py": "1dba921d38a9e98577ee60e3777b18d3dd4d7be17c5ab6725b8e5b5b2a4a1503",
+    "evidence/codex-only-migration/p4-host-ci-review/host.py": "f1d5b1ea530536422103e2c94a357f3b0427c087418b84fc291134c9c1366627",
+    "evidence/codex-only-migration/p4-host-ci-review/prepare.py": "223f2fd74d8b3c41233fc35160206ed49dd25d641fdf72020518b7ba9458d675",
+    "evidence/codex-only-migration/p4-host-ci-review/protocol.jsonl": "c02fdd00c427fb0afdcab00c1159bf0fe9907bd11f3ea777cbb098fa0347a16b",
+    "evidence/codex-only-migration/p4-host-ci-review/README.md": "729feebef465ecac9d67a35c1dec0c948948b36e51267724cfe526d08c97eb15",
+    "evidence/codex-only-migration/p4-host-ci-review/review-binding.json": "3b9832fab7bdfeaec85fe08f9aa0232c188b28ab9fae9e3e35c35458d583e0c2"
+  },
+  "host_sessions": 0,
+  "model_calls": 0,
+  "isolated_cli_preflight_attempts": 1,
+  "preflight_exit_code": 1,
+  "retry_count": 0,
+  "formal_file_edits": [],
+  "new_commits_pushes": 0,
+  "remote_CI_reruns": 0,
+  "local_project_tests": 0,
+  "L5": "BLOCKED_EXECUTION_ROUTE",
+  "CI": "PRIOR_ACTUAL_PUSH_CI_PASS_RETAINED",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED"
+}

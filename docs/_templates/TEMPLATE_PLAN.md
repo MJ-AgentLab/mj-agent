@@ -122,7 +122,7 @@ track: shared / code / agent / engineering-workflow
 ## 关联文档
 
 - [[sdd/workflows/execution-loop|执行闭环 workflow]] §1（Stage 4 Plan）
-- `.claude/skills/mj-agent-flow-plan/SKILL.md`（Plan body 编排器）
+- `.agents/skills/mj-agent-flow-plan/SKILL.md`（Plan body 编排器）
 - [[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（plans/ 4 态机）
 - [[TEMPLATE_REPO_SCAN_RESULT|TEMPLATE_REPO_SCAN_RESULT]]（Plan 上游 Stage 3 输出）
 

@@ -1,9 +1,6 @@
 # tests/AGENTS.md
 
-> Tool-neutral local constraints for `tests/` — binds every AI agent working here (roster in
-> root `AGENTS.md`). Codex discovers this file hierarchically (root → cwd); Claude Code
-> imports it via the sibling `tests/CLAUDE.md`. Cross-cutting BDD/TDD rules live in
-> `sdd/adapters/bdd-tdd.md` — this file only points.
+> Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
 ## Band discipline
 
@@ -42,5 +39,9 @@ Human/IDE direct pytest is supported but remains offline through the root confte
 
 ## See also
 
-- Root `AGENTS.md` · `tests/CLAUDE.md` (same layer) · `sdd/adapters/bdd-tdd.md`
+- Root `AGENTS.md`
 - `pyproject.toml` (pytest markers / addopts) · `policies/ai-agent.md` §4 + §7
+
+## Execution details
+
+BDD steps 位于对应 capability steps 目录。固定 expected 文件不由待测代码生成。smoke/contract 显式标记；缺外部环境只能记录 structured skip，不伪装通过。新原生测试承接 G1/G2、payload 脱敏、fail-closed 和冻结摘要；P1 共用离线断言保持。

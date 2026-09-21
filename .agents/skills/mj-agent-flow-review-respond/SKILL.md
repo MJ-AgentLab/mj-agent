@@ -1,37 +1,20 @@
 ---
 name: mj-agent-flow-review-respond
-description: "Stage 15 review response on your own PR: fetch review comments, classify each (bug/suggestion/style/architecture/requirement/test), analyze CI failures, draft fixes and replies; use for 处理 review, respond to review, CI failure 分析; replies post only after Owner approval."
+description: "适用于 mj-agent 的Stage15回应自己的PR反馈/CI失败。输入：自有PR、comments、head、CI日志、Plan/SPEC。流程：fetch→逐条分类→影响→修复计划→逐条回复→风险输出。输出：每条comment有采纳/解释/延后理由及草案。Use when：我的PR收到三条意见，分类并拟回复。Do not use for：请评审另一作者的新PR；建议git-review-pr，避免反向调用。授权：req/API/schema/权限/B改动先Owner；发帖明确授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Respond to Review Comments (HITL Stage 15)
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill processes review comments and CI failures on **your own** PR (HITL Stage 15) — fetches PR reviews via gh CLI, classifies each comment (bug / suggestion / style / architecture / requirement / test / CI failure), evaluates impact on Plan/SPEC/ADR + mj-agent-specific surfaces (in-source canonical / biz_catalog / SQL guardrail), drafts modification plan + reply per comment, outputs HITL questions when comments touch requirement/API/schema/permission/user-visible-behavior or §3.1 必停 4 项. Make sure to use this skill whenever the user says "处理 review", "回应 review", "处理 PR feedback", "我的 PR 收到了 review", "review 回复", "respond to review", "comment triage", "PR comment 分类", "CI failure 分析", "Stage 15", "review respond" in the mj-agent context, or pastes a PR URL belonging to themselves with reviews to handle. Direction-distinct from mj-agent-git-review-pr (audits **others'** PRs for architecture compliance — opposite direction). Outputs per-comment classification + modification plan + reply draft + HITL flags; publishes replies only with explicit authorization of the exact PR and reply content, using a discovered tool or gh after execution-route checks; does NOT auto-commit or auto-modify code (those stay gated). Do not use for: reviewing someone else's PR (use mj-agent-git-review-pr in PR-B3+), pre-commit self-check (use mj-agent-flow-self-review, Stage 11), or pre-merge readiness (use mj-agent-git-check-merge in PR-B3+).
+
 
 ## Overview
 
@@ -41,10 +24,10 @@ description: "Stage 15 review response on your own PR: fetch review comments, cl
 
 | Skill | Direction | When |
 |---|---|---|
-| `/mj-agent-git-review-pr`（PR-B3） | **审别人 PR** | Architecture / design / merge-readiness review |
-| `/mj-agent-flow-review-respond`（本 skill） | **回应自己 PR comments** | Stage 15 of HITL flow — 处理收到的 feedback |
+| `mj-agent-git-review-pr`（PR-B3） | **审别人 PR** | Architecture / design / merge-readiness review |
+| `mj-agent-flow-review-respond`（本 skill） | **回应自己 PR comments** | Stage 15 of HITL flow — 处理收到的 feedback |
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 13/15 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.13 Rules + Output 6 字段）+ [[../../../sdd/workflows/execution-loop|execution-loop]] §6（AI Self-review 双段约束；修复后须出双段证据；实操矩阵见 §5）.
+**Reference**: `repo:sdd/workflows/execution-loop.md` §4.1（Stage 13/15 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.13 Rules + Output 6 字段）+ `repo:sdd/workflows/execution-loop.md` §6（AI Self-review 双段约束；修复后须出双段证据；实操矩阵见 §5）.
 
 ## Workflow
 
@@ -83,9 +66,9 @@ digraph review_respond {
 - 用户明确"我直接改了"（仍记跳过原因）
 
 **MUST NOT use for**：
-- 审**别人**的 PR → `/mj-agent-git-review-pr`（PR-B3 落地）
-- Pre-commit self-check → `/mj-agent-flow-self-review`（Stage 11）
-- Pre-merge readiness → `/mj-agent-git-check-merge`（PR-B3 落地）
+- 审**别人**的 PR → `mj-agent-git-review-pr`（PR-B3 落地）
+- Pre-commit self-check → `mj-agent-flow-self-review`（Stage 11）
+- Pre-merge readiness → `mj-agent-git-check-merge`（PR-B3 落地）
 
 ## Step 1: Fetch PR Feedback
 
@@ -109,7 +92,7 @@ gh pr checks <pr-id>                                         # CI status detail
 
 ## Step 2: Classify Each Comment
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1 的 Stage 13/15 映射（历史源 HITL_Prompt §4.13 Rules 2），每条 comment 归类（一条可多类）：
+按 `repo:sdd/workflows/execution-loop.md` §4.1 的 Stage 13/15 映射（历史源 HITL_Prompt §4.13 Rules 2），每条 comment 归类（一条可多类）：
 
 | 类别 | 触发特征 | 例 |
 |---|---|---|
@@ -240,7 +223,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 2. **Comment #6: reviewer 要改 system.md system prompt body**
    - 当前观察：本 PR 是 documentation/* PR，未在 scope 内动 system.md
    - 不确定点：扩 scope 改 system.md vs 拒绝 vs follow-up
-   - 为什么重要：B 风味 in-source canonical 改动是 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 /mj-agent-runtime-prompt-version-bump（PR-C2）
+   - 为什么重要：B 风味 in-source canonical 改动是 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 mj-agent-runtime-prompt-version-bump（PR-C2）
    - 选项：A. 接受扩 scope（变 feature/* PR；本 PR rebase）/ B. defer → follow-up PR / C. 改 SPEC 重对齐
    - 推荐：B（B 风味单独 PR + Domain Expert review）
    - 默认假设：B
@@ -268,49 +251,42 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## What This Skill DOES NOT DO
 
-- ✅ 拍板后 auto-reply（Owner 拍板后 AI 经 gh / mcp__github__ 自动发 reply 到 GitHub；不再要 user 手动 paste）
+- ✅ 回复只在具体 PR/内容获得明确发布授权且执行路线可用后发送；未发送保留草案
 - ❌ 不 auto-commit / auto-push 修改
-- ❌ 不修改 Plan / SPEC / ADR（仅建议；user 决定后调 /mj-agent-doc-sync 或 /mj-agent-doc-author，PR-B4/C1）
-- ❌ 不替代 `/mj-agent-git-review-pr`（方向相反——本 skill 处理 own PR comments；review-pr 审别人 PR）
-- ❌ 不替代 `/mj-agent-flow-self-review`（self-review = Stage 11 commit 前自检；本 skill = Stage 15 处理外部 reviewer feedback）
-- ❌ 不替代 `/mj-agent-git-check-merge`（check-merge = Stage 16 技术合并门）
+- ❌ 不修改 Plan / SPEC / ADR（仅建议；user 决定后调 mj-agent-doc-sync 或 mj-agent-doc-author，PR-B4/C1）
+- ❌ 不替代 `mj-agent-git-review-pr`（方向相反——本 skill 处理 own PR comments；review-pr 审别人 PR）
+- ❌ 不替代 `mj-agent-flow-self-review`（self-review = Stage 11 commit 前自检；本 skill = Stage 15 处理外部 reviewer feedback）
+- ❌ 不替代 `mj-agent-git-check-merge`（check-merge = Stage 16 技术合并门）
 - ❌ 不直接调 GitHub API 修 PR（add comment / dismiss review / approve / merge 仍需 user 操作）
-- ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + /mj-agent-runtime-* propose→拍板→apply）
+- ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + mj-agent-runtime-* propose→拍板→apply）
 
 ## Sub-skill / Tool Calls
 
 | Tool / Skill | 用途 |
 |---|---|
-| Bash `gh pr view --json reviews,comments` | Step 1 fetch feedback |
-| Bash `gh pr checks` | Step 1 CI status |
-| Bash `gh api repos/.../pulls/.../comments` | Step 1 per-line |
-| Read | 读 Plan / SPEC / ADR / Issue body |
-| Grep | 在 Plan / SPEC 搜 reviewer 提到的文件路径 |
-| `$mj-agent-flow-scope-drift` | reviewer 提"scope 越界"comment 时复用做 drift 判断 |
-| `$mj-agent-git-issue` | defer-to-followup 决策建 Issue 时复用 |
-
-<!-- codex-route:edge-flow-review-respond-flow-scope-drift -->
-> Codex route: invoke `$mj-agent-flow-scope-drift` (native carrier; call, conditional)
-
-<!-- codex-route:edge-flow-review-respond-git-issue -->
-> Codex route: invoke `$mj-agent-git-issue` (native carrier; call, conditional)
+| shell `gh pr view --json reviews,comments` | Step 1 fetch feedback |
+| shell `gh pr checks` | Step 1 CI status |
+| shell `gh api repos/.../pulls/.../comments` | Step 1 per-line |
+| 读取 | 读 Plan / SPEC / ADR / Issue body |
+| rg | 在 Plan / SPEC 搜 reviewer 提到的文件路径 |
+| `mj-agent-flow-scope-drift` | reviewer 提"scope 越界"comment 时复用做 drift 判断 |
+| `mj-agent-git-issue` | defer-to-followup 决策建 Issue 时复用 |
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 13/15 映射；历史源 HITL_Prompt §4.13 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §6（修复后须出双段证据；AI Self-review 双段约束；实操矩阵见 §5）
-- [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention]]（PR description / 回复规范）
-- `.claude/skills/mj-agent-git-review-pr/SKILL.md`（PR-B3 落地，方向相反对照）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 13/15 映射；历史源 HITL_Prompt §4.13 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
+- `repo:sdd/workflows/execution-loop.md` §6（修复后须出双段证据；AI Self-review 双段约束；实操矩阵见 §5）
+- `repo:docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`（PR description / 回复规范）
+- `.agents/skills/mj-agent-git-review-pr/SKILL.md`（PR-B3 落地，方向相反对照）
 - `.agents/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 commit 前自检；与本 skill 时序衔接）
 - `.agents/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）
 - `.agents/skills/mj-agent-git-issue/SKILL.md`（defer 时建 follow-up issue 子例程）
-- mj-system `.claude/skills/mj-sys-flow-review-respond/SKILL.md`（直接派生源）
 
 ## Anti-patterns
 
 - **不要** 在 B 风味 comment 触发时自动接受改动（强制 HITL；建议 follow-up PR）
 - **不要** push-back 不给理由（必须技术性）
-- 拍板后由 AI 经 gh / mcp__github__ 发 reply 到 GitHub（Owner 拍板 = 发帖授权；不再要 user 手动 paste）
+- 只有具体 PR/内容获得明确发布授权且执行路线可用才发送，不将修复方案批准等同于发帖授权
 - **不要** 跳过 §3.1 必停 4 项 mj-agent 专属维度判断
 - **不要** 在 #2 类需求 / #6 类 in-source canonical comment 上给 GO（必 HITL）
 
@@ -319,28 +295,10 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 ```
 Review Response Report 已输出（对话）。
 HITL 通过 → user 决定每条 comment 处理后：
-  → 改代码 → $mj-agent-flow-implement (Stage 8 重新走)
-  → 文档同步 → Codex substitute edge-flow-review-respond-doc-sync (PR-C1) 或手工 Edit
-  → 重测 → $mj-agent-flow-verify (Stage 10) 跑相关命令
-  → 新 commit → $mj-agent-git-commit + $mj-agent-git-push
-  → 回复 GitHub → Owner 拍板后 AI 经 gh / mcp__github__ 发 reply
-  → 等 reviewer 重审 → Codex substitute edge-flow-review-respond-git-check-merge (Stage 16)
+  → 改代码 → mj-agent-flow-implement (Stage 8 重新走)
+  → 文档同步 → mj-agent-doc-sync (PR-C1) 或手工 编辑
+  → 重测 → mj-agent-flow-verify (Stage 10) 跑相关命令
+  → 新 commit → mj-agent-git-commit + mj-agent-git-push
+  → 回复 GitHub → 核验具体发帖授权和实际工具后发 reply
+  → 等 reviewer 重审 → mj-agent-git-check-merge (Stage 16)
 ```
-
-<!-- codex-route:edge-flow-review-respond-doc-sync -->
-> Codex route: No native Codex carrier for the doc family: follow the shared documentation semantics (sdd/adapters/development-agent.md + docs/_templates), propose the document body in conversation, obtain Owner approval, then write it and run the repo doc validators.
-
-<!-- codex-route:edge-flow-review-respond-flow-implement -->
-> Codex route: invoke `$mj-agent-flow-implement` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-review-respond-flow-verify -->
-> Codex route: invoke `$mj-agent-flow-verify` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-review-respond-git-check-merge -->
-> Codex route: Merge readiness and the merge itself are Owner actions: report CI/review state, stop at AWAITING_HUMAN_MERGE, and never merge.
-
-<!-- codex-route:edge-flow-review-respond-git-commit -->
-> Codex route: invoke `$mj-agent-git-commit` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-review-respond-git-push -->
-> Codex route: invoke `$mj-agent-git-push` (native carrier; handoff, conditional)

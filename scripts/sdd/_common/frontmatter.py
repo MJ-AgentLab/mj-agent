@@ -41,7 +41,7 @@ def parse_frontmatter(text: str) -> tuple[dict[str, Any] | None, str]:
 def parse_native_frontmatter(text: str) -> tuple[dict[str, str] | None, str]:
     """Split text into `(frontmatter_dict, body)` using permissive native semantics.
 
-    Matches Claude Code's `.claude/skills/*/SKILL.md` parser: each top-level
+    Legacy unquoted-scalar compatibility parser: each top-level
     `<key>: <value>` line is captured with `<value>` as the literal rest-of-line,
     so embedded `:` characters inside `description` (e.g., a literal
     `Do not use for: ...` anti-trigger phrase) do NOT trigger YAML's "mapping
@@ -60,7 +60,7 @@ def parse_native_frontmatter(text: str) -> tuple[dict[str, str] | None, str]:
 
     Use `parse_frontmatter` (strict yaml.safe_load) for full Agent_Side / PROMPT
     13-field schemas; use `parse_native_frontmatter` for ADR-013 native 2-field
-    `.claude/skills/*/SKILL.md` files only.
+    legacy unquoted development-skill fixtures only. Native development skills use strict YAML.
     """
     match = _FRONTMATTER_RE.match(text)
     if not match:

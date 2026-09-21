@@ -1,0 +1,13 @@
+--- a/scripts/sdd/codex_hook_guard.py
++++ b/scripts/sdd/codex_hook_guard.py
+@@ -51,6 +51,10 @@
+     tool = payload.get("tool_name")
+     data = payload.get("tool_input")
+     if tool in {"apply_patch", "Edit", "Write"}:
++        if tool == "apply_patch" and isinstance(data, dict) and "command" in data:
++            if set(data) != {"command"} or not isinstance(data["command"], str):
++                return "UNKNOWN", "unrecognized patch payload"
++            data = data["command"]
+         if isinstance(data, str):
+             paths = re.findall(r"^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)$", data, re.M)
+         elif isinstance(data, dict):

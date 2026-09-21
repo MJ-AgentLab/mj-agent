@@ -9,13 +9,13 @@ Algorithm: parse keys from each file (skipping blank / `#` lines), return
 keys present in `.env.example` but missing from `.env`. Values are not
 read or compared.
 
-Scope (post ADR-030): app keys only. MCP infrastructure secrets (5 SSH +
-10 PG URL = 15 keys) live in ``config/secrets-mcp.enc`` and are decrypted
-directly to OS env via ``.claude/scripts/setup-mcp-secrets.ps1``. They are
-intentionally **not** declared in ``.env.example`` and **not** in ``.env``,
-so drift detection ignores them by construction. To check MCP keys
-separately, run ``setup-mcp-secrets.ps1 -Reload`` which compares OS
-User-level env (``HKCU/Environment``) against ``config/secrets-mcp.example``.
+Scope (post ADR-030 / ADR-040): app keys only. Native project MCP
+credentials use six named variables (GitHub + five memory PostgreSQL targets),
+maintained separately through ``scripts/mcp/setup-mcp-secrets.ps1``. They are
+not app ``.env`` entries, so drift detection ignores them by construction.
+The setup script's ``-Reload`` mode reports only required-variable presence;
+credential maintenance and OS environment writes require separate Owner
+authorization. This module never invokes that script.
 """
 
 from __future__ import annotations
