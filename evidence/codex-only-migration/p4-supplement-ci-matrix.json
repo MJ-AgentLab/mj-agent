@@ -1,0 +1,449 @@
+{
+  "workflow_sha256": "6bda81da924225007d7923ee58f61580673019b8730075a09bb2c4de14954977",
+  "steps": [
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Checkout",
+      "command_or_action": "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Read Python version",
+      "command_or_action": "echo \"version=$(cat .python-version)\" >> \"$GITHUB_OUTPUT\"",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Setup Python",
+      "command_or_action": "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Install uv",
+      "command_or_action": "astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Sync dependencies",
+      "command_or_action": "uv sync --frozen",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Syntax check (compileall)",
+      "command_or_action": "uv run python -m compileall -q src tests scripts",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Lint (ruff)",
+      "command_or_action": "uv run ruff check",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Type check (mypy strict)",
+      "command_or_action": "uv run mypy src/mj_agent",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Frontmatter schema (canonical docs)",
+      "command_or_action": "uv run python scripts/check_frontmatter.py",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Wikilinks (canonical docs)",
+      "command_or_action": "uv run python scripts/check_wikilinks.py",
+      "warning_only": false,
+      "environment": {
+        "MJ_AGENT_A4_STRICT": "1"
+      },
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Kernel section refs (execution-loop)",
+      "command_or_action": "uv run python scripts/check_loop_section_refs.py",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "A6 audit schema (evidence/ai-context-audit)",
+      "command_or_action": "uv run python scripts/check_ai_context_audit.py",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "No cross-repo refs (forward guard)",
+      "command_or_action": "uv run python scripts/check_no_cross_repo_refs.py",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Old completed plans (warning-mode GC候选)",
+      "command_or_action": "uv run python scripts/find_old_completed_plans.py",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G1 capability schema (BLOCKING per Stage C C-a; 5P/0W/0F clean)",
+      "command_or_action": "uv run python scripts/sdd/check_capability_schema.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G2 traceability (BLOCKING per Stage C C-a; 5P/0W/0F clean)",
+      "command_or_action": "uv run python scripts/sdd/check_traceability.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G9 INDEX idempotency (BLOCKING per Stage C C-a; --check matches committed)",
+      "command_or_action": "uv run python scripts/sdd/generate_index.py --check",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G11/G12 archive manifest (BLOCKING per M6 PR4-flip; archive/ populated #229/#231)",
+      "command_or_action": "uv run python scripts/sdd/check_archive_manifest.py --all --strict",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G14/G15 archived references (WARNING — M6-FU-G14G15-BLOCKING-FLIP: archive/legacy + archive/capabilities forward-refs pending)",
+      "command_or_action": "uv run python scripts/sdd/check_archived_references.py --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "archive/INDEX.md idempotency (WARNING per M5-PR0; no-op until archive/ born in move PRs)",
+      "command_or_action": "uv run python scripts/sdd/generate_archive_index.py --check",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V1 python contracts (BLOCKING per Stage C C-a; 9P/11W/0F clean)",
+      "command_or_action": "uv run python scripts/sdd/check_python_contracts.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V2 agent contracts (warning; SKIP-CLEAN no contracts; Phase 2+ when agent.contract.yml lands)",
+      "command_or_action": "uv run python scripts/sdd/check_agent_contracts.py --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V3 prompt contracts (BLOCKING per Stage C C-a; 1P/1W/0F clean post M3-FU-VALIDATOR-CONTRACT-ALIGN)",
+      "command_or_action": "uv run python scripts/sdd/check_prompt_contracts.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V4 claude-skill contracts (BLOCKING per M3-FU-V4-SKILLS-COMPLETE; full-scan, count SoT = validator output)",
+      "command_or_action": "uv run python scripts/sdd/check_native_skills.py",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V5 docker contracts (BLOCKING per Stage C C-a; 2P/4W/0F clean post M3-FU-V5-SUBFLAGS)",
+      "command_or_action": "uv run python scripts/sdd/check_docker_contracts.py --all --bdd --tdd --compose-config",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V6 runtime expected (warning; SKELETON BY DESIGN; Phase M4 full probe implementation)",
+      "command_or_action": "uv run python scripts/sdd/check_runtime_expected.py --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V7 runtime-skill contracts (BLOCKING per Stage C C-a; 3P/0W/0F clean)",
+      "command_or_action": "uv run python scripts/sdd/check_runtime_skill_contracts.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G8 capability evidence required (BLOCKING per Stage D D-1; 4P/0W/0F/1SKIP per current pilot state)",
+      "command_or_action": "uv run python scripts/sdd/check_capability_evidence_required.py --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G19 BDD scenario trace (BLOCKING per Stage D D-2; 17P/0W/0F post completion-audit PR1)",
+      "command_or_action": "uv run python scripts/sdd/check_bdd_scenario_trace.py --all --scope full",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G21 BDD acceptance (BLOCKING per Stage E E-1; @risk:critical|high subset; 15P/0W/0F post-E-0b)",
+      "command_or_action": "uv run python scripts/sdd/check_bdd_acceptance.py --all --strict",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G22 BDD unautomated justification (BLOCKING per Stage E E-2; @risk:critical|high × unautomated runbook.md check; 4P/0W/0F post completion-audit PR1 truth-up)",
+      "command_or_action": "uv run python scripts/sdd/check_bdd_unautomated.py --all --strict",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G23 TDD test_list (warning per Stage D D-5; tasks.md critical|high check; 15P/5W/0F per R-N v12 R-12-2)",
+      "command_or_action": "uv run python scripts/sdd/check_tdd_test_list.py --check g23 --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G24 bugfix regression (BLOCKING per Stage D D-5; branch-conditional SKIP on non-bugfix; R-N v12 R-12-3)",
+      "command_or_action": "uv run python scripts/sdd/check_tdd_test_list.py --check g24 --all",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G3 contracts (warning at landing; real impl per completion-audit PR2; 5P/0W/0F)",
+      "command_or_action": "uv run python scripts/sdd/check_contracts.py --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G7 secret exposure (warning; 4P/0W/0F since S2 #330 codex-config check; completion-audit PR2 + follow-up)",
+      "command_or_action": "uv run python scripts/sdd/check_secret_exposure.py --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "G25 changed-code-has-test (warning; PR-context only, SKIP on push; completion-audit PR2)",
+      "command_or_action": "uv run python scripts/sdd/check_tdd_test_list.py --check g25 --all",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V8 native development entries",
+      "command_or_action": "uv run python scripts/sdd/check_native_governance.py --surface entries",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V9 native skill resources and frozen contracts",
+      "command_or_action": "uv run python scripts/sdd/check_native_skills.py --surface resources --surface resources --surface resources --surface resources --surface resources --surface resources",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V10 native active consumers",
+      "command_or_action": "uv run python scripts/sdd/check_native_governance.py --surface consumers",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V11 native project MCP",
+      "command_or_action": "uv run python scripts/sdd/check_codex_native.py --surface mcp",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "V13 native enforcement structure",
+      "command_or_action": "uv run python scripts/sdd/check_codex_native.py --surface enforcement",
+      "warning_only": true,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Tests (unit + eval + integration; smoke + contract + bdd excluded by default)",
+      "command_or_action": "uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests --ignore tests/bdd",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "BDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)",
+      "command_or_action": "uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/bdd -q",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    },
+    {
+      "job": "ci",
+      "runner": "ubuntu-latest",
+      "name": "Contract tests (offline; synthetic snapshot fixtures)",
+      "command_or_action": "uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract",
+      "warning_only": false,
+      "environment": {},
+      "actual_CI": "NOT_TESTED",
+      "Linux": "NOT_TESTED"
+    }
+  ],
+  "actual_workflow_dispatched": false,
+  "note": "No push/PR/workflow dispatch or network. Local checker evidence is separate and cannot mark these actual CI steps passed."
+}

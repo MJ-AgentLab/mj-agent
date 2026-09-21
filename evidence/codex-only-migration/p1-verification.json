@@ -1,0 +1,134 @@
+{
+  "phase": "P1",
+  "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "recorded_at": "2026-09-18T03:08:12.272996+00:00",
+  "authorization": {
+    "project_mcp_only": true,
+    "owner_actions": "hard block; manual review and separately handled execution route",
+    "no_p2": true
+  },
+  "candidate_files": {
+    ".migration/codex-only/project/.codex/config.toml": "b84d64f57060abee3d004c412782988493f5d72283d3a70286bc02ef05bdaf92",
+    ".migration/codex-only/project/.codex/hooks.json": "7f8c4fcdee343f6bda10075a0fbd9dde599d3760cc9a9b9f2d5d419a1675cee4",
+    ".migration/codex-only/project/.codex/rules/mj-agent.rules": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5",
+    ".migration/codex-only/project/scripts/mcp/pg-server-start.ps1": "5df1780e776ec8eaf2648b1b0df477446713bda14ece41a45dcd47b5991a0edc",
+    ".migration/codex-only/project/scripts/mcp/pg-server-wrapper.mjs": "b3325f681d883f521fdd5afe893821dc03736946fb8391c5a290a1c079c5b5d1",
+    ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1": "09f5198811a7ba5e0d89ac228ed782e48aec5a15a6702c0c46af93ab52dd2765",
+    ".migration/codex-only/project/scripts/sdd/check_codex_native.py": "8e482bf1851eb311340bdb50a35960497b7635d1f9aa060ccb547ad0e675d4f2",
+    ".migration/codex-only/project/scripts/sdd/codex_hook_guard.py": "f6c1d328572b44b7e63f5c8b69d10414d974057ff9f3b366d9e707991cf2b0d5",
+    ".migration/codex-only/project/scripts/sdd/run_codex_hook.ps1": "51e3c187370863a3a24b52fc4758ab1f1ddac920c0dbcfb407ddd6a75c05e163",
+    ".migration/codex-only/project/tests/unit/test_codex_native.py": "d498d1b865fc907ca4f60b41d2a2637c75ff994ae92442040ce39edff8ec7d06",
+    "tests/unit/test_offline_execution_boundary.py": "b587aabb6c1cec8d2ec7cb08b448a6b7296e738e0dcc6e3c2eb57e88107ed865",
+    "tests/unit/test_agents_sync.py": "1abaa4163e0cfe14c00c3850841353c6c2c75e50c77da20c6f566c1b61f6aa1a"
+  },
+  "red_green": [
+    {
+      "stage": "RED missing implementation",
+      "result": "collection failed: ModuleNotFoundError scripts.sdd.check_codex_native"
+    },
+    {
+      "stage": "fixture completeness",
+      "result": "1 failed, 113 passed; copied unchanged README required by preserved test"
+    },
+    {
+      "stage": "initial GREEN",
+      "result": "117 passed in 10.81s"
+    },
+    {
+      "stage": "path regression RED",
+      "result": "3 failed, 43 passed; exit code propagation and nested PowerShell quoting"
+    },
+    {
+      "stage": "wrong-root RED",
+      "result": "1 failed, 121 passed; nested shell maps exit 2 to 1"
+    },
+    {
+      "stage": "final GREEN",
+      "result": "122 passed in 14.94s",
+      "candidate_cases": 48,
+      "preserved_offline_cases": 74
+    }
+  ],
+  "pytest": {
+    "interpreter": "../../develop/.venv/Scripts/python.exe -B",
+    "runner": ".mj-agent-local/codex-only-p1-validation/scripts/sdd/run_offline_pytest.py",
+    "targets": [
+      "tests/unit/test_codex_native.py",
+      "tests/unit/test_offline_execution_boundary.py"
+    ],
+    "arguments": [
+      "-q"
+    ],
+    "exit_code": 0,
+    "environment": "existing Python 3.13.5; runner-isolated environment and version-checked plugins; no installation"
+  },
+  "other_checks": {
+    "ruff": "PASS targeted candidate and split Python files",
+    "node_check": "PASS wrapper",
+    "powershell_ast": "PASS three scripts, zero parse errors",
+    "ast_move": "PASS 43 definitions including 42 tests unchanged; 65 remaining unchanged",
+    "native_check": {
+      "config": "STATIC_PASS",
+      "session_approval": "INCOMPATIBLE",
+      "owner_approval": "NOT_ASSESSED",
+      "host_enforcement": "NOT_TESTED"
+    },
+    "cli_rule_checks": [
+      {
+        "cli": "0.155.0-alpha.9",
+        "command": "git push origin example",
+        "decision": "prompt"
+      },
+      {
+        "cli": "0.147.0",
+        "command": "git checkout -b example",
+        "decision": "forbidden"
+      },
+      {
+        "cli": "0.155.0-alpha.9",
+        "command": "gh pr merge 1",
+        "decision": "forbidden"
+      },
+      {
+        "cli": "0.147.0",
+        "command": "gh pr create --base develop",
+        "decision": "prompt"
+      }
+    ],
+    "document_checks": "PASS both plan/report frontmatter, UTF-8 no BOM, whitespace, fences, eight local links; original plan hash retained"
+  },
+  "protected_neighbor_hashes": {
+    "../499-enforcement-blocking/tests/unit/test_agents_sync.py": "378c986c19a40646ab6c54960df5bc932cffe2c0e0b566bbf78e0c6168c1bdcf",
+    "../499-enforcement-blocking/tests/unit/test_v2_engine.py": "b9eccb361cac416d68e4307bcd74f93f9ad0db6486b4d0814ba5c3ad5ca8bf3d",
+    "../552-codex-approval-preflight/docs/guide/[GUIDE]_Developer_Onboarding.md": "78e47bc2c3b67457149396e62f2ebeaf6b3c1d3301df4414bc7e7984bf894326",
+    "../552-codex-approval-preflight/docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md": "9ad544a6b788da63edbff8f4c936aa30175de80dd8f893d29aeb8370ee7bc50c",
+    "../552-codex-approval-preflight/scripts/sdd/agents_sync.py": "f42b0b01ecd84e6b8174101e7ab31aada7e6a4c1da6d9d91167ff601fdacbc62",
+    "../552-codex-approval-preflight/tests/unit/test_codex_enforcement_d1a.py": "11ae0a17607a0bd3edc0f3cc249df7490af803caae4dd4634bdf58afc4505274",
+    "../552-codex-approval-preflight/tests/unit/test_sdd_development_agent.py": "f68870929fe5886c0fc990306e90fa2ae18279cd7b4e68e4fa1d92a0a155496a",
+    "../552-codex-approval-preflight/plans/[PLAN]_552_codex_approval_preflight.md": "1c7e1b3d53c6afcaca88b5250997d95aaef7fa28484b424a860913d223b32a9f",
+    "../../develop/plans/[PLAN]_Codex_Only_Development_Migration.md": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728"
+  },
+  "main_tree_staged_files": 0,
+  "main_tree_tracked_changes": [
+    "tests/unit/test_agents_sync.py"
+  ],
+  "not_tested": [
+    "real MCP connectivity",
+    "real npx package install/discovery",
+    "real decryption/User environment writes",
+    "actual hook activation and host canary",
+    "Linux runtime",
+    "P4 clone/linked-worktree discovery"
+  ],
+  "notes": [
+    "Only synthetic data and process doubles used. Exit 0 for hook block is protocol success, never action permission.",
+    "Scratch Git index records test fixtures only; no commit or branch ref, original tree unstaged.",
+    "Candidate hashes do not claim P3 ownership cutover or P4 acceptance."
+  ],
+  "retained_projection_tests": {
+    "command": "../../develop/.venv/Scripts/python.exe -B scripts/sdd/run_offline_pytest.py tests/unit/test_agents_sync.py -q",
+    "result": "56 passed, 3 skipped in 2.76s",
+    "exit_code": 0,
+    "skip_reason": "symlink creation not permitted on this platform; lines 925, 997, 1018; not verified"
+  }
+}

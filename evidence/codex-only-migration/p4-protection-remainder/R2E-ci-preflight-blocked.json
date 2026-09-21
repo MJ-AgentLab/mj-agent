@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-21T04:15:23.284832+00:00",
+  "authorization": "Owner explicit A at call_Pm9PQKqz4MYgUA8OChJe3SwR for exact private repo two-file commit/push/CI; persists unconsumed",
+  "status": "BLOCKED_EXECUTION_ROUTE_REMOTE_REF_PREFLIGHT_EXIT1",
+  "repo": "ranzuozhou/mj-agent-p4-acceptance-20260920",
+  "branch": "maintain/p4-acceptance-20260920",
+  "private_metadata_check": "gh repo view and isPrivate/name assertion passed before ref call",
+  "failed_command": [
+    "C:\\Program Files\\GitHub CLI\\gh.exe",
+    "api",
+    "repos/ranzuozhou/mj-agent-p4-acceptance-20260920/git/ref/heads/maintain/p4-acceptance-20260920"
+  ],
+  "exit": 1,
+  "stderr": "NOT_RETAINED_BY_FIRST_HELPER; reason unknown; no fabricated authentication/network diagnosis",
+  "remote_fresh_HEAD": "NOT_VERIFIED",
+  "local": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\ci publish",
+  "local_HEAD": "5bc6353f90e164ee22edee341d4f6b794b6aaa91",
+  "local_dirty": false,
+  "old_819_blobs_and_working_files_verified": true,
+  "current_source_main_817_verified": true,
+  "verified_remote_alias": "acceptance",
+  "remote_config_changed": false,
+  "source_index_unchanged": true,
+  "stage": false,
+  "commit": false,
+  "push": false,
+  "CI_triggered": false,
+  "normal_retry": "NOT_ATTEMPTED",
+  "next_specific_request": "One identical read-only gh api ref request with bounded stderr capture and safe diagnostic summary; no alternate API/tool/credential/permission changes. If it succeeds, continue already approved scoped publication. If it fails, stop.",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE"
+}

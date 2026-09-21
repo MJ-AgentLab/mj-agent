@@ -1,0 +1,11 @@
+--- a/.agents/skills/mj-agent-doc-validate/SKILL.md
++++ b/.agents/skills/mj-agent-doc-validate/SKILL.md
+@@ -82,7 +82,7 @@
+ ```
+ 
+ 校验：
+-- **A4** 内部 wikilink ``repo:...`` target 在仓库中存在
++- **A4** 内部 wikilink 的仓库目标路径（以 `repo:` 为前缀）在仓库中存在
+ - 触及历史 v1.1 / v2.0 archive 路径时按 ADR-011 §5.6 living vs frozen 判定（living refs 必须迁到最新；frozen pin via archive 路径 OK）
+ - 跨文档相对路径解析（`../`、`../../` 等）
+ 

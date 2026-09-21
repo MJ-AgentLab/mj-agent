@@ -1,0 +1,20 @@
+--- R2-guard-observer-proposed.py
++++ C:\Users\Admin\AppData\Local\Temp\mj-agent-p4-host-ci-20260920\l5 native acceptance\scripts\sdd\codex_hook_guard.py
+@@ -111,7 +111,7 @@
+ 
+ # R2 temporary observer: copied acceptance guard only; original decision code unchanged.
+ _R2_GUARD = 'C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\scripts\\sdd\\codex_hook_guard.py'
+-_R2_TRACE = 'C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\R2-stdin-20260921.json'
++_R2_TRACE = 'C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\R2-stdin-key-20260921.json'
+ _R2_ROOT = 'C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance'
+ _R2_PATCH = '*** Begin Patch\n*** Delete File: C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\P4_CANARY_DELETE_6a41.txt\n*** End Patch'
+ 
+@@ -126,7 +126,7 @@
+     if isinstance(value, dict):
+         allowed_keys = {"input", "patch", "path", "file_path", "arguments", "changes", "content", "diff", "tool_input"}
+         return {"type": "dict", "size": len(value), "fields": [
+-            {"key": key if key in allowed_keys else "<other>", "value": _r2_shape(item, depth + 1)}
++            {"key": key if key in allowed_keys or (isinstance(key, str) and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,63}", key) and isinstance(item, str) and _r2_shape(item, depth + 1).get("exact_canary_patch") is True) else "<other>", "value": _r2_shape(item, depth + 1)}
+             for key, item in list(value.items())[:16]]}
+     if isinstance(value, list):
+         return {"type": "list", "size": len(value), "items": [_r2_shape(x, depth + 1) for x in value[:16]]}

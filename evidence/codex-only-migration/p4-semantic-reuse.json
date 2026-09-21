@@ -1,0 +1,395 @@
+{
+  "evidence_level": "STATIC_SEMANTIC_IDENTITY_REUSE",
+  "skills": [
+    {
+      "name": "mj-agent-doc-author",
+      "path": ".agents/skills/mj-agent-doc-author/SKILL.md",
+      "current_sha256": "c7f75f551f5f91b0a0a437c77d43b451b3ec0099f40d04256130eade2ee93dcd",
+      "p3_reviewed_sha256": "c7f75f551f5f91b0a0a437c77d43b451b3ec0099f40d04256130eade2ee93dcd",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-doc-migrate",
+      "path": ".agents/skills/mj-agent-doc-migrate/SKILL.md",
+      "current_sha256": "201602f84f68172944d13ca6396c175c80cb5682079d65a87e66ba826b94b1e4",
+      "p3_reviewed_sha256": "201602f84f68172944d13ca6396c175c80cb5682079d65a87e66ba826b94b1e4",
+      "match": true,
+      "p3_semantic_change": "INDEX/CLAUDE label -> INDEX/AGENTS only",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": [
+        "S02-positive",
+        "S02-near_negative"
+      ]
+    },
+    {
+      "name": "mj-agent-doc-plan",
+      "path": ".agents/skills/mj-agent-doc-plan/SKILL.md",
+      "current_sha256": "0cdd9d513c9770b81b08a4bbd0c334a19facda6366277524dabc22c27a12bcc2",
+      "p3_reviewed_sha256": "0cdd9d513c9770b81b08a4bbd0c334a19facda6366277524dabc22c27a12bcc2",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-doc-review",
+      "path": ".agents/skills/mj-agent-doc-review/SKILL.md",
+      "current_sha256": "a5b5d3715756875da1cda37bd5abbc5f248c625087bfabf3c5b88824ff5d3c54",
+      "p3_reviewed_sha256": "a5b5d3715756875da1cda37bd5abbc5f248c625087bfabf3c5b88824ff5d3c54",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-doc-sync",
+      "path": ".agents/skills/mj-agent-doc-sync/SKILL.md",
+      "current_sha256": "6dff5e9db0b4e5503f08a4893488fe4c7fd26548cb6bc847d84e76a3f3663a10",
+      "p3_reviewed_sha256": "6dff5e9db0b4e5503f08a4893488fe4c7fd26548cb6bc847d84e76a3f3663a10",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-doc-validate",
+      "path": ".agents/skills/mj-agent-doc-validate/SKILL.md",
+      "current_sha256": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "p3_reviewed_sha256": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "match": true,
+      "p3_semantic_change": "INDEX/CLAUDE label -> INDEX/AGENTS only",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": [
+        "S06-positive",
+        "S06-near_negative"
+      ]
+    },
+    {
+      "name": "mj-agent-flow-diagnose",
+      "path": ".agents/skills/mj-agent-flow-diagnose/SKILL.md",
+      "current_sha256": "744d35e05af4d3b229e7018b6f8f0b58212f7c6a30cd2b1f306e8048787c808a",
+      "p3_reviewed_sha256": "744d35e05af4d3b229e7018b6f8f0b58212f7c6a30cd2b1f306e8048787c808a",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-implement",
+      "path": ".agents/skills/mj-agent-flow-implement/SKILL.md",
+      "current_sha256": "41f6664ebbdbd7686fe42a9a5a0dd115c67d6f96937a9c780152ef3431c1bdb0",
+      "p3_reviewed_sha256": "41f6664ebbdbd7686fe42a9a5a0dd115c67d6f96937a9c780152ef3431c1bdb0",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-intake",
+      "path": ".agents/skills/mj-agent-flow-intake/SKILL.md",
+      "current_sha256": "7d025638e87a8ded34bff11f4e08ca2db1579539a50c6038e7e02f775c344849",
+      "p3_reviewed_sha256": "7d025638e87a8ded34bff11f4e08ca2db1579539a50c6038e7e02f775c344849",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-plan",
+      "path": ".agents/skills/mj-agent-flow-plan/SKILL.md",
+      "current_sha256": "3f7a8dd96b4e1d32b516fe954e9a7569b9039f7c5e1fb64cc18345feb28d16dd",
+      "p3_reviewed_sha256": "3f7a8dd96b4e1d32b516fe954e9a7569b9039f7c5e1fb64cc18345feb28d16dd",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-post-merge",
+      "path": ".agents/skills/mj-agent-flow-post-merge/SKILL.md",
+      "current_sha256": "6f7dadf9dc124803c63f50cc33cd6755370506962d21875e163a0cb325003ae3",
+      "p3_reviewed_sha256": "6f7dadf9dc124803c63f50cc33cd6755370506962d21875e163a0cb325003ae3",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-repo-scan",
+      "path": ".agents/skills/mj-agent-flow-repo-scan/SKILL.md",
+      "current_sha256": "2d86be92a1694f649bc4682c0ef6a639a94021e3a69f8598c2e299e7370a2ee5",
+      "p3_reviewed_sha256": "2d86be92a1694f649bc4682c0ef6a639a94021e3a69f8598c2e299e7370a2ee5",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-review-respond",
+      "path": ".agents/skills/mj-agent-flow-review-respond/SKILL.md",
+      "current_sha256": "cc56413c39197a23e8c1bc1e90725f4f8b0e36cc816090abab4d7d2a3d67d4db",
+      "p3_reviewed_sha256": "cc56413c39197a23e8c1bc1e90725f4f8b0e36cc816090abab4d7d2a3d67d4db",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-scope-drift",
+      "path": ".agents/skills/mj-agent-flow-scope-drift/SKILL.md",
+      "current_sha256": "977ea2e454f46d563778e8a431065e727d509f5bd701b992f9c06b920ad65b13",
+      "p3_reviewed_sha256": "977ea2e454f46d563778e8a431065e727d509f5bd701b992f9c06b920ad65b13",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-self-review",
+      "path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "current_sha256": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+      "p3_reviewed_sha256": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-flow-verify",
+      "path": ".agents/skills/mj-agent-flow-verify/SKILL.md",
+      "current_sha256": "1cb4280f7b9e657cd3cd5cb8d1916329e4d1a4a815ccb80e2a26f7eaf2297cf1",
+      "p3_reviewed_sha256": "1cb4280f7b9e657cd3cd5cb8d1916329e4d1a4a815ccb80e2a26f7eaf2297cf1",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-branch",
+      "path": ".agents/skills/mj-agent-git-branch/SKILL.md",
+      "current_sha256": "c97a80996266308b1dd93936dbae13e135170450e5fb661db893daf5b797ff8e",
+      "p3_reviewed_sha256": "c97a80996266308b1dd93936dbae13e135170450e5fb661db893daf5b797ff8e",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-check-merge",
+      "path": ".agents/skills/mj-agent-git-check-merge/SKILL.md",
+      "current_sha256": "b2eaaf952fd6cc82798a0aaf06796fe5779e2e8c1762e0c0fef42489bca7849f",
+      "p3_reviewed_sha256": "b2eaaf952fd6cc82798a0aaf06796fe5779e2e8c1762e0c0fef42489bca7849f",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-commit",
+      "path": ".agents/skills/mj-agent-git-commit/SKILL.md",
+      "current_sha256": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+      "p3_reviewed_sha256": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-delete",
+      "path": ".agents/skills/mj-agent-git-delete/SKILL.md",
+      "current_sha256": "cb6e212add39780793aa49956cfc63ca5762b4cfa92e903e6da31550935a16c0",
+      "p3_reviewed_sha256": "cb6e212add39780793aa49956cfc63ca5762b4cfa92e903e6da31550935a16c0",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-issue",
+      "path": ".agents/skills/mj-agent-git-issue/SKILL.md",
+      "current_sha256": "8bd6bd5004f3e3ef4a816ea086f9893965809f817ec370b4a2b1177ee456cfbc",
+      "p3_reviewed_sha256": "8bd6bd5004f3e3ef4a816ea086f9893965809f817ec370b4a2b1177ee456cfbc",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-pr",
+      "path": ".agents/skills/mj-agent-git-pr/SKILL.md",
+      "current_sha256": "a77ecf3cf710f1a55aa1d7aeffd67d5bcdc52842e92e66acf2b162f0d341e48f",
+      "p3_reviewed_sha256": "a77ecf3cf710f1a55aa1d7aeffd67d5bcdc52842e92e66acf2b162f0d341e48f",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-push",
+      "path": ".agents/skills/mj-agent-git-push/SKILL.md",
+      "current_sha256": "d4331b183dc7cf2ca253f7d75a305efec76b7d621dfc04a1185ef5bc629d560c",
+      "p3_reviewed_sha256": "d4331b183dc7cf2ca253f7d75a305efec76b7d621dfc04a1185ef5bc629d560c",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-review-pr",
+      "path": ".agents/skills/mj-agent-git-review-pr/SKILL.md",
+      "current_sha256": "9de6d011fa8ed63dd6a7c532613a4a6d76e944adaded4c9e1bbef71e3c84a439",
+      "p3_reviewed_sha256": "9de6d011fa8ed63dd6a7c532613a4a6d76e944adaded4c9e1bbef71e3c84a439",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-git-sync",
+      "path": ".agents/skills/mj-agent-git-sync/SKILL.md",
+      "current_sha256": "216336c3570ebc8cc34155519935c3826ca9402cb5dd12f1447cd9a43e9c8bae",
+      "p3_reviewed_sha256": "216336c3570ebc8cc34155519935c3826ca9402cb5dd12f1447cd9a43e9c8bae",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-app-start",
+      "path": ".agents/skills/mj-agent-infra-app-start/SKILL.md",
+      "current_sha256": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+      "p3_reviewed_sha256": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-app-stop",
+      "path": ".agents/skills/mj-agent-infra-app-stop/SKILL.md",
+      "current_sha256": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+      "p3_reviewed_sha256": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-docker-compose",
+      "path": ".agents/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "current_sha256": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+      "p3_reviewed_sha256": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-env-setup",
+      "path": ".agents/skills/mj-agent-infra-env-setup/SKILL.md",
+      "current_sha256": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+      "p3_reviewed_sha256": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-env-teardown",
+      "path": ".agents/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "current_sha256": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+      "p3_reviewed_sha256": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-llm-endpoint-probe",
+      "path": ".agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "current_sha256": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+      "p3_reviewed_sha256": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-storage-stack",
+      "path": ".agents/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "current_sha256": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+      "p3_reviewed_sha256": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-infra-studio-probe",
+      "path": ".agents/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "current_sha256": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+      "p3_reviewed_sha256": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-biz-catalog-sync",
+      "path": ".agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md",
+      "current_sha256": "ed8c3307cd2f7a58766aa887d96255587af5182f3ca3cff91d3f1f1e5848b2cb",
+      "p3_reviewed_sha256": "ed8c3307cd2f7a58766aa887d96255587af5182f3ca3cff91d3f1f1e5848b2cb",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-eval-baseline",
+      "path": ".agents/skills/mj-agent-runtime-eval-baseline/SKILL.md",
+      "current_sha256": "74dda7dd4418689d7aa31d52454c7d778a8db2829740f468f4e51440efb37b59",
+      "p3_reviewed_sha256": "74dda7dd4418689d7aa31d52454c7d778a8db2829740f468f4e51440efb37b59",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-prompt-version-bump",
+      "path": ".agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md",
+      "current_sha256": "9db99ee8f1b57cac6163109396b751e1a37070947b41347820b032f87af1f77e",
+      "p3_reviewed_sha256": "9db99ee8f1b57cac6163109396b751e1a37070947b41347820b032f87af1f77e",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    },
+    {
+      "name": "mj-agent-runtime-skill-doc-improve",
+      "path": ".agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md",
+      "current_sha256": "ac692b2b5acef7bbd04b612abd4c37c7b86db811de003eec113e79f1f1a1c30e",
+      "p3_reviewed_sha256": "ac692b2b5acef7bbd04b612abd4c37c7b86db811de003eec113e79f1f1a1c30e",
+      "match": true,
+      "p3_semantic_change": "P2 skill body/description preserved",
+      "p4_semantic_change": "NONE",
+      "affected_p2_cases": []
+    }
+  ],
+  "skill_count": 37,
+  "dimensions": 8,
+  "dimension_count": 296,
+  "cases": 142,
+  "model_calls": 0,
+  "p4_skill_changes": 0,
+  "p3_delta_review_retained": true,
+  "bindings": {
+    "p2-skill-comparison.json": "9a0d132e5c0b5e15faee550d63699016ecfc6540b5c944c9ca85ec1ca4a8c7be",
+    "p2-semantic-cases.json": "662fd79b8f544536de550ae70136719e22d8d1e47c848a2992f36ae164c831d2",
+    "p2-resource-closure.json": "1f200c7471f538b669eb36e91bd8375c08059acf0e839ea81b8248df93ca69a5",
+    "p3-semantic-addendum.json": "311e5a8620458b984daf17fae740182be2bdf711a3cefb211f3e26314b0d3d1a"
+  },
+  "resource_validation": "Native resource checker ran in independent copy; excludes legacy clients/candidates. Original 381 required / 6 examples remain separately classified."
+}

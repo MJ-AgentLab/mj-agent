@@ -1,0 +1,217 @@
+{
+  "at": "2026-09-21T07:43:01.873546+00:00",
+  "changes": [
+    {
+      "path": ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      "p5_sha256": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+      "current_sha256": "66e99023f232d0bbc5ff1198554480af568b8738dec0dcd78a09760cc5c96a36"
+    },
+    {
+      "path": ".agents/skills/mj-agent-git-commit/SKILL.md",
+      "p5_sha256": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+      "current_sha256": "16dcbe7fe6fc259890cd54cf8166b6168fe91d6d1d2cf3613a6c6b783668b7e4"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "p5_sha256": "38e0d0d6c27e8fcd4647c472946bb669cac79e5e243f4ff287671a311ce9747e",
+      "current_sha256": "8a231209abb65e3606dd3f38377cbba6fa9dff63884203419ad7617d581e2b51"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/bugfix.md",
+      "p5_sha256": "bf32185627aa6deb8c6ff26df604f181a1f267fcd3ded2c2e8e87b6394862d86",
+      "current_sha256": "c0d2e95201fcb9101d6f1f3558721d2959e7ff06e1497559b0edea9e12969823"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/documentation.md",
+      "p5_sha256": "b9a27cd3dc9e2c980d160f7bc8d67b24e03fae3740ae63e78d9e68ffb442b0dc",
+      "current_sha256": "6eb76bff0262e34b1e57a192e7f6631253c74e186152525de91ebe8034ccae47"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/feature.md",
+      "p5_sha256": "67b9f13dd379fd45749dd895a65cd886f816a8517366113361cce72e97e74ef8",
+      "current_sha256": "9b21dce1b331bea884275fe82a15bcd95272eab362bb81de320753ecd1c8a02b"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/hotfix.md",
+      "p5_sha256": "9192e496b68b4ad5905fc194f61c3f16390bf52cdf4d644b2fee70d90507c899",
+      "current_sha256": "bcbbff4078a264a1f4bda7712af9d49d88f3e8114ad37cef18d7c5b5ad095638"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/maintain.md",
+      "p5_sha256": "ffa348e1e78f5014948be53bc4d61e02994cde06c3b271e22aa4183865eb823a",
+      "current_sha256": "58ada6866705dafdd7bb9c54f962837c87b17dd7f6097920e580f638476cbfc6"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE/release.md",
+      "p5_sha256": "2834222654598dee150c85a5f03c8666f7d5ef47b562bbcbf73062fd22c49d1b",
+      "current_sha256": "500073d48716011f2a8203cf9bb2813844a69df4ce3adf3350c851618ea634d5"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "p5_sha256": "d4e21b7c851ee127eebcdf33fd0c0b5bb10184eddd4a5c4421cceae8dd04060c",
+      "current_sha256": "bbfb7d82b6339dec357b915de3e543b42b86f068391975078a0f8ad7156ba746"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "p5_sha256": "0b3ba493b57cb599723b12bf376924b8322ada81652efe384da4b41a54e4f7c4",
+      "current_sha256": "ac46aca93aad085c023002d5b88b6d34f148cdd067021932c402377621efc48d"
+    },
+    {
+      "path": "README.md",
+      "p5_sha256": "9bc6afec28aaac269c6b9515a9136f14ad601a78700eb8a665bc2c60c45ac6c8",
+      "current_sha256": "1f146fb9121448eb4ecde94f3dfff9018613f832a99002a252c11d016f871639"
+    },
+    {
+      "path": "config/README.md",
+      "p5_sha256": "5e677199325efe16a820dcceefaa4f038d60f0ebd4e1364633922c9cd0f473f7",
+      "current_sha256": "c3b91db22f26e6c62dcf173f609b8180acacc3518477eb08fe2ecbc81dcb6b1c"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "p5_sha256": "4488e7ed2388670e3c1cc71dcb38643960e9f57b3bab9e82304a2c7f7f064b81",
+      "current_sha256": "f64c2b58deb584352581aa80a855816f00e21fec73fb2115d95d82b3744b2d97"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_Developer_Onboarding.md",
+      "p5_sha256": "95dbcee945f991f6b7e3996f63ef31e1cef73a5429ed6c5034c9b3b23ab0c44c",
+      "current_sha256": "bbd07346f761dbd8ce8052587ba560ec022a9f3944ff87c777208868578b7d89"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_MJ_Agent_SPEC_Authoring.md",
+      "p5_sha256": "4497b08f8235cd71bfc2cee21755ce159a9abadd726ce9f1518d77cf44d0aacb",
+      "current_sha256": "97ace7bf0715c0823f78a919fc4f8a6da794551e5f1c78c5614603572f325f74"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_Quick_Start_Setup.md",
+      "p5_sha256": "181b55776fee877025c78b1838067747d07132669c9b3c40887b3e3d293f8ba0",
+      "current_sha256": "39a1710c108f744babb2231a8bb3fc156ec56a92a38103fb511fa88475fa7283"
+    }
+  ],
+  "unchanged800": true,
+  "prior_application": "documentation-application.json is historical candidate-v2; three followup docs corrected to actual checker CLI and current MCP diagnostics",
+  "intermediate_backup": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p6\\before-doc-correction.zip",
+  "intermediate_backup_sha256": "142745be46211bf2c4b571e58927d84d61b6753fa8a1cfe16c1e4be3eceddd73",
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--check"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'GLOSSARY.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/check_frontmatter.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 142 canonical docs all pass frontmatter schema check\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/check_wikilinks.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 0 archive-ref violations (13 archived files auto-discovered)\nOK: A4 link resolution — 0 unresolved targets in 5 root files\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "skills"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "resources"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "entries"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"entries\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_codex_native.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    }
+  ],
+  "two_skill_review": {
+    "paths": [
+      ".agents/skills/mj-agent-flow-self-review/SKILL.md",
+      ".agents/skills/mj-agent-git-commit/SKILL.md"
+    ],
+    "dimensions": {
+      "trigger": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "inputs": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "targets": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "sequence": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "authorization": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "recovery": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "completion": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity",
+      "handoff": "UNCHANGED; only optional verified authorship placeholder replaces fabricated model identity"
+    },
+    "cases": {
+      "positive": "STATIC_PASS: prepare proposal with verified optional contributor; do not infer commit authorization",
+      "negative": "STATIC_PASS: unknown contributor must omit trailer, never invent model identity",
+      "reentry": "STATIC_PASS: unchanged hash/preflight and stage gates"
+    },
+    "model_runs": "NOT_TESTED_ON_NEW_TWO_SKILL_BYTES",
+    "other35_skills": "EXACT_P5_IDENTITY"
+  },
+  "L5": "Config, guard, rules, launcher bytes unchanged; original approved Windows CLI case evidence retained only"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "FROZEN_REVIEW_ONLY_NOT_APPROVED_NOT_APPLIED",
+  "frozen_at": "2026-09-18T05:29:53.322384+00:00",
+  "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "branch": "maintain/codex-dev-mode-migration",
+  "atomic_group": "G-P3-ATOMIC",
+  "patch_sha256": "abdf11bc9fc44286ab2b5cc32294e7385d0af97c8b8dc7d6c099210cd6734741",
+  "files": {
+    "p3-cutover-proposal.diff": "abdf11bc9fc44286ab2b5cc32294e7385d0af97c8b8dc7d6c099210cd6734741",
+    "p3-cutover-recovery.diff": "8581f70b94a43ce28ae1311b551843db190ef4ce15395d05f264ded47b63a526",
+    "p3-cutover-files.json": "d4461758cb523efea5401e8188d2f387b25b200a6103b7bf9676f01e2fb714ca",
+    "p3-cutover-review.md": "9fa1b200de899a908c0831b08fa03c106027fb9dc3aa80633b2740f9052ec50d",
+    "p3-authorization-map.json": "4a08f1fe7f5e63aaa8ac6d7b67d632449126970e213e4466e2a5af98bfd91513",
+    "p3-gate-map.md": "8a34eb9230aeb9d94f1d537876169b52241277cc79f3f79bd51b838d71e35846",
+    "p3-infra-freeze-map.json": "609d2e91e4f241a838461230d26f3eafd9548a2fa8b245ca0e788f75f812ba0e",
+    "p3-test-retirement-review.json": "a2f630029a39de1424fde9b48d68d6aa697b85eff2ff73f61c3b7cf97cae0211",
+    "p3-completion-verification.json": "4b49a17e8a9c16655d0549ca10bf027ee947733b4d9ce9c87dd9042aa316e690",
+    "p3-semantic-addendum.json": "311e5a8620458b984daf17fae740182be2bdf711a3cefb211f3e26314b0d3d1a",
+    "p3-consumer-inventory.json": "ff16b5eb0ca2f2cdcb02b1f854b861eb36a65aa0228ce17b2dc3ae31a06d9b65",
+    "p3-active-dependency-scan.json": "e62ab3af75caac042366f5f47587cfe0455f166a9da3f7d37633c63e16188904",
+    "p3-consumer-residuals.json": "0a1c449295e6d8d876ff8e2b4fe7538023a7c78c5a788e06cc3328723c92bb01",
+    "p3-entry.json": "d6c93bf641606e7b579e0b444e4b7f02e807a26426a5834ffa075a01da556368",
+    "p3-completion-entry.json": "1b33564771bda6929db35f733bff6057e69eb857c166a995a8381db1e73da759",
+    "asset-map.csv": "13cf352870baab4c33842381cdf6750e94a2af6b7b6437d0e7c5bfdfcafcbfec"
+  },
+  "report_sha256": "2b100c087f65734810323aec0915a5e661930986dbce6802836d6a3005018539",
+  "package": "p3-review-package.zip",
+  "package_sha256": "d856807f96a4fbb94795d947247f84b85400b331b0eed4add295b5cdc56f02d3",
+  "recovery_backup_sha256": "87e1d215503eba8b191c664983acf4490a6ee145a4568feb3ae7c08d52dcc3d7",
+  "automatic_writes": "STOP_AFTER_FINAL_IDENTITY_CHECK",
+  "manual_route": "Owner specific group approval and manual apply, then Codex verification; no hook/permission changes"
+}

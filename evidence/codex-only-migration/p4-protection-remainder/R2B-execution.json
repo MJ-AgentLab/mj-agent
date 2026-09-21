@@ -1,0 +1,94 @@
+{
+  "at": "2026-09-21T03:52:38.873017+00:00",
+  "case": "R2B_STDIN_KEY",
+  "status": "ROOT_CAUSE_CONFIRMED_COMMAND_WRAPPER; GUARD_RESTORED",
+  "approval": "Owner A at call_CVi2OfQRwDm6seMVMCFvSAv6: exact Apply -> one canary -> Restore",
+  "apply_exit": 0,
+  "driver_exit": 1,
+  "restore_exit": 0,
+  "driver_exit_meaning": "Expected first hook block; not a successful protected-path classification",
+  "restored_guard_sha256": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608",
+  "source_main_817_restored_verified": true,
+  "original_main_index_unchanged": true,
+  "main_status_restored": true,
+  "missing_target_still_absent": true,
+  "raw_model_payload": {
+    "type": "custom_tool_call",
+    "id": "ctc_0d5d3459d7116f33016ab0a7cc3ec887d0a118a56287ddd887",
+    "call_id": "call_3Kw2s1KQazhpAkwIl23lVQUy",
+    "name": "exec",
+    "input": "const r = await tools.apply_patch(\"*** Begin Patch\\n*** Delete File: C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\mj-agent-p4-host-ci-20260920\\\\l5 native acceptance\\\\.codex\\\\P4_CANARY_DELETE_6a41.txt\\n*** End Patch\");\ntext(r);\n"
+  },
+  "hook_run": {
+    "id": "pre-tool-use:0:C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json:exec-09c96ae0-3086-4689-a094-3c5a28bd90b0",
+    "eventName": "preToolUse",
+    "handlerType": "command",
+    "executionMode": "sync",
+    "scope": "turn",
+    "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json",
+    "source": "project",
+    "displayOrder": 0,
+    "status": "blocked",
+    "statusMessage": null,
+    "startedAt": 1789962188,
+    "completedAt": 1789962189,
+    "durationMs": 975,
+    "entries": [
+      {
+        "kind": "feedback",
+        "text": "UNKNOWN: no recognized edit target"
+      }
+    ]
+  },
+  "observation": {
+    "case": "R2_STDIN_OBSERVE",
+    "tool_name": "apply_patch",
+    "event_is_pretooluse": true,
+    "tool_input_shape": {
+      "type": "dict",
+      "size": 1,
+      "fields": [
+        {
+          "key": "command",
+          "value": {
+            "type": "str",
+            "length": 163,
+            "exact_canary_patch": true
+          }
+        }
+      ]
+    },
+    "guard_path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\scripts\\sdd\\codex_hook_guard.py",
+    "hook_process_cwd_matches_target": true,
+    "interpreter_path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.venv\\Scripts\\python.exe",
+    "values_policy": "No raw strings, credentials, transcript or arbitrary top-level fields recorded"
+  },
+  "observer_label_note": "Observer retained R2_STDIN_OBSERVE case label; R2B identity bound by separate driver, path and hashes",
+  "post_stop": {
+    "host_pid": 46008,
+    "host_exit_code": 0,
+    "terminate_used": false,
+    "reader_finished": true,
+    "queue_exhausted": true
+  },
+  "new_tools_after_stop": 0,
+  "result_dir": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-114237-r2b_stdin_key",
+  "evidence_hashes": {
+    "canary-input.json": "95f33b82597f502fac5b886d5e74b71d4e8bbd5bdcfd54769f02a563ce908c86",
+    "events.jsonl": "d87259448abfd093e301802c7f00c48b71793f64498cf3d00e54d8140daa15ab",
+    "hook-block-stop.json": "787a85c631f6e6138fa2e383298b12eb89794e33e70858d83144b842cc120136",
+    "hooks-list.json": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "invocation.json": "ea634d689676944be3dcfd3b70a795f66685e124e460fe16e39862c8a04fe04f",
+    "post-stop-audit.json": "c5f5b98e1473b61061b4b88dcb60a3befeb28dbe829e8e30ecbf085a2bc3f9ae",
+    "skills-list.json": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30",
+    "thread-start.json": "49aef38d2891bfb028cdbce115cf861c2f1ee5a965b5fe50ea6fc212ba05d0d7",
+    "turn-start.json": "767d751558e75db9f99b45217313e4149545a09b68fece6d9dbced548bc57e1b"
+  },
+  "original_trace": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\R2-stdin-key-20260921.json",
+  "trace_sha256": "cf658020f3f8622a6ca1a669e9cee9d1676ccb86cf49b1bbdd31f79d0c4bddc2",
+  "model_turns_started": 1,
+  "classification_fix_applied": false,
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE"
+}

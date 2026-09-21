@@ -1,0 +1,35 @@
+--- a/tests/unit/test_native_migration_guards.py
++++ b/tests/unit/test_native_migration_guards.py
+@@ -51,6 +51,32 @@
+         self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
+             'tool_name': 'Edit', 'tool_input': {'file_path': 'docs/guide/example.md'}})[0], 'ALLOW')
+ 
++    def test_apply_patch_command_wrapper_preserves_path_protection(self):
++        for path, expected in [('.codex/synthetic.txt', 'OWNER_APPROVAL_REQUIRED'),
++                               ('.env', 'FORBIDDEN'),
++                               ('docs/guide/synthetic.md', 'ALLOW')]:
++            with self.subTest(path=path):
++                patch = f'*** Begin Patch\n*** Delete File: {path}\n*** End Patch'
++                self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
++                    'tool_name': 'apply_patch', 'tool_input': {'command': patch}})[0], expected)
++
++    def test_apply_patch_command_wrapper_rejects_ambiguous_payload(self):
++        patch = '*** Begin Patch\n*** Delete File: .codex/synthetic.txt\n*** End Patch'
++        for data in [{'command': patch, 'path': 'docs/guide/ordinary.md'},
++                     {'command': patch, 'extra': True}, {'command': None},
++                     {'command': 1}, {'command': []}, {'command': {}},
++                     {'command': ''}, {'command': 'not a patch'}]:
++            with self.subTest(data=data):
++                self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
++                    'tool_name': 'apply_patch', 'tool_input': data})[0], 'UNKNOWN')
++
++    def test_apply_patch_command_wrapper_checks_move_destination(self):
++        patch = ('*** Begin Patch\n*** Update File: docs/guide/synthetic.md\n'
++                 '*** Move to: .codex/synthetic.txt\n@@\n-a\n+b\n*** End Patch')
++        self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
++            'tool_name': 'apply_patch', 'tool_input': {'command': patch}})[0],
++            'OWNER_APPROVAL_REQUIRED')
++
+     def test_invalid_payload_is_closed(self):
+         for value in [{}, {'hook_event_name':'PreToolUse'},
+                       {'hook_event_name':'PreToolUse','tool_name':'apply_patch','tool_input':{}}]:

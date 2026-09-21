@@ -1,0 +1,94 @@
+[
+  {
+    "label": "origin_refs",
+    "argv": [
+      "git",
+      "ls-remote",
+      "origin",
+      "refs/heads/develop",
+      "refs/heads/maintain/codex-dev-mode-migration"
+    ],
+    "at": "2026-09-21T07:32:58.706872+00:00",
+    "exit": 0,
+    "stdout": "20e2f24c352cf640d9dd33234b128ca897804b99\trefs/heads/develop\n",
+    "stderr": ""
+  },
+  {
+    "label": "gitee_refs",
+    "argv": [
+      "git",
+      "ls-remote",
+      "gitee",
+      "refs/heads/develop",
+      "refs/heads/maintain/codex-dev-mode-migration"
+    ],
+    "at": "2026-09-21T07:32:58.707051+00:00",
+    "exit": 0,
+    "stdout": "20e2f24c352cf640d9dd33234b128ca897804b99\trefs/heads/develop\n",
+    "stderr": ""
+  },
+  {
+    "label": "pull_requests",
+    "argv": [
+      "gh",
+      "pr",
+      "list",
+      "--repo",
+      "MJ-AgentLab/mj-agent",
+      "--head",
+      "maintain/codex-dev-mode-migration",
+      "--state",
+      "all",
+      "--json",
+      "number,url,state,headRefOid,baseRefName,reviewDecision,mergeCommit,statusCheckRollup"
+    ],
+    "at": "2026-09-21T07:32:58.707227+00:00",
+    "exit": 0,
+    "stdout": "[]\n",
+    "stderr": ""
+  },
+  {
+    "label": "branch_runs",
+    "argv": [
+      "gh",
+      "run",
+      "list",
+      "--repo",
+      "MJ-AgentLab/mj-agent",
+      "--branch",
+      "maintain/codex-dev-mode-migration",
+      "--limit",
+      "10",
+      "--json",
+      "databaseId,headSha,status,conclusion,event,url"
+    ],
+    "at": "2026-09-21T07:32:58.707418+00:00",
+    "exit": 0,
+    "stdout": "[]\n",
+    "stderr": ""
+  },
+  {
+    "label": "develop_protection",
+    "argv": [
+      "gh",
+      "api",
+      "repos/MJ-AgentLab/mj-agent/branches/develop/protection"
+    ],
+    "at": "2026-09-21T07:32:58.707587+00:00",
+    "exit": 1,
+    "stdout": "{\"message\":\"Branch not protected\",\"documentation_url\":\"https://docs.github.com/rest/branches/branch-protection#get-branch-protection\",\"status\":\"404\"}",
+    "stderr": "gh: Branch not protected (HTTP 404)\n"
+  },
+  {
+    "label": "develop_rules",
+    "argv": [
+      "gh",
+      "api",
+      "repos/MJ-AgentLab/mj-agent/rules/branches/develop"
+    ],
+    "at": "2026-09-21T07:32:58.707870+00:00",
+    "exit": 0,
+    "stdout": "[{\"type\":\"deletion\",\"ruleset_source_type\":\"Repository\",\"ruleset_source\":\"MJ-AgentLab/mj-agent\",\"ruleset_id\":15606888},{\"type\":\"non_fast_forward\",\"ruleset_source_type\":\"Repository\",\"ruleset_source\":\"MJ-AgentLab/mj-agent\",\"ruleset_id\":15606888},{\"type\":\"pull_request\",\"parameters\":{\"required_approving_review_count\":1,\"dismiss_stale_reviews_on_push\":true,\"required_reviewers\":[],\"require_code_owner_review\":false,\"dismissal_restriction\":{\"enabled\":false,\"allowed_actors\":[]},\"require_last_push_approval\":true,\"required_review_thread_resolution\":true,\"require_extra_approval_for_unattributed_changes\":true,\"allowed_merge_methods\":[\"merge\"]},\"ruleset_source_type\":\"Repository\",\"ruleset_source\":\"MJ-AgentLab/mj-agent\",\"ruleset_id\":15606888},{\"type\":\"required_status_checks\",\"parameters\":{\"strict_required_status_checks_policy\":true,\"do_not_enforce_on_create\":false,\"required_status_checks\":[{\"context\":\"ci\"}]},\"ruleset_source_type\":\"Repository\",\"ruleset_source\":\"MJ-AgentLab/mj-agent\",\"ruleset_id\":15606888}]",
+    "stderr": ""
+  }
+]

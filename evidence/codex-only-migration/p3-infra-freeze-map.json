@@ -1,0 +1,152 @@
+{
+  "contract": "capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml",
+  "schema": "sdd/schemas/development-skill-contract.schema.json",
+  "algorithm": "Parsed description scalar UTF8; strip first frontmatter using original regex; LF-normalize body without trimming.",
+  "rows": [
+    {
+      "name": "mj-agent-infra-app-start",
+      "old_path": ".claude/skills/mj-agent-infra-app-start/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-app-start/SKILL.md",
+      "old_file_sha256": "66276af6f6656161d8fb5b217b410f7fd430152e6ba90398f158a275a3228c0c",
+      "new_file_sha256": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:ac3dcb53efc27c435888c886272594b798ca87f49a6d8573ed7b025f8c7e0c07",
+        "body_content_hash": "sha256:9ab21e612642ee925a9e3340777f3d2c77aadc9f498a904a38ea5828b0786170"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:5a80607da91bac49f466fabc210e5fb8f16921d5ca537945b9873a7ea40809d2",
+        "body_content_hash": "sha256:344f85c860f0a6be29b418263a2fa200bc4f078b571c7a0dbaf7d073f3884c59"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-app-stop",
+      "old_path": ".claude/skills/mj-agent-infra-app-stop/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-app-stop/SKILL.md",
+      "old_file_sha256": "59148197413d9c3b371b21ccbecc6c763ba5a691c9cd7a20c10b1cd88b602374",
+      "new_file_sha256": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:2181768f5aefd448aa1b0bd6f65865ab86b887897b85016f7d766ecdae613301",
+        "body_content_hash": "sha256:2ed0c015e41e97aac5e7564b752b2a5d38e371a8c4f7f193b485224c3cff591a"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:e877e20924484e642937a21c622a6ffdb65a5b81d949e179a0ab16ef7893f9b0",
+        "body_content_hash": "sha256:2a785bc1efe9b498634f45c600eed60df9485b780e94b221632588f42c367c0e"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-docker-compose",
+      "old_path": ".claude/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-docker-compose/SKILL.md",
+      "old_file_sha256": "667f51d2f8df07d10f71b9d22b044a75c2b5f64a5fc5f83baf986567b0e18aef",
+      "new_file_sha256": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:013d8ec2c3db8d3a814d7db516cc92cedb5dab4f12e34fbe6070a68e162ce002",
+        "body_content_hash": "sha256:3c68d460960e8f406068f19df16d9a7bb807f9f892019ea2d801f5fce716929f"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:edc35321cc8397e459f3c2c66f884f6ff1321fa5a3b25a366e0109a211db8dc3",
+        "body_content_hash": "sha256:3480751bdacf2eceff202fa0479b74e69634f23f4cbb193e433ae7a7b9726018"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-env-setup",
+      "old_path": ".claude/skills/mj-agent-infra-env-setup/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-env-setup/SKILL.md",
+      "old_file_sha256": "a3ee532da5609742f80cd38f5ca20629329dc13f233811fc05ef4fcc8b7d5c7e",
+      "new_file_sha256": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:d0c1bfa84b8143f3ff5d5d6a33b92b79857ad8135265b999f349075b25643745",
+        "body_content_hash": "sha256:402d9b748cdee70bc8eb2134bcedb4cecc380fc20390df36d3c6dc97116e8e0f"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:38d8b4a0cf75f1eae01f44dff9ddc2306472635533f95c4a9d5394e53e2c0c06",
+        "body_content_hash": "sha256:248f84f521fa564544bd8cf963fcdf04f78dd6166ecfe6f48a70b0259e7f5e4f"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-env-teardown",
+      "old_path": ".claude/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-env-teardown/SKILL.md",
+      "old_file_sha256": "ba8d0e15bfb6620c0ed47e0f8eb241c0151da95d0a39139708d19f575f433ca5",
+      "new_file_sha256": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:388b327abd3b9d833be0977e4d39cd5e5a25d4ef534edfded030da2d207516a1",
+        "body_content_hash": "sha256:8963f817783010555754c6136bc931c66f6023638b4c2dbdf1209854e079318a"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:4c96cbdf48388759c44edf7f7c1530333d1672a126fe7b031f42b593ed0d67ea",
+        "body_content_hash": "sha256:d6f1c48d67802fadcf3392eaf158000785d0926cd975c329c8d0dc3dd6f17bb8"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-llm-endpoint-probe",
+      "old_path": ".claude/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md",
+      "old_file_sha256": "0600a50891e107acb180683a83228689c8cbc52430b75e5d28717ca4214a281d",
+      "new_file_sha256": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:4ab5f6edbf47495a3b40f183ba2736cd96b9665c9ee9b68608392a2e44d16bff",
+        "body_content_hash": "sha256:5e53851599a3e3dc623028e3d02be2c1a72272562c24e28a2ad2be5898d09531"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:bd4a60e9b2b0a53fc23646645b79d74ba3a9993726c32ac70644b7c178e993ed",
+        "body_content_hash": "sha256:a8101c179ffa9e51c14a34445e7d3f1d2998de74f8fea37f90266978beea61a4"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-storage-stack",
+      "old_path": ".claude/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-storage-stack/SKILL.md",
+      "old_file_sha256": "90081d0fac8e391b2347e6ea5a77b16f6ba62cbb13d1273ef0c32ee67421b99f",
+      "new_file_sha256": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:d1a7c9bc66b5a1369f94d0d43ce3ab8acd1c86aa3a5e269bd9034035abff97d1",
+        "body_content_hash": "sha256:b4e4ec4dce74f04c011d3e1accd5d838e59ca7d6f9fba7da9d05431b45b63572"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:bf2b3ec55ed335baa2b26f098bc272f45aa3907b12c7efe81ab2004ccda56562",
+        "body_content_hash": "sha256:5f0939fd0f32863aea912614cd0d78aa84bfdc316ea4bb997a0a2f8a95b312b6"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    },
+    {
+      "name": "mj-agent-infra-studio-probe",
+      "old_path": ".claude/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "new_path": ".agents/skills/mj-agent-infra-studio-probe/SKILL.md",
+      "old_file_sha256": "925605d3fa2fbf99c0c53fa2ed224eec9e32792b13276173dd92ced0f913bf89",
+      "new_file_sha256": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+      "old_hashes_recomputed": {
+        "description_hash": "sha256:3b01bf7bc5b2c9f7671bbb97cfe6ba0ddf8cb7d9a96a9d27fcd896bfc77e9edd",
+        "body_content_hash": "sha256:fcb36d85ff40bd7fbff3056688851ebb7dab87dab97932b5ba49296b2e3d4bf6"
+      },
+      "new_hashes_recomputed": {
+        "description_hash": "sha256:810dcc24cf5037855e61309971df9a8826a96d2457b21ebe9302455d50559104",
+        "body_content_hash": "sha256:c801f70334899d34d50230ee7c2c00c709e2061bcb0f9b14b7b1f26cd9f582ff"
+      },
+      "frozen_at_proposed": "2026-09-18T00:00:00Z",
+      "status": "RECOMPUTED_MATCH_DRAFT_NOT_APPLIED"
+    }
+  ],
+  "consumers": [
+    "check_native_skills.py",
+    "check_ai_context_audit.py --derive",
+    "MCP spec/trace/BDD",
+    "G3 active-contract selection",
+    "native contract template",
+    "capabilities/AGENTS.md"
+  ],
+  "old_contract": "retained physically; explicitly excluded only by proposed native ownership cutover; no deletion"
+}

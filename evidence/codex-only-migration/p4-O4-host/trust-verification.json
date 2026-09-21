@@ -1,0 +1,96 @@
+{
+  "at": "2026-09-21T03:12:35.183086+00:00",
+  "status": "OWNER_REPORTED_AND_ACTUAL_API_TRUSTED_ENABLED",
+  "approval": "call_2zz2rj2ZgUUFTQQMrPjxqcqp option A; Owner subsequently reported 已执行 and supplied Active1 screenshot",
+  "automatic_trust": false,
+  "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+  "hooks": [
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked\\src\\mj_agent",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked\\tests",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  ],
+  "inventory": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-111113-topology-linked-inventory",
+  "evidence_hashes": {
+    "events.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hooks-list.json": "d388a55b72f3fca804135b3415ef2e03311179cd153e919329da99edef01d483",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "integrity.json": "566e011b9db1b63b895e81082e7101e9246c8492311d07b247d506b449cf578d",
+    "invocation.json": "86feb78b287431dbfd4784a82065e51244ea2e5db0f894b83ee36acc731e92a4",
+    "skills-list.json": "38da52843cd186e568b0bd57de223d54053cb8859c49c086120ca7d40fdbd609"
+  },
+  "screenshot_source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-b6713eab-b575-40db-8899-dbe12d7a3982.png",
+  "screenshot_sha256": "297b706661d9d2dee2be1953a4a93a494b27fe1316c0aa14d80dc1fed25880da",
+  "limits": "Discovery/trust only, not hook execution; no separately observed project-trust prompt"
+}

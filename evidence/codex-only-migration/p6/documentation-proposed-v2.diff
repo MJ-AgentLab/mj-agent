@@ -1,0 +1,485 @@
+--- a/docs/guide/[GUIDE]_Developer_Onboarding.md
++++ b/docs/guide/[GUIDE]_Developer_Onboarding.md
+@@ -10,9 +10,9 @@
+   - mj-agent Developer Onboarding
+   - mj-agent 开发者上手指南
+ created: 2026-05-06
+-updated: 2026-08-10
++updated: 2026-09-21
+ state: draft
+-version: v0.7
++version: v0.8
+ track: code
+ owner: 项目负责人
+ ---
+@@ -21,8 +21,8 @@
+ 
+ > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
+ > **目标受众**：开发 + 维护者
+-> **版本**：v0.7
+-> **最后更新**：2026-08-10
++> **版本**：v0.8
++> **最后更新**：2026-09-21
+ > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
+ > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
+ > GUIDE）、[[policies/documentation|documentation policy]]、
+@@ -64,6 +64,7 @@
+ - §4 测试运行
+ - §5 三轨道文档约定
+ - §6 提交与推送
++- §6.4 Codex 原生维护与迁移恢复
+ - §6.5 G1/G2 PreToolUse hook 防护
+ - §7 LangGraph Studio 首跑（含 §7.1 H1-R2 验证矩阵 / §7.2 LangSmith trace 开关 / §7.3 常见诊断）
+ - §8 速查表
+@@ -97,7 +98,7 @@
+ | LangSmith API key | trace 调试（可选） | 团队 LangSmith 工作区 invite |
+ | 团队 secrets 口令 | `.\scripts\setup-env.ps1` + `.\scripts\mcp\setup-mcp-secrets.ps1` 解密（两 bundle 同口令） | 项目负责人发放（口令轮换 2 月一次；详见 [[../../config/README|config/README.md]] §6） |
+ | GitHub PAT（`GITHUB_PERSONAL_ACCESS_TOKEN`） | Codex 的 github MCP server（`.codex/config.toml` 引用、无 fallback） | 自己的 GitHub 帐号生成 fine-grained PAT，写入 OS User env（不在 mj-agent secrets 治理范围） |
+-| Playwright Chromium | Claude Code 的 playwright MCP（浏览器驱动 Chainlit 自测） | 一次性 `npx playwright install chromium` |
++| Playwright Chromium | Codex 的 playwright MCP（浏览器驱动 Chainlit 自测） | 一次性 `npx playwright install chromium` |
+ 
+ 补完后回到 §1 顺序往下读。
+ 
+@@ -146,7 +147,7 @@
+                                        #   没团队口令 → cp .env.example .env 手填）
+ .\scripts\mcp\setup-mcp-secrets.ps1   # 同一口令解密 secrets-mcp.enc → OS User env
+                                        # （Codex 按 env_vars 白名单继承变量（独立授权操作）；不写 .env）
+-# ⚠ setup-mcp-secrets 跑完必须【完全重启】终端 + Claude Code —— User env 只对新进程可见
++# ⚠ setup-mcp-secrets 跑完必须【完全重启】终端 + Codex —— User env 只对新进程可见
+ # ⚠ pg-* MCP servers 从【具名 env 变量】解析连接串（无内嵌 default，per #353/议题 3）——
+ #   没跑 setup-mcp-secrets → server 显式失败（exit 3），不再静默连 localhost 兜底
+ uv run langgraph dev                   # 启 LangGraph Studio
+@@ -155,7 +156,7 @@
+ > **secrets.conf 填写速览**（全表 + 逐字段说明见 [[../../config/README|config/README.md]] §「secrets.conf 填写指南」）：
+ > - app secret 8：**必填 5**（analyst×2 / ARK / memory×2；纯 DGX 免 ARK = 4）· **可空 3**（LLM_API_KEY / LANGSMITH / SUPERUSER）
+ > - §2c profile 9：**照抄预填 7** · **强制留空 1**（`LLM_PROFILE_ARK__LLM_BASE_URL`，填了→#297 的 404 事故）· **可选 1**（`LLM_PROFILE_DEFAULT`）
+-> - MCP 15 键：**对 app 启动零影响**，纯本地可全空，按「要用哪些 MCP 工具」填（SSH 连哪台填哪台 / PG WAN 要用则必填）
++> - MCP 与 app 凭据分离：原生维护脚本仅接受 GitHub token 与 memory×5 URL 的具名变量；历史 bundle 的 SSH/biz 键不迁入。Owner 在自己的终端维护，代理不读值。
+ > - ⚠ 填的是 `secrets.conf` 非 `.env`：普通 secret 键留空会**刷空 `.env`**，§2c profile 键留空则跳过（安全）
+ 
+ `.env` 字段说明在 `.env.example`；secrets 治理与**逐字段填写分类**（两 bundle / 填写指南 / 轮换 / cold-reset / `-Reload` 诊断）在 `config/README.md`。
+@@ -165,7 +166,7 @@
+ `host.docker.internal:18000` 隧道形态与 `LLM_MODEL_ID` 覆写——默认 model id 是 Ark 云 id，切换必须覆写）。
+ 切换前跑 `/mj-agent-infra-llm-endpoint-probe` 验端点；隧道拓扑详见根 `README.md` §LLM provider。
+ 
+-**前置自检**（M6 X4 并入；原 dev_studio §1 前置条件）：`uv python list`（需 Python 3.13；缺则 `uv python install 3.13`）· `uv --version`（缺见 <https://docs.astral.sh/uv/>）· `psql ... -c 'SELECT 1'`（biz DB dev profile 可达；不通联系 DBA 或开 SSH tunnel）。analyst 凭据 / Ark key 申领见 §0.5。
++**前置自检**：确认 Python 3.13、uv 与锁定依赖。外部可达性须另行批准后通过 agent 工具链验证；不使用 psql 或数据库客户端探测 biz。analyst 凭据 / Ark key 由 Owner 维护，见 §0.5。
+ 
+ ## §3.5 仓库结构鸟瞰
+ 
+@@ -189,16 +190,19 @@
+ 
+ ## §4 测试运行
+ 
+-四档测试；命令矩阵见 [[../../AGENTS.md#Commands|AGENTS.md Commands]]：
++从已核对 Git 根运行受控入口（先准备锁定依赖）：
+ 
+ ```powershell
+-uv run pytest tests/unit          # 快；无外部依赖
+-uv run pytest tests/eval          # seed schema + Component 检查；无 DB
+-uv run pytest tests/integration   # 需 live biz DB（无 .env 凭据时 skip）
+-uv run pytest tests/smoke -m smoke   # 需 DB + LLM（无凭据时 skip）
++uv run --frozen --no-sync python scripts/sdd/check_codex_native.py
++uv run --frozen --no-sync python scripts/sdd/check_native_skills.py
++uv run --frozen --no-sync python scripts/sdd/check_native_governance.py
++uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
++uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval -q
+ ```
+ 
+-`tests/conftest.py` 在凭据缺失时**自动 skip**（不 fail），所以空 env 也能跑出绿。
++受控 runner 只消费 tracked 文件，封闭环境并锁定插件；必要新测试须先进入经授权的明确交付集合。测试可能写索引或提交时，使用真实工作树之外的独立副本与 TEMP，先确认 Git 初始化成功且 Git 根精确等于副本根。不得让测试向上发现原仓。
++
++integration / smoke / contract 等外部依赖仍按 `SKIP_POLICY_EXTERNAL_DEPENDENCY` 处理；凭据存在不启用 live。skip 不证明服务可用，静态检查也不证明 hook 已加载。外部探针单独授权并按服务留证。
+ 
+ ## §5 三轨道文档约定
+ 
+@@ -221,11 +225,11 @@
+ >   13 字段 schema + 五段式 body；由 `load_skill()` Python loader 加载剥 frontmatter
+ > - **Track C 工程 skill**：`.agents/skills/mj-agent-<group>-<verb>/SKILL.md` —— 开发流程
+ >   编排（17-stage HITL 闭环；5 family：flow / git / doc / runtime / infra）；
+->   ADR-013 native 2 字段 schema；由 Claude Code 主进程发现 + slash command 触发
++>   ADR-013 native 2 字段 schema；由 Codex 从项目原生技能目录发现；按当前宿主提供的技能调用方式显式选择
+ >
+ > 二者**同名同形不同义**，必须严格区分；混淆会导致施加错误约束 / 套错 schema。
+ > 三类完整速查表（含第三类 marketplace plugin SKILL）见
+-> [[../../AGENTS|AGENTS.md]] §"Three-source SKILL distinction"。
++> [[policies/development-skills|development skills policy]] 与本节。
+ 
+ 撰写新文档时复制 `docs/_templates/TEMPLATE_*.md` 起步：
+ 
+@@ -245,6 +249,18 @@
+ - 推送前 7 步检查：[[../infrastructure/git/[GUIDE]_Git_Push_Workflow|Git Push Workflow]]
+ - PR 描述模板：[[../infrastructure/git/[GUIDE]_PR_Description_Convention|PR Description Convention]]
+ 
++## §6.4 Codex 原生维护与迁移恢复
++
++先读根及目标目录 AGENTS，按 [ADR-040](../../decisions/ADR-040_Codex_Only_Development.md) 直接维护 `.agents/skills/`、`.agents/references/` 和 `.codex/`。技能索引为 `.agents/skills/SKILL_INDEX.md`；不执行生成、投影、adopt 或 lock 同步。非客户端 `sdd/adapters/` 规范继续保留。
++
++普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的边界变化先由 Owner 审阅准确差异。SQL guardrail、runtime skill、Prompt、catalog 等既有受保护边界保持。暂存、提交、双推、PR 和合并分别按具名批准执行；新分支使用 worktree，迁移 PR base 为 develop。
++
++Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 MCP 凭据。代理不自动信任/激活 hook、不更改个人配置或权限、不解密或写 OS 凭据。配置检查成功不等于服务已连接。
++
++迁移证据覆盖 Windows Codex CLI 0.147.0 的已批准发现、五技能族及近邻 canary、hook 允许/拒绝和具名原生规则拒绝，以及 Linux 隔离离线检查与清理前 GitHub Ubuntu CI。Desktop、Linux Codex 宿主及 L6 外部服务未验证；每次复用都须比对受测文件身份。最终版本是否提交、CI/review/合并通过，以实际 SHA 的新记录为准。
++
++恢复入口为[累计报告](../../plans/[REPORT]_Codex_Only_Migration_Progress.md)及其 P5/P6 具名恢复清单。HEAD 仅恢复已提交基线；未提交 P0–P4 成果依赖公共备份及后续增量；已删81项用 `legacy-81-before.zip`，P5 六文件用 `consumer-six-before.zip`，P6 修改用本阶段 `before.zip` / `additional-before.zip`。先核对目标 SHA 和包成员，按后续增量逆序评估，再处理旧 P3 成组差异；不把旧整组补丁直接套到当前树，不执行全树 reset/clean。备份和候选保留为恢复材料，不成为第二维护源。
++
+ ## §6.5 G1/G2 PreToolUse hook 防护
+ 
+ 原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。无执行路线时保持 BLOCKED_EXECUTION_ROUTE，不修改权限或个人配置绕过。
+@@ -254,8 +270,7 @@
+ - **G2 base=develop-except-hotfix**：拦 `gh pr create` 不带 `--base` / `-B`，
+   引导 non-hotfix 用 `--base develop`（仅 hotfix 允许 `--base main`）
+ 
+-Hook 命令 exit code 2 让 Claude Code 把 stderr 经 agent 视图喂回，AI 立即看到违例
+-并自动修复。事故起源：PR #158（缺 `--base` 误合到 main）+ PR #154（`git checkout -b`
++原生 hook 的实际阻断须以宿主事件和工具结果为证；收到拒绝时停止对应动作，聊天批准不自动解锁 hook。事故起源：PR #158（缺 `--base` 误合到 main）+ PR #154（`git checkout -b`
+ 而非 worktree-add）于 2026-05-12；恢复闭环 PR #159 + 3 层防御设计见
+ [[../../plans/[PLAN]_g1_g2_workflow_enforcement|PLAN_g1_g2_workflow_enforcement]]。
+ 
+@@ -326,8 +341,8 @@
+ | --- | --- |
+ | 装依赖 | `uv sync` |
+ | 启 Studio | `uv run langgraph dev` |
+-| 单元测试 | `uv run pytest tests/unit` |
+-| 完整测试 | `uv run pytest`（默认排除 smoke） |
++| 单元测试 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q` |
++| 完整测试 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit tests/eval -q` |
+ | Lint | `uv run ruff check` |
+ | 类型检查 | `uv run mypy src/mj_agent` |
+ | 起 worktree | `git -C develop worktree add ../<dir> -b <branch> develop` |
+@@ -358,7 +373,7 @@
+ 
+ **跑通 hello**（§4 + §7）
+ 
+-- [ ] `uv run pytest tests/unit` 全绿
++- [ ] `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q` 全绿
+ - [ ] `uv run langgraph dev` 启 Studio，浏览器自动打开 `http://127.0.0.1:2024`
+ - [ ] Studio 选 `mj_agent` graph，首问"biz_dws 里有哪些日度总量表？"
+ - [ ] 回复含 `dws_qcm_*_daily_total` 表名清单（说明 `find_biz_context + list_biz_tables` 调通）
+@@ -366,7 +381,7 @@
+ **文档第一眼**（§5）
+ 
+ - [ ] 已读 [[../INDEX|docs/INDEX.md]]
+-- [ ] 已读 [[../../AGENTS|AGENTS.md]] §Documentation 三轨段
++- [ ] 已读 [[../../AGENTS|AGENTS.md]] 的 Documentation and workflow 段
+ - [ ] 已记住三类 SKILL 区分（in-source / in-tree workflow / marketplace plugin）
+ 
+ **提交链路**（§6 + §6.5）
+@@ -404,3 +419,5 @@
+ | 2026-07-17 | v0.5 | #353（议题 3 pg 凭据单一真相）：§3 命令块加 pg-* MCP server 具名 env 解析说明——连接串从具名变量解析、无内嵌 default、未设即显式失败（exit 3），单一真相 = secrets-mcp.enc→HKCU env |
+ | 2026-08-10 | v0.6 | #108 关联（承 PR #462/#463 的 `config/README.md` §6.3/§6.4 更正）：§7.3 诊断表新增「某个 `pg-*` MCP server 起不来，但 `/doctor` 没报缺、`-Reload` 还显示 `15 / 15 set`」一行——空值键照样计 `[SET]`，判据是**掩码**（`****` = 空 / `post****` = 真值）；机制为 `pg-server-start.cmd` 判 `if not defined`（cmd 里空串等同未定义）→ `exit /b 3`，node 从未启动。另订正两处**既存**漂移：① frontmatter `version` 停在 v0.4 而本表已记 v0.5（2026-07-17 那次只落表未 bump），本行起对齐；② body「最后更新」行停在 2026-07-08，改随 frontmatter |
+ | 2026-08-10 | v0.7 | §2「长期 worktree」列表订正——原写 `develop` / `main` / `documentation/research-mj-agent` **三者**，实测 `git worktree list` 只有 `.bare`(bare) + `develop`：`research-mj-agent` 本地与两个远端都无对应分支、目录为空壳（本批已删），`main` 从不是工作树。改为「裸库 `.bare/` + 长期 worktree 只有 `develop`」+ 权威口径以 `git worktree list` 为准；临时 worktree 行补 Stage 17 清理与容器目录留空复用。新增一段解释 `git branch` 里 `main` 带 `+` 前缀的成因（`.bare/HEAD` = `ref: refs/heads/main`，故被 `.bare` 自己检出）并提示本地 `main` 指针仍停在脚手架初始提交、要 main 内容用 `origin/main` |
++
++| 2026-09-21 | v0.8 | P6 原生维护、受控测试、Owner 凭据/信任边界及具名恢复交接；历史记录保留 |
+--- a/docs/guide/[GUIDE]_Quick_Start_Setup.md
++++ b/docs/guide/[GUIDE]_Quick_Start_Setup.md
+@@ -10,9 +10,9 @@
+   - mj-agent Quick Start
+   - mj-agent 5 分钟启动
+ created: 2026-05-18
+-updated: 2026-07-08
++updated: 2026-09-21
+ state: draft
+-version: v0.2
++version: v0.3
+ track: code
+ owner: 项目负责人
+ ---
+@@ -21,12 +21,14 @@
+ 
+ > **适用范围**：mj-agent 仓库环境从零到 Studio 首问跑通的赶时间版速查清单
+ > **目标受众**：demo / 培训 / hotfix 现场赶时间的开发者；已熟悉 mj-agent 仅作 refresh 的回归者
+-> **版本**：v0.2
+-> **最后更新**：2026-07-08
++> **版本**：v0.3
++> **最后更新**：2026-09-21
+ > **派生自**：mj-agent 原生（参考 mj-system 仓库 `[GUIDE]_Quick_Start_Setup.md` 9 步速查 + Troubleshooting 表的结构与写法；命令与术语均按 mj-agent 自身资产派生）
+ > **关联文档**：[[[GUIDE]_Developer_Onboarding|Developer Onboarding（15 分钟完整版）]]、[[../../README|README]]、[[../../AGENTS|AGENTS.md]]
+ 
+ ---
++
++> 原生开发维护、受控离线检查与恢复入口见 [[[GUIDE]_Developer_Onboarding|Developer Onboarding §4 / §6.4]]。下列凭据、服务启动和 live 步骤由 Owner 按环境单独授权；不是迁移验收默认动作。
+ 
+ ## TL;DR
+ 
+@@ -134,7 +136,7 @@
+ 
+ # MCP bundle → OS User env（Codex 按 env_vars 白名单继承变量（独立授权操作）；同一口令）
+ .\scripts\mcp\setup-mcp-secrets.ps1
+-# ⚠ 跑完必须【完全重启】终端 + Claude Code（User env 只对新进程可见）
++# ⚠ 跑完必须【完全重启】终端 + Codex（User env 只对新进程可见）
+ ```
+ 
+ 无团队口令的 fallback：
+@@ -142,7 +144,7 @@
+ ```bash
+ cp .env.example .env
+ # 编辑 .env 手工填 ARK_API_KEY + POSTGRES_ANALYST_USER / PASSWORD（向项目负责人申请）
+-# 此路径没有 MCP secrets——Claude Code 的 ssh-manager / WAN pg MCP 起不来（app 本体不受影响）
++# 此路径未配置 MCP 凭据；memory MCP 是否可用另行验证。biz/ssh-manager 永不进入原生 MCP。
+ ```
+ 
+ ## §7 Step 7 — mj-agent check 验 DB + LLM 凭据
+@@ -190,7 +192,7 @@
+ | 启 Studio | `uv run langgraph dev` |
+ | Lint | `uv run ruff check` |
+ | Type-check | `uv run mypy src/mj_agent` |
+-| 单元测试 | `uv run pytest tests/unit` |
++| 单元测试 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q` |
+ 
+ ---
+ 
+--- a/README.md
++++ b/README.md
+@@ -82,7 +82,7 @@
+ 
+ # 3. MCP secrets（Codex 按 env_vars 白名单继承变量（独立授权操作）；写 OS User env，非 .env）
+ .\scripts\mcp\setup-mcp-secrets.ps1
+-# 跑完必须完全重启终端 + Claude Code（User env 只对新进程可见）
++# 跑完必须完全重启终端 + Codex（User env 只对新进程可见）
+ 
+ # 4. 启动 LangGraph Studio
+ uv run langgraph dev
+--- a/CONTRIBUTING.md
++++ b/CONTRIBUTING.md
+@@ -29,7 +29,7 @@
+ **标准贡献流程 5 步**：
+ 
+ 1. 从 `develop` 用 `git -C develop worktree add ../<dir> -b <branch> develop` 起新 worktree（G1 worktree-required；不要用 `git checkout -b`）
+-2. 编码 + 本地自测（`uv run pytest tests/unit` + `uv run ruff check` + `uv run mypy src/mj_agent`）+ 按规范 commit
++2. 编码 + 本地自测（`uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit` + `uv run ruff check` + `uv run mypy src/mj_agent`）+ 按规范 commit
+ 3. 推送分支到 GitHub（origin）+ Gitee（镜像）+ 用 `gh pr create --base develop`（G2 hook 拦截缺 `--base`）
+ 4. 等待 review，按反馈修改
+ 5. PR merge 后：删除已合并的 worktree + 分支（[`/mj-agent-flow-post-merge`](https://github.com/MJ-AgentLab/mj-agent/blob/develop/.agents/skills/mj-agent-flow-post-merge/SKILL.md) 提供清理 workflow）
+@@ -167,8 +167,8 @@
+ | 1. 字节码编译 | `python -m compileall` | 是 |
+ | 2. Lint | `uv run ruff check` | 是 |
+ | 3. 类型检查 | `uv run mypy src/mj_agent`（strict） | 是 |
+-| 4. pytest（默认 band） | `uv run pytest` — unit + eval + integration（smoke + contract deselected） | 是 |
+-| 5. pytest contract | `uv run pytest tests/contract -m contract`（skip-clean if no DB creds） | 是 |
++| 4. pytest（默认 band） | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py` — unit + eval + integration（smoke + contract deselected） | 是 |
++| 5. pytest contract | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract`（外部依赖策略 skip，不证明服务连接） | 是 |
+ 
+ **Smoke 测试**（`-m smoke`）CI 永不跑——需 live biz DB + Ark；仅本地手工跑。
+ 
+--- a/config/README.md
++++ b/config/README.md
+@@ -98,7 +98,7 @@
+ ```
+ 
+ **Step 2 后必须重启**：Windows User-level env 变量只对**新启动的进程**可见。重启
+-PowerShell 终端 + Claude Code，才能看到新 OS env 值。
++PowerShell 终端 + Codex，才能看到新 OS env 值。
+ 
+ 幂等：两个脚本都幂等。重跑 `setup-env.ps1` 会比对每个变量并以 `[SKIP]` /
+ `[CHANGED]` / `[NEW]` 标注（强制覆盖加 `-Force`）；重跑 `setup-mcp-secrets.ps1`
+@@ -163,7 +163,7 @@
+ - `config/secrets.example` 增加键名（值留空）
+ - `.env.example` 增加键名（值留空，注释中写明"由 setup-env.ps1 注入"）
+ - `src/mj_agent/config.py` 的 `Settings` 类增加对应字段（仅当 mj-agent
+-  Python runtime 需要消费该值时；纯 `.codex/config.toml` 用的 SSH/PG URL 不要
++  Python runtime 需要消费该值时；纯 `.codex/config.toml` 用的 GitHub/memory MCP 凭据 不要
+   登记此处，避免 pydantic-settings 把它们当成 mj-agent 自己的配置；
+   **compose-only 键同理豁免**——如 `MJ_AGENT_PG_SUPERUSER_PASSWORD` 仅被
+   `docker/compose.yaml` `${...}` 替换消费，只登记前两处）
+@@ -179,7 +179,7 @@
+ 
+ ### MCP bundle（secrets-mcp.enc）
+ 
+-MCP 基础设施 secrets（5 SSH + 10 PG URL）走独立 bundle + 独立注入路径（→ `HKCU\Environment`，
++历史 MCP bundle 包含 5 SSH + 10 PG URL；原生 setup 只维护既有 GitHub token 与 memory×5 URL 白名单。历史 bundle 的其他键不迁入，仍走独立 bundle + 独立注入路径（→ `HKCU\Environment`，
+ 不入 `.env`；详见 §6.4）。加密 / 轮换与 app bundle 并列，但键清单与目标不同：
+ 
+ ```powershell
+@@ -197,9 +197,9 @@
+ # 4. 通过安全渠道告知团队"MCP bundle 已更新"
+ ```
+ 
+-新增 MCP key（如新 SSH host / 新 PG URL）时，只登记**两处**（与 app 的三处对照）：
++原生 MCP 变量变更须先取得具名 Owner 批准，并同时核对以下公开接口；不能按历史 bundle 键扩充服务或导入 SSH/biz：
+ - `config/secrets-mcp.example` 增加键名（值留空）
+-- 经 Owner 审阅 `.codex/config.toml` 对应 `env_vars` 名称（在 server config 里消费）
++- 经 Owner 审阅 `.codex/config.toml` 对应 `env_vars` 名称及 `scripts/mcp/setup-mcp-secrets.ps1` 的白名单（变量按名转交，不回显值）
+ - **显式不登记** `.env.example` / `src/mj_agent/config.py`——ADR-030 核心红线：MCP 键永不入
+   `.env`，Python runtime 不消费（误登记 config.py 会让 pydantic-settings 把它当成 app 配置）。
+ 
+--- a/docs/INDEX.md
++++ b/docs/INDEX.md
+@@ -48,7 +48,7 @@
+ | [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 4 态（含 §2.5 retroactive 补落）/ archive 5 态 / 转移触发 + gate 联动 |
+ | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
+ | `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/development-skill\|development-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.agents/` 原生开发技能治理（A7-A14 surface） |
+-| [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 settings.json blocking |
++| [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 原生保护检查 |
+ | [[policies/git-branching\|policies/git-branching]] / [[policies/release\|policies/release]] | 分支类型 / commit 类型 / G1·G2 worktree / PR 模板矩阵（§4）/ SemVer bump 规则 + dev·release tags（M6 X6 把 git **规则**从 `docs/infrastructure/git/` GUIDEs absorb 进 kernel；GUIDEs 保留 operational how-to，不归档）|
+ 
+ ## 架构决策（decisions/）
+@@ -309,3 +309,5 @@
+ 
+ - Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，项目与 hook 信任由工程师独立审阅；见 [[decisions/ADR-040_Codex_Only_Development|ADR-040]]）。
+ - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）
++
++- 原生开发维护、受控离线测试、平台边界与恢复交接：[[guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §4 / §6.4。
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -4,6 +4,12 @@
+ 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+ 
+ ## [Unreleased]
++
++### Changed — Codex 原生独立开发迁移
++
++- 开发入口切至 AGENTS、37 个同名 `.agents/skills/` 与直接维护的 `.codex/`；必要 MCP 工具迁至 `scripts/mcp/`，允许服务与凭据隔离边界保持。
++- 原生检查承接技能、配置、消费者及安全回归；按具名批准删除81项旧客户端/适配资产，保留业务规范、安全断言、历史证据和恢复材料。
++- 上手指南补充受控离线测试、Owner 信任/凭据维护和恢复入口。本条位于 Unreleased，不表示已推送、合并、发布或外部服务已验证。
+ 
+ ### Fixed — 离线 pytest runner 的 tiktoken BPE 每跑重下（#546）
+ 
+--- a/docs/guide/[GUIDE]_MJ_Agent_SPEC_Authoring.md
++++ b/docs/guide/[GUIDE]_MJ_Agent_SPEC_Authoring.md
+@@ -161,11 +161,11 @@
+ 
+ - **适用范围**：`.agents/skills/mj-agent-*/SKILL.md`（5 family：flow / git / doc / runtime / infra）+ `.codex/config.toml` server 配置 + `.codex/hooks.json`
+ - **必填段**：§1 Context + §2 Scope + §3 Contract（SKILL frontmatter schema：name + description；ADR-013 native 2-field schema；description ≥ 200 chars + 反向触发段）+ §7 Verification（A12-A14 PR 门禁通过 + skill triggering 5-iteration eval 推荐但非阻塞）
+-- **可选 / 多数 N/A 段**：§4 Configuration（除非引入新 settings.json 字段）；§5 Error handling（skill 失败由用户重试，无系统级 error handling）；§6 Rollback（git revert 即可）；§8 Observability（无 telemetry）
++- **可选 / 多数 N/A 段**：§4 Configuration（原生 config/hooks/rules 字段变更时必填）；§5 Error handling（skill 失败由用户重试，无系统级 error handling）；§6 Rollback（已提交变更按评审 revert；未提交工作字节依具名备份恢复）；§8 Observability（无 telemetry）
+ - **常见 anti-pattern**：
+   - ❌ §3 Contract 漏 description "Do not use for:" 反向触发段（A12 阻塞门禁）
+   - ❌ runtime 类目 SKILL 缺 "Anti-patterns" 段的 "Do NOT modify src/mj_agent/..." 硬约束
+-  - ❌ §7 Verification 漏 `.codex/config.toml` 改动后的 `/doctor` Missing-env 验证
++  - ❌ §7 Verification 漏 `.codex/config.toml` 改动后的原生检查、Owner 脱敏凭据完整性核对及实际宿主证据（静态检查不证明服务可用）
+ 
+ ### §4.8 文档治理
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE.md
++++ b/.github/PULL_REQUEST_TEMPLATE.md
+@@ -116,7 +116,7 @@
+ <summary><b>Legacy Engineering-Workflow checklist</b> (A12-A14) — Phase M5 末迁入 policies/</summary>
+ 
+ - [ ] A12：`.agents/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
+-- [ ] A13：`.codex/hooks.json` allowlist diffs reviewed；无 bare `Bash` in `permissions.allow`；secrets 在 `permissions.deny`
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] A14：`.codex/config.toml` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
+ 
+ </details>
+--- a/.github/PULL_REQUEST_TEMPLATE/bugfix.md
++++ b/.github/PULL_REQUEST_TEMPLATE/bugfix.md
+@@ -45,7 +45,7 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+-- [ ] **A13** `.codex/hooks.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+ - [ ] **bugfix 风险面**：修 `.agents/skills/` 内 SKILL 行为时 description 文案变化不能破坏正向 trigger 命中率（A12）；description 修剪过头会让 user 输入触发不到 skill — fix 类语义修改要保留主 trigger 词
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE/documentation.md
++++ b/.github/PULL_REQUEST_TEMPLATE/documentation.md
+@@ -39,7 +39,7 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+-- [ ] **A13** `.codex/hooks.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+ - [ ] **documentation 风险面**：改 `.agents/skills/**/SKILL.md` body 时 frontmatter `name` + `description` 不漂（A12）；修订 [[../../policies/development-skills|development skills policy]] / [[../../policies/ci-gates|ci-gates policy]] / [[../../policies/ai-agent|ai-agent policy]] 等 A12-A14 kernel home 时条文与本 template 同步检查
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE/feature.md
++++ b/.github/PULL_REQUEST_TEMPLATE/feature.md
+@@ -48,9 +48,9 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+-- [ ] **A13** `.codex/hooks.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+-- [ ] **feature 风险面**：新增 `.agents/skills/` 时 description ≥ 200 chars + 正反 trigger 双段是命中率刚需（A12）；新功能引入 MCP server / 调整 settings.json `enabledPlugins` 必走 A13/A14 评审
++- [ ] **feature 风险面**：新增 `.agents/skills/` 时 description ≥ 200 chars + 正反 trigger 双段是命中率刚需（A12）；新功能引入 MCP server / 调整原生项目 config/hooks/rules 必走 A13/A14 评审
+ 
+ </details>
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE/hotfix.md
++++ b/.github/PULL_REQUEST_TEMPLATE/hotfix.md
+@@ -48,9 +48,9 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14；hotfix 紧急通道但 A12 schema 不可跳) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace（紧急修复也不跳 schema 校验）
+-- [ ] **A13** `.codex/hooks.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture + credential mode
+-- [ ] **hotfix 风险面**：紧急通道下 A12 schema 校验 + A13/A14 触发的 settings.json / mcp.json 调整若临时跳过，**事后必须补 documentation/* PR 说明 + 同步进 develop**（与 §27 主同步动作配套）
++- [ ] **hotfix 风险面**：原生 config/hooks/rules 或 MCP 变更仍须改前 Owner 批准；事后文档补充与 develop 同步不替代批准
+ 
+ </details>
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE/maintain.md
++++ b/.github/PULL_REQUEST_TEMPLATE/maintain.md
+@@ -41,9 +41,9 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
+-- [ ] **A13** `.codex/hooks.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`、`enabledPlugins` 变更附 PR body 理由
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+ - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
+-- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核 `permissions.deny`
++- [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核原生秘密保护与 Owner 批准边界
+ 
+ </details>
+ 
+--- a/.github/PULL_REQUEST_TEMPLATE/release.md
++++ b/.github/PULL_REQUEST_TEMPLATE/release.md
+@@ -37,9 +37,9 @@
+ <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+ 
+ - [ ] **A12** 本 release 周期内新增/修改的 `.agents/skills/<name>/SKILL.md` 全部用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正反 trigger；`name` 符合 `mj-agent-<group>-<verb>` namespace
+-- [ ] **A13** `.codex/hooks.json` 在本 release 周期内的累计 diff 评审：无裸 `Bash` 残留、secret patterns 完整在 `permissions.deny`、`enabledPlugins` 变更与对应 PR body 理由一一对应
++- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook；本周期累计差异与对应 PR 逐项对账
+ - [ ] **A14** `.codex/config.toml` 在本 release 周期内的 server 增删与 trust posture / credential mode 声明在对应 PR body 一一对应
+-- [ ] **release 风险面**：把 `.agents/skills/`、`.codex/{hooks.json,rules/}` 与 `.codex/config.toml` 的本周期增删与对应 maintain/* / feature/* PR 的 A12-A14 自检记录交叉核对，确认无遗漏；hotfix/* 紧急通道临时跳过的 A13/A14 已补 documentation/* PR
++- [ ] **release 风险面**：把 `.agents/skills/`、`.codex/{hooks.json,rules/}` 与 `.codex/config.toml` 的本周期增删与对应 maintain/* / feature/* PR 的 A12-A14 自检记录交叉核对，确认无遗漏；hotfix/* 的 A13/A14 改前批准和事后文档均有记录，事后补文档不替代批准
+ 
+ </details>
+ 
+--- a/.agents/skills/mj-agent-git-commit/SKILL.md
++++ b/.agents/skills/mj-agent-git-commit/SKILL.md
+@@ -197,7 +197,7 @@
+ 
+ <long body>
+ 
+-Co-Authored-By: Codex Opus 4.7 (1M context) <noreply@anthropic.com>
++Co-Authored-By: <verified contributor name> <verified contributor email>
+ EOF
+ )"
+ 
+@@ -308,7 +308,7 @@
+ - **不要** 跳过 Step 4 type/branch matrix 校验（push 阶段 H3 会重新触发，浪费时间）
+ - **不要** 引入未在 35 闭合 allowlist 内的 scope（应该先修订 Commit Convention §4 minor bump）
+ - **不要** 用 type 当 scope（`refactor` / `test` / `feat`）或用项目阶段当 scope（`stage-e` / `phase0`）——v1.1 §4.3 已明文禁止
+-- **不要** 在 commit message 中嵌入 `Generated by Codex` 之类自动化签名（用 `Co-Authored-By: Codex Opus ...` 标准 trailer）
++- **不要** 在 commit message 中嵌入 `Generated by Codex` 之类自动化签名（用 `Co-Authored-By: <verified contributor name> <verified contributor email>` 标准 trailer）
+ - **不要** 在 in-source SKILL.md / system.md body 改动时跳过 §3.1 必停 HITL（H8 触发；这是 mj-agent 专属硬约束）
+ 
+ ## Handoff to mj-agent-git-push
+@@ -319,3 +319,5 @@
+   已验证项：commit message 格式 ✓、type/branch 纪律 ✓、35-scope allowlist ✓
+   待检查项：CHANGELOG 更新、工作目录干净、base branch 同步、双推
+ ```
++
++> 署名示例中的占位符不得写入提交；仅填已核实的协作者身份，未核实则省略可选 trailer，实际贡献在任务与 PR 正文记录。
+--- a/.agents/skills/mj-agent-flow-self-review/SKILL.md
++++ b/.agents/skills/mj-agent-flow-self-review/SKILL.md
+@@ -261,7 +261,7 @@
+ \`\`\`
+ feat(skill): add mj-agent-flow-self-review (Stage 11 self-review skill)
+ 
+-Co-Authored-By: Codex Opus 4.7 (1M context) <noreply@anthropic.com>
++Co-Authored-By: <verified contributor name> <verified contributor email>
+ \`\`\`
+ 
+ ### HITL Questions
+@@ -307,3 +307,5 @@
+   → mj-agent-git-commit 用 Step 6 commit message draft 落 commit
+   → mj-agent-git-push（Stage 13）pre-push checklist + 双推
+ ```
++
++> 署名示例中的占位符不得写入提交；仅填已核实的协作者身份，未核实则省略可选 trailer，实际贡献在任务与 PR 正文记录。

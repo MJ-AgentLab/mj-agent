@@ -1,0 +1,85 @@
+{
+  "at": "2026-09-21T04:45:07.260054+00:00",
+  "method": "Read current source at referenced lines; distinguish executable/default-runner and current instructions from historical records, exclusions and negative fixtures.",
+  "previous_scan": "p4-final-consumer-scan.json",
+  "findings": [
+    {
+      "id": "C01",
+      "classification": "ACTIVE_EXECUTABLE_CONSUMER",
+      "locations": {
+        "tests/fixtures/development-agent/scenarios/S5/expected.yml": [
+          12
+        ],
+        "tests/fixtures/development-agent/scenarios/S5/request.md": [
+          17
+        ],
+        "tests/unit/test_sdd_development_agent.py": [
+          83
+        ],
+        "scripts/sdd/fixture_runner.py": [
+          151,
+          158,
+          353,
+          356
+        ]
+      },
+      "candidate": "scripts/sdd/check_development_agent.py",
+      "finding": "S5 expected verification still calls the legacy checker. The retained runner defaults to executing expected.verification unless --no-commands. The shared safety test pins the same string; this is not merely an archived reference. No execution or failure was synthesized in this audit.",
+      "required": "Replace the obsolete verification consumer with a reviewed native equivalent while preserving no-write/classification and all P1 safety assertions. Recheck direct/transitive legacy dependencies before deleting the checker or its manifest.",
+      "source_identity": {
+        "tests/fixtures/development-agent/scenarios/S5/expected.yml": "fe888c6cf55dcc4a1dc01b4537f46c484fff0f08a8bdecd91a92dd27a1fc0540",
+        "tests/fixtures/development-agent/scenarios/S5/request.md": "491f95bc4c6347f0d1983937575043b5260b7a6798b033fd6a62a401ad34127e",
+        "tests/unit/test_sdd_development_agent.py": "feb2a819ab6baa580b36cf55d379c16c988e1beedebaf601b97bbdd4d70f3b41",
+        "scripts/sdd/fixture_runner.py": "4380a516df83a1bad8082f81eb7cb15f110229fa60855a899d99d95391260072"
+      }
+    },
+    {
+      "id": "C02",
+      "classification": "ACTIVE_DOCUMENTATION_ENTRY",
+      "locations": {
+        "docs/INDEX.md": [
+          279,
+          310
+        ]
+      },
+      "candidate": "scripts/sdd/check_claude_skill_contracts.py; .claude shared assets; .mcp.json",
+      "finding": "Current skill count instructions point to the old checker, and quick links direct users to the old client workspace. These lines are not explicitly historical.",
+      "required": "Update only current instructions to native checks/configuration; preserve ADR summaries and history.",
+      "source_identity": {
+        "docs/INDEX.md": "b92a00d3a6d3661eb70f25c3f2e7caeccd40699fa9a57db841b91c3ed811f9f6"
+      }
+    },
+    {
+      "id": "C03",
+      "classification": "ACTIVE_POLICY_COMMAND",
+      "locations": {
+        "policies/ci-gates.md": [
+          141
+        ]
+      },
+      "candidate": ".mcp.json; policies/claude-code-skill.md",
+      "finding": "The current quarterly audit row names .codex/config.toml but its runnable count command reads .mcp.json and points to the old policy. A green CI run does not execute this quarterly command.",
+      "required": "Prepare exact policy diff and recovery for Owner review. Use native configuration enumeration without service connections, and preserve the gate/trust posture.",
+      "source_identity": {
+        "policies/ci-gates.md": "bcff687f6edc110d4c4fbf80c2072266fac6ca8b5875071682644fc93329e0d3"
+      }
+    },
+    {
+      "id": "C04",
+      "classification": "ACTIVE_USAGE_DOCUMENTATION",
+      "locations": {
+        "src/mj_agent/env_drift.py": [
+          14,
+          17
+        ]
+      },
+      "candidate": ".claude/scripts/setup-mcp-secrets.ps1",
+      "finding": "The current module docstring directs users to the old setup script. This is a documentation consumer, not an observed runtime import or a reason to access credentials.",
+      "required": "Correct the named native script pointer only; do not execute secret setup or change business behavior.",
+      "source_identity": {
+        "src/mj_agent/env_drift.py": "9630c1f014a57be3d7e797bc7b85aa8b6cb3737538cde4ab3d641e8a09ce8fb9"
+      }
+    }
+  ],
+  "limits": "Not an exhaustive dynamic dependency proof. No tests, model turns, services, CI triggers or fixture runs were performed. Exclusion literals in native_assets.py and negative tests remain valid and must not be removed to achieve zero grep matches."
+}

@@ -1,0 +1,240 @@
+{
+  "at": "2026-09-20T02:17:07.522976+00:00",
+  "phase": "P4",
+  "status": "LINUX_LOCAL_ACCEPTANCE_SUPPLEMENT_PASS; P4_NOT_FULLY_ACCEPTED",
+  "authorization": [
+    "User resumed after Docker was started",
+    "Explicit public PyPI/pythonhosted and Debian dependency download exception",
+    "Prior single disposable Git fixture commit reused; no new Git commits"
+  ],
+  "source_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "source_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+  "formal_group_overrides_since_P3": [
+    {
+      "path": ".agents/skills/mj-agent-doc-validate/SKILL.md",
+      "P3_sha256": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "current_sha256": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b"
+    },
+    {
+      "path": "capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature",
+      "P3_sha256": "586fe2a078748f9fe362008bcfaac47b60fd44afae0917d946e942b49e7da1bf",
+      "current_sha256": "da0ecc2a8a49c46548386cf4bf31cfc8fbec09dd5610dfeef492d19d486928bd"
+    },
+    {
+      "path": "tests/unit/test_sdd_development_agent.py",
+      "P3_sha256": "dfd789e1abe80214e7bff3d74c4a9d248901c62d8db346137eade9e065924bb5",
+      "current_sha256": "feb2a819ab6baa580b36cf55d379c16c988e1beedebaf601b97bbdd4d70f3b41"
+    }
+  ],
+  "delivery_file_count": 817,
+  "current_input_package": "p4-linux-input-package-v2.json",
+  "current_archive_sha256": "79d145bda9064c87bd1eb9817c5983e0b160f0634fc5dbe29b23e8fb105b14bd",
+  "environment": {
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+    "python": "3.13.14 (main, Jun 24 2026, 02:06:49) [GCC 14.2.0]",
+    "dependency_versions": {
+      "pytest": "9.0.3",
+      "pytest-asyncio": "1.3.0",
+      "pytest-bdd": "8.1.0",
+      "pyyaml": "6.0.3",
+      "ruff": "0.15.11",
+      "mypy": "1.20.2"
+    },
+    "git": "2.47.3",
+    "node": "20.19.2",
+    "matrix_image_id": "sha256:7a868cb349e4110b2a56c42f84a8b06938e3e865c5ca6ad6690fd93176fea82d",
+    "topology_image_id": "sha256:c8c1eb9a5c819f02c2c5e646383ca32eb9daee154091bec12bfedb2b9de322a2",
+    "docker_server": "28.3.2 linux/amd64",
+    "network": "All acceptance containers were created --network none; only loopback observed; online stage limited to approved public dependency setup"
+  },
+  "root_commands": 44,
+  "root_nonzero": 0,
+  "pytest_bands": [
+    {
+      "band": "tests/unit",
+      "exit_code": 0,
+      "summary": "877 passed, 10 skipped, 24 warnings, 19 subtests passed in 10.63s",
+      "passed": 877,
+      "failed": 0,
+      "skipped": 10
+    },
+    {
+      "band": "tests/eval",
+      "exit_code": 0,
+      "summary": "93 passed in 1.42s",
+      "passed": 93,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "band": "tests/bdd",
+      "exit_code": 0,
+      "summary": "13 passed, 7 skipped, 48 warnings in 3.01s",
+      "passed": 13,
+      "failed": 0,
+      "skipped": 7
+    },
+    {
+      "band": "tests/integration",
+      "exit_code": 0,
+      "summary": "4 passed, 5 skipped in 1.52s",
+      "passed": 4,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "band": "tests/smoke",
+      "exit_code": 0,
+      "summary": "18 skipped in 0.64s",
+      "passed": 0,
+      "failed": 0,
+      "skipped": 18
+    },
+    {
+      "band": "tests/contract",
+      "exit_code": 0,
+      "summary": "64 passed in 0.23s",
+      "passed": 64,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "pytest_totals": {
+    "passed": 1051,
+    "failed": 0,
+    "skipped": 40,
+    "subtests_passed_separate": 19
+  },
+  "skip_interpretation": "10 platform-specific unit skips and 30 external-dependency policy skips; no assertion removed or new skip added",
+  "topology_commands": 38,
+  "topology_nonzero": 0,
+  "topology_tests": {
+    "clone": "106 passed; 19 subtests",
+    "linked": "106 passed; 19 subtests"
+  },
+  "topology_inputs": "One approved 817-file fixture commit in bundle; 361 byte-only line ending adjustments plus G19 and one-line doc fix materialized to exact current hashes; no new commit, remote or original worktree registration",
+  "platform_limits": [
+    "Actual Linux execution was Docker Desktop WSL2 Linux/amd64; no native Linux distribution or macOS claim",
+    "Windows launcher checks/skips retain their scope; no added Linux MCP launcher requirement"
+  ],
+  "layers": {
+    "L1": "CURRENT_SOURCE_RESOURCE_CLOSURE_PASS; 37 native skills; historical P2 sourcing preserved",
+    "L2": "WINDOWS_AND_LINUX_COMPONENT_PASS; root/subdirectory/space path/full clone/linked; L5 loading remains separate",
+    "L3": "CONTROLLED_OFFLINE_PASS_WITH_EXPLICIT_SKIPS; no real secrets or business effects",
+    "L4": "STATIC_PASS_REUSED; only S06 eight dimensions/two prior cases re-reviewed against new SHA; no model run",
+    "L5": "BLOCKED_EXECUTION_ROUTE / NOT_TESTED; engineer-reviewed host/hook route still required",
+    "L6": "OUT_OF_SCOPE; public package downloads are not external business-service verification"
+  },
+  "acceptance_criteria": {
+    "AC-01": "PASS_SOURCE_AND_RESOURCE_SCOPE: 37 native skills, current Linux validation",
+    "AC-02": "STATIC_PASS: previous comparison plus identity-bound S06 delta; model selection NOT_TESTED",
+    "AC-03": "PASS_COMPONENT_SCOPE: native ownership/consumer checks; no legacy fallback in copies",
+    "AC-04": "PARTIAL: existing Windows launcher plus Linux Node wrapper offline tests pass; real MCP services NOT_TESTED; Linux PowerShell launcher not in scope",
+    "AC-05": "PARTIAL: deterministic safety tests pass; actual host hook/rule behavior NOT_TESTED",
+    "AC-06": "PARTIAL: Windows/Linux copies and paths pass; real host loading route blocked",
+    "AC-07": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS; P5 removal closure remains pending",
+    "AC-08": "BLOCKED_PREREQUISITE: no cleanup; all 387 cleanable=NO",
+    "AC-09": "PARTIAL: current Linux local command matrix and offline tests pass with inherited warnings/skips; L5/actual CI remain missing",
+    "AC-10": "RECOVERY_CURRENT; phase P6 handoff not executed",
+    "AC-11": "NO_OBSERVED_SCOPE_DRIFT: one ordinary native documentation line; approved temporary public dependencies; no business/guard/CI changes",
+    "AC-12": "NOT_DELIVERED: no original Git publication or actual CI run; existing one fixture commit reused only"
+  },
+  "unresolved": {
+    "U01": "UNMET_DEPENDENCY",
+    "U02": "UNMET_DEPENDENCY",
+    "U03": "NOT_TESTED",
+    "U04": "MANUAL_ROUTE_EXECUTED_VERIFIED (P3 scope)",
+    "U05": "NOT_TESTED",
+    "U06": "UNMET_DEPENDENCY / NOT_TESTED",
+    "U07": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS (Windows and Linux component evidence; not host/service acceptance)"
+  },
+  "actual_CI": "NOT_TESTED; local workflow equivalents are not a hosted CI run",
+  "failure_history": [
+    "Original installed runtime lacked git/pytest/lint/type tools; probe only, no tests then",
+    "Git installer client timed out after240s while actual installer continued; observed finish, dpkg audit and same apt command succeeded",
+    "First Linux run had actual resource checker FAIL and 2 actual unit failures from missing Node; raw results retained",
+    "Node dependency download failed exit100; one identical apt command/source retry succeeded",
+    "Topology v1 assumed Windows checkout byte behavior; v2 used a Windows G19 work-byte hash for a Linux Git blob; both stopped before project checks. v3 uses verified Git blob/current delivery identities. These are auxiliary preparation failures, not migrated project assertion failures"
+  ],
+  "source_fix": "p4-linux-doc-resource-fix.json; one ordinary native skill line, applied in original and three existing Windows acceptance copies; no checker/guard/contract/CI/test edits",
+  "cleanup_list": "p4-linux-cleanup-current.csv",
+  "cleanup_rows": 387,
+  "cleanable_count": 0,
+  "deletions": [],
+  "moves": [],
+  "new_git_commits": [],
+  "new_docker_test_images": [
+    "sha256:c8c1eb9a5c819f02c2c5e646383ca32eb9daee154091bec12bfedb2b9de322a2",
+    "sha256:7a868cb349e4110b2a56c42f84a8b06938e3e865c5ca6ad6690fd93176fea82d"
+  ],
+  "retained_runtime_resources": [
+    {
+      "id": "a3f4b88f3e8be72c183e3b0dc657f16d5d0a3be9acae2a83f0e00e5a70da8bab",
+      "name": "mj-agent-p4-linux-v2-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "5441279f574a84f77c90e4efa3b8b8e34111860ae88c9d56d003ad50790be7e8",
+      "name": "mj-agent-p4-topology-v3-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "d1d1a8b9dfebf73815f754257ff88b26faeb7e85f87b94ed538ff121c19fe1cd",
+      "name": "mj-agent-p4-topology-v2-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "4748aece5972404111b803b249042eed776ac4242c98994c5000327d15ed570d",
+      "name": "mj-agent-p4-topology-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "51d933128a4aabf917576489b1495e1bf57d40499179f9973b0d59444bcbbe4f",
+      "name": "mj-agent-p4-linux-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "1c8ea52ba19609748a7a645f856facca26f45d2b336e82c29d7a3b2e2d9fc7d2",
+      "name": "mj-agent-p4-deps-20260920",
+      "state": "exited"
+    },
+    {
+      "id": "151b5cc41cad781f923e8baf0c36426b2a9f8263f1c67c7e5fb36d28c5cbd2b8",
+      "name": "mj-agent-p4-uv-source-20260920",
+      "state": "created"
+    },
+    {
+      "id": "e78f0045a139f2a717a64bc9f0fb5ec75e7821ed8f8076ed918953677bfc5251",
+      "name": "mj-agent-p4-envprobe-20260920",
+      "state": "exited"
+    }
+  ],
+  "preexisting_container_state_changes": [
+    {
+      "id": "24c18d55c3364613bebd458f3231bd2799cd583605727449432b079e38e906f5",
+      "before": [
+        "mj-system-metabase",
+        "exited"
+      ],
+      "after": [
+        "mj-system-metabase",
+        "running"
+      ]
+    }
+  ],
+  "ambient_state_note": "A prior record-validation assertion expected stationary states and stopped on the observed change. No task command targeted a pre-existing container lifecycle; the cause of its state change is not inferred or investigated. This is not a project test failure.",
+  "runtime_recovery": "Retained input tar v1/v2, fixture bundle, script versions and raw logs reconstruct the tmpfs checkouts. tmpfs workspaces are volatile after container exit; no assertion that those live filesystem directories persist. Windows acceptance copies and public P0-P4 recovery ZIPs remain.",
+  "record_backup": {
+    "path": ".mj-agent-local\\p4-linux\\records-before-linux-acceptance.zip",
+    "sha256": "7a50f6ab43a5db866762070cc850506fdfa266aa6419fc4213e44d0a4cde2f6c"
+  },
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED",
+  "subagents": "NONE",
+  "bdd_tdd_impact": "Existing offline and safety tests executed unchanged; no new model measurement",
+  "missing_inputs": [
+    "Engineer-reviewed real Codex host and hook canary route; no automatic trust or hooks activation",
+    "Actual CI execution/evidence bound to current 817-file delivery; no remote dispatch or publication authorized"
+  ],
+  "recording_note": "External network exception covers public dependency packages only, not real MCP/business services, model canary or hosted CI"
+}

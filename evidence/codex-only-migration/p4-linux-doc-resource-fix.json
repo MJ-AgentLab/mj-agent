@@ -1,0 +1,97 @@
+{
+  "at": "2026-09-20T01:58:58.042705+00:00",
+  "target": ".agents/skills/mj-agent-doc-validate/SKILL.md",
+  "before_sha256": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+  "after_sha256": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b",
+  "classification": "MIGRATION_DEFECT; P3 changed an illustrative wikilink placeholder into a repo: reference that the new resource checker treats as a real path on Linux",
+  "scope": "One line in an ordinary native doc skill, not a frozen infra/runtime skill; no checker/guard/contract/CI/test edits",
+  "authorization": "Existing P4 permission for minimal migration or acceptance-blocking fixes; ordinary native skill is not Owner-protected under policies/ai-agent.md section5",
+  "red_evidence": "p4-linux-execution.json resource checker actual exit1; Windows check had not exposed the placeholder",
+  "backup": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-linux\\doc-validate-before.zip",
+    "sha256": "14eedfa05fa9928082db6012754f457cc7b96fe5ec137c297b5c59acecb81688"
+  },
+  "diff": "p4-linux-doc-resource.diff",
+  "recovery_diff": "p4-linux-doc-resource-recovery.diff",
+  "updated_windows_copies": [
+    {
+      "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.agents\\skills\\mj-agent-doc-validate\\SKILL.md",
+      "before": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "after": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b"
+    },
+    {
+      "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.agents\\skills\\mj-agent-doc-validate\\SKILL.md",
+      "before": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "after": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b"
+    },
+    {
+      "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology linked\\.agents\\skills\\mj-agent-doc-validate\\SKILL.md",
+      "before": "ee07233a6575558d070466a4b9cf6f0bf57f16f21402651f123e7ecd6eb77a78",
+      "after": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b"
+    }
+  ],
+  "L4_delta_review": {
+    "type": "STATIC_SEMANTIC_REVIEW_ONLY",
+    "skill": "mj-agent-doc-validate",
+    "dimensions": {
+      "触发": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "既有文档格式/元数据/链接审核"
+      },
+      "输入": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "文件集合、track、当前规范"
+      },
+      "读写目标": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "只读docs与两个校验脚本输出；产A1-A14/OB表"
+      },
+      "顺序": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "frontmatter→wikilinks→半自动OB→track分组→根例外→报告"
+      },
+      "授权": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "校验授权不含修复/发布；保护面只报告；P1 hard block，批准不解hook；无执行路线返回BLOCKED_EXECUTION_ROUTE。"
+      },
+      "异常恢复": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "解析失败FAIL；缺工具UNMET，不拿skip补绿；并按共用说明做身份复核/部分完成对账/只续未完成项。"
+      },
+      "完成判据": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "每项PASS/FAIL/WARN/SKIP及来源；静态审阅明确标记"
+      },
+      "交接返回": {
+        "current_conclusion": "UNCHANGED_BY_ONE_LINE_WORDING_FIX",
+        "previous_evidence": "p2-skill-comparison.json S06",
+        "meaning": "返回author/sync/review调用者；不跨Stage10；独立/委派/建议三态与调用者返回阶段明确，不自动发布。"
+      }
+    },
+    "resource_delta": "Illustrative placeholder wording clarified; no actual resource removed or added",
+    "cases": [
+      "Valid existing repository target still required",
+      "Missing target still fails unchanged checker",
+      "Secrets/protected repair boundaries unchanged",
+      "Checker execution is still distinct from manual document assessment"
+    ],
+    "model_execution": "NOT_TESTED",
+    "reused_case_ids": [
+      "S06-positive",
+      "S06-near_negative"
+    ],
+    "unchanged_other_skills": 36
+  },
+  "windows_verification": "Native skill schema and resource check commands exit0; diff --check exit0",
+  "new_package_sha256": "79d145bda9064c87bd1eb9817c5983e0b160f0634fc5dbe29b23e8fb105b14bd",
+  "formal_source_edits": [
+    ".agents/skills/mj-agent-doc-validate/SKILL.md"
+  ]
+}

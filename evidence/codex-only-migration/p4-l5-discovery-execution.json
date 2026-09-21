@@ -1,0 +1,371 @@
+{
+  "at": "2026-09-20T03:29:32.518146+00:00",
+  "phase": "P4",
+  "status": "HOST_DISCOVERY_TRUST_VERIFIED; CANARY_BLOCKED_EXECUTION_ROUTE_SANDBOX_MISMATCH",
+  "authorization": [
+    "Owner approved route v2 option A",
+    "Owner reported personally completing isolated login/project and hook trust",
+    "Owner selected gpt-5.6-sol for fixed canary"
+  ],
+  "host": {
+    "path": "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\node_modules\\@openai\\codex-win32-x64\\vendor\\x86_64-pc-windows-msvc\\bin\\codex.exe",
+    "version": "codex-cli 0.147.0",
+    "sha256": "935a1911ed2556e4ffcec995f4886ac2ac425863ba26fed264df62e30272ad9d"
+  },
+  "source_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "source_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+  "delivery_unchanged": 817,
+  "cleanup_unchanged": 387,
+  "cleanable_count": 0,
+  "pretrust_hooks": "EMPTY in three cwd; not accepted as loaded",
+  "owner_screenshots": [
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-1f96b98a-c9aa-4f2a-8224-bb065553ee47.png",
+      "evidence": "evidence/codex-only-migration/p4-l5-route-v2/owner-hook-trusted.png",
+      "sha256": "65c38ce07be5513c6aaec865f504d00865097c6df26c78fa3972b2d1deea66c7",
+      "scope": "Owner-supplied UI screenshot; trusted/active hook, not hook behavior; no separate project-trust prompt evidence"
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-f68b6cd1-5590-4c43-a82e-53457b246173.png",
+      "evidence": "evidence/codex-only-migration/p4-l5-route-v2/owner-hook-active.png",
+      "sha256": "3150e027d7f486d0f8ea30514b500c3090eefd59b1d87bd0d36b83b1d1816749",
+      "scope": "Owner-supplied UI screenshot; trusted/active hook, not hook behavior; no separate project-trust prompt evidence"
+    }
+  ],
+  "readonly_diagnostic": {
+    "effective": {
+      "sandbox_mode": "workspace-write",
+      "approval_policy": "on-request",
+      "windows": null,
+      "sandbox_workspace_write": null,
+      "default_permissions": null
+    },
+    "origins": {
+      "sandbox_mode": {
+        "name": {
+          "type": "project",
+          "dotCodexFolder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex"
+        },
+        "version": "sha256:b5e86a61d6d9a123a4baa98ad505a790449b59c02d38bd09a515986ca4fba0b0"
+      },
+      "approval_policy": {
+        "name": {
+          "type": "project",
+          "dotCodexFolder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex"
+        },
+        "version": "sha256:b5e86a61d6d9a123a4baa98ad505a790449b59c02d38bd09a515986ca4fba0b0"
+      }
+    },
+    "scope": "read-only effective policy metadata; no layer bodies/auth/config writes"
+  },
+  "next_route": "p4-l5-route-v2/NEXT-STEP.md; prepared only; no altered canary retry",
+  "posttrust_discovery": [
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+      "project_skills": 37,
+      "system_skills": 6,
+      "hook": {
+        "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json",
+        "source": "project",
+        "eventName": "preToolUse",
+        "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+        "timeoutSec": 30,
+        "enabled": true,
+        "trustStatus": "trusted",
+        "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041"
+      },
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\src\\mj_agent",
+      "project_skills": 37,
+      "system_skills": 6,
+      "hook": {
+        "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json",
+        "source": "project",
+        "eventName": "preToolUse",
+        "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+        "timeoutSec": 30,
+        "enabled": true,
+        "trustStatus": "trusted",
+        "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041"
+      },
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\tests",
+      "project_skills": 37,
+      "system_skills": 6,
+      "hook": {
+        "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json",
+        "source": "project",
+        "eventName": "preToolUse",
+        "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+        "timeoutSec": 30,
+        "enabled": true,
+        "trustStatus": "trusted",
+        "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041"
+      },
+      "errors": []
+    }
+  ],
+  "mcp": [
+    {
+      "name": "github",
+      "enabled": false
+    },
+    {
+      "name": "pg-mj-agent-memory-dev",
+      "enabled": false
+    },
+    {
+      "name": "pg-mj-agent-memory-prod-lan",
+      "enabled": false
+    },
+    {
+      "name": "pg-mj-agent-memory-prod-wan",
+      "enabled": false
+    },
+    {
+      "name": "pg-mj-agent-memory-test-lan",
+      "enabled": false
+    },
+    {
+      "name": "pg-mj-agent-memory-test-wan",
+      "enabled": false
+    },
+    {
+      "name": "playwright",
+      "enabled": false
+    },
+    {
+      "name": "serena",
+      "enabled": false
+    }
+  ],
+  "strict_host_start": true,
+  "models": [
+    {
+      "id": "gpt-5.6-sol",
+      "isDefault": true
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "isDefault": false
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "isDefault": false
+    },
+    {
+      "id": "gpt-5.5",
+      "isDefault": false
+    }
+  ],
+  "H03": {
+    "status": "BLOCKED_EXECUTION_ROUTE",
+    "stage": "after thread/start, before turn/start",
+    "process_exit": 1,
+    "expected_sandbox": "workspaceWrite",
+    "actual": {
+      "model": "gpt-5.6-sol",
+      "modelProvider": "openai",
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+      "approvalPolicy": "on-request",
+      "sandbox": {
+        "type": "readOnly",
+        "networkAccess": false
+      }
+    },
+    "failure": "AssertionError: unexpected effective sandbox",
+    "model_turns": 0,
+    "hook_behavior_events": 0,
+    "retried": false
+  },
+  "remaining_canaries": "NOT_TESTED / BLOCKED_PREREQUISITE; no model, rule or hook behavior verdict",
+  "evidence_level": "host-discovery only; no actual-model or actual-hook execution",
+  "script_increment": {
+    "scope": "test driver only; no source/config/permission/trust change",
+    "changes": [
+      "resolve frozen canaries from original review package",
+      "add read-only model/list mode using exported schema; no thread or turn"
+    ],
+    "recovery": "host-v2.py preserved byte-for-byte; v2.1 separate file, no restoration executed",
+    "old_sha256": "6572b8418063c2c1e8219440c5b9bddaaafd71c50cccd2b14a4510e52584bf8a",
+    "new_sha256": "57a020dba3ada3cb2997204bf78f1a79392f994324a6e62dc530cf22dc3d1745",
+    "canaries_sha256": "d00b0c50cfe2af5b7e2082af04d5c4e0aef27968533bda8a70df0930e34d1170",
+    "validation": "AST_PASS; runtime pending"
+  },
+  "preparation_failure": "First incremental-driver preparation incorrectly assumed CRLF; assertion stopped before writing new driver. Corrected newline detection; no host execution in failed preparation.",
+  "observations": {
+    "20260920-111710-preflight-root": {
+      "events.jsonl": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\events.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "hooks-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\hooks-list.json",
+        "sha256": "2e1df3a45d4ee8606cb279f780165d3790a75d857429b5b308278a29b0333a75"
+      },
+      "initialize.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\initialize.json",
+        "sha256": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308"
+      },
+      "integrity.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\integrity.json",
+        "sha256": "8d40a183f1317550fb05a9c5045570188babe68c6bf73cc4ad98cc3c08e879e0"
+      },
+      "invocation.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\invocation.json",
+        "sha256": "547c99284dc0023d736174d77b7ad8e58afe456553cfa351a1aaa59afcbfe316"
+      },
+      "skills-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-111710-preflight-root\\skills-list.json",
+        "sha256": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30"
+      }
+    },
+    "20260920-112210-inventory-root": {
+      "events.jsonl": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\events.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "hooks-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\hooks-list.json",
+        "sha256": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6"
+      },
+      "initialize.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\initialize.json",
+        "sha256": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308"
+      },
+      "integrity.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\integrity.json",
+        "sha256": "8d40a183f1317550fb05a9c5045570188babe68c6bf73cc4ad98cc3c08e879e0"
+      },
+      "invocation.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\invocation.json",
+        "sha256": "790839746d4a7af1b1ab273db5506ed124d90488a5be217d63dca60caffebbef"
+      },
+      "skills-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112210-inventory-root\\skills-list.json",
+        "sha256": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30"
+      }
+    },
+    "20260920-112330-models-root": {
+      "events.jsonl": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\events.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "hooks-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\hooks-list.json",
+        "sha256": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6"
+      },
+      "initialize.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\initialize.json",
+        "sha256": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308"
+      },
+      "integrity.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\integrity.json",
+        "sha256": "8d40a183f1317550fb05a9c5045570188babe68c6bf73cc4ad98cc3c08e879e0"
+      },
+      "invocation.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\invocation.json",
+        "sha256": "f90fa0a87ad3f699e25f589857e95937bef99fd9b2eb41dc10ca31f41eb0e49f"
+      },
+      "model-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\model-list.json",
+        "sha256": "1ad7e0b2776b1c150492c3de57547382138261563c643d7c06d0c2785ac75927"
+      },
+      "skills-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112330-models-root\\skills-list.json",
+        "sha256": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30"
+      }
+    },
+    "20260920-112412-canary-root": {
+      "canary-input.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\canary-input.json",
+        "sha256": "43d3df36a41aac99dd8de864e1631804e048bea3d6fd8835b46968ead90ab3e2"
+      },
+      "events.jsonl": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\events.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "hooks-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\hooks-list.json",
+        "sha256": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6"
+      },
+      "initialize.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\initialize.json",
+        "sha256": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308"
+      },
+      "invocation.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\invocation.json",
+        "sha256": "ea634d689676944be3dcfd3b70a795f66685e124e460fe16e39862c8a04fe04f"
+      },
+      "skills-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\skills-list.json",
+        "sha256": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30"
+      },
+      "thread-start.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112412-canary-root\\thread-start.json",
+        "sha256": "3ca81e4a9a5003d0b242897eeed8d7e96d14356ea84fc2c7f8bbc846c01aeb94"
+      }
+    },
+    "20260920-112750-diagnostic-root": {
+      "config-read-selected.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\config-read-selected.json",
+        "sha256": "e95d37f259add5236ff73e31c9277f454d7e4a3cce9acb890908dc40b09c97d3"
+      },
+      "events.jsonl": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\events.jsonl",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "hooks-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\hooks-list.json",
+        "sha256": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6"
+      },
+      "initialize.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\initialize.json",
+        "sha256": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308"
+      },
+      "integrity.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\integrity.json",
+        "sha256": "8d40a183f1317550fb05a9c5045570188babe68c6bf73cc4ad98cc3c08e879e0"
+      },
+      "invocation.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\invocation.json",
+        "sha256": "6f68523c13f09e6f2f48e528287399432e95de82a553b3ac73a6b5b92df0a5bc"
+      },
+      "skills-list.json": {
+        "path": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-112750-diagnostic-root\\skills-list.json",
+        "sha256": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30"
+      }
+    }
+  },
+  "backup": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-l5-route-v2\\records-before-discovery.zip",
+    "sha256": "186e63e7ae80df7105b0c8e25b6d8f6f4a73f904fe855cd12c2540db23a909a3"
+  },
+  "original_git_observation": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-l5-route-v2\\git-observation.json",
+    "sha256": "dcaa88492e717ed6b4cc600598e9bfc46f6f196be9cf8079592e052d2fe4ac49"
+  },
+  "CI": "Prior actual push CI success retained, no rerun",
+  "L1_L4": "Prior bounded evidence retained; no offline tests repeated",
+  "U01": "UNMET_DEPENDENCY memory backup/schema",
+  "U02": "UNMET_DEPENDENCY background lifecycle",
+  "U03": "NOT_TESTED real credentials",
+  "U04": "P3 MANUAL_ROUTE_EXECUTED_VERIFIED retained; L5 new mismatch separate",
+  "U05": "Actual GitHub CI only; MCP services NOT_TESTED",
+  "U06": "UNMET_DEPENDENCY real runtime EVAL",
+  "U07": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS; no service/host behavior upgrade",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED",
+  "delete_move_publish": 0,
+  "limits": [
+    "Windows CLI0.147.0 only",
+    "Desktop app/Linux host/host clone and linked topology not tested",
+    "H01 prompt layering not yet tested",
+    "Review canaries do not yet cover all five skill families, near-neighbor and deletion cases required by plan section6.2"
+  ]
+}

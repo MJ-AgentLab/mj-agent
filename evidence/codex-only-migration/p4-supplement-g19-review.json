@@ -1,0 +1,85 @@
+{
+  "at": "2026-09-18T11:19:26.824541+00:00",
+  "status": "OWNER_APPROVED; PENDING_OWNER_MANUAL_APPLICATION; FORMAL_G19_FAIL",
+  "target": "capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature",
+  "absolute_target": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\capabilities\\infrastructure\\mcp-server-governance\\contracts\\behavior.feature",
+  "classification": "MIGRATION_DEFECT; P3 removed original CTR tags while native contract id/trace remain valid",
+  "affected_acceptance": [
+    "AC-05",
+    "AC-07",
+    "AC-09"
+  ],
+  "blocking_gate": "G19; 22P/0W/2F; actual Windows command exit1",
+  "before_sha256": "586fe2a078748f9fe362008bcfaac47b60fd44afae0917d946e942b49e7da1bf",
+  "proposed_sha256": "da0ecc2a8a49c46548386cf4bf31cfc8fbec09dd5610dfeef492d19d486928bd",
+  "backup": ".mj-agent-local\\p4-supplement\\g19-before.zip",
+  "backup_sha256": "4c75bd754cb6d4271d60c362a7e2f81620b02bb5b62f52ae030de93579787e69",
+  "diff": "p4-supplement-g19-proposed.diff",
+  "recovery_diff": "p4-supplement-g19-recovery.diff",
+  "change": "Only add @CTR-mcp-server to existing REQ-001 and REQ-002 scenario tag lines; no steps/assertions/checkers/gates/config changes",
+  "approval_basis": "policies/ai-agent.md section4 declared-contract-change covers contracts/*.feature; frozen P3 approval does not explicitly include this new delta",
+  "execution_route": "Reuse established Owner manual apply, then Codex identity/checker verification; no hook unlock or protected write by Codex",
+  "read_only_apply_check": {
+    "argv": [
+      "git",
+      "apply",
+      "--check",
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\evidence\\codex-only-migration\\p4-supplement-g19-proposed.diff"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "baseline_ctr_tags_present": true,
+  "current_helper_results": [
+    {
+      "scenario_name": "Adding a new MCP server triggers A14 PR gate body declaration",
+      "has_req_tag": true,
+      "has_ctr_tag": false,
+      "req_bound_in_trace": true,
+      "ctr_bound_in_trace": false,
+      "messages": [
+        "scenario 'Adding a new MCP server triggers A14 PR gate body declaration' missing @CTR-<slug> tag binding"
+      ]
+    },
+    {
+      "scenario_name": "All 5 memory pg entries reference the same native wrapper script",
+      "has_req_tag": true,
+      "has_ctr_tag": false,
+      "req_bound_in_trace": true,
+      "ctr_bound_in_trace": false,
+      "messages": [
+        "scenario 'All 5 memory pg entries reference the same native wrapper script' missing @CTR-<slug> tag binding"
+      ]
+    }
+  ],
+  "proposed_helper_results": [
+    {
+      "scenario_name": "Adding a new MCP server triggers A14 PR gate body declaration",
+      "has_req_tag": true,
+      "has_ctr_tag": true,
+      "req_bound_in_trace": true,
+      "ctr_bound_in_trace": true,
+      "messages": []
+    },
+    {
+      "scenario_name": "All 5 memory pg entries reference the same native wrapper script",
+      "has_req_tag": true,
+      "has_ctr_tag": true,
+      "req_bound_in_trace": true,
+      "ctr_bound_in_trace": true,
+      "messages": []
+    }
+  ],
+  "validation_level": "STATIC_PROPOSAL_CHECK_ONLY; formal G19 still FAIL until actual application and rerun",
+  "source_modified": false,
+  "copy_modified": false,
+  "validation_after_application": [
+    "Full G19 --all --scope full",
+    "Traceability --all",
+    "MCP governance BDD via unchanged offline runner",
+    "188/817 identities with one recorded delta; original index unchanged"
+  ],
+  "owner_reply": "批准两行修复，我人工应用后通知",
+  "authorization_status": "EXPLICITLY_APPROVED_FOR_EXACT_TWO_TAG_DELTA",
+  "application_status": "NOT_APPLIED; current source still equals before_sha256"
+}

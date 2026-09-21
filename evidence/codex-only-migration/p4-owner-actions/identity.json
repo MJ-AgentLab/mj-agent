@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-20T04:24:37.675153+00:00",
+  "files": {
+    "F_GIT.ps1": "fb5acbbb2fa9bcff07518c24a60c25880ed90c5d1a261d8a9be8f87e020ca023",
+    "F_RUNTIME.ps1": "9a99820f2495536f40cc111038301d59ca270087728d76ae577b2e8c92444005",
+    "host-human-review.diff": "86df7d71911613457fd7320ed8241726968b835cb12303e2b9825c02d5019b52",
+    "host-human-review.py": "d5e1aa386cb371caed1730c54f23089c05a687d93473beffd53338c12ede1d6d",
+    "independent-verification.json": "654a274dbc883c1e675a1ec49be74a0b45789c1fbeb36a6efe3bf63fc2a97b41",
+    "prior-records.json": "6bed92877bd6fc86af2d53c20c2d7ccbf386b847a05ee5f7d1703cf10a64655e",
+    "README.md": "accfaf5d9bbb7c060853a5cda8c5aed1bbed3f13b71f08f70cc9895e6b63c99c",
+    "readonly-request-shapes.json": "e4e53ad399fc2ccc350851d8b40c7c7500265bcd29bd6dc19fb03659a2f6ac68",
+    "remaining-canaries.json": "b483acb10f9f068ff3ee2818df176e217f4a5a94f34997f134deea74f898baaa",
+    "T_clone.ps1": "bb51bea632a631105c41675522716c04b4280540b30c8d5344772a63cad4a17e",
+    "T_linked.ps1": "b713d00aa8b8bc8025fba3e4a77f376a3714d5956af0a7c5ef8255799c0f6102",
+    "topology-inventory.diff": "67bf4c77e999a93bb604b472d598c8ad2e3913a98792dd31c0463ee1bba8698e",
+    "topology-inventory.py": "c19db8cb7092660b7b341d5f15251d94c5fdbe044cbde420f34a438df2f21cae",
+    "topology-owner-tui.diff": "b88ae42586d220e5532ac07d52c1c610ac3a152a2cfb93a2cbe22974229d99f0",
+    "topology-owner-tui.py": "8ebfa8860e223e2f2b67a81b67751b2d06abc4d67e27c98496ed5f61151804b1"
+  },
+  "readOnly_canary_started": false,
+  "Owner_approval_responses": 0,
+  "CI_logs_reverified": true,
+  "cleanup_table_unchanged_sha256": "d515cadcf1f9a1eefd8880e07a9505b38e3465187186db935ce3c58479a8decf",
+  "previous_matrix": "../p4-final-acceptance-summary.json",
+  "matrix_delta": {
+    "AC-01": "37 repo skills discovered additionally in clone/linked at three cwd each",
+    "AC-06": "topology skill discovery actual PASS; hook lists empty, project loading/trust NOT_INFERRED; behavior NOT_TESTED",
+    "AC-05": "partial unchanged; R1/R2 remain blocked",
+    "L5": "PARTIAL; NOT_FULLY_ACCEPTED",
+    "U01-U07": "unchanged; see previous matrix; L6 is excluded",
+    "workspace_write": "not independently added as mandatory scope; no global permission request"
+  },
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED"
+}

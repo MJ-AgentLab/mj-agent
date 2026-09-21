@@ -1,0 +1,53 @@
+{
+  "at": "2026-09-18T11:18:02.171818+00:00",
+  "source": "Installed codex-cli 0.147.0 --experimental JSON schema export",
+  "source_sha256": {
+    "ClientRequest.json": "929a5688c54f9beb6086a703b7fd2980f34d5fee17e3944a01e9eb3219eee10d",
+    "v2\\HooksListResponse.json": "5bffc797c1271816b89f20f2d3f4039be8626bae76bc9064453d7403cabaee23"
+  },
+  "available_relevant_methods": [
+    "skills/list",
+    "skills/extraRoots/set",
+    "hooks/list",
+    "plugin/skill/read",
+    "skills/config/write",
+    "config/mcpServer/reload",
+    "config/read",
+    "externalAgentConfig/detect",
+    "externalAgentConfig/import",
+    "externalAgentConfig/import/recordHistory",
+    "externalAgentConfig/import/readHistories",
+    "config/value/write",
+    "config/batchWrite",
+    "configRequirements/read"
+  ],
+  "hooks_list_metadata_fields": [
+    "additionalContextLimit",
+    "command",
+    "currentHash",
+    "displayOrder",
+    "enabled",
+    "eventName",
+    "handlerType",
+    "isManaged",
+    "key",
+    "matcher",
+    "pluginId",
+    "source",
+    "sourcePath",
+    "statusMessage",
+    "timeoutSec",
+    "trustStatus"
+  ],
+  "hook_trust_states": [
+    "managed",
+    "untrusted",
+    "trusted",
+    "modified"
+  ],
+  "public_hook_simulation_method_found": false,
+  "limitation": "Absence applies only to exported public method names. Schema does not establish app-server startup network behavior or actual loaded/trusted hooks.",
+  "L5": "NOT_TESTED; schema/interface evidence only",
+  "model_calls": 0,
+  "host_sessions_started": 0
+}
