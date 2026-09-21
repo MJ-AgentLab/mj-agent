@@ -3,8 +3,9 @@ type: plan
 summary: "分阶段将 mj-agent 现有开发能力迁至 Codex 原生入口，退役 Claude 与双工具适配链并约束迁移范围"
 owner: ranzuozhou
 created: 2026-09-18
-updated: 2026-09-18
-state: draft
+updated: 2026-09-21
+state: completed
+completed: 2026-09-21
 track: engineering-workflow
 ---
 
