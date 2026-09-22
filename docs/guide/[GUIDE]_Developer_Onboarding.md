@@ -341,6 +341,16 @@ python scripts/sdd/check_deletion_targets.py --diagnose-error 'CreateProcess rej
 
 有限识别的单条 `git commit [-m <message> | -F <file>]`、`git push [-u] <gitee|origin> <branch>`、`git push <gitee|origin> --delete <branch>` 和显式 base 的 `gh pr create` 由 hook 输出 HOST_APPROVAL_REQUIRED 上下文；它不作授权认证，不输出 allow/ask/updatedInput。现有规则仍要求 prompt。未知拼法、复合/展开命令、force 等不在该路由内；G1/G2、人工 merge、秘密及受保护编辑边界保留。实现使用官方支持的 PreToolUse additionalContext；官方文档将 permissionDecision=ask 列为不支持，因此不用它模拟审批。[官方 Hooks](https://learn.chatgpt.com/docs/hooks)（2026-09-22 核对；不证明本机 Desktop 已加载或兼容）。
 
+删除形态的离线判定如下；这些是识别器输入，不是当前会话的执行命令：
+
+| 输入 | hook 静态判定 |
+|---|---|
+| `git push gitee --delete maintain/example` | `HOST_APPROVAL_REQUIRED`；只提供上下文 |
+| `git push origin --delete refs/heads/maintain/example` | `HOST_APPROVAL_REQUIRED`；只提供上下文 |
+| `git push gitee --delete maintain/example documentation/example` | `UNKNOWN` → block；不支持批量删除 |
+
+同一形态在 Gitee/origin、短分支名/完整引用和字符串/argv 输入下分别回归。仅在正常执行路线已核实恢复后，按 Gitee → origin、每端逐分支处理并逐项查询；已知 `never` 时不得通过拆分上述批量反例立即重试。离线 hook 输出不能证明 Desktop 实际加载了 hook，也不能用它解释发生在进程创建前的宿主错误。
+
 远程删除只读核验示例，参数须替换为已核实的清单，命令自身不删除、不 fetch、不批准：
 
 ```powershell
@@ -356,6 +366,10 @@ CLI 以本地提交祖先关系核验普通合并；squash/rebase 由 `inspect_r
 恢复记录分别保存 last_result 和只读对账结论：MATCH 表示确切结果已核实（删除时必须成功查询证明不存在）；ABSENT 表示成功查询证明动作结果尚未发生；DIFFERENT 表示对象变化；UNKNOWN 表示未能确认。响应丢失或成功但尚未对账返回 RECONCILE_FIRST；已对账成功返回 COMPLETE，不重复执行。远端删除失败后的 ABSENT 指“删除结果未发生，精确旧 tip 仍在”，不能用查询失败填写。
 
 已知 prompt×never 阻断未解除时，新的“同意/继续”、仅网络或文件权限恢复都不会恢复执行；不改工具、不换 remote 试探。工程师恢复后先查实际有效模式、规则/信任加载与对象，再从剩余动作继续。`check_deletion_targets.py --diagnose-error` 保留脱敏原错，分别识别 APPROVAL_MODE、FILESYSTEM_PERMISSION（含 index.lock Permission denied）、NETWORK（含 Connection refused）、FILE_IN_USE、EXEC_POLICY、PROJECT_HOOK；来源不明保持 UNKNOWN_LAYER。
+
+首次危险动作请求也必须遵守上述结论：预检已知 `never + prompt` 时直接报告 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE`，动作记 `NOT_EXECUTED`，无需先制造一次真实拒绝。“再次尝试”的聊天要求不证明执行条件变化。仅实际调用被拒才记录 `REJECTED`；`AskForApproval is set to Never` 表明进程未启动，不能据此判定 hook 已执行或自动审批模型已拒绝。
+
+受控会话验收要记录用户请求、有效模式来源、已知规则、是否发起危险工具调用、判断及后续状态。覆盖“首次请求前已知 never”和“已有拒绝后再次要求尝试”两个场景，预期均不发起危险调用；只读对账和离线测试可以继续。工程师正常恢复后另行核实覆盖来源、Desktop 引擎版本及实际规则/hook 加载，再在独立获批临时对象上验收 AC-4/9/13。单改项目配置、CLI 版本、重新开任务或离线测试通过均不能代替这些证据。
 
 报告分列本地清理、Gitee、origin、计划 state、计划文档提交和其他任务边界。例如 develop=7446e73 的合成场景：本地 COMPLETE、Gitee REJECTED、origin NOT_EXECUTED、计划 completed、文档 UNCOMMITTED、#552 OUT_OF_SCOPE。这既不证明远端清理完成，也不自动授权提交计划或处置 #552。真实验收分别记录本地删除、远端双删及 commit→双推→PR 链路的有效模式、正常工具请求、实际审批/无需弹窗事实和结果；任何缺项单列未验证，离线测试不能替代。
 
@@ -507,3 +521,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-09-21 | v0.8 | P6 原生维护、受控测试、Owner 凭据/信任边界及具名恢复交接；历史记录保留 |
 | 2026-09-22 | v0.8 (patch) | #552：§4.1 补交付前审批预检入口、状态语义和 Git 恢复指南指针 |
 | 2026-09-22 | v0.8 (patch) | #555：§6.5–§6.6 补删除核验、有限 hook 路由、五类动作的独立授权和部分完成恢复；真实宿主验收另记 |
+| 2026-09-22 | v0.8 (patch) | #555 合并后回归：§6.6 明确首次请求前 never 停止、多分支 UNKNOWN 反例及受控会话证据边界 |

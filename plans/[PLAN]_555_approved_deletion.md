@@ -285,3 +285,46 @@ TDD：新 action-review 测试先因模块缺失报红；诊断3条新样本先�
 | git diff --check / git ls-files -u / git diff --cached --stat | 空白检查通过；无冲突；无暂存内容 |
 
 文档审阅（mj-agent-doc-sync → mj-agent-doc-validate）：A1–A4 路径/元数据/状态/链接通过；A5 无新 canonical 页面或入口变化，INDEX 无需改；A6 HITL 入口同步；A7–A11 无 runtime canonical 变更，不适用；A12–A14 原生技能/规则/信任边界静态通过，宿主加载与服务保持未验证。OB 静态审阅确认示例标为合成、接口与代码一致、历史方案有明确时间界限、无重复迁移正文。无实际发布、破坏性操作、宿主配置或工程师恢复动作可报告为已执行。
+
+## 10. #558 合并后流程回归修复（2026-09-22）
+
+### 10.1 输入、根因与范围
+
+- 读取 Issue #555 `updatedAt=2026-09-22T04:38:07Z`；Owner 本次要求“根据刚刚更新 issue 555 中的内容，执行修复”。基线为 #558 merge `cfb2ea339452a752c01503bf2e6856f2964673e4`，独立 worktree 分支 `codex/555-approval-regression`。
+- Issue 新现场是两个其他分支的批量远程删除在创建进程前被拒；本任务上一轮也在已知 never 下发起单分支删除并收到同类拒绝。两者都属于执行流程错误；不能把“用户再次要求尝试”当成模式恢复证据。
+- 静态源码显示 `_host_review` 已将单分支删除交宿主审批、多分支形态判为 UNKNOWN；`review_actions` 即使没有既往拒绝记录也会在 never 下返回 BLOCKED_EXECUTION_ROUTE。根因是调用前未遵守已有兼容性结论，不是必须放宽 hook 才能处理的缺陷。
+- 本次只补守卫/恢复回归、删除与 post-merge 技能的执行入口、既有 Onboarding §6.6 和本计划。原生 hook、`.codex/**`、政策/SDD 元规则、冻结契约及运行时代码不改；不新增批量识别，不修改宿主权限或信任，不重试真实清理，不发布 commit/push/PR，不关闭 Issue。
+
+### 10.2 实施与文档决策
+
+| 对象 | 改动与原因 |
+|---|---|
+| `tests/unit/test_git_hook_review.py` | 增补 16 组：两端 × 短名/完整 ref × string/argv × 单分支/多分支；同时验证分类与实际 hook JSON 输出，单分支仅 additionalContext，多分支 UNKNOWN/block，伪造批准字段不能放行 |
+| `tests/unit/test_git_action_review.py` | 增补 5 类动作的首次请求前 never 场景，无既往拒绝且比较范围相同也保持 NOT_EXECUTED / NOT_ATTEMPTED；重复审阅不解除阻断 |
+| `mj-agent-git-delete` | 把有效模式核验置于命令序列之前；已知 never 时连首次“试一次”也不发起；补多分支反例，恢复后逐端、逐分支核验 |
+| `mj-agent-flow-post-merge` | Step 7 显式接入上述执行入口，区分预检未执行和历史真实拒绝 |
+| Onboarding GUIDE §6.6 | 单/多分支形态表、宿主错误归因边界及受控会话验收记录要求 |
+| 本计划 | 分开保留 #558 离线实现、后续失败现场、本轮回归和仍未完成的真实验收 |
+
+无文件重命名、新文档入口、runtime canonical、依赖或契约变更，INDEX、ADR/SPEC、CHANGELOG、EVAL 无新增修改需求；根 AGENTS 与共用执行边界原有不绕过/不重复试探要求继续有效。
+
+### 10.3 会话证据与验收边界
+
+| 场景 | 证据与结论 |
+|---|---|
+| 本任务上一轮“评估…如果没有尝试再次执行” | 会话声明 never，既有规则要求 prompt；实际调用单分支 Gitee 删除，返回 `approval required by policy, but AskForApproval is set to Never`。这是 AC-10 的负例，不能当验收成功；进程未启动，hook 是否执行未知，不能归因于自动审批模型 |
+| Issue 描述的其他两分支批量删除 | 仅作为 Issue 来源的失败记录；本轮未重新执行。多分支 UNKNOWN 是本地代码及离线回归结论，不冒充现场 hook 返回 |
+| 本次修复会话 | 权限声明仍为 never；只读审批预检 7 行全部 INCOMPATIBLE，exit 1。保留旧任务授权，不调用真实删除/commit/push/PR，不拆分批量命令、不改权限或另换工具；此为本轮行为记录，不等于已完成所有受控会话场景 |
+
+AC-6 本轮补充单分支正例、多分支反例及示例一致性；AC-10 离线回归与失败/修正记录分别保留，独立受控会话中“首次请求”“拒绝后重复尝试”“环境确实恢复”的完整验收仍待执行。AC-4/9/13 仍需工程师核实有效审批环境、Desktop 引擎版本、配置覆盖来源及规则/hook 加载，并对另行批准的临时对象走真实链路。Issue 保持 OPEN，计划保持 active；本节未提交，不把文档更新当作远端操作结果。
+
+### 10.4 本次验证
+
+- 现有离线 runner 执行 `test_git_hook_review.py` 与 `test_git_action_review.py`：**68 passed，12.33s，exit 0**。
+- Ruff 检查两份修改的 Python 测试：通过，exit 0。
+- 关联原生检查器/技能回归 `test_codex_native.py`、`test_native_governance.py`、`test_native_skill_contracts.py`：**97 passed，6.54s，exit 0**；两批共 165 项通过。
+- `check_native_skills`、`check_native_governance --surface entries/consumers`、`check_codex_native --effective-approval-policy never`：静态通过；后者 session 仍 INCOMPATIBLE，host NOT_TESTED。
+- `check_frontmatter`：145 篇 canonical 文档通过；`check_wikilinks`：0 archive-ref violations，5 个根入口 0 unresolved；`git diff --check` 通过，无暂存内容。
+- 文档静态审阅：A1–A4 路径/元数据/链接通过，A5–A6 无入口变化，A7–A11 无 runtime canonical 变更，A12–A14 保留既有保护面和实际宿主未验证状态。Onboarding GUIDE 长度超过建议 500 行，记 OB1 WARN（原指南已超过建议长度，本次按既有 §6.6 局部补充）；无新路径或移动，其他 OB 未见本次新增矛盾。检查已有推送 GUIDE 的 never 恢复说明与本次入口一致，未重复修改。
+- `check_codex_approvals.py --effective-approval-policy never`：7 行 INCOMPATIBLE，exit 1（预期停止诊断）；owner NOT_ASSESSED、host NOT_TESTED。
+- 本次是既有行为的覆盖补充与流程说明修复，测试首次运行通过，未宣称 red-green 修复了 hook 行为。实施来源 Codex；未委派；未执行外部业务测试或宿主成功验收。

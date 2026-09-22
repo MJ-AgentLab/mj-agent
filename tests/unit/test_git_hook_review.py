@@ -48,3 +48,35 @@ def test_hook_emits_context_only_and_keeps_other_blocks(monkeypatch, capsys) -> 
             assert set(output) == {'hookSpecificOutput'}
             assert set(output['hookSpecificOutput']) == {'hookEventName', 'additionalContext'}
             assert 'does not authenticate Owner authorization' in output['hookSpecificOutput']['additionalContext']
+
+
+@pytest.mark.parametrize('remote', ['gitee', 'origin'])
+@pytest.mark.parametrize('qualified', [False, True])
+@pytest.mark.parametrize('as_argv', [False, True])
+@pytest.mark.parametrize('batch', [False, True])
+def test_remote_deletion_single_ref_context_and_batch_unknown(
+    remote, qualified, as_argv, batch, monkeypatch, capsys,
+) -> None:
+    """Exercise the hook protocol without invoking Git or a real host approval."""
+    prefix = 'refs/heads/' if qualified else ''
+    branches = [prefix + 'maintain/example']
+    if batch:
+        branches.append(prefix + 'documentation/example')
+    argv = ['git', 'push', remote, '--delete', *branches]
+    payload = {'hook_event_name': 'PreToolUse', 'tool_name': 'exec_command',
+               'tool_input': {'cmd': argv if as_argv else ' '.join(argv)},
+               'owner_approved': True}
+    expected = 'UNKNOWN' if batch else 'HOST_APPROVAL_REQUIRED'
+    assert guard.classify(guard.project_payload(payload))[0] == expected
+    monkeypatch.setattr('sys.stdin', io.StringIO(json.dumps(payload)))
+    assert guard.main() == 0
+    output = json.loads(capsys.readouterr().out)
+    if batch:
+        assert set(output) == {'decision', 'reason'}
+        assert output['decision'] == 'block'
+        assert output['reason'].startswith('UNKNOWN:')
+    else:
+        assert set(output) == {'hookSpecificOutput'}
+        assert set(output['hookSpecificOutput']) == {'hookEventName', 'additionalContext'}
+        assert output['hookSpecificOutput']['hookEventName'] == 'PreToolUse'
+        assert output['hookSpecificOutput']['additionalContext'].startswith('HOST_APPROVAL_REQUIRED:')

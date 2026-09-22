@@ -186,6 +186,8 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 7: Branch Cleanup
 
+进入清理前执行 `mj-agent-git-delete` 的审批模式入口核验。已知 `never` 与适用 `prompt` 冲突时，首次真实危险请求也不发起；记录 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE` 与 `NOT_EXECUTED`，不把“尝试一次再被拒”当成必要验收。现有明确授权继续保留，独立只读对账可继续。恢复后远程删除逐端、逐分支执行，当前 hook 不支持一条命令删除多个分支。
+
 **Delegate to `mj-agent-git-delete`**（PR-B3 落地后），按顺序：
 
 1. 删 worktree（`git worktree remove`）
