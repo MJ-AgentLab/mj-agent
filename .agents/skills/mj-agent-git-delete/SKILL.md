@@ -59,6 +59,14 @@ git ls-remote --refs --heads origin refs/heads/<type>/<desc>
 
 ## 命令序列
 
+### 执行入口：先核对有效审批模式
+
+首次危险动作请求前就核对当前有效模式与适用规则；不要等真实命令被拒后才检查。已知 `never` 且动作要求 `prompt` 时，直接记录 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE`，该动作记 `NOT_EXECUTED`，保留已有项目授权。用户再次要求“尝试”“继续”、网络或文件权限恢复，均不构成模式已恢复的证据；不发起“试一次”的真实删除，也不以拆分命令或切换 remote 验证已知阻断。
+
+有效模式未知时记未知并先核实，不以项目配置中的 `on-request` 或重新开任务代替有效会话证据。工程师恢复环境后，还须核对 Desktop 引擎版本、覆盖来源及规则/hook 加载，重新对账对象，再续做未完成项。此前实际拒绝的历史仍保留 `REJECTED`，本轮未尝试不改写为再次被拒。
+
+当前 hook 仅识别每条命令一个 remote、一个 branch 的删除形态。`git push gitee --delete maintain/example documentation/example` 是多分支反例，静态分类为 `UNKNOWN`，不能作为执行示例。以下命令只在正常执行路线已核实可用后使用；多个目标逐端（Gitee → origin）、逐分支执行，每一项成功查询确认后再继续。
+
 ### 选项 1：仅本地
 
 ```bash

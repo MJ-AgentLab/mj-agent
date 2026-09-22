@@ -164,6 +164,32 @@ def test_known_block_requires_observed_mode_recovery(mode) -> None:
         'never': 'BLOCKED_EXECUTION_ROUTE', None: 'UNKNOWN_MODE', 'on-request': 'READY_FOR_REVIEW'}[mode]
 
 
+@pytest.mark.parametrize('kind,scope', [
+    ('local_delete', {'root': 'synthetic-root', 'target': 'synthetic-target',
+                      'snapshot_sha256': 'a' * 64}),
+    ('commit', {'repo': 'synthetic/repo', 'branch': 'maintain/example', 'head': 'a' * 40,
+                'files': ['public.txt'], 'staged_diff_sha256': 'b' * 64}),
+    ('push', {'repo': 'synthetic/repo', 'branch': 'maintain/example', 'remote': 'gitee',
+              'tip': 'a' * 40, 'from_tip': 'b' * 40}),
+    ('pr_create', {'repo': 'synthetic/repo', 'head': 'maintain/example', 'head_sha': 'a' * 40,
+                   'base': 'develop', 'title': 'Synthetic PR', 'body_sha256': 'b' * 64}),
+    ('remote_delete', {'repo': 'synthetic/repo', 'remote': 'gitee',
+                       'ref': 'refs/heads/maintain/example', 'tip': 'a' * 40}),
+])
+def test_never_blocks_before_first_attempt_without_a_previous_rejection(kind, scope) -> None:
+    items = [{'id': 'first-attempt', 'kind': kind, 'scope': scope}]
+    # Matching comparison inputs are not trusted authorization. Repeated review
+    # cannot turn a known effective never mode into an executable route.
+    for _ in range(2):
+        report = review_actions(items, items, mode='never')
+        assert report['known_approval_block'] is False
+        assert report['items'][0]['status'] == 'BLOCKED_EXECUTION_ROUTE'
+        assert report['items'][0]['last_result'] == 'NOT_EXECUTED'
+        assert report['execution'] == 'NOT_ATTEMPTED'
+        assert report['owner_approval'] == 'NOT_ASSESSED'
+        assert report['host_enforcement'] == 'NOT_TESTED'
+
+
 def test_recovery_preserves_partial_success_and_requires_reconciliation() -> None:
     items = [action(), action(remote='origin')]
     evidence = {'gitee': {'result': 'SUCCESS', 'reconciled': 'MATCH'},
