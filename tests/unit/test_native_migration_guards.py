@@ -25,8 +25,8 @@ class NativeGuards(unittest.TestCase):
 
     def test_bounded_git_actions_defer_to_host_approval(self):
         for command in ['git commit -m test', 'git push origin branch',
-                        'gh pr create --base develop --title test']:
-            self.assertEqual(self.state(command), 'HOST_APPROVAL_REQUIRED')
+                        'gh pr create --repo synthetic/repo --head maintain/example --base develop --title test --body-file body.md']:
+            self.assertEqual(self.state(command), 'TASK_AUTHORIZATION_CONTEXT')
 
     def test_known_forbidden_routes(self):
         for command in ['git checkout -q -b feature/x','git switch -c feature/x',

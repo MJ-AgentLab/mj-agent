@@ -69,7 +69,7 @@ digraph post_merge {
 
 ## Step 1: Verify Merge Status
 
-本地清理、两端远程删除、计划生命周期与计划文档提交分别报告。计划 completed 不表示远端已删除；completed 但 UNCOMMITTED 是独立交付待办，不自动 stage/commit。已有明确删除批准复用，普通 push/PR/merge 或本地删除不包含远端删除。失败/未知先对账，成功项不重复；共同 never 阻断未解除时不换 remote 试探。跨任务 issue、旧 worktree 与未提交成果不自动纳入；#555 的恢复报告不处置 #552。
+本地清理、两端远程删除、计划生命周期与计划文档提交分别报告。计划 completed 不表示远端已删除；completed 但 UNCOMMITTED 是独立交付待办，不自动 stage/commit。已有明确删除批准复用，普通 push/PR/merge 或本地删除不包含远端删除。失败/未知先对账，成功项不重复；共同实际阻断未解除时不换 remote 试探。跨任务 issue、旧 worktree 与未提交成果不自动纳入；#555 的恢复报告不处置 #552。
 
 ```bash
 gh pr view <pr-id> --json state,mergedAt,mergeCommit,baseRefName,headRefName,closingIssuesReferences
@@ -186,7 +186,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 7: Branch Cleanup
 
-进入清理前执行 `mj-agent-git-delete` 的审批模式入口核验。已知 `never` 与适用 `prompt` 冲突时，首次真实危险请求也不发起；记录 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE` 与 `NOT_EXECUTED`，不把“尝试一次再被拒”当成必要验收。现有明确授权继续保留，独立只读对账可继续。恢复后远程删除逐端、逐分支执行，当前 hook 不支持一条命令删除多个分支。
+进入清理前执行 `mj-agent-git-delete` 的逐命令入口核验：项目 rules 不含 Git/gh，never 单独不阻断 Git 清理；Remove-Item 的 prompt×never 仅暂停该命令，记 INCOMPATIBLE / BLOCKED_EXECUTION_ROUTE / NOT_EXECUTED。已知实际拒绝未解除前不重试；已有授权保留，只读对账可继续。单/多分支远端删除均需逐引用核验授权、tip、合并与保护分支，任一不符暂停批次。Gitee → origin，每端逐引用报告结果，部分成功或未知先对账；经审阅规则变更后还须核实目标会话加载及实际条件。
 
 **Delegate to `mj-agent-git-delete`**（PR-B3 落地后），按顺序：
 

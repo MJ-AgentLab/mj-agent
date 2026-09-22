@@ -18,6 +18,8 @@ ai_visibility: source-of-truth
 
 ## Active ADRs
 
+待审阅决策：[ADR-041 — 按具体命令判断 Git 执行条件](ADR-041_Command_Specific_Git_Execution_Policy.md)（draft；Issue #555，候选规则尚不证明宿主加载）。
+
 | ADR | Domain | Decision (state) | Summary |
 |---|---|---|---|
 | [ADR-000_Data_LLM_Boundary_Principles.md](./ADR-000_Data_LLM_Boundary_Principles.md) | DATA | accepted (active) | 最小必要出网、通道隔离、工具中介——后续所有安全相关决策的理论基础 |

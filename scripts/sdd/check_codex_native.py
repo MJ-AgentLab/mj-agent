@@ -17,13 +17,12 @@ REQUIRED = (
     "scripts/mcp/pg-server-start.ps1", "scripts/mcp/pg-server-wrapper.mjs",
     "scripts/mcp/setup-mcp-secrets.ps1", "scripts/sdd/codex_hook_guard.py",
     "scripts/sdd/run_codex_hook.ps1", "scripts/sdd/check_codex_native.py",
+    "scripts/sdd/git_command_review.py",
 )
 RULES = {
     ("Remove-Item",): "prompt",
-    ("git", "checkout", "-b"): "forbidden", ("git", "switch", "-c"): "forbidden",
-    ("gh", "pr", "merge"): "forbidden", ("psql",): "forbidden",
+    ("psql",): "forbidden",
     ("pg_dump",): "forbidden", ("pg_restore",): "forbidden",
-    ("git", "commit"): "prompt", ("git", "push"): "prompt", ("gh", "pr", "create"): "prompt",
 }
 # Plaintext of the tiny Windows quoting bootstrap in hooks.json. EncodedCommand
 # avoids expansion by an outer PowerShell/cmd; it contains no credentials.
@@ -36,7 +35,14 @@ HOOK_BOOTSTRAP = (
 )
 
 
-def approval_status(mode: str | None) -> str:
+def approval_status(mode: str | None, decision: str = "UNKNOWN") -> str:
+    """A mode alone is never a session-wide compatibility verdict."""
+    if decision == "NO_MATCH":
+        return "NO_PROJECT_RULE_REQUIREMENT"
+    if decision == "forbidden":
+        return "FORBIDDEN"
+    if decision != "prompt":
+        return "UNKNOWN"
     return {"never": "INCOMPATIBLE", "on-request": "APPROVAL_REQUIRED"}.get(mode or "", "UNKNOWN")
 
 
@@ -89,7 +95,8 @@ def check_mcp(root: Path) -> list[str]:
 
 
 ENFORCEMENT = (".codex/hooks.json", ".codex/rules/mj-agent.rules",
-               "scripts/sdd/codex_hook_guard.py", "scripts/sdd/run_codex_hook.ps1")
+               "scripts/sdd/codex_hook_guard.py", "scripts/sdd/git_command_review.py",
+               "scripts/sdd/run_codex_hook.ps1")
 
 
 def check_enforcement(root: Path) -> list[str]:
@@ -117,7 +124,9 @@ def check_enforcement(root: Path) -> list[str]:
                     or stmt.value.args):
                 raise ValueError
             options = {kw.arg: ast.literal_eval(kw.value) for kw in stmt.value.keywords}
-            if set(options) != {"pattern", "decision"}:
+            if set(options) != {"pattern", "decision"} or len(stmt.value.keywords) != 2:
+                raise ValueError
+            if not isinstance(options['pattern'], list) or not all(isinstance(x, str) for x in options['pattern']):
                 raise ValueError
             pattern = tuple(options["pattern"])
             if pattern in found:
@@ -142,7 +151,9 @@ def main() -> int:
     args = parser.parse_args()
     errors = {"all": check, "mcp": check_mcp, "enforcement": check_enforcement}[args.surface](args.root)
     print(json.dumps({"config": "FAIL" if errors else "STATIC_PASS", "errors": errors,
-                      "session_approval": approval_status(args.effective_approval_policy),
+                      "session_approval": "PER_COMMAND",
+                      "effective_approval_policy": args.effective_approval_policy or "unknown",
+                      "rule_loading": "UNKNOWN",
                       "owner_approval": "NOT_ASSESSED", "host_enforcement": "NOT_TESTED"}))
     return 1 if errors else 0
 

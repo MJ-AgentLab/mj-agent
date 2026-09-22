@@ -212,9 +212,9 @@ integration / smoke / contract 等外部依赖仍按 `SKIP_POLICY_EXTERNAL_DEPEN
 uv run --frozen --no-sync python scripts/check_codex_approvals.py
 ```
 
-默认 `UNKNOWN` / exit 2；确认目标会话实际模式后，才传 `--effective-approval-policy never` 或 `on-request`。`never + prompt` 为 `INCOMPATIBLE` / exit 1；`on-request + prompt` 为 `APPROVAL_REQUIRED` / exit 0，仍需具体动作的 Owner HITL 及合法宿主执行路线。静态项目配置、完整访问权限和测试输入都不能证明审批已经满足，hook 硬阻断仍返回 `BLOCKED_EXECUTION_ROUTE`。
+输出 session_approval=PER_COMMAND。默认全选包含 Remove-Item：其 prompt 在 never 下为 INCOMPATIBLE、on-request 下为 APPROVAL_REQUIRED、模式未知为 UNKNOWN。Git/gh 无项目规则匹配，分别为 NO_PROJECT_RULE_REQUIREMENT；用 --action commit/push/pr_create 等筛选时不继承 Remove-Item 冲突。有效模式、rule_loading=UNKNOWN 和 host_enforcement=NOT_TESTED 分开记录；静态通过不认证任务授权或宿主许可。详见 §6.6。
 
-脚本列出 commit、Gitee/origin push 和 PR create 的命令族、规则来源及状态，不执行交付动作。有效配置/覆盖来源排查、无副作用规则重放和受控恢复验收见 [Git 推送指南 §0.1–§0.2](../infrastructure/git/[GUIDE]_Git_Push_Workflow.md#01-codex-首次提交前的审批预检)。没有真实会话恢复证据时标未验证。
+脚本逐命令列出本地删除、commit、Gitee/origin push、PR create 和远端删除的规则来源及状态，不执行交付动作。有效配置/覆盖来源排查、无副作用规则重放和受控恢复验收见 [Git 推送指南 §0.1–§0.2](../infrastructure/git/[GUIDE]_Git_Push_Workflow.md#01-codex-首次提交前的审批预检)。没有真实会话恢复证据时标未验证。
 
 ## §5 三轨道文档约定
 
@@ -330,48 +330,64 @@ python scripts/sdd/check_deletion_targets.py --diagnose-error 'CreateProcess rej
 
 ## §6.6 Git 发布、远程删除与恢复（#555）
 
-`scripts/check_codex_approvals.py` 现在逐命令覆盖本地删除、commit、普通双推、PR 创建及双端远程引用删除；never/on-request/未知仅是有效模式诊断。具体任务批准与工具审批独立，已有相同批准可复用，一次列明多个动作可分别核验。只批准删除不会包含发布，普通 push 不包含远端删除，PR 不包含 merge。
+项目 rules 不再含 Git/gh 条目，never 单独不阻断 Git/gh；Remove-Item 保留 prompt。G1/G2、人工 merge、秘密、业务数据与受保护编辑由 hook 和政策继续约束。任务授权、项目规则匹配与宿主执行能力分别判定；无规则匹配不等于宿主已允许。决策见 [ADR-041](../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)，历史 #558/#560 的旧行为及执行证据不改写。
 
-| 动作 | 执行前对象与条件 | 完成证据 |
+| 动作 | 核验对象 | 完成证据 |
 |---|---|---|
-| commit | worktree/分支/HEAD、实际 staged 文件和内容；排除秘密及误纳入的未暂存/未跟踪内容；必要验证、工作树及共享 Git 目录写入条件 | SHA、文件集、实际作者及状态 |
-| 普通 push | 分支、提交范围、remote、本地及两端 tip、网络；Gitee → origin，无默认 force | 每端成功查询的 SHA；失败/未执行端分别列出 |
-| PR create | repo/head SHA/base/标题/正文；head 已推送、已有 PR 查重；non-hotfix develop / hotfix main | 实际 URL、head SHA、base、标题和正文 |
-| 远程删除 | repo/remote/精确 refs/heads 引用、批准时及当前 tip、合并证据、保护分支；两端分别核验 | 成功查询确认不存在；DELETED / ALREADY_ABSENT / REJECTED / FAILED / NOT_EXECUTED / UNKNOWN |
+| commit | 分支/HEAD、实际 staged 文件和内容、message 或 message 文件、验证及写入条件 | SHA、文件集、实际作者和工作区状态 |
+| push | remote、源提交、精确目标 refs/heads、当前 tip 和快进证据；Gitee → origin | 每端成功查询的 SHA，失败/未执行端单列 |
+| PR create | repo/head SHA/base/标题/body-file 与正文摘要、head 已推送、PR 查重；non-hotfix develop / hotfix main | URL/head/base/标题/正文 |
+| 本地删除 | 实际命令、绝对路径、跟踪/未提交/忽略内容、备份、占用和重解析点 | 路径、worktree 元数据和本地引用各自结果 |
+| 远端删除 | 每条 ref 的 remote、批准 tip、当前 tip、合并及保护证据、独立任务授权 | 每端每 ref 成功查询证明不存在；DELETED / ALREADY_ABSENT / REJECTED / FAILED / NOT_EXECUTED / UNKNOWN |
 
-有限识别的单条 `git commit [-m <message> | -F <file>]`、`git push [-u] <gitee|origin> <branch>`、`git push <gitee|origin> --delete <branch>` 和显式 base 的 `gh pr create` 由 hook 输出 HOST_APPROVAL_REQUIRED 上下文；它不作授权认证，不输出 allow/ask/updatedInput。现有规则仍要求 prompt。未知拼法、复合/展开命令、force 等不在该路由内；G1/G2、人工 merge、秘密及受保护编辑边界保留。实现使用官方支持的 PreToolUse additionalContext；官方文档将 permissionDecision=ask 列为不支持，因此不用它模拟审批。[官方 Hooks](https://learn.chatgpt.com/docs/hooks)（2026-09-22 核对；不证明本机 Desktop 已加载或兼容）。
+### 有限识别范围
 
-删除形态的离线判定如下；这些是识别器输入，不是当前会话的执行命令：
+识别成功只产生 `TASK_AUTHORIZATION_CONTEXT`，不输出 allow/ask/updatedInput 或审批凭证。参数依据为 [Git commit](https://git-scm.com/docs/git-commit)、[Git push](https://git-scm.com/docs/git-push)、[gh pr create](https://cli.github.com/manual/gh_pr_create)（2026-09-22 核对）；这不是完整 shell 解析器。
 
-| 输入 | hook 静态判定 |
+| 动作 | 支持形态与边界 |
 |---|---|
-| `git push gitee --delete maintain/example` | `HOST_APPROVAL_REQUIRED`；只提供上下文 |
-| `git push origin --delete refs/heads/maintain/example` | `HOST_APPROVAL_REQUIRED`；只提供上下文 |
-| `git push gitee --delete maintain/example documentation/example` | `UNKNOWN` → block；不支持批量删除 |
+| commit | 无参数或重复 -m/--message、--message=值；-F/--file/--file=路径；消息与文件互斥 |
+| push | 明确 gitee/origin 和单个分支/refspec；-u/--set-upstream 可合法换序；源分支或 HEAD:明确目标，支持 refs/heads/ |
+| 远端删除 | --delete 单/多分支，参数合法换序，短名或完整 refs/heads；不与 upstream 混用 |
+| PR create | 显式 repo/head/base/title/body-file；长参数和 -R/-H/-B/-t/-F/-d；有值长参数支持等号形式 |
 
-同一形态在 Gitee/origin、短分支名/完整引用和字符串/argv 输入下分别回归。仅在正常执行路线已核实恢复后，按 Gitee → origin、每端逐分支处理并逐项查询；已知 `never` 时不得通过拆分上述批量反例立即重试。离线 hook 输出不能证明 Desktop 实际加载了 hook，也不能用它解释发生在进程创建前的宿主错误。
+字符串支持正常引号与带空格值，argv 中值按字面处理；字符串中未引用的 shell 运算、展开和歧义转义仍 UNKNOWN。引号内普通分号或竖线不是新命令。force/force-with-lease、amend、空源删除、通配引用、重复冲突与未列形态均不作为普通发布放行。批量包含 main/develop 时整批 FORBIDDEN；其他保护分支和服务端保护须独立核对。
 
-远程删除只读核验示例，参数须替换为已核实的清单，命令自身不删除、不 fetch、不批准：
+批量删除先逐引用核验授权、tip 和合并证据；任何目标未授权、已变化或受保护就暂停整批。每端每条引用单独对账，不能把一次批量响应当全部成功。部分完成时保留成功项，再核验剩余清单；不通过拆批规避既有实际拒绝。
+
+### 逐命令只读诊断
 
 ```powershell
-python scripts/sdd/check_git_actions.py --root 'D:/temporary/review-repo' --ref refs/heads/maintain/example --expected-tip gitee <observed-sha> --expected-tip origin <observed-sha> --base-ref refs/heads/develop
+# 已观察到 never；仅诊断 Git 发布动作，不继承 Remove-Item 冲突。
+python scripts/check_codex_approvals.py --effective-approval-policy never --action commit --action push --action pr_create --action remote_delete
+# 对比 Remove-Item、git branch -d 和 git worktree remove。
+python scripts/check_codex_approvals.py --effective-approval-policy never --action local_delete
+# 精确 argv（示例仅诊断，不删除）。
+python scripts/check_codex_approvals.py --effective-approval-policy never --command-json '["git","branch","-d","maintain/example"]'
 ```
 
-两端范围用重复 `--expected-tip REMOTE SHA` 明确指定；其他保护分支用 `--protected-ref refs/heads/<name>`。本地目标分支或工作树已删时可从其他合法现有工作树核验，无需重建。输出含逐端 query 与状态；查询失败不算不存在；两端 tip 不同或与清单不同暂停，缺本地提交对象记 UNKNOWN。默认保护 main/develop；服务端保护状态仍 NOT_TESTED，remote_identity 为 NOT_ASSESSED，须独立核实 remote 对应的实际仓库及批准对象，工具不读取可能包含凭据的 URL 配置。CLI exit 0 仅代表清单可审阅或执行前已不存在，exit 1 为暂停，非法参数 exit 2。
+输出 `session_approval=PER_COMMAND`，每行列出规则来源/匹配、status、静态 hook 结果；有效模式及其来源单列。Git/gh 正常文件基线为 `NO_MATCH` / `NO_PROJECT_RULE_REQUIREMENT`，不等于宿主许可。Remove-Item 的 prompt 在 never 下为 INCOMPATIBLE，在 on-request 下为 APPROVAL_REQUIRED，模式未知为 UNKNOWN。规则文件缺失、损坏、间接路径或不符合基线时为 UNKNOWN；`rule_loading=UNKNOWN` 与 `host_enforcement=NOT_TESTED` 不被静态通过抹掉。默认包含全部示例，故 never 时只有 Remove-Item 导致 exit 1；筛选正常 Git 动作可为 exit 0。未知规则或所选 prompt 模式未知为 exit 2。示例不是当前任务对象或授权。
 
-CLI 以本地提交祖先关系核验普通合并；squash/rebase 由 `inspect_remote_deletion(..., merge_evidence=...)` 接收独立核实的 PR 证据（method、state=MERGED、确切 head、merge_commit），并检查 merge commit 已在 base 中。输入记录为 CALLER_OBSERVATION，工具不能认证 PR 来源或替代人工复核。执行紧前必须重新查询，单次观察不能消除并发更新。
+`check_codex_native.py` 只报配置静态结果和 PER_COMMAND，不从一个动作推导整个会话统一不兼容。它不修改模式、个人配置或信任。目标会话实际加载情况、Desktop 引擎版本及覆盖来源仍由工程师独立核实。
 
-`review_actions(baseline, current, mode=..., progress=...)` 比较五类动作的具体对象：本地删除 root/target/snapshot_sha256；commit repo/branch/head/files/staged_diff_sha256；push repo/branch/remote/from_tip/tip；PR repo/head/head_sha/base/title/body_sha256；远端删除 repo/remote/ref/tip。baseline 是比较数据，owner_approval 始终 NOT_ASSESSED，不可交 hook 当凭证。撤销返回 REVOKED，变化返回 CHANGED 及字段名，新增动作 NOT_IN_SCOPE。实际核验仍须完成上表步骤，READY_FOR_REVIEW 不表示已获授权或可执行。
+### 对象核验和恢复
 
-恢复记录分别保存 last_result 和只读对账结论：MATCH 表示确切结果已核实（删除时必须成功查询证明不存在）；ABSENT 表示成功查询证明动作结果尚未发生；DIFFERENT 表示对象变化；UNKNOWN 表示未能确认。响应丢失或成功但尚未对账返回 RECONCILE_FIRST；已对账成功返回 COMPLETE，不重复执行。远端删除失败后的 ABSENT 指“删除结果未发生，精确旧 tip 仍在”，不能用查询失败填写。
+只读远端核验 CLI 保留：`python scripts/sdd/check_git_actions.py --root <绝对仓库路径> --ref refs/heads/maintain/example --expected-tip gitee <已核实SHA> --expected-tip origin <已核实SHA>`。查询失败不是不存在，缺本地对象为 UNKNOWN；远端身份与服务端保护分别 NOT_ASSESSED / NOT_TESTED。squash/rebase 通过 `inspect_remote_deletion(..., merge_evidence=...)` 传入独立核实的 PR state/head/merge commit，不凭祖先关系猜测。
 
-已知 prompt×never 阻断未解除时，新的“同意/继续”、仅网络或文件权限恢复都不会恢复执行；不改工具、不换 remote 试探。工程师恢复后先查实际有效模式、规则/信任加载与对象，再从剩余动作继续。`check_deletion_targets.py --diagnose-error` 保留脱敏原错，分别识别 APPROVAL_MODE、FILESYSTEM_PERMISSION（含 index.lock Permission denied）、NETWORK（含 Connection refused）、FILE_IN_USE、EXEC_POLICY、PROJECT_HOOK；来源不明保持 UNKNOWN_LAYER。
+`inspect_remote_batch(root, targets)` 接收逐 ref 的 `ref/expected_tips/merge_evidence`，任一不符返回 BATCH_PAUSED；`inspect_push(root, remote, source, target, expected_source_tip=..., expected_target_tip=...)` 核对源 SHA、精确目标及快进，None 表示清单中目标不存在。二者均不 fetch、不执行写入、不认证授权。
 
-首次危险动作请求也必须遵守上述结论：预检已知 `never + prompt` 时直接报告 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE`，动作记 `NOT_EXECUTED`，无需先制造一次真实拒绝。“再次尝试”的聊天要求不证明执行条件变化。仅实际调用被拒才记录 `REJECTED`；`AskForApproval is set to Never` 表明进程未启动，不能据此判定 hook 已执行或自动审批模型已拒绝。
+`review_actions(baseline, current, mode=..., root=..., progress=...)` 的每项包含 id、kind、实际 command 和 scope。五类 scope 字段保持原模型：local_delete 的 root/target/snapshot_sha256；commit 的 repo/branch/head/files/staged_diff_sha256；push 的 repo/branch/remote/from_tip/tip，显式 refspec 另列 source/ref；pr_create 的 repo/head/head_sha/base/title/body_sha256；remote_delete 的 repo/remote/ref/tip。command 必须与对象匹配，不能仅靠 local_delete 类型继承 Remove-Item 结论。baseline 和观察值始终不是审批凭证，owner_approval=NOT_ASSESSED。
 
-受控会话验收要记录用户请求、有效模式来源、已知规则、是否发起危险工具调用、判断及后续状态。覆盖“首次请求前已知 never”和“已有拒绝后再次要求尝试”两个场景，预期均不发起危险调用；只读对账和离线测试可以继续。工程师正常恢复后另行核实覆盖来源、Desktop 引擎版本及实际规则/hook 加载，再在独立获批临时对象上验收 AC-4/9/13。单改项目配置、CLI 版本、重新开任务或离线测试通过均不能代替这些证据。
+撤销/变化/新增范围分别为 REVOKED/CHANGED/NOT_IN_SCOPE；响应丢失或尚未对账为 RECONCILE_FIRST。progress 的 MATCH 表示确切结果已核实，删除必须成功查询证明不存在；ABSENT 表示结果未发生，删除时精确旧 tip 仍在；查询失败仍 UNKNOWN。已对账成功为 COMPLETE，不重复执行；批量中的成功项也不能随整批再次执行。
 
-报告分列本地清理、Gitee、origin、计划 state、计划文档提交和其他任务边界。例如 develop=7446e73 的合成场景：本地 COMPLETE、Gitee REJECTED、origin NOT_EXECUTED、计划 completed、文档 UNCOMMITTED、#552 OUT_OF_SCOPE。这既不证明远端清理完成，也不自动授权提交计划或处置 #552。真实验收分别记录本地删除、远端双删及 commit→双推→PR 链路的有效模式、正常工具请求、实际审批/无需弹窗事实和结果；任何缺项单列未验证，离线测试不能替代。
+已知实际拒绝保持暂停。项目 prompt 来源的 prior_blocks 需包含 source=PROJECT_PROMPT、raw_error、确切 command、当时 mode 与 rules_sha256；仅在观察到条件变化、且 loaded_rules_sha256 与当前文件一致时，比较器才重新评估。它不认证这些来源，也不由单个哈希证明 hook 已加载；其他宿主来源或未知来源不能用项目规则变化自动解除。网络恢复、重复“继续”和只改模式字符串都不是充分证据。实际拒绝的脱敏原错继续通过 `check_deletion_targets.py --diagnose-error` 分层诊断；未知来源保留 UNKNOWN_LAYER，不改写命令或换工具/remote 绕过。
+
+### 验收与报告
+
+AC-4/9/13/24 分别在另行批准的临时对象上记录本地 Git 清理、Remove-Item、commit→双推→PR、双端逐 ref 删除。记录有效模式及来源、实际加载的新规则/hook、正常工具是否请求审批/无需审批/被拒和真实结果；never 场景不能沿用已撤除的 Git prompt 提前停止，也不能假定宿主其他层必定放行。
+
+本地清理、两端远端状态、Plan state、计划提交状态及其他任务边界各自列出。#552 和其他工作树不自动纳入。静态测试、候选补丁或旧规则下的成功都不替代新条件下的真实验收；缺项标未验证。
+
 
 ## §7 LangGraph Studio 首跑
 
@@ -522,3 +538,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-09-22 | v0.8 (patch) | #552：§4.1 补交付前审批预检入口、状态语义和 Git 恢复指南指针 |
 | 2026-09-22 | v0.8 (patch) | #555：§6.5–§6.6 补删除核验、有限 hook 路由、五类动作的独立授权和部分完成恢复；真实宿主验收另记 |
 | 2026-09-22 | v0.8 (patch) | #555 合并后回归：§6.6 明确首次请求前 never 停止、多分支 UNKNOWN 反例及受控会话证据边界 |
+| 2026-09-22 | v0.8 (patch) | #555 最新方案：§4.1/§6.6 改为逐命令规则判断，扩展 Git 参数和批量逐引用核验；上行保留旧方案历史，新条件真实验收单列 |

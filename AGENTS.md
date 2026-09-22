@@ -44,7 +44,11 @@ Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原�
    actions needing the Owner's go-ahead (per ADR-034).
    Reuse an existing approval for its exact action and objects; commit, ordinary push, PR creation,
    local deletion and remote-ref deletion are separate scopes. Reconcile partial/unknown results
-   before resuming. A known `never` approval block is not cleared by repeated chat approval or network recovery.
+   before resuming. Project rules contain no Git/gh entries; `never` alone does not block Git/gh.
+   Assess the actual command, loaded rules/hook and observed host restrictions separately.
+   Remove-Item still matches prompt. Known unresolved refusals need evidence of changed conditions;
+   repeated chat approval or network recovery alone does not clear them.
+   Decision: [ADR-041](decisions/ADR-041_Command_Specific_Git_Execution_Policy.md).
 5. **Git workflow discipline (G1/G2) binds you too.** New branches ONLY via
    `git worktree add ../<branch-name> -b <branch-name>` — never `git checkout -b` / `git switch -c`
    (G1); `gh pr create` must carry an explicit `--base` (non-hotfix → develop, hotfix → main) (G2).

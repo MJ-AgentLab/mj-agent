@@ -59,13 +59,13 @@ git ls-remote --refs --heads origin refs/heads/<type>/<desc>
 
 ## 命令序列
 
-### 执行入口：先核对有效审批模式
+### 执行入口：核对实际命令与当前条件
 
-首次危险动作请求前就核对当前有效模式与适用规则；不要等真实命令被拒后才检查。已知 `never` 且动作要求 `prompt` 时，直接记录 `INCOMPATIBLE` / `BLOCKED_EXECUTION_ROUTE`，该动作记 `NOT_EXECUTED`，保留已有项目授权。用户再次要求“尝试”“继续”、网络或文件权限恢复，均不构成模式已恢复的证据；不发起“试一次”的真实删除，也不以拆分命令或切换 remote 验证已知阻断。
+先核对任务授权、当前对象、有效模式及来源、适用规则/hook 和宿主实际结果。项目 rules 不含 Git/gh，never 单独不阻断 git branch -d、git worktree remove 或远端删除；Remove-Item 仍匹配 prompt，prompt×never 只暂停该命令，记 INCOMPATIBLE / BLOCKED_EXECUTION_ROUTE / NOT_EXECUTED。缺失/损坏规则、未知加载与未知模式分别记录，不推定为无规则。只读诊断支持 --action local_delete/remote_delete 或 --command-json 精确 argv。
 
-有效模式未知时记未知并先核实，不以项目配置中的 `on-request` 或重新开任务代替有效会话证据。工程师恢复环境后，还须核对 Desktop 引擎版本、覆盖来源及规则/hook 加载，重新对账对象，再续做未完成项。此前实际拒绝的历史仍保留 `REJECTED`，本轮未尝试不改写为再次被拒。
+已知未解除的实际拒绝保留原错并暂停，不换工具/remote、拆批或改写命令试探。重复“继续”、网络或文件权限恢复不是审批恢复证据；经审阅规则变更后还须核实目标会话实际加载，按新条件重新评估。有效模式未知先核实，不以项目配置或重新开任务替代证据。历史 REJECTED 不倒写，本轮未调用记 NOT_EXECUTED。
 
-当前 hook 仅识别每条命令一个 remote、一个 branch 的删除形态。`git push gitee --delete maintain/example documentation/example` 是多分支反例，静态分类为 `UNKNOWN`，不能作为执行示例。以下命令只在正常执行路线已核实可用后使用；多个目标逐端（Gitee → origin）、逐分支执行，每一项成功查询确认后再继续。
+hook 有限识别单/多分支 --delete、短名/完整 refs/heads 和合法参数换序，只提供 TASK_AUTHORIZATION_CONTEXT。批量删除必须逐引用绑定授权、批准 tip、当前 tip 和合并证据；任一保护目标、未合并、变化或未授权项暂停整个批次。Gitee → origin，逐端逐引用查询与记录，不能将一次批量返回当作全部成功。部分完成先对账并重新核验剩余清单，成功引用不重复操作；此流程不允许通过拆批规避已知拒绝。以下单分支命令仍是有效示例。
 
 ### 选项 1：仅本地
 
@@ -105,7 +105,7 @@ git push origin --delete <type>/<desc>
 > - Step 1 worktree remove 元数据移除但目录残留（Windows 文件锁常见）：记路径与元数据现状；确认独立分支/远端删除仍获授权才继续，绝不自动递归清目录
 > - Step 2 触 H2 → 按 H2 流程后继续 Step 3
 > - Step 3 触 H4 → 按 H4 流程
-> - 已知 prompt×never 阻断适用于两端时，不换 remote 试探：Gitee 记 REJECTED、origin 记 NOT_EXECUTED。重复“同意/继续”或仅网络/文件权限恢复不解除模式阻断；工程师恢复后先核对有效模式、授权、合并证据与两端 tip，只处理剩余项。响应丢失先查询对账，成功项不重复。
+> - 已知且未解除的实际阻断适用于两端时，不换 remote 试探：Gitee 记 REJECTED、origin 记 NOT_EXECUTED。重复“同意/继续”或仅网络/文件权限恢复不解除实际阻断；工程师恢复或经审阅规则变更后先核实加载与拒绝来源，再核对有效模式、授权、合并证据与两端 tip，只处理剩余项。响应丢失先查询对账，成功项不重复。
 > - 最终输出清理摘要：
 
 ```

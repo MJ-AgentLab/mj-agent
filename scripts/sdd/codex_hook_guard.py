@@ -8,9 +8,16 @@ from __future__ import annotations
 import json
 import posixpath
 import re
-import shlex
 import sys
+from pathlib import Path
 from typing import Any
+
+if __package__:
+    from .git_command_review import CONTEXT, publication, tokenize
+else:
+    # The reviewed launcher uses Python -I; load only the adjacent project helper.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from git_command_review import CONTEXT, publication, tokenize  # type: ignore[no-redef]
 
 
 def project_payload(payload: dict[str, Any]) -> dict[str, Any]:
@@ -34,7 +41,7 @@ def _owner(path: str) -> bool:
         ".mcp.json", "src/mj_agent/tools/sql/guardrail.py", "src/mj_agent/tools/sql/precheck.py",
         "src/mj_agent/prompts/system.md", "src/mj_agent/biz_catalog/qcm_catalog.yaml",
         "docker/compose.prod.yml", "docker/dockerfile",
-        "scripts/sdd/codex_hook_guard.py", "scripts/sdd/run_codex_hook.ps1",
+        "scripts/sdd/codex_hook_guard.py", "scripts/sdd/git_command_review.py", "scripts/sdd/run_codex_hook.ps1",
         "scripts/sdd/check_codex_native.py", "scripts/sdd/check_native_skills.py",
         "scripts/sdd/check_native_governance.py", "scripts/sdd/_common/native_assets.py",
     )
@@ -43,56 +50,6 @@ def _owner(path: str) -> bool:
             or bool(re.search(r"(?:^|/)capabilities/[^/]+/[^/]+/contracts/", path))
             or bool(re.search(r"(?:^|/)src/mj_agent/skills/[^/]+/skill.md$", path))
             or bool(re.search(r"(?:^|/)\.agents/skills/mj-agent-infra-[^/]+/", path)))
-
-
-def _branch_token(value: str) -> bool:
-    return (bool(re.fullmatch(r"(?:refs/heads/)?[A-Za-z0-9][A-Za-z0-9._/-]*", value))
-            and value != "HEAD" and not value.endswith(("/", ".", ".lock"))
-            and ".." not in value and "//" not in value)
-
-
-def _host_review(tokens: list[str]) -> tuple[str, str]:
-    """Bounded canonical spellings covered by native prompt rules; no approval claim."""
-    if tokens[:2] == ["git", "commit"]:
-        args = tokens[2:]
-        if not args or (len(args) == 2 and args[0] in {"-m", "--message", "-F", "--file"}
-                        and args[1].strip("\"'") and not args[1].startswith("-")):
-            return "HOST_APPROVAL_REQUIRED", "commit; task authorization remains separate"
-    elif tokens[:2] == ["git", "push"]:
-        args = tokens[2:]
-        if args and args[0] in {"-u", "--set-upstream"}:
-            args = args[1:]
-        if len(args) == 3 and args[0] in {"gitee", "origin"} and args[1] == "--delete":
-            branch = args[2].removeprefix("refs/heads/")
-            if branch in {"main", "develop"}:
-                return "FORBIDDEN", "protected remote branch"
-            if _branch_token(args[2]):
-                return "HOST_APPROVAL_REQUIRED", "remote deletion; independent task authorization required"
-        if len(args) == 2 and args[0] in {"gitee", "origin"} and _branch_token(args[1]):
-            return "HOST_APPROVAL_REQUIRED", "push; task authorization remains separate"
-    elif tokens[:3] == ["gh", "pr", "create"]:
-        args = tokens[3:]
-        values: dict[str, str] = {}
-        while args:
-            flag, *args = args
-            if flag == "--draft" and flag not in values:
-                values[flag] = "true"
-                continue
-            if flag == "-B":
-                flag = "--base"
-            if flag not in {"--repo", "--head", "--base", "--title", "--body-file"} or flag in values:
-                return "UNKNOWN", "unrecognized PR invocation"
-            if not args or args[0].startswith("-") or not args[0].strip("\"'"):
-                return "UNKNOWN", "missing PR option value"
-            values[flag], *args = args
-        if values.get("--base") not in {"develop", "main"}:
-            return "UNKNOWN", "review explicit PR base"
-        head = values.get("--head")
-        if head and (not _branch_token(head) or values["--base"] != (
-                "main" if head.startswith("hotfix/") else "develop")):
-            return "FORBIDDEN", "G2 base does not match head type"
-        return "HOST_APPROVAL_REQUIRED", "PR creation; task authorization remains separate"
-    return "UNKNOWN", "publication spelling needs explicit review"
 
 
 def classify(payload: dict[str, Any]) -> tuple[str, str]:
@@ -122,7 +79,7 @@ def classify(payload: dict[str, Any]) -> tuple[str, str]:
         return "UNKNOWN", "unsupported tool payload"
     command = data.get("command", data.get("cmd"))
     try:
-        tokens = shlex.split(command, posix=False) if isinstance(command, str) else command
+        tokens = tokenize(command)
     except ValueError:
         return "UNKNOWN", "unrecognized command syntax"
     if not isinstance(tokens, list) or not tokens or not all(isinstance(t, str) for t in tokens):
@@ -132,32 +89,36 @@ def classify(payload: dict[str, Any]) -> tuple[str, str]:
     # Do not attempt a new general command parser: fail closed for this spelling.
     if words[0] == "git" and len(tokens) > 1 and tokens[1].startswith("-"):
         return "UNKNOWN", "Git global options require reviewed execution route"
+    if words[:2] == ["git", "checkout"] and any(
+            t.startswith(("-b", "-B", "--orphan")) for t in tokens[2:]):
+        return "FORBIDDEN", "G1 worktree required"
+    if words[:2] == ["git", "switch"] and any(
+            t.startswith(("-c", "-C", "--create", "--force-create", "--orphan")) for t in tokens[2:]):
+        return "FORBIDDEN", "G1 worktree required"
+    if words[:3] == ["gh", "pr", "merge"]:
+        return "FORBIDDEN", "human merge only"
+    if words[:3] == ["gh", "pr", "create"] or words[:2] in (["git", "commit"], ["git", "push"]):
+        review = publication(tokens)
+        scope = review['scope']
+        for key in ('message_file', 'body_file'):
+            if scope.get(key) and _sensitive(_path(scope[key])):
+                return "FORBIDDEN", "secret surface"
+        return review['status'], review['reason']
     docker_carrier = words[:2] == ["docker", "compose"]
     if any(_sensitive(t) for t in words) and not docker_carrier:
         return "FORBIDDEN", "secret surface"
     if any(t.rsplit("/", 1)[-1].removesuffix(".exe") in {"psql", "pg_dump", "pg_restore"} for t in words):
         return "FORBIDDEN", "direct database route"
-    if words[:2] == ["git", "checkout"] and any(t in {"-b", "-B"} for t in tokens[2:]):
-        return "FORBIDDEN", "G1 worktree required"
-    if words[:2] == ["git", "switch"] and any(t in {"-c", "-C", "--create", "--force-create"} for t in tokens[2:]):
-        return "FORBIDDEN", "G1 worktree required"
-    if words[:3] == ["gh", "pr", "merge"]:
-        return "FORBIDDEN", "human merge only"
-    if any(re.search(r"[;|&<>`\n\r$]", token) for token in tokens) or any(
-            token.startswith("(") or token.endswith(")") for token in tokens if not token.startswith(("'", '"'))):
+    if (words[:2] == ["git", "branch"] and "-d" in tokens
+            and any(t.removeprefix('refs/heads/') in {'main', 'develop'} for t in tokens[2:])):
+        return "FORBIDDEN", "protected local branch"
+    if words[:3] == ["git", "worktree", "remove"] and any(
+            word.rstrip('/').rsplit('/', 1)[-1] in {'main', 'develop'} for word in words[3:]):
+        return "FORBIDDEN", "protected worktree"
+    # Literal argv is not shell-evaluated. Unknown command carriers retain the
+    # conservative compound check; publication values were parsed above.
+    if any(re.search(r"[;|&<>`\n\r$]", token) for token in tokens):
         return "UNKNOWN", "compound or expanding command needs explicit review"
-    if words[:3] == ["gh", "pr", "create"]:
-        has_base = any(t.startswith("--base=") and len(t) > 7 for t in tokens[3:])
-        has_base |= any(t in {"--base", "-B"} and i + 1 < len(tokens) and not tokens[i + 1].startswith("-")
-                        for i, t in enumerate(tokens) if i >= 3)
-        if not has_base:
-            return "FORBIDDEN", "G2 explicit base required"
-        return _host_review(tokens)
-    if words[:2] in (["git", "commit"], ["git", "push"]):
-        return _host_review(tokens)
-    # Do not pretend to parse compound commands, interpreters or arbitrary writes.
-    if isinstance(command, str) and re.search(r"[;|&<>`\n]", command):
-        return "UNKNOWN", "compound command needs explicit review"
     if words[:2] in (["git", "status"], ["git", "diff"], ["git", "log"]):
         return "ALLOW", "read-only Git inspection"
     if words[0] in {"get-content", "cat", "rg"}:
@@ -171,11 +132,11 @@ def main() -> int:
         state, reason = classify(project_payload(raw)) if isinstance(raw, dict) else ("UNKNOWN", "invalid payload")
     except (ValueError, TypeError):
         state, reason = "UNKNOWN", "invalid payload"
-    if state == "HOST_APPROVAL_REQUIRED":
-        # No allow/ask or updatedInput: leave existing native prompt rules in charge.
+    if state == CONTEXT:
+        # Context only: neither project authorization nor a host approval result.
         print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse",
-              "additionalContext": f"{state}: {reason}. Normal host approval is still required; "
-                                   "this hook does not authenticate Owner authorization."}}))
+              "additionalContext": f"{state}: {reason}. This hook does not authenticate Owner authorization; "
+                                   "host execution restrictions are assessed separately."}}))
     elif state != "ALLOW":
         # Legacy block is supported by the current host; never emit unsupported ask.
         print(json.dumps({"decision": "block", "reason": f"{state}: {reason}"}))

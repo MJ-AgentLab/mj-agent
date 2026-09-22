@@ -87,9 +87,9 @@ of truth），LSP 仅作交互式辅助.
 
 > **执行机制**：AI 给具体差异，Owner 对目标/动作/关键内容/范围拍板。当前任务已明确批准的具体删除清单无需重复确认或额外理由；批准不扩展到其他目录、worktree、后来新增内容或不同动作。删除前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及符号链接/重解析点；变化只暂停受影响项。核验通过后由 Codex 使用正常工具执行，不预设人工删除。项目授权与宿主审批分开，hook 不认证聊天授权；UNKNOWN/FORBIDDEN 继续阻断，守卫未命中不构成授权。实际拒绝时保留原始错误，依据证据区分 hook、exec-policy/危险命令检查、审批模式、权限/占用；通用 blocked by policy 无法归因时标未知。受阻步骤返回 BLOCKED_EXECUTION_ROUTE，不换工具、改写命令、编码、改权限或建 receipt 绕过；独立且已授权的工作可继续。
 
-commit、普通 push、PR 创建、本地删除、远程引用删除分别核对动作与对象；一次批准可以明确列出多项，已有相同批准不重复索取。commit 绑定分支/HEAD/实际 staged 内容与文件集；push 绑定提交范围、目标 remote 和 tip；PR 绑定 repo/head/base/标题/正文。撤销或实质变化仅暂停受影响项。有限识别的 Git 命令由原生 hook 返回 `HOST_APPROVAL_REQUIRED` 上下文，继续交既有 prompt 规则及宿主正常审批；该状态不认证 Owner 授权，受保护编辑及 UNKNOWN/FORBIDDEN 仍阻断。
+commit、普通 push、PR 创建、本地删除、远程引用删除分别核对动作与对象；一次批准可以明确列出多项，已有相同批准不重复索取。commit 绑定分支/HEAD/实际 staged 内容与文件集；push 绑定提交范围、目标 remote 和 tip；PR 绑定 repo/head/base/标题/正文。撤销或实质变化仅暂停受影响项。项目 rules 不含 Git/gh，不以 never 单独阻断 Git/gh。有限识别的 Git 命令由 hook 返回 `TASK_AUTHORIZATION_CONTEXT`，提示核对动作、对象与任务授权，不输出审批凭证或宣称宿主必须审批。G1/G2、人工 merge、受保护编辑及 UNKNOWN/FORBIDDEN 保留。Remove-Item 仍匹配 prompt，与 git branch -d / git worktree remove 按实际命令分别诊断。宿主其他规则、危险命令检查、沙箱与组织策略按实际证据处理。参见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)。
 
-远程删除独立绑定仓库、remote、精确 refs/heads 引用、批准时及当前 tip、真实合并证据；保护 main/develop 和其他明确保护分支。两端按 Gitee → origin 分别核验及执行；只有成功查询证明不存在，才记录已删除或执行前已不存在。查询失败不等于不存在，本地分支已删或计划 completed 不替代远端证据。部分成功/结果未知先对账，成功项不重复；已知 prompt×never 未解除时不得换 remote 试探。仅网络/文件权限恢复或重复聊天批准不解除审批模式阻断；工程师恢复环境后先核实有效模式、规则/信任和当前对象，再处理剩余项。merge 仍由 Owner 人工执行，计划文档未提交单列交付待办，不自动提交或处置其他任务。
+远程删除独立绑定仓库、remote、精确 refs/heads 引用、批准时及当前 tip、真实合并证据；保护 main/develop 和其他明确保护分支。批量删除逐引用核验授权、tip 与合并证据；任一目标受保护、变化或范围不符，暂停该批次。两端按 Gitee → origin 分别核验及执行；只有成功查询证明不存在，才记录已删除或执行前已不存在。查询失败不等于不存在，本地分支已删或计划 completed 不替代远端证据。部分成功/结果未知先对账，成功项不重复。已知实际拒绝未解除时，不换 remote、工具或改写命令试探。网络/文件权限恢复或重复聊天批准不证明拒绝解除；经审阅规则变更或工程师恢复后，核实目标会话加载、有效模式、拒绝来源和当前对象，再处理剩余项。merge 仍由 Owner 人工执行，计划文档未提交单列交付待办，不自动提交或处置其他任务。
 
 ## §5 可修改路径白名单 / 必须 HITL 清单
 

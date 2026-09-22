@@ -186,7 +186,7 @@ git branch --show-current
 
 先复用当前任务对具体分支、文件集及提交内容的明确批准；仅批准删除、push 或 PR 不包含 commit。核对工作树身份、HEAD、实际 staged diff（先按文件名排除秘密）、未暂存/未跟踪内容是否误纳入、验证结果，以及工作树和共享 Git 目录写入条件。内容变化或撤销只暂停受影响提交。不得把“计划 completed”的未提交文档顺带加入。
 
-有限识别的 `git commit` / `git commit -m <message>` / `git commit -F <file>` 交现有 prompt 及正常宿主审批；复杂 shell 展开不在此识别范围。项目批准不认证为工具批准。已知 never 阻断未解除时不重试；仅网络/文件权限恢复或新的“继续”不解除它。响应未知先查 HEAD、实际提交内容及作者，避免重复提交。成功后记录 SHA、文件集合、实际 authorship 和工作区状态。
+有限识别支持无参数 commit、重复 -m/--message、--message=值，以及 -F/--file/--file=路径；消息与文件参数互斥。引号内普通文本不是新命令，shell 复合/展开、amend 和未列参数保持 UNKNOWN。hook 仅给 TASK_AUTHORIZATION_CONTEXT；项目 rules 无 Git 条目，never 单独不阻断提交。仍需动作级任务授权，并单独核对宿主限制；已知实际拒绝在来源未解除前不重试，不能用网络恢复或“继续”代替恢复证据。响应未知先查 HEAD、实际提交内容及作者，避免重复提交。成功后记录 SHA、文件集合、实际 authorship 和工作区状态。
 
 ```bash
 # 最终确认

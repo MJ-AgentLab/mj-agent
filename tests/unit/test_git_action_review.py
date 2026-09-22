@@ -6,7 +6,32 @@ import subprocess
 from pathlib import Path
 
 import pytest
-from scripts.sdd.check_git_actions import inspect_remote_deletion, review_actions
+from scripts.sdd.check_git_actions import inspect_remote_deletion
+from scripts.sdd.check_git_actions import review_actions as _review_actions
+
+
+def review_actions(baseline, current, **kwargs):
+    """Supply explicit synthetic commands for the legacy scope fixtures."""
+    def with_command(item):
+        scope = item['scope']
+        kind = item['kind']
+        if kind == 'local_delete':
+            command = ['Remove-Item', '-LiteralPath', scope.get('target', '')]
+        elif kind == 'commit':
+            command = ['git', 'commit']
+        elif kind == 'push':
+            command = ['git', 'push', scope.get('remote', ''), scope.get('branch', '')]
+        elif kind == 'remote_delete':
+            command = ['git', 'push', scope.get('remote', ''), '--delete', scope.get('ref', '')]
+        elif kind == 'pr_create':
+            command = ['gh', 'pr', 'create', '--repo', scope.get('repo', ''),
+                       '--head', scope.get('head', ''), '--base', scope.get('base', ''),
+                       '--title', scope.get('title', ''), '--body-file', 'synthetic-body.md']
+        else:
+            command = []
+        return dict(item, command=command)
+    return _review_actions([with_command(i) for i in baseline],
+                           [with_command(i) for i in current], **kwargs)
 
 
 def git(root: Path, *args: str) -> str:
@@ -158,10 +183,9 @@ def test_revocation_and_changes_only_pause_affected_actions() -> None:
 
 
 @pytest.mark.parametrize('mode', ['never', None, 'on-request'])
-def test_known_block_requires_observed_mode_recovery(mode) -> None:
+def test_known_block_is_not_cleared_by_mode_alone(mode) -> None:
     result = review_actions([action()], [action()], mode=mode, known_approval_block=True)
-    assert result['items'][0]['status'] == {
-        'never': 'BLOCKED_EXECUTION_ROUTE', None: 'UNKNOWN_MODE', 'on-request': 'READY_FOR_REVIEW'}[mode]
+    assert result['items'][0]['status'] == 'BLOCKED_EXECUTION_ROUTE'
 
 
 @pytest.mark.parametrize('kind,scope', [
@@ -176,14 +200,14 @@ def test_known_block_requires_observed_mode_recovery(mode) -> None:
     ('remote_delete', {'repo': 'synthetic/repo', 'remote': 'gitee',
                        'ref': 'refs/heads/maintain/example', 'tip': 'a' * 40}),
 ])
-def test_never_blocks_before_first_attempt_without_a_previous_rejection(kind, scope) -> None:
+def test_never_is_evaluated_per_actual_command_before_first_attempt(kind, scope) -> None:
     items = [{'id': 'first-attempt', 'kind': kind, 'scope': scope}]
     # Matching comparison inputs are not trusted authorization. Repeated review
-    # cannot turn a known effective never mode into an executable route.
+    # cannot authenticate Owner approval or prove host execution.
     for _ in range(2):
         report = review_actions(items, items, mode='never')
         assert report['known_approval_block'] is False
-        assert report['items'][0]['status'] == 'BLOCKED_EXECUTION_ROUTE'
+        assert report['items'][0]['status'] == ('BLOCKED_EXECUTION_ROUTE' if kind == 'local_delete' else 'READY_FOR_REVIEW')
         assert report['items'][0]['last_result'] == 'NOT_EXECUTED'
         assert report['execution'] == 'NOT_ATTEMPTED'
         assert report['owner_approval'] == 'NOT_ASSESSED'
@@ -279,3 +303,50 @@ def test_missing_scope_and_merge_are_never_ready() -> None:
     for item in ({'id': 'bad', 'kind': 'commit', 'scope': {}},
                  {'id': 'bad', 'kind': 'merge', 'scope': {}}):
         assert reviewed([item])['items'][0]['status'] == 'INVALID_SCOPE'
+
+
+def test_explicit_push_resolves_source_and_destination_without_writing(repo):
+    from scripts.sdd.check_git_actions import inspect_push
+    root, tip = repo
+    args = dict(root=root, remote='origin', source='HEAD', target='refs/heads/maintain/example',
+                expected_source_tip=tip, expected_target_tip=tip)
+    report = inspect_push(**args)
+    assert report['status'] == 'READY_FOR_REVIEW'
+    assert report['source_tip'] == report['target_tip'] == tip
+    assert report['execution'] == 'NOT_ATTEMPTED'
+    assert inspect_push(**dict(args, expected_source_tip='f' * 40))['status'] == 'SOURCE_CHANGED'
+    assert inspect_push(**dict(args, expected_target_tip=None))['status'] == 'TARGET_CHANGED'
+    assert inspect_push(**dict(args, source='+HEAD'))['status'] == 'INVALID_SCOPE'
+    assert inspect_push(**dict(args, target='refs/tags/example'))['status'] == 'INVALID_SCOPE'
+    assert git(root, 'ls-remote', '--heads', 'origin', 'refs/heads/maintain/example').startswith(tip)
+
+
+def test_multi_ref_remote_review_pauses_whole_batch_on_protected_or_changed_target(repo):
+    from scripts.sdd.check_git_actions import inspect_remote_batch
+    root, tip = repo
+    targets = [{'ref': 'refs/heads/maintain/example', 'expected_tips': {'gitee': tip, 'origin': tip}},
+               {'ref': 'refs/heads/maintain/absent', 'expected_tips': {'gitee': tip, 'origin': tip}}]
+    report = inspect_remote_batch(root, targets)
+    assert report['status'] == 'READY_FOR_REVIEW'
+    assert [row['status'] for row in report['items']] == [
+        'READY_FOR_REVIEW', 'READY_FOR_REVIEW', 'ALREADY_ABSENT', 'ALREADY_ABSENT']
+    targets[1]['ref'] = 'refs/heads/develop'
+    assert inspect_remote_batch(root, targets)['status'] == 'BATCH_PAUSED'
+    targets[1]['ref'] = 'refs/heads/maintain/other'
+    targets[0]['expected_tips']['origin'] = 'f' * 40
+    assert inspect_remote_batch(root, targets)['status'] == 'BATCH_PAUSED'
+
+
+def test_push_non_fast_forward_and_failed_query_remain_distinct(repo):
+    from scripts.sdd.check_git_actions import inspect_push
+    root, old = repo
+    (root / 'public.txt').write_text('new remote content')
+    git(root, 'commit', '-am', 'synthetic remote advancement')
+    new = git(root, 'rev-parse', 'HEAD')
+    git(root, 'push', 'origin', 'HEAD:refs/heads/maintain/example')
+    git(root, 'branch', 'maintain/source', old)
+    args = dict(root=root, remote='origin', source='maintain/source', target='refs/heads/maintain/example',
+                expected_source_tip=old, expected_target_tip=new)
+    assert inspect_push(**args)['status'] == 'NOT_FAST_FORWARD'
+    git(root, 'remote', 'set-url', 'origin', str(root / 'missing-bare'))
+    assert inspect_push(**args)['status'] == 'UNKNOWN'
