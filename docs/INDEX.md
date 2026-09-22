@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-09-21
+updated: 2026-09-22
 state: draft
 track: shared
 ---
@@ -47,6 +47,7 @@ track: shared
 | [[policies/archive\|policies/archive]] | 归档触发判定 / active-path-stability / 状态机 / `archive.yml` manifest schema / ceremony playbook / ai_visibility + G14/G15 / retention |
 | [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 4 态（含 §2.5 retroactive 补落）/ archive 5 态 / 转移触发 + gate 联动 |
 | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
+| [[sdd/workflows/session-maintenance\|sdd/workflows/session-maintenance]] | Codex 开发协作会话归档摘要 / 推荐标题 / 明确重命名 / 客户端动作边界 |
 | `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/development-skill\|development-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.agents/` 原生开发技能治理（A7-A14 surface） |
 | [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 原生保护检查 |
 | [[policies/git-branching\|policies/git-branching]] / [[policies/release\|policies/release]] | 分支类型 / commit 类型 / G1·G2 worktree / PR 模板矩阵（§4）/ SemVer bump 规则 + dev·release tags（M6 X6 把 git **规则**从 `docs/infrastructure/git/` GUIDEs absorb 进 kernel；GUIDEs 保留 operational how-to，不归档）|
