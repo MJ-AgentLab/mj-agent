@@ -18,11 +18,11 @@ updated: 2026-05-20
 - **Phase**：M1 / **Priority**：critical (meta) / **Linked REQ**：N/A
 - **Status**：in-progress
 
-### T-002 — REQ-001 14-server inventory + A14 PR gate declaration
+### T-002 — REQ-001 8-server inventory + A14 PR gate declaration
 - **Phase**：M1 (contract; informational) / M2 (CI warning) / M3 (CI blocking)
 - **Priority**：medium / **Linked REQ**：REQ-001
 - **Contract changed?**：no
-- **HITL trigger**：any .mcp.json modification → A14 gate per `contracts/governance.contract.yml §a14_pr_gate` (former MCP STANDARD §4, archived M6 X5)
+- **HITL trigger**：any .codex/config.toml modification → A14 gate per `contracts/governance.contract.yml §a14_pr_gate` (former MCP STANDARD §4, archived M6 X5)
 - **Status**：done (M1 contract); TBD-M3 tests + automation
 - **TDD test_list**：
   - **TBD-M3** `tests/contract/test_mcp_inventory.py::test_thirteen_server_entries`
@@ -35,11 +35,11 @@ updated: 2026-05-20
 - **Phase**：M1 (contract) / M3 (tests)
 - **Priority**：medium / **Linked REQ**：REQ-002
 - **Contract changed?**：no
-- **HITL trigger**：.claude/scripts/pg-server-* modifications → baseline diff against `docs/_baselines/pg_server_baseline.md`
+- **HITL trigger**：scripts/mcp/pg-server-* modifications → baseline diff against `docs/_baselines/pg_server_baseline.md`
 - **Status**：done (M1 contract); TBD-M3 tests
 - **TDD test_list**：
-  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_all_pg_entries_use_same_wrapper` — load .mcp.json; iterate pg-* entries; assert all invoke `.claude\scripts\pg-server-start.cmd`
-  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_pg_wrapper_baseline_aligned` — diff `.claude/scripts/pg-server-wrapper.mjs` against `docs/_baselines/pg_server_baseline.md` (warn on drift; fail on major change)
+  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_all_pg_entries_use_same_wrapper` — load .codex/config.toml; iterate pg-* entries; assert all invoke `scripts/mcp/pg-server-start.ps1`
+  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_pg_wrapper_baseline_aligned` — diff `scripts/mcp/pg-server-wrapper.mjs` against `docs/_baselines/pg_server_baseline.md` (warn on drift; fail on major change)
 
 ### T-004 — Quarterly audit cycle (cron-driven)
 - **Phase**：M4+ (automation; not blocking M1)
@@ -63,10 +63,12 @@ updated: 2026-05-20
 (none beyond T-001)
 
 ## Anti-Backlog
-- **Per-entry separate config files** — rejected per design §4 tradeoff B (convention is single .mcp.json)
+- **Per-entry separate config files** — rejected per design §4 tradeoff B (convention is single .codex/config.toml)
 - **Empty defaults for all entries** — rejected per design §4 tradeoff F (first-clone friction)
-- **Per-host enumeration of ssh-manager's 9 hosts as separate MCP servers** — rejected per REQ-001 (counts as 1 server matching .mcp.json structure; quarterly audit enumerates internally)
+- **Per-host enumeration of ssh-manager's 9 hosts as separate MCP servers** — rejected per REQ-001 (counts as 1 server matching .codex/config.toml structure; quarterly audit enumerates internally)
 
 ---
 
 > Phase M1 baseline. 5 TBD-M3 test entries + 1 TBD-M4 cron + 1 TBD-M2 cross-cap.
+
+Native cutover verification uses the actual native checker and existing BDD bindings in trace.yml. Historical TBD-M3 test names above are not claimed implemented; native service/host execution remains separate.

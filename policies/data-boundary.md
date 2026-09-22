@@ -100,7 +100,7 @@ L1b 的 fail-open **只在 L3/L4 仍然权威时才是安全的**：被放过的
 只读 GRANT 之下，最坏结果是"一条低质量但只读的查询"。因此**削弱 L3 或 L4，会把 L1b 的
 fail-open 变成真漏洞**，其风险等级等同于放宽 L1/L1b。
 ⚠ 载体现状（如实记录）：L1/L1b 所在的 `tools/sql/{guardrail,precheck}.py` 在
-`.claude/settings.json` `permissions.ask` 列表内（§3），而 **L3 所在的
+`.codex/hooks.json` `permissions.ask` 列表内（§3），而 **L3 所在的
 `integrations/mj_system_db.py` 不在**——该面目前只靠本节纪律 + 合并审查兜底，无 harness 门、
 也无审批类 CI gate（与 `policies/docker-runtime.md` §4 的 Dockerfile 供应链面同属一档）。
 
@@ -141,19 +141,10 @@ fail-open 变成真漏洞**，其风险等级等同于放宽 L1/L1b。
 | prompt-version-bump | `src/mj_agent/prompts/system.md` version + body | 系统提示词行为边界 | `mj-agent-runtime-prompt-version-bump` skill（propose+拍板+apply） |
 | biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | mirror 上游业务系统数据字典 | `mj-agent-runtime-biz-catalog-sync` skill（propose+拍板+apply） |
 
-**执行机制**（ADR-034；拍板即落盘——AI 提议 + Owner 拍板 + AI 落盘，不再要求 Owner 手动转写）：
-
-1. **`ask` 权限门（逐写拍板）**：上述 4 路径在 `.claude/settings.json` `permissions.ask`
-   列表（precedence `deny` > `ask` > `allow`，覆盖顶部 blanket `Edit`/`Write` allow）——AI 对其
-   Edit/Write 在交互模式触发**逐写权限 prompt**（= Owner 拍板）；批准后 AI 落盘。
-   （原 `deny` 物理硬锁已于 ADR-034 解除。）⚠️ **注**：`.claude/scripts/guard-git-workflow.ps1`
-   PreToolUse hook 仅 `matcher=Bash` 且只管 G1/G2 git 命令，**不**拦上述 4 路径的 Edit/Write——
-   本 4 面的门来自 settings.json `ask`，非该 hook。
-2. **Runtime skill 工作流**：`.claude/skills/mj-agent-runtime-*/SKILL.md` 先做 propose diff +
-   impact 反扫，**Owner 拍板后**由 skill 经 `ask` 门落盘（`## Anti-patterns` 段写"❌ 未经
-   Owner 拍板就落盘 / ❌ 跳过 impact 分析直接改"；per A12 description gate）.
-3. **A12-A14 PR gate（合并审查兜底）**：PR review 阶段 reviewer 必须 check 4 项专属必停清单 +
-   A13 settings allowlist diff；落盘后的合并审查是物理硬锁解除后的主兜底层.
+**执行机制**：四项 runtime 必停保持 Owner 决策；AGENTS、自守边界与原生 hook 协作执行。
+原生 runtime-* 开发技能先提供差异与 impact，Owner 批准后按已审阅执行路线应用。
+hook 对 Owner 动作仍硬阻断；不能用批准代替技术放行。合并审查核对 A12–A14 与保护边界。
+秘密和 biz 旁路始终禁止。该迁移不改本节上表任何 runtime 路径或业务权限。
 
 ## §4 跨能力变更触发条件
 

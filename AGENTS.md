@@ -1,134 +1,24 @@
 # AGENTS.md
 
-> mj-agent · AI Agent collaboration boundaries
->
-> ⚠ **NOTE — Codex is an authorized full development participant (per ADR-035 + its 2026-07-06
-> amendment). You (Codex) MAY run commands and do development work in this repo now — subject to the
-> self-enforced boundaries in "Codex participation" below. This file IS your operating contract: you
-> run under your own harness, so those boundaries hold only by you obeying this file, not by the
-> Claude Code permission harness.**
->
-> This file is the **tool-neutral collaboration contract for all AI agents** working in this repo
-> (Claude Code, Codex, and any future agent). Claude Code additionally loads
-> [CLAUDE.md](./CLAUDE.md) — its harness-specific working notes; both derive from the same project
-> kernel (`sdd/` + `policies/` + `capabilities/`) and neither overrides it.
+# mj-agent Codex 开发入口
 
-## Roster
+Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则正文在 `policies/`、`sdd/` 和 capability contracts。
 
-| Agent | Role in mj-agent dev | Authority |
-|---|---|---|
-| **Claude Code** | Full-responsibility AI developer（双工具对等，no fixed primacy） | Full implementation: file edits, test runs, migrations, docs, verification — 必停 enforced by its own harness (`ask`-gates / hooks) |
-| **Codex** | **Full-responsibility AI developer**（双工具对等；authorized per ADR-035） | Same authority class as Claude Code — run commands, edit / create / delete files, commit / push, migrate — **and MUST self-honor the 必停 + data boundary below** |
-| **Other AI agents** | Not yet authorized | NO write access |
+## Native asset ownership
 
-## Nested AGENTS.md map (same-layer local constraints)
+`.agents/skills/`、`.agents/references/`、`.agents/README.md` 与 `.codex/{config.toml,hooks.json,rules/}` 直接维护。不再由投影、翻译、lock、sync 或 adopt 维护。正式维护权切换的依据为 ADR-040；历史客户端资产仅留作 P5 具名清理候选，不参与执行，不双份维护。
 
-Codex discovers `AGENTS.md` hierarchically (repo root → cwd); Claude Code sees the same files
-via each sibling `CLAUDE.md`'s `@AGENTS.md` import (per dual-agent-compat plan v5 P1). Local
-constraints live at:
+`.codex/**`、原生守卫、冻结 infra、契约、政策/SDD 元规则及 CI gate 仍须相应 Owner 批准。MCP 只包含既有 GitHub、Playwright、Serena、memory×5；biz×5 与 ssh-manager 永久禁入。不迁入个人或其他来源的服务。秘密按变量名传递；应用与 MCP 凭据分离。
 
-- `capabilities/AGENTS.md` — capability catalog: contract schema obligations / frozen-contract
-  surfaces / archive-reference bans
-- `docker/AGENTS.md` — container security boundary: prod-compose hard stop, **Dockerfile external
-  image-ref supply-chain hard stop**, `--env-file` carrier semantics, teardown safety
-- `src/mj_agent/AGENTS.md` — runtime code: the 4 mj-agent-specific hard-stop surfaces + data
-  boundary + loading contracts
-- `tests/AGENTS.md` — test bands / fixtures / external-dependency and skip conventions
+项目和 hooks 信任均由工程师独立审阅；不得改个人配置、自动信任或激活 hooks。
 
-Same layering rule as this file: nested files point to the kernel, they do not restate it.
+## Local constraints
 
-## Generated projections (`.agents/` + `.codex/config.toml`) — never hand-edit
-
-`.agents/skills/**`, `.agents/README.md`, the repo-root `.agents.lock.json` **and the repo-level
-`.codex/config.toml`** are **generated artifacts** owned 100% by `scripts/sdd/agents_sync.py`
-(per ADR-036 D-011/D-012/D-013/D-014 + ADR-039). The manifest `sdd/development-agent.yml` is the
-SoT, and since the PR-C1 cutover (#499) it is the per-capability **`codex_carrier`** field — no
-longer `projection` — that decides HOW each skill is carried: `byte-copy` writes
-`.claude/skills/<name>/SKILL.md` through byte-identically, while `translated` renders that same
-source deterministically through the translation registry
-(`sdd/workflows/development-agent-workflows.yml` + `sdd/adapters/codex-skill-translation.yml` +
-`sdd/adapters/codex-skill-preface.md`). **A translated carrier is therefore NOT byte-identical to
-its source** — it is a generated view of it, the source stays authoritative, and its
-`carrier_binding.workflow_id` must close against the registry. **Do not re-enumerate the
-byte-copy/translated split here** — it is derived from the manifest and validators must never
-hardcode the counts (AC-04). Plus — since S2 (#330) — a Codex MCP config derived from
-`.mcp.json` filtered by the manifest's per-server `mcp.servers.<name>.projection_policy`.
-**That manifest field is the SoT for which servers get projected — do not re-enumerate the list
-here**: it grew from 3 to 8 at #353 (`c700934`, which projected `pg-mj-agent-memory-*`×5) and the
-enumeration that used to sit in this sentence went stale unnoticed, because V11 compares the
-config to the manifest and no gate reads this prose. What is fixed and MUST stay stated:
-`pg-mj-system-biz-*`×5 + `ssh-manager` are pinned `never` — PERMANENTLY excluded per the
-ADR-006/009 data boundary. `codex.posture` is transcribed alongside. They are committed so Codex discovers skills under `.agents/skills`
-and MCP servers via `.codex/config.toml` after `git pull`; projected copies do NOT count toward
-the 37-skill SoT. Rules — they bind BOTH tools:
-
-- **Never hand-edit** anything under `.agents/`, `.agents.lock.json`, or `.codex/config.toml`.
-- Change path (skills) = edit the SOURCE skill (its own gates apply) → run
-  `python scripts/sdd/agents_sync.py sync` → commit source + artifacts + lock together.
-- Change path (MCP) = edit the SOURCE through its own gate — `.mcp.json` is an A14 hard-stop
-  surface; the manifest `mcp` / `codex.posture` sections are protected-adjacent (D-017 Owner
-  approval) — then run `sync` and commit `.codex/config.toml` + lock together. Secrets are
-  referenced BY NAME only (`env_vars` whitelists; Codex sanitizes MCP child env and inherits
-  the named variables) — a literal credential in this file is always a defect (G7 scans it).
-- Change path (enforcement) = edit `sdd/adapters/codex-enforcement.yml` through its own gate (a
-  D-017 protected-adjacent typed source, per `policies/ai-agent.md` §4), then run `sync` and commit
-  source + `.codex/hooks.json` + `.codex/rules/*.rules` + lock together. Those two artifacts sit on
-  the same never-hand-edit footing as the ones above, and there is **no adopt path** for them
-  (enforcement outputs are not adoptable, D-012 revised). The render also digests every file the
-  typed source names in `policy_refs[]` — **this file is one of them**, so an authorized edit here
-  is itself a re-render trigger.
-- **Cooperative scope — the enforcement carrier does not replace this file.** `.codex/hooks.json`
-  and `.codex/rules/*.rules` surface the stop points below inside your own harness; they bind only
-  Codex, they never write `.claude/**`, and a hook or rule that fails to fire is **not** permission
-  to proceed. Owner 拍板 is unchanged and the self-enforced boundaries below remain the actual
-  boundary. Activating hooks is a per-engineer manual review step in Codex (hash-trust gated), the
-  same shape as the `~/.codex/config.toml` trust step — no repo script may perform it (D-015).
-- Reverse-feeding an artifact edit into the source goes ONLY through
-  `python scripts/sdd/agents_sync.py --adopt <name>` (Owner HITL applies to the source write);
-  there is NO adopt path for `.codex/config.toml` (fully derived).
-- Merge conflict on generated files: merge the source, re-run `sync` to overwrite the artifacts —
-  never 3-way-merge artifacts by hand.
-- Drift gates: CI runs `agents_sync.py --check --surface skills` (**V10, BLOCKING since the P4
-  flip #399, 2026-08-03**; it landed warning-first per D-016) and `agents_sync.py --check
-  --surface mcp` (**V11, BLOCKING day-1 per D-016**; Owner execution record #330) plus V9
-  (`check_agents_projection.py --fail-on warning`) closure / reconcile / lock / codex-config
-  (PJ04x, incl. PJ044 never-tier leak) rules. **V8 / V9 / V10 are all BLOCKING as of #399** —
-  one Owner `ci-blocking-gate-toggle` execution record per gate, in issue #399; eligibility per
-  `plans/[PLAN]_dual-agent-compat.md` §11.2 (anchor 2026-07-14 +20d; streaks 55 / 55 / 49).
-- Codex consumption semantics (spike-verified 2026-07-14, #330): project-level `.codex/config.toml`
-  loads only in **trusted** projects; trust matches the exact project root or an in-repo ancestor
-  entry (the bare-container entry covers all worktrees on the reference machine). Trust stays a
-  per-engineer manual `~/.codex/config.toml` `[projects]` step (D-015 — no repo script may write
-  it); edit that file with the Codex Desktop app closed (the app rewrites it while running).
-- Semantic caveat for Codex: the Claude harness `ask`-gates / protected-path prompts / PreToolUse
-  hooks referenced inside projected skill bodies are NOT present under your harness — those stop
-  points are AGENTS.md self-enforced duties (see "Self-enforced boundaries" below).
-
-## 会话维护
-
-用户明确要求归档本次对话、推荐标题、为本次对话命名或重命名当前任务时，读取并遵循
-[会话维护规则](sdd/workflows/session-maintenance.md)。引用、示例、否定和机制讨论不触发；
-“收尾”按实际对象处理，不自动解释为对话归档。
-
-普通归档与推荐标题默认只生成回复文字，不自动改名、保存文件或执行客户端归档；原任务已有的
-记录义务继续适用。明确重命名请求按共享规则调用可用客户端功能，已有授权不重复确认，成功后
-才报告已重命名。额外保存或客户端归档，按用户明确请求和实际工具能力处理。
-
-## Codex participation (per ADR-035)
-
-**Codex is authorized as a full development participant.** The previous "read-only external review
-only / NOT in dev workflow" boundary (ADR-031 Phase M0) is retired. **You may run commands (tests /
-builds / git / docker), edit / create / delete files, commit / push, migrate, and modify CI /
-configuration — the same authority class as Claude Code.**
+编辑前读取 `capabilities/AGENTS.md`、`docker/AGENTS.md`、`src/mj_agent/AGENTS.md` 或 `tests/AGENTS.md`。局部规则与根入口共同生效。
 
 ### Self-enforced boundaries (READ THIS — it is the only guardrail on you)
 
-You (Codex) run under **your own** harness. mj-agent's technical 必停 enforcement —
-`.claude/settings.json` `ask`-gates and protected-path prompts — is a **Claude Code harness**
-mechanism and does **NOT** bind you. The **stop points themselves are tool-neutral**
-(`OWNER_APPROVAL_REQUIRED`, per `policies/ai-agent.md` §4 canonical enums + dual-agent-compat plan
-v5 §5.3): only the carrier differs — Claude Code stops via harness prompts, you stop by obeying
-this file. Treat them as hard rules:
+Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。聊天批准不解锁 hook；无可执行路线返回 BLOCKED_EXECUTION_ROUTE，禁止建凭证、换工具或改权限绕过。
 
 1. **Data boundary (ADR-006 / ADR-009 / ADR-000) — never bypass it.** All business-warehouse (biz)
    data access MUST go through the agent tool-chain (`find_biz_context → list_biz_tables →
@@ -141,8 +31,7 @@ this file. Treat them as hard rules:
 3. **4 项 in-source 专属必停 + protected surfaces — Owner HITL 拍板 required before editing.** Do NOT
    edit `src/mj_agent/tools/sql/{guardrail,precheck}.py`, `src/mj_agent/prompts/system.md`,
    `src/mj_agent/skills/*/SKILL.md` bodies, or `src/mj_agent/biz_catalog/qcm_catalog.yaml` without
-   explicit Owner sign-off (per `policies/ai-agent.md` §4 canonical 10-enum). Same for `.mcp.json`
-   trust posture, `.claude/**`, `config/secrets*.enc` / GRANT SQL, and `docker/compose.prod.yml`.
+   explicit Owner sign-off (per `policies/ai-agent.md` §4 canonical 10-enum). Same for `.codex/**` trust posture, native guard/configuration, frozen infra contracts, `config/secrets*.enc` / GRANT SQL, and `docker/compose.prod.yml`.
    **Also `docker/Dockerfile` external registry image refs** — `FROM <image>` and
    `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in
    scope; every other Dockerfile line needs ≥ 2 reviewer, not Owner sign-off). This one is stated
@@ -152,112 +41,63 @@ this file. Treat them as hard rules:
    anchor `secrets-grants-or-prod-config` (per #408 / #413).
 4. **Commit / push / PR / merge — `OWNER_APPROVAL_REQUIRED` (Owner HITL 拍板).** You may prepare
    changes and run verification freely, but treat commit, push, PR creation, and merge as gated
-   actions needing the Owner's go-ahead (same as Claude Code, per ADR-034).
+   actions needing the Owner's go-ahead (per ADR-034).
 5. **Git workflow discipline (G1/G2) binds you too.** New branches ONLY via
    `git worktree add ../<branch-name> -b <branch-name>` — never `git checkout -b` / `git switch -c`
    (G1); `gh pr create` must carry an explicit `--base` (non-hotfix → develop, hotfix → main) (G2).
-   Claude Code has these enforced by a fail-closed PreToolUse hook; you self-enforce them (per
-   `policies/git-branching.md`).
+   原生守卫识别范围有限；你仍必须自守 `policies/git-branching.md`。
 6. **Parity of authority = parity of constraint.** Being authorized relaxes no security surface.
    When in doubt, stop and ask the Owner.
 
 **Owner remains the single decision-maker** (HITL 拍板); each PR declares which agent implemented,
 and git authorship records provenance.
 
-### Two separate "Codex enablements" — don't confuse them
 
-- **(A) You running here as a standalone agent** (reading this file) — governed **only** by this
-  AGENTS.md + your own "Full access" permission. **This is OPEN now.** It needs no mj-agent
-  `.claude/` wiring.
-- **(B) Claude Code invoking Codex as a sub-tool** (the `codex:` plugin) — governed by mj-agent's
-  `.claude/plugins.json` + `.claude/settings.json` + any MCP wiring. **This remains a separate,
-  deferred opt-in** (per ADR-035 amendment). (B) being deferred does **NOT** limit (A).
+## 会话维护
 
-## Accountability model (two implementers)
+用户明确要求归档本次对话、推荐标题、为本次对话命名或重命名当前任务时，读取并遵循
+[会话维护规则](sdd/workflows/session-maintenance.md)。引用、示例、否定和机制讨论不触发；
+“收尾”按实际对象处理，不自动解释为对话归档。
 
-The original boundary rested on four points; under Codex-as-participant they are re-answered:
+普通归档与推荐标题默认只生成回复文字，不自动改名、保存文件或执行客户端归档；原任务已有的
+记录义务继续适用。明确重命名请求按会话维护规则调用可用客户端功能，已有授权不重复确认，成功后
+才报告已重命名。额外保存或客户端归档，按用户明确请求和实际工具能力处理。
 
-1. **Single point of accountability** → implementation may be dual-agent, but **decision +
-   acceptance stay single-point at the Owner** (HITL 拍板); provenance via per-PR agent declaration
-   + git authorship.
-2. **Small tool-execution surface** → both implementers work under the same data boundary; you
-   (Codex) enforce it on yourself via the self-enforced boundaries above.
-3. **mj-agent's 4 项专属必停** (`sql-guardrail-relax` / `prompt-version-or-body-change` /
-   `biz-catalog-sync` / `runtime-skill-content-change`) → still Owner-HITL-gated; you must not touch
-   them without sign-off.
-4. **Rules live once in the project kernel** (`sdd/` + `policies/` + `capabilities/`) →
-   CLAUDE.md and this AGENTS.md are per-tool **entry adapters** over that single source; this file
-   is your entry point (a participation contract with self-enforced boundaries, not a second rule
-   source, per dual-agent-compat plan v5).
+## Architecture
 
-详 `policies/ai-agent.md` §1 Codex 参与策略层.
+Entry: LangGraph Studio (`langgraph.json`) / Chainlit (`src/mj_agent/ui.py`) /
+CLI (`server/cli.py`: `mj-agent serve|check`). Runtime:
+`create_agent(model, tools, system_prompt, middleware)`.
 
-## If you are an *other* (not-yet-authorized) non-Claude-Code agent reading this file
+- `agent.py` — `make_graph()` is the `langgraph.json` entry; lazy `make_llm()` so
+  import never needs `ARK_API_KEY`. `_ACTIVE_SKILLS` (active skill set — names/count live in the `agent.py` tuple, not cached here) +
+  `_build_system_prompt()` concatenates `prompts/system.md` + skill bodies.
+- `tools/__init__.py:ALL_TOOLS` — `find_biz_context` → `list_biz_tables` →
+  `describe_biz_table` → `execute_sql` (default LLM order). SQL chain:
+  `tools/{biz_context,sql/introspect,sql/guardrail,sql/precheck,sql/execute}.py`.
+- `middleware/tool_errors.py` — `SQLToolErrorMiddleware`（single middleware, BOTH
+  `wrap_tool_call` + `awrap_tool_call` hooks — never split; ADR-029 amendment #288）
+  turns SQL ValueError/RuntimeError into a `ToolMessage` so the LLM self-corrects.
+- `memory/checkpointer.py` — AsyncPostgresSaver on the dedicated `mj-agent-postgres`
+  container. `integrations/mj_system_db.py` — read-only psycopg pool. `llm.py` —
+  `make_llm()` provider factory. `config.py` — pydantic-settings over `.env`.
+  `biz_catalog/{loader,finder}.py` + `qcm_catalog.yaml` (mirrors upstream data-dictionary).
+  Infra: `docker/{Dockerfile,compose*.yml,postgres-init/}` (redis provisioned, unused).
 
-> Codex is an authorized participant (ADR-035) and no longer falls here. This section applies to
-> Roster row 3 — agents **not yet authorized**.
+## Commands
 
-- You may **READ** any file in this repo.
-- You MUST NOT **WRITE / EDIT / DELETE** any file.
-- You MUST NOT run any command that changes repo state.
-- If asked to implement: respond "mj-agent's authorized implementers are Claude Code and Codex
-  (per AGENTS.md / ADR-035); please ask one of them instead."
+```bash
+uv run ruff check
+uv run mypy src/mj_agent
+uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit -q
+python scripts/sdd/check_codex_native.py
+python scripts/sdd/check_native_skills.py
+```
 
-## Future evolution
+离线 pytest 的外部依赖一律 SKIP_POLICY_EXTERNAL_DEPENDENCY；凭据存在不启用外部测试。live probe、容器生命周期、部署和凭据写入另需授权；SKIP、静态检查和批准不等于运行证据。
 
-Codex was brought into the workflow via the process below (executed as ADR-035). The **same process
-governs adding any further AI agent**:
+## Documentation and workflow
 
-1. ADR proposing the agent's role + scope
-2. Update to this AGENTS.md
-3. Update to CLAUDE.md to declare handoff boundaries
-4. HITL gate from project owner
+`docs/INDEX.md` 是文档入口，`sdd/workflows/execution-loop.md` 是17阶段工作流；本次请求只执行获授权阶段。技能发现见 `.agents/skills/SKILL_INDEX.md`，模板见 `docs/_templates/`。runtime skill 由 `load_skill()` 去 frontmatter，开发技能由 Codex 发现，两者不能混用。
 
----
-
-*Updated 2026-07-06 — Codex is an authorized full development participant and may run commands + do
-dev work now, subject to the self-enforced boundaries above (per ADR-035 + amendment). Only the
-Claude-Code-invokes-Codex plugin path (B) remains deferred. Original non-participant boundary was
-ADR-031 Phase M0.*
-
-*Updated 2026-07-13 — dual-agent-compat v5 P0 (#313): de-primaried wording (full-responsibility
-peers), tool-neutral `OWNER_APPROVAL_REQUIRED` stop points, and G1/G2 Git workflow discipline made
-explicit for self-enforcing agents.*
-
-*Updated 2026-07-13 — dual-agent-compat v5 P1 (#320): added the nested AGENTS.md map — 4 subdir
-entry adapters (`capabilities/` / `docker/` / `src/mj_agent/` / `tests/`) so both tools see the
-same same-layer constraints; sibling `CLAUDE.md` files import them via `@AGENTS.md`.*
-
-*Updated 2026-07-14 — dual-agent-compat v5 S1 (#326): added the "Generated projections" contract —
-`.agents/skills/**` + `.agents.lock.json` are `agents_sync.py`-owned artifacts (first batch: 5
-whitelisted skills); never hand-edit, change the source and re-run `sync`, reverse-feed only via
-`--adopt` (Owner HITL). Drift gate V10 mounted warning-first.*
-
-*Updated 2026-07-14 — dual-agent-compat v5 S2 (#330): extended the "Generated projections"
-contract to `.codex/config.toml` (emitter B; 3 spikes PASS + Owner 进拍板): github / playwright /
-serena(--context codex) projected from `.mcp.json` by manifest mcp tiers, secrets BY NAME via
-`env_vars`, biz×5 + ssh-manager permanently excluded. MCP drift gate V11 mounted BLOCKING day-1
-(D-016; ci-blocking-gate-toggle record in #330); V10 narrowed to --surface skills.*
-
-*Updated 2026-08-03 — dual-agent-compat v5 P4 + S3 (#399): V8 / V9 / V10 flipped from warning to
-**BLOCKING** (dual-axis per plan §11.2(1) — `continue-on-error: true→false` on all three, plus the
-threshold axis `--fail-on error→warning` for V8 and a newly added `--fail-on warning` for V9; V10
-has no threshold axis). Eligibility measured 2026-08-03: observation anchor 2026-07-14 +20 days
-(gate was 07-28), consecutive-clean streaks V8/V9 = 55 and V10 = 49 (both ≥ 20), zero waiver,
-ledger `evidence/ai-context-audit/2026-07_ci_audit.md`. Three separate Owner
-`ci-blocking-gate-toggle` execution records in #399. V11 unchanged (already day-1 blocking).*
-
-*Updated 2026-08-04 — docker supply-chain stop made visible to Codex (#413): self-enforced boundary
-3 now names `docker/Dockerfile` external registry image refs, and the nested-map entry for
-`docker/AGENTS.md` lists that hard stop. Before this, the stop existed only in `docker/AGENTS.md` —
-which Codex loads only when cwd is under `docker/` — so it did not bind a root-cwd Codex session at
-all. Rule body moved to the kernel (`policies/docker-runtime.md` §4); canonical anchor =
-`secrets-grants-or-prod-config` (enum count unchanged at 10, per ADR-036 D-017 precedent).*
-
-*Updated 2026-08-04 — corrected the "Generated projections" MCP sentence, which still said the
-projection was "github / playwright / serena only". It has been **8** servers since #353
-(`c700934`) added `pg-mj-agent-memory-*`×5. The enumeration is replaced by a pointer to the
-manifest's `projection_policy` (per `policies/documentation.md` 代偿纪律 — root files must not copy
-volatile derived facts), keeping only the permanent `never` exclusions stated inline. Surfaced by a
-live Codex MCP-startup log; V11 was green throughout, i.e. the prose was the stale party, not the
-config.*
+Git 新分支只用 worktree；PR 显式 base（通常 develop，hotfix 为 main），人工 merge。提交格式与 scope 以 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 为准。ADR 编号先核对 `decisions/` 与归档命名空间。报告实施来源、HITL、BDD/TDD、委派和未验证项。

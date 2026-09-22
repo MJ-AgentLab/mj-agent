@@ -1,0 +1,49 @@
+{
+  "at": "2026-09-21T06:14:39.394552+00:00",
+  "status": "PASS_CURRENT_SIX_FILE_DELIVERY_ACTUAL_CI",
+  "run": 35564875219,
+  "attempt": 1,
+  "event": "push",
+  "head": "40b470320ef9cf073f0d18867ca6134fa95637d2",
+  "branch": "maintain/p4-acceptance-20260920",
+  "tree": "8d800f400092f57e0d894b64dc36dbbe5a378c3c",
+  "url": "https://github.com/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/runs/35564875219",
+  "jobs": 1,
+  "steps": 49,
+  "tests": {
+    "unit_eval_integration": {
+      "passed": 977,
+      "skipped": 15,
+      "deselected": 82
+    },
+    "bdd": {
+      "passed": 13,
+      "skipped": 7
+    },
+    "contract": {
+      "passed": 64
+    },
+    "total_passed": 1054,
+    "total_skipped": 22
+  },
+  "test_summary_lines": [
+    "ci\tTests (unit + eval + integration; smoke + contract + bdd excluded by default)\t2026-09-21T05:32:54.3054625Z ========= 977 passed, 15 skipped, 82 deselected, 24 warnings in 13.98s =========",
+    "ci\tBDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)\t2026-09-21T05:33:01.0888241Z 13 passed, 7 skipped, 48 warnings in 3.64s",
+    "ci\tContract tests (offline; synthetic snapshot fixtures)\t2026-09-21T05:33:03.4223283Z ============================== 64 passed in 0.28s =============================="
+  ],
+  "source_delivery": 817,
+  "CI_blob_count": 819,
+  "binding": "CI-binding-proposed.json; current source bytes delivery-binding-current.json",
+  "evidence_read": "Resumed unchanged query succeeded after Owner continued remediation; run/jobs/log reads exit0",
+  "old_failures": "Initial unknown gh exit1 and authorized retry TLS timeout retained; neither was CI failure",
+  "prior_run": 35560658984,
+  "new_CI_trigger_this_turn": false,
+  "limits": "Private acceptance push workflow; original repository PR-only/branch protection and P6 release not tested; static CI is not L5 model execution",
+  "hashes": {
+    "CI-run-35564875219-run.json": "e6db994d9f6cf62d969f8ae34cc9391ae46de6b0ee1211e8dc50029a78d0d7cd",
+    "CI-run-35564875219-jobs.json": "9a8c6ea33d0143d1cdb13e60dd7c40040cf5c5d8ccca86b6fdb9e77ed7ab2d00",
+    "CI-run-35564875219.log": "e2b21e8804a213b9a2b9735cfd80b2ff7473855ad3e075f093e25a79c2622878",
+    "CI-result-read-resumed.json": "d8b8b0cb8782ab51c8ba1f92382a8670e1e5d82c1967df4be26913003533927a",
+    "CI-evidence-read-commands.json": "f68cc59825028fd25dfa4df9c079f2fa270b11d756cf52e42c6e5cf5841f6919"
+  }
+}

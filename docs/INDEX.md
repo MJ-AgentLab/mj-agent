@@ -4,15 +4,15 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-09-17
+updated: 2026-09-22
 state: draft
 track: shared
 ---
 
 # mj-agent 文档索引
 
-> **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Claude Code 不
-> 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `CLAUDE.md`.
+> **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
+> 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.
 >
 > **互引（per spec-anchored-refactor）**：
 > - 治理元规则：[../sdd/constitution.md](../sdd/constitution.md) +
@@ -43,13 +43,13 @@ track: shared
 
 | Kernel 文档 | 治理范围 |
 |------|------|
-| [[policies/documentation\|policies/documentation]] | 12 类文档分类 / `track` 字段 + 决策树 / PR 门禁 A1-A6 + OB1-OB5 / frontmatter schema + 类型专属 / per-type body 深度（§8）/ CLAUDE.md sync-allowlist |
+| [[policies/documentation\|policies/documentation]] | 12 类文档分类 / `track` 字段 + 决策树 / PR 门禁 A1-A6 + OB1-OB5 / frontmatter schema + 类型专属 / per-type body 深度（§8）/ AGENTS.md sync-allowlist |
 | [[policies/archive\|policies/archive]] | 归档触发判定 / active-path-stability / 状态机 / `archive.yml` manifest schema / ceremony playbook / ai_visibility + G14/G15 / retention |
 | [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 4 态（含 §2.5 retroactive 补落）/ archive 5 态 / 转移触发 + gate 联动 |
 | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
-| [[sdd/workflows/session-maintenance\|sdd/workflows/session-maintenance]] | 开发协作会话归档摘要 / 推荐标题 / 明确重命名 / 客户端动作边界；Codex 与 Claude Code 共用 |
-| `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/claude-code-skill\|claude-code-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.claude/` SKILL 治理（A7-A14 surface） |
-| [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 settings.json blocking |
+| [[sdd/workflows/session-maintenance\|sdd/workflows/session-maintenance]] | Codex 开发协作会话归档摘要 / 推荐标题 / 明确重命名 / 客户端动作边界 |
+| `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/development-skill\|development-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.agents/` 原生开发技能治理（A7-A14 surface） |
+| [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 原生保护检查 |
 | [[policies/git-branching\|policies/git-branching]] / [[policies/release\|policies/release]] | 分支类型 / commit 类型 / G1·G2 worktree / PR 模板矩阵（§4）/ SemVer bump 规则 + dev·release tags（M6 X6 把 git **规则**从 `docs/infrastructure/git/` GUIDEs absorb 进 kernel；GUIDEs 保留 operational how-to，不归档）|
 
 ## 架构决策（decisions/）
@@ -69,16 +69,16 @@ track: shared
 | [[decisions/ADR-012_Two_Track_Documentation_Governance\|ADR-012 Two-Track Documentation Governance]] | SYS | accepted (state: draft) | 决议引入双轨文档治理（Code_Side + Agent_Side + Meta 元层）+ skeleton-first 演进 + 双 plugin 骨架 |
 | [[decisions/ADR-013_Plugin_SKILL_md_Schema_Separation\|ADR-013 Plugin SKILL.md Schema Separation]] | SYS | accepted (state: draft) | marketplace plugin SKILL.md 使用 Claude Code 原生 schema（name + description 两字段），与 mj-agent in-source SKILL.md 的 13 字段 schema 独立 |
 | [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014 Tri-Track Documentation Governance v2.1]] | SYS | accepted | 决议引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁加入；mj-agent-* 命名空间；skeleton-first 落地 |
-| [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .claude/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .claude/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow / git / doc / runtime / infra）+ lifecycle (P0/P1/P2 + sunset 规则) |
+| [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016 In-Tree .agents/skills/ Ecosystem]] | WORKFLOW | accepted | mj-agent .agents/skills/ in-tree 工程编排技能命名空间 mj-agent-<group>-<verb>（5 family：flow / git / doc / runtime / infra）+ lifecycle (P0/P1/P2 + sunset 规则) |
 | [[decisions/ADR-020_Archive_Auto_Discovery\|ADR-020 Archive Auto-Discovery]] | SYS | accepted | scripts/check_wikilinks.py 改为 auto-discover NEEDLES from `docs/archive/rule/[DEPRECATED]_*.md` glob；零维护 archive 引用校验 |
 | [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]] | AGENT | accepted | Agent_Side v1.2 §4 EVAL Authoring 完整规范（4 子类 outcome/trajectory/component/integration + body 八段 + frontmatter schema）；mj-agent 原生 |
 | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026 Multi-Environment Compose Profile]] | OPS | accepted | docker-compose 4-file 分层（base + override + test + prod）；compose project name 跨 profile 不变；dev 也用显式 -f 链（auto-load 不生效 quirk） |
 | [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027 LLM Provider Abstraction]] | AGENT | accepted | `make_llm()` 抽象为 provider 分支 factory（ark + local-openai-compat 支持 DGX-Spark vLLM/SGLang/Ollama）；Profile enum 不扩 dgx |
-| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] | WORKFLOW | accepted | `.mcp.json` 13 servers（**决策时点数；现为 14**，活体清单 = `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`）+ 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement；**M6 X5 已 archive，该目录不复存在** → 同上 capability）+ A14 PR gate 实施细则；独立 secrets pipeline |
+| [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028 MCP Server Inventory + Governance]] | WORKFLOW | accepted | `.mcp.json` 13 servers（**历史决策时点数；原生现役八项见配置**，活体清单 = `capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml`）+ 新建 `docs/infrastructure/mcp/` STANDARD（领域专属 placement；**M6 X5 已 archive，该目录不复存在** → 同上 capability）+ A14 PR gate 实施细则；独立 secrets pipeline |
 | [[decisions/ADR-029_Tool_Error_Surfacing_To_LLM\|ADR-029 Tool Error Surfacing to LLM via Middleware]] | AGENT | accepted | `src/mj_agent/middleware/tool_errors.py` 用 `@wrap_tool_call` 把 SQL 工具 ValueError/RuntimeError 转为 ToolMessage；工具函数本身保留 raise 行为；修掉 2026-05-12 frontend hang 根因 |
 | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | accepted | 把 MCP 基础设施 secrets（5 SSH + 10 PG URL = 15 keys）从 `config/secrets.enc` 拆出到独立的 `config/secrets-mcp.enc`，解密后直接写 OS User-level env（不入 `.env`）；对齐 mj-system v2.3 `secrets-sys-ops.enc` 范式；新增 `setup-mcp-secrets.ps1` + `encrypt-secrets-mcp.ps1`；删除旧 `setup-mcp-env.ps1`（一次性迁移工具 `migrate-secrets-bundle-split.ps1` 已随 #297 移除，见 ADR-030 Amendment） |
 | [[decisions/ADR-031_Spec_Anchored_Refactor\|ADR-031 Spec-Anchored Refactor]] | SYS | accepted | Maximum Spec-Anchored Refactor（Phase M0-M6）：把 tri-track STANDARD + 20 active ADR + ~100 篇文档治理语料重构为 SDD Kernel + Capability Package + Business Policy 三支柱架构，落地机器可读 contract + capability lifecycle + CI gates（M0-M6 已落地、#245 闭幕；promoted accepted 2026-07-23 #372） |
-| [[decisions/ADR-032_Claude_Skill_Schema_Monitoring\|ADR-032 Claude Skill Schema Monitoring]] | WORKFLOW | accepted | 为 `.claude/skills/` ADR-013 native 2-field schema 合规建立 3 层监控：validator gate（V4；M3 warning / M4 blocking）+ PR 模板 A12 提示 + 季度 A6 audit；把原 M3-FU 范围从「修既存偏差」（premise 经 reverify 证伪）重构为「防未来偏差」（promoted accepted 2026-07-23 #372；V4 已 blocking） |
+| [[decisions/ADR-032_Claude_Skill_Schema_Monitoring\|ADR-032 Claude Skill Schema Monitoring]] | WORKFLOW | accepted | 为 `.agents/skills/` ADR-013 native 2-field schema 合规建立 3 层监控：validator gate（V4；M3 warning / M4 blocking）+ PR 模板 A12 提示 + 季度 A6 audit；把原 M3-FU 范围从「修既存偏差」（premise 经 reverify 证伪）重构为「防未来偏差」（promoted accepted 2026-07-23 #372；V4 已 blocking） |
 | [[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary\|ADR-033 DGX Ops Sister-Repo Boundary]] | OPS | accepted | DGX-Spark serving/ops 归独立姊妹仓 `MJ-AgentLab/dgx-mlops`；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算）；T-1/T-2/T-5 跟踪锚点 |
 | [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034 HITL Propose → 拍板 → Apply Model]] | WORKFLOW | accepted | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（`.claude/**` / `.mcp.json`）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff 纪律 + Owner 执行步骤字段；仅交互模式成立；supersede ADR-015 §决策点 4 残留 |
 | [[decisions/ADR-035_Codex_Full_Development_Participant\|ADR-035 Codex Full Development Participant]] | WORKFLOW | accepted | Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑 / 提交 / 迁移，受同一 HITL 必停 + 数据边界约束）；本 ADR 仅反转书面政策，技术使能延后为独立 opt-in；(A) standalone Codex 靠 AGENTS.md 自守 prose enforce、(B) Claude-Code-调用-Codex 插件仍延后；数据边界 ADR-006/009/000 不变 |
@@ -109,7 +109,7 @@ track: shared
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1\|Framework v1.1（archive）]] | v2.0 trio：Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.0 引入 `track` frontmatter 字段与双轨子框架；详见 [[decisions/ADR-012_Two_Track_Documentation_Governance\|ADR-012]] |
 | Meta_Framework v2.0 + Code_Side v1.0 + Agent_Side v1.0 (all archive) | v2.1 trio (现 v2.2 stable) + HITL_Prompt v1.0 | v2.1 引入第三轨 engineering-workflow（治理 .claude/ + HITL_Prompt + 工程流程 STANDARD）+ A12-A14 PR 门禁 + §3.10 in-tree workflow SKILL 治理；详见 [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014]] |
 | Meta_Framework v2.1 (archive) | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2\|Meta_Framework v2.2（archive）]] | v2.2 引入 §4.4 active canonical 路径稳定原则（已归档 ADR-018 决议；filename rename 触发已归档 ADR-017 §5.9 trigger #4）；v2.2 本身已于 M6 PR4 archive |
-| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2\|Meta_Framework v2.2（archive）]] | SDD kernel：[[policies/documentation\|policies/documentation]] + [[policies/archive\|policies/archive]] + [[sdd/lifecycle\|sdd/lifecycle]] + [[sdd/adapters/claude-code-skill\|claude-code-skill]] | **M6 PR4（2026-06-04）**：tri-track doc-governance 内容迁入 SDD kernel（policies/ + sdd/）；本 STANDARD 作 cite-by-vintage frozen 快照（ADR-011 §5.6 + ADR-019） |
+| [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2\|Meta_Framework v2.2（archive）]] | SDD kernel：[[policies/documentation\|policies/documentation]] + [[policies/archive\|policies/archive]] + [[sdd/lifecycle\|sdd/lifecycle]] + [[sdd/adapters/development-skill\|development-skill]] | **M6 PR4（2026-06-04）**：tri-track doc-governance 内容迁入 SDD kernel（policies/ + sdd/）；本 STANDARD 作 cite-by-vintage frozen 快照（ADR-011 §5.6 + ADR-019） |
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1\|Code_Side v1.1（archive）]] | [[policies/documentation\|policies/documentation]]（§1 / §2 / §5 A1-A6 / §6 / §8） | M6 PR4：Track A 代码侧文档治理迁入 kernel |
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.2\|Agent_Side v1.2（archive）]] | [[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] + [[policies/documentation\|documentation]] §5.3 + [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024]]（EVAL，仍 active） | M6 PR4：Track B 智能体侧治理迁入 adapters；EVAL spec 留 ADR-024（PR4b guard，未归档） |
 | [[archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1\|HITL_Prompt v1.1（archive）]] | [[sdd/workflows/execution-loop\|execution-loop]] + [[policies/ai-agent\|ai-agent]] §4 | M6 PR4：Track C 17-stage 执行闭环迁入 execution-loop |
@@ -143,8 +143,8 @@ track: shared
 | `TEMPLATE_SPEC.md` | SPEC 骨架；body §0 + 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；§0 任务类型识别按 [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|SPEC Authoring GUIDE]] §3 决策树 + §4 8 类裁剪规则 |
 | `TEMPLATE_REPO_SCAN_RESULT.md` | HITL Stage 3 Repo Scan Result 输出结构（对话输出，**不**写文件）；与 `mj-agent-flow-repo-scan` SKILL Output Format 一致；含 8-dim Evidence Map + 10 行 Documentation Decision + Stale Doc Reverse Scan + Plan Verdict + HITL Questions |
 | `TEMPLATE_PLAN.md` | HITL Stage 4 Plan body 模板（写到 `plans/[PLAN]_*.md`）；轻量 5-6 段（Scope / Task Breakdown / Risk Control / Verification / AC + 可选 Phase 子包 / 严格守约）；从 plans/ 既有 18 份范例综合 |
-| `TEMPLATE_HITL_STAGE.md` | 执行闭环单 stage prompt 模板；匹配通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[sdd/workflows/execution-loop\|执行闭环 workflow]] §2 配套 —— per-stage prompt **本体**归 `.claude/skills/mj-agent-*` SKILL（kernel 明写不 re-port），execution-loop 只持 stage 骨架（§1）+ stage→skill 映射（§4） |
-| `TEMPLATE_WORKFLOW_SKILL.md` | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.claude/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
+| `TEMPLATE_HITL_STAGE.md` | 执行闭环单 stage prompt 模板；匹配通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[sdd/workflows/execution-loop\|执行闭环 workflow]] §2 配套 —— per-stage prompt **本体**归 `.agents/skills/mj-agent-*` SKILL（kernel 明写不 re-port），execution-loop 只持 stage 骨架（§1）+ stage→skill 映射（§4） |
+| `TEMPLATE_WORKFLOW_SKILL.md` | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
 | `TEMPLATE_POSTMORTEM.md` | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[policies/documentation\|documentation policy]] §8.0 + §6.2 |
 | `TEMPLATE_ISSUE.md` | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
 | `TEMPLATE_ASSESSMENT.md` | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
@@ -211,7 +211,7 @@ track: shared
 
 ---
 
-## 工程编排技能（`.claude/skills/`，Track C engineering-workflow）
+## 工程编排技能（`.agents/skills/`，Track C engineering-workflow）
 
 按 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] 锁定的 5 family / 命名空间 `mj-agent-<group>-<verb>`，目标态 32 skills；落地状态随 PR-B1...D 推进：
 
@@ -277,7 +277,7 @@ track: shared
 | `/mj-agent-infra-app-start` | 10 sub app runtime 有序启动（prereq→launch→verify） | **active**（本 PR #304） |
 | `/mj-agent-infra-app-stop` | 17 sub app runtime 非破坏停止（host tree-kill + Level-1 down） | **active**（本 PR #304） |
 
-合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_claude_skill_contracts.py --all` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 propose→拍板→apply（ADR-034）；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_native_skills.py --surface skills` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 propose→拍板→apply（ADR-034）；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
@@ -308,5 +308,7 @@ track: shared
 
 ## 快速链接
 
-- Claude Code 工作区配置：`.claude/`（项目级 `.claude/{settings.json,skills/**,scripts/**,hooks/**}` + `.mcp.json` 纳入 engineering-workflow track；详见 [[sdd/adapters/claude-code-skill\|claude-code-skill adapter]] §Scope + [[policies/ci-gates\|ci-gates policy]] §5 + [[decisions/ADR-014_Tri_Track_Documentation_Governance\|ADR-014]]）
+- Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，项目与 hook 信任由工程师独立审阅；见 [[decisions/ADR-040_Codex_Only_Development|ADR-040]]）。
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）
+
+- 原生开发维护、受控离线测试、平台边界与恢复交接：[[guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §4 / §6.4。

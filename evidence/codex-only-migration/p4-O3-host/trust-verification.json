@@ -1,0 +1,164 @@
+{
+  "case": "O3",
+  "status": "OWNER_HOOK_TRUST_AND_ENABLE_VERIFIED; ACTUAL_HOOK_EXECUTION_NOT_TESTED",
+  "clone": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+  "screenshots": [
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-82bd2804-688d-4480-b752-c386216de69e.png",
+      "archive": "01-launch-wait.png",
+      "sha256": "d511020d92b63cfb83af6b7312adf99488c25210d1cf1eb336facef486caca46",
+      "bytes": 77213
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-6470cac2-efe4-4335-bdda-8fbd1678b034.png",
+      "archive": "02-review-menu.png",
+      "sha256": "9c3ed728a449b3d9f8144c244fc1acd68360dc45253a3ae12ed68b780ac5411f",
+      "bytes": 78904
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-f0d4520a-ce2b-4093-867b-504ef353f827.png",
+      "archive": "03-installed-inactive.png",
+      "sha256": "dc538fd11614640aeb78ec96cbf7122d62188daf928f22bb5abda94714174713",
+      "bytes": 178958
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-496f5eaa-1b42-4571-9903-3a534bb7723c.png",
+      "archive": "04-definition-before-trust.png",
+      "sha256": "6e179ae84a09062bbd17e2d0cc561f8d9faee00370581cc19c8754c9ecce7218",
+      "bytes": 169408
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-aae361d0-c48e-4421-809e-613b19afcdf4.png",
+      "archive": "05-owner-trusted.png",
+      "sha256": "64fc86c66e2a9876470a08e63278daa4ab50fc5f763f20861274f63d21a16874",
+      "bytes": 169257
+    },
+    {
+      "source": "C:\\Users\\Admin\\AppData\\Local\\Temp\\codex-clipboard-fb8d4315-1dbe-4a2c-a5b3-a6efd79016c8.png",
+      "archive": "06-installed-active.png",
+      "sha256": "1337bb82081edf05cc3d293fd6dee4c751988b63f941f973d447982638b6fc25",
+      "bytes": 171372
+    }
+  ],
+  "metadata_result": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-103416-topology-clone-inventory",
+  "metadata_exit_code": 0,
+  "hooks": [
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\src\\mj_agent",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\tests",
+      "hooks": [
+        {
+          "key": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json:pre_tool_use:0:0",
+          "eventName": "preToolUse",
+          "handlerType": "command",
+          "matcher": "Bash|shell|exec_command|apply_patch|Edit|Write",
+          "command": "pwsh -NoProfile -EncodedCommand JABFAHIAcgBvAHIAQQBjAHQAaQBvAG4AUAByAGUAZgBlAHIAZQBuAGMAZQAgAD0AIAAnAFMAdABvAHAAJwA7ACAAdAByAHkAIAB7ACAAJAByACAAPQAgACYAIABnAGkAdAAgAHIAZQB2AC0AcABhAHIAcwBlACAALQAtAHMAaABvAHcALQB0AG8AcABsAGUAdgBlAGwAIAAyAD4AJABuAHUAbABsADsAIABpAGYAIAAoACQATABBAFMAVABFAFgASQBUAEMATwBEAEUAIAAtAG4AZQAgADAAIAAtAG8AcgAgAC0AbgBvAHQAIAAkAHIAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAHIAbwBvAHQAJwAgAH0AOwAgACQAcAAgAD0AIABKAG8AaQBuAC0AUABhAHQAaAAgACQAcgAgACcAcwBjAHIAaQBwAHQAcwAvAHMAZABkAC8AcgB1AG4AXwBjAG8AZABlAHgAXwBoAG8AbwBrAC4AcABzADEAJwA7ACAAaQBmACAAKAAtAG4AbwB0ACAAKABUAGUAcwB0AC0AUABhAHQAaAAgAC0ATABpAHQAZQByAGEAbABQAGEAdABoACAAJABwACkAKQAgAHsAIAB0AGgAcgBvAHcAIAAnAGgAYQBuAGQAbABlAHIAJwAgAH0AOwAgACYAIAAkAHAAIAB9ACAAYwBhAHQAYwBoACAAewAgAFsAQwBvAG4AcwBvAGwAZQBdADoAOgBPAHUAdAAuAFcAcgBpAHQAZQBMAGkAbgBlACgAJwB7ACIAZABlAGMAaQBzAGkAbwBuACIAOgAiAGIAbABvAGMAawAiACwAIgByAGUAYQBzAG8AbgAiADoAIgBVAE4ASwBOAE8AVwBOADoAIABwAHIAbwBqAGUAYwB0ACAAaABvAG8AawAgAHUAbgBhAHYAYQBpAGwAYQBiAGwAZQAiAH0AJwApACAAfQA=",
+          "timeoutSec": 30,
+          "statusMessage": null,
+          "additionalContextLimit": null,
+          "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\.codex\\hooks.json",
+          "source": "project",
+          "pluginId": null,
+          "displayOrder": 0,
+          "enabled": true,
+          "isManaged": false,
+          "currentHash": "sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041",
+          "trustStatus": "trusted"
+        }
+      ],
+      "warnings": [],
+      "errors": []
+    }
+  ],
+  "skills": [
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone",
+      "project_count": 37,
+      "system_count": 6,
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\src\\mj_agent",
+      "project_count": 37,
+      "system_count": 6,
+      "errors": []
+    },
+    {
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\topology clone\\tests",
+      "project_count": 37,
+      "system_count": 6,
+      "errors": []
+    }
+  ],
+  "hook_chain_sha256": {
+    ".codex/hooks.json": "538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a",
+    "scripts/sdd/run_codex_hook.ps1": "9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0",
+    "scripts/sdd/codex_hook_guard.py": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608"
+  },
+  "metadata_hashes": {
+    "events.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "hooks-list.json": "7f61120d7dd686d068532035d271daab0ae1e8fab86f6ff48fc694ee3902ce0c",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "integrity.json": "566e011b9db1b63b895e81082e7101e9246c8492311d07b247d506b449cf578d",
+    "invocation.json": "edac928675605c32bd0c15411886ea32064c59826915ad8c824999a55123f88a",
+    "skills-list.json": "e2a945a0baa67739f0e27bc4355344ad61a4c8296efb8d46f862ef143d4272a7"
+  },
+  "source_delivery_817_unchanged": true,
+  "clone_identity": "816 exact + verified GLOSSARY newline mapping",
+  "separate_project_trust_prompt": "NOT_CAPTURED; project hook actually loaded; do not infer unseen UI confirmation",
+  "auto_trust": false,
+  "new_model_turns": 0,
+  "business_connections": 0,
+  "next_dependency": ".venv absent in clone; no implicit uv environment creation attempted",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE"
+}

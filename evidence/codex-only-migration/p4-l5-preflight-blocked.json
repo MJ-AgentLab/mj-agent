@@ -1,0 +1,117 @@
+{
+  "at": "2026-09-20T03:12:05.734546+00:00",
+  "phase": "P4",
+  "status": "BLOCKED_EXECUTION_ROUTE",
+  "authorization": "User confirmation accepted as response to pending managed MCP/plugin policy precondition; prior scoped execution authorization retained",
+  "managed_policy_confirmation": "OWNER_CONFIRMED; not independent runtime verification",
+  "failure_classification": "CLI_ARGUMENT_COMPATIBILITY_ERROR_IN_REVIEW_SCRIPT; NOT_HOOK_REJECTION; NOT_PROJECT_TEST_FAILURE",
+  "preflight": {
+    "argv": [
+      "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\node_modules\\@openai\\codex-win32-x64\\vendor\\x86_64-pc-windows-msvc\\bin\\codex.exe",
+      "--strict-config",
+      "-c",
+      "web_search=\"disabled\"",
+      "-c",
+      "mcp_servers.github.enabled=false",
+      "-c",
+      "mcp_servers.playwright.enabled=false",
+      "-c",
+      "mcp_servers.serena.enabled=false",
+      "-c",
+      "mcp_servers.pg-mj-agent-memory-dev.enabled=false",
+      "-c",
+      "mcp_servers.pg-mj-agent-memory-test-lan.enabled=false",
+      "-c",
+      "mcp_servers.pg-mj-agent-memory-test-wan.enabled=false",
+      "-c",
+      "mcp_servers.pg-mj-agent-memory-prod-lan.enabled=false",
+      "-c",
+      "mcp_servers.pg-mj-agent-memory-prod-wan.enabled=false",
+      "mcp",
+      "list",
+      "--json"
+    ],
+    "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+    "exit_code": 1,
+    "host_session_started": false,
+    "model_calls": 0,
+    "stderr": "Error: `--strict-config` is not supported for `codex mcp`\n",
+    "servers": [],
+    "isolation_pass": false
+  },
+  "source_evidence": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-l5-preflight\\preflight.json",
+    "sha256": "10e2e49faacab4beeac829d4f3d9c124f85aedaf6a0c7245ad05821c7da15eab"
+  },
+  "cli": {
+    "path": "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\node_modules\\@openai\\codex-win32-x64\\vendor\\x86_64-pc-windows-msvc\\bin\\codex.exe",
+    "version": "codex-cli 0.147.0",
+    "sha256": "935a1911ed2556e4ffcec995f4886ac2ac425863ba26fed264df62e30272ad9d"
+  },
+  "source_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "source_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+  "source_and_l5_copy_sha_matches": 817,
+  "isolated_profile_metadata_only": [
+    {
+      "path": "appdata",
+      "kind": "directory"
+    },
+    {
+      "path": "localappdata",
+      "kind": "directory"
+    },
+    {
+      "path": "temp",
+      "kind": "directory"
+    },
+    {
+      "path": "tmp",
+      "kind": "directory"
+    },
+    {
+      "path": "uv-cache",
+      "kind": "directory"
+    },
+    {
+      "path": "tmp/arg0",
+      "kind": "directory"
+    }
+  ],
+  "executed": "one reviewed read-only mcp list preflight; configuration isolation not established",
+  "not_executed": [
+    "codex login",
+    "TUI",
+    "app-server",
+    "project trust",
+    "hook trust/activation",
+    "skills/hooks inventory",
+    "prompt-input",
+    "model canary",
+    "MCP server launch",
+    "business services"
+  ],
+  "no_retry_or_bypass": true,
+  "review_scripts_changed": false,
+  "permissions_changed": false,
+  "parameter_removal": false,
+  "alternate_tool_or_version": false,
+  "approval_artifact_created": false,
+  "remaining_route": "A version-compatible strict-validation and MCP-isolation route must be concretely reviewed before resuming; no alternate route tried",
+  "L5": "BLOCKED_EXECUTION_ROUTE; dependent discovery/canary BLOCKED_PREREQUISITE / NOT_TESTED",
+  "CI": {
+    "run_id": 35485491970,
+    "head": "5bc6353f90e164ee22edee341d4f6b794b6aaa91",
+    "conclusion": "success",
+    "rerun": false
+  },
+  "L1_L4": "prior scoped evidence unchanged",
+  "U01_U07": "section 25 limited statuses retained; this preflight is not actual MCP/hook validation",
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED",
+  "project_tests_run": 0,
+  "new_remote_actions": 0,
+  "new_commits_or_pushes": 0,
+  "deletions": 0,
+  "moves": 0
+}

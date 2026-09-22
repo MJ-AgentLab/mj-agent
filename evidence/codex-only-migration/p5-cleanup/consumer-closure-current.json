@@ -1,0 +1,155 @@
+{
+  "at": "2026-09-21T06:41:19.404712+00:00",
+  "status": "PASS_CURRENT_CONSUMER_CLOSURE_BOUNDED_SCOPE",
+  "checks": [
+    {
+      "path": ".env.example",
+      "sha256": "8057db4621982b4dd3a8c29765451c3d243b884c9541553ec68e6d8226716d01",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    },
+    {
+      "path": "config/secrets.example",
+      "sha256": "d2ed8d4b3a1b93ac1e998e2fe6c57e746d49534d202cbab8a46512781ccff2da",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    },
+    {
+      "path": "config/secrets-mcp.example",
+      "sha256": "b986752aa9a66e061fc0620d6e8137b545e1ab81aca5b53f409c50581bd05b92",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "sha256": "1577a5a992d73b71f7dad9f7c7683c59e78b5c5f9a9dea464f4711a322ae929f",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    },
+    {
+      "path": "docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md",
+      "sha256": "e63360e401aa6f83a00292f7f6fab5d3e73fbc026d38fe5a7666657446a4423a",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "sha256": "b2eb1824517508940c5f13e338a637e9977c4e28d45e793ba73cca33700d96a8",
+      "result": "EXACT_APPROVED_DIFF_AND_PRESERVATION_PASS"
+    }
+  ],
+  "remaining_six_file_hits": [
+    {
+      "path": "config/secrets-mcp.example",
+      "line": 12,
+      "text": "# .\\.claude\\scripts\\setup-mcp-secrets.ps1 and written directly to OS",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "config/secrets-mcp.example",
+      "line": 13,
+      "text": "# User-level env (HKCU\\Environment), bypassing .env entirely. .mcp.json",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "config/secrets-mcp.example",
+      "line": 17,
+      "text": "# 在 .mcp.json 里全是 pass-by-name、无 fallback，留空则对应 pg MCP server 启动即",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "config/secrets-mcp.example",
+      "line": 29,
+      "text": "# §2 PostgreSQL Connection URLs for .mcp.json pg-server wrapper (10 entries:",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "config/secrets-mcp.example",
+      "line": 31,
+      "text": "# All 10 are pass-by-name in .mcp.json — no `:-` defaults, no placeholder",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "line": 24,
+      "text": "> 本基线快照锁定 `.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 当前内容；作为 `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §quarterly_audit（former MCP STANDARD §6，M6 X5 archived）季度 audit 的漂移检测基准。",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "line": 30,
+      "text": "`.claude/scripts/pg-server-start.cmd`（Windows entry）+ `.claude/scripts/pg-server-wrapper.mjs`（Node.js wrapper）通过 `pg.types.setTypeParser` overrides 修复第三方 `@modelcontextprotocol/server-postgres` 默认对 timestamp 列做 JS Date 转换的问题（导致 SELECT 返 UTC \"Z\" 字符串而非数据库原始字符串）。",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "line": 34,
+      "text": "- `.claude/scripts/pg-server-start.cmd`",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "line": 35,
+      "text": "- `.claude/scripts/pg-server-wrapper.mjs`",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "docs/_baselines/pg_server_baseline.md",
+      "line": 41,
+      "text": "| 1. wrapper 字符级 diff vs 本 baseline | 每季度 | Tooling Reviewer | `git diff <last-baseline-update> -- .claude/scripts/pg-server-*` |",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 62,
+      "text": "> SQL `guardrail.py` / `precheck.py` 和业务 catalog 仍是受保护面，但不是本审计的 Markdown 文本面；继续由原有专属约束保护。原生面集不再从 `.claude/settings.json` 的 `permissions.ask` 推导，不因客户端退役放宽任何保护。",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 87,
+      "text": "（必停 markdown 轨 18 = 9 runtime `SKILL.md` + `system.md` + 8 infra；CLAUDE.md 轨 5）。",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 90,
+      "text": "> 路径重命名（如 `infra/docker/CLAUDE.md` → `docker/CLAUDE.md`）→ 在 entry 内显式标注新旧",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 161,
+      "text": "- **5 CLAUDE.md inventory**: path + line count + plain SHA-256",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 162,
+      "text": "- **34 `.claude/skills/<name>/SKILL.md` inventory** + canonical regex-strip",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    },
+    {
+      "path": "evidence/ai-context-audit/SCHEMA.md",
+      "line": 164,
+      "text": "- **`.claude/settings.json` snapshot**: hooks 列表 (PreToolUse + Stop entries",
+      "classification": "EXPLICIT_HISTORICAL_BASELINE_OR_NEGATIVE_STATEMENT",
+      "reason": "Approved diff identifies legacy schema/baseline as historical; current author/setup references are native. SCHEMA historical cycles retained."
+    }
+  ],
+  "unchanged_scan_files": 811,
+  "limitations": "Historical, negative tests, exclusion lists and cleanup records retained; no assertion of universal dynamic zero-dependency. Manual semantics supplements native executable closure.",
+  "authorization": "Owner: 批准六文件修订与离线复验，继续原81项",
+  "native_check": "consumer-native-predelete.json",
+  "prior_scan": "consumer-scan-classified.json; consumer-exact-scan.json"
+}

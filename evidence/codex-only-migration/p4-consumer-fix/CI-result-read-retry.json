@@ -1,0 +1,12 @@
+{
+  "at": "2026-09-21T05:34:19.737539+00:00",
+  "command": [
+    "C:\\Program Files\\GitHub CLI\\gh.exe",
+    "api",
+    "repos/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/runs?head_sha=40b470320ef9cf073f0d18867ca6134fa95637d2&per_page=10"
+  ],
+  "exit": 1,
+  "authorization": "Owner-approved single identical read retry under CI-READ-RETRY-REVIEW.md; no republish/trigger.",
+  "stderr_sanitized": "Get \"https://api.github.com/repos/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/runs?head_sha=40b470320ef9cf073f0d18867ca6134fa95637d2&per_page=10\": net/http: TLS handshake timeout\n",
+  "head": "40b470320ef9cf073f0d18867ca6134fa95637d2"
+}

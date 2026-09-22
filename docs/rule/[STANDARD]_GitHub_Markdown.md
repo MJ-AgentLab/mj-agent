@@ -20,7 +20,7 @@ aliases:
 
 # mj-agent GitHub-Flavored Markdown 编写规范
 
-> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / CLAUDE.md` 5 个具名 markdown + `AGENTS.md`（AI agent 指令契约，per ADR-035）（见 §14 项目根特例 + [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6）。
+> **适用范围**：所有 `docs/**` canonical 文档、`plans/**` working 文档、`src/mj_agent/skills/**/SKILL.md` 与 `src/mj_agent/prompts/*.md` 两类 in-source canonical、以及仓库根 `README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / AGENTS.md` 5 个具名 markdown + `AGENTS.md`（AI agent 指令契约，per ADR-035）（见 §14 项目根特例 + [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6）。
 > **目标受众**：开发 / 文档撰写者 / AI Agent
 > **版本**：v1.2（minor：§适用范围 + §14 纳入 `AGENTS.md`（AI-agent 指令契约）根例外，per ADR-035；in-place per ADR-011 §5.9，不触发 archive ceremony）｜v1.1（§14 新增项目根 README 与 Markdown 特例；原 §14 参考改 §15）
 > **最后更新**：2026-07-06
@@ -576,7 +576,7 @@ description: >
 
 ## 14 项目根 README 与 Markdown 特例
 
-> 项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md`；
+> 项目根 markdown（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `AGENTS.md`；
 > 外加 `AGENTS.md` AI-agent 指令契约，per ADR-035）
 > 是访问者第一接触点；GitHub 自动渲染到仓库主页。本节补充 §1-§13 之外的特例规则。
 > Cross-ref：[[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6（5 文件具名职责表 + 治理例外条款）。
@@ -607,7 +607,7 @@ mj-agent 当前**仅中文 README**。如未来引入英文版，沿用社区惯
 
 ### 14.4 ASCII 架构图
 
-CLAUDE.md 已大量使用 ` ```text ` 围栏的 ASCII 架构图；项目根 README 中同样允许，但：
+AGENTS.md 已大量使用 ` ```text ` 围栏的 ASCII 架构图；项目根 README 中同样允许，但：
 
 - 字符仅用 `├ │ └ ─` 4 类（不混 `+` `--` `|` 替代）
 - 每层缩进 **4 空格**（与 Python 缩进一致）
@@ -621,7 +621,7 @@ per [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6 例外�
 - 项目根 5 文件 + `AGENTS.md`**不强制 frontmatter**（A2 frontmatter schema 校验不适用）
 - 不强制 GUIDE / STANDARD 等 canonical 类型 body 骨架（无 TL;DR / Prerequisites / 目录 等段名约束）
 - 不计入 A1-A3 PR 门禁校验
-- **仍受**：A4 wikilink 完整性（`[[...]]` 形式）+ A6 CLAUDE.md sync 检查
+- **仍受**：A4 wikilink 完整性（`[[...]]` 形式）+ A6 AGENTS.md sync 检查
 - **仍受**：本节 §14.1-§14.4 GitHub 渲染特例语法约束
 
 ---
@@ -639,7 +639,7 @@ per [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|Meta v2.2]] §2.6 例外�
 
 - [[STANDARD]_MJ_Agent_Documentation_Meta_Framework|mj-agent 文档治理元框架 v2.2]] —— frontmatter 字段语义、文档治理规则（§2.6 项目根具名文件 + §4 字段 / §6.3 链接 / §7.5 委托 Agent_Side v1.1）
 - `docs/_templates/TEMPLATE_*.md` —— 各 canonical 类型的骨架（frontmatter 已符合本标准）
-- `CLAUDE.md §Documentation` —— 运行时 loader 对 frontmatter 的消费约束
+- `AGENTS.md §Documentation` —— 运行时 loader 对 frontmatter 的消费约束
 
 ### 15.3 派生来源
 

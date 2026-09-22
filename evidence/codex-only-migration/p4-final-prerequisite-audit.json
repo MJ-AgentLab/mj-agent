@@ -1,0 +1,32 @@
+{
+  "at": "2026-09-20T03:41:19.409741+00:00",
+  "original_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "original_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+  "source_and_l5_copy_files_matched": 817,
+  "linux_delivery_manifest_matched": 817,
+  "doc_resource_fix_retained": "58a21e1e06e5b8e1fc8905930b1efe1eb2615500aa7e32336d2c97242727bf0b",
+  "ci_commit": "5bc6353f90e164ee22edee341d4f6b794b6aaa91",
+  "ci_files": 819,
+  "ci_current_source_mapped": 817,
+  "ci_log_hash_verified": true,
+  "ci_remote_tree_record_hash_verified": true,
+  "linux_workflow_commands_reused": 44,
+  "linux_topology_commands_reused": 38,
+  "cleanup_rows_verified": 387,
+  "cleanable": 0,
+  "backup": {
+    "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-final-audit\\records-before.zip",
+    "sha256": "b01b4a2b965639c1687e144f5fe577979d96f77840cbae85b88624e433174efe"
+  },
+  "git_before": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-final-audit\\git-before.json",
+  "no_project_tests_repeated": true,
+  "evidence_hashes": {
+    "p4-linux-input-package-v2.json": "5f740086234aa252c50e5862f3875000c9248eabf2461503e356b72cdf5f1e74",
+    "p4-linux-execution-v2.json": "8a47fab88fd1ca92ac74dd3db39b915f044ff3991083320bb42a47e6000f42ab",
+    "p4-linux-topology-execution-v3.json": "6b0fa167895bed7acb250e3739c0ae3c46fd1ac7cddf8e8b9d4d54e2de7d1bbc",
+    "p4-linux-doc-resource-fix.json": "09a3c2ff8c1d344392660b607977991e4e41bd747ac76c26264e7027c2ad9d68",
+    "p4-ci-run-35485491970.json": "451d776a44842d32968db826ecad46f222ca3526ede0a467de7ebd2db01c030d",
+    "p4-ci-delivery-commit.json": "326891817f8746dd832e54117c9b7f2d653710ed594ceba00496683ee0caef92",
+    "p4-host-ci-execution.json": "d96d9973d7ad2de8bbe6e6cde8f7e9fd6f25ea4dca70a84b8da0ce0043d08271"
+  }
+}

@@ -1,52 +1,34 @@
 ---
 name: mj-agent-flow-implement
-description: "Stage 8 coding methodology: red-green-refactor TDD, root-cause-first bugfixing, fresh-evidence completion checks and 3-flavor change classification; use when asked to 开始编码, implement a confirmed plan or spec; in-source canonical (B-flavor) edits always stop for Owner approval."
+description: "适用于 mj-agent 的已确认Plan/SPEC的Stage8编码。输入：Plan/SPEC/Issue、repo-scan、diff。流程：context→A/B/C→red-green或root-cause或infra→fresh证据→返回。输出：实现与plan一致，方法轨迹和本次证据明确。Use when：按已批准Plan实现纯函数并验证新行为。Do not use for：给我创建PR并合并；建议Git技能准备，不在Stage8执行发布或merge。授权：B永远Owner；infra live/secret/镜像按保护面；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Implementation (HITL Stage 8 编码段)
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill orchestrates mj-agent coding methodology (HITL Stage 8 Implementation) — applies red-green-refactor for behavior changes, root-cause-first for bug fixes, fresh-evidence verification before claiming completion, and **mj-agent-specific 3-flavor classification** (A pure code / B in-source canonical 永远 HITL / C infra) per HITL_Prompt §4.7. Make sure to use this skill whenever the user says "开始编码", "开始实现", "implement", "实现 SPEC", "implement plan", "Stage 8 编码", "TDD", "test first", "red-green", "先写测试", "复现 bug", "root cause", "排查 bug", "debug", "声称完成前", "实现完成验证", "fresh evidence", "before claiming done", or after Plan/SPEC has been confirmed and the user is ready to write code in mj-agent. Direction-distinct from mj-agent-flow-verify (Stage 10 command matrix), mj-agent-flow-self-review (Stage 11 11-item checklist), and mj-agent-flow-scope-drift (Stage 9 diff vs Plan) — this skill handles **coding-process methodology**. Outputs step-by-step coding plan + Rules 1-15 enforcement; uses the explicit local methodology steps below. Runs only the focused feedback commands needed for implementation; the full Stage 10 matrix belongs to mj-agent-flow-verify. **B 风味 in-source canonical 改动**（src/mj_agent/{skills,prompts}/）**永远触发 §3.1 必停 HITL**，建议先用 mj-agent-runtime-{skill-doc-improve, prompt-version-bump}（PR-C2）propose diff。Do not use for: GitHub Issue creation, branch creation, commit, push, PR creation (use respective git family skills), or B-flavor in-source canonical edit (use mj-agent-runtime-* skills in PR-C2 to propose diff first).
+
+
 ## Overview
 
-The 4th orchestrator in `mj-agent-flow-*` family — owns the Stage 8 Implementation rules the kernel only maps ([[../../../sdd/workflows/execution-loop|execution-loop]] §4.1; the per-stage prompt is deliberately NOT re-ported into the kernel — historical source HITL_Prompt §4.7 Rules 1-15) as hard constraints. Runs **during** coding (after Plan/SPEC confirmed, before Stage 10 verification), enforcing 4 methodology pillars:
+The 4th orchestrator in `mj-agent-flow-*` family — owns the Stage 8 Implementation rules the kernel only maps (`repo:sdd/workflows/execution-loop.md` §4.1; the per-stage prompt is deliberately NOT re-ported into the kernel — historical source HITL_Prompt §4.7 Rules 1-15) as hard constraints. Runs **during** coding (after Plan/SPEC confirmed, before Stage 10 verification), enforcing 4 methodology pillars:
 
 1. **Red-green-refactor** for behavior changes (Rules 6, 风味 A/B applicable)
 2. **Root-cause-first** for bug fixes (Rule 7, no bypass / no try-except 吞错)
 3. **Fresh evidence** before claiming completion (Rule 8)
 4. **mj-agent-specific 3-flavor discipline**（Rules 9-15）：A 纯代码 / B in-source canonical **永远 HITL** / C infra
 
-The skill is **the in-tree first preference** for the Stage 8 Implementation Skill Hint (historical source HITL_Prompt §4.7; the generic Skill Hint rules live in kernel §2.2). When `superpowers:*` skills available, can be invoked as optional sub-call enhancers; when unavailable, falls back to manual execution.
+The skill is **the in-tree first preference** for the Stage 8 Implementation Skill Hint (historical source HITL_Prompt §4.7; the generic Skill Hint rules live in kernel §2.2). 直接执行以下方法，不依赖外部插件。
 
 **Reference**:
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
-- mj-system `.claude/skills/mj-sys-flow-implement/SKILL.md`（直接派生源；mj-agent 加 3 风味 + Rules 9-15）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
 
 ## Workflow
 
@@ -59,7 +41,7 @@ digraph implement {
 
   s2 [label="Step 2: Classify task type + 风味\nA pure code / B in-source canonical / C infra" shape=diamond];
 
-  hitl_b [label="风味 B (in-source canonical)\n→ §3.1 必停 HITL\n→ 建议先 Codex substitute edge-flow-implement-runtime-wildcard propose diff (PR-C2)\n→ 项目负责人审 → 用户确认 → Step 3" shape=box];
+  hitl_b [label="风味 B (in-source canonical)\n→ §3.1 必停 HITL\n→ 建议先 mj-agent-runtime-* propose diff (PR-C2)\n→ 项目负责人审 → 用户确认 → Step 3" shape=box];
 
   s3a [label="Step 3a (red-green path):\n• 写或调整失败测试\n• 观察 RED\n• 最小代码到 GREEN\n• refactor\n[Rule 6 hard constraint]" shape=box];
 
@@ -69,7 +51,7 @@ digraph implement {
 
   s4 [label="Step 4: Fresh evidence\n• 本次会话新输出\n• 不复用旧测试结果 / log 截图\n[Rule 8 hard constraint]" shape=box];
 
-  s5 [label="Step 5: Hand off to Stage 10\n→ $mj-agent-flow-verify (Stage 10 落地后)\n或手动跑 Level A/B 命令矩阵" shape=box];
+  s5 [label="Step 5: Hand off to Stage 10\n→ mj-agent-flow-verify (Stage 10 落地后)\n或手动跑 Level A/B 命令矩阵" shape=box];
 
   out [label="Output: coding plan executed\n+ red-green / root-cause / infra trace\n+ fresh evidence summary\n→ Stage 10 entry" shape=doublecircle];
 
@@ -85,12 +67,6 @@ digraph implement {
   s4 -> s5 -> out;
 }
 ```
-
-<!-- codex-route:edge-flow-implement-flow-verify -->
-> Codex route: invoke `$mj-agent-flow-verify` (native carrier; handoff, always)
-
-<!-- codex-route:edge-flow-implement-runtime-wildcard -->
-> Codex route: In-source canonical runtime surfaces are Owner-gated: propose the exact diff in conversation and stop at OWNER_APPROVAL_REQUIRED (runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync per surface); apply only after the Owner approves.
 
 ## When to Run This Skill
 
@@ -129,18 +105,18 @@ git diff --name-only HEAD
 git diff --stat $(git merge-base develop HEAD)..HEAD
 ```
 
-如 Plan / SPEC 缺失（非 trivial 任务）→ STOP，提示先跑 `/mj-agent-flow-plan` 或 `/mj-agent-doc-author`。无 plan 编码违反 HITL_Prompt §4.7 Rule 1（保持改动范围最小）。
+如 Plan / SPEC 缺失（非 trivial 任务）→ STOP，提示先跑 `mj-agent-flow-plan` 或 `mj-agent-doc-author`。无 plan 编码违反 HITL_Prompt §4.7 Rule 1（保持改动范围最小）。
 
 ## Step 2: Classify Task Type + 风味
 
-**3 风味判定**（mj-agent 专属，参 [[../../../sdd/workflows/execution-loop|execution-loop]] §5（实现 3 风味 A/B/C）+ ADR-015 §决策点 3）：
+**3 风味判定**（mj-agent 专属，参 `repo:sdd/workflows/execution-loop.md` §5（实现 3 风味 A/B/C）+ ADR-015 §决策点 3）：
 
 | 修改路径 | 风味 | 强约束 |
 |---|---|---|
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | **A 纯代码** | TDD red-green；ruff/mypy strict；Rules 1-8 |
 | `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical** | **永远 HITL**；A11 EVAL 门禁；frontmatter strip 契约不破坏；五段式 body 保持；Rules 9-12 |
 | `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | **C infra** | mj-agent check healthcheck；compose 排练；uv lock；Rules 13-15 |
-| `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **C infra + 必停子面** | **改前 Owner 拍板**（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4）。无 `permissions.ask`、无审批类 CI gate → 靠本行提醒；Dockerfile 其余行按上一行常规 C 处理 |
+| `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **C infra + 必停子面** | **改前 Owner 拍板**（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4）。不能依赖自动审批类 CI gate → 靠本行提醒；Dockerfile 其余行按上一行常规 C 处理 |
 
 | Task 信号 | 路径 | 硬约束 |
 |---|---|---|
@@ -153,9 +129,9 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 1. 检测到 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` body 改动
 2. **HITL 必停**：输出"检测到 B 风味 in-source canonical 改动；§3.1 必停项 10/11 触发"
-3. 建议先用 `/mj-agent-runtime-skill-doc-improve` 或 `/mj-agent-runtime-prompt-version-bump`（PR-C2 落地后）propose diff
+3. 建议先用 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2 落地后）propose diff
 4. 项目负责人 review diff → 用户确认接受 → 才进 Step 3
-5. PR description 必须含 EVAL backlog ticket 自动开单声明（execution-loop §7.3 Rule 11）
+5. PR description 必须含 EVAL backlog 草案；获明确发布授权后才开单声明（execution-loop §7.3 Rule 11）
 
 不分类错误 → 走错方法学路径，浪费工作。如不清晰，问用户。
 
@@ -172,7 +148,7 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 **为什么观察重要**：写但没看红的测试不证明它声称的事。Rule 6 显式要求"先写或先调整失败测试" + Step 3a 强制观察 RED。
 
-**Sub-call (optional)**：`superpowers:test-driven-development` — 节奏更严格。不可用时 4 步手动等价。
+**Sub-call (optional)**：`本地方法：写测试→红→最小实现→绿→重构` — 节奏更严格。不可用时 4 步手动等价。
 
 ## Step 3b: Root-cause-first (Bug Fix Path)
 
@@ -191,12 +167,9 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 - `if condition_that_triggers_bug: return early` 不解释为何
 - "我机器上能跑" — 不是修复
 
-**Sub-call (optional)**：`superpowers:systematic-debugging`。手动等价：写假设 → 测 → 收窄 → 重复。
+**Sub-call (optional)**：`本地方法：复现→假设→单变量验证→根因`。手动等价：写假设 → 测 → 收窄 → 重复。
 
-**委派判据（硬 bug / perf / flaky）**：bug 难复现 / 性能回归 / flaky（时好时坏）/ 查不出根因 → 调 `/mj-agent-flow-diagnose`（feedback-loop-first 6 步：先建会变红的 tight「红信号」再下钻、先回归测试后修、事后预防归因）。**简单显见 bug**（typo / 明确单点）仍在本 3b 内按 Rule 7 解决，不必委派。
-
-<!-- codex-route:edge-flow-implement-flow-diagnose -->
-> Codex dependency route: invoke `$mj-agent-flow-diagnose` (native carrier; call, conditional)
+**委派判据（硬 bug / perf / flaky）**：bug 难复现 / 性能回归 / flaky（时好时坏）/ 查不出根因 → 调 `mj-agent-flow-diagnose`（feedback-loop-first 6 步：先建会变红的 tight「红信号」再下钻、先回归测试后修、事后预防归因）。**简单显见 bug**（typo / 明确单点）仍在本 3b 内按 Rule 7 解决，不必委派。
 
 ## Step 3c: Infra Path（C 风味，mj-agent 专属，Rules 13-15）
 
@@ -208,10 +181,10 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 执行纪律：
 
-1. **healthcheck 必过**：`uv run mj-agent check`（DB + LLM creds 健康）
+1. **healthcheck 需单列授权**：`uv run mj-agent check` 会连接 memory，不是离线；未授权标 NOT_TESTED。
 2. **compose lifecycle 排练**：up → 验证容器 status → down → 验证清理
 3. **依赖 lock**：每次 pyproject.toml 修改后 `uv lock` 必跑，lock 同 PR commit
-4. **secret 同步**：`.env.example` 加新字段时 `secrets.enc` 同步（用 `scripts/encrypt-secrets.ps1`）+ `config/README.md` 文档更新
+4. **secret 同步（Owner 终端操作）**：`.env.example` 加新字段时 `secrets.enc` 同步（用 `scripts/encrypt-secrets.ps1`）+ `config/README.md` 文档更新
 
 ## Step 4: Fresh Evidence
 
@@ -225,11 +198,11 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 
 **为什么重要**：陈旧证据曾让本项目踩过坑——3 commit 前过的测试在当前 diff 上崩。Fresh evidence 廉价且确定。
 
-**Sub-call (optional)**：`superpowers:verification-before-completion`。手动等价：显式列验证命令现在跑（不是"它们应该还过"）。
+**Sub-call (optional)**：`本地方法：运行当前检查并记录新证据`。手动等价：显式列验证命令现在跑（不是"它们应该还过"）。
 
 ## Step 5: Hand Off to Stage 10
 
-Steps 3 + 4 完成后交接 `/mj-agent-flow-verify`（PR-B3 落地后；Stage 10 Local Verification 跑 Level A/B 命令矩阵）。本 skill 工作到此结束——不亲跑矩阵。
+Steps 3 + 4 完成后交接 `mj-agent-flow-verify`（PR-B3 落地后；Stage 10 Local Verification 跑 Level A/B 命令矩阵）。本 skill 工作到此结束——不亲跑矩阵。
 
 handoff 输出：
 
@@ -241,7 +214,7 @@ handoff 输出：
 
 ### B 风味 HITL trace（如适用）
 - §3.1 必停项: <runtime-skill-content-change | prompt-version-bump>
-- 已 propose diff via: </mj-agent-runtime-skill-doc-improve | -prompt-version-bump>
+- 已 propose diff via: <mj-agent-runtime-skill-doc-improve | -prompt-version-bump>
 - 项目负责人 review: <date / 接受>
 - EVAL backlog ticket: <issue # / 待开>
 
@@ -260,27 +233,27 @@ handoff 输出：
 - mj-agent check: <pass / fail>
 - compose up/down 排练: <log / failed>
 - uv lock 已同 PR: <yes / no>
-- secret 同步: <secrets.enc 已同步 / N/A>
+- secret 同步（Owner 终端操作）: <secrets.enc 已同步 / N/A>
 
 ### Fresh evidence
 - <list of rerun commands and what they output, in this session>
 
 ### Handoff
-- → $mj-agent-flow-verify for Stage 10 Level A/B/C 命令矩阵（PR-B3 落地）
+- → mj-agent-flow-verify for Stage 10 Level A/B/C 命令矩阵（PR-B3 落地）
 ```
 
 ## Sub-skill / Tool Calls
 
 | Sub-skill | Source | When | Manual equivalent if unavailable |
 |---|---|---|---|
-| `superpowers:test-driven-development` | 外部插件（可选） | Step 3a 严格节奏 | Rule 6 manual: write test → run → see red → minimal impl → refactor |
-| `superpowers:systematic-debugging` | 外部插件（可选） | Step 3b 结构化 frame | Rule 7 manual: hypothesis → test → narrow → root cause |
-| `superpowers:verification-before-completion` | 外部插件（可选） | Step 4 pre-completion check | Rule 8 manual: list commands, run them now, capture fresh output |
-| `superpowers:executing-plans` / `subagent-driven-development` | 外部插件（可选） | Step 2 → confirmed plan with bite-sized steps | Manual: walk through plan step by step, applying Step 3a/3b/3c/4 to each |
-| `mj-agent-runtime-skill-doc-improve`（PR-C2） | in-tree | B 风味 SKILL.md body 改动前 propose diff | 直接 Edit 但 §3.1 必停 HITL |
-| `mj-agent-runtime-prompt-version-bump`（PR-C2） | in-tree | B 风味 system.md `version` bump propose | 直接 Edit 但 §3.1 必停 HITL |
+| `本地方法：写测试→红→最小实现→绿→重构` | 项目内方法（直接执行） | Step 3a 严格节奏 | Rule 6 manual: write test → run → see red → minimal impl → refactor |
+| `本地方法：复现→假设→单变量验证→根因` | 项目内方法（直接执行） | Step 3b 结构化 frame | Rule 7 manual: hypothesis → test → narrow → root cause |
+| `本地方法：运行当前检查并记录新证据` | 项目内方法（直接执行） | Step 4 pre-completion check | Rule 8 manual: list commands, run them now, capture fresh output |
+| `本地方法：按依赖逐步执行已批准计划` / `本地方法：拆分任务、逐项验收并返回调用者` | 项目内方法（直接执行） | Step 2 → confirmed plan with bite-sized steps | Manual: walk through plan step by step, applying Step 3a/3b/3c/4 to each |
+| `mj-agent-runtime-skill-doc-improve`（PR-C2） | in-tree | B 风味 SKILL.md body 改动前 propose diff | 直接 编辑 但 §3.1 必停 HITL |
+| `mj-agent-runtime-prompt-version-bump`（PR-C2） | in-tree | B 风味 system.md `version` bump propose | 直接 编辑 但 §3.1 必停 HITL |
 
-> **Why optional superpowers**：外部可选插件，非每个贡献者/每个 agent harness 都有。本 skill Step 3a/3b/3c/4 散文设计为 standalone 工作。
+> 上述方法已在正文具体化，直接执行，不需要插件发现或安装。
 
 ## Domain Companion Skills
 
@@ -300,8 +273,8 @@ handoff 输出：
 - ❌ 不比 diff vs Plan drift → `mj-agent-flow-scope-drift`（Stage 9）
 - ❌ 不自动 commit/push → `mj-agent-git-commit` / `mj-agent-git-push`
 - ❌ 不替代 Rules 1-15——operationalizes 它们。本 skill 不可用时仍须手动遵 Rules 1-15
-- ❌ 不硬要 superpowers:*——sub-call 是 optional enhancer，非依赖
-- ❌ B 风味时 **不**自动 Edit/Write src/mj_agent/{skills,prompts}/—— §3.1 必停 HITL；建议先 propose diff via mj-agent-runtime-*
+- ❌ 不硬要 本文内化的工程方法——sub-call 是 optional enhancer，非依赖
+- ❌ B 风味时 **不**自动 编辑/写入 src/mj_agent/{skills,prompts}/—— §3.1 必停 HITL；建议先 propose diff via mj-agent-runtime-*
 
 ## Direction Matrix vs Companion mj-agent-flow-* Skills
 
@@ -318,16 +291,15 @@ handoff 输出：
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
-- [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味决策） + §决策点 4（runtime 类目硬约束）
-- mj-system `.claude/skills/mj-sys-flow-implement/SKILL.md`（直接派生源；mj-agent 加 3 风味 + Rules 9-15）
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 8 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.7 Implementation Rules 1-15）
+- `repo:sdd/workflows/execution-loop.md`（有效三风味/停点规则；旧 ADR-015 路径基线缺失，仅作历史来源） §决策点 3（3 风味决策） + §决策点 4（runtime 类目硬约束）
 - `.agents/skills/mj-agent-flow-verify/SKILL.md`（PR-B3 落地，Stage 10 hand-off）
 - `.agents/skills/mj-agent-flow-self-review/SKILL.md`（PR-B3 落地，Stage 11 successor）
 - `.agents/skills/mj-agent-flow-plan/SKILL.md`（Stage 4 predecessor）
 
 ## Anti-patterns
 
-- **不要** 在 §3.1 必停项触发后还自动 Edit src/mj_agent/{skills,prompts}/（违反 Rule 9-12）
+- **不要** 在 §3.1 必停项触发后还自动 编辑 src/mj_agent/{skills,prompts}/（违反 Rule 9-12）
 - **不要** 跳过 Step 4 fresh evidence 直接声称 done（违反 Rule 8；PR review 阶段会被挑战）
 - **不要** 用 `try: except: pass` 吞错替代 root cause 修复（违反 Rule 7）
 - **不要** 立即过的"测试"作 red-green 证据（违反 Rule 6 观察 RED 强约束）

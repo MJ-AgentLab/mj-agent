@@ -1,0 +1,137 @@
+{
+  "at": "2026-09-20T01:39:22.462950+00:00",
+  "authorization": "User: docker 已经启动，继续; continuing previously approved P4 offline acceptance",
+  "delivery_files_verified": 817,
+  "archive_sha256": "a19eee0f96cb21f432e3295cdf8ec93ea42a7c8d5edf5262ddd578b73c5a2186",
+  "commands": [
+    {
+      "argv": [
+        "docker",
+        "version",
+        "--format",
+        "{{json .Server}}"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"Platform\":{\"Name\":\"Docker Desktop 4.43.2 (199162)\"},\"Components\":[{\"Name\":\"Engine\",\"Version\":\"28.3.2\",\"Details\":{\"ApiVersion\":\"1.51\",\"Arch\":\"amd64\",\"BuildTime\":\"Wed Jul  9 16:13:55 2025\",\"Experimental\":\"false\",\"GitCommit\":\"e77ff99\",\"GoVersion\":\"go1.24.5\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"MinAPIVersion\":\"1.24\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"1.7.27\",\"Details\":{\"GitCommit\":\"05044ec0a9a75232cad458027ca83437aae3f4da\"}},{\"Name\":\"runc\",\"Version\":\"1.2.5\",\"Details\":{\"GitCommit\":\"v1.2.5-0-g59923ef\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"Version\":\"28.3.2\",\"ApiVersion\":\"1.51\",\"MinAPIVersion\":\"1.24\",\"GitCommit\":\"e77ff99\",\"GoVersion\":\"go1.24.5\",\"Os\":\"linux\",\"Arch\":\"amd64\",\"KernelVersion\":\"6.18.33.2-microsoft-standard-WSL2\",\"BuildTime\":\"2025-07-09T16:13:55.000000000+00:00\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "docker",
+        "image",
+        "ls",
+        "--no-trunc",
+        "--format",
+        "{{.ID}} {{.Repository}}:{{.Tag}}"
+      ],
+      "exit_code": 0,
+      "stdout": "sha256:58156e91546ef8a29e33bb75655d31a42e1ef5085075a42962e5aeea450d9525 mj-agent:ci-local-test\nsha256:a8313999c7b1dda58f508266b86c66f9795d4e8214244865c1b41ea414f9d80a postgres:16-http\nsha256:7131e67a8b80e07ba4341b08713c3f53b7dc19d7c05742d3d4b8c2a6fa2c2c66 mj-system:3.5.2\nsha256:8c67893176999577ffb26669bf90333e0423eb2e702880996532f63f3a0cab7d <none>:<none>\nsha256:b0ebd9e73efbfaebdc88d46220cf7c6621d3b1e65ab7ec1acd031aadb03b89fb <none>:<none>\nsha256:891f7f649d65be1e08d7506aebb73971e59442deff987b2e2ae5af77fe94b182 mj-agent:0.1\nsha256:57552c7b38ce1c844880c2bd5e8f481f7c743a4b6461026b027cd436cf26d91c python:3.13-slim\nsha256:9fe157f329904d995e48672c17541fcc1f81a8a312d832225c3ce979b856da67 metabase/metabase:v0.61.4\nsha256:3a02d38405dc12092032737fdadd513729a81efca8439d1d7eef883e6e67e26e redis:<none>\nsha256:69951c9faec3fbeb515127ff4c880c352ed959e95855c8c891d12cd87abb38b7 python:<none>\nsha256:c0eb29927f0e8590eac49c9d5bf9c5ebf87f4e6e7273e0a9270218e6b73795ee postgres:<none>\nsha256:b5d00da817ee20d2b5fa9f4d1f657004728fa0e9db8f2a50bf23f2d881a79078 mj-system:3.2.2\nsha256:2c9e679aa481a61dad651f5ed1e3891f4571eced1c84ce5550c508a30bea414b <none>:<none>\nsha256:348c44a44956547a8a7f40a0bb6c6cac59d74756beb42347822043b005e86975 ghcr.io/astral-sh/uv:latest\nsha256:18e30fdc01cec4f4e299dff7e93c1acc385807403c6bcb1ffdfe704d2bf64202 python:<none>\nsha256:0f16dc869bf201a80a8e2106317fe3d7d39396cdb5bc9465a81025a2c3b89cd1 redis:7-alpine\nsha256:d9cae67c16c863b22918a452ca321338fb4687fc086c277b1198144abac417da debian:trixie-slim\nsha256:cb6eb3f1fe778e069d1f656755e7aecaa4c267aae8b83ce420ae6e6841068ad8 ghcr.io/mermaid-js/mermaid-live-editor:latest\nsha256:667495ca2ac33180ad3690178da1bf274f481d0c43849d4c1941f0176983bd2e postgres:16-alpine\nsha256:f6d4985d97e69bb9de4d5e24f9f24cbfaa90d30877ce935a8ee872f62efbb621 postgres:18-alpine\nsha256:bf8527eb54c3680e728d5b4b383a8ba730d72dae7236fbc8dff97ed6b224a731 alpine:3.20\nsha256:3cb067eab609612d81b4d82ff8ad71d73482bb3059a87b642d7e14f0ed659cde alpine:latest\nsha256:6a93e40843a7ee949486c7864d988c3ff33318de90afbd8a0588f13f3b0e5206 <none>:<none>\nsha256:7ed24fb811a9ec3ad5d9d35baaa30d6226eda267ffeb5e9b91cfe14cab29463d n8nio/n8n:2.10.0\nsha256:2bc951502019a3552d3b0994af62ceb3b8c7170f24217ba635fed206edda50ed flyway/flyway:11\nsha256:90a8782b2360b0f3839e977351daeccdd96cb42beb721f7c971e51f4056442cd postgres:16\nsha256:2622931a6f420d9c80c84f6b17cce4b0fb5a0d67b23eb2baf44eae774ff5a9ac portainer/portainer-ce:2.33.6\nsha256:83b2b6703a620bf2e001ab57f7adc414d891787b3c59859b1b62909e48dd2242 alpine:3.19\nsha256:1b75f92cc7117e0b61c8f18ee987bd333a62454b214838a3e2718101b4f191d7 koalaman/shellcheck:stable\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "docker",
+        "container",
+        "ls",
+        "--all",
+        "--no-trunc",
+        "--format",
+        "{{.ID}} {{.Names}} {{.State}}"
+      ],
+      "exit_code": 0,
+      "stdout": "c85cd10c33c237a68273793d0f7ef0d98be136331c8821fa632779bcbb806b3e mj-system-postgres running\na6f8e90bba6dc4ccb7664460fc70f44746a8f9fd3160eb04d70110a06d9c3e0f mj-system-metabase-init exited\n251d1982abd9a0f0d6db09e1447a64171b7a87805ce45024bec6517eb1d935f2 t589-db exited\ncfae59ddc927f4d1c9d92c4e438d87b7d667b481bc31868f3824bad725c0eff4 t589-app exited\n486df2f83281daae5bf62c7ce167038bed6d82192ac3547958e12101b4a69dfd mj-agent-postgres exited\nc49b50383ea7b9ea4a36bb7e0a9e49619b29ad076df2377cade81f423938c967 mj-system-metabase-setup exited\nac0961ced4ddd3d5bfa79348b9fbb554f18b3a01f9ed8888017c72c04edcaec2 mj-system-n8n-setup exited\n4cc99865a1516a58cb7de51e9400513fc13c48f1b91930bc26e98e1da047b115 mj-system-n8n exited\n6270bc8ae6610c7b5c9205e8151d3a7a33bc744f5515da312cf4df3e28a6ff74 mj-system-app exited\n24c18d55c3364613bebd458f3231bd2799cd583605727449432b079e38e906f5 mj-system-metabase exited\n19327cf47159b8ef22bb819648169369d004a1c24ee6aa66b1083621b9779ffd mj-system-flyway exited\n74212331f1b4d5eed51db05d9e2bc84b738baeb8246713ec809425eb635af18d mj-system-n8n-import exited\n344d68359585eff7a7b84d6ab3df9f277a007793c6f1492e8338f4f62ab4542d mj-agent exited\na5e017abeb71e0d01a7337234c223e52e254c424f9a614ccaa668e1918fb7051 mj-agent-redis exited\nb9b31b2d302be8b4eace3f3eb6474b946cf2aff76ae4e99fecb5b843a54b5d2f mermaid-live-editor exited\nd88ce7466c5086368a08db109ea9e48813c5e6ac2a1a2ed5225d32ab25c846d3 portainer running\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "docker",
+        "image",
+        "inspect",
+        "sha256:58156e91546ef8a29e33bb75655d31a42e1ef5085075a42962e5aeea450d9525",
+        "--format",
+        "{{json .Id}} {{json .Os}} {{json .Architecture}} {{json .Config.User}} {{json .Config.Entrypoint}} {{json .Config.Cmd}} {{json .Config.Volumes}}"
+      ],
+      "exit_code": 0,
+      "stdout": "\"sha256:58156e91546ef8a29e33bb75655d31a42e1ef5085075a42962e5aeea450d9525\" \"linux\" \"amd64\" \"appuser\" [\"/usr/bin/tini\",\"--\",\"/app/entrypoint.sh\"] [\"serve\"] null\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "docker",
+        "run",
+        "--name",
+        "mj-agent-p4-envprobe-20260920",
+        "--pull",
+        "never",
+        "--network",
+        "none",
+        "--read-only",
+        "--cap-drop",
+        "ALL",
+        "--security-opt",
+        "no-new-privileges=true",
+        "--no-healthcheck",
+        "--workdir",
+        "/tmp",
+        "--entrypoint",
+        "/usr/bin/env",
+        "sha256:58156e91546ef8a29e33bb75655d31a42e1ef5085075a42962e5aeea450d9525",
+        "-i",
+        "PATH=/app/.venv/bin:/usr/local/bin:/usr/bin:/bin",
+        "LANG=C.UTF-8",
+        "PYTHONNOUSERSITE=1",
+        "PYTHONUTF8=1",
+        "python",
+        "-I",
+        "-B",
+        "-c",
+        "import importlib.metadata as m,json,platform,shutil,sys\nfrom pathlib import Path\nnames=['pytest','pytest-asyncio','pytest-bdd','pyyaml','ruff','mypy','langchain','langgraph','tiktoken']\nversions={}\nfor n in names:\n try: versions[n]=m.version(n)\n except m.PackageNotFoundError: versions[n]=None\nprint(json.dumps({'platform':platform.platform(),'python':sys.version,'executable':sys.executable,'git':shutil.which('git'),'node':shutil.which('node'),'uv':shutil.which('uv'),'interfaces':[p.name for p in Path('/sys/class/net').iterdir()],'dependency_versions':versions}))\n"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"platform\": \"Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41\", \"python\": \"3.13.14 (main, Jun 24 2026, 02:06:49) [GCC 14.2.0]\", \"executable\": \"/app/.venv/bin/python\", \"git\": null, \"node\": null, \"uv\": null, \"interfaces\": [\"lo\"], \"dependency_versions\": {\"pytest\": null, \"pytest-asyncio\": null, \"pytest-bdd\": null, \"pyyaml\": \"6.0.3\", \"ruff\": null, \"mypy\": null, \"langchain\": \"1.2.15\", \"langgraph\": \"1.1.8\", \"tiktoken\": \"0.12.0\"}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "docker",
+        "inspect",
+        "mj-agent-p4-envprobe-20260920",
+        "--format",
+        "{{json .Id}} {{json .State.Status}} {{json .State.ExitCode}} {{json .HostConfig.NetworkMode}} {{json .HostConfig.ReadonlyRootfs}} {{json .HostConfig.CapDrop}} {{json .HostConfig.SecurityOpt}} {{json .Mounts}}"
+      ],
+      "exit_code": 0,
+      "stdout": "\"e78f0045a139f2a717a64bc9f0fb5ec75e7821ed8f8076ed918953677bfc5251\" \"exited\" 0 \"none\" true [\"ALL\"] [\"no-new-privileges=true\"] []\n",
+      "stderr": ""
+    }
+  ],
+  "probe_image_id": "sha256:58156e91546ef8a29e33bb75655d31a42e1ef5085075a42962e5aeea450d9525",
+  "probe_container_name": "mj-agent-p4-envprobe-20260920",
+  "probe": {
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+    "python": "3.13.14 (main, Jun 24 2026, 02:06:49) [GCC 14.2.0]",
+    "executable": "/app/.venv/bin/python",
+    "git": null,
+    "node": null,
+    "uv": null,
+    "interfaces": [
+      "lo"
+    ],
+    "dependency_versions": {
+      "pytest": null,
+      "pytest-asyncio": null,
+      "pytest-bdd": null,
+      "pyyaml": "6.0.3",
+      "ruff": null,
+      "mypy": null,
+      "langchain": "1.2.15",
+      "langgraph": "1.1.8",
+      "tiktoken": "0.12.0"
+    }
+  },
+  "status": "PROBE_EXECUTED_REVIEW_DEPENDENCIES",
+  "existing_containers_not_operated": true,
+  "pulls": [],
+  "external_connections": [],
+  "project_tests_run": 0,
+  "P5": "BLOCKED_PREREQUISITE"
+}

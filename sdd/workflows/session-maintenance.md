@@ -6,14 +6,14 @@ state: active
 version: 1.0
 owner: ranzuozhou
 created: 2026-09-17
-updated: 2026-09-17
+updated: 2026-09-22
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
 
 # Workflow: 会话维护
 
-本规则由根 [AGENTS.md](../../AGENTS.md) 按需引入，统一维护开发协作会话的归档摘要、推荐标题与明确请求的客户端任务重命名。Codex 与 Claude Code 共用正文，客户端动作按当次实际工具能力执行。
+本规则由根 [AGENTS.md](../../AGENTS.md) 按需引入，统一维护 Codex 开发协作会话的归档摘要、推荐标题与明确请求的客户端任务重命名。客户端动作按当次实际工具能力执行。
 
 来源参考：mj-system 的 `.agents/references/session-maintenance.md`（提交 `3e55613`）。本文件在 mj-agent 独立维护，执行与授权语义引用本项目 kernel，不依赖上游文件。
 

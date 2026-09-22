@@ -1,0 +1,29 @@
+{
+  "classification": "MIGRATION_DEFECT; minimal direct-consumer/test-input repairs per plan 2.4 and P4 scope",
+  "files": [
+    {
+      "path": "tests/unit/test_sdd_development_agent.py",
+      "before_sha256": "dfd789e1abe80214e7bff3d74c4a9d248901c62d8db346137eade9e065924bb5",
+      "after_sha256": "feb2a819ab6baa580b36cf55d379c16c988e1beedebaf601b97bbdd4d70f3b41",
+      "copy_sha256": "feb2a819ab6baa580b36cf55d379c16c988e1beedebaf601b97bbdd4d70f3b41"
+    },
+    {
+      "path": "GLOSSARY.md",
+      "before_sha256": "d7b8b690370a0b85968afb4b5085e75a3790f7592aeee0ff92ca3a6538bd28c6",
+      "after_sha256": "d0ba1c26cd2779476e56129e064a75f3e71a8d06493eb0c6d5dd2c4afb40b28c",
+      "copy_sha256": "d0ba1c26cd2779476e56129e064a75f3e71a8d06493eb0c6d5dd2c4afb40b28c"
+    }
+  ],
+  "authorization": "Current P4 explicit minimal-repair authorization; ordinary tests/docs, no protected guard/config/gate/schema edits",
+  "red_evidence": [
+    "p4-results-unit.json: 6 failed due to --tool claude",
+    "p4-results-static.json: GLOSSARY.md:298 unresolved CLAUDE.md after legacy exclusion"
+  ],
+  "test_assertions": "AST identical after four claude-to-codex literal substitutions; no assertion removal, skip, gate or runner change",
+  "recovery_backup": ".mj-agent-local/p4-minimal-fixes-before.zip",
+  "backup_sha256": "6356316cbf4e77bfb8a045883c7096cddf2296ea864f8873ba9f1c3f3cf5ced5",
+  "diff": "p4-minimal-fixes.diff",
+  "recovery_diff": "p4-minimal-fixes-recovery.diff",
+  "temporary_copy_index_updated": true,
+  "original_index_updated": false
+}

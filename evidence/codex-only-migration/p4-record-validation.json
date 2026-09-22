@@ -1,0 +1,63 @@
+{
+  "phase": "P4_PREREQUISITE_RECORDS_ONLY",
+  "recorded_at": "2026-09-18T04:41:38.287146+00:00",
+  "status": "STATIC_PASS",
+  "acceptance_status": "BLOCKED_PREREQUISITE",
+  "product_tests_run": false,
+  "actual_command": "../../develop/.venv/Scripts/python.exe -I -X utf8 -B .mj-agent-local/p4_record_validate.py",
+  "validator_sha256": "5e34426aa8251897ff0f29e43a941ffb468bfe7526abad0cfee29131e67832bd",
+  "checks": {
+    "entry_public_files": 1002,
+    "prior_public_files_unchanged_except_cumulative_records": 1000,
+    "changed_existing": [
+      "evidence/codex-only-migration/asset-map.csv",
+      "plans/[REPORT]_Codex_Only_Migration_Progress.md"
+    ],
+    "head_unchanged": true,
+    "branch_unchanged": true,
+    "index_byte_identical": true,
+    "staged_empty": true,
+    "worktree_registry_unchanged": true,
+    "tracked_diff": [
+      "tests/unit/test_agents_sync.py"
+    ],
+    "asset_prior_324_rows_29_columns_preserved": true,
+    "asset_total_rows": 328,
+    "cleanup_unique_paths": 404,
+    "cleanup_current_hashes_match": true,
+    "cleanable_paths": 0,
+    "P0_P3_report_sections_2_through_13_preserved": true,
+    "report_frontmatter_UTF8_fences_links": true,
+    "AC01_AC12_present": true,
+    "P1_P2_P3_identity_checks_all_match": true,
+    "old_freeze_matches": 16,
+    "backup_checks_match": true
+  },
+  "output_sha256": {
+    "evidence/codex-only-migration/asset-map.csv": "c2f9ac1703fa7d360338358a8dd0a5186cd0c92f6c26f0d62be84f1e015bbeb9",
+    "evidence/codex-only-migration/p4-cleanup-review.csv": "a804fe34558eb6e5a6bcd7230f4352e13e4a9c0e1cd2ca51b29c10a883c18dab",
+    "evidence/codex-only-migration/p4-entry.json": "7518a242ab09d5925f4b53346b25346c9534902f8306f2a261d9909edf00acad",
+    "evidence/codex-only-migration/p4-prerequisite-verification.json": "e42dc90e982de09348383da5cbac2eaa2d752f6d7a09a7d6e6a5634c87eca3e1",
+    "plans/[REPORT]_Codex_Only_Migration_Progress.md": "9b833b9cb2eceb64084a53990e54aa420d20cb758def086a7e337d4378cbc00b"
+  },
+  "final_untracked_count": 138,
+  "new_files": [
+    "evidence/codex-only-migration/p4-cleanup-review.csv",
+    "evidence/codex-only-migration/p4-entry.json",
+    "evidence/codex-only-migration/p4-prerequisite-verification.json",
+    "evidence/codex-only-migration/p4-record-validation.json"
+  ],
+  "excluded_ignored_local_outputs": [
+    ".mj-agent-local/p4_prerequisite_audit.py",
+    ".mj-agent-local/p4_record_validate.py",
+    ".mj-agent-local/p4-entry-cumulative-backup.zip"
+  ],
+  "failure_history": [
+    "Initial inline record checker split report on ## 14. and accidentally matched ### 14.1; AC presence assertion failed. Scoped to exact ## 14. P4 heading; report AC content unchanged. This is a record-validator error, not a product test."
+  ],
+  "limitations": [
+    "Evidence consistency only, not L1-L5 acceptance or product PASS.",
+    "This final record has no self-referential digest.",
+    "No formal changes, P3 implementation, independent Git copy, host trust/load, external service or P5 action."
+  ]
+}

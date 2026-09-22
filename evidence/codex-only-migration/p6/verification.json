@@ -1,0 +1,127 @@
+{
+  "at": "2026-09-21T07:38:15.577659+00:00",
+  "environment": {
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL",
+    "NUMBER_OF_PROCESSORS": "28",
+    "PROCESSOR_ARCHITECTURE": "AMD64",
+    "OS": "Windows_NT",
+    "SYSTEMDRIVE": "C:",
+    "PATH": "C:\\Users\\Admin\\AppData\\Local\\Microsoft\\WinGet\\Packages\\astral-sh.uv_Microsoft.Winget.Source_8wekyb3d8bbwe;D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts;C:\\Program Files\\Git\\cmd;C:\\Program Files\\Git\\usr\\bin;C:\\Users\\Admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell;D:\\Development\\nodejs;C:\\WINDOWS\\System32",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "UV_OFFLINE": "1",
+    "UV_NO_SYNC": "1",
+    "UV_NO_CACHE": "1",
+    "UV_PYTHON_DOWNLOADS": "never",
+    "USERPROFILE": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+    "HOME": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+    "APPDATA": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+    "LOCALAPPDATA": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+    "TEMP": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+    "TMP": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54"
+  },
+  "temp": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-p6-docs-o4dpnn54",
+  "tests": "No pytest rerun; static/docs only, no index writes",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--no-optional-locks",
+        "diff",
+        "--check"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'GLOSSARY.md', LF will be replaced by CRLF the next time Git touches it\n"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/check_frontmatter.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 142 canonical docs all pass frontmatter schema check\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/check_wikilinks.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "OK: 0 archive-ref violations (13 archived files auto-discovered)\nOK: A4 link resolution — 0 unresolved targets in 5 root files\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "skills"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "resources"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "entries"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"entries\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "scripts/sdd/check_codex_native.py"
+      ],
+      "cwd": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "exit": 0,
+      "stdout": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\n",
+      "stderr": ""
+    }
+  ]
+}

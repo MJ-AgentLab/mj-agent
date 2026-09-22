@@ -1,0 +1,425 @@
+{
+  "total_count": 1,
+  "jobs": [
+    {
+      "id": 106224606012,
+      "run_id": 35564875219,
+      "workflow_name": "CI",
+      "head_branch": "maintain/p4-acceptance-20260920",
+      "run_url": "https://api.github.com/repos/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/runs/35564875219",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOUiArWM8AAAAYu3rbPA",
+      "head_sha": "40b470320ef9cf073f0d18867ca6134fa95637d2",
+      "url": "https://api.github.com/repos/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/jobs/106224606012",
+      "html_url": "https://github.com/ranzuozhou/mj-agent-p4-acceptance-20260920/actions/runs/35564875219/job/106224606012",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-09-21T05:32:05Z",
+      "started_at": "2026-09-21T05:32:08Z",
+      "completed_at": "2026-09-21T05:33:06Z",
+      "name": "ci",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-09-21T05:32:09Z",
+          "completed_at": "2026-09-21T05:32:10Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-09-21T05:32:10Z",
+          "completed_at": "2026-09-21T05:32:12Z"
+        },
+        {
+          "name": "Read Python version",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-09-21T05:32:12Z",
+          "completed_at": "2026-09-21T05:32:12Z"
+        },
+        {
+          "name": "Setup Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-09-21T05:32:12Z",
+          "completed_at": "2026-09-21T05:32:12Z"
+        },
+        {
+          "name": "Install uv",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-09-21T05:32:12Z",
+          "completed_at": "2026-09-21T05:32:18Z"
+        },
+        {
+          "name": "Sync dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-09-21T05:32:18Z",
+          "completed_at": "2026-09-21T05:32:19Z"
+        },
+        {
+          "name": "Syntax check (compileall)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-09-21T05:32:19Z",
+          "completed_at": "2026-09-21T05:32:19Z"
+        },
+        {
+          "name": "Lint (ruff)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-09-21T05:32:19Z",
+          "completed_at": "2026-09-21T05:32:19Z"
+        },
+        {
+          "name": "Type check (mypy strict)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-09-21T05:32:19Z",
+          "completed_at": "2026-09-21T05:32:32Z"
+        },
+        {
+          "name": "Frontmatter schema (canonical docs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-09-21T05:32:32Z",
+          "completed_at": "2026-09-21T05:32:32Z"
+        },
+        {
+          "name": "Wikilinks (canonical docs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-09-21T05:32:32Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "Kernel section refs (execution-loop)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "A6 audit schema (evidence/ai-context-audit)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "No cross-repo refs (forward guard)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "Old completed plans (warning-mode GC候选)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "G1 capability schema (BLOCKING per Stage C C-a; 5P/0W/0F clean)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "G2 traceability (BLOCKING per Stage C C-a; 5P/0W/0F clean)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "G9 INDEX idempotency (BLOCKING per Stage C C-a; --check matches committed)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "G11/G12 archive manifest (BLOCKING per M6 PR4-flip; archive/ populated #229/#231)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:33Z"
+        },
+        {
+          "name": "G14/G15 archived references (WARNING — M6-FU-G14G15-BLOCKING-FLIP: archive/legacy + archive/capabilities forward-refs pending)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-09-21T05:32:33Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "archive/INDEX.md idempotency (WARNING per M5-PR0; no-op until archive/ born in move PRs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V1 python contracts (BLOCKING per Stage C C-a; 9P/11W/0F clean)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V2 agent contracts (warning; SKIP-CLEAN no contracts; Phase 2+ when agent.contract.yml lands)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V3 prompt contracts (BLOCKING per Stage C C-a; 1P/1W/0F clean post M3-FU-VALIDATOR-CONTRACT-ALIGN)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V4 claude-skill contracts (BLOCKING per M3-FU-V4-SKILLS-COMPLETE; full-scan, count SoT = validator output)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V5 docker contracts (BLOCKING per Stage C C-a; 2P/4W/0F clean post M3-FU-V5-SUBFLAGS)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V6 runtime expected (warning; SKELETON BY DESIGN; Phase M4 full probe implementation)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "V7 runtime-skill contracts (BLOCKING per Stage C C-a; 3P/0W/0F clean)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 28,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "G8 capability evidence required (BLOCKING per Stage D D-1; 4P/0W/0F/1SKIP per current pilot state)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 29,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "G19 BDD scenario trace (BLOCKING per Stage D D-2; 17P/0W/0F post completion-audit PR1)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 30,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:34Z"
+        },
+        {
+          "name": "G21 BDD acceptance (BLOCKING per Stage E E-1; @risk:critical|high subset; 15P/0W/0F post-E-0b)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 31,
+          "started_at": "2026-09-21T05:32:34Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G22 BDD unautomated justification (BLOCKING per Stage E E-2; @risk:critical|high × unautomated runbook.md check; 4P/0W/0F post completion-audit PR1 truth-up)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 32,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G23 TDD test_list (warning per Stage D D-5; tasks.md critical|high check; 15P/5W/0F per R-N v12 R-12-2)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 33,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G24 bugfix regression (BLOCKING per Stage D D-5; branch-conditional SKIP on non-bugfix; R-N v12 R-12-3)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 34,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G3 contracts (warning at landing; real impl per completion-audit PR2; 5P/0W/0F)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G7 secret exposure (warning; 4P/0W/0F since S2 #330 codex-config check; completion-audit PR2 + follow-up)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 36,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "G25 changed-code-has-test (warning; PR-context only, SKIP on push; completion-audit PR2)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 37,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "V8 native development entries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 38,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "V9 native skill resources and frozen contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 39,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "V10 native active consumers",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 40,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "V11 native project MCP",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 41,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:35Z"
+        },
+        {
+          "name": "V13 native enforcement structure",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 42,
+          "started_at": "2026-09-21T05:32:35Z",
+          "completed_at": "2026-09-21T05:32:36Z"
+        },
+        {
+          "name": "Tests (unit + eval + integration; smoke + contract + bdd excluded by default)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 43,
+          "started_at": "2026-09-21T05:32:36Z",
+          "completed_at": "2026-09-21T05:32:55Z"
+        },
+        {
+          "name": "BDD scenarios (BLOCKING per Stage C C-a; hardened offline runner)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 44,
+          "started_at": "2026-09-21T05:32:55Z",
+          "completed_at": "2026-09-21T05:33:01Z"
+        },
+        {
+          "name": "Contract tests (offline; synthetic snapshot fixtures)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 45,
+          "started_at": "2026-09-21T05:33:01Z",
+          "completed_at": "2026-09-21T05:33:03Z"
+        },
+        {
+          "name": "Post Install uv",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 88,
+          "started_at": "2026-09-21T05:33:03Z",
+          "completed_at": "2026-09-21T05:33:03Z"
+        },
+        {
+          "name": "Post Setup Python",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 89,
+          "started_at": "2026-09-21T05:33:03Z",
+          "completed_at": "2026-09-21T05:33:03Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 90,
+          "started_at": "2026-09-21T05:33:03Z",
+          "completed_at": "2026-09-21T05:33:03Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 91,
+          "started_at": "2026-09-21T05:33:03Z",
+          "completed_at": "2026-09-21T05:33:04Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/ranzuozhou/mj-agent-p4-acceptance-20260920/check-runs/106224606012",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000000064,
+      "runner_name": "GitHub Actions 1000000064",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}

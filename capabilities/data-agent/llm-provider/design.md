@@ -47,7 +47,7 @@ openai integration). Two operational needs require an abstraction layer:
 | Config | `src/mj_agent/config.py` | 8 LLM-related Settings fields + 2 cached_property helpers |
 | Error | `src/mj_agent/llm.py:LLMConfigError(RuntimeError)` | Raised at make_llm call time (lazy validation; Settings stays constructible) |
 | CLI health | `src/mj_agent/server/cli.py:check` | Provider-aware credential validation (no endpoint contact) |
-| Endpoint probe | `.claude/skills/mj-agent-infra-llm-endpoint-probe/` | 4-step probe (reachable + model id + 1-token chat + tool-calling) — out-of-scope here |
+| Endpoint probe | `.agents/skills/mj-agent-infra-llm-endpoint-probe/` | 4-step probe (reachable + model id + 1-token chat + tool-calling) — out-of-scope here |
 
 **Why lazy validation (LLMConfigError at make_llm time, not Settings construction)**：
 
@@ -105,7 +105,7 @@ openai integration). Two operational needs require an abstraction layer:
             ├─► local: check LLM_BASE_URL → failures.append (with vLLM example)
             └─► success output: "llm provider = <name> (endpoint=<url>)"
 
-[Endpoint probe]                          ──── .claude/skills/mj-agent-infra-llm-endpoint-probe
+[Endpoint probe]                          ──── .agents/skills/mj-agent-infra-llm-endpoint-probe
        │  (out of scope of this capability)
        │
        └──► 4-step probe: reachable + model id + 1-token chat + tool-calling
@@ -114,7 +114,7 @@ openai integration). Two operational needs require an abstraction layer:
 **Cross-capability dependencies (2 outbound)**：
 
 - `infrastructure.docker-compose`：LLM env vars (`LLM_PROVIDER` / `LLM_BASE_URL` / `LLM_API_KEY` / `ARK_API_KEY`) injected per profile via compose `env_file: ../../.env`; secrets resolution owned by docker-compose capability
-- `infrastructure.mcp-server-governance`：`.mcp.json` ssh-manager has DGX-Spark host entry; `local-openai-compat` endpoint typically lives on the same DGX host (192.168.0.189); trust posture coordination expected
+- Native MCP covers memory endpoints only; SSH is excluded. Runtime LLM and business data behavior is unchanged.
 
 ## §4 Tradeoffs
 

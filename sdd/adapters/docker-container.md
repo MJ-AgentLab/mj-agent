@@ -221,7 +221,7 @@ alongside change"（同一 PR 内含 test + 实装；不强制先 commit failing
 red-green.
 
 **`_common.yaml_io` 接口共享** — Stage A 实装；本 adapter 与 prompt / runtime-skill /
-claude-code-skill adapter 共用 YAML 解析：
+development-skill adapter 共用 YAML 解析：
 
 ```python
 # scripts/sdd/_common/yaml_io.py 公开符号：

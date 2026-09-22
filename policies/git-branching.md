@@ -75,8 +75,7 @@ git worktree add ../<branch-name> -b <branch-name>
 **禁止** 在已有 worktree 中 `git checkout -b` / `git checkout -B` / `git switch -c` /
 `git switch -C`. bugfix 同样适用.
 
-执行机制：L3 PreToolUse hook `.claude/scripts/guard-git-workflow.ps1` 拦截 `git checkout -b` /
-`-B` 与 `git switch -c` / `-C`（完整判定面 + 边界见 §3.1）.
+执行机制：AGENTS 自律 + 原生 `scripts/sdd/codex_hook_guard.py`；实际宿主加载需独立验证，静态代码测试不能证明 hook 生效。
 
 ### G2 — base = develop（除 hotfix）
 
@@ -95,49 +94,16 @@ target 相关的只有 `hotfix.md` 顶部一句"目标分支为 `main`"的提醒
 - 后续：PR #159 sync develop ← main 修复；`plans/[PLAN]_g1_g2_workflow_enforcement.md` 根因
   分析 + 3 层防御设计
 
-### §3.1 执行机制联动表（G1/G2 × `mj-agent-git-*` skill family × hook）
+### §3.1 原生 G1/G2 保护承担者
 
-3 层防御框架 per `plans/[PLAN]_g1_g2_workflow_enforcement.md` §3（`ed785b6` 首发）：
+原生 git-branch/git-pr 技能与 AGENTS 承载规则，`scripts/sdd/codex_hook_guard.py`
+承载有限语法判定。建分支禁令、PR base 要求仍适用。带 Git 全局选项、复杂 shell
+或无法理解的输入 fail closed；不把解析失败当授权。提交/推送/PR/merge 仍须 Owner。
 
-| 层 | 载体 | G1 | G2 |
-|---|---|---|---|
-| L1 提示层 | `.claude/skills/mj-agent-git-branch/SKILL.md` 的 `HARD REQUIREMENT — G1` 块 | ✅ 规则 + `worktree add` 命令模板 | — |
-| L1 提示层 | `.claude/skills/mj-agent-git-pr/SKILL.md` 的 `HARD REQUIREMENT — G2` 块 | — | ✅ 分支类型→`--base` 值映射表；全部 `gh pr create` 示例均带 `--base` |
-| L1 交接 | `.claude/skills/mj-agent-git-push/SKILL.md` 末步 | — | ⚠ 仅一条指针（"`gh pr create` 显式 `--base`, per policies/git-branching.md G2"），无 HARD REQUIREMENT 块 |
-| L2 规范层 | `CLAUDE.md` "Repo conventions" · `AGENTS.md` Self-enforced boundaries 第 5 条 | ✅ | ✅ |
-| L3 运行时层 | `.claude/scripts/guard-git-workflow.ps1`（挂载点 `.claude/settings.json` 的 `hooks.PreToolUse` matcher `Bash`） | ✅ 拦截 | ✅ 拦截 |
-
-**family 覆盖面**：`mj-agent-git-*` 共 **9** 个 skill（`branch` / `check-merge` / `commit` /
-`delete` / `issue` / `pr` / `push` / `review-pr` / `sync`），其中**只有 `branch`（G1）与 `pr`
-（G2）带 HARD REQUIREMENT 块**；`push` 只有上表那条交接指针；其余 6 个不在 G1/G2 面上。
-
-**L3 判定面（从实现取证）**：
-
-| 规则 | 拦截（exit 2） | 放行（exit 0） |
-|---|---|---|
-| G1 | `git checkout -b` / `-B`、`git switch -c` / `-C`；跨全局选项（`git -C <path> checkout -b`）、跨复合段（`cd sub && git checkout -b`）、混入非 ASCII 文本均照拦 | `git worktree add ... -b`；不带 `-b` 的 `git checkout <branch>`；把 `checkout -b` 写进别的子命令参数（`git commit -m "... checkout -b ..."`）或非 git 段（`echo ...`） |
-| G2 | `gh pr create` 未给 base | `--base <v>` / `--base=<v>` / `-B <v>` / `-B=<v>` |
-
-判定是**按 shell 分隔符切段后逐段 token 化**（再跳过 git 全局选项定位子命令位置），**不是**对整条
-命令行做正则匹配 —— 上述 plan §3.2 记载的正则表是 `ed785b6` 时的历史快照，已被 #313 PR-2 的
-token 实现取代；**引用时以实现为准**。
-
-**输入协议 fail-closed**（dual-agent-compat v5 §5.4 / #313）：stdin 非 JSON、空、缺
-`tool_input.command`、`tool_name` ≠ `Bash`、`hook_event_name` ≠ `PreToolUse` —— 一律 **exit 2
-拒绝**，绝不静默放行。⚠ 同一 plan §3.1 记载的"非 JSON stdin → exit 0"是收紧前的旧行为。
-
-**契约钉线**：`tests/unit/test_guard_git_workflow_hook.py` —— 3 个测试函数 / 21 个参数化用例
-（8 blocked + 8 allowed + 5 malformed-stdin），subprocess 端到端跑真实 hook；宿主无
-`pwsh` / `powershell` 时 skip 而非 fail。
-
-**两处边界（明写而非默默吸收）**：
-
-- **L3 只绑 Claude Code harness**。hook 由 `.claude/settings.json` 挂载，Codex 跑在自己的
-  harness 下**不经过它** —— 对 Codex，G1/G2 是 `AGENTS.md` "Self-enforced boundaries" 第 5 条
-  的 prose 义务（per ADR-035）。**规则是工具中立的，载体不是。**
-- **L3 不是 CI gate**，未登记于 `sdd/gates.md` §1 的 G 系列。⚠ 那里的 `G1` / `G2` 是**另一套
-  编号**（`check_capability_schema.py` / `check_traceability.py`），与本节的 G1/G2 同形不同义；
-  本 hook 在 `sdd/gates.md` 全文只被提及一次，且是作为"不拦 4 必停面 Edit/Write"的对照物。
+协议返回 JSON block（进程退出 0 不表示允许）；异常 payload 也 block。
+Owner 批准动作保持硬阻断，人工应用路线按 execution-loop §3.0。
+`tests/unit/test_codex_native.py`、`test_native_migration_guards.py` 验证代码；宿主
+权限与真实 hook canary 另取证。这里 G1/G2 是 Git 规则，与 sdd/gates 的同名编号不同。
 
 ## §4 PR Template + Commit Message Validation
 

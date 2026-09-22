@@ -7,7 +7,7 @@
 
 ## §1 Purpose
 
-Quarterly audit of AI-context surfaces (CLAUDE.md tree + `.claude/` artefacts +
+Quarterly audit of AI-context surfaces (AGENTS.md tree + `.agents/` artefacts +
 freeze surfaces) for drift detection. Trigger = quarter natural boundary (manual
 + reminder; **NOT** CI cron, which is brittle and silently lapses). A6 produces
 a write-once `<cycle>.md` entry per quarter; future cycles diff against prior
@@ -29,51 +29,44 @@ type: ai-context-audit
 cycle: YYYY-QN                  # e.g. 2026-Q2
 auditor: <human-or-agent-id>    # 执行者标识 (人名 OR "ai-agent (<model> via <client>; HITL-supervised by <human>)")
 scope:                          # 本 cycle 覆盖 surface 类型 (4-5 项)
-  - root-claude-md
-  - subdir-claude-md
-  - claude-skills-inventory
+  - root-agents-md
+  - subdir-agents-md
+  - native-skills-inventory
   - freeze-surface-hashes
-  - claude-settings-hooks
+  - native-hooks-rules
 findings_summary: <one-line>    # 本 cycle 主要发现 (no finding = "baseline OK; no drift detected")
-content_hash_snapshot:          # 双轨基线 (必停轨 + CLAUDE.md 轨); 面集 **按下方规则推导**,
+content_hash_snapshot:          # 双轨基线 (必停轨 + AGENTS.md 轨); 面集 **按下方规则推导**,
                                 # 不写死数量; 未来 cycle 用此 map diff 检测 drift
-  CLAUDE.md: <sha256-hex>
-  src/mj_agent/CLAUDE.md: <sha256-hex>
+  AGENTS.md: <sha256-hex>
+  src/mj_agent/AGENTS.md: <sha256-hex>
   # ... 其余各项
 ---
 ```
 
 ### §2.1 `content_hash_snapshot` 面集 —— 推导规则（**不写死数量**）
 
-> **为何是推导规则**：本节初版把面集**写死为固定数量**（15 面 = 10 必停 + 5 CLAUDE.md），并把
+> **为何是推导规则**：本节初版把面集**写死为固定数量**（15 面 = 10 必停 + 5 AGENTS.md），并把
 > 必停轨枚举为固定的 3 个 runtime skills + 6 个 infra skills。这些常量**无 gate 盯**，随后静默过期
 > —— #304 冻结 `app-start`/`app-stop`（infra 6→8）时无人回改本文件，2026-Q3 审计才发现
 > （见 `2026-Q3.md` F3）。故本节改为**从执行面机械推导**：面集跟随磁盘，不再靠人肉回改数字。
 
-本审计快照的是 **AI-context 文本面**（§1：CLAUDE.md 树 + `.claude/` prose artefacts + 冻结面）——
+本审计快照的是 **AI-context 文本面**（§1：AGENTS.md 树 + `.agents/` prose artefacts + 冻结面）——
 即 hash 算法（regex-strip-frontmatter）**能作用**的 **markdown** 面。面集 = 下列两轨之**并集**，
 每 cycle 按当时的仓库状态**现场推导**（数量是**观测值**，不是规范值）：
 
 | 轨 | 推导源（single source） | 算法 |
 |---|---|---|
-| **必停 markdown 轨** | `.claude/settings.json` `permissions.ask` glob 命中的 **`.md` 文件**（= `skills/**/SKILL.md` 命中项 + `prompts/system.md`；**`.py`/`.yaml` 项不入**——见下）∪ `claude-skill.contract.yml` 声明冻结的 `.claude/skills/mj-agent-infra-*/SKILL.md` | canonical regex-strip |
-| **CLAUDE.md 轨** | `git ls-files` 命中的 `**/CLAUDE.md`（根 + 各 subdir） | plain SHA-256 |
+| **必停 markdown 轨** | 当前 `policies/ai-agent.md` 声明的 `src/mj_agent/skills/*/SKILL.md` 与 `src/mj_agent/prompts/system.md` ∪ `development-skill.contract.yml` 声明冻结的 `.agents/skills/mj-agent-infra-*/SKILL.md`；以 `scripts/check_ai_context_audit.py --derive` 当前实现核对，不读取旧客户端 settings | canonical regex-strip |
+| **AGENTS.md 轨** | `git ls-files` 命中的 `**/AGENTS.md`（根 + 各 subdir） | plain SHA-256 |
 
-> **为何排除 3 个非-markdown 必停面**：`permissions.ask` 共 5 条，其中
-> `tools/sql/{guardrail,precheck}.py`（代码）+ `biz_catalog/qcm_catalog.yaml`（数据）
-> **是必停面但不是 AI-context markdown 面**：① regex-strip-frontmatter 算法对 `.py`/纯 `.yaml`
-> **无意义**（无 frontmatter/body 之分）；② 其 drift 由各自专属机制监控——`.py` 由
-> `sql-guardrail-relax` 必停门 + 单测，`qcm_catalog.yaml` 由 `biz-catalog-sync` 必停门。
-> 故本 hash 审计**故意不纳入**这 3 面（**非遗漏**）；它们的存在与「另有专门监控」在 cycle entry
-> 显式记一笔即可。→ 「必停 markdown 轨」= 5 条 `ask` 中的 **2 类 markdown**（SKILL.md glob +
-> system.md）∪ 冻结 infra。
+> SQL `guardrail.py` / `precheck.py` 和业务 catalog 仍是受保护面，但不是本审计的 Markdown 文本面；继续由原有专属约束保护。原生面集不再从 `.claude/settings.json` 的 `permissions.ask` 推导，不因客户端退役放宽任何保护。
 
 - **canonical regex-strip 算法**（per `runtime-skill.contract.yml` /
-  `claude-skill.contract.yml` header comment）：strip frontmatter via
+  `development-skill.contract.yml` header comment）：strip frontmatter via
   `(?ms)^---\r?\n.*?\r?\n---\r?\n` regex + LF normalise + SHA-256 hex lowercase。
   与 contract YAML 中 `content_hash` / `body_content_hash` 字段**同算法** ——
   故必停轨的 infra 项可直接与 contract 的 `body_content_hash` 比对以判定冻结违规。
-- **plain SHA-256**：full file UTF-8 bytes（CLAUDE.md 无 frontmatter → full-file hash
+- **plain SHA-256**：full file UTF-8 bytes（AGENTS.md 无 frontmatter → full-file hash
   即 body hash）。
 - **落地纪律**：审计者须**先复现上一 cycle 的若干既有 hash** 证明算法实现正确，再算新面
   （否则实现 bug 会被误报成 drift）。

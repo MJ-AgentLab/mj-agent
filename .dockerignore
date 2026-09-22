@@ -30,3 +30,8 @@ config/secrets*.conf
 .ruff_cache
 .langgraph_api
 learning
+
+# Development-only native assets and migration review data
+.agents
+.codex
+.migration

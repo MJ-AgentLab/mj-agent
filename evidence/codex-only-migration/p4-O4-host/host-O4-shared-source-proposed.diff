@@ -1,0 +1,69 @@
+--- host-O4-status-proposed.py
++++ host-O4-shared-source-proposed.py
+@@ -30,6 +30,25 @@
+     def verify_linked(root, entries):
+         verify(root, [x for x in entries if x['path'] != 'GLOSSARY.md'])
+         assert sha((root/'GLOSSARY.md').read_bytes()) == 'eaf4c6a6697ab660fdc67c4fd8589b21344fb94e249686ad35dfe83a7175181e'
++    # Proposed exact shared-source binding; never accept arbitrary parent hooks.
++    shared_root = Path('C:/Users/Admin/AppData/Local/Temp/mj-agent-p4-20260918-ij3anyxq/native acceptance')
++    frozen = {'.codex/config.toml': '7f1016969634c1a16d0c23707a1d02b6797eeb9d028616250313d7582b170655', '.codex/hooks.json': '538dc7feb4d38c6d6db76b7c99ad3bad61e11479613d3d16c5e02e35e1893f1a', '.codex/rules/mj-agent.rules': 'ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5', 'scripts/sdd/run_codex_hook.ps1': '9034d3952250a70e0e74458105f9e1a9dfa89408d55fc8c2a305877d980915b0', 'scripts/sdd/codex_hook_guard.py': '422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608'}
++    def verify_shared_source():
++        for base in (root, shared_root):
++            for rel, expected in frozen.items():
++                file = base / rel
++                for part in (file, *file.parents):
++                    assert not part.is_symlink() and not (hasattr(part, 'is_junction') and part.is_junction())
++                assert sha(file.read_bytes()) == expected, 'reviewed source changed: ' + rel
++            actual_files = {p.relative_to(base).as_posix() for p in (base/'.codex').rglob('*') if p.is_file()}
++            assert actual_files == {p for p in frozen if p.startswith('.codex/')}, 'unexpected project config file'
++        common_dir = Path(run([b['git'], '--no-optional-locks', 'rev-parse', '--git-common-dir'], cwd=root, env=host_environment()).decode().strip())
++        if not common_dir.is_absolute():
++            common_dir = root / common_dir
++        assert common_dir.resolve() == (shared_root/'.git').resolve(), 'shared Git identity changed'
++        top = run([b['git'], '--no-optional-locks', 'rev-parse', '--show-toplevel'], cwd=root, env=host_environment()).decode().strip()
++        assert Path(top).resolve() == root.resolve(), 'linked cwd changed'
++    verify_shared_source()
+     assert (root/'.venv/Scripts/python.exe').is_file(), 'reviewed offline Python environment required before hook execution'
+ 
+     verify_linked(root, b['files'])
+@@ -69,7 +88,7 @@
+     assert {x['name'] for x in rows} == set(b['mcp_names']), 'unexpected MCP source'
+     assert all(x.get('enabled') is False for x in rows), 'MCP isolation not effective'
+     stamp = time.strftime('%Y%m%d-%H%M%S')
+-    out = target('results') / 'l5' / (stamp + '-O4-root-status')
++    out = target('results') / 'l5' / (stamp + '-O4-shared-source-root-status')
+     out.mkdir(parents=True, exist_ok=False)
+     save(out / 'invocation.json', {'mode': args.mode, 'cwd': str(cwd), 'cli': b['cli'],
+          'model': args.model, 'mcp': [{'name': x['name'], 'enabled': x['enabled']} for x in rows],
+@@ -164,9 +183,10 @@
+                 for entry in hooks['data']:
+                     assert not entry['errors'] and not entry['warnings']
+                     project = [x for x in entry['hooks'] if x['source'] == 'project']
+-                    assert project and len(project) == len(entry['hooks']), 'unexpected/nonproject hook source'
++                    assert len(project) == len(entry['hooks']) == 1, 'exactly one reviewed project hook required'
+                     for hook in project:
+-                        assert Path(hook['sourcePath']).resolve() == (root/'.codex/hooks.json').resolve()
++                        assert Path(hook['sourcePath']).resolve() == (shared_root/'.codex/hooks.json').resolve()
++                        assert hook['currentHash'] == 'sha256:bb31f2388614bb65d2f587afa61440d0ce613a77269db9ca542c91f7eb5ab041', 'hook definition changed'
+                         assert hook['enabled'] and hook['trustStatus'] == 'trusted', 'engineer hook trust incomplete'
+                 case = {'id': 'O4_ROOT_STATUS', 'prompt': 'O4 linked 无副作用宿主canary。仅在给定副本根目录通过一个实际shell工具调用执行 git status --short，并根据真实输出报告结果。不要运行其他命令，不读取其他文件，不委派、不联网、不改Git状态或文件。若在工具调用前拒绝，明确没有执行，不能声称hook已运行；遇任何hook或技术拒绝立即停止，不改写命令/路径/工具重试。'}
+                 prompt = case['prompt'] + '\n具名副本根为：' + str(root)
+@@ -179,6 +199,7 @@
+                 assert thread['model'] == args.model and thread['modelProvider'] == 'openai'
+                 assert thread['approvalPolicy'] == 'on-request', 'unexpected effective policy'
+                 assert thread['sandbox'] == {'type': 'readOnly', 'networkAccess': False}, 'unexpected read-only sandbox'
++                assert [Path(p).resolve() for p in thread['instructionSources']] == [(root/'AGENTS.md').resolve()], 'unexpected instruction source'
+                 tid = thread['thread']['id']
+                 request(5, 'turn/start', {'threadId': tid, 'input': [{'type': 'text', 'text': prompt}]})
+                 deadline = canary_deadline
+@@ -197,8 +218,10 @@
+             except subprocess.TimeoutExpired:
+                 proc.terminate()  # only the Popen child created above
+                 proc.wait(timeout=5)
++            verify_shared_source()
+             verify_linked(root, b['files'])
+             verify_original()
++    verify_shared_source()
+     verify_linked(root, b['files'])
+     verify_original()
+     save(out / 'integrity.json', {'linked_exact_files_unchanged': 816, 'explicit_newline_mapping': 'GLOSSARY.md', 'acceptance': 'NOT_AUTOMATIC'})

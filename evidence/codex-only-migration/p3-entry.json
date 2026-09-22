@@ -1,0 +1,196 @@
+{
+  "phase": "P3",
+  "head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+  "branch": "maintain/codex-dev-mode-migration",
+  "status": " M tests/unit/test_agents_sync.py\n?? .migration/\n?? evidence/codex-only-migration/\n?? plans/[PLAN]_Codex_Only_Development_Migration.md\n?? plans/[REPORT]_Codex_Only_Migration_Progress.md\n?? tests/unit/test_offline_execution_boundary.py\n",
+  "backup": ".mj-agent-local/p3-entry-public-backup.zip",
+  "backup_sha256": "30cce1caf0366ab737151b1c47b3b52aa1bf4b538d19aadc2aaaaaad9528dd99",
+  "public_files": {
+    ".migration/codex-only/project/.agents/references/execution-boundaries.md": "d7d307f6f5933eeeda6c55cf617a167e0318dfc4bb8c4f594f240791c3ae3203",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-author/SKILL.md": "c7f75f551f5f91b0a0a437c77d43b451b3ec0099f40d04256130eade2ee93dcd",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-migrate/SKILL.md": "ed70a74c5dfba07273d27feb3359c019a393489c7c599417f1cdfe6e5bb0ee4b",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-plan/SKILL.md": "0cdd9d513c9770b81b08a4bbd0c334a19facda6366277524dabc22c27a12bcc2",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-review/SKILL.md": "a5b5d3715756875da1cda37bd5abbc5f248c625087bfabf3c5b88824ff5d3c54",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-sync/SKILL.md": "6dff5e9db0b4e5503f08a4893488fe4c7fd26548cb6bc847d84e76a3f3663a10",
+    ".migration/codex-only/project/.agents/skills/mj-agent-doc-validate/SKILL.md": "8e19d494c1da9312047410c278ff7ca8d0f4aa48693833f1f80368ad033978aa",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-diagnose/SKILL.md": "744d35e05af4d3b229e7018b6f8f0b58212f7c6a30cd2b1f306e8048787c808a",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-implement/SKILL.md": "41f6664ebbdbd7686fe42a9a5a0dd115c67d6f96937a9c780152ef3431c1bdb0",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-intake/SKILL.md": "7d025638e87a8ded34bff11f4e08ca2db1579539a50c6038e7e02f775c344849",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-plan/SKILL.md": "3f7a8dd96b4e1d32b516fe954e9a7569b9039f7c5e1fb64cc18345feb28d16dd",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-post-merge/SKILL.md": "6f7dadf9dc124803c63f50cc33cd6755370506962d21875e163a0cb325003ae3",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-repo-scan/SKILL.md": "2d86be92a1694f649bc4682c0ef6a639a94021e3a69f8598c2e299e7370a2ee5",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-review-respond/SKILL.md": "cc56413c39197a23e8c1bc1e90725f4f8b0e36cc816090abab4d7d2a3d67d4db",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-scope-drift/SKILL.md": "977ea2e454f46d563778e8a431065e727d509f5bd701b992f9c06b920ad65b13",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-self-review/SKILL.md": "e3409ecad18582f8e730bfc9328778766d9991877920a6bc04b33a4ba881a3f9",
+    ".migration/codex-only/project/.agents/skills/mj-agent-flow-verify/SKILL.md": "1cb4280f7b9e657cd3cd5cb8d1916329e4d1a4a815ccb80e2a26f7eaf2297cf1",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-branch/SKILL.md": "c97a80996266308b1dd93936dbae13e135170450e5fb661db893daf5b797ff8e",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-check-merge/SKILL.md": "b2eaaf952fd6cc82798a0aaf06796fe5779e2e8c1762e0c0fef42489bca7849f",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-commit/SKILL.md": "b7fac92b0d42867e946ed338e74cb2c5589b9ea12bf8b14d443d6e130afed0cc",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-delete/SKILL.md": "cb6e212add39780793aa49956cfc63ca5762b4cfa92e903e6da31550935a16c0",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-issue/SKILL.md": "8bd6bd5004f3e3ef4a816ea086f9893965809f817ec370b4a2b1177ee456cfbc",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-pr/SKILL.md": "a77ecf3cf710f1a55aa1d7aeffd67d5bcdc52842e92e66acf2b162f0d341e48f",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-push/SKILL.md": "d4331b183dc7cf2ca253f7d75a305efec76b7d621dfc04a1185ef5bc629d560c",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-review-pr/SKILL.md": "9de6d011fa8ed63dd6a7c532613a4a6d76e944adaded4c9e1bbef71e3c84a439",
+    ".migration/codex-only/project/.agents/skills/mj-agent-git-sync/SKILL.md": "216336c3570ebc8cc34155519935c3826ca9402cb5dd12f1447cd9a43e9c8bae",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-start/SKILL.md": "ee009a5c93fa93cbf93d6b79ddaeb69a9878233e5d39f45c55a8d9d2ed9f706d",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-app-stop/SKILL.md": "9ca5dc8db8d6d573e49926329be44c3c47a72504ed6c3d7a74605542923c314c",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-docker-compose/SKILL.md": "387fff765886c70fa361d8e6e389da21e253e6bf8a8dd3a0a5c5f7209adcd655",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-setup/SKILL.md": "c48e42a2b815b2ad029dfaf08ec3a03de3a338a3b57dac4b7bb9db9a3ab68c1d",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-env-teardown/SKILL.md": "8961afd7ab7ef8e741bc029f430e79d5920feac3f2f82b52be5b2710070947de",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-llm-endpoint-probe/SKILL.md": "2360d35653ec85d8f903ccc9a3257431db46323e7ee2e7058e6ea558021bc408",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-storage-stack/SKILL.md": "be4d49d0106cdfe77b9c4dafb196366d00253e076183bf6322d5d77cc6657b50",
+    ".migration/codex-only/project/.agents/skills/mj-agent-infra-studio-probe/SKILL.md": "07c416ef91b95b3ed95dfd50c1ad33b60e3eacefba9e3cf498a459d291d696b7",
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md": "ed8c3307cd2f7a58766aa887d96255587af5182f3ca3cff91d3f1f1e5848b2cb",
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-eval-baseline/SKILL.md": "74dda7dd4418689d7aa31d52454c7d778a8db2829740f468f4e51440efb37b59",
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md": "9db99ee8f1b57cac6163109396b751e1a37070947b41347820b032f87af1f77e",
+    ".migration/codex-only/project/.agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md": "ac692b2b5acef7bbd04b612abd4c37c7b86db811de003eec113e79f1f1a1c30e",
+    ".migration/codex-only/project/.codex/config.toml": "b84d64f57060abee3d004c412782988493f5d72283d3a70286bc02ef05bdaf92",
+    ".migration/codex-only/project/.codex/hooks.json": "7f8c4fcdee343f6bda10075a0fbd9dde599d3760cc9a9b9f2d5d419a1675cee4",
+    ".migration/codex-only/project/.codex/rules/mj-agent.rules": "ca65d2f4d6c68902571db3da280009a3ec2a9969d30803a522d13f68f5f21ff5",
+    ".migration/codex-only/project/scripts/mcp/pg-server-start.ps1": "5df1780e776ec8eaf2648b1b0df477446713bda14ece41a45dcd47b5991a0edc",
+    ".migration/codex-only/project/scripts/mcp/pg-server-wrapper.mjs": "b3325f681d883f521fdd5afe893821dc03736946fb8391c5a290a1c079c5b5d1",
+    ".migration/codex-only/project/scripts/mcp/setup-mcp-secrets.ps1": "09f5198811a7ba5e0d89ac228ed782e48aec5a15a6702c0c46af93ab52dd2765",
+    ".migration/codex-only/project/scripts/sdd/check_codex_native.py": "8e482bf1851eb311340bdb50a35960497b7635d1f9aa060ccb547ad0e675d4f2",
+    ".migration/codex-only/project/scripts/sdd/codex_hook_guard.py": "f6c1d328572b44b7e63f5c8b69d10414d974057ff9f3b366d9e707991cf2b0d5",
+    ".migration/codex-only/project/scripts/sdd/run_codex_hook.ps1": "51e3c187370863a3a24b52fc4758ab1f1ddac920c0dbcfb407ddd6a75c05e163",
+    ".migration/codex-only/project/tests/unit/test_codex_native.py": "d498d1b865fc907ca4f60b41d2a2637c75ff994ae92442040ce39edff8ec7d06",
+    "evidence/codex-only-migration/asset-map.csv": "321862edb6f1f2cdfb2d8699fce3b7faf11f91bfc771a3b78a069e03ab948ee7",
+    "evidence/codex-only-migration/p1-verification.json": "c4e13576d343a281ffca6062b820c84e55a6e7251973af6bc1ec22718ed94c25",
+    "evidence/codex-only-migration/p2-infra-contract-drafts.json": "3fb991532e746e6bfe262e4557ecf799ae5cac3f500de4746779b0f5983250c2",
+    "evidence/codex-only-migration/p2-infra-contract-drafts.md": "2e3fa1078b1321bcd1b7507426031b79a1371b57a6cb3e303e2b69e568008cf7",
+    "evidence/codex-only-migration/p2-resource-closure.json": "1f200c7471f538b669eb36e91bd8375c08059acf0e839ea81b8248df93ca69a5",
+    "evidence/codex-only-migration/p2-semantic-cases.json": "662fd79b8f544536de550ae70136719e22d8d1e47c848a2992f36ae164c831d2",
+    "evidence/codex-only-migration/p2-semantic-cases.md": "186f21219d3f9a37c36f88bc318ab18be4f768d7a8f996582d07709b749ada27",
+    "evidence/codex-only-migration/p2-skill-comparison.json": "9a0d132e5c0b5e15faee550d63699016ecfc6540b5c944c9ca85ec1ca4a8c7be",
+    "evidence/codex-only-migration/p2-skill-comparison.md": "5d8f02cd073202fa2ae26e922d5f387b8b6bc79e0a20755a28e9dc6b7298dc99",
+    "evidence/codex-only-migration/p2-source-candidate.diff": "102d73998b37c382a441a35902d23998edd715d041fa68b5f88c70400c787209",
+    "evidence/codex-only-migration/p2-verification.json": "cd9db97bb074959e689a68a5e2b6baea9112222dd38ef863021b504f24d02da0",
+    "plans/[PLAN]_Codex_Only_Development_Migration.md": "7dfad81dcf40d8cb867c7d9051907677eac85b6cbd2c9fb856a75f86c37d3728",
+    "plans/[REPORT]_Codex_Only_Migration_Progress.md": "6f1926fba4ccd706adfb9a8d7a7dfb00d80a34eb6f29c1144aa74e90a57f67fc",
+    "tests/unit/test_agents_sync.py": "1abaa4163e0cfe14c00c3850841353c6c2c75e50c77da20c6f566c1b61f6aa1a",
+    "tests/unit/test_offline_execution_boundary.py": "b587aabb6c1cec8d2ec7cb08b448a6b7296e738e0dcc6e3c2eb57e88107ed865"
+  },
+  "identity_errors": [],
+  "counts": {
+    "skills": 37,
+    "dimensions": 296,
+    "cases": 142,
+    "references": 387,
+    "infra_drafts": 8
+  },
+  "frozen_hash_recomputation": [
+    {
+      "name": "mj-agent-infra-app-start",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-app-stop",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-docker-compose",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-env-setup",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-env-teardown",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-llm-endpoint-probe",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-storage-stack",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    },
+    {
+      "name": "mj-agent-infra-studio-probe",
+      "hash_matches": {
+        "old": {
+          "description_hash": true,
+          "body_content_hash": true
+        },
+        "new": {
+          "description_hash": true,
+          "body_content_hash": true
+        }
+      }
+    }
+  ],
+  "evidence_level": "STATIC_IDENTITY_ONLY",
+  "uncommitted_recovery": "Exact public entry bytes in named ZIP; SHA is identity, not backup",
+  "git_recovery": "Baseline 20e2f24c352cf640d9dd33234b128ca897804b99; never restore whole tree",
+  "reverification_history": [
+    {
+      "first_attempt": "16 body comparisons failed because review helper used whitespace-consuming regex instead of canonical exact newline regex; source/candidates unchanged",
+      "correction": "Use exact contract regex; preserve blank lines"
+    }
+  ]
+}

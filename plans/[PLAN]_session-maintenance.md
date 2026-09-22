@@ -1,9 +1,9 @@
 ---
 type: plan
-summary: 迁移 mj-system 会话维护机制，接入 mj-agent 共享入口并验证生成一致性
+summary: 迁移 mj-system 会话维护机制，接入 mj-agent Codex 入口并验证原生治理一致性
 owner: 项目负责人
 created: 2026-09-17
-updated: 2026-09-17
+updated: 2026-09-22
 state: active
 track: engineering-workflow
 ---
@@ -16,28 +16,29 @@ track: engineering-workflow
 
 只读扫描基线：mj-agent `develop` 为 `20e2f24`，工作区干净；mj-system 规则参考提交为 `3e55613`，源文件为 `.agents/references/session-maintenance.md`。上游路径只作来源记录，本项目运行不依赖跨仓文件。
 
+2026-09-22，Owner 确认“同步 develop、解决冲突并重新验证，再推送和创建 PR”。当前方案以已合并的 Codex 原生迁移为前提，保留会话维护语义，移除现行说明中的双客户端和生成器依赖。此授权包括本分支同步合并、冲突解决、提交、双推及创建 PR；不包含 PR 合并。§8 的 2026-09-17 记录保留为历史证据，不作为现行执行步骤。
+
 ## 2 目标与范围
 
-建立由根 AGENTS 按需读取、Claude Code 经 `@AGENTS.md` 共同消费的会话维护规则，区分归档摘要、推荐标题、明确重命名和额外客户端动作。正文唯一归属 `sdd/workflows/session-maintenance.md`；这是开发协作流程，不修改运行时 agent、数据库、依赖、技能清单或客户端工具实现。
+建立由根 AGENTS 按需读取的 Codex 会话维护规则，区分归档摘要、推荐标题、明确重命名和额外客户端动作。正文唯一归属 `sdd/workflows/session-maintenance.md`；这是开发协作流程，不修改运行时 agent、数据库、依赖、技能清单或客户端工具实现。
 
 | 文件 | 动作 |
 |---|---|
 | `sdd/workflows/session-maintenance.md` | 新增共享规则，适配上游执行约定引用 |
 | `AGENTS.md` | 增加会话维护触发入口 |
 | `docs/INDEX.md` | 登记 workflow 并更新实质修改日期 |
-| `.agents.lock.json` | 仅通过 `agents_sync.py sync` 更新生成输入摘要 |
 | 本计划 | 记录范围、验证和后续状态 |
 
-不手改 `.agents/` 或 `.codex/`；同步若产生范围外内容差异，先核实原因，不顺带纳入。`CLAUDE.md` 已导入根 AGENTS，不重复维护规则正文。
+本任务相对最新 develop 的净变更限定为上述四份文档。沿用 develop 对 `.agents.lock.json` 的删除，不恢复生成器或旧客户端入口；不修改 `.agents/`、`.codex/` 或原生守卫。同步带入的上游变更不计为本任务新增实现。
 
 ## 3 任务拆解与执行顺序
 
 1. 从 develop 创建 `documentation/session-maintenance` 工作树，保存已确认方案。
 2. 移植上游六节规则，补充共享入口、来源说明及本项目执行流程/授权边界引用。
-3. 同步根入口和文档索引；运行生成器同步已有生成产物及 lock。
-4. 执行文档、入口与投影校验，逐项静态审阅意图识别场景，记录实际覆盖范围。
+3. 同步最新 develop，保留原生入口及索引结构并补入会话维护入口；接受已退役 lock 的删除。
+4. 执行文档、入口与原生治理校验，逐项静态审阅意图识别场景，记录实际覆盖范围。
 
-改动属于文档与生成元数据，不进入 A/B/C 运行时实现路径；无程序行为实现或新测试缝，不新增模拟规则正文的单元测试。
+改动属于开发协作文档，不进入 A/B/C 运行时实现路径；无程序行为实现或新测试缝，不新增模拟规则正文的单元测试。同步后的必要回归复用现有检查和离线测试。
 
 ## 4 Documentation Decision
 
@@ -45,8 +46,8 @@ track: engineering-workflow
 |---|---|---|---|---|---|---|---|
 | Plan | Create | 本文件 | 无 | 固定范围与验收 | 评估后的“执行”授权 | working 字段、范围、风险、验证 | 实施前 |
 | SPEC | None | — | 无 | 行为由 workflow 承载 | 无应用接口变化 | — | — |
-| ADR | None | — | 无 | 沿用共享 kernel 架构 | AGENTS 及 CLAUDE 导入关系 | — | — |
-| RUNBOOK | None | — | 无 | 无运维变化 | 五文件范围 | — | — |
+| ADR | None | — | 无 | 沿用原生 kernel 架构 | AGENTS 按需读取 workflow | — | — |
+| RUNBOOK | None | — | 无 | 无运维变化 | 四份文档范围 | — | — |
 | GUIDE | None | — | 无 | 根入口已可发现 | AGENTS 按需读取 | — | — |
 | STANDARD | None | — | 无 | 不另建重复规则 | 正文在 sdd/workflows | — | — |
 | Local ISSUE | None | — | 无 | 无独立长期问题 | 需求和范围已明确 | — | — |
@@ -56,16 +57,16 @@ track: engineering-workflow
 
 ## 5 风险与控制
 
-总体风险 Medium。HITL 命中 `mcp-server-trust-posture-change` 的 D-017 生成记录邻接面，仅重新计算已有生成输入摘要，不修改信任策略或生成器；Owner 的“执行”覆盖评估中已明确的同步动作。四项 in-source 专属必停面均不涉及。
+总体风险 Medium。当前涉及根 AGENTS 和 SDD 流程文档的受保护治理面；Owner 的“执行”覆盖已说明的同步与适配。相对最新 develop 不修改信任策略、原生守卫、冻结契约或生成记录；四项 in-source 专属必停面均不涉及。旧版生成记录联动仅保留在历史执行记录。
 
 | 风险 | 缓解与回退 |
 |---|---|
 | 把机制讨论、普通摘要或命名建议当成客户端操作 | 保留正反例和动作边界，分别静态审阅 |
-| 双工具规则分叉或误报工具成功 | 只维护一份正文；按当前能力调用，确认结果后才报告成功 |
-| AGENTS 改动未同步生成摘要 | sync 后检查全表及 enforcement；不手改 lock |
+| 规则重复维护或误报工具成功 | 只维护一份正文；按当前能力调用，确认结果后才报告成功 |
+| 同步时恢复旧客户端或生成器依赖 | 保留最新原生入口；核对净变更及原生校验结果 |
 | 静态检查被误报为客户端验证 | 单列实测状态，未授权目标则不调用客户端写操作 |
 
-回退时撤回本任务源文档差异，并由生成器重建 lock；保留用户其他修改。没有数据或服务恢复步骤。
+回退时仅撤回本任务四份文档相对最新 develop 的差异，保留上游迁移和用户其他修改，不恢复旧 lock 或生成器。没有数据或服务恢复步骤。
 
 ## 6 验证计划
 
@@ -73,20 +74,20 @@ track: engineering-workflow
 
 - `git diff --check`，并核对已跟踪与未跟踪文件的完整范围。
 - `scripts/check_frontmatter.py`、`scripts/check_wikilinks.py`、`scripts/check_loop_section_refs.py`。
-- `scripts/sdd/check_development_agent.py --all --fail-on warning`。
-- `scripts/sdd/check_agents_projection.py --all --fail-on warning`。
-- `scripts/sdd/agents_sync.py --check --surface all` 和 `--surface enforcement`，核对实际结果码，SKIP 不算通过。
+- `scripts/sdd/check_codex_native.py`、`scripts/sdd/check_native_skills.py` 和 `scripts/sdd/check_native_governance.py`；静态通过与实际宿主审批分开报告。
+- `scripts/check_codex_approvals.py --effective-approval-policy never`，按当前已知有效会话模式诊断交付路线，不用项目静态配置冒充有效模式。
+- 现有 ruff、mypy 与 `scripts/sdd/run_offline_pytest.py tests/unit`，完成同步后的离线回归。
 - 补充核对 workflow 元数据及新增相对链接：通用 frontmatter 扫描不覆盖 `sdd/`，根 AGENTS 的新 Markdown 链接也需独立验证。
 - AI 静态审阅：归档/推荐/显式改名/规范改名，四种编号组合，多编号、指定日期/时区、完整标题、工具缺失/失败/结果未知，以及否定/引用/机制讨论/文件归档/PR 收尾。
 
-客户端改名或客户端归档实测仅在 Owner 明确指定获授权目标和动作后执行，本次不作为实施完成条件。无业务代码改动，不运行应用、数据库、Docker、LLM 或业务测试。
+客户端改名或客户端归档实测仅在 Owner 明确指定获授权目标和动作后执行，本次不作为实施完成条件。无业务代码改动，不运行应用、数据库、Docker、LLM 或 live 测试。
 
 ## 7 验收标准
 
 - [x] 一份共享规则覆盖上游六节语义，并正确引用本项目执行流程与授权边界。
-- [x] 根入口和索引可达；CLAUDE 经现有导入消费，不复制正文。
-- [x] 五文件范围内完成，生成记录仅由同步脚本维护。
-- [x] 文档与投影校验结果有本次证据，新增链接及 workflow 元数据补检通过。
+- [x] 根入口和索引可达；Codex 按需读取，不复制正文。
+- [x] 当前四份文档范围内完成，不恢复已退役生成记录。
+- [x] 同步后文档与原生治理校验有新证据，新增链接及 workflow 元数据补检通过。
 - [x] 静态场景审阅与客户端实测状态分别记录，不以工具存在或静态 PASS 代替执行成功。
 
 ## 8 关联与执行记录
@@ -150,3 +151,39 @@ Codex 负责本次评估与实施；HITL scenario hit = `mcp-server-trust-postur
 提交前 fetch 确认 origin/develop 与任务基线相同，无需合并上游差异。五个文件作为同一文档主题提交，保持跨治理目录省略 scope 的 `docs` 格式，并记录 Codex 协作来源。PR 按 documentation 模板填写本地验证、AI 自检、HITL Trigger Inventory 和 Docker Impact；客户端实测仍为未执行。
 
 本轮补充本地验证：`ruff check` 通过；`mypy src/mj_agent` 为 48 个源文件无问题；frontmatter、execution-loop 节号引用及 all/enforcement 生成一致性复查通过（enforcement = `EXECUTED_CLEAN`）。
+
+## 9 2026-09-22 同步与交付准备
+
+原提交为 `b2fa9da`；同步目标为 `origin/develop` 的 `7446e731649c2577c6246d57bbfdccc2d91e780e`。同步前工作树干净，分支独有 1 个提交、落后 12 个提交。通过正常 Git merge 引入上游，解决以下三项冲突：
+
+- `AGENTS.md`：保留最新 Codex 原生开发入口，补回会话维护按需触发段。
+- `docs/INDEX.md`：保留最新原生技能索引，补回会话规则链接并更新日期。
+- `.agents.lock.json`：沿用上游删除，不恢复投影生成机制。
+
+相对同步目标的净变更为四份文档。workflow 改用 Codex 单工具说明，当前计划移除已退役客户端和生成器执行依赖；§8 旧验证记录仅作历史证据。
+
+### 本轮本地验证
+
+在本分支工作树使用已有 develop `.venv` 的 Python（`-B`，文本检查加 `-X utf8`）执行，没有安装依赖或读取凭据：
+
+| 检查 | 结果 |
+|---|---|
+| `scripts/check_frontmatter.py` | PASS，144 份扫描范围内文档 |
+| `scripts/check_wikilinks.py`（另以 `MJ_AGENT_A4_STRICT=1` 复查） | PASS，0 archive-ref violations，5 个根文件 0 unresolved targets |
+| `scripts/check_loop_section_refs.py` | PASS，20 sections，0 violations |
+| `scripts/sdd/check_codex_native.py` | STATIC_PASS；不是宿主执行或服务验证 |
+| `scripts/sdd/check_native_skills.py` | STATIC_PASS |
+| `scripts/sdd/check_native_governance.py --surface entries` / `--surface consumers` | 均 STATIC_PASS；首次漏传必需 `--surface` 返回 exit 2，按接口补齐后通过 |
+| 补充 metadata / 相对链接检查 | PASS，四份文档、9 个 Markdown 链接，未发现冲突标记或旧 lock 文件 |
+| `python -m ruff check` | PASS |
+| `python -m mypy src/mj_agent` | PASS，48 个源文件 |
+| `scripts/sdd/run_offline_pytest.py tests/unit -q` | 903 passed、1 skipped、30 subtests passed；skip 为非 Windows 专属测试；1 条第三方 Pydantic 弃用 warning |
+| 交付审批预检（有效模式 `never`） | INCOMPATIBLE，commit / 双端 push / PR create 的项目规则为 `prompt`；静态诊断不当作实际工具拒绝 |
+
+合并暂存区相对旧 HEAD 的全量 whitespace 检查会报告上游历史迁移 evidence 的空白；这些文件与最新 develop 一致，不纳入本次净变更，也不顺带改写历史证据。交付以相对最新 develop 的四文件净差异检查为准。
+
+### 本轮 AI 自检与继续入口
+
+Scope drift = None；六节会话规则的触发、标题/日期、摘要、事实边界和客户端动作语义保持，现役消费者改为 Codex。根入口与索引可达，无 runtime / 数据 / 依赖 / MCP 服务变更，无需应用 CHANGELOG；无新增 BDD/TDD 场景或子代理。客户端改名/归档实测仍未执行，不作成功声明。核验结果与静态语义审阅分别记录。
+
+Owner 已授权完成本分支同步、冲突解决、提交、推送与 PR 创建；PR 合并不在授权内。交付动作通过正常工具执行，真实 commit / remote / PR 结果以 Git 和 GitHub 为准；遇实际拒绝保留原始错误，不更改规则或更换工具绕过。此记录写入时合并尚待提交，后续状态由交付结果补充。

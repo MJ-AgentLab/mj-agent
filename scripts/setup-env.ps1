@@ -332,8 +332,8 @@ try {
     Write-Host ""
     Write-Host "Next steps:" -ForegroundColor White
     Write-Host "  1. Review .env and adjust POSTGRES_DEV_HOST / MJ_CONFIG_PROFILE if needed" -ForegroundColor White
-    Write-Host "  2. MCP secrets bundle (ADR-030): .\.claude\scripts\setup-mcp-secrets.ps1" -ForegroundColor White
-    Write-Host "     (decrypts config\secrets-mcp.enc -> OS User-level env; needed for .mcp.json)" -ForegroundColor DarkGray
+    Write-Host "  2. MCP secrets bundle (ADR-030): .\scripts\mcp\setup-mcp-secrets.ps1" -ForegroundColor White
+    Write-Host "     (decrypts config\secrets-mcp.enc -> OS User-level env; needed for .codex/config.toml)" -ForegroundColor DarkGray
     Write-Host "  3. uv sync" -ForegroundColor White
     Write-Host "  4. uv run langgraph dev" -ForegroundColor White
     Write-Host ("=" * 60)

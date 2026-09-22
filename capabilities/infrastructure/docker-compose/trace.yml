@@ -20,9 +20,9 @@ cross_capability_refs:
 
   - target: infrastructure.mcp-server-governance
     direction: outbound
-    surface: ".mcp.json WAN pg URLs reference deployed pg endpoints"
-    rationale: "compose-deployed pg hosts (mj-agent-postgres at 5433, biz pg via mj-system-backend-network at 5432) are referenced by .mcp.json wrapped pg server entries"
-    impact: "pg port / host changes must sync with .mcp.json MJ_AGENT_PG_*_URL overrides"
+    surface: ".codex/config.toml WAN pg URLs reference deployed pg endpoints"
+    rationale: "compose-deployed memory PG hosts (mj-agent-postgres at 5433) are referenced by .codex/config.toml wrapped pg server entries"
+    impact: "pg port / host changes must sync with .codex/config.toml MJ_AGENT_PG_MEMORY_*_URL overrides"
 
 links:
 

@@ -72,10 +72,10 @@ def _make_tree(root: Path, extra: dict[str, str] | None = None) -> Path:
 
 
 class TestScanFaceConfig:
-    def test_claude_skills_are_on_the_face(self) -> None:
-        # The defect class lives in .claude/skills/**; a gate that cannot see
+    def test_native_skills_are_on_the_face(self) -> None:
+        # The defect class lives in .agents/skills/**; a gate that cannot see
         # them is useless.
-        assert ".claude" in WALK_DIRS
+        assert ".agents" in WALK_DIRS
 
     def test_kernel_dirs_are_on_the_face(self) -> None:
         for expected in ("sdd", "policies", "docs", "decisions", "capabilities"):
@@ -89,7 +89,7 @@ class TestScanFaceConfig:
         assert "CHANGELOG.md" not in WALK_FILES
 
     def test_root_instruction_files_are_on_the_face(self) -> None:
-        for expected in ("CLAUDE.md", "AGENTS.md", "CONTRIBUTING.md"):
+        for expected in ("AGENTS.md", "CONTRIBUTING.md"):
             assert expected in WALK_FILES
 
 
@@ -223,13 +223,13 @@ class TestPositionalHitlIndex:
 
 class TestIterScannedFiles:
     def test_collects_face_dirs_and_root_files(self, tmp_path: Path) -> None:
-        _make_tree(tmp_path, {"policies/p.md": "x", "CLAUDE.md": "y"})
+        _make_tree(tmp_path, {"policies/p.md": "x", "AGENTS.md": "y"})
         found = {p.relative_to(tmp_path).as_posix() for p in iter_scanned_files(tmp_path)}
         assert "policies/p.md" in found
-        assert "CLAUDE.md" in found
+        assert "AGENTS.md" in found
         assert KERNEL_REL.as_posix() in found
 
-    def test_skips_archive_and_generated_projections(self, tmp_path: Path) -> None:
+    def test_skips_archive_and_retired_client_but_scans_native(self, tmp_path: Path) -> None:
         _make_tree(
             tmp_path,
             {
@@ -241,8 +241,8 @@ class TestIterScannedFiles:
         (tmp_path / ".agents" / "skills" / "proj.md").write_text("z", encoding="utf-8")
         found = {p.relative_to(tmp_path).as_posix() for p in iter_scanned_files(tmp_path)}
         assert "docs/archive/old.md" not in found
-        assert not any(f.startswith(".agents/") for f in found)
-        assert ".claude/skills/s/SKILL.md" in found
+        assert ".agents/skills/proj.md" in found
+        assert ".claude/skills/s/SKILL.md" not in found
 
     def test_missing_face_dirs_are_tolerated(self, tmp_path: Path) -> None:
         _make_tree(tmp_path)

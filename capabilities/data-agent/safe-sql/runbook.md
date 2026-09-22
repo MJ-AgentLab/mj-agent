@@ -36,7 +36,7 @@ uv run langgraph dev
 
 ### TEST / PROD profiles
 
-Per `docker/CLAUDE.md`. 4-file
+Per `docker/AGENTS.md`. 4-file
 profile chain; `--env-file .env` explicit.
 
 ```bash

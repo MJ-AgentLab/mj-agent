@@ -29,10 +29,10 @@
 **标准贡献流程 5 步**：
 
 1. 从 `develop` 用 `git -C develop worktree add ../<dir> -b <branch> develop` 起新 worktree（G1 worktree-required；不要用 `git checkout -b`）
-2. 编码 + 本地自测（`uv run pytest tests/unit` + `uv run ruff check` + `uv run mypy src/mj_agent`）+ 按规范 commit
+2. 编码 + 本地自测（`uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit` + `uv run ruff check` + `uv run mypy src/mj_agent`）+ 按规范 commit
 3. 推送分支到 GitHub（origin）+ Gitee（镜像）+ 用 `gh pr create --base develop`（G2 hook 拦截缺 `--base`）
 4. 等待 review，按反馈修改
-5. PR merge 后：删除已合并的 worktree + 分支（[`/mj-agent-flow-post-merge`](https://github.com/MJ-AgentLab/mj-agent/blob/develop/.claude/skills/mj-agent-flow-post-merge/SKILL.md) 提供清理 workflow）
+5. PR merge 后：删除已合并的 worktree + 分支（[`/mj-agent-flow-post-merge`](https://github.com/MJ-AgentLab/mj-agent/blob/develop/.agents/skills/mj-agent-flow-post-merge/SKILL.md) 提供清理 workflow）
 
 ---
 
@@ -60,7 +60,7 @@ main              ← 稳定可部署（受保护；只接受 PR 合并）
 ### G1 worktree-required（PreToolUse hook 强制）
 
 - 起新分支**必须**用 `git -C develop worktree add ../<dir> -b <branch> develop`
-- **禁用** `git checkout -b` / `git switch -c`（`.claude/scripts/guard-git-workflow.ps1` PreToolUse hook 拦截 exit code 2）
+- **禁用** `git checkout -b` / `git switch -c`（`scripts/sdd/codex_hook_guard.py` 原生 hook 返回 block；实际宿主另行验证）
 
 ### G2 base=develop-except-hotfix（PreToolUse hook 强制）
 
@@ -93,7 +93,7 @@ main              ← 稳定可部署（受保护；只接受 PR 合并）
 | `perf` | 性能优化 |
 | `refactor` | 重构（不改外部行为） |
 | `test` | 测试相关 |
-| `docs` | 文档变更（`docs/**` / `README.md` / `CHANGELOG.md` / `CONTRIBUTING.md` / `GLOSSARY.md` / `CLAUDE.md`） |
+| `docs` | 文档变更（`docs/**` / `README.md` / `CHANGELOG.md` / `CONTRIBUTING.md` / `GLOSSARY.md` / `AGENTS.md`） |
 | `infra` | 基础设施（CI / Docker / 依赖 / 脚本） |
 
 ### Scope
@@ -160,15 +160,15 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 
 ## CI 流水线
 
-每次 push/PR 触发 `.github/workflows/ci.yml`，执行（per [CLAUDE.md §Commands](./CLAUDE.md)）：
+每次 push/PR 触发 `.github/workflows/ci.yml`，执行（per [AGENTS.md §Commands](./AGENTS.md)）：
 
 | 步骤 | 命令 | 阻塞？ |
 |------|------|------|
 | 1. 字节码编译 | `python -m compileall` | 是 |
 | 2. Lint | `uv run ruff check` | 是 |
 | 3. 类型检查 | `uv run mypy src/mj_agent`（strict） | 是 |
-| 4. pytest（默认 band） | `uv run pytest` — unit + eval + integration（smoke + contract deselected） | 是 |
-| 5. pytest contract | `uv run pytest tests/contract -m contract`（skip-clean if no DB creds） | 是 |
+| 4. pytest（默认 band） | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py` — unit + eval + integration（smoke + contract deselected） | 是 |
+| 5. pytest contract | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract`（外部依赖策略 skip，不证明服务连接） | 是 |
 
 **Smoke 测试**（`-m smoke`）CI 永不跑——需 live biz DB + Ark；仅本地手工跑。
 
@@ -182,24 +182,24 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 |---|---|---|
 | Track A 代码侧 | GUIDE / ADR-code / SPEC-code / RUNBOOK / POSTMORTEM-code / STANDARD-code / ISSUE-code / ASSESSMENT-code | [policies/documentation.md](policies/documentation.md) |
 | Track B 智能体侧 | in-source SKILL / PROMPT / EVAL / agent-facing CONTRACT | [sdd/adapters/runtime-skill.md](sdd/adapters/runtime-skill.md)（+ [policies/documentation.md](policies/documentation.md) §5.3 门禁） |
-| Track C 工程编排侧 | `.claude/skills/mj-agent-*/SKILL.md` / `.claude/settings.json` / `.mcp.json` / 执行闭环 | [sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)（+ [sdd/adapters/claude-code-skill.md](sdd/adapters/claude-code-skill.md) for Meta §3.10 / §7.7） |
+| Track C 工程编排侧 | `.agents/skills/mj-agent-*/SKILL.md` / `.codex/hooks.json` / `.codex/config.toml` / 执行闭环 | [sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md)（+ [policies/development-skills.md](policies/development-skills.md) for Meta §3.10 / §7.7） |
 | Shared 元层 | types / layers / lifecycle / archive / `track` 字段 | [policies/documentation.md](policies/documentation.md)（+ [policies/archive.md](policies/archive.md)） |
 
 ### A1-A14 PR 门禁速查
 
 | 编号 | 适用 track | 说明 |
 |---|---|---|
-| A1-A6 | 全部 | 路径 / frontmatter / state / Wikilink / INDEX / CLAUDE.md sync（hygiene 通用） |
+| A1-A6 | 全部 | 路径 / frontmatter / state / Wikilink / INDEX / AGENTS.md sync（hygiene 通用） |
 | OB1-OB5 | 全部 | 非阻塞观察（长度 / 时态 / 边界 / 摘要 / 内部一致性） |
 | A7-A10 | agent | in-source SKILL / PROMPT / EVAL / CONTRACT 专属 |
 | A11 | agent | `state: active` SKILL `eval_references` 非空（Phase 2 起强制） |
-| A12 | engineering-workflow | `.claude/skills/` ADR-013 native schema 合规 + description 质量 |
-| A13 | engineering-workflow | `.claude/settings.json` 不裸 `Bash` 通配 + secret pattern 进 deny |
-| A14 | engineering-workflow | `.mcp.json` server 增删声明 trust posture + credential mode |
+| A12 | engineering-workflow | `.agents/skills/` ADR-013 native schema 合规 + description 质量 |
+| A13 | engineering-workflow | `.codex/hooks.json` Owner 动作硬阻断、非法输入 fail closed、秘密不回显 |
+| A14 | engineering-workflow | `.codex/config.toml` server 增删声明 trust posture + credential mode |
 
 ### 项目根 5 文件例外
 
-项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `CLAUDE.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。`AGENTS.md`（AI agent 指令契约）同为根操作文件例外，同样处理（per ADR-035）。详见 [policies/documentation.md §2.6](policies/documentation.md)。
+项目根 `README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` / `AGENTS.md` **不进入 canonical 治理表**（不写 frontmatter；不强制 body 骨架；A1-A3 不适用；A4 + A6 仍适用；语法约束见 GitHub_Markdown §14）。其中 `AGENTS.md` 为 AI agent 指令契约；四处局部 AGENTS 同享例外。详见 [policies/documentation.md §2.6](policies/documentation.md)。
 
 ### 新文档默认值
 

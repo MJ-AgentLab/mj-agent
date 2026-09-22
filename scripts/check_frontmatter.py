@@ -42,6 +42,9 @@ from typing import Any
 
 import frontmatter  # type: ignore[import-untyped]
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
+
 # Roots scanned for canonical docs.
 SCAN_ROOTS = (
     Path("docs"),
@@ -211,7 +214,7 @@ def find_scanned_docs(repo_root: Path) -> list[Path]:
             if not md.is_file():  # a directory literally named `*.md` is not a doc
                 continue
             rel = md.relative_to(repo_root)
-            if is_skipped(rel):
+            if is_skipped(rel) or retired_client_asset(rel):
                 continue
             out.append(rel)
     return sorted(out)

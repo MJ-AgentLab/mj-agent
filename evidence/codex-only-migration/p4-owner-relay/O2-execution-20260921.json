@@ -1,0 +1,64 @@
+{
+  "at": "2026-09-21T02:13:42.871763+00:00",
+  "case": "F_RUNTIME",
+  "status": "BLOCKED_EXECUTION_ROUTE_COMMAND_OUTSIDE_CASE_SCOPE",
+  "exit_code": 1,
+  "model_turns": 1,
+  "completed": false,
+  "result_dir": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-101115-canary-root",
+  "request": {
+    "method": "item/commandExecution/requestApproval",
+    "id": 0,
+    "params": {
+      "threadId": "01a0c1bb-5d94-7212-9d29-587197d0aa35",
+      "turnId": "01a0c1bb-5dc3-7781-995f-e78b80f58670",
+      "itemId": "exec-e6b5b07c-96b1-412f-b18a-39e3b602d4ad",
+      "startedAtMs": 1789956698272,
+      "environmentId": "local",
+      "command": "\"C:\\\\Users\\\\Admin\\\\.cache\\\\codex-runtimes\\\\codex-primary-runtime\\\\dependencies\\\\native\\\\powershell\\\\pwsh.exe\" -Command 'git rev-parse --show-toplevel'",
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+      "commandActions": [
+        {
+          "type": "unknown",
+          "command": "git rev-parse --show-toplevel"
+        }
+      ],
+      "proposedExecpolicyAmendment": [
+        "git",
+        "rev-parse",
+        "--show-toplevel"
+      ],
+      "availableDecisions": [
+        "accept",
+        {
+          "acceptWithExecpolicyAmendment": {
+            "execpolicy_amendment": [
+              "git",
+              "rev-parse",
+              "--show-toplevel"
+            ]
+          }
+        },
+        "cancel"
+      ]
+    }
+  },
+  "approval_responses": 0,
+  "read_commands_completed": 2,
+  "hook_completed": 3,
+  "source_copy_817_unchanged": true,
+  "not_project_assertion_failure": true,
+  "evidence_hashes": {
+    "canary-input.json": "b534a4274f134dcef2493e3635a353ff5107178aa04b7cbb83b9b52b2951c212",
+    "events.jsonl": "738b69813a75f7d005dd880280fc5581645f68e67e67eb851a3900b12e7a837b",
+    "hooks-list.json": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "invocation.json": "ea634d689676944be3dcfd3b70a795f66685e124e460fe16e39862c8a04fe04f",
+    "server-request-stop.json": "ac3b27ba437259b62f50ed9b329276af582367fc864b4e5d7329ba4725f7df49",
+    "skills-list.json": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30",
+    "thread-start.json": "c6f2422be5b7d4de514f973fab4bf01eeb0317c57961ec25582b52fda397b445",
+    "turn-start.json": "53789f1d38c7bbe2ce0e48178cad521fb7c5a702366194dc94a906f830a5fbf3"
+  },
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE"
+}

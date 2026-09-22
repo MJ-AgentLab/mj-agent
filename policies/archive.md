@@ -147,9 +147,9 @@ related_decisions:
    - **Frozen**（ADR / ASSESSMENT 里"事故/决策时规则状态"语境）→ pin 到 archive 副本的
      `_vX.Y` 路径，措辞作 immutable artifact 保留。
    - **必须覆盖项目根 5 文件**（`README.md` / `CONTRIBUTING.md` / `CHANGELOG.md` / `GLOSSARY.md` /
-     `CLAUDE.md`）+ **`AGENTS.md` 全部 5 件**（AI agent 指令契约——根 + 4 嵌套
+     `AGENTS.md`）+ **`AGENTS.md` 全部 5 件**（AI agent 指令契约——根 + 4 嵌套
      `capabilities|docker|src/mj_agent|tests`，per documentation.md §2.6 / ADR-035/036）：它们
-     gate-light（§2.6 豁免 A1-A3），G14/G15 自动化扫描的根目录文件仅 `CLAUDE.md`（§5.2 扫描范围；
+     gate-light（§2.6 豁免 A1-A3），G14/G15 自动化扫描的根目录文件仅 `AGENTS.md`（§5.2 扫描范围；
      嵌套 `AGENTS.md` 中 `tests/AGENTS.md` 亦在 walk 域外），其余的 living 引用**只能靠本步人工
      grep 兜底**。M6 三轨归档时 `GLOSSARY.md` 即因漏入本步 sweep 而留下指向 `docs/rule/` 的悬空
      链接——故此处显式点名。
@@ -179,7 +179,7 @@ related_decisions:
 
 ### §5.2 active 文件引用 archive/ 路径的规则
 
-扫描范围：`docs/`、`capabilities/`、`sdd/`、`policies/`、`decisions/`、`plans/` + `CLAUDE.md`
+扫描范围：`docs/`、`capabilities/`、`sdd/`、`policies/`、`decisions/`、`plans/` + `AGENTS.md`
 （`archive/` 树本身**不**扫描）。对每处字面 `archive/<path>` 引用（正则
 `(?<![\w./-])archive/([\w./\-\[\]]+)`，**只匹配顶层 `archive/`，不匹配 `docs/archive/`**），
 解析该引用所属 archive unit 的 `archive.yml`（向上就近查找）的 `ai_visibility`：

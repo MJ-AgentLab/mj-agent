@@ -32,7 +32,7 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 <summary><b>Code-Side checklist</b> (A1-A6 + OB1-OB5) — cite [[../../policies/documentation|documentation policy]] §5.1</summary>
 
 - [ ] 事故根因值得沉淀时，Release 后补 `[POSTMORTEM]`（本次 PR 不强制）
-- [ ] 若 hotfix 触发 allowlist（运行入口/关键依赖），`CLAUDE.md` 已同步检查（A6）
+- [ ] 若 hotfix 触发 allowlist（运行入口/关键依赖），`AGENTS.md` 已同步检查（A6）
 
 </details>
 
@@ -45,12 +45,12 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 </details>
 
 <details>
-<summary><b>Engineering-Workflow checklist</b> (A12-A14；hotfix 紧急通道但 A12 schema 不可跳) — cite A12 → [[../../sdd/adapters/claude-code-skill|claude-code-skill adapter]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
+<summary><b>Engineering-Workflow checklist</b> (A12-A14；hotfix 紧急通道但 A12 schema 不可跳) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
 
-- [ ] **A12** `.claude/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace（紧急修复也不跳 schema 校验）
-- [ ] **A13** `.claude/settings.json` allowlist diff 评审：无裸 `Bash`、secret patterns 在 `permissions.deny`
-- [ ] **A14** `.mcp.json` server 增删声明 trust posture + credential mode
-- [ ] **hotfix 风险面**：紧急通道下 A12 schema 校验 + A13/A14 触发的 settings.json / mcp.json 调整若临时跳过，**事后必须补 documentation/* PR 说明 + 同步进 develop**（与 §27 主同步动作配套）
+- [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace（紧急修复也不跳 schema 校验）
+- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A14** `.codex/config.toml` server 增删声明 trust posture + credential mode
+- [ ] **hotfix 风险面**：原生 config/hooks/rules 或 MCP 变更仍须改前 Owner 批准；事后文档补充与 develop 同步不替代批准
 
 </details>
 

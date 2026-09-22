@@ -1,207 +1,179 @@
-# capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml
-#
-# Covers REQ-001 (14-server inventory) + REQ-002 (pg wrapper consistency).
-
 contract_id: mcp-server
 covers_requirements:
-  - REQ-001
-  - REQ-002
-
+- REQ-001
+- REQ-002
 mcp_inventory_file:
-  path: .mcp.json
-  freeze_anchor: .mcp.json                        # entire file
-  expected_total_entries: 14
-
-# 14-server inventory (REQ-001)
+  path: .codex/config.toml
+  freeze_anchor: .codex/config.toml
+  expected_total_entries: 8
 servers:
-
-  - name: github
-    type: stdio
-    invocation: 'npx @modelcontextprotocol/server-github'
-    trust_posture: first-party                    # Anthropic-published
-    credential_mode: api_key_via_env
-    env_secrets:
-      - GITHUB_PERSONAL_ACCESS_TOKEN
-    purpose: "Issues / PRs / repo browsing"
-
-  - name: serena
-    type: stdio
-    invocation: 'uv tool run --from "git+https://github.com/oraios/serena" serena-mcp-server'
-    trust_posture: third-party                    # oraios
-    credential_mode: none                         # local-only IDE-like LSP
-    args: ['--context claude-code', '--enable-web-dashboard false', '--project-from-cwd']
-    purpose: "LSP-like symbol-first search for Claude Code A5"
-
-  # --- pg-* wrapper credential model (updated by #353 / ADR-037; freeze_anchor = .mcp.json) ---
-  # All 10 pg-* entries changed to PASS-BY-NAME: the .mcp.json arg carries the env-var NAME
-  # (e.g. MJ_AGENT_PG_MEMORY_DEV_URL), pg-server-start.cmd resolves the URL from that env var,
-  # and there is NO inline default — an unset var is an explicit failure (exit 3). Single source
-  # of truth = secrets-mcp.enc -> HKCU env (ADR-030). `env_override` below is now the SOLE source
-  # (nothing to "override"); `default_url*` are null for all (no inline default remains).
-  # memory x5 are projected to Codex (project tier, ADR-037); biz x5 + ssh stay never (ADR-006/009).
-  - name: pg-mj-agent-memory-dev
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper            # wrapper around community pg MCP
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_MEMORY_DEV_URL
-    purpose: "DEV mj-agent-postgres memory checkpointer pg"
-
-  - name: pg-mj-agent-memory-test-lan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_MEMORY_TEST_LAN_URL
-    purpose: "LAN access to 192.168.0.179:5433"
-
-  - name: pg-mj-agent-memory-test-wan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # NO default — fail loud
-    env_override: MJ_AGENT_PG_MEMORY_TEST_WAN_URL
-    purpose: "WAN/FRP tunnel; env REQUIRED"
-
-  - name: pg-mj-agent-memory-prod-lan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_MEMORY_PROD_LAN_URL
-    purpose: "LAN access to 192.168.0.106:5433"
-
-  - name: pg-mj-agent-memory-prod-wan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null
-    env_override: MJ_AGENT_PG_MEMORY_PROD_WAN_URL
-    purpose: "WAN/FRP"
-
-  - name: pg-mj-system-biz-dev
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_BIZ_DEV_URL
-    purpose: "biz pg via analyst RO role"
-
-  - name: pg-mj-system-biz-test-lan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_BIZ_TEST_LAN_URL
-    purpose: "LAN 192.168.0.179:5432 biz pg"
-
-  - name: pg-mj-system-biz-test-wan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null
-    env_override: MJ_AGENT_PG_BIZ_TEST_WAN_URL
-    purpose: "WAN biz pg"
-
-  - name: pg-mj-system-biz-prod-lan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null                             # #353: no inline default; env REQUIRED
-    env_override: MJ_AGENT_PG_BIZ_PROD_LAN_URL
-    purpose: "LAN 192.168.0.106:5432 biz pg"
-
-  - name: pg-mj-system-biz-prod-wan
-    type: stdio
-    invocation: '.claude\scripts\pg-server-start.cmd'
-    trust_posture: first-party-wrapper
-    credential_mode: wrapped_script_env_name_resolution
-    default_url: null
-    env_override: MJ_AGENT_PG_BIZ_PROD_WAN_URL
-    purpose: "WAN biz pg"
-
-  - name: ssh-manager
-    type: stdio
-    invocation: 'npx @iflow-mcp/mcp-ssh-manager'
-    trust_posture: third-party                    # iflow-mcp community
-    credential_mode: api_key_via_env
-    env_secrets:                                  # 5 unique passwords (LAN+WAN share for each host)
-      - MJ_AGENT_SSH_SERVER_CLOUD_PASSWORD
-      - MJ_AGENT_SSH_SERVER_RUNNER_PASSWORD
-      - MJ_AGENT_SSH_SERVER_TEST_PASSWORD
-      - MJ_AGENT_SSH_SERVER_PROD_PASSWORD
-      - MJ_AGENT_SSH_SERVER_DGX_PASSWORD
-    aggregated_hosts: 9                            # Cloud / Runner LAN/WAN / Test LAN/WAN / Prod LAN/WAN / DGX LAN/WAN
-    purpose: "9 SSH host configs aggregated into one MCP server"
-
-  - name: playwright
-    type: stdio
-    invocation: 'npx @playwright/mcp@latest'
-    trust_posture: third-party                    # Microsoft (microsoft/playwright-mcp)
-    credential_mode: none                         # local browser automation; no creds
-    purpose: "Browser automation for developing + testing the Chainlit web UI (:8000)"
-
-# REQ-002 — Wrapper consistency
+- name: github
+  type: stdio
+  invocation: cmd
+  trust_posture: first-party
+  credential_mode: api_key_via_env
+  env_secrets:
+  - GITHUB_PERSONAL_ACCESS_TOKEN
+  purpose: Issues / PRs / repo browsing
+  args:
+  - /c
+  - npx
+  - -y
+  - '@modelcontextprotocol/server-github'
+  env_vars:
+  - GITHUB_PERSONAL_ACCESS_TOKEN
+- name: serena
+  type: stdio
+  invocation: cmd
+  trust_posture: third-party
+  credential_mode: none
+  args:
+  - /c
+  - uv
+  - tool
+  - run
+  - --from
+  - git+https://github.com/oraios/serena
+  - serena
+  - start-mcp-server
+  - --context
+  - codex
+  - --enable-web-dashboard
+  - 'false'
+  - --project-from-cwd
+  purpose: Symbol-first local project inspection for Codex
+  env_vars: []
+- name: pg-mj-agent-memory-dev
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  default_url: null
+  env_override: MJ_AGENT_PG_MEMORY_DEV_URL
+  purpose: DEV mj-agent-postgres memory checkpointer pg
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path
+    $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_DEV_URL'; exit $LASTEXITCODE
+  env_vars:
+  - MJ_AGENT_PG_MEMORY_DEV_URL
+- name: pg-mj-agent-memory-test-lan
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  default_url: null
+  env_override: MJ_AGENT_PG_MEMORY_TEST_LAN_URL
+  purpose: LAN access to 192.168.0.179:5433
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path
+    $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_TEST_LAN_URL'; exit $LASTEXITCODE
+  env_vars:
+  - MJ_AGENT_PG_MEMORY_TEST_LAN_URL
+- name: pg-mj-agent-memory-test-wan
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  default_url: null
+  env_override: MJ_AGENT_PG_MEMORY_TEST_WAN_URL
+  purpose: WAN/FRP tunnel; env REQUIRED
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path
+    $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_TEST_WAN_URL'; exit $LASTEXITCODE
+  env_vars:
+  - MJ_AGENT_PG_MEMORY_TEST_WAN_URL
+- name: pg-mj-agent-memory-prod-lan
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  default_url: null
+  env_override: MJ_AGENT_PG_MEMORY_PROD_LAN_URL
+  purpose: LAN access to 192.168.0.106:5433
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path
+    $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_PROD_LAN_URL'; exit $LASTEXITCODE
+  env_vars:
+  - MJ_AGENT_PG_MEMORY_PROD_LAN_URL
+- name: pg-mj-agent-memory-prod-wan
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  default_url: null
+  env_override: MJ_AGENT_PG_MEMORY_PROD_WAN_URL
+  purpose: WAN/FRP
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path
+    $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_PROD_WAN_URL'; exit $LASTEXITCODE
+  env_vars:
+  - MJ_AGENT_PG_MEMORY_PROD_WAN_URL
+- name: playwright
+  type: stdio
+  invocation: cmd
+  trust_posture: third-party
+  credential_mode: none
+  purpose: Browser automation for developing + testing the Chainlit web UI (:8000)
+  args:
+  - /c
+  - npx
+  - -y
+  - '@playwright/mcp@latest'
+  env_vars: []
 wrapper_script_consistency:
-  required_wrapper: ".claude\\scripts\\pg-server-start.cmd"
-  required_for: "all 10 pg-* entries"
-  baseline_sor: docs/_baselines/pg_server_baseline.md
-  quarterly_diff_target: "community pg MCP upstream"
-
-# Credential mode rules (folded from former MCP STANDARD §3, M6 X5)
+  required_wrapper: scripts/mcp/pg-server-start.ps1
+  required_for: all 5 pg-mj-agent-memory-* entries
+  implementation: scripts/mcp/pg-server-wrapper.mjs
+  historical_baseline: docs/_baselines/pg_server_baseline.md (historical only; native behavior is tested directly)
 credential_rules:
-  modes:                                            # 5 modes (§3 matrix)
-    - none                                          # public service; no creds
-    - OAuth                                         # browser OAuth; token not in .mcp.json/.env
-    - api_key_via_env                               # ${VAR} template injected from env
-    - wrapped_script_url_override                   # cmd wrapper + URL ${VAR}; via secrets-mcp.enc (ADR-030)
-    - template_var                                  # URL contains ${VAR} directly (equiv to api_key; current .mcp.json wraps it, so unused)
+  modes:
+  - none
+  - api_key_via_env
+  - wrapped_script_env_name_resolution
   prohibited:
-    - "plaintext credential (password / token / connection string) written into .mcp.json"
-    - ".mcp.json with a real IP while creds sit in an unprotected file"
-    - "wrapper script containing a hard-coded credential"
+  - literal credential/connection URL in project config
+  - business database or ssh MCP entries
+  - application-secret import or fallback URL
+  - logging secret values
   mandatory:
-    - "every ${VAR}-template env var MUST be declared as a placeholder in .env.example (even if empty) so onboarding devs know which secrets are needed"
-
-# A14 PR gate (REQ-001)
+  - explicit env_vars by name only; missing value fails closed
+  - MCP and application credentials remain separate
+  - User environment changes require separate Owner-approved execution; no automatic trust or hooks activation
 a14_gate:
-  trigger: ".mcp.json file modification"
+  trigger: .codex/config.toml or native MCP scripts modified
   required_pr_body_block:
-    template_location: "contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block (former MCP STANDARD §4 archived M6 X5 → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md)"
+    template_location: contracts/governance.contract.yml §a14_pr_gate.pr_body_required_block (former MCP STANDARD
+      §4 archived M6 X5 → archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md)
     required_fields:
-      - server_name
-      - trust_posture (one of: first-party / third-party / first-party-wrapper / community)
-      - credential_mode (one of: none / OAuth / api_key_via_env / wrapped_script_url_override / template_var)
-      - rationale (for added / changed entries)
+    - server_name
+    - trust_posture (one of: first-party / third-party / first-party-wrapper / community)
+    - credential_mode (none / api_key_via_env / wrapped_script_env_name_resolution)
+    - rationale (for added / changed entries)
   enforcement_phase:
-    M1: manual_reviewer_check                      # informational
-    M2: warning_via_check_a14_gate.py              # CI warning; non-blocking
-    M3: blocking                                   # CI blocks PR if block absent
-
-# Quarterly audit (§6 of MCP STANDARD; out of REQ scope but referenced)
+    M1: manual_reviewer_check
+    M2: warning_via_check_a14_gate.py
+    M3: blocking
 quarterly_audit:
   cycle: 3_months
   dri: ranzuozhou
   tasks:
-    - re_evaluate_trust_posture
-    - diff_wrapper_script_against_community_pg_mcp
-    - check_unmaintained_community_servers (serena / ssh-manager)
-    - update_baseline_if_drift
-
+  - re_evaluate_trust_posture
+  - diff_wrapper_script_against_community_pg_mcp
+  - check_unmaintained_community_servers (retained native inventory only)
+  - update_baseline_if_drift
 hitl_required:
-  - mcp_inventory_change                          # .mcp.json modification → A14 gate
-  - wrapper_script_change                         # .claude/scripts/pg-server-* → baseline diff
-
-# TBD Phase M3:
-#   - tests/contract/test_mcp_inventory.py (assert 14 entries; per-entry fields)
-#   - tests/contract/test_mcp_pg_wrapper_consistency.py (all 10 pg-* use same wrapper)
-#   - scripts/sdd/check_a14_gate.py (PR body parser; warning M2 / blocking M3)
+- mcp_inventory_change
+- wrapper_script_change
+permanently_excluded:
+- pg-mj-system-biz-*
+- ssh-manager

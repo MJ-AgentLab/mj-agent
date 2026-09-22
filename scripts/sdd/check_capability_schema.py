@@ -14,7 +14,7 @@ Validated fields:
 - `archive_state` ∈ 5-state enum (active / deprecated / frozen / archived /
   purge-eligible).
 - `adapter_coverage` ⊆ 7 adapter slugs (python / langchain-agent / prompt /
-  runtime-skill / claude-code-skill / docker-container / tdd-bdd) plus
+  runtime-skill / development-skill / docker-container / tdd-bdd) plus
   bdd-tdd alias accepted (sdd/adapters/bdd-tdd.md uses the bdd-tdd form;
   spec.yml files use tdd-bdd — dual-name accepted at M3 per drift compat).
 - `requirements[]` non-empty; each entry has id matching `^REQ-[0-9]{3}$` +
@@ -60,7 +60,7 @@ _ARCHIVE_STATES = frozenset({
 })
 _ADAPTER_COVERAGE_SLUGS = frozenset({
     "python", "langchain-agent", "prompt", "runtime-skill",
-    "claude-code-skill", "docker-container",
+    "development-skill", "docker-container",
     "tdd-bdd", "bdd-tdd",  # dual-name accepted (M3 drift compat)
 })
 _REQUIREMENT_PRIORITIES = frozenset({"critical", "high", "medium", "low"})

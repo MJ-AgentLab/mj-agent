@@ -48,7 +48,7 @@ ai_visibility: source-of-truth
 ## §4 Version-bearing files
 
 - `pyproject.toml` `version = "..."` — **sole authority** (Phase 0).
-- `README.md` / `CLAUDE.md` — optional / manual references.
+- `README.md` / `AGENTS.md` — optional / manual references.
 - Phase 1+ may add more bearers (Dockerfile / compose / CHANGELOG); a batch-update
   script lands then (per ADR-010 §Defer). No batch script needed at Phase 0 (single bearer).
 

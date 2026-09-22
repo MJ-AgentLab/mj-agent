@@ -11,7 +11,7 @@ aliases:
   - mj-agent Git Push Workflow
   - mj-agent Git 推送工作流
 created: 2026-04-30
-updated: 2026-05-06
+updated: 2026-09-22
 state: draft
 version: v1.0
 track: code
@@ -23,7 +23,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 开发人员完成编码和提交后、推送分支到远程仓库前的标准操作流程
 > **目标受众**：开发
 > **版本**：v1.0
-> **最后更新**：2026-05-06
+> **最后更新**：2026-09-22
 > **历史背景**：推送流程源自团队成熟实践；§2 CHANGELOG / §10 Q6 已按 mj-agent Phase 0 实际状态调整。
 > **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
@@ -85,6 +85,49 @@ Issue → 创建分支 → 编码 → 自测 → 提交 → ★ 推送 → 创�
 | 更新 CHANGELOG.md | 本指南 [[#2 CHANGELOG 更新确认]] |
 
 ---
+
+### 0.1 Codex 首次提交前的审批预检
+
+开始任务及首次 commit 前检查一次；切换会话/权限设置后、push/PR 前重跑，避免完成提交后才发现交付无法执行。只读诊断入口如下：
+
+```powershell
+# 不知道目标会话有效模式时省略参数：应输出 UNKNOWN，exit 2
+uv run --frozen --no-sync python scripts/check_codex_approvals.py
+
+# 仅当目标会话实际显示 never 时使用，预期 INCOMPATIBLE，exit 1
+uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy never
+
+# 仅当已核实目标会话有效值为 on-request 时使用，预期 APPROVAL_REQUIRED，exit 0
+uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy on-request
+```
+
+脚本默认检查自身所在工作树；可用 `--root <工作树路径>` 指定项目文件。它复用原生检查器，仅读项目规则/钩子，不读取用户配置、凭据或会话转录，不运行 Git/gh/Codex 子进程。输出列出 `git commit`、Gitee push、origin push、`gh pr create --base develop` 的命令族、示例及 `.codex/rules/mj-agent.rules` 来源。PR 示例的 base 为非 hotfix 默认值；hotfix 仍为 main。
+
+| 输出 | 含义与下一步 |
+| --- | --- |
+| `INCOMPATIBLE` / exit 1 | 已核对的项目规则要求 prompt，而调用方观察模式为 never；交付前先恢复支持审批的会话 |
+| `UNKNOWN` / exit 2 | 模式未核实，或原生规则/钩子缺失、间接、格式错误、与既定规则不符；查看 errors 并核验，不当 PASS |
+| `APPROVAL_REQUIRED` / exit 0 | 模式可请求审批，仍须取得具体动作的 Owner HITL；不表示动作已批准或可执行 |
+
+必须分开理解三层：Owner 对任务/动作的授权、规则 `prompt` 对工具审批的要求、目标会话 `never/on-request` 是否支持请求审批。`danger-full-access` 是沙箱权限，不自动满足 prompt。`rule_scope=PROJECT_FILES_ONLY` 仅说明检查范围；`owner_approval=NOT_ASSESSED`、`host_enforcement=NOT_TESTED` 和 `remote_authentication=NOT_TESTED` 保留未核验事实。
+
+### 0.2 审批冲突的恢复与验收
+
+1. 记录被拒绝动作、时间及脱敏错误。若是 `CreateProcess` 前的 `approval required by policy, but AskForApproval is set to Never`，尚未启动 Git，不能归因为远端 token/权限或网络错误，也不能当作自动审批模型评估不通过。
+2. 由 Owner 在目标客户端核对有效会话模式、启动/会话覆盖、所选 profile 以及项目配置是否受信任并加载；仅记录非敏感键和来源。静态 `.codex/config.toml` 里的 on-request 不能证明会话有效值。官方配置层级列出 CLI 覆盖、可信项目配置、profile、用户配置等；不能仅看到用户配置 never 就断言它覆盖了项目配置。Desktop 覆盖来源须有该客户端证据，CLI 版本不等于 Desktop 内嵌引擎版本。
+3. Owner 选择支持审批的会话。CLI 可由 Owner 在目标工作树终端使用 `codex --ask-for-approval on-request --sandbox workspace-write` 启动（本机 0.147.0 帮助已核对）；随后仍需检查有效模式。Desktop 使用其实际提供的权限设置并重新核验，不保证单改配置或新开任务即可恢复。Agent 不自动修改个人配置、建立信任或激活 hooks。
+4. 在该工作树做以下无副作用规则重放，确认三个顶层 decision 均为 prompt。这只计算指定项目规则，不执行传入的 push/PR，不证明全部活动配置层或实际审批弹窗：
+
+   ```powershell
+   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty git push -u gitee example
+   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty git push -u origin example
+   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty gh pr create --base develop
+   ```
+
+5. 用实际观察的模式重跑预检。只有动作级 Owner 授权和合法宿主执行路线均已满足，才回原任务继续交付；先核对分支 tip、两端状态及 PR 查重。原生 hook 可继续拒绝 OWNER_APPROVAL_REQUIRED；聊天批准和 on-request 不解锁 hook。无路线返回 `BLOCKED_EXECUTION_ROUTE`，不得删 prompt、加宽泛 allow、生成审批凭证、改写命令或换工具/传输绕过。
+6. 验收分别记录诊断输出、规则重放、有效会话模式与来源、实际审批交互及真实交付结果。没有后两项就标未验证；离线参数场景不替代真实恢复，也不自动恢复 #552 原分支的推送/PR。
+
+原生迁移后不再运行旧 `agents_sync.py`。规则保全使用 `scripts/sdd/check_codex_native.py --surface all` 与 `--surface enforcement`，静态成功不代表交付获准。依据：[Issue #552](https://github.com/MJ-AgentLab/mj-agent/issues/552)、[ADR-040](../../../decisions/ADR-040_Codex_Only_Development.md)、[官方 Rules](https://learn.chatgpt.com/docs/agent-configuration/rules)、[官方 Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)（核对日期：2026-09-22）。
 
 ## 1 Commit 质量检查
 
@@ -262,14 +305,14 @@ git status --short
 
 ```bash
 # 如果文件已被 Git 追踪，需先移除缓存再提交
-git rm --cached .claude/settings.local.json
+# 历史命令（不执行；旧客户端清理仅在 P5 获批后）: git rm --cached .claude/settings.local.json
 git add .gitignore
-git commit -m "infra(ci): 将 .claude/settings.local.json 加入 .gitignore"
+# 历史提交示例；本迁移不提交
 ```
 
 > [!TIP]
 > Claude Code 协作规则
-> 在 `CLAUDE.md` 中可加入以下规则，确保 Claude Code 在辅助提交时自动执行检查：
+> 在 `AGENTS.md` 中维护提交前规则，由 Codex 按现行授权执行检查：
 > - 每次 `git push` 前必须先执行 `git status --short`，确认工作目录为空
 > - 如有残留修改，逐项确认是否应纳入当前提交
 > - 不得提交 `.gitignore` 中列出的文件
@@ -653,3 +696,4 @@ fi
 | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：推送流程逐字保留；§2 CHANGELOG 章节加注 Phase 0.5+ 启用；§10 删除 Q6（Gitee shallow fetch），原 Q7 重编号为 Q6；§6.5 双推说明改 mj-agent 实际（Phase 0 CI 仅 compileall） |
 | 2026-05-06 | v1.0 (patch) | §0:84 / §6 冲突解决段 / §文末延伸阅读 — 三处 `Phase 0.5 待 docs/guide/[GUIDE]_Developer_Onboarding.md 启用` forward-reference 升级为 active wikilink（PLAN G PR2 落地）；非结构性补丁，version 不升 |
 | 2026-05-06 | v1.0 (patch) | §2 删除 Phase 0.5+ 目标态 IMPORTANT 段头与 5 处「Phase 0.5+ 启用后」限定语；§2 流程从前瞻 stub 翻转为 active（PLAN G PR4 落地）；非结构性补丁，version 不升 |
+| 2026-09-22 | v1.0 (patch) | #552：§0.1–§0.2 增加原生 Codex 提交前审批兼容性诊断、恢复操作和未验证边界；既有推送步骤不变 |

@@ -1,41 +1,24 @@
 ---
 name: mj-agent-git-pr
-description: "Create pull requests with the per-branch-type template, an explicit base branch and body-file discipline, including the dual-track self-check; use for 创建PR, create PR, pull request preparation; merge is never executed."
+description: "适用于 mj-agent 的按分支模板准备/创建PR。输入：head/base、commits、diff、模板、验证、CHANGELOG。流程：前置→模板→字段→自检→明确base/body-file→确认创建。输出：模板/字段/base正确；实际创建有URL。Use when：为maintain分支准备PR正文和base。Do not use for：CI绿了直接merge并删除分支；本技能不merge/删除，交Owner决策。授权：Owner PR create；non-hotfix develop/hotfix main；不merge；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Git PR
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to create a Pull Request, select a PR template, fill PR fields, prepare a PR body, or perform a release for mj-agent. Make sure to use this skill whenever the user says "创建PR", "新建PR", "提PR", "create PR", "pull request", "PR模板", "PR description", "发版", "release", "合并到main", "merge to main", "fill PR template" in the mj-agent context. Uses gh CLI with --body-file and the correct template per branch type. mj-agent has 5 PR templates (feature/bugfix/documentation/maintain/hotfix) plus implicit release flow. Includes dual-track A1-A10 self-check + Phase B+ A12-A14 (post v2.1 promote). Do not use for: review-respond on incoming review comments (use mj-agent-flow-review-respond in PR-B3+), merge readiness gate after CI green (use mj-agent-git-check-merge in PR-B3+), or post-merge cleanup (use mj-agent-flow-post-merge in PR-B3+).
+
+
 ## Overview
 
-为 mj-agent 创建 Pull Request，按 branch type 选择 5 个 PR 模板之一。Claude Code 是非交互模式，**永远不**用 `--body` inline；正确流程：读模板 → 填内容 → 写临时文件 → `--body-file` 传入。
+为 mj-agent 创建 Pull Request，按 branch type 选择 5 个 PR 模板之一。Codex 是非交互模式，**永远不**用 `--body` inline；正确流程：读模板 → 填内容 → 写临时文件 → `--body-file` 传入。
 
 **Workflow position**: Stage 14 of HITL_Prompt 17-stage flow.
 
@@ -49,8 +32,8 @@ description: "Create pull requests with the per-branch-type template, an explici
 缺 `--base` 时 `gh` 会 fallback 到 GitHub repo default (`main`)，导致
 非-hotfix 分支误合到 main。PR #158 (2026-05-12) 是该漂移的历史教训。
 
-钩子 `.claude/scripts/guard-git-workflow.ps1` 在 PreToolUse 拦截缺
-`--base` 的 `gh pr create`（详见 `.claude/settings.json`）。
+钩子 `scripts/sdd/codex_hook_guard.py` 在 PreToolUse 拦截缺
+`--base` 的 `gh pr create`（详见 `.codex/hooks.json`）。
 
 ## Template Selection Matrix
 
@@ -89,8 +72,8 @@ git log --oneline develop..HEAD   # 确认有 commits to PR
 cat .github/PULL_REQUEST_TEMPLATE/<branch-type>.md
 
 # Step 2: 填写完成后写临时文件
-# Windows: $env:TEMP/mj-agent-pr-body-<branch>.md
-# Unix: /tmp/mj-agent-pr-body-<branch>.md
+# Windows: $env:TEMPmj-agent-pr-body-<branch>.md
+# Unix: /tmpmj-agent-pr-body-<branch>.md
 
 # Step 3: 创建 PR
 # 标准分支（feature/bugfix/documentation/maintain → target develop）：
@@ -123,7 +106,7 @@ gh pr create \
 
 ## PR Title Format
 
-`<type>(<scope>): <summary>` 与 commit message 一致格式（参 [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention]]）
+`<type>(<scope>): <summary>` 与 commit message 一致格式（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`）
 
 例：
 
@@ -155,12 +138,12 @@ gh pr create \
 
 1. target = `main`（**不**是 develop）
 2. **回滚预案 mandatory**——描述如何回退如果修复引入新问题
-3. PR description 必须确认 hotfix → develop 同步计划（PR merge 后用 `/mj-agent-git-sync`，PR-B3 落地）
+3. PR description 必须确认 hotfix → develop 同步计划（PR merge 后用 `mj-agent-git-sync`，PR-B3 落地）
 4. PR merge 后：在 main 打 patch tag → main → develop 同步
 
 ## Self-Check Checklist（按 track 选填）
 
-mj-agent 三轨道治理现状（**v2.2 trio active 终态**：Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 + HITL_Prompt v1.1 Track C 主 STANDARD；v2.0/v2.1 trio 已 archive 至 `docs/archive/rule/`）；自检 checklist 按 track 选填（详见 [[../../../policies/documentation|policies/documentation]] §5.1 A1-A6）：
+mj-agent 三轨道治理现状（**v2.2 trio active 终态**：Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 + HITL_Prompt v1.1 Track C 主 STANDARD；v2.0/v2.1 trio 已 archive 至 `docs/archive/rule/`）；自检 checklist 按 track 选填（详见 `repo:policies/documentation.md` §5.1 A1-A6）：
 
 ### Code-Side（A1-A6 + OB1-OB5）
 
@@ -169,7 +152,7 @@ mj-agent 三轨道治理现状（**v2.2 trio active 终态**：Meta v2.2 + Code_
 - A3 state 取值合法
 - A4 Wikilinks 检查：`uv run python scripts/check_wikilinks.py` 0 violations
 - A5 INDEX.md 已同步
-- A6 CLAUDE.md sync allowlist 检查
+- A6 AGENTS.md sync allowlist 检查
 - OB1-OB5 非阻塞观察项
 
 ### Agent-Side（A7-A11；本 PR 涉及 src/mj_agent/{skills,prompts}/ 时）
@@ -182,9 +165,9 @@ mj-agent 三轨道治理现状（**v2.2 trio active 终态**：Meta v2.2 + Code_
 
 ### Engineering-Workflow（A12-A14；v2.1 promote 后激活，Phase B PR-B3 之后）
 
-- A12 `.claude/skills/<name>/SKILL.md` ADR-013 native schema + description ≥ 200 chars + 正向 / 反向触发
-- A13 `.claude/settings.json` allowlist diff 评审（Phase C+ 阈值文档定稿后强制）
-- A14 `.mcp.json` server 增删声明 trust posture + credential mode（Phase C+ 强制）
+- A12 `.agents/skills/<name>/SKILL.md` ADR-013 native schema + description ≥ 200 chars + 正向 / 反向触发
+- A13 原生 hooks/rules 保护语义与执行能力核对
+- A14 `.codex/config.toml` server 增删声明 trust posture + credential mode（Phase C+ 强制）
 
 ## 验证
 
@@ -203,7 +186,7 @@ uv run mypy src/mj_agent
 | # | 触发条件 | skill 行为 |
 |---|---|---|
 | H1 | gh CLI 未登录 | 输出 `gh auth login` 指令 |
-| H2 | branch 不在远程（未 push） | 重定向到 `/mj-agent-git-push` |
+| H2 | branch 不在远程（未 push） | 重定向到 `mj-agent-git-push` |
 | H3 | 模板缺字段（如 hotfix 缺回滚预案） | 列出缺字段 + 询问填值 |
 | H4 | hotfix PR target 不是 main | **硬性阻断**：hotfix 必须 base = main |
 | H5 | feature/bugfix PR 但 CHANGELOG 未更新 | 询问：(1) 加 CHANGELOG 后再开 PR (2) 跳过（明确不影响 user-visible） |
@@ -222,14 +205,11 @@ uv run mypy src/mj_agent
 
 ```
 PR 创建完成 ✓
-下一步：等 CI 跑完，用 `Codex substitute edge-git-pr-git-check-merge`（PR-B3 落地）检查合并就绪。
+下一步：等 CI 跑完，用 `mj-agent-git-check-merge`（PR-B3 落地）检查合并就绪。
   已完成：模板选择 ✓、描述填写 ✓、双轨自检 ✓
   待检查：合并冲突、CI 状态、Review 审批、merge commit 格式
 ```
 
-<!-- codex-route:edge-git-pr-git-check-merge -->
-> Codex route: Merge readiness and the merge itself are Owner actions: report CI/review state, stop at AWAITING_HUMAN_MERGE, and never merge.
-
 ## Detailed → docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md
 
-完整字段填写指引 + 示例 + per-template guidance 见 [[../../../docs/infrastructure/git/[GUIDE]_PR_Description_Convention|PR_Description_Convention GUIDE]]。本 SKILL 是其交互式封装。
+完整字段填写指引 + 示例 + per-template guidance 见 `repo:docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`。本 SKILL 是其交互式封装。

@@ -1,43 +1,26 @@
 ---
 name: mj-agent-flow-scope-drift
-description: "Stage 9 scope drift check: compare the working diff against the approved plan scope and report per-file alignment with continue/amend/split recommendations; use for scope drift, 范围漂移, drift check during implementation."
+description: "适用于 mj-agent 的Stage9 diff对批准scope漂移检查。输入：Plan/SPEC/Issue、当前diff。流程：定位锚→diff→逐文件映射/风味→严重度→建议。输出：每文件对齐/漂移/理由及风险有证据。Use when：检查当前5文件diff是否偏离已批Plan。Do not use for：执行本地测试矩阵；建议flow-verify，不把测试结果当scope分析。授权：超scope只建议，不自行改Plan/B面；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Scope Drift Gate (HITL Stage 9)
+
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill detects "scope drift" during mj-agent task implementation (HITL Stage 9) — compares the current working tree diff against the linked Plan / SPEC / Issue scope and reports per-file alignment ("in Plan §X" vs "not in Plan"). Make sure to use this skill whenever the user says "范围漂移", "scope drift", "实施超出 Plan", "diff vs SPEC", "drift check", "实施跑偏了吗", "改动还在范围内吗", "Stage 9", "scope check", "scope verification" in the mj-agent context, or before commit/push when significant code has been written. Outputs a drift report with recommendations (continue / amend Plan / split PR / pause for HITL); after Owner 拍板 applies the chosen path (e.g., amends the Plan via 编辑 per ADR-034); git-level actions (split PR) remain their own gates. mj-agent-specific: classifies B-flavor (in-source canonical) drift as auto-High since they always trigger §3.1 必停 HITL. Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review which sub-calls this skill), Stage 10 command matrix (use mj-agent-flow-verify), or Stage 8 coding methodology (use mj-agent-flow-implement).
+
 
 ## Overview
 
 17-stage 闭环中**最易遗漏**的 stage（实施跑偏检测）。比对 working tree diff vs linked Plan / SPEC / Issue scope，识别 commit 前的 implementation drift。
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1 必停规则（`实现中 scope 明显扩大`）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描原理，drift detection 的对偶；历史源 HITL_Prompt §4.4）.
+**Reference**: `repo:sdd/workflows/execution-loop.md` §3.1 必停规则（`实现中 scope 明显扩大`）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描原理，drift detection 的对偶；历史源 HITL_Prompt §4.4）.
 
 ## Workflow
 
@@ -72,7 +55,7 @@ digraph drift {
 **MAY skip**：
 - Single-file trivial change（rename / typo / 小 docstring）
 - 用户明确"I know it's out of scope, ship it anyway"（仍输出报告，但不阻塞）
-- 无 linked Plan / SPEC（首次 Repo Scan 阶段；建议先 `/mj-agent-flow-intake` + `/mj-agent-flow-plan`）
+- 无 linked Plan / SPEC（首次 Repo Scan 阶段；建议先 `mj-agent-flow-intake` + `mj-agent-flow-plan`）
 
 ## Step 1: Locate Linked Artifacts
 
@@ -93,7 +76,7 @@ issue=$(echo "$branch" | grep -oE '[0-9]+' | head -1)
 [ -n "$issue" ] && gh issue view "$issue" --json title,body
 ```
 
-**Plan / SPEC / Issue 任一缺失** → Step 5 推荐里标"无明确 scope 锚点，建议先建 Plan / 跑 /mj-agent-flow-intake"。
+**Plan / SPEC / Issue 任一缺失** → Step 5 推荐里标"无明确 scope 锚点，建议先建 Plan / 跑 mj-agent-flow-intake"。
 
 ## Step 2: Capture Diff
 
@@ -114,7 +97,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 |---|---|
 | 文件路径片段（如 `mj_agent/agent.py`） | 显式提及 → in-scope |
 | 文件所在 mj-agent 模块（agent / llm / prompt / skill / sql / db / config / biz_catalog） | 模块级提及 → in-scope |
-| 文件类别（`src/`, `tests/`, `docs/`, `docker/`, `.claude/`） | 类别级提及 → in-scope（覆盖性） |
+| 文件类别（`src/`, `tests/`, `docs/`, `docker/`, `.codex/`） | 类别级提及 → in-scope（覆盖性） |
 | 完全无匹配 | unclassified → 候选 drift |
 
 **风味识别（mj-agent 专属，per ADR-015 §决策点 3）**：
@@ -142,9 +125,9 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 | 1-2 unclassified，单一模块，小改 (<50 行) | **Low** | continue + commit message 注明 |
 | 3+ unclassified 但同一类别（如全 docs/） | **Low-Medium** | continue + PR description "扩展 scope" 说明 |
 | 1+ 跨模块 unclassified | **Medium** | amend Plan + 重新对齐 |
-| **B 风味 unclassified**（in-source canonical 改动未在 Plan） | **High（自动）** | **HITL 暂停**；建议先 `/mj-agent-runtime-skill-doc-improve` 或 `/mj-agent-runtime-prompt-version-bump`（PR-C2）propose diff |
+| **B 风味 unclassified**（in-source canonical 改动未在 Plan） | **High（自动）** | **HITL 暂停**；建议先 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2）propose diff |
 | API / SQL guardrail / biz_catalog / public interface 出现在 unclassified | **High** | **HITL 暂停** + 询问拆 PR vs 合并 |
-| > 50% 文件 unclassified | **High** | 重新做 `/mj-agent-flow-intake`（scope 显然漂了） |
+| > 50% 文件 unclassified | **High** | 重新做 `mj-agent-flow-intake`（scope 显然漂了） |
 
 ## Step 5: Recommendation
 
@@ -177,13 +160,13 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 1. **改动 src/mj_agent/skills/biz-domain-context/SKILL.md 是否在原 scope 内？**
    - 当前观察：Plan 未提 SKILL body 改动
    - 风味识别：B in-source canonical（永远 §3.1 必停 HITL）
-   - 选项：A. 接受 → 改 Plan + 走 /mj-agent-runtime-skill-doc-improve propose diff（PR-C2）/ B. 不接受 → revert + 拆独立 PR / C. 改 Plan 重对齐
+   - 选项：A. 接受 → 改 Plan + 走 mj-agent-runtime-skill-doc-improve propose diff（PR-C2）/ B. 不接受 → revert + 拆独立 PR / C. 改 Plan 重对齐
    - 推荐：B（B 风味改动应单独 PR + Domain Expert review）
    - 默认假设：A
    - 必须 HITL：是
 
 ### Next Action
-- ☐ amend Plan（手动 / 用 /mj-agent-doc-author，PR-B4 落地）
+- ☐ amend Plan（手动 / 用 mj-agent-doc-author，PR-B4 落地）
 - ☐ revert + 单独 PR（B 风味场景）
 - ☐ 在 commit message 注明「scope expand: ...」
 - ☐ 继续 commit
@@ -192,26 +175,25 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 ## What This Skill DOES NOT DO
 
 - ❌ 不自动改 Plan（仅建议；用户决定后调用 mj-agent-doc-author，PR-B4）
-- ❌ 不拆 PR（仅建议；用户用 /mj-agent-git-branch 创建新 branch）
+- ❌ 不拆 PR（仅建议；用户用 mj-agent-git-branch 创建新 branch）
 - ❌ 不阻塞 commit（仅 High Severity 时建议 HITL；user 可 override）
 - ❌ 不替代 PR review（PR review = Stage 15-16）
-- ❌ 不调 /mj-agent-flow-self-review（self-review = Stage 11；本 skill = Stage 9，被 self-review Step 2 嵌套调用）
+- ❌ 不调 mj-agent-flow-self-review（self-review = Stage 11；本 skill = Stage 9，被 self-review Step 2 嵌套调用）
 
 ## Sub-skill / Tool Calls
 
 | Tool | 用途 |
 |---|---|
-| Bash `git status` / `git diff` / `git merge-base` | Step 2 capture diff |
-| Bash `gh issue view` | Step 1 locate Issue |
-| Read | 读 Plan / SPEC / Issue body |
-| Grep | 在 Plan / SPEC / Issue 文本搜文件路径片段 |
+| shell `git status` / `git diff` / `git merge-base` | Step 2 capture diff |
+| shell `gh issue view` | Step 1 locate Issue |
+| 读取 | 读 Plan / SPEC / Issue body |
+| rg | 在 Plan / SPEC / Issue 文本搜文件路径片段 |
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §3.1（必停规则之"实现中 scope 明显扩大"）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描，drift 的对偶；历史源 HITL_Prompt §4.4）
-- [[../../../docs/adr/[ADR]_015_HITL_Prompt_v1_0_Derivation|ADR-015]] §决策点 3（3 风味分类，本 skill Step 3 风味识别依据）
+- `repo:sdd/workflows/execution-loop.md` §3.1（必停规则之"实现中 scope 明显扩大"）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描，drift 的对偶；历史源 HITL_Prompt §4.4）
+- `repo:sdd/workflows/execution-loop.md`（有效三风味/停点规则；旧 ADR-015 路径基线缺失，仅作历史来源） §决策点 3（3 风味分类，本 skill Step 3 风味识别依据）
 - `.agents/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 上游消费者，Step 2 嵌套调本 skill）
-- mj-system `.claude/skills/mj-sys-flow-scope-drift/SKILL.md`（直接派生源）
 
 ## Anti-patterns
 
@@ -224,13 +206,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 
 ```
 Drift Report 已输出。
-Severity = None/Low → $mj-agent-flow-self-review 继续（Step 4）
+Severity = None/Low → mj-agent-flow-self-review 继续（Step 4）
 Severity = Medium → 用户决定 amend Plan 或 revert，然后回 self-review
-Severity = High → HITL 暂停；B 风味建议先 Codex substitute edge-flow-scope-drift-runtime-wildcard propose diff（PR-C2）
+Severity = High → HITL 暂停；B 风味建议先 mj-agent-runtime-* propose diff（PR-C2）
 ```
-
-<!-- codex-route:edge-flow-scope-drift-flow-self-review -->
-> Codex route: invoke `$mj-agent-flow-self-review` (native carrier; handoff, conditional)
-
-<!-- codex-route:edge-flow-scope-drift-runtime-wildcard -->
-> Codex route: In-source canonical runtime surfaces are Owner-gated: propose the exact diff in conversation and stop at OWNER_APPROVAL_REQUIRED (runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync per surface); apply only after the Owner approves.

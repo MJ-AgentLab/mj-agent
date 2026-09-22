@@ -1,0 +1,2037 @@
+{
+  "status": "EXACT_PROPOSED_DISPOSITION_NO_TESTS_ACTUALLY_DELETED",
+  "delete_files": [
+    "tests/unit/test_agents_sync.py",
+    "tests/unit/test_carrier_cutover_c1.py",
+    "tests/unit/test_codex_enforcement_d1a.py",
+    "tests/unit/test_codex_renderers.py",
+    "tests/unit/test_cross_carrier_v12.py",
+    "tests/unit/test_dual_agent_compat.py",
+    "tests/unit/test_fidelity_attestations_c0.py",
+    "tests/unit/test_lock_v2.py",
+    "tests/unit/test_manifest_v2_carrier.py",
+    "tests/unit/test_run_codex_carrier_probe.py",
+    "tests/unit/test_run_codex_carrier_probe_p1b.py",
+    "tests/unit/test_skill_renderer_translation.py",
+    "tests/unit/test_stage11_fixes.py",
+    "tests/unit/test_task0_freeze.py",
+    "tests/unit/test_translation_sources.py",
+    "tests/unit/test_v2_engine.py"
+  ],
+  "files": [
+    {
+      "path": "tests/unit/test_agents_sync.py",
+      "current_sha256": "1abaa4163e0cfe14c00c3850841353c6c2c75e50c77da20c6f566c1b61f6aa1a",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_sync_creates_artifacts_readme_lock",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_is_idempotent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_preserves_unowned_orphans_and_strays_but_check_reds",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_missing_source_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_clean_after_sync",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_hand_edited_artifact_red_with_prescribed_action",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_source_edited_without_sync_red",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_extra_file_and_missing_lock_red",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_red_when_agents_tree_absent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_red_when_artifacts_deleted_but_lock_remains",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_stray_file_squatting_on_skill_dir_path",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_cross_eol_lock_hash_and_check_stable",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_under_v1_lock_is_disabled_with_zero_writes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_under_v1_lock_never_tier_target_also_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_with_no_lock_at_all_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_deleted_source_recovery_requires_v2_lock",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_mode_exclusivity_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v9_accepts_generated_artifacts_and_flags_hand_edits",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_emits_codex_config_golden",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_codex_config_idempotent_and_preserves_unowned_neighbors",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_literal_env_value_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_server_field_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_non_stdio_type_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_substitution_or_credential_shape_in_args_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_context_transform_gated_on_manifest_transform_field",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_failure_leaves_tree_untouched",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_scoped_surfaces_flag_orphan_lock_keys",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_mcp_surface_missing_lock_prints_mcp_action",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_project_server_missing_from_mcp_json_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_mcp_drift_and_surface_scoping",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_mcp_missing_config_red",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_surface_requires_check",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_empty_mcp_tier_preserves_unowned_stale_config_and_check_reds",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_cross_eol_codex_config_check_stable",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v9_pj042_pairing",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v9_pj043_hash_and_pj044_never_leak",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v9_pj040_extra_and_missing_server",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v9_pj041_invalid_toml_and_pj045_info_neighbor",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_projection_in_sync",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_mcp_projection_in_sync",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_handoff_parser_is_the_shared_common_implementation",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_verify_lock_rejects_unknown_malformed_and_mixed_schemas",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_preserves_unowned_codex_hooks_rules_and_user_file",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_empty_mcp_tier_deletes_only_owned_config",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_empty_mcp_tier_prunes_codex_dir_when_no_neighbors",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_removed_skill_deletes_owned_artifact_and_prunes_dir",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_removed_skill_keeps_dir_with_unowned_neighbor",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_without_lock_never_deletes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_hand_edited_deletion_candidate",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_malformed_lock",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_casefold_squatter_of_managed_target",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_symlink_ancestor",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_casefold_variant_skill_dir",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_root_casefold_variant_agents_dir",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_lock_dir_squat",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_dangling_symlink_ancestor",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sync_fails_closed_on_dangling_symlink_at_managed_target",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_mcp_surface_consistent_with_include_codex",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_mcp_surface_stale_reserved_key_after_tier_emptied",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_carrier_cutover_c1.py",
+      "current_sha256": "f65812323149f59138028483e33c409bf4b8f3562a21990de666cf2ee4e83956",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_pj011_v1_predicate_is_unchanged",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_pj011_v2_accepts_a_declared_substitute",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_pj011_v2_still_red_without_a_substitute",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_substituted_targets_is_empty_without_a_registry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_substituted_targets_is_empty_on_a_malformed_registry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_pj011_substitute_is_per_referrer_not_global",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_byte_copy_digest_is_eol_sensitive",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_byte_copy_artifact_crlf_flip_is_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_translated_artifact_stays_eol_immune",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_gitattributes_pins_both_carrier_sides_to_lf",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_byte_copy_carriers_are_lf_on_disk",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_codex_enforcement_d1a.py",
+      "current_sha256": "3842b6103f50624e9720017872821b026c9dd7f449ea5b0b7c62ed45d4702dc5",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_fixture_source_loads",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_optional_top_keys_are_accepted_when_present",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_top_key_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_required_top_key_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_wrong_schema_version_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unsafe_or_glob_policy_ref_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_policy_refs_are_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_post_tool_use_event_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_guard_surface_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_rule_decision_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_empty_prefix_rules_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_rule_output_path_grammar_is_enforced",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_guard_ids_are_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_policy_ref_inventory_shape_and_missing_file",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_policy_ref_digest_is_eol_insensitive",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_hook_render_is_canonical_and_deterministic",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_rule_render_is_deterministic_and_lf",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_malformed_source_blocks_before_any_side_effect",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_absent_source_renders_nothing_and_preserves_neighbors",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_guard_never_reads_forbidden_payload_fields",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_guard_decisions",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_apply_patch_path_guard_reads_hunk_headers",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_project_payload_keeps_only_allowlisted_keys",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_enforcement_drift_does_not_redden_blocking_surfaces",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_enforcement_entries_carry_the_pr_b_lock_contract",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_enforcement_result_codes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_hand_edited_owned_artifact_makes_sync_refuse",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_removing_source_deletes_owned_outputs_then_skips",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_blocking_surfaces_emit_no_result_code_token",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_rendered_rules_load_and_decide_in_codex",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_main_emits_the_block_wire",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_main_allow_path_emits_nothing",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_main_fails_open_on_unusable_payload",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_main_is_silent_when_no_typed_source",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_source_declares_the_expected_guards",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_source_command_guards",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_source_exempts_the_documented_compose_command",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_source_path_guards_via_apply_patch",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_path_guard_survives_an_absolute_spelling",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_patch_envelope_is_found_under_any_tool_input_key",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_secret_bearing_policy_ref_is_refused",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_bracket_named_canonical_doc_is_a_valid_policy_ref",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_mixed_type_keys_do_not_escape_as_a_traceback",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_error_path_emits_a_result_code",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v1_manifest_reports_a_neutral_skip",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_surface_all_names_the_enforcement_source_in_its_remediation",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_codex_renderers.py",
+      "current_sha256": "ea57b9a89189f7c60a6ebc3cbc6ed84de563de242471668ec0fe4588e3ea4bbc",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_extraction_is_byte_identical_on_real_tree",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_posture_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_env_literal_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_non_stdio_type_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_strategy_summary_is_derived_not_hardcoded",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_render_readme_from_real_template_is_deterministic",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_placeholder_fails_closed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_required_placeholder_fails_closed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_template_uses_only_known_placeholders",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_cross_carrier_v12.py",
+      "current_sha256": "ddac62850704c3073be940f8f80d6821e54e768fd1d48d71e96b123800e1226a",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_v12_is_clean_on_a_converged_v2_tree",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_skips_a_pre_cutover_v1_tree_neutrally",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_a_missing_artifact",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_an_orphan_artifact_dir",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_a_carrier_with_no_lock_entry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_a_broken_translated_registry_bijection",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_a_fidelity_coverage_gap",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_warns_when_the_fidelity_index_is_missing",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_errors_on_an_unknown_manifest_schema_version",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_errors_on_a_malformed_lock",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_reports_an_edge_whose_target_has_no_substitute",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_errors_rather_than_passing_on_an_unreadable_manifest",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_flags_a_v1_lock_under_a_v2_manifest",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_source_hardcodes_no_carrier_counts",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v12_runs_on_the_real_tree_without_erroring",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_dual_agent_compat.py",
+      "current_sha256": "d933234d506087978933562297fb6d74865631970c4f8595283e043779bb9009",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_teaching_surface_boundary",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_docker_compose_env_file_flag_untouched",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sanitized_scripts_exist_and_never_echo_values",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_dual_agent_negative.py",
+      "current_sha256": "5ef3aff0213154534ff97b7cf63ec47b9a958565a01dc659541c920632a9ae25",
+      "operation": "RETAIN_SHARED_REPLACE_LEGACY_SECTIONS",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_deleting_claude_adapter_breaks_only_its_own_pointer",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deleting_codex_adapter_breaks_only_its_own_pointer",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adapter_is_replaceable_any_file_restores_green",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_projection_domain_is_independent_of_the_adapter_doc",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adapter_that_is_also_evidence_double_hits",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_adapter_deletion_is_contained",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_agents_md_pins_biz_data_boundary_prose",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_agents_md_pins_secrets_boundary_prose",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_fidelity_attestations_c0.py",
+      "current_sha256": "2c7a481e17d4281c4c70da4035f9a0203e6208e81c60f76541c06ed997ef1940",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_set_digest_wire_reproduces_the_published_candidate_set",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_set_digest_is_order_independent_but_content_sensitive",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_canonical_json_bytes_are_lf_utf8_with_final_newline",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_reports_cover_exactly_the_13_translated_carriers",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_reports_bind_to_the_published_candidate_digests",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_reports_use_exact_schema_keys_and_closed_enums",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_inventory_sha256_is_self_consistent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_every_report_carries_exactly_one_frontmatter_description",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_drift_detector_is_clean_against_the_committed_reports",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_drift_detector_reports_edited_and_missing_reports",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_independent_checker_closes_over_the_committed_reports",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_dropping_one_committed_item_reds_the_independent_checker",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_surplus_item_also_reds_the_independent_checker",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_declared_partition_is_an_exact_3_to_4_way_split",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_packet_digest_table_matches_digests_recomputed_from_the_p1b_fixture",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_packet_item_accounting_sums_to_each_capability_item_total",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_packet_spot_check_surface_is_declared_transforms_not_digest_inequality",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_packets_do_not_tell_the_reviewer_to_run_emit_fixtures",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_load_bindings_accepts_a_complete_reviewer_supplied_set",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_load_bindings_blocks_when_a_tranche_has_no_record",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_load_bindings_rejects_any_verdict_outside_the_closed_enum",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_load_bindings_rejects_a_reused_immutable_record_id",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_load_bindings_rejects_inexact_binding_keys",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_build_index_emits_a_structurally_valid_index",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_build_packet_fails_closed_when_a_description_does_not_parse",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_is_refused_for_modes_that_do_not_implement_it",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_build_index_refuses_a_record_reviewed_against_other_inputs",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_lock_v2.py",
+      "current_sha256": "42f8d1b1ef88b4df3726e993915a7b06ed86fa83a2257bf2fe457042b83c5e67",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_each_kind_verifies",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_multi_entry_envelope_and_surface_mapping",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_negative_matrix",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_cross_kind_combination_fails",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_composite_member_hash_is_recomputed_not_trusted",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_wildcard_empty_list_still_requires_digest",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_wildcard_resolved_ids_shape",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_wildcard_digest_mismatch_fails",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_envelope_top_level_is_closed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_generator_protocol_fails",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_entry_key_casefold_collision_fails",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unsafe_entry_keys_fail",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_strict_v1_and_v2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_malformed_and_mixed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_lock_is_strict_v2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_canonical_json_wire_shape",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_json_keys_rejected_before_canonicalization",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_lock_v2_canonical_text_round_trips",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_different_inputs_produce_different_digests",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_manifest_v2_carrier.py",
+      "current_sha256": "d80f92f04780c47f80e23ff33cf0ccf1066bdd13270854d6104962596bca5077",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_v2_manifest_well_formed_is_green",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_manifest_without_registry_is_red",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_schema_version_still_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v1_rejects_v2_only_fields",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_requires_explicit_codex_carrier",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_translated_requires_exactly_workflow_id",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_binding_forbidden_off_translated",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_invariant_1_carrier_iff_project",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_invariant_2_required_needs_carrier",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_id_syntax_guards_derived_path",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_id_is_a_casefold_collision_too",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_is_v2_and_green",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_run_codex_carrier_probe.py",
+      "current_sha256": "5aa8850fcb328284cc8499f2620414064c852cd1473cae57c47fc8315a26eb4e",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_canonical_json_bytes_shape",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_digest_distinguishes_inputs",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_set_digest_matches_manual_recompute",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_make_run_id_format",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_parse_frontmatter_roundtrip",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_parse_frontmatter_accepts_colon_space_in_description",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_discovery_parsers",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_render_mode",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_path_safety_all_required_ids_clean",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_path_safety_rejects_bad_ids",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_trust_entry_covering_ancestor_and_exact",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_parse_user_trust_entries_reads_levels",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_pass_on_clean_tree",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_detects_missing_source",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_detects_tampered_source_digest",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_reports_a_fixture_pinned_at_another_revision",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_p1b_render_failure_is_recorded_not_a_traceback",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_blocked_when_codex_unavailable",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_deterministic_trust_absent_fails_route_case",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_telemetry_shape_and_classification",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_telemetry_fail_closed_on_existing_output",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_telemetry_rejects_duplicate_corpus_entry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_telemetry_project_config_sha_is_hex_not_null",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_events_unparseable_variants",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_events_structured_field_arm",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_classify_events_ignores_prose_self_report",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_discovery_budget_is_the_measured_1024",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_sanitized_child_env_filters_credentials",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_run_codex_carrier_probe_p1b.py",
+      "current_sha256": "aaf1f3bc2b1eec629c29be6679de1b5621087282412a9b986da188a33a14d45f",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_unquote_plain_scalar_is_identity",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unquote_double_quoted_scalar_returns_parsed_value",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unquote_leaves_undecodable_quoted_literal_alone",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unquote_ignores_short_and_unquoted",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_frontmatter_description_unquotes_a_rendered_carrier",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_frontmatter_description_rejects_malformed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_no_live_source_uses_a_quoted_description",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_derive_candidate_manifest_partitions_by_registry_and_projection",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_derive_candidate_manifest_drops_stale_carrier_binding",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_derive_candidate_manifest_does_not_mutate_the_input",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_candidate_partition_sorts_and_ignores_none_rows",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_candidate_manifest_violations_formats_a_real_violation",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_candidate_manifest_violations_is_empty_for_the_live_candidate",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_candidate_surface_maps_lock_surface_members",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_staged_artifacts_never_include_the_rendered_codex_config",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_live_render_has_a_codex_config_that_staging_must_drop",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_p1b_cases_all_pass_on_a_matching_render",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det11_fails_on_candidate_manifest_violation",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det12_fails_when_the_module_is_not_the_frozen_one",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det12_fails_on_renderer_version_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det12_reports_a_module_that_dropped_out_of_the_pipeline",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_renderer_identity_covers_every_production_module",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det13_fails_on_a_changed_output_byte",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det13_reports_an_output_the_fixture_expected_but_the_render_dropped",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det13_maps_the_mcp_output_onto_the_config_surface",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det14_fails_when_two_renders_diverge",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det15_fails_on_set_digest_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det16_fails_when_a_capability_lands_in_both_halves",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det16_fails_when_a_required_carrier_is_missing",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_det17_fails_on_render_input_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_stage_candidate_project_writes_supplied_artifact_bytes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_stage_without_artifacts_still_uses_source_blobs",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_resolve_rev_returns_a_full_commit_sha",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_build_candidate_render_on_the_live_tree",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_sdd_development_agent.py",
+      "current_sha256": "cae87006c7703f39fd77f3913fc97b2c3d6449be4c50a9b5ac94c052b2312eb8",
+      "operation": "RETAIN_SHARED_REPLACE_LEGACY_SECTIONS",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_real_tree_v8_all_passes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_v9_no_false_red",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_dual_discovery_canary_on_disk_matches_manifest",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_scope_parameters_are_exclusive_and_required",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_changed_from_bad_ref_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_json_output_schema",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_manifest_schema_version_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_support_mode_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_required_capability_unsupported_side_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_owner_hitl_without_gates_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_gate_policy_ref_must_resolve",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_ids_and_forbidden_owner_agent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_evidence_severity_follows_required",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_on_disk_skill_missing_from_manifest_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_skill_index_count_drift_is_warning_only",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_agents_import_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_pr_template_enum_drift_is_error",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_mcp_forced_never_tier_is_enforced",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_codex_posture_required",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_closure_only_counts_handoff_sections",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_closure_violation_is_warning_at_s0_error_after_artifacts",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_reconcile_extra_and_missing_artifacts_fail",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_lock_and_artifacts_must_land_together",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_lock_hash_mismatch_fails",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_fixture_dirs_complete",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_real_tree_fixture_expected_pins_match_plan_table",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_real_tree_fixture_surface_has_no_python_files",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_real_tree_fixture_protocol_markers",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_normalize_lf_and_exact_patch_lf",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_snapshot_workspace_over_git_tracked_untracked",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_classification_exact_semantics",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_path_scope_commands_and_red_green",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_result_schema_validation_negatives",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_evaluate_no_write_and_self_report_cross_check",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_no_write_comparator_gates_safety_critical_subset",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_non_classification_comparators_ignore_stage_bookkeeping",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_report_schema_exact_S6_golden_passes",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_report_schema_exact_S6_mutations_fail_but_free_text_is_ignored",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_check_pinned_content",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_scrubbed_git_env_neutralizes_user_config",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_s1_input_patch_reproduces_from_base_overlay",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_setup_builds_isolated_run_dir",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_setup_is_deterministic",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_verify_judges_pass_and_fail",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_teardown_guard_and_removal",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_default_source_works_in_normal_clone",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_writes_commands_log",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_no_commit_guarantee",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_fixture_runner_setup_cleans_up_on_failure",
+          "proposed_disposition": "RETAINED_EXACT_ASSERTIONS"
+        },
+        {
+          "test": "test_doctor_writes_nothing",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_output_is_ascii_with_three_sections",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_trust_exact_and_case_insensitive",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_trust_via_ancestor",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_untrusted_no_matching_entry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_missing_config_reports_untrusted",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_canary_pass_when_aligned",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_canary_warns_on_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_mode_is_exclusive",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_main_dispatch_exit_0",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_env_tolerates_non_utf8_powershell_output",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_trust_tolerates_non_utf8_config",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_writes_nothing_when_config_absent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_coerces_non_ascii_to_ascii",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_canary_warns_missing_direction",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_doctor_fatal_manifest_exits_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_skill_renderer_translation.py",
+      "current_sha256": "c224840564eab753904cb2e66cea105c63391919609beb9b68249f4defef15f8",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_synthetic_golden_all_constructs",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_input_form_never_changes_output",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_golden_structure_assertions",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_all_13_translated_sources_render_deterministically",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_prohibition_lines_pass_through_with_no_route",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_git_issue_renders_four_t1b_interactions",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unclassified_interaction_token_refuses_with_diagnostics",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_region_token_without_edge_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_frontmatter_extra_key_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_closing_fence_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_name_scalar_is_verbatim",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_stage11_fixes.py",
+      "current_sha256": "9986e817b75d567fe381a4f2f529580a4b7d5e8b23fee2a7c737dc270a9f69c9",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_t2a_does_not_consume_path_embedded_tokens",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_blank_frontmatter_line_keeps_transforms_aligned",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_route_lands_after_wrapped_list_item",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_lock_versions_reject_floats_and_bools",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_registry_schema_version_rejects_bool",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_malformed_v2_lock_exits_2_in_sync_and_adopt",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_duplicate_key_lock_scoped_check_drifts",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v1_lock_json_error_message_keeps_path",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_scoped_v2_check_catches_stale_lock_entry",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_carrier_required_edge_to_no_carrier_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_cutover_rejects_unmappable_v1_lock_key",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_t2b_construct_mismatch_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_t2b_frontmatter_description_route",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_registry_construct_enum_closed",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_owner_gate_reasons_match_checker_vocabulary",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_t1a_site_with_unknown_reason_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_hook_category_in_lexicon_census",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_coverage_transform_anchor_is_exact_never_arbitrary",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_refuses_non_regular_source_squat",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_scan_layer_a_semantics_unchanged_for_real_sources",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_parse_source_document_blank_line_roundtrip",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_task0_freeze.py",
+      "current_sha256": "ef5a1717867f556100500e4deb568c1ba642a66264ffad535918f31b7d261369",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_emit_hashes_match_independently_computed_blob_digests",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_inventory_surface_counts_sum_to_file_count",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_hard_frozen_shadows_the_generic_prefix_surfaces",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_identity_resolves_the_expected_hard_frozen_set",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_patterns_that_matched_nothing_are_recorded_explicitly",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_identity_digest_is_independently_reproducible",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_untracked_paths_never_enter_the_inventory",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_hash_follows_the_blob_not_the_worktree_bytes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_is_clean_immediately_after_emit",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_modified_hard_frozen_file_stops",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_added_hard_frozen_file_stops",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_removed_hard_frozen_file_stops",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_controlled_surface_change_is_reported_as_its_own_code",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unfrozen_change_stays_clean",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_missing_baseline_exits_two_and_never_zero",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_malformed_baseline_exits_two",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_baseline_with_wrong_schema_version_exits_two",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_mode_flip_on_a_hard_frozen_file_stops",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_gitlink_under_a_hard_frozen_prefix_is_visible_and_stops",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_identity_digest_mismatch_alone_is_treated_as_drift",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_identity_digest_changes_when_a_frozen_file_changes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_emit_outside_a_repo_exits_two",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_outside_a_repo_reports_missing_baseline_first",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_translation_sources.py",
+      "current_sha256": "13fcaac901358d0cbbee5278fb4aefba4afe078ef9e0a8cb3079cbeb76d53810",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_real_typed_sources_load",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_translated_set_partitions_required_with_byte_copy",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_layer_a_double_closure_on_real_sources",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_layer_b_markers_hit_exactly_once",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_prohibition_lines_produce_no_scan_token",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_no_carrier_targets_all_carry_substitutes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_lexicon_census_disposes_every_hit_in_13_sources",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_all_sites_point_at_translated_sources",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_summaries_pass_lexicon_and_close_with_descriptions",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_unknown_registry_schema_version_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_summary_missing_trigger_term_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_oversized_summary_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_dangling_route_ref_refuses",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_strict_yaml_refusals",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_wildcard_expansion_is_deterministic_and_nonempty",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    },
+    {
+      "path": "tests/unit/test_v2_engine.py",
+      "current_sha256": "f1f7e0ed91919c3b635e3f3995de906446b8f477ab499af8be05bcc23abcb08d",
+      "operation": "DELETE_TEST_FILE",
+      "approval": "PENDING_SPECIFIC_A5_APPROVAL",
+      "tests": [
+        {
+          "test": "test_v2_sync_converges_and_is_idempotent",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_v2_unowned_neighbors_survive_and_are_reported",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_cutover_v1_lock_is_read_only_ledger",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_rollback_v2_lock_is_read_only_ledger",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_check_mismatch_rows_are_nonzero",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_malformed_mixed_lock_exits_2_with_zero_writes",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_cas_success_and_noop",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_cas_ambiguous_rows_exit_2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_missing_source_recovery",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_adopt_translated_and_none_never_eligible",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_partial_apply_reports_and_next_sync_converges",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_scoped_surfaces_stay_isolated_under_v2",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_fidelity_closure_green_on_generated_reports",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_fidelity_red_when_renderer_and_report_both_omit_an_item",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_fidelity_index_negatives",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        },
+        {
+          "test": "test_real_tree_now_takes_the_v2_paths",
+          "proposed_disposition": "RETIRE_WITH_LEGACY_MECHANISM_PENDING_APPROVAL"
+        }
+      ],
+      "successors": [
+        "test_codex_native.py (P1 native config/wrapper/env/guard)",
+        "test_offline_execution_boundary.py (P1 shared safety remains separate)",
+        "test_native_skill_contracts.py",
+        "test_native_governance.py",
+        "test_native_migration_guards.py",
+        "test_guard_git_workflow_hook.py",
+        "test_native_scan_domains.py"
+      ],
+      "reason": "Retire only source/renderer/registry/lock/adopt/old-probe assertions with that mechanism. Native safety assertions stay. Old host-probe/trust telemetry is not claimed reproduced: P4 input remains NOT_TESTED."
+    }
+  ],
+  "shared_safety": "P1 split survives in its own file; only native instruction fixture paths change. Shared comparator/fixture tests and biz/secret prose pins retained.",
+  "blocking_delta": "54 synthetic tests plus P1 native tests will be auto-discovered by blocking Tests after publication; requires explicit approval. No marker/skip/discovery weakening."
+}

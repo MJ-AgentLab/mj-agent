@@ -51,7 +51,7 @@ powershell -ExecutionPolicy Bypass -File .\mj-agent-clone-bare.ps1 `
 |---|---|---|---|
 | 运行时 | Python | 3.13 | [pyproject.toml](./pyproject.toml) |
 | 依赖管理 | uv | latest | [astral-sh/uv](https://github.com/astral-sh/uv) |
-| Agent 框架 | LangChain + LangGraph | 1.x / 1.1.8 | [CLAUDE.md §Architecture](./CLAUDE.md) |
+| Agent 框架 | LangChain + LangGraph | 1.x / 1.1.8 | [AGENTS.md §Architecture](./AGENTS.md) |
 | 前端 UI | Chainlit | latest | [src/mj_agent/ui.py](./src/mj_agent/ui.py) |
 | 状态存储 | PostgreSQL（AsyncPostgresSaver） | 15+ | [ADR-006](./decisions/ADR-006_Fail_Safe_Reads.md) |
 | 容器化 | Docker Compose（4-file profile） | latest | [ADR-026](./decisions/ADR-026_Multi_Environment_Compose_Profile.md) |
@@ -80,9 +80,9 @@ uv sync
 .\scripts\setup-env.ps1 -LlmProfile ark
 # 没有团队口令？向管理员申请，或手工 copy .env.example 并填入本地可用的 ARK_API_KEY（不推荐）
 
-# 3. MCP secrets（Claude Code 的 .mcp.json ${VAR} 消费；写 OS User env，非 .env）
-.\.claude\scripts\setup-mcp-secrets.ps1
-# 跑完必须完全重启终端 + Claude Code（User env 只对新进程可见）
+# 3. MCP secrets（Codex 按 env_vars 白名单继承变量（独立授权操作）；写 OS User env，非 .env）
+.\scripts\mcp\setup-mcp-secrets.ps1
+# 跑完必须完全重启终端 + Codex（User env 只对新进程可见）
 
 # 4. 启动 LangGraph Studio
 uv run langgraph dev
@@ -104,7 +104,7 @@ uv run ruff check                      # Lint
 uv run mypy src/mj_agent                # Type-check（strict）
 ```
 
-完整命令矩阵（含 pytest 四档 + Docker compose 三 profile）见 [CLAUDE.md §Commands](./CLAUDE.md)。
+完整命令矩阵（含 pytest 四档 + Docker compose 三 profile）见 [AGENTS.md §Commands](./AGENTS.md)。
 
 ## LLM provider
 
@@ -183,7 +183,7 @@ LangGraph Studio / Chainlit / CLI
    └─ safe-sql-analysis              └─ execute_sql  ──► L1 hybrid → L1b sqlglot → L3 RO conn → biz_dws / biz_dwd
 ```
 
-完整架构图（Memory / CLI / Storage stack）见 [CLAUDE.md §Architecture](./CLAUDE.md)。
+完整架构图（Memory / CLI / Storage stack）见 [AGENTS.md §Architecture](./AGENTS.md)。
 
 ## 文档导航
 
@@ -193,7 +193,7 @@ LangGraph Studio / Chainlit / CLI
 | 15 分钟新成员上手 | [docs/guide/[GUIDE]_Developer_Onboarding.md](./docs/guide/[GUIDE]_Developer_Onboarding.md) |
 | 分析师 Day-One | [docs/guide/[GUIDE]_Analyst_Day_One.md](./docs/guide/[GUIDE]_Analyst_Day_One.md) |
 | 项目入口 INDEX | [docs/INDEX.md](./docs/INDEX.md) |
-| AI 高频上下文 | [CLAUDE.md](./CLAUDE.md) |
+| AI 高频上下文 | [AGENTS.md](./AGENTS.md) |
 
 ## Data boundary
 

@@ -1,0 +1,119 @@
+{
+  "layers": {
+    "L1": "STATIC_PASS_POST_DELETE_ROOT_LOCAL_ENTRIES_37_SKILLS_RESOURCES",
+    "L2": "STATIC_PASS_NATIVE_CONSUMERS; new isolated copy creation BLOCKED_EXECUTION_ROUTE; actual P4 topology evidence retained at unchanged mechanism identity",
+    "L3": "POST_DELETE_STATIC_PASS; AFFECTED_OFFLINE_NOT_TESTED_BLOCKED_EXECUTION_ROUTE; old CI pre-delta only",
+    "L4": "PASS_STATIC_SEMANTIC_REVIEW_37_SKILLS_296_DIMENSIONS_142_CASES; bounded five-family and neighbor actual canaries supplement, not 37 model runs; unchanged skill bodies verified",
+    "L5": "PASS_REQUIRED_BOUNDED_WINDOWS_CLI_CANARIES; actual hook allow/deny/protected edit and independent native-rule sentinel deny; approved restoration verified; retained unchanged native guard/config identity, no new host calls",
+    "L6": "OUT_OF_SCOPE; NOT_TESTED / UNMET_DEPENDENCY historically; not a new P4 blocker"
+  },
+  "acceptance_criteria": {
+    "AC-01": {
+      "status": "PASS_SOURCE_AND_HOST_DISCOVERY",
+      "evidence": "37 same-name native skills, three cwd discovery against current 817 manifest"
+    },
+    "AC-02": {
+      "status": "STATIC_PASS; LIMITED_MODEL_SUPPLEMENT",
+      "evidence": "37/296/142 static retained; all five doc/flow/git/infra/runtime families now have completed bounded explicit model canaries; not 37 full model calls or real runtime EVAL."
+    },
+    "AC-03": {
+      "status": "PASS_FORMAL_STATIC_OWNERSHIP",
+      "evidence": "Native direct maintenance and consumer closure preserved; no legacy overlay replay"
+    },
+    "AC-04": {
+      "status": "PASS_CONFIG_AND_LAUNCHER_COMPONENT_SCOPE",
+      "evidence": "Existing offline allow/deny launch tests retained; eight MCP disabled during L5; real services are excluded L6"
+    },
+    "AC-05": {
+      "status": "PASS_REQUIRED_PROTECTION_EVIDENCE",
+      "evidence": "R2D formal guard compatibility fix matches actual R2C protected edit refusal; R3 hook completed then native rule declined/no process/policy-forbidden for added sentinel; prior H03/O3/O4 allows, R1 G1 hook deny, O2 one Owner approval roundtrip and S1 first-block stop retained",
+      "limits": "No per-rule full model coverage or claim of perfect model self-discipline. Old O2 rewrite failure retained; bounded client-stop verification separately passed."
+    },
+    "AC-06": {
+      "status": "PASS_BOUNDED_REQUIRED_TOPOLOGY_EVIDENCE; COVERAGE_LIMITS_RECORDED",
+      "evidence": "Existing original root/subdir/space and platform records retained; clone and linked root real commands/hook completion now verified. Linked 37 skill paths and AGENTS remain linked-local; hook source is explicitly approved shared Git parent. No actual shell command coverage claimed for every subdirectory or untested platform."
+    },
+    "AC-07": {
+      "status": "STATIC_PASS_C01_C08_AND_POST_DELETE_CONSUMERS",
+      "evidence": "consumer-closure-current.json; verification-after.json; approved exact six-byte deltas"
+    },
+    "AC-08": {
+      "status": "PASS_NAMED81_DELETION_AND_BOUNDED_SCOPE",
+      "evidence": "cleanup-81-result.csv; final-check.json; no directory deletion or P3 test replay"
+    },
+    "AC-09": {
+      "status": "BLOCKED_EXECUTION_ROUTE; REQUIRED_AFFECTED_OFFLINE_NOT_TESTED",
+      "evidence": "verification-after.json; seven static checks pass, pytest never started"
+    },
+    "AC-10": {
+      "status": "PASS_EXACT_RECOVERY_PREPARATION; P6_HANDOFF_NOT_STARTED",
+      "evidence": "recovery-current.json; legacy81 exact members; six current docs backup"
+    },
+    "AC-11": {
+      "status": "PASS_P5_BOUNDED_SCOPE; P6_FINAL_REVIEW_NOT_STARTED",
+      "evidence": "final-check.json; only81 deletions,six approved docs,records"
+    },
+    "AC-12": {
+      "status": "OLD_CI_VERIFIED; POST_DELTA_CI_NOT_TESTED; VERSION_DELIVERY_NOT_STARTED",
+      "evidence": "CI35564875219 confirms pre-P5 commit40b4703 only; no original staging/publication/review/merge this turn"
+    }
+  },
+  "U01_U07": {
+    "U01": {
+      "status": "UNMET_DEPENDENCY",
+      "scope": "memory backup/schema real service; L6 excluded, not new P4 blocker"
+    },
+    "U02": {
+      "status": "UNMET_DEPENDENCY",
+      "scope": "background lifecycle real environment; L6 excluded"
+    },
+    "U03": {
+      "status": "NOT_TESTED",
+      "scope": "real credentials/OS credential writes; excluded"
+    },
+    "U04": {
+      "status": "MANUAL_ROUTE_EXECUTED_VERIFIED_P3_RETAINED",
+      "scope": "P3 manual applied route retained; L5 current readOnly route now has one actual Owner chat single-request accept and successful command; does not unlock hook. R2D formal two-file normal apply_patch route actually succeeded; not a general hook unlock or trust change."
+    },
+    "U05": {
+      "status": "PRE_P5_ACTUAL_CI_VERIFIED; POST_DELTA_CI_NOT_TESTED",
+      "scope": "Existing35564875219 at40b4703 retained; six new public document/comment changes not published; L6 MCP excluded"
+    },
+    "U06": {
+      "status": "UNMET_DEPENDENCY / NOT_TESTED",
+      "scope": "Real runtime EVAL and dataset/snapshot dependencies excluded; development skill canary is not runtime EVAL"
+    },
+    "U07": {
+      "status": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS; C05_C08_APPROVED_REPAIR_STATIC_PASS; AFFECTED_RUNTIME_NOT_TESTED",
+      "scope": "Exact81 removed, current native consumer closure; offline route denied before tests; no general dynamic zero-dependency claim"
+    }
+  },
+  "platforms": {
+    "Windows": "CLI0.147.0 readOnly actual host; prior controlled offline retained",
+    "Linux": "Actual GitHub Ubuntu CI and earlier isolated local Linux/offline/topologies; no Linux Codex host claim",
+    "Desktop_App": "NOT_TESTED",
+    "Other_OS": "NOT_TESTED"
+  },
+  "at": "2026-09-21T06:48:42.424103+00:00",
+  "phase": "P5",
+  "P4": "PASS_PRIOR_APPROVED_BOUND_IDENTITY; §57 retained",
+  "P5": "INCOMPLETE_BLOCKED_EXECUTION_ROUTE_POST_CLEANUP_OFFLINE",
+  "P6": "NOT_STARTED",
+  "technical_migration": "NOT_DECLARED_ACCEPTED; required affected tests pending",
+  "cleanup": {
+    "deleted": 81,
+    "held_within81": 0,
+    "retained": 290,
+    "prior_P3_absent_no_action": 16,
+    "directories_deleted": 0
+  },
+  "prior_matrix": "../p4-consumer-fix/acceptance-after-CI-success.json",
+  "missing_inputs": [
+    "Resolve reported external temporary directory access denial using a compliant reviewed execution route; isolated Git init/root verification then remaining controlled tests",
+    "No new approval for the same six revisions or81 deletion is needed; do not replay them"
+  ],
+  "post_cleanup_CI": "NOT_TESTED; no publication or CI trigger authorized",
+  "post_cleanup_host": "NOT_REPEATED; unchanged native inputs reuse bounded actual P4 evidence only",
+  "L6": "OUT_OF_SCOPE; not a P5 prerequisite",
+  "subagents": "NONE"
+}

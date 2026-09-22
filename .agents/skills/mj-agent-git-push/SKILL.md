@@ -1,19 +1,30 @@
 ---
 name: mj-agent-git-push
-description: This skill should be used when the user asks to push code, run pre-push checks, set up dual-push to Gitee and GitHub, troubleshoot push errors, or handle CHANGELOG updates in mj-agent. Make sure to use this skill whenever the user says "推送代码", "push code", "git push", "推到远端", "push to remote", "dual push", "Gitee push", "推送失败", "push error", "CHANGELOG", "推送前检查", "pre-push check" in the mj-agent context. Runs an 8-item pre-push checklist and executes dual-push (Gitee first, GitHub second). Do not use for: commit creation (use mj-agent-git-commit), PR creation (use mj-agent-git-pr), force-push of an amended commit (handle directly via git push --force-with-lease), or branch deletion after merge (use mj-agent-git-delete in PR-B3+).
+description: "适用于 mj-agent 的推送/推送前检查/双推。输入：branch、commit、lint/type/tests/docs/changelog状态、remotes。流程：八项pre-push→文档/日志→worktree→双推→状态。输出：两端SHA/失败端/未执行端分别确认。Use when：检查当前分支是否可双推，给检查报告。Do not use for：我还没commit，替我提交所有改动；转git-commit建议，不顺带stage/commit。授权：push需Owner；force-with-lease另核head与授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
+
 
 # mj-agent Git Push
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to push code, run pre-push checks, set up dual-push to Gitee and GitHub, troubleshoot push errors, or handle CHANGELOG updates in mj-agent. Make sure to use this skill whenever the user says "推送代码", "push code", "git push", "推到远端", "push to remote", "dual push", "Gitee push", "推送失败", "push error", "CHANGELOG", "推送前检查", "pre-push check" in the mj-agent context. Runs an 8-item pre-push checklist and executes dual-push (Gitee first, GitHub second). Do not use for: commit creation (use mj-agent-git-commit), PR creation (use mj-agent-git-pr), force-push of an amended commit (handle directly via git push --force-with-lease), or branch deletion after merge (use mj-agent-git-delete in PR-B3+).
+
+
 ## Overview
 
-8 步 pre-push checklist + 双推（Gitee first, GitHub second）执行 for mj-agent。gitee 是 GitHub 的**被动冗余镜像**：当前 CI 跑在 GitHub-hosted runner（`actions/checkout` 拉 **origin**），**不读 gitee**——保持双推是为镜像一致 +「未来无法直连 GitHub 时改从 gitee 拉」（per [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow]] §6.5），因此两个 remote 必须都收到 push。
+8 步 pre-push checklist + 双推（Gitee first, GitHub second）执行 for mj-agent。gitee 是 GitHub 的**被动冗余镜像**：当前 CI 跑在 GitHub-hosted runner（`actions/checkout` 拉 **origin**），**不读 gitee**——保持双推是为镜像一致 +「未来无法直连 GitHub 时改从 gitee 拉」（per `repo:docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md` §6.5），因此两个 remote 必须都收到 push。
 
-> **前置技能**：`/mj-agent-git-commit` 已在提交阶段验证 commit message 格式 + type/branch 纪律。本技能 Step 1-2 是二次确认。
+> **前置技能**：`mj-agent-git-commit` 已在提交阶段验证 commit message 格式 + type/branch 纪律。本技能 Step 1-2 是二次确认。
 
 **Workflow position**: Stage 13 of HITL_Prompt 17-stage flow.
 
-详细 push 流程见 [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow GUIDE]]（mj-agent v1.0；本 SKILL 是其交互式封装）。
+详细 push 流程见 `repo:docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md`（mj-agent v1.0；本 SKILL 是其交互式封装）。
 
 ## Pre-Push Checklist（按顺序）
 
@@ -37,13 +48,13 @@ git diff develop -- CHANGELOG.md
 
 # 4. 工作目录干净
 git status --short
-# 必须为空。否则用 /mj-agent-git-commit 暂存提交，或加 .gitignore
+# 必须为空。否则用 mj-agent-git-commit 暂存提交，或加 .gitignore
 
 # 5. 分支命名验证
 git branch --show-current
 # 必须匹配：<type>/<desc> 或 <type>/<issue-id>-<desc>；type ∈ 5 类
 
-# 6. 同步 base branch（详见 /mj-agent-git-sync，PR-B3 落地）
+# 6. 同步 base branch（详见 mj-agent-git-sync，PR-B3 落地）
 git fetch origin && git merge origin/develop   # feature/bugfix/documentation/maintain
 git fetch origin && git merge origin/main      # hotfix/* only
 # 冲突 → git status → 解 → git add . → git commit -m "merge: 合并 origin/develop 解决冲突"
@@ -135,9 +146,9 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 | # | 触发条件 | skill 行为 |
 |---|---|---|
 | H1 | Commit message 格式不规范 | 列出问题行 + 建议 amend |
-| H2 | Type/branch 不匹配 | 重定向到 `/mj-agent-git-commit` H3 流程 |
+| H2 | Type/branch 不匹配 | 重定向到 `mj-agent-git-commit` H3 流程 |
 | H3 | CHANGELOG 缺更新且本 PR 含 feat/fix | 询问：(1) 加 CHANGELOG 后再 push (2) 跳过（仅 docs PR） |
-| H4 | 工作目录有未提交变更 | 重定向到 `/mj-agent-git-commit` |
+| H4 | 工作目录有未提交变更 | 重定向到 `mj-agent-git-commit` |
 | H5 | base branch 远程有 diverge | 触发 sync 流程；冲突时强制 HITL |
 | H6 | 远程 push 失败（H1-permission / H2-token-expired） | 显示错误 + 修复指引 |
 | H7 | 用户要求 force-push 到 main / develop | **硬性阻断**：保护分支不允许 force-push |
@@ -161,4 +172,4 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 
 ## Detailed → docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md
 
-完整流程（含 .gitignore 策略 / 可选 pre-push hook / 全部 troubleshooting）见 [[../../../docs/infrastructure/git/[GUIDE]_Git_Push_Workflow|Git_Push_Workflow GUIDE]]。本 SKILL 是其交互式封装。
+完整流程（含 .gitignore 策略 / 可选 pre-push hook / 全部 troubleshooting）见 `repo:docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md`。本 SKILL 是其交互式封装。

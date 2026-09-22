@@ -1,41 +1,24 @@
 ---
 name: mj-agent-git-branch
-description: "Create branches for the bare-repo worktree model: pick the branch type (feature/bugfix/documentation/maintain/hotfix) and generate the worktree add command; use for 创建分支, create branch, starting new work; branches are never created in-place with checkout -b."
+description: "适用于 mj-agent 的Stage2选择类型与创建worktree分支。输入：任务类型、base、branch名、绝对worktree目标。流程：precheck→类型→命名→碰撞→worktree add→健康核对。输出：目标worktree/ref/base正确，状态明确。Use when：按现有feature规范准备新分支/worktree命令。Do not use for：把develop同步进当前分支；建议git-sync，不创建多余分支。授权：G1仅worktree add；目标/动作批准不含其他Git操作；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Git Branch
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill should be used when the user asks to create a branch, name a branch, set up a Git Worktree, start feature/bugfix/documentation/maintain/hotfix work, or choose the correct branch type in mj-agent. Make sure to use this skill whenever the user says "创建分支", "新建分支", "开新分支", "create branch", "new branch", "branch naming", "worktree add", "哪种分支类型", "which branch type", "开始开发", "start feature", "start bugfix", "start hotfix" in the mj-agent context. Generates the worktree-add command for mj-agent's bare repo + 5-branch-type model. Do not use for: GitHub Issue creation (use mj-agent-git-issue), commit (use mj-agent-git-commit), push (use mj-agent-git-push), branch deletion (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync after merge (use mj-agent-git-sync in PR-B3+).
+
+
 ## Overview
 
-Creates and manages Git branches for **mj-agent** following the project's bare-repo + worktree-per-branch convention. **5 temporary branch types** (per [[../../../docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Convention v1.0]] §5)—`feature/*`、`bugfix/*`、`documentation/*`、`maintain/*`、`hotfix/*`—plus 2 protected permanent branches (`main`、`develop`)。
+Creates and manages Git branches for **mj-agent** following the project's bare-repo + worktree-per-branch convention. **5 temporary branch types** (per `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5)—`feature/*`、`bugfix/*`、`documentation/*`、`maintain/*`、`hotfix/*`—plus 2 protected permanent branches (`main`、`develop`)。
 
 > mj-agent **不**用 `optimization/`（与 mj-system 差异；详见 ADR-010 / Commit Convention §5.2）。
 
@@ -58,8 +41,8 @@ git worktree add ../<branch-name> -b <branch-name>
 bugfix 同样适用 —— PR #154 (2026-05-12) 是 G1 规则诞生前的 precipitating
 incident（详见 `plans/[PLAN]_g1_g2_workflow_enforcement.md` 根因 + 时间线）。
 
-钩子 `.claude/scripts/guard-git-workflow.ps1` 在 PreToolUse 拦截 `git
-checkout -b`（详见 `.claude/settings.json`）。
+钩子 `scripts/sdd/codex_hook_guard.py` 在 PreToolUse 拦截 `git
+checkout -b`（详见 `.codex/hooks.json`）。
 
 ## Prerequisite Check
 
@@ -79,7 +62,7 @@ git status --short
 |---|---|
 | 任务性质不明确（"要开始开发" / "改代码"） | 问："这次任务是新功能、bug 修复、纯文档、基础设施维护，还是生产紧急修复？" |
 | 类型明确，但无英文描述词 | 问："请用 2-5 个英文单词描述此任务（kebab-case，e.g. `add-flow-intake-skill`、`fix-yaml-loader-encoding`）" |
-| 类型 + 描述词均有，缺 issue-id | 直接生成（issue-id 可选，不追问）。若需先创建 Issue，提示 `/mj-agent-git-issue` |
+| 类型 + 描述词均有，缺 issue-id | 直接生成（issue-id 可选，不追问）。若需先创建 Issue，提示 `mj-agent-git-issue` |
 | 信息完整 | 直接生成命令 |
 
 ### 输出格式（信息收集完毕后，**只输出单行命令**）
@@ -150,9 +133,9 @@ cd ../feature/63-add-flow-intake-skill
 git rev-parse --is-inside-work-tree   # 期望: true；false → §Bare Worktree Health Check
 
 # ... 编码 → commit → push ...
-# 开发中如需同步 develop 最新代码 → 用 /mj-agent-git-sync（PR-B3 落地）
+# 开发中如需同步 develop 最新代码 → 用 mj-agent-git-sync（PR-B3 落地）
 
-# PR merge 后清理（用 /mj-agent-git-delete，PR-B3 落地；或手动）
+# PR merge 后清理（用 mj-agent-git-delete，PR-B3 落地；或手动）
 cd D:/workspace/10-software-project/projects/mj-agent/develop
 git worktree remove ../feature/63-add-flow-intake-skill
 git branch -d feature/63-add-flow-intake-skill
@@ -177,12 +160,12 @@ git commit -m "fix(memory): drop AsyncPostgresSaver connections leak"
 # Step 4: Push（双推 gitee + origin）
 git push -u gitee hotfix/async-checkpointer-leak && git push -u origin hotfix/async-checkpointer-leak
 
-# Step 5: PR 创建（base = main，target = main；用 /mj-agent-git-pr）
+# Step 5: PR 创建（base = main，target = main；用 mj-agent-git-pr）
 
 # Step 6: PR merge 后
 #   (a) 在 main 上打 patch 版本 tag
-#   (b) hotfix → develop 同步（用 /mj-agent-git-sync，PR-B3 落地）
-#   (c) 清理 hotfix worktree（用 /mj-agent-git-delete）
+#   (b) hotfix → develop 同步（用 mj-agent-git-sync，PR-B3 落地）
+#   (c) 清理 hotfix worktree（用 mj-agent-git-delete）
 ```
 
 ## Bare Repo Worktree 模型
@@ -228,7 +211,7 @@ git worktree add develop develop
 git worktree list   # 应见 .bare + develop
 ```
 
-详见 [[../../../docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning|GitHub_Setup_And_Versioning]]。
+详见 `repo:docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md`。
 
 ## Bare Worktree Health Check（防 config.worktree 漂移）
 
@@ -274,7 +257,4 @@ $cfgPath = ".bare/worktrees/$wtName/config.worktree"
 
 ## Handoff to mj-agent-git-commit
 
-worktree 创建后进入分支编码，commit 阶段用 `$mj-agent-git-commit`（PR-B1 落地）。
-
-<!-- codex-route:edge-git-branch-git-commit -->
-> Codex route: invoke `$mj-agent-git-commit` (native carrier; handoff, always)
+worktree 创建后进入分支编码，commit 阶段用 `mj-agent-git-commit`（PR-B1 落地）。

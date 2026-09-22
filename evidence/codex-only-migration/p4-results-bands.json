@@ -1,0 +1,112 @@
+{
+  "mode": "bands",
+  "copy_root": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/eval",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 4.796,
+      "at": "2026-09-18T10:18:38.568914+00:00",
+      "output": "........................................................................ [ 77%]\r\n.....................                                                    [100%]\r\n93 passed in 2.47s\r\n",
+      "status": "PASS",
+      "level": "OFFLINE_PROGRAM",
+      "source_checker_sha256": "1288c47e43669be09f9b70ed07a2c8d7a0d4a48990fcbd4c4692092e406de614"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 9.452,
+      "at": "2026-09-18T10:18:48.021908+00:00",
+      "output": ".ss..........sssss..                                                     [100%]\r\n============================== warnings summary ===============================\r\nD:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: 48 warnings\r\n  D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\gherkin\\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument\r\n    uncommented_line = re.split(r\"\\s#\", self._trimmed_line_text.strip(), 2)[0]\r\n\r\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\r\n=========================== short test summary info ===========================\r\nSKIPPED [4] D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\pytest_bdd\\scenario.py:296: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [3] D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Lib\\site-packages\\pytest_bdd\\scenario.py:296: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\n13 passed, 7 skipped, 48 warnings in 6.68s\r\n",
+      "status": "PASS",
+      "level": "OFFLINE_PROGRAM",
+      "source_checker_sha256": "1288c47e43669be09f9b70ed07a2c8d7a0d4a48990fcbd4c4692092e406de614"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/integration",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 4.834,
+      "at": "2026-09-18T10:18:52.856403+00:00",
+      "output": "....sssss                                                                [100%]\r\n=========================== short test summary info ===========================\r\nSKIPPED [1] tests\\integration\\test_mj_system_db.py:17: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\integration\\test_mj_system_db.py:25: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\integration\\test_mj_system_db.py:32: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\integration\\test_mj_system_db.py:47: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\integration\\test_mj_system_db.py:52: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\n4 passed, 5 skipped in 2.73s\r\n",
+      "status": "PASS",
+      "level": "OFFLINE_PROGRAM",
+      "source_checker_sha256": "1288c47e43669be09f9b70ed07a2c8d7a0d4a48990fcbd4c4692092e406de614"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/smoke",
+        "-m",
+        "smoke",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 3.023,
+      "at": "2026-09-18T10:18:55.879771+00:00",
+      "output": "ssssssssssssssssss                                                       [100%]\r\n=========================== short test summary info ===========================\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:42: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:54: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:65: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:78: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:108: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:121: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:128: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:136: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:143: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_agent_smoke.py:150: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_check_live_smoke.py:24: SKIP_POLICY_EXTERNAL_DEPENDENCY: biz live legs are permanently unavailable to pytest\r\nSKIPPED [1] tests\\smoke\\test_memory_redaction_canary.py:106: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_redaction_canary.py:125: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_redaction_canary.py:146: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_redaction_canary.py:164: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_redaction_canary.py:194: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_retention_smoke.py:91: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\nSKIPPED [1] tests\\smoke\\test_memory_retention_smoke.py:127: SKIP_POLICY_EXTERNAL_DEPENDENCY: no Owner-approved non-biz pytest profile exists\r\n18 skipped in 1.06s\r\n",
+      "status": "PASS",
+      "level": "OFFLINE_PROGRAM",
+      "source_checker_sha256": "1288c47e43669be09f9b70ed07a2c8d7a0d4a48990fcbd4c4692092e406de614"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/contract",
+        "-m",
+        "contract",
+        "-q",
+        "--tb=short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 2.344,
+      "at": "2026-09-18T10:18:58.224264+00:00",
+      "output": "......................................................s.........         [100%]\r\n=========================== short test summary info ===========================\r\nSKIPPED [1] tests\\contract\\test_biz_snapshot_validator.py:420: SKIP_POLICY_EXTERNAL_DEPENDENCY: cannot create symlink here ([WinError 1314] A required privilege is not held by the client: 'C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\mj-agent-offline-pytest-eez0x5i1\\\\tmp\\\\pytest-of-unknown\\\\pytest-0\\\\test_symlinked_snapshot_is_rej0\\\\real_target.yaml' -> 'C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\mj-agent-offline-pytest-eez0x5i1\\\\tmp\\\\pytest-of-unknown\\\\pytest-0\\\\test_symlinked_snapshot_is_rej0\\\\.mj-agent-local\\\\biz-schema-snapshots\\\\link.yaml')\r\n63 passed, 1 skipped in 0.45s\r\n",
+      "status": "PASS",
+      "level": "OFFLINE_PROGRAM",
+      "source_checker_sha256": "1288c47e43669be09f9b70ed07a2c8d7a0d4a48990fcbd4c4692092e406de614"
+    }
+  ],
+  "runner_unchanged": true,
+  "environment": "Closed non-secret parent names; unchanged runner creates isolated child profile and locked plugins. No real credentials."
+}

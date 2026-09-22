@@ -1,0 +1,14 @@
+{
+  "case": "O4",
+  "pid": 18816,
+  "start_time_utc": "2026-09-21T02:54:34.6942281Z",
+  "launcher": "evidence/codex-only-migration/p4-owner-actions/T_linked.ps1",
+  "target": "C:/Users/Admin/AppData/Local/Temp/mj-agent-p4-20260918-ij3anyxq/topology linked",
+  "window_title": "P4 linked - Owner project/hook review",
+  "status": "VISIBLE_TERMINAL_STARTED; OWNER_START_AND_TRUST_NOT_OBSERVED",
+  "authorized_followup": "after actual Owner trust and verification: named .venv without pip and one O4 status canary",
+  "auto_trust": false,
+  "model_task_sent": false,
+  "authorization": "Owner explicitly approved O4 named complete flow, conditional on personal trust review",
+  "model_turns": 0
+}

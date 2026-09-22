@@ -1,0 +1,295 @@
+{
+  "mode": "static",
+  "copy_root": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_skills.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.135,
+      "at": "2026-09-18T10:18:14.848485+00:00",
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "d52047ab8b200ab0548bf7d98d86e14f8bd360158b0660e50575464b19d55245"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_skills.py",
+        "--surface",
+        "resources"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.152,
+      "at": "2026-09-18T10:18:15.002031+00:00",
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "d52047ab8b200ab0548bf7d98d86e14f8bd360158b0660e50575464b19d55245"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "entries"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.07,
+      "at": "2026-09-18T10:18:15.072691+00:00",
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"entries\", \"host\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "4fcffaf2c1c06db7f40a58cb76f4860761e95f9038b9ab9d14a6f3ef5dbd3246"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.221,
+      "at": "2026-09-18T10:18:15.294097+00:00",
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "4fcffaf2c1c06db7f40a58cb76f4860761e95f9038b9ab9d14a6f3ef5dbd3246"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_codex_native.py",
+        "--surface",
+        "mcp"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.079,
+      "at": "2026-09-18T10:18:15.373692+00:00",
+      "output": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "8a9fcce6a82a21b8f2115fd59c58da3a0ff2d154da2b869e50a672750c991a3b"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_codex_native.py",
+        "--surface",
+        "enforcement"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.08,
+      "at": "2026-09-18T10:18:15.454180+00:00",
+      "output": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "8a9fcce6a82a21b8f2115fd59c58da3a0ff2d154da2b869e50a672750c991a3b"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_test_offline_boundary.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.398,
+      "at": "2026-09-18T10:18:15.853183+00:00",
+      "output": "OFFLINE_BOUNDARY: GREEN (static/AST boundary closed)\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "f3822dfdab7710c535b499cfdaca664417060f04948ae5568d6ab5b60870375a"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_capability_schema.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.123,
+      "at": "2026-09-18T10:18:15.977314+00:00",
+      "output": "check_capability_schema.py — validating 6 spec.yml (G1)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\spec.yml: schema valid (3 requirements; lifecycle=active, archive=active)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\spec.yml: schema valid (3 requirements; lifecycle=active, archive=active)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\spec.yml: schema valid (5 requirements; lifecycle=active, archive=active)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\spec.yml: schema valid (6 requirements; lifecycle=active, archive=active)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\spec.yml: schema valid (3 requirements; lifecycle=active, archive=active)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\spec.yml: schema valid (2 requirements; lifecycle=drafting, archive=active)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "e035c6a7329b5fbaaa8387a62d67c89a27d57c0399c47837005d24ae797a0ade"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_traceability.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.127,
+      "at": "2026-09-18T10:18:16.104748+00:00",
+      "output": "check_traceability.py — validating 6 trace.yml (G2/G5; schema v1.2)\r\n  [PASS] capabilities\\data-agent\\biz-catalog\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\trace.yml: schema valid (3 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer\\trace.yml: schema valid (5 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\data-agent\\safe-sql\\trace.yml: schema valid (6 REQ links; 1 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\trace.yml: schema valid (3 REQ links; 2 cross_capability_refs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\trace.yml: schema valid (2 REQ links; 1 cross_capability_refs)\r\n\r\n=== Summary ===\r\nPASS: 6 / WARN: 0 / FAIL: 0\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "46e347d2aee295c55eec21257a4e5238eb141849f673da8e7b5002d02bfe9158"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_contracts.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.176,
+      "at": "2026-09-18T10:18:16.281629+00:00",
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: contracts/ non-empty (4 files; 3 *.contract.yml parse OK); behavior.feature present (critical|high REQs)\r\n  [PASS] capabilities\\data-agent\\llm-provider: contracts/ non-empty (4 files; 3 *.contract.yml parse OK); behavior.feature present (critical|high REQs)\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: contracts/ non-empty (3 files; 2 *.contract.yml parse OK); behavior.feature not required (no critical|high REQ)\r\n  [PASS] capabilities\\data-agent\\safe-sql: contracts/ non-empty (5 files; 4 *.contract.yml parse OK); behavior.feature present (critical|high REQs)\r\n  [PASS] capabilities\\infrastructure\\docker-compose: contracts/ non-empty (4 files; 2 *.contract.yml parse OK); behavior.feature present (critical|high REQs)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance: contracts/ non-empty (4 files; 3 *.contract.yml parse OK); behavior.feature not required (no critical|high REQ)\r\ncheck_contracts: 6P / 0W / 0F (over 6 capabilities; contracts non-empty + parse + behavior.feature critical|high rule)\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "d374d73ddccb51641c6e42e7ec2a1adb668d796caf9371c408fc5f3785cb26bc"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/generate_index.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.14,
+      "at": "2026-09-18T10:18:16.422659+00:00",
+      "output": "  [PASS] capabilities/INDEX.auto.md matches regenerated content (6 specs)\r\n\r\n=== Summary ===\r\nPASS: 1 / WARN: 0 / FAIL: 0\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "665ddecfae4ce6e7e48a21a0194d732a76459d287ca87275d8970216c2531d0f"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_frontmatter.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.149,
+      "at": "2026-09-18T10:18:16.572369+00:00",
+      "output": "OK: 140 canonical docs all pass frontmatter schema check\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "e76c9aaf7249949852e31139b65274ff446bb3adeec33418b8fb5404092090d4"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_wikilinks.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.163,
+      "at": "2026-09-18T10:18:16.736214+00:00",
+      "output": "OK: 0 archive-ref violations (13 archived files auto-discovered)\r\nGLOSSARY.md:298: [A4-md] unresolved link target -> CLAUDE.md\r\nWARN: 1 unresolved root-file link target(s) (warning-mode; set MJ_AGENT_A4_STRICT=1 to block)\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "fabdef4dc0f9e99f3382c931b53955dbc4f05717fdba0bee2cb3cb454367118a"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_loop_section_refs.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.156,
+      "at": "2026-09-18T10:18:16.892970+00:00",
+      "output": "Kernel section-reference check: OK (20 live sections parsed)\r\n{\"violations\": 0, \"sections\": 20, \"findings\": []}\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "ad95b97e3bc747af392769a2dd6ba3ceff52c8d079104c791b9aae62c2ad9780"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_no_cross_repo_refs.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.101,
+      "at": "2026-09-18T10:18:16.994399+00:00",
+      "output": "WARN: 13 forbidden cross-repo refs in 10 of 35 scanned files\r\n\r\n  docs\\guide\\[GUIDE]_Analyst_Day_One.md\r\n    line 27: `派生自` — > **派生自**：mj-agent 原生\r\n    line 46: `mj-system` — - mj-system QCM 维度命名（_total / _by_industry / _by_tenant 等；agent 会自动选）\r\n  docs\\guide\\[GUIDE]_Developer_Onboarding.md\r\n    line 26: `mj-system` — > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 ...\r\n    line 400: `mj-system` — | 2026-05-18 | v0.1（in-place） | 4 处增强（§0.5 权限清单 / §3.5 仓库结构鸟瞰 / §6.5 G1/G2 hook 防护 / §9 Day-1 打勾清单）+ 关联文档 + §5 文档版本号刷新到 ...\r\n  docs\\guide\\[GUIDE]_MJ_Agent_SPEC_Authoring.md\r\n    line 262: `mj-system` — | 2026-05-11 | v0.1 | 初稿（PR-118 commit-3 落地；G3 gap 修复；mj-agent 8 类任务分类，区别于 mj-system 8 类） |\r\n  docs\\guide\\[GUIDE]_Quick_Start_Setup.md\r\n    line 26: `mj-system` — > **派生自**：mj-agent 原生（参考 mj-system 仓库 `[GUIDE]_Quick_Start_Setup.md` 9 步速查 + Troubleshooting 表的结构与写法；命令与术语均按 mj-agent 自身...\r\n    line 224: `mj-system` — | 2026-05-18 | v0.1 | 初稿（借鉴 mj-system Quick_Start_Setup 9 步结构 + Troubleshooting 表写法；内容按 mj-agent 自身资产派生） |\r\n  docs\\INDEX.md\r\n    line 78: `mj-system` — | [[decisions/ADR-030_Secrets_Bundle_Split_For_MCP_Isolation\\|ADR-030 Secrets Bundle Split for MCP Isolation]] | OPS | a...\r\n  docs\\infrastructure\\git\\[GUIDE]_Git_Branch_Strategy.md\r\n    line 631: `派生自` — | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：5 分支模型 + worktree 用法逐字保留；§0 / §2.3 / §4 / §7 命名示例与 commit scope 改 mj-agen...\r\n  docs\\infrastructure\\git\\[GUIDE]_Git_Push_Workflow.md\r\n    line 653: `派生自` — | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：推送流程逐字保留；§2 CHANGELOG 章节加注 Phase 0.5+ 启用；§10 删除 Q6（Gitee shallow fetch），原...\r\n  docs\\infrastructure\\git\\[GUIDE]_GitHub_Setup_And_Versioning.md\r\n    line 365: `派生自` — | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：仓库 URL 改 mj-agent；§4.1 文件清单缩减为 mj-agent Phase 0 实际（仅 pyproject.toml + REA...\r\n  docs\\infrastructure\\git\\[GUIDE]_PR_Description_Convention.md\r\n    line 389: `派生自` — | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：6 模板分类与 gh CLI 用法逐字保留；§3.1 实际案例改为 mj-agent 占位（首份案例待回填）；§4.3 自检对齐表删除 Docke...\r\n  README.md\r\n    line 238: `mj-system` — mj-agent 依赖上游 `mj-system` compose 栈先 up（提供 external network）；详见 [docker/README.md](./docker/README.md) + [ADR-008](./dec...\r\n\r\nFix: replace prose `mj-system` → `上游业务系统` (see `docs/glossary/upstream_business_warehouse.md`); strip `派生自 ...` frontmatter / prose markers. Allow-list literals are in this script (`ALLOW_LITERAL_SUBSTRINGS`). Set MJ_AGENT_CHECK_REFS_STRICT=1 to fail-fast in CI (warning-mode is the current posture, not a timed transition).\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "570ac79c14d2d9b827ca14f4fcff2c7a1c07d38d7ea89d87673bc9b50a17a5e6"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_archived_references.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "seconds": 0.327,
+      "at": "2026-09-18T10:18:17.322540+00:00",
+      "output": "  [PASS] docs\\glossary\\upstream_business_warehouse.md:87: archive/decisions/superseded/[DEPRECATED]_ (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:35: archive/rule/ (unit ai_visibility=reference)\r\n  [WARN] docs\\INDEX.md:35: references archive/INDEX (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] docs\\INDEX.md:35: references archive/INDEX]] (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] docs\\INDEX.md:56: archive/decisions/superseded/INDEX (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:56: archive/decisions/superseded/]] (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:101: archive/decisions/superseded/INDEX (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:101: archive/decisions/superseded/INDEX]] (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:107: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:107: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:108: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:110: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:111: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:112: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:113: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.2 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:114: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1 (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:118: archive/decisions/superseded/INDEX (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:118: archive/decisions/superseded/INDEX.md]] (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:122: archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:123: archive/decisions/superseded/[DEPRECATED]_[ADR]_015_HITL_Prompt_v1_0_Derivation (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:124: archive/decisions/superseded/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:125: archive/decisions/superseded/[DEPRECATED]_[ADR]_018_Active_Path_Stability (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:126: archive/decisions/superseded/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:126: archive/decisions/superseded/INDEX (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:127: archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:128: archive/decisions/superseded/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:129: archive/decisions/superseded/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra (unit ai_visibility=reference)\r\n  [PASS] docs\\INDEX.md:130: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [WARN] docs\\INDEX.md:304: references archive/legacy/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] docs\\infrastructure\\git\\[GUIDE]_GitHub_Setup_And_Versioning.md:353: archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System (unit ai_visibility=reference)\r\n  [PASS] docs\\infrastructure\\git\\INDEX.md:37: archive/decisions/superseded/[DEPRECATED]_[ADR]_010_Git_And_Commit_Conventions_From_MJ_System (unit ai_visibility=reference)\r\n  [WARN] docs\\rule\\[STANDARD]_MJ_Agent_Commit_Message_Convention.md:186: references archive/decisions/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] docs\\rule\\[STANDARD]_MJ_Agent_Commit_Message_Convention.md:193: archive/rule (unit ai_visibility=reference)\r\n  [PASS] capabilities\\data-agent\\llm-provider\\evidence\\runtime\\2026-05-23_endpoint_probe.md:86: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_ (unit ai_visibility=reference)\r\n  [PASS] capabilities\\infrastructure\\docker-compose\\evidence\\runtime\\2026-05-23_compose_smoke.md:96: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_ (unit ai_visibility=reference)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\contracts\\governance.contract.yml:8: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md (unit ai_visibility=reference)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\contracts\\mcp-server.contract.yml:156: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md (unit ai_visibility=reference)\r\n  [PASS] capabilities\\infrastructure\\mcp-server-governance\\evidence\\runtime\\2026-05-23_quarterly_audit_q2.md:113: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_ (unit ai_visibility=reference)\r\n  [WARN] sdd\\archive.schema.json:5: references archive/. (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] sdd\\gates.md:44: references archive/legacy (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] sdd\\gates.md:44: references archive/capabilities (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] sdd\\lifecycle.md:85: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [WARN] sdd\\workflows\\archive-capability.md:20: references archive/capabilities/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] sdd\\workflows\\archive-capability.md:37: references archive/capabilities/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] sdd\\workflows\\archive-capability.md:39: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] sdd\\workflows\\execution-loop.md:22: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1.md (unit ai_visibility=reference)\r\n  [PASS] policies\\ai-agent.md:243: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:23: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:34: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [WARN] policies\\archive.md:110: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] policies\\archive.md:115: archive/decisions/superseded/archive.yml (unit ai_visibility=reference)\r\n  [WARN] policies\\archive.md:130: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] policies\\archive.md:141: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:156: archive/rule/ (unit ai_visibility=reference)\r\n  [WARN] policies\\archive.md:158: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] policies\\archive.md:161: archive/rule/ (line ai_visibility=reference marker)\r\n  [PASS] policies\\archive.md:162: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:167: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:195: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:215: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] policies\\archive.md:216: archive/rule/ (unit ai_visibility=reference)\r\n  [WARN] policies\\archive.md:217: references archive/legacy/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] policies\\archive.md:218: references archive/capabilities/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] policies\\archive.md:219: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] policies\\ci-gates.md:342: references archive/INDEX.md (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] policies\\documentation.md:21: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] policies\\documentation.md:200: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] policies\\release.md:69: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] policies\\security.md:100: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-012_Two_Track_Documentation_Governance.md:100: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-012_Two_Track_Documentation_Governance.md:167: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-012_Two_Track_Documentation_Governance.md:168: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-012_Two_Track_Documentation_Governance.md:169: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-013_Plugin_SKILL_md_Schema_Separation.md:26: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-013_Plugin_SKILL_md_Schema_Separation.md:152: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:24: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:24: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:24: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:243: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:244: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:245: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:247: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:248: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:249: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-014_Tri_Track_Documentation_Governance.md:251: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-016_In_Tree_Claude_Skills_Ecosystem.md:24: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-016_In_Tree_Claude_Skills_Ecosystem.md:24: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-016_In_Tree_Claude_Skills_Ecosystem.md:249: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-016_In_Tree_Claude_Skills_Ecosystem.md:250: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_AI_Engineering_Execution_HITL_Prompt_v1_1 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-020_Archive_Auto_Discovery.md:48: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-020_Archive_Auto_Discovery.md:52: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-024_Eval_Framework_Spec.md:152: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.2 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-026_Multi_Environment_Compose_Profile.md:21: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction.md (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-026_Multi_Environment_Compose_Profile.md:99: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-027_LLM_Provider_Abstraction.md:138: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-028_MCP_Server_Inventory_And_Governance.md:49: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-028_MCP_Server_Inventory_And_Governance.md:106: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-028_MCP_Server_Inventory_And_Governance.md:107: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md:155: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_MCP_Server_Governance_v1_0.md (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md:156: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-030_Secrets_Bundle_Split_For_MCP_Isolation.md:157: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.2 (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-031_Spec_Anchored_Refactor.md:98: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-031_Spec_Anchored_Refactor.md:98: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\ADR-033_DGX_Ops_Sister_Repo_Boundary.md:87: archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction (unit ai_visibility=reference)\r\n  [PASS] decisions\\INDEX.md:3: archive/decisions/superseded/. (unit ai_visibility=reference)\r\n  [PASS] decisions\\INDEX.md:56: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] decisions\\INDEX.md:57: archive/decisions/superseded/INDEX (unit ai_visibility=reference)\r\n  [PASS] decisions\\INDEX.md:57: archive/decisions/superseded/INDEX]] (unit ai_visibility=reference)\r\n  [WARN] decisions\\INDEX.md:61: references archive/decisions/ (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] plans\\[PLAN]_check_wikilinks_generalize.md:49: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:43: archive/rule/..._v2.1 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:103: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:104: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Management_Framework_v1.1 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:105: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.0 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:106: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Documentation_Meta_Framework_v2.1 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:107: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Code_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1a.md:108: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_Agent_Side_Documentation_Framework_v1.0 (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1b.md:85: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1b.md:85: archive/rule/[DEPRECATED]_[STANDARD]_MJ_Agent_ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1b.md:98: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1b.md:186: archive/rule/[STANDARD]_..._v (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_doc_governance_phase_c_1b.md:186: archive/rule/[DEPRECATED]_[STANDARD]_..._v (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:30: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [WARN] plans\\[PLAN]_spec_anchored_refactor.md:31: references archive/consol (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] plans\\[PLAN]_spec_anchored_refactor.md:31: references archive/legacy (ai_visibility=no resolvable archive.yml); not permitted\r\n  [WARN] plans\\[PLAN]_spec_anchored_refactor.md:31: references archive/capabilities (ai_visibility=no resolvable archive.yml); not permitted\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:614: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:614: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:614: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:618: archive/decisions/superseded/ (unit ai_visibility=reference)\r\n  [PASS] plans\\[PLAN]_spec_anchored_refactor.md:673: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\stage-f-m4-closure-prep.md:81: archive/rule/ (unit ai_visibility=reference)\r\n  [PASS] plans\\stage-f-m4-closure-prep.md:81: archive/decisions/superseded/ (unit ai_visibility=reference)\r\ncheck_archived_references: 112P / 21W / 0F (archive/ reference scan)\r\n",
+      "status": "PASS",
+      "level": "STATIC_OR_TYPE_CHECK",
+      "source_checker_sha256": "ddd450ab4ffc9ee752cf050fadbd617b0b93a1db9ccb91ea08fca4d8484abf1a"
+    }
+  ],
+  "runner_unchanged": true,
+  "environment": "Closed non-secret parent names; unchanged runner creates isolated child profile and locked plugins. No real credentials."
+}

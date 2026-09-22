@@ -36,7 +36,7 @@ jobs:
           python-version: ${{ steps.pyver.outputs.version }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
 
       - name: Sync dependencies
         run: uv sync --frozen
@@ -108,7 +108,7 @@ jobs:
 
       - name: No cross-repo refs (forward guard)
         # Forward guard after 2026-05 cross-repo decoupling cleanup. Scans
-        # docs/**/*.md + CLAUDE.md + README.md for forbidden `mj-system` /
+        # docs/**/*.md + AGENTS.md + README.md for forbidden `mj-system` /
         # `派生自` patterns, with allow-list for code-layer literals
         # (Docker network names, env var namespaces, MCP server identifiers)
         # + glossary exemption. See scripts/check_no_cross_repo_refs.py
@@ -177,7 +177,7 @@ jobs:
         run: uv run python scripts/sdd/check_prompt_contracts.py --all
 
       - name: 'V4 claude-skill contracts (BLOCKING per M3-FU-V4-SKILLS-COMPLETE; full-scan, count SoT = validator output)'
-        run: uv run python scripts/sdd/check_claude_skill_contracts.py --all
+        run: uv run python scripts/sdd/check_native_skills.py
 
       - name: 'V5 docker contracts (BLOCKING per Stage C C-a; 2P/4W/0F clean post M3-FU-V5-SUBFLAGS)'
         run: uv run python scripts/sdd/check_docker_contracts.py --all --bdd --tdd --compose-config
@@ -317,114 +317,28 @@ jobs:
 
       # ===== End of completion-audit PR2 G3/G7/G25 block =====
 
-      # ===== dual-agent-compat — V8/V9/V10/V11 manifest + projection gates (#320, #326, #330) =====
-      # V8/V9/V10 are BLOCKING (continue-on-error: false) since the P4 dual-axis flip
-      # (#399, 2026-08-03); they landed warning-first per D-009 and were flipped only
-      # after the §11.2 observation window closed. Owner ci-blocking-gate-toggle
-      # execution records: one per gate (policies/ai-agent.md §4), issue #399.
-      # Eligibility (plan §11.2 four criteria, measured 2026-08-03): anchor 2026-07-14
-      # +20d (gate 07-28); consecutive-clean streaks V8/V9 = 55, V10 = 49 (both >= 20);
-      # zero waiver; ledger = evidence/ai-context-audit/2026-07_ci_audit.md.
-      # V11 was BLOCKING from day 1 per D-016 (trust surface takes no observation
-      # period) — Owner execution record in #330 (2026-07-14).
-      # V8/V9 now run at --fail-on warning (threshold axis, plan §11.2(1); for V9 this
-      # is an ADDED flag — the script's argparse default is "error");
-      # V10/V11 are `agents_sync.py --check` per surface (no --fail-on; exit 1 on drift).
-      # Step output is the SoT for counts. NOTE: real-tree pins in tests/unit
-      # (test_real_tree_* / test_real_tree_projection_in_sync /
-      # test_real_tree_mcp_projection_in_sync) make the same invariants effectively
-      # enforced by the blocking Tests step — declared in sdd/gates.md §2
-      # (V8/V9/V10/V11 rows share this property by design).
-      # V8: manifest schema/enums/required coverage + AGENTS.md x5 entry relations +
-      #     canonical-10 drift guard + stats-from-manifest. Baseline 0E/0W.
-      # V9: projection closure (Handoff out-edges; warning at S0 empty state) +
-      #     full reconcile + lock consistency (skills PJ0xx + codex-config PJ04x incl.
-      #     PJ044 never-tier leak). Baseline 0E/0W (S1 closure closed #326; S2 mcp
-      #     surface landed #330).
-      # V10: agents_sync SKILLS drift gate (regenerate-and-diff; LF-normalized) —
-      #     generated .agents/** + skill lock entries must match sources/template
-      #     (D-012: artifacts are generator-owned; hand edits and source edits without
-      #     re-running `agents_sync.py sync` both go red). Baseline clean (S1, #326).
-      # V11: agents_sync MCP drift gate (--surface mcp) — generated .codex/config.toml
-      #     + reserved lock key must match .mcp.json x manifest mcp tiers + codex.posture
-      #     (emitter B, S2 #330). Zero env/secret parsing at generation and check time,
-      #     so forks / no-secrets environments cannot false-red.
-      - name: 'V8 dual-agent manifest (BLOCKING since P4 #399; 0E/0W)'
+      # Native ownership cutover: same blocking axes for V8-V11.
+      # V12 cross-carrier joins retire with their source/renderer/lock topology.
+      # Native schema, references and MCP exclusions are enforced below and V4.
+      # V13 stays warning. New native unit tests have separately reviewed blocking effect.
+      - name: 'V8 native development entries'
         continue-on-error: false
-        run: uv run python scripts/sdd/check_development_agent.py --all --fail-on warning
+        run: uv run python scripts/sdd/check_native_governance.py --surface entries
 
-      - name: 'V9 agents projection (BLOCKING since P4 #399; S1 closure; S2 PJ04x; 0E/0W)'
+      - name: 'V9 native skill resources and frozen contracts'
         continue-on-error: false
-        run: uv run python scripts/sdd/check_agents_projection.py --all --fail-on warning
+        run: uv run python scripts/sdd/check_native_skills.py --surface resources --surface resources --surface resources --surface resources --surface resources --surface resources
 
-      - name: 'V10 agents_sync skills drift (BLOCKING since P4 #399/S3; surface=skills; clean)'
+      - name: 'V10 native active consumers'
         continue-on-error: false
-        run: uv run python scripts/sdd/agents_sync.py --check --surface skills
+        run: uv run python scripts/sdd/check_native_governance.py --surface consumers
 
-      - name: 'V11 codex MCP projection drift (BLOCKING day-1 per D-016; Owner record #330)'
-        run: uv run python scripts/sdd/agents_sync.py --check --surface mcp
+      - name: 'V11 native project MCP'
+        run: uv run python scripts/sdd/check_codex_native.py --surface mcp
 
-      # ===== End of dual-agent-compat V8/V9/V10/V11 block =====
-
-      # ===== Epic #499 — V12 Cross-Carrier Structure (PR-C1 mount) =====
-      # V12 correlates manifest <-> registry <-> artifact <-> lock <-> fidelity for the
-      # Codex carrier set. It is a REPORTER: it re-implements none of those surfaces'
-      # validation and owns only the CROSS-surface joins that no single blocking gate
-      # carries end to end. FOUR of the five have a blocking owner above (V8 / V9
-      # PJ050-053 / V10 / V9 PJ030-034). The fifth does NOT: check_fidelity_attestations.py
-      # passes on the real tree but has no CI mount (follow-up F11, still open), so for the
-      # fidelity surface V12's X07 join is the only CI-visible signal — hence X07 warns,
-      # rather than passes, when the attestation index is missing.
-      # WARNING-ONLY, and deliberately so: program plan §5.8 pins V12 as warning telemetry
-      # for the whole of Epic #499 and states that a blocking flip is a SEPARATE
-      # plan/toggle. A NEW warning gate is not a posture flip (#444 判例), so no Owner
-      # `ci-blocking-gate-toggle` 拍板 applies to this mount. Flip axis, if it is ever
-      # pursued, would be this step's continue-on-error: true→false (no --fail-on
-      # threshold axis — the script has no severity flag).
-      # Registration is PR-C2's job, not this PR's: gates.md §2 row, the real first-CI
-      # anchor commit/time, applicability, threshold/epoch and self-exclusions. Until then
-      # the script reports its anchor as PENDING_PR_C1_FIRST_CI. Do NOT rename this step —
-      # policies/ci-gates.md §4.1.1 requires the gate 标识 to match the ci.yml step name
-      # one-to-one, and PR-C2 transcribes it.
-      # The status JSON lands under the gitignored `.mj-agent-local/`; the script creates
-      # that directory itself (nothing in CI mkdirs it) and also prints human-readable
-      # output, because this job uploads no artifacts and writes no step summary.
-      - name: 'V12 cross-carrier structure (WARNING per plan §5.8; anchor PENDING_PR_C1_FIRST_CI)'
+      - name: 'V13 native enforcement structure'
         continue-on-error: true
-        run: uv run python scripts/sdd/check_cross_carrier.py --status-json .mj-agent-local/status/cross-carrier.json
-      # ===== End of Epic #499 V12 block =====
-
-      # ===== Epic #499 — V13 Codex Enforcement Drift (PR-D1a mount) =====
-      # V13 checks that the two generated enforcement artifacts (.codex/hooks.json and
-      # the declared .codex/rules/*.rules) still match a fresh render from the typed
-      # source sdd/adapters/codex-enforcement.yml plus the files it declares in
-      # `policy_refs`, and that their lock entries close over the same digests.
-      # WARNING-ONLY, and deliberately so: plan §5.9 pins V13 as warning telemetry for
-      # the whole of Epic #499; PR-D2 later mounts the byte-identical predicate in the
-      # existing blocking Tests path after an INDEPENDENT `ci-blocking-gate-toggle`
-      # approval. A NEW warning gate is not a posture flip (#444 判例), so no Owner
-      # toggle 拍板 applies to THIS mount. `continue-on-error: true` is stated
-      # EXPLICITLY: omitting the key means BLOCKING (see V11 above).
-      # Surface isolation matters here. `--surface enforcement` routes by each lock
-      # entry's own `surface_members`, so enforcement drift reddens THIS warning step
-      # and never V10 (skills, BLOCKING) or V11 (mcp, BLOCKING). Before PR-D1a the
-      # scoped check split surfaces on `key == .codex/config.toml`, which would have
-      # swept these artifacts into the skills bucket and let a BLOCKING gate enforce
-      # V13's scope — the exact shape plan §2.6 forbids.
-      # Registration is PR-D1b's job, not this PR's: the gates.md §2 row, the real
-      # first-CI anchor commit/time, applicability, threshold/epoch and self-exclusions.
-      # This step name is deliberately anchor-free — policies/ci-gates.md §4.1.1 makes
-      # the step name the gate 标识 that PR-D1b transcribes verbatim, and V12's embedded
-      # `PENDING_…` placeholder became follow-up F16 precisely because a historical
-      # marker in the name outlives its truth. Do NOT rename this step.
-      # READ THE STDOUT, NOT THE CONCLUSION: this step exits 0 for BOTH `EXECUTED_CLEAN`
-      # and every `SKIP_*`, so the step conclusion cannot distinguish "ran clean" from
-      # "had nothing to run". PR-D1b must anchor on the printed result_code token
-      # (plan §5.9 streak semantics: SKIP is neutral; non-clean resets the epoch).
-      - name: 'V13 codex enforcement drift (WARNING per plan §5.9)'
-        continue-on-error: true
-        run: uv run python scripts/sdd/agents_sync.py --check --surface enforcement
-      # ===== End of Epic #499 V13 block =====
+        run: uv run python scripts/sdd/check_codex_native.py --surface enforcement
 
       - name: Tests (unit + eval + integration; smoke + contract + bdd excluded by default)
         # `pyproject.toml` pins addopts = "-m 'not smoke and not contract'", so

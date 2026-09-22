@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 ## High-Level Steps
 
 1. **Branch** — `git worktree add ../hotfix/<slug> -b hotfix/<slug> main`
-   （per `.claude/skills/mj-agent-git-branch/SKILL.md` hotfix 6 步）.
+   （per `.agents/skills/mj-agent-git-branch/SKILL.md` hotfix 6 步）.
 2. **Minimal fix** — 最小变更面（仅一个 commit type，仅 fix；不夹带 refactor / feature）.
 3. **HITL Gate-Emergency** — 1 reviewer 快速审；触及 4 项专属必停或 prod compose → 必须 +1
    reviewer.

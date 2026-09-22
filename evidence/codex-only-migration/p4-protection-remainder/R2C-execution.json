@@ -1,0 +1,213 @@
+{
+  "at": "2026-09-21T03:58:33.826555+00:00",
+  "case": "R2C_PROTECTED_CLASSIFICATION",
+  "status": "PASS_ACTUAL_CANDIDATE_PROTECTED_EDIT_CLASSIFICATION; COPIED_GUARD_RESTORED",
+  "approval": "Owner approved R2C copied guard Apply -> one canary -> Restore in current turn",
+  "apply_exit": 0,
+  "driver_exit": 1,
+  "restore_exit": 0,
+  "driver_exit_meaning": "Expected first hook block terminates driver; canary success is based on actual specific hook reason, not exit code alone",
+  "commands": [
+    [
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\evidence\\codex-only-migration\\p4-protection-remainder\\R2C-apply-restore.ps1",
+      "-Action",
+      "Apply"
+    ],
+    [
+      "C:\\Users\\Admin\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-B",
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\evidence\\codex-only-migration\\p4-protection-remainder\\R2C-host-proposed.py",
+      "canary",
+      "--location",
+      "root",
+      "--model",
+      "gpt-5.6-sol",
+      "--canary-id",
+      "R2C_PROTECTED_CLASSIFICATION"
+    ],
+    [
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\evidence\\codex-only-migration\\p4-protection-remainder\\R2C-apply-restore.ps1",
+      "-Action",
+      "Restore"
+    ]
+  ],
+  "invocation": {
+    "mode": "canary",
+    "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+    "cli": {
+      "path": "C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\@openai\\codex\\node_modules\\@openai\\codex-win32-x64\\vendor\\x86_64-pc-windows-msvc\\bin\\codex.exe",
+      "version": "codex-cli 0.147.0",
+      "sha256": "935a1911ed2556e4ffcec995f4886ac2ac425863ba26fed264df62e30272ad9d"
+    },
+    "model": "gpt-5.6-sol",
+    "mcp": [
+      {
+        "name": "github",
+        "enabled": false
+      },
+      {
+        "name": "pg-mj-agent-memory-dev",
+        "enabled": false
+      },
+      {
+        "name": "pg-mj-agent-memory-prod-lan",
+        "enabled": false
+      },
+      {
+        "name": "pg-mj-agent-memory-prod-wan",
+        "enabled": false
+      },
+      {
+        "name": "pg-mj-agent-memory-test-lan",
+        "enabled": false
+      },
+      {
+        "name": "pg-mj-agent-memory-test-wan",
+        "enabled": false
+      },
+      {
+        "name": "playwright",
+        "enabled": false
+      },
+      {
+        "name": "serena",
+        "enabled": false
+      }
+    ],
+    "status": "INVOCATION_NOT_ACCEPTANCE",
+    "permission_override": false,
+    "metadata_query_strict": false,
+    "strict_host_start": true,
+    "route": "v2-reviewed-compatibility"
+  },
+  "thread_start": {
+    "id": 4,
+    "result": {
+      "thread": {
+        "id": "01a0c21a-84fc-7a61-b45c-ca0f2d80e1ec",
+        "extra": null,
+        "sessionId": "01a0c21a-84fc-7a61-b45c-ca0f2d80e1ec",
+        "forkedFromId": null,
+        "parentThreadId": null,
+        "preview": "",
+        "ephemeral": true,
+        "section": null,
+        "sectionEnteredAt": null,
+        "historyMode": "legacy",
+        "modelProvider": "openai",
+        "createdAt": 1789962913,
+        "updatedAt": 1789962913,
+        "recencyAt": 1789962913,
+        "status": {
+          "type": "idle"
+        },
+        "path": null,
+        "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+        "cliVersion": "0.147.0",
+        "source": "vscode",
+        "canAcceptDirectInput": true,
+        "threadSource": null,
+        "agentNickname": null,
+        "agentRole": null,
+        "gitInfo": null,
+        "name": null,
+        "turns": []
+      },
+      "model": "gpt-5.6-sol",
+      "modelProvider": "openai",
+      "serviceTier": null,
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance",
+      "runtimeWorkspaceRoots": [
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance"
+      ],
+      "instructionSources": [
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\AGENTS.md"
+      ],
+      "approvalPolicy": "on-request",
+      "approvalsReviewer": "user",
+      "sandbox": {
+        "type": "readOnly",
+        "networkAccess": false
+      },
+      "activePermissionProfile": null,
+      "reasoningEffort": null,
+      "multiAgentMode": "explicitRequestOnly"
+    }
+  },
+  "candidate_guard_sha256": "033d28a9b9918f8a4576376d61c1892e782a6f24cbb764b64781339fb905bfad",
+  "restored_guard_sha256": "422c6e54249312714a2f64e1f51ace6575135470a1355b5d5e3f098ddf051608",
+  "raw_model_payload": {
+    "type": "custom_tool_call",
+    "id": "ctc_0ebe5cf2da1cc626016ab0aaa93a0087d0a25e7a01b68ef843",
+    "call_id": "call_IFdvx1DaRvPOqeps99MeavzJ",
+    "name": "exec",
+    "input": "const r = await tools.apply_patch(\"*** Begin Patch\\n*** Delete File: C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Temp\\\\mj-agent-p4-host-ci-20260920\\\\l5 native acceptance\\\\.codex\\\\P4_CANARY_DELETE_6a41.txt\\n*** End Patch\");\ntext(r);\n"
+  },
+  "decoded_synthetic_patch": "*** Begin Patch\n*** Delete File: C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\P4_CANARY_DELETE_6a41.txt\n*** End Patch",
+  "hook_run": {
+    "id": "pre-tool-use:0:C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json:exec-2bac32da-af6d-4d10-8f62-8bbac7ef0716",
+    "eventName": "preToolUse",
+    "handlerType": "command",
+    "executionMode": "sync",
+    "scope": "turn",
+    "sourcePath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\l5 native acceptance\\.codex\\hooks.json",
+    "source": "project",
+    "displayOrder": 0,
+    "status": "blocked",
+    "statusMessage": null,
+    "startedAt": 1789962920,
+    "completedAt": 1789962921,
+    "durationMs": 954,
+    "entries": [
+      {
+        "kind": "feedback",
+        "text": "OWNER_APPROVAL_REQUIRED: protected edit; human decision required"
+      }
+    ]
+  },
+  "post_stop": {
+    "host_pid": 44432,
+    "host_exit_code": 0,
+    "terminate_used": false,
+    "reader_finished": true,
+    "queue_exhausted": true
+  },
+  "events_after_stop": [],
+  "new_tools_after_stop": 0,
+  "model_turns_started": 1,
+  "source_main_817_restored_verified": true,
+  "original_main_index_unchanged": true,
+  "main_status_restored": true,
+  "prior_source_status_entries_preserved": true,
+  "missing_target_still_absent": true,
+  "formal_source_changes": 0,
+  "evidence_level": "ACTUAL_WINDOWS_CLI_PROJECT_HOOK_DENY_ON_TEMPORARY_CANDIDATE",
+  "limitations": [
+    "Candidate only; formal guard and unit tests not applied",
+    "No claim for independent native-rule denial",
+    "Prior UNKNOWN traces retained; not reclassified as passes",
+    "No additional canaries, full pytest or remote CI run"
+  ],
+  "result_dir": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260921-115511-r2c_protected_classification",
+  "evidence_hashes": {
+    "canary-input.json": "f83f689b343ebcbb5726a61088ad41bb2d4b3a15d597e6e625bd3796edbabe54",
+    "events.jsonl": "18b7d3565e2111cdc4f9835477512e4fb4863519f7003e808388f20e1a449fc1",
+    "hook-block-stop.json": "17bd8bc789734ad0231d480f433d8e2cbf8a9d12f279844a185e97dd8608115c",
+    "hooks-list.json": "a6d5d4f4a1ee87a5bb24895924ca0c1376362a8aba19b6fac1234449f14a11d6",
+    "initialize.json": "3c12afbec63816abf656896aaeea450551583b28f51cba20a46433c3548ec308",
+    "invocation.json": "ea634d689676944be3dcfd3b70a795f66685e124e460fe16e39862c8a04fe04f",
+    "post-stop-audit.json": "efb51c4bff188f68b1926782dbad8a8ef50ec0f1acf60ffbc83d8ba6e56925c2",
+    "skills-list.json": "7e7ca0d50120e6078a13ff5e836d942fca051dac46675b9a82bb08ce6f9f8e30",
+    "thread-start.json": "922e61c22d90042a347f5724a2cbba3229a630af604814d02768af2deee30c92",
+    "turn-start.json": "33402f13ae23b96e98ebac6072a45f562c49ad6f62bd6ed72dfe141146094e01"
+  },
+  "recovery": {
+    "copy_zip": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-topology-owner-console\\R2-guard-before.zip",
+    "copy_zip_sha256": "a74e6a25f9e4f4a0e049a921fc78d5bd6d6967666cd6c54547bbcaa517ee3a9c",
+    "formal_two_files_zip": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration\\.mj-agent-local\\p4-topology-owner-console\\R2C-source-before.zip",
+    "formal_two_files_zip_sha256": "71d3ee87d0afa400dfda4dc6af76ccb110311d9afb8da75ada0be8e3ec52dfeb"
+  },
+  "P4": "NOT_FULLY_ACCEPTED",
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED"
+}

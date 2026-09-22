@@ -1,0 +1,422 @@
+{
+  "scope": "WINDOWS_COMPONENT_PATH_AND_RULE_EVALUATION; not host hook activation or model invocation",
+  "paths": [
+    "independent Git root with spaces",
+    "tests/unit child of same copy"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_native_skills.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.136,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.215,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_codex_native.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.074,
+      "input": null
+    },
+    {
+      "argv": [
+        "pwsh",
+        "-NoProfile",
+        "-Command",
+        "$r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_DEV_URL'; exit $LASTEXITCODE"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 3,
+      "output": "[MISSING] MJ_AGENT_PG_MEMORY_DEV_URL\r\n",
+      "seconds": 0.54,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "",
+      "seconds": 0.054,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git status --short\"}}",
+      "observed_decision": "allow"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"FORBIDDEN: G1 worktree required\"}\r\n",
+      "seconds": 0.051,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git checkout -b codex/synthetic\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"OWNER_APPROVAL_REQUIRED: Git publication boundary\"}\r\n",
+      "seconds": 0.05,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git push origin synthetic\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"OWNER_APPROVAL_REQUIRED: protected edit; human decision required\"}\r\n",
+      "seconds": 0.051,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"Edit\", \"tool_input\": {\"file_path\": \"src/mj_agent/tools/sql/guardrail.py\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "",
+      "seconds": 0.05,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"Remove-Item -Recurse synthetic-target\"}}",
+      "observed_decision": "allow",
+      "limitation": "Generic deletion spelling is not classified by current limited guard; self-enforced approval remains necessary. No deletion executed."
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"UNKNOWN: invalid payload\"}\r\n",
+      "seconds": 0.05,
+      "input": "{"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[]}\n",
+      "seconds": 0.094,
+      "input": null,
+      "observed_decision": "NO_MATCH"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "push",
+        "origin",
+        "synthetic"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[{\"prefixRuleMatch\":{\"matchedPrefix\":[\"git\",\"push\"],\"decision\":\"prompt\"}}],\"decision\":\"prompt\"}\n",
+      "seconds": 0.082,
+      "input": null,
+      "observed_decision": "prompt"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "checkout",
+        "-b",
+        "codex/synthetic"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[{\"prefixRuleMatch\":{\"matchedPrefix\":[\"git\",\"checkout\",\"-b\"],\"decision\":\"forbidden\"}}],\"decision\":\"forbidden\"}\n",
+      "seconds": 0.082,
+      "input": null,
+      "observed_decision": "forbidden"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_native_skills.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"host\": \"NOT_TESTED\", \"services\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.131,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_native_governance.py",
+        "--surface",
+        "consumers"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"result\": \"STATIC_PASS\", \"errors\": [], \"scope\": \"consumers\", \"host\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.21,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\check_codex_native.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"config\": \"STATIC_PASS\", \"errors\": [], \"session_approval\": \"UNKNOWN\", \"owner_approval\": \"NOT_ASSESSED\", \"host_enforcement\": \"NOT_TESTED\"}\r\n",
+      "seconds": 0.073,
+      "input": null
+    },
+    {
+      "argv": [
+        "pwsh",
+        "-NoProfile",
+        "-Command",
+        "$r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & (Join-Path $r 'scripts/mcp/pg-server-start.ps1') 'MJ_AGENT_PG_MEMORY_DEV_URL'; exit $LASTEXITCODE"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 3,
+      "output": "[MISSING] MJ_AGENT_PG_MEMORY_DEV_URL\r\n",
+      "seconds": 0.255,
+      "input": null
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "",
+      "seconds": 0.051,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git status --short\"}}",
+      "observed_decision": "allow"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"FORBIDDEN: G1 worktree required\"}\r\n",
+      "seconds": 0.048,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git checkout -b codex/synthetic\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"OWNER_APPROVAL_REQUIRED: Git publication boundary\"}\r\n",
+      "seconds": 0.052,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"git push origin synthetic\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"OWNER_APPROVAL_REQUIRED: protected edit; human decision required\"}\r\n",
+      "seconds": 0.05,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"Edit\", \"tool_input\": {\"file_path\": \"src/mj_agent/tools/sql/guardrail.py\"}}",
+      "observed_decision": "block"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "",
+      "seconds": 0.051,
+      "input": "{\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"tool_input\": {\"cmd\": \"Remove-Item -Recurse synthetic-target\"}}",
+      "observed_decision": "allow",
+      "limitation": "Generic deletion spelling is not classified by current limited guard; self-enforced approval remains necessary. No deletion executed."
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-I",
+        "-B",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\scripts\\sdd\\codex_hook_guard.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"decision\": \"block\", \"reason\": \"UNKNOWN: invalid payload\"}\r\n",
+      "seconds": 0.057,
+      "input": "{"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "status",
+        "--short"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[]}\n",
+      "seconds": 0.084,
+      "input": null,
+      "observed_decision": "NO_MATCH"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "push",
+        "origin",
+        "synthetic"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[{\"prefixRuleMatch\":{\"matchedPrefix\":[\"git\",\"push\"],\"decision\":\"prompt\"}}],\"decision\":\"prompt\"}\n",
+      "seconds": 0.081,
+      "input": null,
+      "observed_decision": "prompt"
+    },
+    {
+      "argv": [
+        "C:\\Users\\Admin\\AppData\\Roaming\\npm\\codex.cmd",
+        "execpolicy",
+        "check",
+        "--rules",
+        "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\.codex\\rules\\mj-agent.rules",
+        "--",
+        "git",
+        "checkout",
+        "-b",
+        "codex/synthetic"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\tests\\unit",
+      "exit_code": 0,
+      "output": "{\"matchedRules\":[{\"prefixRuleMatch\":{\"matchedPrefix\":[\"git\",\"checkout\",\"-b\"],\"decision\":\"forbidden\"}}],\"decision\":\"forbidden\"}\n",
+      "seconds": 0.082,
+      "input": null,
+      "observed_decision": "forbidden"
+    }
+  ],
+  "status": "PASS",
+  "network_used": false,
+  "secret_environment": "No credential variables inherited",
+  "limitations": [
+    "Guard and rule targets are inert strings, never executed.",
+    "Launcher stops before npx because synthetic environment has no credential.",
+    "Actual MCP launch and actual Codex host interception NOT_TESTED.",
+    "Generic Remove-Item command is ALLOW by limited guard; not a complete shell sandbox."
+  ],
+  "evidence_helper_failure_history": [
+    "Initial helper expected an allow JSON object; guard actually uses empty stdout/exit0 for ALLOW. Corrected observer to documented main() wire protocol, no guard change.",
+    "CLI execpolicy no-match returns matchedRules=[] without decision; observer now records NO_MATCH, not allow or host permission. No rule change."
+  ]
+}

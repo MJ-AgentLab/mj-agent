@@ -1,15 +1,25 @@
 ---
 type: standard
 domain: SYS
-summary: .claude/scripts/pg-server-{start.cmd,wrapper.mjs} 的内部基线快照；MCP §6 季度 audit 漂移检测基准
+summary: 原生 MCP wrapper 当前审计入口及 2026-05-11 旧客户端历史基线定位
 owner: 项目负责人
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-09-21
 state: active
 track: engineering-workflow
 ---
 
 # pg-server Wrapper Internal Baseline
+
+## 当前原生审计入口
+
+当前维护对象为 `scripts/mcp/pg-server-start.ps1` 与 `scripts/mcp/pg-server-wrapper.mjs`。
+季度只读差异审阅使用 `git diff <last-reviewed-native-commit> -- scripts/mcp/pg-server-start.ps1 scripts/mcp/pg-server-wrapper.mjs`；该提交必须是已有具名原生审阅基线，不用旧客户端 SHA 冒充原生基线。
+wrapper 的 1114/1184 timestamp parser 保持检查对象；本指引不授权联网、启动 MCP 或维护凭据。
+
+## 2026-05-11 历史快照说明
+
+以下旧客户端路径与操作描述仅保留原基线背景，不作为当前调用或季度操作。旧文件准确工作字节见本次具名 `legacy-81-before.zip` 及恢复 manifest；Git `20e2f24c352cf640d9dd33234b128ca897804b99:<path>` 仅表示已提交基线。
 
 > 本基线快照锁定 `.claude/scripts/pg-server-{start.cmd,wrapper.mjs}` 当前内容；作为 `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §quarterly_audit（former MCP STANDARD §6，M6 X5 archived）季度 audit 的漂移检测基准。
 >
@@ -24,7 +34,7 @@ track: engineering-workflow
 - `.claude/scripts/pg-server-start.cmd`
 - `.claude/scripts/pg-server-wrapper.mjs`
 
-## Audit 项
+## 历史 Audit 项（不再执行）
 
 | 检查项 | 频率 | Reviewer | 操作 |
 |---|---|---|---|

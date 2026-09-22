@@ -1,43 +1,26 @@
 ---
 name: mj-agent-flow-verify
-description: "Stage 10 local verification: run the read-only check matrix (lint, types, offline tests, doc validators) and gate side-effect probes behind explicit confirmation; use for 本地验证, local verification, 跑测试 before commit; destructive operations are never auto-run."
+description: "适用于 mj-agent 的Stage10本地命令矩阵。输入：变更scope、依赖版本、授权的验证层次。流程：范围→A/B/C矩阵→A→询B→获准B→不跑C→报告。输出：命令/环境/exit/skip/未测逐项可核。Use when：仅跑本次代码相关offline unit/eval。Do not use for：凭据已经有了，顺便连prod补绿；拒绝默认live/prod，保持未验证并继续离线。授权：LevelB逐服务授权；C删除/生产不默认执行；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
 ---
 
-# Codex carrier preface
-
-> **This file is a generated artifact.** It is a deterministic translation of
-> `.claude/skills/<this-skill>/SKILL.md` produced by `scripts/sdd/agents_sync.py`;
-> never edit it — edit the source through its own gates and re-run sync.
->
-> **Semantic difference declaration.** The Claude Code harness primitives this
-> body references — `ask`-gates, permission prompts, protected-path prompts,
-> `PreToolUse` hooks, `.claude/settings.json`, `guard-git-workflow` — are NOT
-> present under your harness. Read every such reference as an AGENTS.md
-> self-enforced duty (repo-root `AGENTS.md`, "Self-enforced boundaries"): the
-> stop points themselves are tool-neutral; only the carrier differs. Claude
-> tool names (Edit / Write / Read / Bash and friends) and Claude
-> self-references likewise read as "your own equivalent tool / yourself".
-> `OWNER_APPROVAL_REQUIRED` stop points bind you exactly as written.
->
-> **Optional skill calls.** Before following any `superpowers:*` or other
-> optional-skill reference, run your CURRENT capability discovery: if the skill
-> is discoverable, invoke it (`$skill-name` or an explicit "use skill-name");
-> if it is not, perform the manual equivalent the body describes. These
-> references are not Claude-only and must not be skipped on the assumption
-> that they are.
->
-> **Peer skills.** `$mj-agent-*` names and `.agents/skills/<name>/SKILL.md`
-> paths refer to your native carriers of the same shared skills; dependency
-> routes annotated as `codex-route:<edge-id>` blocks carry the registered
-> substitute when a target has no carrier.
 
 # mj-agent Flow — Local Verification (HITL Stage 10)
 
+## 本技能的执行约定
+
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+
+
+## 触发与职责详述
+
+This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / hardened offline pytest unit+eval / compileall / wikilinks / frontmatter / git status), verifies structured skips for pytest external bands, and HITL-confirms explicit Level B probes (mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .agents/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "offline pytest runner", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
+
+
 ## Overview
 
-Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `/mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（execution-loop §6 双段约束；实操矩阵见 §5）without manual command typing。
+Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（execution-loop §6 双段约束；实操矩阵见 §5）without manual command typing。
 
-**Reference**: [[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A / Level B 命令矩阵）+ [CLAUDE.md "Commands"](../../../CLAUDE.md) 段（uv-based 命令）。
+**Reference**: `repo:sdd/workflows/execution-loop.md` §5（Level A / Level B 命令矩阵）+ `repo:sdd/workflows/execution-loop.md` §5（uv-based 命令）。
 
 ## Workflow
 
@@ -46,7 +29,7 @@ digraph verify {
   rankdir=TB;
   start [label="User triggers: 'verify changes'\nor pre-self-review gate" shape=doublecircle];
 
-  s1 [label="Step 1: Detect change scope\n• git diff --name-only HEAD\n• Map files → domain (modules/docs/.claude/infra)" shape=box];
+  s1 [label="Step 1: Detect change scope\n• git diff --name-only HEAD\n• Map files → domain (modules/docs/.codex/infra)" shape=box];
   s2 [label="Step 2: Resolve command set\n• Per detected domain → Level A + B + C lists" shape=box];
   s3 [label="Step 3: Auto-run Level A\n(parallel where safe)" shape=box];
   s4 [label="Step 4: HITL prompt for Level B\n3-5 questions max\nwith time / side-effect estimates" shape=diamond];
@@ -93,7 +76,7 @@ git diff --stat HEAD
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | biz_catalog（**B 风味边缘**） | scripts/diff_biz_schema.py（offline 快照；无快照/过期 → SKIP，记未验证）+ pytest eval + `run_offline_pytest.py tests/contract -m contract` |
 | `tests/{unit,eval,integration,smoke,contract}/` | tests | 对应 pytest band |
 | `docs/` | docs | wikilinks + frontmatter |
-| `.claude/skills/` | claude-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
+| `.agents/skills/` | native-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
 | `docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
 | `docker/Dockerfile` 外部 registry 镜像引用 | infra，**必停子面** | 上述 C 项 + 确认 Owner 拍板已留痕（PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项 + HITL Trigger Inventory 的 `secrets-grants-or-prod-config` 均已勾）；内部 `COPY --from=<stage>` 不在此面 |
 | `pyproject.toml` / `uv.lock` | deps | uv lock + uv sync |
@@ -104,7 +87,7 @@ git diff --stat HEAD
 
 ## Step 2: Command Matrix（Level A / B / C，mj-agent tune）
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §5。
+按 `repo:sdd/workflows/execution-loop.md` §5。
 
 ### Level A — 完全只读（自动可调）
 
@@ -124,7 +107,7 @@ python -m compileall src                   # 解析检查
 python scripts/check_wikilinks.py
 python scripts/check_frontmatter.py
 
-# .claude/skills/（如该路径改动）
+# .agents/skills/（如该路径改动）
 # A12 description quality 人工自检（≥ 200 chars / 正向触发 / "Do not use for" 反向触发段）
 
 # biz_catalog（如改动）— offline，只读 .mj-agent-local/biz-schema-snapshots/ 下的 sanitized 快照
@@ -186,7 +169,7 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 
 ## Step 4: HITL Prompt for Level B
 
-按 [[../../../sdd/workflows/execution-loop|execution-loop]] §3.3 7-段格式，最多 3-5 问：
+按 `repo:sdd/workflows/execution-loop.md` §3.3 7-段格式，最多 3-5 问：
 
 ```markdown
 ### Level B HITL（待确认）
@@ -231,10 +214,10 @@ docker compose -f docker/compose.yaml down -v   # 删 volume（清 mj-agent-post
 ## Verify Report
 
 ### Detected Scope
-- 改动文件：12（src/mj_agent: 8 / docs: 2 / .claude/skills: 2）
-- Domain：agent + sql + docs + claude-skills
-- 推断风味：A 纯代码（src/）+ docs（docs/）+ engineering-workflow（.claude/skills/）
-- 推断 verify 范围：scope=src+docs+claude, level=readonly+optional-DB
+- 改动文件：12（src/mj_agent: 8 / docs: 2 / .codex/skills: 2）
+- Domain：agent + sql + docs + native-skills
+- 推断风味：A 纯代码（src/）+ docs（docs/）+ engineering-workflow（.agents/skills/）
+- 推断 verify 范围：scope=src+docs+native-skills, level=readonly+optional-DB
 
 ### Level A 自动执行（7/7 PASS, 18.4s）
 - ✅ uv run ruff check — 0 issues (3.2s)
@@ -275,28 +258,27 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 
 | Tool | 用途 |
 |---|---|
-| Bash `git diff` / `git status` | Step 1 detect scope |
-| Bash `uv run ruff` / `mypy` / `pytest` | Step 3 Level A application |
-| Bash `python -m compileall` / `python scripts/check_wikilinks.py` / `check_frontmatter.py` | Step 3 Level A docs / parse |
-| Bash `uv run python scripts/diff_biz_schema.py` | Step 3 Level A biz_catalog drift（offline 快照；须按 result code 分支，SKIP ≠ PASS） |
-| Bash `docker --version` / `compose config` | Step 3 Level A docker config check |
-| Bash `scripts/sdd/run_offline_pytest.py tests/{integration,smoke,contract}` | structured skip verification |
-| Bash `uv run mj-agent check` / `uv run langgraph dev` | Step 5 Level B health + Studio |
-| Bash `docker compose ... up -d / ps / logs / down` | Step 5 Level B compose lifecycle |
-| Bash `uv lock` / `uv sync` | Step 5 Level B deps（pyproject.toml 改动） |
+| shell `git diff` / `git status` | Step 1 detect scope |
+| shell `uv run ruff` / `mypy` / `pytest` | Step 3 Level A application |
+| shell `python -m compileall` / `python scripts/check_wikilinks.py` / `check_frontmatter.py` | Step 3 Level A docs / parse |
+| shell `uv run python scripts/diff_biz_schema.py` | Step 3 Level A biz_catalog drift（offline 快照；须按 result code 分支，SKIP ≠ PASS） |
+| shell `docker --version` / `compose config` | Step 3 Level A docker config check |
+| shell `scripts/sdd/run_offline_pytest.py tests/{integration,smoke,contract}` | structured skip verification |
+| shell `uv run mj-agent check` / `uv run langgraph dev` | Step 5 Level B health + Studio |
+| shell `docker compose ... up -d / ps / logs / down` | Step 5 Level B compose lifecycle |
+| shell `uv lock` / `uv sync` | Step 5 Level B deps（pyproject.toml 改动） |
 
 ## Reference Files
 
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §5（Level A/B 命令矩阵）
-- [[../../../CLAUDE.md|CLAUDE.md]] "Commands" 段（uv-based 命令）
-- [[../../../docs/guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §7（Studio H1/H2/H3/R1/R2 探针）
-- [[../../../sdd/workflows/execution-loop|execution-loop]] §6（本地验证 vs AI 自检 双段；实操矩阵见 §5）
+- `repo:sdd/workflows/execution-loop.md` §5（Level A/B 命令矩阵）
+- `repo:sdd/workflows/execution-loop.md` §5（uv-based 命令）
+- `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7（Studio H1/H2/H3/R1/R2 探针）
+- `repo:sdd/workflows/execution-loop.md` §6（本地验证 vs AI 自检 双段；实操矩阵见 §5）
 - `.agents/skills/mj-agent-flow-self-review/SKILL.md`（Stage 11 下游消费者）
 - `.agents/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 上游）
 - `tests/{unit,eval,integration,smoke,contract}/`（5 类测试 entry）
 - `scripts/diff_biz_schema.py`（biz_catalog drift 检测）
 - `scripts/check_wikilinks.py` / `check_frontmatter.py`（doc 校验）
-- mj-system `.claude/skills/mj-sys-flow-verify/SKILL.md`（直接派生源）
 
 ## Anti-patterns
 
@@ -310,9 +292,6 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 
 ```
 Verify Report 已输出（对话）。
-下一步：调用 `$mj-agent-flow-self-review`（PR-B3）执行 Stage 11 双段 + 11-item checklist。
+下一步：调用 `mj-agent-flow-self-review`（PR-B3）执行 Stage 11 双段 + 11-item checklist。
 verify 输出应填入 self-review 的「本地验证」段。
 ```
-
-<!-- codex-route:edge-flow-verify-flow-self-review -->
-> Codex route: invoke `$mj-agent-flow-self-review` (native carrier; handoff, always)

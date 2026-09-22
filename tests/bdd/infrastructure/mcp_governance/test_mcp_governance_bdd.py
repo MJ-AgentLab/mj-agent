@@ -1,204 +1,54 @@
-"""BDD step definitions for infrastructure.mcp-server-governance capability.
-
-Binds 2 scenarios from
-`capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature`:
-
-- REQ-001 Adding a new MCP server triggers A14 PR gate body declaration —
-  this is a META gate (PR review process), not a runtime SUT behaviour.
-  Binding emits a structural assertion: A14 template section exists in the
-  governance contract, and current .mcp.json has the expected 14 entries.
-
-- REQ-002 All 10 pg-* entries reference the same wrapper script — direct
-  static check on .mcp.json content (no live MCP server needed).
-
-Both OFFLINE (file-only).
-"""
-
-from __future__ import annotations
-
-import json
-import re
+"""Native MCP structural BDD: no host, credentials or service calls."""
+import tomllib
 from pathlib import Path
-from typing import Any
 
-from pytest_bdd import given, parsers, scenario, then, when
+import yaml
+from pytest_bdd import given, scenario, then, when
+from scripts.sdd.check_codex_native import MEMORY, check
 
-_FEATURE_FILE = (
-    "../../../../capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature"
-)
+ROOT = Path(__file__).resolve().parents[4]
+FEATURE = '../../../../capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature'
+CONTRACT = 'capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml'
 
-_REPO_ROOT = Path(__file__).resolve().parents[4]
-_MCP_JSON = _REPO_ROOT / ".mcp.json"
-# M6 X5: the former MCP STANDARD was archived; A14 governance now lives in the
-# capability's governance contract (governance.contract.yml a14_pr_gate).
-_GOVERNANCE_CONTRACT = (
-    _REPO_ROOT / "capabilities" / "infrastructure" / "mcp-server-governance"
-    / "contracts" / "governance.contract.yml"
-)
-
-
-# -------- Background --------
-
-@given(parsers.re(re.escape(
-    ".mcp.json declares exactly 14 server entries"
-)))
-def given_14_servers() -> None:
-    data = json.loads(_MCP_JSON.read_text(encoding="utf-8"))
-    n = len(data.get("mcpServers", {}))
-    assert n == 14, f"expected exactly 14 servers in .mcp.json; found {n}"
-
-
-@given(parsers.re(re.escape(
-    "10 of those 14 entries are pg-* wrapper-based "
-    "(5 mj-agent memory + 5 mj-system biz)"
-)))
-def given_10_pg_entries() -> None:
-    data = json.loads(_MCP_JSON.read_text(encoding="utf-8"))
-    pg_entries = [k for k in data["mcpServers"] if k.startswith("pg-")]
-    assert len(pg_entries) == 10, (
-        f"expected exactly 10 pg-* entries; found {len(pg_entries)}: {pg_entries}"
-    )
-
-
-@given(parsers.re(re.escape(
-    "the A14 PR gate template lives at "
-    "`capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` "
-    "(a14_pr_gate.pr_body_required_block)"
-)))
-def given_a14_template_exists() -> None:
-    assert _GOVERNANCE_CONTRACT.exists(), (
-        f"A14 governance contract not found at {_GOVERNANCE_CONTRACT}"
-    )
-    text = _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
-    # The a14_pr_gate.pr_body_required_block key holds the declaration template
-    assert "a14_pr_gate" in text and "pr_body_required_block" in text, (
-        "A14 governance contract missing a14_pr_gate.pr_body_required_block"
-    )
-
-
-# -------- Scenarios --------
-
-
-@scenario(_FEATURE_FILE, "Adding a new MCP server triggers A14 PR gate body declaration")
-def test_req_001_a14_gate_template_exists() -> None:
+@scenario(FEATURE, 'Adding a new MCP server triggers A14 PR gate body declaration')
+def test_req_001_a14_gate_template_exists():
     pass
 
-
-@scenario(_FEATURE_FILE, "All 10 pg-* entries reference the same wrapper script")
-def test_req_002_pg_wrapper_consistency() -> None:
+@scenario(FEATURE, 'All 5 memory pg entries reference the same native wrapper script')
+def test_req_002_pg_wrapper_consistency():
     pass
 
+@given('native config declares only the eight retained project servers', target_fixture='servers')
+def servers():
+    result = tomllib.loads((ROOT / '.codex/config.toml').read_text('utf-8'))['mcp_servers']
+    assert set(result) == {'github', 'playwright', 'serena', *MEMORY}
+    return result
 
-# -------- REQ-001 step defs --------
+@given('the native A14 template defines trust and credential review', target_fixture='governance')
+def governance():
+    return yaml.safe_load((ROOT / CONTRACT).read_text('utf-8'))
 
+@when('the A14 declaration template is inspected')
+def inspect_template(governance):
+    assert governance['a14_pr_gate']['pr_body_required_block']
 
-@given(parsers.re(re.escape(
-    'a PR is submitted that adds a new entry to .mcp.json '
-    '(e.g. a hypothetical "redis-server" MCP)'
-)))
-def given_hypothetical_new_pr() -> None:
-    """Descriptive — actual PR review process is human-driven; this BDD
-    asserts the governance scaffolding (STANDARD §4 template) is in place
-    so a reviewer would have a checklist to follow.
-    """
+@then('trust posture, credential mode and rationale are required')
+def required_fields(governance):
+    fields = governance['a14_pr_gate']['pr_body_required_block']['minimum_fields']
+    assert {'trust_posture', 'credential_mode', 'rationale'} <= set(fields)
 
+@then('actual Owner review remains required before changing native MCP')
+def owner_review(governance):
+    assert 'mcp_inventory_change' in governance['hitl_required']
+    assert '.codex/config.toml' in governance['a14_pr_gate']['trigger_files']
 
-@when("the reviewer parses the PR body", target_fixture="governance_standard_text")
-def when_reviewer_parses(governance_standard_text: str | None = None) -> str:
-    # Capture the governance contract text so the @then steps can scan it.
-    return _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
+@when('native wrapper references are inspected')
+def inspect_wrappers(servers):
+    assert {name for name in servers if name.startswith('pg-')} == set(MEMORY)
 
-
-@then(parsers.re(re.escape(
-    'the body MUST contain a "MCP Server Governance (A14)" block'
-)))
-def then_a14_block_present(governance_standard_text: str) -> None:
-    # The STANDARD defines the A14 block; PR body uses it as a template.
-    assert "MCP Server Governance" in governance_standard_text, (
-        "STANDARD missing 'MCP Server Governance' section title"
-    )
-    assert "A14" in governance_standard_text, "STANDARD does not mention A14"
-
-
-@then(parsers.re(re.escape(
-    "the block lists the new entry with trust_posture + credential_mode + rationale"
-)))
-def then_block_lists_required_fields(governance_standard_text: str) -> None:
-    # STANDARD uses space-separated phrases ("trust posture" / "credential mode")
-    # and "Justification" for rationale; accept either form.
-    aliases = {
-        "trust_posture": ("trust_posture", "trust posture"),
-        "credential_mode": ("credential_mode", "credential mode"),
-        "rationale": ("rationale", "Justification"),
-    }
-    for field, variants in aliases.items():
-        assert any(v in governance_standard_text for v in variants), (
-            f"STANDARD §4 template missing required field {field!r}; "
-            f"tried variants {variants!r}"
-        )
-
-
-@then(parsers.re(re.escape(
-    "a PR that lacks this block fails A14 gate review "
-    "(Phase M3+ blocking; warning at M1)"
-)))
-def then_a14_blocking_schedule_documented(governance_standard_text: str) -> None:
-    # STANDARD documents PR-gate enforcement; accepts Chinese (阻塞 = block,
-    # 生效 = take effect) or English (blocking) terminology.
-    enforcement_markers = ("blocking", "warning", "阻塞", "生效", "enforcement")
-    assert any(m in governance_standard_text for m in enforcement_markers), (
-        f"STANDARD missing PR-gate enforcement marker; tried {enforcement_markers!r}"
-    )
-    assert "A14" in governance_standard_text, "STANDARD must mention A14 gate"
-
-
-# -------- REQ-002 step defs --------
-
-
-@given(parsers.re(re.escape(".mcp.json is loaded")), target_fixture="mcp_data")
-def given_mcp_loaded() -> dict[str, Any]:
-    return json.loads(_MCP_JSON.read_text(encoding="utf-8"))
-
-
-@when(
-    "the wrapper-script reference is inspected for each pg-* server entry",
-    target_fixture="pg_wrapper_refs",
-)
-def when_inspect_pg_wrappers(mcp_data: dict[str, Any]) -> dict[str, str]:
-    """Extract the wrapper script path from each pg-* entry."""
-    pg_refs: dict[str, str] = {}
-    for name, cfg in mcp_data["mcpServers"].items():
-        if not name.startswith("pg-"):
-            continue
-        # args has the wrapper path at index 1 (after "/c")
-        args = cfg.get("args", [])
-        wrapper = next(
-            (a for a in args if "pg-server-start" in a or "pg-server" in a),
-            "",
-        )
-        pg_refs[name] = wrapper
-    return pg_refs
-
-
-@then(parsers.re(re.escape(
-    r"all 10 pg-* entries reference `.claude\scripts\pg-server-start.cmd`"
-)))
-def then_all_pg_refer_same_wrapper(pg_wrapper_refs: dict[str, str]) -> None:
-    expected = r".claude\scripts\pg-server-start.cmd"
-    mismatches = {n: w for n, w in pg_wrapper_refs.items() if w != expected}
-    assert not mismatches, (
-        f"pg-* entries with non-canonical wrapper: {mismatches}"
-    )
-
-
-@then(parsers.re(re.escape(
-    'any entry referencing a different wrapper (e.g. directly invoking npx '
-    'for a different pg MCP) triggers the A14 "credential mode changed" '
-    "sub-check (PR body MUST justify why per-entry deviation is needed)"
-)))
-def then_a14_deviation_check_documented() -> None:
-    """Descriptive — governance scaffolding present in STANDARD."""
-    text = _GOVERNANCE_CONTRACT.read_text(encoding="utf-8")
-    assert "credential" in text.lower(), (
-        "governance contract missing credential-mode documentation"
-    )
+@then('all five memory entries have canonical wrappers and env names')
+def canonical_wrappers(servers):
+    # Exact bootstrap and argument comparison; substring matching is insufficient.
+    assert check(ROOT) == []
+    for name, variable in MEMORY.items():
+        assert servers[name]['env_vars'] == [variable]

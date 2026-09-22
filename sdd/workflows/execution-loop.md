@@ -25,7 +25,7 @@ ai_visibility: source-of-truth
 >
 > **不在本文件 re-port 的内容（cross-ref，避免重复）**：
 > - 每个 stage 的 **detailed prompt**（源 §4.1-§4.15 的完整步骤 + Output 结构）由
->   `.claude/skills/mj-agent-*` SKILL 拥有（active 执行路径）+ HITL_Prompt §4
+>   `.agents/skills/mj-agent-*` SKILL 拥有（active 执行路径）+ HITL_Prompt §4
 >   历史源；本文件只持 stage 骨架 + stage→skill 映射。
 > - HITL **required-scenarios 10-enum**（canonical 收敛口径）住在
 >   [[../../policies/ai-agent|policies/ai-agent]] §4。
@@ -134,27 +134,15 @@ command，但**不**把它作为唯一执行路径——同时给出 `Use When` 
 > 权限、安全、生产、发布、兼容性、in-source SKILL/PROMPT body、qcm_catalog 镜像或
 > 任务边界的事项，必须暂停并请求人工确认。
 
-### §3.0 HITL 执行模型（拍板即落盘；v1.3）
+### §3.0 HITL 决策与实际执行路线
 
-> **暂停 ≠ 让 Owner 手动转写。** HITL = **AI 呈现方案/选项/diff + impact 分析 →
-> Owner 拍板（决策）→ AI 直接落盘并执行**。Owner 的职责是**决策**，不是粘贴/复制/
-> 编写内容；AI 不得把落盘动作甩回给 Owner 手动完成。
+AI 先完成具体差异、影响、门禁映射与成组恢复方案，Owner 对目标、动作和范围批准。
+Owner 批准不自动解锁 hook。需 Owner 批准的动作仍硬阻断；技术拒绝返回
+`BLOCKED_EXECUTION_ROUTE`，不得改权限、换工具、编码或创建凭证绕过。
 
-拍板有两种形态：
-
-1. **内容多选 / 方案选择** → `AskUserQuestion`（结构见 §3.3）；Owner 选定后 AI 落盘。
-2. **权限门（逐写确认）** → 对 `ask` 列表面（4 项 in-source 专属必停，见 §3.1）与
-   **protected paths**（`.claude/**`、`.mcp.json`、`.claude.json`）的 Edit/Write，
-   harness 在交互模式**强制弹权限 prompt**（`permissions.allow` 不可抑制）——该 prompt
-   **就是拍板**；Owner 批准后 AI 写入。落盘后由 **merge review（A13 settings allowlist /
-   A14 .mcp.json trust posture 等 PR gate）兜底**。
-
-> **enforce 机制变更（ADR-034）**：4 项 in-source 专属必停由"`settings.json` 物理
-> `deny`（AI 完全不能写）"改为"`ask` 列表逐写拍板（AI 可在 Owner 批准后落盘）"；
-> 物理硬锁兜底转为"拍板 prompt + 合并审查"。**仅在交互模式成立**——`auto` / `bypass`
-> 模式下 `ask` 会被自动放行且 protected-path privilege-escalation 被 classifier 硬拦，
-> 故放宽类 / privilege 文件改动必须在交互模式执行。`git commit/push/PR/merge` 与
-> "是否变更必停面"的判断仍是独立拍板点，只是拍板后由 AI 执行而非 Owner 手动。
+本迁移采用“完整成组差异 → Owner 批准并人工应用 → Codex 验证”的路线。
+人工应用前核对全部文件身份；正式入口、所有权、契约及门禁不得部分切换。
+这条路线不是 AI 代替 Owner 批准，也不改变其他业务必停面。日常动作按当次已审阅路线执行。
 
 ### §3.1 必须暂停确认
 
@@ -189,10 +177,7 @@ mj-agent 专属新增（4 项硬必停）：
 > canonical 的 HITL required-scenarios 10-enum 收敛口径见
 > [[../../policies/ai-agent|policies/ai-agent]] §4；本节是其在执行闭环里的展开。
 >
-> **enforce（per §3.0）**：上述 4 项 in-source 专属必停由 `.claude/settings.json`
-> `ask` 列表逐写拍板门 enforce（不再是 `deny` 物理硬锁）——AI 可在 Owner 权限 prompt
-> 批准后落盘，合并审查（A13/A14）兜底。"暂停"= 呈现方案 + 等拍板 + 拍板后 AI 落盘，
-> **不要求 Owner 手动转写**。
+> **执行边界**：四项 in-source 必停保持 Owner 审批；原生 hook 的硬阻断与范围批准分别判断。无执行路线时停止该动作，继续不依赖它的准备。
 
 ### §3.2 可以默认处理
 
@@ -259,27 +244,27 @@ External-Info Handoff Discipline）。
 
 ## §4 Stage → Skill 映射表
 
-> Port from HITL_Prompt STANDARD §5。目标态覆盖 `.claude/skills/` 内 **37 个** mj-agent-*
+> Port from HITL_Prompt STANDARD §5。目标态覆盖 `.agents/skills/` 内 **37 个** mj-agent-*
 > in-tree skills——flow family 10（9 流程编排器 + 1 邻接子纪律 flow-diagnose）+ 27 域工具
 > skills（git 9 / doc 6 / runtime 4 / infra 8）。**on-disk 实装计数以
-> `scripts/sdd/check_claude_skill_contracts.py --all` 为准**（ADR-016 设计态目标 32 与实装
+> `scripts/sdd/check_native_skills.py` 为准**（ADR-016 设计态目标 32 与实装
 > 存在既有 drift；跨文档计数全量刷新 / 去硬写 = M-FU，tracked #267 + `docs/INDEX.md`
-> §技能清单合计行）。各 skill 详细描述见对应 `.claude/skills/<skill-name>/SKILL.md`。
+> §技能清单合计行）。各 skill 详细描述见对应 `.agents/skills/<skill-name>/SKILL.md`。
 
 ### §4.1 流程编排器（mj-agent-flow family，9 个 + 1 邻接子纪律 flow-diagnose）
 
 | Stage | 推荐 Skill |
 |---|---|
-| 0 Intake | [[../../.claude/skills/mj-agent-flow-intake/SKILL\|mj-agent-flow-intake]] |
-| 3 Repo Scan | [[../../.claude/skills/mj-agent-flow-repo-scan/SKILL\|mj-agent-flow-repo-scan]] |
-| 4 Plan body 编写 | [[../../.claude/skills/mj-agent-flow-plan/SKILL\|mj-agent-flow-plan]] |
-| 8 Implementation 编码段 | [[../../.claude/skills/mj-agent-flow-implement/SKILL\|mj-agent-flow-implement]] |
-| 8/10 邻接 · 诊断（非新 stage） | [[../../.claude/skills/mj-agent-flow-diagnose/SKILL\|mj-agent-flow-diagnose]]（硬/flaky/perf bug；flow-implement Step 3b 委派） |
-| 9 Scope Drift Gate | [[../../.claude/skills/mj-agent-flow-scope-drift/SKILL\|mj-agent-flow-scope-drift]] |
-| 10 Local Verification | [[../../.claude/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]] |
-| 11 AI Self-review | [[../../.claude/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]] |
-| 13/15 Review/CI 处理 | [[../../.claude/skills/mj-agent-flow-review-respond/SKILL\|mj-agent-flow-review-respond]] |
-| 17 Post-merge | [[../../.claude/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]] |
+| 0 Intake | [[../../.agents/skills/mj-agent-flow-intake/SKILL\|mj-agent-flow-intake]] |
+| 3 Repo Scan | [[../../.agents/skills/mj-agent-flow-repo-scan/SKILL\|mj-agent-flow-repo-scan]] |
+| 4 Plan body 编写 | [[../../.agents/skills/mj-agent-flow-plan/SKILL\|mj-agent-flow-plan]] |
+| 8 Implementation 编码段 | [[../../.agents/skills/mj-agent-flow-implement/SKILL\|mj-agent-flow-implement]] |
+| 8/10 邻接 · 诊断（非新 stage） | [[../../.agents/skills/mj-agent-flow-diagnose/SKILL\|mj-agent-flow-diagnose]]（硬/flaky/perf bug；flow-implement Step 3b 委派） |
+| 9 Scope Drift Gate | [[../../.agents/skills/mj-agent-flow-scope-drift/SKILL\|mj-agent-flow-scope-drift]] |
+| 10 Local Verification | [[../../.agents/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]] |
+| 11 AI Self-review | [[../../.agents/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]] |
+| 13/15 Review/CI 处理 | [[../../.agents/skills/mj-agent-flow-review-respond/SKILL\|mj-agent-flow-review-respond]] |
+| 17 Post-merge | [[../../.agents/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]] |
 
 ### §4.2 域工具 family（git 9 / doc 6 / runtime 4 / infra 8）
 
@@ -303,7 +288,7 @@ External-Info Handoff Discipline）。
 
 > Port from HITL_Prompt STANDARD §4.8。**Level A 只读 / 无副作用 / 无 HITL**（必跑）
 > 与 **Level B DB/LLM 依赖 / 副作用 / HITL-confirm** 分别执行。
-> 完整编排步骤见 [[../../.claude/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]]。
+> 完整编排步骤见 [[../../.agents/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]]。
 
 ### Level A：只读 / 无副作用 / 无 HITL（必跑）
 
@@ -354,7 +339,7 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
 ## §6 AI Self-review 检查清单 [GAP #10]
 
 > Port from HITL_Prompt STANDARD §4.9。commit 前（HITL Stage 11）逐项自检。
-> 完整编排见 [[../../.claude/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]]。
+> 完整编排见 [[../../.agents/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]]。
 
 11-item checklist：
 
@@ -365,7 +350,7 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
    `secrets.enc` / Ark API key）。
 5. **文档同步检查（5a/5b/5c/5d 反向扫描）**：
    - **5a 既有文档失真扫描**：基于本次 diff 中 rename / move / delete 的函数 /
-     类 / 文件 / SQL 对象 / 列，反向 grep `docs/**/*.md` + `CLAUDE.md` +
+     类 / 文件 / SQL 对象 / 列，反向 grep `docs/**/*.md` + `AGENTS.md` +
      **`src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md`**（runtime
      canonical 是反向扫描目标）中 backtick 包裹的引用，列出命中并在 PR
      description 说明已更新或决定不更新（含理由）；不涉及上述 5 类改动时须显式
@@ -373,8 +358,8 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
    - **5b 新文档创建确认**：比对 Repo Scan Documentation Decision 表中
      Action=Create 的所有行，确认对应 Plan / SPEC / ADR / RUNBOOK / GUIDE /
      STANDARD / 本地 ISSUE / ASSESSMENT 已创建并填入 frontmatter。
-   - **5c INDEX / CLAUDE.md / CHANGELOG.md 同步**：按文档框架 allowlist 检查
-     `CLAUDE.md`；按 A5 检查 `INDEX.md`；按 PR template CHANGELOG 字段判断。
+   - **5c INDEX / AGENTS.md / CHANGELOG.md 同步**：按文档框架 allowlist 检查
+     `AGENTS.md`；按 A5 检查 `INDEX.md`；按 PR template CHANGELOG 字段判断。
    - **5d SPEC Delta Check**：若本任务创建/更新了 SPEC，对比最终 diff、验证
      结果与 review/CI 发现，判断 SPEC 是否遗漏关键契约 / 配置 / 错误处理 /
      幂等 / 回滚 / 验证 / 可观测性。无漏项输出 `SPEC Delta: None`；不涉及 SPEC
@@ -404,7 +389,7 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
 
 > Port from HITL_Prompt STANDARD §4.15（post-merge prompt Rules 9/10/11）。Stage 17 收尾阶段的
 > 沉淀闸；§1 stage 17 列出的 "EVAL backlog ticket 自动开单 / SPEC-* 漏项沉淀" 即指本节。完整收尾
-> 编排见 [[../../.claude/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]]。
+> 编排见 [[../../.agents/skills/mj-agent-flow-post-merge/SKILL\|mj-agent-flow-post-merge]]。
 
 ### §7.1 ASSESSMENT-on-optimization 闸（Rule 9）
 
@@ -455,7 +440,7 @@ ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未
 ## §8 Cross-refs
 
 - **每个 stage 的 detailed prompt**（源 §4.1-§4.15 完整步骤 + Output 结构）：由
-  `.claude/skills/mj-agent-*` SKILL 拥有（active 执行路径）——`mj-agent-flow-*`
+  `.agents/skills/mj-agent-*` SKILL 拥有（active 执行路径）——`mj-agent-flow-*`
   编排器是入口，git / doc / runtime / infra 域工具承载具体步骤；本文件只持
   骨架 + 映射，不复制 prompt body。
 - **HITL required-scenarios 10-enum**（canonical 收敛口径）：

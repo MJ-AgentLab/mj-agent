@@ -1,0 +1,369 @@
+{
+  "at": "2026-09-18T11:18:02.170287+00:00",
+  "scope": "Only previously missing checker slices or stricter CI flag; previous passing tests not repeated",
+  "platform": "Windows",
+  "actual_CI": "NOT_TESTED",
+  "Linux": "NOT_TESTED",
+  "commands": [
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "compileall",
+        "-q",
+        "src",
+        "tests",
+        "scripts"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "",
+      "seconds": 0.339,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_wikilinks.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "OK: 0 archive-ref violations (13 archived files auto-discovered)\r\nOK: A4 link resolution — 0 unresolved targets in 5 root files\r\n",
+      "seconds": 0.167,
+      "environment_extra": {
+        "MJ_AGENT_A4_STRICT": "1"
+      },
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/check_ai_context_audit.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "skip (not a cycle or investigation entry): evidence\\ai-context-audit\\2026-07_ci_audit.md\r\nskip (not a cycle or investigation entry): evidence\\ai-context-audit\\2026-08_ci_audit.md\r\nskip (not a cycle or investigation entry): evidence\\ai-context-audit\\SCHEMA.md\r\nOK: 2 cycle + 3 investigation entries pass SCHEMA §2 schema check\r\n",
+      "seconds": 0.091,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/find_old_completed_plans.py"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "OK: no archive candidates (state: completed AND updated >= 180d ago)\r\n",
+      "seconds": 0.074,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_archive_manifest.py",
+        "--all",
+        "--strict"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] archive\\decisions\\superseded\\archive.yml: 5 required fields present + enums valid\r\n  [PASS] archive\\rule\\archive.yml: 5 required fields present + enums valid\r\ncheck_archive_manifest: 2P / 0W / 0F (over 2 archive.yml manifest(s))\r\n",
+      "seconds": 0.104,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/generate_archive_index.py",
+        "--check"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] archive\\INDEX.md matches regenerated content (2 manifest(s))\r\ngenerate_archive_index: 1P / 0W / 0F\r\n",
+      "seconds": 0.102,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_python_contracts.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_python_contracts.py — validating 2 python.contract.yml\r\n\r\ncapabilities\\data-agent\\llm-provider\\contracts\\python.contract.yml\r\n  [WARN] src.mj_agent.llm: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.llm: adr cross-ref 'ADR-027' not yet linked to decisions/ existence check (TBD-M3)\r\n  [WARN] src.mj_agent.config: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.server.cli: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [PASS] 3 modules verified (exports + constants where present)\r\n\r\ncapabilities\\data-agent\\safe-sql\\contracts\\python.contract.yml\r\n  [WARN] src.mj_agent.tools.sql.guardrail: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.tools.sql.precheck: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.tools.sql.execute: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.tools.sql.introspect: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.integrations.mj_system_db: public_invariants documented (informational; M3 will add machine-verifiable test)\r\n  [WARN] src.mj_agent.middleware.tool_errors: adr cross-ref 'ADR-029' not yet linked to decisions/ existence check (TBD-M3)\r\n  [WARN] src.mj_agent.middleware.tool_errors: wiring spec documented (informational; M3 will validate make_graph middleware=[...] match)\r\n  [PASS] 6 modules verified (exports + constants where present)\r\n\r\n=== Summary ===\r\nPASS: 9 / WARN: 11 / FAIL: 0\r\n",
+      "seconds": 0.108,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_agent_contracts.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "no agent.contract.yml found (Phase M1 has none; future data-agent.tool-chain Phase 2+ will add)\r\n",
+      "seconds": 0.096,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_prompt_contracts.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_prompt_contracts.py — validating 1 prompt.contract.yml\r\n\r\ncapabilities\\data-agent\\llm-provider\\contracts\\prompt.contract.yml\r\n  [WARN] allowed_state_transitions documented (informational; M3 will track via PR / git log analysis)\r\n  [PASS] prompt.contract.yml verified (prompt_path='src/mj_agent/prompts/system.md', content_hash match)\r\n\r\n=== Summary ===\r\nPASS: 1 / WARN: 1 / FAIL: 0\r\n",
+      "seconds": 0.105,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_docker_contracts.py",
+        "--all",
+        "--bdd",
+        "--tdd",
+        "--compose-config"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_docker_contracts.py — validating 1 docker.contract.yml + 1 compose.contract.yml\r\n\r\ncapabilities\\infrastructure\\docker-compose\\contracts\\docker.contract.yml\r\n  [WARN] runtime_stage_contract nested schema (M1 deviation from M0 template flat fields; M3 cleanup PR planned)\r\n  [WARN] base_image.runtime_stage.image documented (informational; M3 will resolve Dependabot digest pin to verify match)\r\n  [PASS] docker.contract.yml verified ('docker/Dockerfile')\r\n\r\ncapabilities\\infrastructure\\docker-compose\\contracts\\compose.contract.yml\r\n  [WARN] file_layering nested schema (M1 deviation from M0 template flat compose_files; M3 cleanup PR planned)\r\n  [WARN] invocation_contract documented (informational; M3 will static-validate the -f chain shape)\r\n  [PASS] compose.contract.yml verified (4 compose files resolve)\r\n\r\n=== Summary ===\r\nPASS: 2 / WARN: 4 / FAIL: 0\r\n",
+      "seconds": 0.12,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_runtime_expected.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_runtime_expected.py — M2 skeleton (no runtime probe); structure-loading 1 runtime.expected.yaml\r\n\r\ncapabilities\\infrastructure\\docker-compose\\contracts\\runtime.expected.yaml\r\n  [WARN] C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance\\capabilities\\infrastructure\\docker-compose\\contracts\\runtime.expected.yaml: runtime probe deferred to Phase M4 (M2 skeleton only; per blueprint §6 Phase M4 §3)\r\n  [PASS] runtime.expected.yaml structure load OK (3 containers declared; M4 will runtime-verify)\r\n\r\n=== Summary ===\r\nPASS: 1 / WARN: 1 / FAIL: 0\r\n",
+      "seconds": 0.101,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_runtime_skill_contracts.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_runtime_skill_contracts.py — validating 2 runtime-skill.contract.yml\r\n\r\ncapabilities\\data-agent\\biz-catalog\\contracts\\runtime-skill.contract.yml\r\n  [PASS] src/mj_agent/skills/biz-domain-context/SKILL.md: version + state + content_hash + body_section_heads all PASS\r\n  [PASS] src/mj_agent/skills/qcm-analysis/SKILL.md: version + state + content_hash + body_section_heads all PASS\r\n\r\ncapabilities\\data-agent\\safe-sql\\contracts\\runtime-skill.contract.yml\r\n  [PASS] src/mj_agent/skills/safe-sql-analysis/SKILL.md: version + state + content_hash + body_section_heads all PASS\r\n\r\n=== Summary ===\r\nPASS: 3 / WARN: 0 / FAIL: 0\r\n",
+      "seconds": 0.106,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_capability_evidence_required.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: lifecycle_state=active + evidence/ ≥1 non-.gitkeep file\r\n  [PASS] capabilities\\data-agent\\llm-provider: lifecycle_state=active + evidence/ ≥1 non-.gitkeep file\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: lifecycle_state=active + evidence/ ≥1 non-.gitkeep file\r\n  [PASS] capabilities\\data-agent\\safe-sql: lifecycle_state=active + evidence/ ≥1 non-.gitkeep file\r\n  [PASS] capabilities\\infrastructure\\docker-compose: lifecycle_state=active + evidence/ ≥1 non-.gitkeep file\r\ncheck_capability_evidence_required: 5P / 0W / 0F / 1SKIP (over 6 capabilities)\r\n",
+      "seconds": 0.115,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_scenario_trace.py",
+        "--all",
+        "--scope",
+        "full"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 1,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Redaction clones the message so the live in-process state is untouched' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'The digested envelope retains executed_sql for recoverable-by-refetch' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Both on-disk write paths carry no verbatim biz cell value' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'Evicting stale threads removes only threads older than the TTL' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\memory-checkpointer: scenario 'A dry run reports stale threads without deleting' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' REQ+CTR tags bound + trace cross-ref OK\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' REQ+CTR tags bound + trace cross-ref OK\r\n  [FAIL] capabilities\\infrastructure\\mcp-server-governance: scenario 'Adding a new MCP server triggers A14 PR gate body declaration' missing @CTR-<slug> tag binding\r\n  [FAIL] capabilities\\infrastructure\\mcp-server-governance: scenario 'All 5 memory pg entries reference the same native wrapper script' missing @CTR-<slug> tag binding\r\ncheck_bdd_scenario_trace: 22P / 0W / 2F (scope=full; over 6 capabilities)\r\n",
+      "seconds": 0.125,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "FAIL_OR_BLOCKED_REVIEW_OUTPUT"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_acceptance.py",
+        "--all",
+        "--strict"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'load_catalog rejects YAML whose root parses to a list (not a mapping)' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Catalog signal_tables must resolve in live biz_dws' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\biz-catalog: scenario 'Active SKILL bodies reference only resolvable catalog symbols and DB tables' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'Local provider constructs ChatOpenAI without extra_body.thinking' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\llm-provider: scenario 'effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 regex guardrail rejects blocked-keyword statement before DB contact' (@risk:critical) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact' (@risk:critical) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L1b precheck rejects biz_dws fact-table query missing time-column predicate' (@risk:critical) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L3 connection enforces read-only transaction + bounded timeouts via DSN options' (@risk:critical) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' (@risk:critical) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'execute_sql return envelope contains 8 required keys with documented types' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\data-agent\\safe-sql: scenario 'handle_sql_tool_errors middleware converts tool ValueError into ToolMessage' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' (@risk:high) runbook justification 4-field fallback (R-15-1 coupling)\r\ncheck_bdd_acceptance: 16P / 0W / 0F (over 6 capabilities; @risk:critical|high × evidence pass_rate OR runbook fallback per R-15-1 + R-18-* lock; 保 WARNING mode per Stage E α' E-0a; WARN-raise = R-18-4 intended gap exposure;E-0b curation closes WARN→0)\r\n",
+      "seconds": 0.112,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_bdd_unautomated.py",
+        "--all",
+        "--strict"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] capabilities\\data-agent\\safe-sql: scenario 'L4 statement_timeout cancellation translates to Chinese self-correction hint' (@risk:critical) unautomated + runbook.md 4-field justification full\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'DEV profile loads with explicit -f chain + --env-file' (@risk:high) unautomated + runbook.md 4-field justification full\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres healthcheck rejects half-initialized DB' (@risk:high) unautomated + runbook.md 4-field justification full\r\n  [PASS] capabilities\\infrastructure\\docker-compose: scenario 'Postgres init handles password with shell metacharacters unmangled' (@risk:high) unautomated + runbook.md 4-field justification full\r\ncheck_bdd_unautomated: 4P / 0W / 0F (over 6 capabilities; @risk:critical|high × automation_status:unautomated subset per R-10-2; M-FU#7 runbook curation defer)\r\n",
+      "seconds": 0.12,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_tdd_test_list.py",
+        "--check",
+        "g23",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [WARN] capabilities\\data-agent\\biz-catalog: task 'T-001 — Phase M1 capability artifact suite' (priority=critical) missing TDD test_list (R-12-6 CURATION WARN; M-FU#9 maintenance)\r\n  [PASS] capabilities\\data-agent\\biz-catalog: task 'T-002 — REQ-001 catalog schema completeness' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\biz-catalog: task 'T-003 — REQ-002 catalog ↔ DB alignment' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\biz-catalog: task 'T-004 — REQ-003 SKILL ↔ catalog coherence' (priority=high) has TDD test_list\r\n  [WARN] capabilities\\data-agent\\llm-provider: task 'T-001 — Phase M1 capability artifact suite' (priority=critical) missing TDD test_list (R-12-6 CURATION WARN; M-FU#9 maintenance)\r\n  [PASS] capabilities\\data-agent\\llm-provider: task 'T-002 — REQ-001 ark provider behavior' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\llm-provider: task 'T-003 — REQ-002 local-openai-compat provider behavior' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\llm-provider: task 'T-004 — REQ-003 provider switch + config schema + CLI awareness' (priority=high) has TDD test_list\r\n  [WARN] capabilities\\data-agent\\safe-sql: task 'T-001 — Phase M1 capability artifact suite' (priority=critical) missing TDD test_list (R-12-6 CURATION WARN; M-FU#9 maintenance)\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-002 — REQ-001 L1 hybrid guardrail (contract reverse-engineering)' (priority=critical) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-003 — REQ-002 L1b sqlglot AST precheck (contract reverse-engineering)' (priority=critical) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-004 — REQ-003 L3 read-only connection (contract reverse-engineering)' (priority=critical) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-005 — REQ-004 L4 statement_timeout catch + GRANT reference' (priority=critical) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-006 — REQ-005 execute_sql envelope schema' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\data-agent\\safe-sql: task 'T-007 — REQ-006 handle_sql_tool_errors middleware' (priority=high) has TDD test_list\r\n  [WARN] capabilities\\infrastructure\\docker-compose: task 'T-001 — Phase M1 capability artifact suite' (priority=critical) missing TDD test_list (R-12-6 CURATION WARN; M-FU#9 maintenance)\r\n  [PASS] capabilities\\infrastructure\\docker-compose: task 'T-002 — REQ-001 4-file profile loading + --env-file' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\infrastructure\\docker-compose: task 'T-003 — REQ-002 healthcheck + startup order' (priority=high) has TDD test_list\r\n  [PASS] capabilities\\infrastructure\\docker-compose: task 'T-004 — REQ-003 secrets not in image + shell-safe init' (priority=high) has TDD test_list\r\n  [WARN] capabilities\\infrastructure\\mcp-server-governance: task 'T-001 — Phase M1 capability artifact suite' (priority=critical) missing TDD test_list (R-12-6 CURATION WARN; M-FU#9 maintenance)\r\ncheck_tdd_test_list: 15P / 5W / 0F (--check=g23; G23 WARN per L62 / G24 BLOCKING per L63+L198 / branch-conditional SKIP)\r\n",
+      "seconds": 0.101,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_tdd_test_list.py",
+        "--check",
+        "g24",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_tdd_test_list: 0P / 0W / 0F (--check=g24; G23 WARN per L62 / G24 BLOCKING per L63+L198 / branch-conditional SKIP)\r\n",
+      "seconds": 0.103,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_secret_exposure.py",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "  [PASS] git tracked files clean (817 paths; no decrypted-secret patterns; secrets*.enc ciphertext intentionally committed per ADR-030)\r\n  [PASS] .gitignore pins present (.env, config/secrets.conf, config/secrets-mcp.conf)\r\n  [PASS] docker build-context exposure clean (root .dockerignore covers config/secrets*.conf for the repo-root-context DEV build)\r\n  [PASS] .codex/config.toml clean (8 servers; env-var NAME references only, no env tables, no literal-credential shapes)\r\ncheck_secret_exposure: 4P / 0W / 0F (decrypted-artifact patterns; ciphertext .enc allowed per ADR-030)\r\n",
+      "seconds": 0.14,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "scripts/sdd/check_tdd_test_list.py",
+        "--check",
+        "g25",
+        "--all"
+      ],
+      "cwd": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-20260918-ij3anyxq\\native acceptance",
+      "exit_code": 0,
+      "output": "check_tdd_test_list: 0P / 0W / 0F (--check=g25; G23 WARN per L62 / G24 BLOCKING per L63+L198 / branch-conditional SKIP)\r\n",
+      "seconds": 0.103,
+      "environment_extra": {},
+      "level": "WINDOWS_OFFLINE_CHECKER_NOT_ACTUAL_CI",
+      "status": "EXIT_ZERO_REVIEW_WARNINGS_AND_SKIPS"
+    }
+  ],
+  "no_services_started": true,
+  "source_unchanged": true,
+  "original_index_untouched": true
+}

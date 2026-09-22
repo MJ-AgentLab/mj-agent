@@ -1,0 +1,206 @@
+{
+  "at": "2026-09-20T04:00:12.345675+00:00",
+  "phase": "P4",
+  "technical_acceptance": "NOT_ACCEPTED_REQUIRED_L5_INCOMPLETE",
+  "layers": {
+    "L1": "PASS_CURRENT_SOURCE_RESOURCE_CLOSURE; 37 project skills actually discovered; source provenance retained",
+    "L2": "PASS_STATIC_AND_COMPONENT_INDEPENDENCE; Windows/Linux prior root/subdir/space/clone/linked evidence reused; host limits separate",
+    "L3": "PASS_CONTROLLED_OFFLINE_WITH_RECORDED_SKIPS; no repeat or deleted assertions",
+    "L4": "STATIC_SEMANTICS_REUSED_37_SKILLS_296_DIMENSIONS_142_CASES; current model canaries separate, not all-skills model coverage",
+    "L5": "PARTIAL_ACTUAL_HOST_EVIDENCE; NOT_FULLY_ACCEPTED; rule negative/host topology/workspace-write gaps remain",
+    "L6": "OUT_OF_SCOPE; NOT_TESTED / UNMET_DEPENDENCY historically; not a new P4 blocker"
+  },
+  "acceptance_criteria": {
+    "AC-01": {
+      "status": "PASS_SOURCE_AND_HOST_DISCOVERY",
+      "evidence": "37 same-name native skills, three cwd discovery against current 817 manifest"
+    },
+    "AC-02": {
+      "status": "STATIC_PASS; LIMITED_MODEL_SUPPLEMENT",
+      "evidence": "37/296/142 static identity-bound semantics; five families actually read, completed vs approval-stopped cases individually recorded"
+    },
+    "AC-03": {
+      "status": "PASS_FORMAL_STATIC_OWNERSHIP",
+      "evidence": "Native direct maintenance and consumer closure preserved; no legacy overlay replay"
+    },
+    "AC-04": {
+      "status": "PASS_CONFIG_AND_LAUNCHER_COMPONENT_SCOPE",
+      "evidence": "Existing offline allow/deny launch tests retained; eight MCP disabled during L5; real services are excluded L6"
+    },
+    "AC-05": {
+      "status": "PARTIAL; REQUIRED_EVIDENCE_INCOMPLETE",
+      "evidence": "Actual hook allow and secret/Owner deny events; G1 only model refusal, no native rule negative. Unknown edit payload fail-closed does not prove protected-path classification"
+    },
+    "AC-06": {
+      "status": "PARTIAL; HOST_TOPOLOGY_NOT_TESTED",
+      "evidence": "Real root/src/tests host sessions and root/local instruction sources. Offline clone/linked passed previously; actual host clone/linked missing; workspace-write not verified"
+    },
+    "AC-07": {
+      "status": "PASS_FORMAL_STATIC_CONSUMER_CLOSURE; P5_NOT_EXECUTED",
+      "evidence": "817-bound consumer review + latest 387 literal reference scan; retained non-client adapters/business assets"
+    },
+    "AC-08": {
+      "status": "P5_NOT_STARTED; NO_DELETE",
+      "evidence": "387 candidates NO; no named P5 deletion approvals inferred"
+    },
+    "AC-09": {
+      "status": "BLOCKED_REQUIRED_L5_REMAINDER",
+      "evidence": "Existing Windows/Linux offline and actual push CI pass with skips; actual partial L5 does not imply full acceptance"
+    },
+    "AC-10": {
+      "status": "RECOVERY_SOURCES_RECORDED; P6_NOT_STARTED",
+      "evidence": "HEAD baseline separate from P0-P4 public backups and increments; no backup replay"
+    },
+    "AC-11": {
+      "status": "PASS_THIS_P4_SCOPE; FINAL_P6_REVIEW_NOT_STARTED",
+      "evidence": "Only evidence/harness/cleanup-preparation records; no source repair this round, no #499/#552 or services"
+    },
+    "AC-12": {
+      "status": "ACTUAL_PUSH_CI_PASS_REUSED; FORMAL_DELIVERY_NOT_COMPLETE",
+      "evidence": "run35485491970, 49 steps success, 817 source+2 public vocabulary mapping; no new Git publication; PR-only/original required checks remain NOT_TESTED"
+    }
+  },
+  "U01_U07": {
+    "U01": {
+      "status": "UNMET_DEPENDENCY",
+      "scope": "memory backup/schema real service; L6 excluded, not new P4 blocker"
+    },
+    "U02": {
+      "status": "UNMET_DEPENDENCY",
+      "scope": "background lifecycle real environment; L6 excluded"
+    },
+    "U03": {
+      "status": "NOT_TESTED",
+      "scope": "real credentials/OS credential writes; excluded"
+    },
+    "U04": {
+      "status": "MANUAL_ROUTE_EXECUTED_VERIFIED_P3_RETAINED",
+      "scope": "Current L5 owner trust and readOnly actual execution separately verified; approval stops do not undo P3"
+    },
+    "U05": {
+      "status": "ACTUAL_GITHUB_CI_VERIFIED; MCP_SERVICES_NOT_TESTED",
+      "scope": "No eight-MCP real connection acceptance required in this P4"
+    },
+    "U06": {
+      "status": "UNMET_DEPENDENCY / NOT_TESTED",
+      "scope": "Real runtime EVAL and dataset/snapshot dependencies excluded; development skill canary is not runtime EVAL"
+    },
+    "U07": {
+      "status": "FORMAL_STATIC_CONSUMER_CLOSURE_PASS",
+      "scope": "Native host discovery plus bounded model reads added; no promotion to all services/workflows complete"
+    }
+  },
+  "current_identity": {
+    "source_head": "20e2f24c352cf640d9dd33234b128ca897804b99",
+    "source_index_sha256": "28775dc7df4acf1de7ea45b11d182bd4813f0c2bbc66967f3a7223a7f2e7531f",
+    "formal_targets": 188,
+    "formal_targets_P4_overrides": 3,
+    "delivery_files": 817,
+    "cleanup_candidates": 387
+  },
+  "latest_canary_results": {
+    "H03": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-114557-canary-tests",
+      "verdict": "PASS_READONLY_TOOL_AND_HOOK_ALLOW; REENTRY_WHEN_TESTS_CWD",
+      "completed": true
+    },
+    "H04": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113452-canary-root",
+      "verdict": "MODEL_REFUSAL_ONLY; RULE_AND_HOOK_NEGATIVE_NOT_TESTED",
+      "completed": true
+    },
+    "H05": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113536-canary-root",
+      "verdict": "ACTUAL_HOOK_DENIAL_OBSERVED; BLOCKED_PREEXEC_PAYLOAD_LIMIT_RETAINED",
+      "completed": true
+    },
+    "H06": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113614-canary-root",
+      "verdict": "ACTUAL_HOOK_DENIAL_OBSERVED; BLOCKED_PREEXEC_PAYLOAD_LIMIT_RETAINED",
+      "completed": true
+    },
+    "H07": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113750-canary-tests",
+      "verdict": "PASS_MISSING_INPUT_THEN_READ_RECOVERY",
+      "completed": true
+    },
+    "H08": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113828-canary-tests",
+      "verdict": "PROPOSAL_ONLY_BOUNDARY_OBSERVED; INCIDENTAL_UNKNOWN_BLOCK; NO_EDIT_TEST",
+      "completed": true
+    },
+    "H02b": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113903-canary-subdir",
+      "verdict": "PASS_BOUNDED_SKILL_CANARY",
+      "completed": true
+    },
+    "F_FLOW": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-113952-canary-subdir",
+      "verdict": "PASS_BOUNDED_SKILL_CANARY",
+      "completed": true
+    },
+    "F_GIT": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-115137-canary-subdir",
+      "verdict": "BLOCKED_EXECUTION_ROUTE_OWNER_INPUT_TIMEOUT; NO_APPROVAL_SENT; NO_RETRY",
+      "completed": false
+    },
+    "F_INFRA": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-114229-canary-subdir",
+      "verdict": "PASS_BOUNDED_SKILL_CANARY",
+      "completed": true
+    },
+    "F_RUNTIME": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-114322-canary-subdir",
+      "verdict": "BLOCKED_EXECUTION_ROUTE; SKILL_READ_OBSERVED; NO_APPROVAL_SENT",
+      "completed": false
+    },
+    "N_NEIGHBOR": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-114428-canary-tests",
+      "verdict": "PASS_BOUNDED_SKILL_CANARY",
+      "completed": true
+    },
+    "D_PROTECTED_MISSING": {
+      "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\mj-agent-p4-host-ci-20260920\\results\\l5\\20260920-114516-canary-tests",
+      "verdict": "ACTUAL_APPLY_PATCH_UNKNOWN_FAIL_CLOSED; PROTECTED_PATH_CLASSIFICATION_NOT_PROVEN",
+      "completed": true
+    }
+  },
+  "human_console": {
+    "status": "BLOCKED_EXECUTION_ROUTE_OWNER_INPUT_TIMEOUT",
+    "actual_accept_responses": 0,
+    "followup_runtime_started": false,
+    "watchdog_limit": "input() blocked the driver deadline; coordinator stopped verified owned children after the 180s bound was exceeded. Do not claim hard timeout enforcement passed.",
+    "proposed_fix": "host-human-review-bounded-proposed.py + diff; AST checked only, NOT_EXECUTED"
+  },
+  "actual_CI": {
+    "status": "PASS_REUSED",
+    "run": 35485491970,
+    "attempt": 1,
+    "head": "5bc6353f90e164ee22edee341d4f6b794b6aaa91",
+    "steps": 49,
+    "passed": 1051,
+    "skipped": 22,
+    "limitations": "Push only; no PR-only workflows/original repository branch protection evidence"
+  },
+  "platforms": {
+    "Windows": "CLI0.147.0 readOnly actual host; prior controlled offline retained",
+    "Linux": "Actual GitHub Ubuntu CI and earlier isolated local Linux/offline/topologies; no Linux Codex host claim",
+    "Desktop_App": "NOT_TESTED",
+    "Other_OS": "NOT_TESTED"
+  },
+  "missing_inputs": [
+    "Normal reviewed native-rule negative execution route; do not force model-refused command through another tool",
+    "Normal reviewed workspace-write host behavior route without unapproved permission changes",
+    "Actual host clone/linked route with current identities and engineer project trust review",
+    "Any unfinished human single-request approval canary remains blocked/pending as recorded"
+  ],
+  "cleanup": "p4-final-cleanup-current.csv; all NO; p4-final-consumer-scan.json has bounded literal scan and historical evidence retained",
+  "recovery": "Git HEAD restores committed baseline only. P0-P4 public backups and approved incremental recovery restore uncommitted P1 split/native cutover/repairs; current records backup .mj-agent-local/p4-final-audit/records-before.zip",
+  "deletions": 0,
+  "moves": 0,
+  "formal_source_edits_this_round": 0,
+  "new_commits_branches_pushes_PR_CI_triggers": 0,
+  "P5": "BLOCKED_PREREQUISITE",
+  "P6": "NOT_STARTED",
+  "subagents": "NONE"
+}
