@@ -4,7 +4,8 @@ summary: 迁移 mj-system 会话维护机制，接入 mj-agent Codex 入口并�
 owner: 项目负责人
 created: 2026-09-17
 updated: 2026-09-22
-state: active
+state: completed
+completed: 2026-09-22
 track: engineering-workflow
 ---
 
