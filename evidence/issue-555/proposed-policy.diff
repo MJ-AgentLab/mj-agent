@@ -1,0 +1,70 @@
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -21 +21 @@
+-Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。聊天批准不解锁 hook；无可执行路线返回 BLOCKED_EXECUTION_ROUTE，禁止建凭证、换工具或改权限绕过。
++Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。Owner 在当前任务中明确批准具体删除清单后，该范围内无需重复确认或额外理由。执行前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及重解析点；目标或内容实质变化仅暂停受影响项。核验通过后通过正常工具执行，不预设 Owner 必须人工删除。聊天批准不替代宿主审批；实际拒绝时保留原始错误并按证据定位，无法定位则标未知，受阻步骤返回 BLOCKED_EXECUTION_ROUTE。禁止建凭证、换工具、改写命令或改权限绕过拒绝。
+--- a/policies/ai-agent.md
++++ b/policies/ai-agent.md
+@@ -8 +8 @@
+-updated: 2026-09-18
++updated: 2026-09-22
+@@ -88 +88 @@
+-> **执行机制**：AI 给具体差异，Owner 对目标/动作/关键内容/范围拍板，之后还要检查实际执行路线。原生 hook 对 OWNER_APPROVAL_REQUIRED 保持 block；聊天批准不自动解锁。无路线返回 BLOCKED_EXECUTION_ROUTE；禁止换工具、编码、改权限或建 receipt 绕过。守卫未命中不构成授权。
++> **执行机制**：AI 给具体差异，Owner 对目标/动作/关键内容/范围拍板。当前任务已明确批准的具体删除清单无需重复确认或额外理由；批准不扩展到其他目录、worktree、后来新增内容或不同动作。删除前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及符号链接/重解析点；变化只暂停受影响项。核验通过后由 Codex 使用正常工具执行，不预设人工删除。项目授权与宿主审批分开，hook 不认证聊天授权；UNKNOWN/FORBIDDEN 继续阻断，守卫未命中不构成授权。实际拒绝时保留原始错误，依据证据区分 hook、exec-policy/危险命令检查、审批模式、权限/占用；通用 blocked by policy 无法归因时标未知。受阻步骤返回 BLOCKED_EXECUTION_ROUTE，不换工具、改写命令、编码、改权限或建 receipt 绕过；独立且已授权的工作可继续。
+--- a/.agents/references/execution-boundaries.md
++++ b/.agents/references/execution-boundaries.md
+@@ -28 +28 @@
+-4. commit、push、PR 创建、删除及其他需批准动作保留具体目标的 Owner 决策。聊天批准不等于 hook 自动解锁；原生 hook 对需审批动作保持 block。遇拒绝不得换工具、换编码、改 hook/rules、建 receipt 或改会话模式绕过。执行路线未人工处理时返回 `BLOCKED_EXECUTION_ROUTE`，继续独立只读工作。
++4. commit、push、PR 创建、删除及其他需批准动作保留具体目标的 Owner 决策。当前任务中已明确批准的具体删除清单复用该批准，不重复索取确认或额外理由；删除授权不扩展到其他动作。核验通过后通过正常工具执行，由宿主处理工具审批，不预设 Owner 必须人工删除。hook 不认证聊天，UNKNOWN/FORBIDDEN 继续阻断；实际拒绝时保留原始错误并按证据定位，通用错误不足以归因时标未知。受阻步骤返回 `BLOCKED_EXECUTION_ROUTE`；不得换工具、改写命令、换编码、改 hook/rules、建 receipt 或改会话模式绕过。独立且已授权的工作可继续。
+@@ -42 +42 @@
+-每次危险动作前复核绝对路径、分支 tip、PR head、PID 启动时间/命令、compose project/profile/-f 链、volume 或目标内容摘要。任一变化使旧批准不能覆盖新目标，停止该动作并重提差异。
++每次危险动作前复核绝对路径、分支 tip、PR head、PID 启动时间/命令、compose project/profile/-f 链、volume 或目标内容摘要。删除另核验 Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份和文件占用；逐层检查路径、目标及后代，防止路径逃逸、递归越界及符号链接/重解析点误删。未跟踪/被忽略不等于可丢弃；秘密路径不读取或计算内容摘要。目标或内容实质变化、授权撤销、范围扩大只暂停受影响项并说明差异；其他目录、worktree、新增内容、不同动作及备份移动不自动继承旧批准。
+--- a/.agents/skills/mj-agent-git-delete/SKILL.md
++++ b/.agents/skills/mj-agent-git-delete/SKILL.md
+@@ -16 +16 @@
+-This skill should be used when the user asks to delete branches, remove worktrees, or clean up after a PR merge in mj-agent. Make sure to use this skill whenever the user says "删除分支", "清理分支", "branch cleanup", "delete branch", "worktree remove", "PR 合并后清理", "分支已合并", "Stage 17 sub", "post-merge cleanup", "remove worktree" in the mj-agent context. Enforces correct deletion order (worktree then local branch then optional remote with dual-remote gitee+origin) with safety checks and human confirmation for all destructive steps; protects main + develop from deletion. Do not use for: hotfix→develop sync (use mj-agent-git-sync), full post-merge cleanup orchestration (use mj-agent-flow-post-merge which sub-calls this skill), or branch creation (use mj-agent-git-branch).
++This skill should be used when the user asks to delete branches, remove worktrees, or clean up after a PR merge in mj-agent. Make sure to use this skill whenever the user says "删除分支", "清理分支", "branch cleanup", "delete branch", "worktree remove", "PR 合并后清理", "分支已合并", "Stage 17 sub", "post-merge cleanup", "remove worktree" in the mj-agent context. Enforces correct deletion order (worktree then local branch then optional remote with dual-remote gitee+origin) with safety checks and explicit approval for the exact destructive scope, reusing an existing approval while that scope and its contents remain unchanged; protects main + develop from deletion. Do not use for: hotfix→develop sync (use mj-agent-git-sync), full post-merge cleanup orchestration (use mj-agent-flow-post-merge which sub-calls this skill), or branch creation (use mj-agent-git-branch).
+@@ -21 +21 @@
+-删除 mj-agent 中的 Git 分支，支持 Bare Repo Worktree 模式下的安全清理。删除是不可逆，每个关键节点需 user 确认。**Stage 17 sub** of HITL_Prompt 17-stage 闭环。
++删除 mj-agent 中的 Git 分支，支持 Bare Repo Worktree 模式下的安全清理。删除前必须取得具体目标和动作的明确批准；当前任务已批准且目标/内容未变化时复用批准，不逐节点重复确认或索取额外理由。**Stage 17 sub** of HITL_Prompt 17-stage 闭环。
+@@ -46 +46 @@
+-询问选 1/2/3：
++先检查当前任务是否已明确批准目标及以下范围；已明确则复用，不重复询问。仅缺少具体范围时询问选 1/2/3：
+@@ -98 +98 @@
+-✅ Step 1: worktree 已移除（⚠️ 目录残留需手动: <path>）
++✅ Step 1: worktree 元数据已移除（如有目录残留：列出路径、核验结果和是否在已批准删除范围内；核验通过且仍获授权时用正常工具处理，实际拒绝则保留错误）
+@@ -107 +107 @@
+-| **H1** | `git status` 显示未提交修改 | ⚠️ 展示 status，询问"修改将永久丢失，确认继续？" |
++| **H1** | 有未提交、未跟踪或被忽略内容 | 展示目标状态与必要恢复来源；已审阅并明确批准同一内容时复用，否则仅暂停该项目并说明新增差异。未跟踪/被忽略不是可丢弃依据。 |
+@@ -110 +110 @@
+-| **H4** | 远程分支不存在（push --delete 失败） | ℹ️ 告知远程不存在，询问"继续完成本地清理？" |
++| **H4** | 远程分支不存在（push --delete 失败） | 保留原始错误并只读核实远程状态；已不存在标记该项完成，不重复执行。独立且已授权的本地清理可以继续，不重复询问。 |
+@@ -112 +112 @@
+-> **原则**：删除不可逆，有不确定性应先暂停。
++> **原则**：核验遵循共用执行边界；绝对路径、Git 状态、全部内容、必要备份、占用及重解析点逐项检查。不确定性只暂停受影响项，核验通过且已授权的删除由 Codex 通过正常工具完成；实际拒绝按原始证据定位，无法定位标未知，不改写命令或换工具重试。
+--- a/docs/guide/[GUIDE]_Developer_Onboarding.md
++++ b/docs/guide/[GUIDE]_Developer_Onboarding.md
+@@ -13 +13 @@
+-updated: 2026-09-21
++updated: 2026-09-22
+@@ -266 +266,11 @@
+-原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。无执行路线时保持 BLOCKED_EXECUTION_ROUTE，不修改权限或个人配置绕过。
++原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。
++
++已批准具体删除清单时，先核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、占用及符号链接/重解析点，再用正常工具逐项执行。相同范围和内容不重复确认或索取额外理由，也不预设 Owner 人工删除；目标变化或授权撤销只暂停受影响项。核验快照不是授权凭证，工具审批由宿主处理。
++
++| 实际有效模式 | 可得结论 |
++|---|---|
++| `never` | 与要求 prompt 的动作不兼容；不自行改配置或换执行路线 |
++| `on-request` | 可以请求正常审批；不是已经批准或自动放行 |
++| 未知 | `UNKNOWN`，项目配置不能替代有效会话证据 |
++
++实际拒绝时保存原始错误；显式 hook decision、审批模式错误或文件占用证据可用于归因，通用 `blocked by policy` 只能标阻断层未知。受阻步骤保持 `BLOCKED_EXECUTION_ROUTE`；不修改权限、停用保护、改写命令或换工具绕过。工程师通过正常配置流程核实有效模式后，再在获批临时样本上记录宿主版本、正常请求/审批和实际删除结果。
+--- a/.codex/rules/mj-agent.rules
++++ b/.codex/rules/mj-agent.rules
+@@ -1,0 +2 @@
++prefix_rule(pattern=["Remove-Item"], decision="prompt")
+--- a/scripts/sdd/check_codex_native.py
++++ b/scripts/sdd/check_codex_native.py
+@@ -21,0 +22 @@
++    ("Remove-Item",): "prompt",

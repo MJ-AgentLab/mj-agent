@@ -106,15 +106,19 @@ def test_delivery_approval_preflight(
     assert report["remote_authentication"] == "NOT_TESTED"
     rows = report["commands"]
     assert [row["command"] for row in rows] == [
+        ["Remove-Item", "-LiteralPath", "<absolute-target>"],
         ["git", "commit"], ["git", "push", "-u", "gitee", "<branch>"],
         ["git", "push", "-u", "origin", "<branch>"],
         ["gh", "pr", "create", "--base", "develop"],
+        ["git", "push", "gitee", "--delete", "<branch>"],
+        ["git", "push", "origin", "--delete", "<branch>"],
     ]
     assert all(row["status"] == expected for row in rows)
     assert all(row["rule_decision"] == "prompt" for row in rows)
     assert all(row["rule_source"] == ".codex/rules/mj-agent.rules" for row in rows)
     assert [row["command_family"] for row in rows] == [
-        ["git", "commit"], ["git", "push"], ["git", "push"], ["gh", "pr", "create"],
+        ["Remove-Item"], ["git", "commit"], ["git", "push"], ["git", "push"],
+        ["gh", "pr", "create"], ["git", "push"], ["git", "push"],
     ]
 
 
@@ -196,12 +200,24 @@ def test_delivery_preflight_cli_from_other_directory(
     assert json.loads(proc.stdout)["session_approval"] == expected
 
 
+def test_literal_deletion_uses_host_review_and_unknown_still_blocks() -> None:
+    from scripts.sdd.check_codex_native import RULES
+    assert RULES[("Remove-Item",)] == "prompt"
+    for command, expected in (
+        ("Remove-Item -LiteralPath 'D:/temporary/item.txt'", "ALLOW"),
+        ("Remove-Item -LiteralPath 'D:/temporary/item.txt'; git status", "UNKNOWN"),
+        ("Remove-Item -LiteralPath '.env'", "FORBIDDEN"),
+    ):
+        assert classify({"hook_event_name": "PreToolUse", "tool_name": "exec_command",
+                         "tool_input": {"cmd": command}})[0] == expected
+
+
 @pytest.mark.parametrize(("command", "expected"), [
     ("git status", "ALLOW"), ("git checkout -b trial", "FORBIDDEN"),
     ("git switch -c trial", "FORBIDDEN"), ("psql", "FORBIDDEN"),
     ("pg_dump", "FORBIDDEN"), ("gh pr merge 1", "FORBIDDEN"),
-    ("gh pr create", "FORBIDDEN"), ("gh pr create --base develop", "OWNER_APPROVAL_REQUIRED"),
-    ("git push origin example", "OWNER_APPROVAL_REQUIRED"),
+    ("gh pr create", "FORBIDDEN"), ("gh pr create --base develop", "HOST_APPROVAL_REQUIRED"),
+    ("git push origin example", "HOST_APPROVAL_REQUIRED"),
     ("Get-Content .env", "FORBIDDEN"), ("Get-Content .env.example", "ALLOW"),
 ])
 def test_native_command_boundaries(command: str, expected: str) -> None:

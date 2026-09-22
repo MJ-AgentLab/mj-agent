@@ -23,10 +23,10 @@ class NativeGuards(unittest.TestCase):
             with self.subTest(command=command):
                 self.assertIn(self.state(command), ('FORBIDDEN','UNKNOWN'))
 
-    def test_git_owner_actions_stay_blocked(self):
+    def test_bounded_git_actions_defer_to_host_approval(self):
         for command in ['git commit -m test', 'git push origin branch',
                         'gh pr create --base develop --title test']:
-            self.assertEqual(self.state(command), 'OWNER_APPROVAL_REQUIRED')
+            self.assertEqual(self.state(command), 'HOST_APPROVAL_REQUIRED')
 
     def test_known_forbidden_routes(self):
         for command in ['git checkout -q -b feature/x','git switch -c feature/x',

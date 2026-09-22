@@ -16,15 +16,19 @@ else:
     )
 
 COMMANDS = (
+    (("Remove-Item",), ("Remove-Item", "-LiteralPath", "<absolute-target>")),
     (("git", "commit"), ("git", "commit")),
     (("git", "push"), ("git", "push", "-u", "gitee", "<branch>")),
     (("git", "push"), ("git", "push", "-u", "origin", "<branch>")),
     (("gh", "pr", "create"), ("gh", "pr", "create", "--base", "develop")),
+    (("git", "push"), ("git", "push", "gitee", "--delete", "<branch>")),
+    (("git", "push"), ("git", "push", "origin", "--delete", "<branch>")),
 )
 RECOVERY = {
     "UNKNOWN": "Verify the effective session mode and project rules; do not infer them from static config.",
     "INCOMPATIBLE": "Have the Owner enter an approval-capable session, verify its effective mode, then rerun.",
-    "APPROVAL_REQUIRED": "Obtain action-specific Owner approval and verify the host execution route before delivery.",
+    "APPROVAL_REQUIRED": "Verify action-specific Owner approval, reusing an existing exact approval, "
+                         "and verify the host execution route before delivery.",
 }
 
 

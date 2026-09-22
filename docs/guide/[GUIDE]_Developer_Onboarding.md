@@ -275,7 +275,49 @@ Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 M
 
 ## §6.5 G1/G2 PreToolUse hook 防护
 
-原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。无执行路线时保持 BLOCKED_EXECUTION_ROUTE，不修改权限或个人配置绕过。
+原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。
+
+已批准具体删除清单时，先核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、占用及符号链接/重解析点，再用正常工具逐项执行。相同范围和内容不重复确认或索取额外理由，也不预设 Owner 人工删除；目标变化或授权撤销只暂停受影响项。核验快照不是授权凭证，工具审批由宿主处理。
+
+| 实际有效模式 | 可得结论 |
+|---|---|
+| `never` | 与要求 prompt 的动作不兼容；不自行改配置或换执行路线 |
+| `on-request` | 可以请求正常审批；不是已经批准或自动放行 |
+| 未知 | `UNKNOWN`，项目配置不能替代有效会话证据 |
+
+实际拒绝时保存原始错误；显式 hook decision、审批模式错误或文件占用证据可用于归因，通用 `blocked by policy` 只能标阻断层未知。受阻步骤保持 `BLOCKED_EXECUTION_ROUTE`；不修改权限、停用保护、改写命令或换工具绕过。工程师通过正常配置流程核实有效模式后，再在获批临时样本上记录宿主版本、正常请求/审批和实际删除结果。
+
+### 删除清单只读核验
+
+`scripts/sdd/check_deletion_targets.py` 检查指定 Git 工作树内部的具名文件或目录，不执行删除、备份移动或进程终止。整个工作树、嵌套仓库、其他工作树和 `.git` 均返回 `OUT_OF_SCOPE`；分支/worktree 清理仍按 git-delete 的对应 Git 核验流程处理。所有已知凭据路径必须从普通内容核验中排除；文件名保护不是秘密内容扫描器。
+
+以下均为占位样例，先替换为已确认的绝对路径。首次结果用于审阅；执行紧前使用同一清单重新核验。JSON 快照只作差异比较，不认证聊天或授予删除权限。
+
+```powershell
+python scripts/sdd/check_deletion_targets.py --root 'D:/review-repo' --target 'D:/review-repo/candidate' > 'D:/review-evidence/baseline.json'
+python scripts/sdd/check_deletion_targets.py --root 'D:/review-repo' --target 'D:/review-repo/candidate' --baseline 'D:/review-evidence/baseline.json'
+```
+
+已跟踪且无变更的文件记录 `GIT_CLEAN`；未提交、未跟踪、被忽略、Git 隐藏变更标志或空目录要求恢复来源。工具用 `--backup 'D:/review-repo/candidate' 'D:/review-backups/candidate'` 比较既有普通文件/目录备份的完整成员和内容，不创建备份，不跟随链接，也不把硬链接当独立副本。未备份而已获明确丢弃批准的内容仍显示 `BACKUP_REQUIRED`，由当前任务记录例外判断；没有跳过开关或自动放行状态。
+
+| 结果 | 意义 |
+|---|---|
+| `READY_FOR_REVIEW` | 当前技术核验通过；仍需核对当前任务授权及宿主审批 |
+| `CHANGED` / `OUT_OF_SCOPE` | 内容、成员、Git身份或范围发生变化，只暂停受影响项 |
+| `BACKUP_REQUIRED` | 需要核实恢复来源或记录具体内容的已批准丢弃决定 |
+| `SECRET_BOUNDARY` / `REPARSE_POINT` | 停止该项；不读取秘密，不跟随链接 |
+| `IN_USE` / `UNKNOWN` | 已发现占用或无法完成可靠核验；不杀进程，不猜测可删 |
+| `ALREADY_ABSENT` | 仅证明当前不存在；不能证明是谁删除或删除曾获批准 |
+
+Windows 使用不带 delete-on-close 的句柄检查 DELETE 权限及删除共享状态；其他平台占用状态目前返回 `UNKNOWN`。即使通过也不承诺消除扫描后的并发变化，执行紧前重检，正常工具报错后保留现场。baseline 仅接受不超过16 MiB的公开普通JSON文件。
+
+拒绝诊断只接收已经脱敏的原始错误，不访问个人配置，不发起重试：
+
+```powershell
+python scripts/sdd/check_deletion_targets.py --diagnose-error 'CreateProcess rejected: blocked by policy' --effective-approval-policy never
+```
+
+该样例返回 `UNKNOWN_LAYER`，不会仅凭有效模式推断历史拒绝原因。核验 exit 0 仅表示各项为可审阅或已不存在；暂停项 exit 1，非法CLI/基线 exit 2；拒绝诊断始终 exit 1，不能当执行成功。所有结果都与真实删除验收分开记录。
 
 - **G1 worktree-required**：拦 `git checkout -b/-B` 与 `git switch -c/-C`，引导用
   `git -C develop worktree add ../<branch> -b <branch> develop`
@@ -285,6 +327,37 @@ Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 M
 原生 hook 的实际阻断须以宿主事件和工具结果为证；收到拒绝时停止对应动作，聊天批准不自动解锁 hook。事故起源：PR #158（缺 `--base` 误合到 main）+ PR #154（`git checkout -b`
 而非 worktree-add）于 2026-05-12；恢复闭环 PR #159 + 3 层防御设计见
 [[../../plans/[PLAN]_g1_g2_workflow_enforcement|PLAN_g1_g2_workflow_enforcement]]。
+
+## §6.6 Git 发布、远程删除与恢复（#555）
+
+`scripts/check_codex_approvals.py` 现在逐命令覆盖本地删除、commit、普通双推、PR 创建及双端远程引用删除；never/on-request/未知仅是有效模式诊断。具体任务批准与工具审批独立，已有相同批准可复用，一次列明多个动作可分别核验。只批准删除不会包含发布，普通 push 不包含远端删除，PR 不包含 merge。
+
+| 动作 | 执行前对象与条件 | 完成证据 |
+|---|---|---|
+| commit | worktree/分支/HEAD、实际 staged 文件和内容；排除秘密及误纳入的未暂存/未跟踪内容；必要验证、工作树及共享 Git 目录写入条件 | SHA、文件集、实际作者及状态 |
+| 普通 push | 分支、提交范围、remote、本地及两端 tip、网络；Gitee → origin，无默认 force | 每端成功查询的 SHA；失败/未执行端分别列出 |
+| PR create | repo/head SHA/base/标题/正文；head 已推送、已有 PR 查重；non-hotfix develop / hotfix main | 实际 URL、head SHA、base、标题和正文 |
+| 远程删除 | repo/remote/精确 refs/heads 引用、批准时及当前 tip、合并证据、保护分支；两端分别核验 | 成功查询确认不存在；DELETED / ALREADY_ABSENT / REJECTED / FAILED / NOT_EXECUTED / UNKNOWN |
+
+有限识别的单条 `git commit [-m <message> | -F <file>]`、`git push [-u] <gitee|origin> <branch>`、`git push <gitee|origin> --delete <branch>` 和显式 base 的 `gh pr create` 由 hook 输出 HOST_APPROVAL_REQUIRED 上下文；它不作授权认证，不输出 allow/ask/updatedInput。现有规则仍要求 prompt。未知拼法、复合/展开命令、force 等不在该路由内；G1/G2、人工 merge、秘密及受保护编辑边界保留。实现使用官方支持的 PreToolUse additionalContext；官方文档将 permissionDecision=ask 列为不支持，因此不用它模拟审批。[官方 Hooks](https://learn.chatgpt.com/docs/hooks)（2026-09-22 核对；不证明本机 Desktop 已加载或兼容）。
+
+远程删除只读核验示例，参数须替换为已核实的清单，命令自身不删除、不 fetch、不批准：
+
+```powershell
+python scripts/sdd/check_git_actions.py --root 'D:/temporary/review-repo' --ref refs/heads/maintain/example --expected-tip gitee <observed-sha> --expected-tip origin <observed-sha> --base-ref refs/heads/develop
+```
+
+两端范围用重复 `--expected-tip REMOTE SHA` 明确指定；其他保护分支用 `--protected-ref refs/heads/<name>`。本地目标分支或工作树已删时可从其他合法现有工作树核验，无需重建。输出含逐端 query 与状态；查询失败不算不存在；两端 tip 不同或与清单不同暂停，缺本地提交对象记 UNKNOWN。默认保护 main/develop；服务端保护状态仍 NOT_TESTED，remote_identity 为 NOT_ASSESSED，须独立核实 remote 对应的实际仓库及批准对象，工具不读取可能包含凭据的 URL 配置。CLI exit 0 仅代表清单可审阅或执行前已不存在，exit 1 为暂停，非法参数 exit 2。
+
+CLI 以本地提交祖先关系核验普通合并；squash/rebase 由 `inspect_remote_deletion(..., merge_evidence=...)` 接收独立核实的 PR 证据（method、state=MERGED、确切 head、merge_commit），并检查 merge commit 已在 base 中。输入记录为 CALLER_OBSERVATION，工具不能认证 PR 来源或替代人工复核。执行紧前必须重新查询，单次观察不能消除并发更新。
+
+`review_actions(baseline, current, mode=..., progress=...)` 比较五类动作的具体对象：本地删除 root/target/snapshot_sha256；commit repo/branch/head/files/staged_diff_sha256；push repo/branch/remote/from_tip/tip；PR repo/head/head_sha/base/title/body_sha256；远端删除 repo/remote/ref/tip。baseline 是比较数据，owner_approval 始终 NOT_ASSESSED，不可交 hook 当凭证。撤销返回 REVOKED，变化返回 CHANGED 及字段名，新增动作 NOT_IN_SCOPE。实际核验仍须完成上表步骤，READY_FOR_REVIEW 不表示已获授权或可执行。
+
+恢复记录分别保存 last_result 和只读对账结论：MATCH 表示确切结果已核实（删除时必须成功查询证明不存在）；ABSENT 表示成功查询证明动作结果尚未发生；DIFFERENT 表示对象变化；UNKNOWN 表示未能确认。响应丢失或成功但尚未对账返回 RECONCILE_FIRST；已对账成功返回 COMPLETE，不重复执行。远端删除失败后的 ABSENT 指“删除结果未发生，精确旧 tip 仍在”，不能用查询失败填写。
+
+已知 prompt×never 阻断未解除时，新的“同意/继续”、仅网络或文件权限恢复都不会恢复执行；不改工具、不换 remote 试探。工程师恢复后先查实际有效模式、规则/信任加载与对象，再从剩余动作继续。`check_deletion_targets.py --diagnose-error` 保留脱敏原错，分别识别 APPROVAL_MODE、FILESYSTEM_PERMISSION（含 index.lock Permission denied）、NETWORK（含 Connection refused）、FILE_IN_USE、EXEC_POLICY、PROJECT_HOOK；来源不明保持 UNKNOWN_LAYER。
+
+报告分列本地清理、Gitee、origin、计划 state、计划文档提交和其他任务边界。例如 develop=7446e73 的合成场景：本地 COMPLETE、Gitee REJECTED、origin NOT_EXECUTED、计划 completed、文档 UNCOMMITTED、#552 OUT_OF_SCOPE。这既不证明远端清理完成，也不自动授权提交计划或处置 #552。真实验收分别记录本地删除、远端双删及 commit→双推→PR 链路的有效模式、正常工具请求、实际审批/无需弹窗事实和结果；任何缺项单列未验证，离线测试不能替代。
 
 ## §7 LangGraph Studio 首跑
 
@@ -433,3 +506,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-08-10 | v0.7 | §2「长期 worktree」列表订正——原写 `develop` / `main` / `documentation/research-mj-agent` **三者**，实测 `git worktree list` 只有 `.bare`(bare) + `develop`：`research-mj-agent` 本地与两个远端都无对应分支、目录为空壳（本批已删），`main` 从不是工作树。改为「裸库 `.bare/` + 长期 worktree 只有 `develop`」+ 权威口径以 `git worktree list` 为准；临时 worktree 行补 Stage 17 清理与容器目录留空复用。新增一段解释 `git branch` 里 `main` 带 `+` 前缀的成因（`.bare/HEAD` = `ref: refs/heads/main`，故被 `.bare` 自己检出）并提示本地 `main` 指针仍停在脚手架初始提交、要 main 内容用 `origin/main` |
 | 2026-09-21 | v0.8 | P6 原生维护、受控测试、Owner 凭据/信任边界及具名恢复交接；历史记录保留 |
 | 2026-09-22 | v0.8 (patch) | #552：§4.1 补交付前审批预检入口、状态语义和 Git 恢复指南指针 |
+| 2026-09-22 | v0.8 (patch) | #555：§6.5–§6.6 补删除核验、有限 hook 路由、五类动作的独立授权和部分完成恢复；真实宿主验收另记 |

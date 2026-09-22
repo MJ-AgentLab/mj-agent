@@ -184,6 +184,10 @@ git branch --show-current
 
 ### Step 6 — Execute Commit
 
+先复用当前任务对具体分支、文件集及提交内容的明确批准；仅批准删除、push 或 PR 不包含 commit。核对工作树身份、HEAD、实际 staged diff（先按文件名排除秘密）、未暂存/未跟踪内容是否误纳入、验证结果，以及工作树和共享 Git 目录写入条件。内容变化或撤销只暂停受影响提交。不得把“计划 completed”的未提交文档顺带加入。
+
+有限识别的 `git commit` / `git commit -m <message>` / `git commit -F <file>` 交现有 prompt 及正常宿主审批；复杂 shell 展开不在此识别范围。项目批准不认证为工具批准。已知 never 阻断未解除时不重试；仅网络/文件权限恢复或新的“继续”不解除它。响应未知先查 HEAD、实际提交内容及作者，避免重复提交。成功后记录 SHA、文件集合、实际 authorship 和工作区状态。
+
 ```bash
 # 最终确认
 git diff --cached --stat
@@ -191,15 +195,8 @@ git branch --show-current
 
 # 提交
 git commit -m "<type>(<scope>): <summary>"
-# 长描述用 heredoc：
-git commit -m "$(cat <<'EOF'
-<type>(<scope>): <summary>
-
-<long body>
-
-Co-Authored-By: <verified contributor name> <verified contributor email>
-EOF
-)"
+# 长描述先将确切正文及已核实作者 trailer 写入普通文件，再使用：
+git commit -F <message-file>
 
 # 验证
 git log --oneline -1

@@ -25,7 +25,7 @@ Git/gh 仅在工具存在、身份与目标确认后使用；认证或网络缺�
 1. 业务库只能经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`、analyst 只读链路；没有该链路就停。不得用 shell、psql、psycopg、通用 MCP 替代。memory 也不得借用 biz 服务、提升角色或扩大用途。
 2. 不打开、打印、记录、传输 `.env`、加密秘密包或真实凭据。缺字段仅使用已审阅脱敏检查接口；解密、口令输入、OS 凭据写入由 Owner 在自己的终端处理，报告只记录状态。不让用户把秘密贴回聊天。
 3. SQL guardrail/precheck、runtime skill、Prompt、catalog、冻结契约、memory migration、生产/GRANT/外部镜像、元规则、原生配置和 CI gate 等受保护变更先给具体 diff/影响/恢复来源，停在 `OWNER_APPROVAL_REQUIRED`。
-4. commit、push、PR 创建、删除及其他需批准动作保留具体目标的 Owner 决策。聊天批准不等于 hook 自动解锁；原生 hook 对需审批动作保持 block。遇拒绝不得换工具、换编码、改 hook/rules、建 receipt 或改会话模式绕过。执行路线未人工处理时返回 `BLOCKED_EXECUTION_ROUTE`，继续独立只读工作。
+4. commit、push、PR 创建、删除及其他需批准动作保留具体目标的 Owner 决策。当前任务中已明确批准的具体删除清单复用该批准，不重复索取确认或额外理由；删除授权不扩展到其他动作。核验通过后通过正常工具执行，由宿主处理工具审批，不预设 Owner 必须人工删除。hook 不认证聊天，UNKNOWN/FORBIDDEN 继续阻断；实际拒绝时保留原始错误并按证据定位，通用错误不足以归因时标未知。受阻步骤返回 `BLOCKED_EXECUTION_ROUTE`；不得换工具、改写命令、换编码、改 hook/rules、建 receipt 或改会话模式绕过。独立且已授权的工作可继续。
 5. merge 永远交 Owner 人工处理；评审、check-merge、PR 创建不执行 merge 或 auto-merge。发布评论、回复、issue、定时任务等外部动作须有对应明确授权；草案/建议不等于发送许可。
 6. project MCP 仅 GitHub、Playwright、Serena、memory×5，共 8 项；凭据维护工具仅 GitHub+memory×5 的具名变量。biz×5、ssh-manager 和个人/其他来源服务不迁入。
 
@@ -39,11 +39,25 @@ Git/gh 仅在工具存在、身份与目标确认后使用；认证或网络缺�
 
 ## 失败、目标变化与重入
 
-每次危险动作前复核绝对路径、分支 tip、PR head、PID 启动时间/命令、compose project/profile/-f 链、volume 或目标内容摘要。任一变化使旧批准不能覆盖新目标，停止该动作并重提差异。
+每次危险动作前复核绝对路径、分支 tip、PR head、PID 启动时间/命令、compose project/profile/-f 链、volume 或目标内容摘要。删除另核验 Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份和文件占用；逐层检查路径、目标及后代，防止路径逃逸、递归越界及符号链接/重解析点误删。未跟踪/被忽略不等于可丢弃；秘密路径不读取或计算内容摘要。目标或内容实质变化、授权撤销、范围扩大只暂停受影响项并说明差异；其他目录、worktree、新增内容、不同动作及备份移动不自动继承旧批准。
 
 部分完成时按子步骤记录成功/失败/未知，先只读对账再决定剩余动作；已成功步骤不重复。前置失败不盲目进入依赖步骤；仅目标独立、授权仍有效的工作可继续。失败不自动 force、删卷、重建、轮换或回滚。恢复先确认备份/原始内容真实存在，Git 源码不是数据库、volume 或未提交文件备份。
 
 重新进入时读取上次结果并核验当前状态，已满足目标则 no-op 返回；身份不一致或执行结果未知则暂停对应动作。检查器 exit 0、离线 skip、静态合法、Owner 批准、宿主可执行、外部服务可用是不同状态。
+
+### Git 动作、恢复及分项证据
+
+commit / 普通 push / PR create / 本地删除 / 远程引用删除是五类独立动作。当前任务一次明确列出多项批准可分别复用；只批准其中一项不会包含其他项或 merge。目标、内容或授权变化仅暂停受影响项。
+
+- commit：核对工作树/分支/HEAD、实际 staged 文件和 diff、未暂存及未跟踪内容是否误纳入、验证结果，以及工作树和共享 Git 目录的写入条件；完成记录 SHA、文件集、实际 authorship 与状态。
+- push：核对分支、提交范围、两端当前 tip 和网络；按 Gitee → origin 使用独立命令，无默认 force。记录每端 SHA、失败及未执行状态，成功端不重复推送。
+- PR：核对 repo/head SHA/base/标题/正文、head 已推送及已有 PR；non-hotfix 显式 develop，hotfix 显式 main。响应丢失先查同 repo/head/base 并比对内容，记录实际 URL/head/base/body，不重复创建。
+- 远程删除：具体仓库/remote/refs/heads 引用、批准时与当前 tip 及合并证据独立成清单。保护 main/develop 和其他明确保护分支；两端 tip 不同、变化、未合并或查询失败暂停受影响项。squash/rebase 用真实 PR head/merge commit 证据，不单凭祖先关系。已删除的本地 worktree/分支无需重建；从其他合法工作树核验即可。
+- 两端删除按 Gitee → origin，逐端成功查询引用后才判定 DELETED / ALREADY_ABSENT；另保留 REJECTED / FAILED / NOT_EXECUTED / UNKNOWN。响应丢失先对账；已成功或已不存在不重复删除。
+
+原生 hook 对有限识别的 Git 命令仅返回 HOST_APPROVAL_REQUIRED 上下文，现有 prompt 规则及宿主处理审批；不认证任务授权，不把 UNKNOWN 改为 ALLOW。实际 AskForApproval Never 拒绝说明命令未启动；已知相同审批阻断时不尝试另一 remote。重复“同意/继续”、Full Access 或单独网络/文件权限恢复不能解除它。工程师恢复环境后先核对实际有效模式和规则/信任加载，再复核对象及对账，续做剩余且仍获授权的动作。
+
+清理报告独立列本地清理、Gitee、origin、计划 state、计划文档提交状态及其他任务边界。completed 但 UNCOMMITTED 是独立待办，不能代表远程已删或自动触发提交；#552 的 issue/旧工作树/未提交成果不因 #555 清理处置。只读 `repo:scripts/sdd/check_git_actions.py` 提供清单/恢复比较，输入和结果都不是可信授权或执行凭证；`repo:scripts/check_codex_approvals.py` 覆盖五类动作与三种有效模式。
 
 ## 原生配置与文档检查接口
 

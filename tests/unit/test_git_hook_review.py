@@ -1,0 +1,50 @@
+"""Bounded hook routing, no approval token or host execution claim."""
+import io
+import json
+
+import pytest
+from scripts.sdd import codex_hook_guard as guard
+
+
+@pytest.mark.parametrize(('command', 'expected'), [
+    ('git commit -F message.txt', 'HOST_APPROVAL_REQUIRED'),
+    ('git push -u gitee maintain/example', 'HOST_APPROVAL_REQUIRED'),
+    ('git push origin --delete maintain/example', 'HOST_APPROVAL_REQUIRED'),
+    ('git push gitee --delete refs/heads/maintain/example', 'HOST_APPROVAL_REQUIRED'),
+    ('git push origin --delete main', 'FORBIDDEN'),
+    ('git push gitee --delete refs/heads/develop', 'FORBIDDEN'),
+    ('git push origin --force maintain/example', 'UNKNOWN'),
+    ('git push origin :maintain/example', 'UNKNOWN'),
+    ('git push unknown maintain/example', 'UNKNOWN'),
+    ('git commit --amend', 'UNKNOWN'),
+    ('git commit -am test', 'UNKNOWN'),
+    ('git commit -m test; git status', 'UNKNOWN'),
+    (['git', 'push', 'origin', 'maintain/example;git'], 'UNKNOWN'),
+    ('git commit -m $(Get-Content x)', 'UNKNOWN'),
+    ('gh pr create --base main --head maintain/example', 'FORBIDDEN'),
+    ('gh pr create --base develop --head hotfix/example', 'FORBIDDEN'),
+    ('gh pr create --repo synthetic/repo --head hotfix/example --base main --title test --body-file body.md',
+     'HOST_APPROVAL_REQUIRED'),
+    ('gh pr create --base develop --base main', 'UNKNOWN'),
+    ('gh pr create --base develop --unknown x', 'UNKNOWN'),
+])
+def test_bounded_publication_spellings(command, expected) -> None:
+    payload = {'hook_event_name': 'PreToolUse', 'tool_name': 'exec_command',
+               'tool_input': {'cmd': command}, 'owner_approved': True}
+    assert guard.classify(guard.project_payload(payload))[0] == expected
+
+
+def test_hook_emits_context_only_and_keeps_other_blocks(monkeypatch, capsys) -> None:
+    for command, blocked in [('git push origin maintain/example', False),
+                              ('git push origin --force maintain/example', True)]:
+        payload = {'hook_event_name': 'PreToolUse', 'tool_name': 'exec_command',
+                   'tool_input': {'cmd': command}}
+        monkeypatch.setattr('sys.stdin', io.StringIO(json.dumps(payload)))
+        assert guard.main() == 0
+        output = json.loads(capsys.readouterr().out)
+        if blocked:
+            assert output['decision'] == 'block'
+        else:
+            assert set(output) == {'hookSpecificOutput'}
+            assert set(output['hookSpecificOutput']) == {'hookEventName', 'additionalContext'}
+            assert 'does not authenticate Owner authorization' in output['hookSpecificOutput']['additionalContext']

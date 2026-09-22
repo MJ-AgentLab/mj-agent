@@ -107,6 +107,10 @@ git pushall
 
 ## Worktree Validation
 
+复用当前任务对分支、提交范围和目标 remote 的明确 push 批准；不包含 commit、PR、merge 或 `push --delete`。执行前核对实际本地 tip、两端远程 tip 和网络，按 Gitee → origin 分开执行正常命令。下文 alias/复合命令是历史人工用法，不作为原生 hook 拒绝后的改写路线；Codex 正常调用使用有限识别的单条 `git push [-u] <gitee|origin> <branch>`。
+
+每端执行后用成功的远程引用查询核对收到的 SHA，不能只看旧 remote-tracking ref。部分成功时成功端不重复推送，结果未知先对账。已知 prompt×never 拒绝时，后端记 NOT_EXECUTED，不换 remote 试探；重复同意或单独网络/文件权限恢复不解除该阻断。工程师恢复后先核实有效模式、授权及两端 tip，再只做剩余项。不默认 force，不自动提交工作区的新内容。
+
 **Push 必须在 worktree 内执行**——`mj-agent/` 根是 bare repo 无 working tree，root 执行 push 会失败。
 
 ```bash
