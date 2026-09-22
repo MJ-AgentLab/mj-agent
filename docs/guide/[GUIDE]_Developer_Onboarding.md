@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-09-21
+updated: 2026-09-22
 state: draft
 version: v0.8
 track: code
@@ -22,7 +22,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
 > **版本**：v0.8
-> **最后更新**：2026-09-21
+> **最后更新**：2026-09-22
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
 > GUIDE）、[[policies/documentation|documentation policy]]、
@@ -203,6 +203,18 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval -q
 受控 runner 只消费 tracked 文件，封闭环境并锁定插件；必要新测试须先进入经授权的明确交付集合。测试可能写索引或提交时，使用真实工作树之外的独立副本与 TEMP，先确认 Git 初始化成功且 Git 根精确等于副本根。不得让测试向上发现原仓。
 
 integration / smoke / contract 等外部依赖仍按 `SKIP_POLICY_EXTERNAL_DEPENDENCY` 处理；凭据存在不启用 live。skip 不证明服务可用，静态检查也不证明 hook 已加载。外部探针单独授权并按服务留证。
+
+### §4.1 Codex 交付前审批预检
+
+开始任务、首次 commit 前，以及切换会话后、push/PR 前，运行只读预检：
+
+```powershell
+uv run --frozen --no-sync python scripts/check_codex_approvals.py
+```
+
+默认 `UNKNOWN` / exit 2；确认目标会话实际模式后，才传 `--effective-approval-policy never` 或 `on-request`。`never + prompt` 为 `INCOMPATIBLE` / exit 1；`on-request + prompt` 为 `APPROVAL_REQUIRED` / exit 0，仍需具体动作的 Owner HITL 及合法宿主执行路线。静态项目配置、完整访问权限和测试输入都不能证明审批已经满足，hook 硬阻断仍返回 `BLOCKED_EXECUTION_ROUTE`。
+
+脚本列出 commit、Gitee/origin push 和 PR create 的命令族、规则来源及状态，不执行交付动作。有效配置/覆盖来源排查、无副作用规则重放和受控恢复验收见 [Git 推送指南 §0.1–§0.2](../infrastructure/git/[GUIDE]_Git_Push_Workflow.md#01-codex-首次提交前的审批预检)。没有真实会话恢复证据时标未验证。
 
 ## §5 三轨道文档约定
 
@@ -420,3 +432,4 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-08-10 | v0.6 | #108 关联（承 PR #462/#463 的 `config/README.md` §6.3/§6.4 更正）：§7.3 诊断表新增「某个 `pg-*` MCP server 起不来，但 `/doctor` 没报缺、`-Reload` 还显示 `15 / 15 set`」一行——空值键照样计 `[SET]`，判据是**掩码**（`****` = 空 / `post****` = 真值）；机制为 `pg-server-start.cmd` 判 `if not defined`（cmd 里空串等同未定义）→ `exit /b 3`，node 从未启动。另订正两处**既存**漂移：① frontmatter `version` 停在 v0.4 而本表已记 v0.5（2026-07-17 那次只落表未 bump），本行起对齐；② body「最后更新」行停在 2026-07-08，改随 frontmatter |
 | 2026-08-10 | v0.7 | §2「长期 worktree」列表订正——原写 `develop` / `main` / `documentation/research-mj-agent` **三者**，实测 `git worktree list` 只有 `.bare`(bare) + `develop`：`research-mj-agent` 本地与两个远端都无对应分支、目录为空壳（本批已删），`main` 从不是工作树。改为「裸库 `.bare/` + 长期 worktree 只有 `develop`」+ 权威口径以 `git worktree list` 为准；临时 worktree 行补 Stage 17 清理与容器目录留空复用。新增一段解释 `git branch` 里 `main` 带 `+` 前缀的成因（`.bare/HEAD` = `ref: refs/heads/main`，故被 `.bare` 自己检出）并提示本地 `main` 指针仍停在脚手架初始提交、要 main 内容用 `origin/main` |
 | 2026-09-21 | v0.8 | P6 原生维护、受控测试、Owner 凭据/信任边界及具名恢复交接；历史记录保留 |
+| 2026-09-22 | v0.8 (patch) | #552：§4.1 补交付前审批预检入口、状态语义和 Git 恢复指南指针 |
