@@ -21,7 +21,7 @@ def candidate(tmp_path: Path) -> Path:
     for rel in (".codex", "scripts/mcp"):
         shutil.copytree(ROOT / rel, root / rel)
     (root / "scripts/sdd").mkdir(parents=True)
-    for name in ("codex_hook_guard.py", "check_codex_native.py", "run_codex_hook.ps1"):
+    for name in ("codex_hook_guard.py", "git_command_review.py", "check_codex_native.py", "run_codex_hook.ps1"):
         shutil.copyfile(ROOT / "scripts/sdd" / name, root / "scripts/sdd" / name)
     return root
 
@@ -82,7 +82,7 @@ def test_rules_and_hooks_malformed_fail(tmp_path: Path) -> None:
     ("on-request", "APPROVAL_REQUIRED"),
 ])
 def test_approval_layers_remain_separate(mode: str | None, expected: str) -> None:
-    assert approval_status(mode) == expected
+    assert approval_status(mode, "prompt") == expected
 
 
 @pytest.mark.parametrize(("mode", "expected", "exit_code"), [
@@ -99,30 +99,21 @@ def test_delivery_approval_preflight(
     args = [] if mode is None else ["--effective-approval-policy", mode]
     assert main(args, repo_root=root) == exit_code
     report = json.loads(capsys.readouterr().out)
-    assert report["session_approval"] == expected
+    assert report["session_approval"] == "PER_COMMAND"
     assert report["effective_approval_policy"] == (mode or "unknown")
     assert report["owner_approval"] == "NOT_ASSESSED"
     assert report["host_enforcement"] == "NOT_TESTED"
     assert report["remote_authentication"] == "NOT_TESTED"
     rows = report["commands"]
-    assert [row["command"] for row in rows] == [
-        ["Remove-Item", "-LiteralPath", "<absolute-target>"],
-        ["git", "commit"], ["git", "push", "-u", "gitee", "<branch>"],
-        ["git", "push", "-u", "origin", "<branch>"],
-        ["gh", "pr", "create", "--base", "develop"],
-        ["git", "push", "gitee", "--delete", "<branch>"],
-        ["git", "push", "origin", "--delete", "<branch>"],
-    ]
-    assert all(row["status"] == expected for row in rows)
-    assert all(row["rule_decision"] == "prompt" for row in rows)
-    assert all(row["rule_source"] == ".codex/rules/mj-agent.rules" for row in rows)
-    assert [row["command_family"] for row in rows] == [
-        ["Remove-Item"], ["git", "commit"], ["git", "push"], ["git", "push"],
-        ["gh", "pr", "create"], ["git", "push"], ["git", "push"],
-    ]
+    assert len(rows) == 9
+    assert rows[0]['status'] == expected
+    assert rows[0]['rule_decision'] == 'prompt'
+    assert all(row['rule_decision'] == 'NO_MATCH' for row in rows[1:])
+    assert all(row['status'] == 'NO_PROJECT_RULE_REQUIREMENT' for row in rows[1:])
+    assert all(row['rule_source'] == '.codex/rules/mj-agent.rules' for row in rows)
 
 
-@pytest.mark.parametrize("damage", ["missing", "malformed", "allow", "forbidden", "hook"])
+@pytest.mark.parametrize("damage", ["missing", "malformed", "allow", "forbidden", "hook", "duplicate-key"])
 def test_delivery_preflight_invalid_rules_are_unknown(tmp_path: Path, damage: str) -> None:
     from scripts.check_codex_approvals import diagnose
 
@@ -134,10 +125,13 @@ def test_delivery_preflight_invalid_rules_are_unknown(tmp_path: Path, damage: st
         rules.write_text("invalid('synthetic-private-value')", encoding="utf-8")
     elif damage == "hook":
         (root / ".codex/hooks.json").write_text("{}", encoding="utf-8")
+    elif damage == "duplicate-key":
+        rules.write_text(rules.read_text('utf-8').replace('pattern=["Remove-Item"]',
+                         'pattern=["Remove-Item"], pattern=["Remove-Item"]'), encoding='utf-8')
     else:
         rules.write_text(rules.read_text("utf-8").replace('"prompt"', f'"{damage}"'), encoding="utf-8")
     report = diagnose(root, "on-request")
-    assert report["session_approval"] == "UNKNOWN"
+    assert report["session_approval"] == "PER_COMMAND"
     assert report["errors"]
     assert all(row["status"] == "UNKNOWN" for row in report["commands"])
     assert "synthetic-private-value" not in json.dumps(report)
@@ -161,7 +155,7 @@ def test_delivery_preflight_is_read_only(tmp_path: Path, monkeypatch: pytest.Mon
     monkeypatch.setattr(Path, "read_text", read)
     monkeypatch.setattr(Path, "write_text", forbidden)
     monkeypatch.setattr(subprocess, "Popen", forbidden)
-    assert diagnose(root, "never")["session_approval"] == "INCOMPATIBLE"
+    assert diagnose(root, "never")["commands"][0]["status"] == "INCOMPATIBLE"
     assert {path: path.read_bytes() for path in allowed} == before
 
 
@@ -178,7 +172,7 @@ def test_delivery_preflight_rejects_indirect_input_before_read(
     monkeypatch.setattr(Path, "is_symlink", lambda path: path == root / ".codex")
     monkeypatch.setattr(Path, "read_text", forbidden)
     report = diagnose(root, "on-request")
-    assert report["session_approval"] == "UNKNOWN"
+    assert report["session_approval"] == "PER_COMMAND"
     assert report["errors"] == ["indirect enforcement path; no files read"]
 
 
@@ -197,7 +191,7 @@ def test_delivery_preflight_cli_from_other_directory(
         capture_output=True, text=True, check=False, timeout=20,
     )
     assert proc.returncode == exit_code, proc.stderr
-    assert json.loads(proc.stdout)["session_approval"] == expected
+    assert json.loads(proc.stdout)["commands"][0]["status"] == expected
 
 
 def test_literal_deletion_uses_host_review_and_unknown_still_blocks() -> None:
@@ -216,8 +210,8 @@ def test_literal_deletion_uses_host_review_and_unknown_still_blocks() -> None:
     ("git status", "ALLOW"), ("git checkout -b trial", "FORBIDDEN"),
     ("git switch -c trial", "FORBIDDEN"), ("psql", "FORBIDDEN"),
     ("pg_dump", "FORBIDDEN"), ("gh pr merge 1", "FORBIDDEN"),
-    ("gh pr create", "FORBIDDEN"), ("gh pr create --base develop", "HOST_APPROVAL_REQUIRED"),
-    ("git push origin example", "HOST_APPROVAL_REQUIRED"),
+    ("gh pr create", "FORBIDDEN"), ("gh pr create --base develop", "UNKNOWN"),
+    ("git push origin example", "TASK_AUTHORIZATION_CONTEXT"),
     ("Get-Content .env", "FORBIDDEN"), ("Get-Content .env.example", "ALLOW"),
 ])
 def test_native_command_boundaries(command: str, expected: str) -> None:

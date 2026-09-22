@@ -34,11 +34,11 @@ class NativeWire(unittest.TestCase):
             self.assertIsNone(self.command(command))
 
     def test_owner_actions_defer_without_claiming_approval(self):
-        for command in ['gh pr create --base develop --title t',
+        for command in ['gh pr create --repo synthetic/repo --head maintain/example --base develop --title t --body-file body.md',
                         'git commit -m "docs: mention checkout -b in guide"', 'git commit -m "docs: 中文提交说明"']:
             output = self.command(command)
             self.assertEqual(set(output), {'hookSpecificOutput'})
-            self.assertTrue(output['hookSpecificOutput']['additionalContext'].startswith('HOST_APPROVAL_REQUIRED:'))
+            self.assertTrue(output['hookSpecificOutput']['additionalContext'].startswith('TASK_AUTHORIZATION_CONTEXT:'))
         self.assertTrue(self.command('gh pr create --base=main --title t')['reason'].startswith('UNKNOWN:'))
 
     def test_unparsed_compound_is_explicit_unknown(self):

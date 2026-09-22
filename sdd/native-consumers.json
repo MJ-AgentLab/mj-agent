@@ -40,6 +40,7 @@
     "scripts/sdd/check_test_offline_boundary.py",
     "scripts/sdd/check_traceability.py",
     "scripts/sdd/codex_hook_guard.py",
+    "scripts/sdd/git_command_review.py",
     "scripts/sdd/fixture_runner.py",
     "scripts/sdd/generate_archive_index.py",
     "scripts/sdd/generate_index.py",

@@ -55,7 +55,9 @@ commit / 普通 push / PR create / 本地删除 / 远程引用删除是五类独
 - 远程删除：具体仓库/remote/refs/heads 引用、批准时与当前 tip 及合并证据独立成清单。保护 main/develop 和其他明确保护分支；两端 tip 不同、变化、未合并或查询失败暂停受影响项。squash/rebase 用真实 PR head/merge commit 证据，不单凭祖先关系。已删除的本地 worktree/分支无需重建；从其他合法工作树核验即可。
 - 两端删除按 Gitee → origin，逐端成功查询引用后才判定 DELETED / ALREADY_ABSENT；另保留 REJECTED / FAILED / NOT_EXECUTED / UNKNOWN。响应丢失先对账；已成功或已不存在不重复删除。
 
-原生 hook 对有限识别的 Git 命令仅返回 HOST_APPROVAL_REQUIRED 上下文，现有 prompt 规则及宿主处理审批；不认证任务授权，不把 UNKNOWN 改为 ALLOW。实际 AskForApproval Never 拒绝说明命令未启动；已知相同审批阻断时不尝试另一 remote。重复“同意/继续”、Full Access 或单独网络/文件权限恢复不能解除它。工程师恢复环境后先核对实际有效模式和规则/信任加载，再复核对象及对账，续做剩余且仍获授权的动作。
+项目 rules 无 Git/gh 条目，hook 对有限识别形态仅返回 TASK_AUTHORIZATION_CONTEXT，不认证任务授权、不强制宿主审批、不把 UNKNOWN 改为 ALLOW。G1/G2、人工 merge、秘密与受保护编辑检查保留。never 单独不构成 Git/gh 不兼容；Remove-Item 保留 prompt，不能把其结论套给 git branch -d 或 git worktree remove。诊断分列具体命令、规则来源/匹配、有效模式及来源、静态 hook 结果与宿主实测状态；文件缺失/损坏不等于无匹配，规则加载不明须单列。
+
+实际 AskForApproval Never 拒绝保留原错和已知来源，不能推断所有后续 Git 动作永久受阻。已知未解除的实际阻断仍暂停，不换工具、remote 或拆批试探；重复“继续”和仅网络/文件权限恢复不构成恢复。经审阅规则变更且目标会话加载得到核验，或工程师修复实际阻断来源后，重新评估该动作，再对账并只续做剩余项。批量远程删除逐目标授权/核验；任何保护、变化、未合并或范围不符暂停该批次，每端每条引用分别记录结果。
 
 清理报告独立列本地清理、Gitee、origin、计划 state、计划文档提交状态及其他任务边界。completed 但 UNCOMMITTED 是独立待办，不能代表远程已删或自动触发提交；#552 的 issue/旧工作树/未提交成果不因 #555 清理处置。只读 `repo:scripts/sdd/check_git_actions.py` 提供清单/恢复比较，输入和结果都不是可信授权或执行凭证；`repo:scripts/check_codex_approvals.py` 覆盖五类动作与三种有效模式。
 

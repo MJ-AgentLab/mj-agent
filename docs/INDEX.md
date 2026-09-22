@@ -11,6 +11,8 @@ track: shared
 
 # mj-agent 文档索引
 
+Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)（draft）、[实施计划](../plans/[PLAN]_555_approved_deletion.md) §11 和 [开发指南](guide/[GUIDE]_Developer_Onboarding.md) §6.6。
+
 > **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
 > 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.
 >

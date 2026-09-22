@@ -88,50 +88,38 @@ Issue → 创建分支 → 编码 → 自测 → 提交 → ★ 推送 → 创�
 
 ### 0.1 Codex 首次提交前的审批预检
 
-开始任务及首次 commit 前检查一次；切换会话/权限设置后、push/PR 前重跑，避免完成提交后才发现交付无法执行。只读诊断入口如下：
+开始任务、首次 commit 前、push/PR 前及执行条件变化后，按当前具体动作运行只读诊断。项目 rules 无 Git/gh 条目，never 单独不阻断 Git/gh；Owner 的具体动作授权与宿主执行限制仍分别核验。
 
 ```powershell
-# 不知道目标会话有效模式时省略参数：应输出 UNKNOWN，exit 2
-uv run --frozen --no-sync python scripts/check_codex_approvals.py
-
-# 仅当目标会话实际显示 never 时使用，预期 INCOMPATIBLE，exit 1
-uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy never
-
-# 仅当已核实目标会话有效值为 on-request 时使用，预期 APPROVAL_REQUIRED，exit 0
-uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy on-request
+# 有效模式确实观察为 never 时，筛选 Git 发布动作。
+uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy never --action commit --action push --action pr_create
+# 未核实有效模式时省略模式参数；JSON 如实保留 unknown。
+uv run --frozen --no-sync python scripts/check_codex_approvals.py --action commit
+# 本地删除示例同时列 Remove-Item 和 Git 两种清理命令。
+uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-approval-policy never --action local_delete
 ```
 
-脚本默认检查自身所在工作树；可用 `--root <工作树路径>` 指定项目文件。它复用原生检查器，仅读项目规则/钩子，不读取用户配置、凭据或会话转录，不运行 Git/gh/Codex 子进程。输出列出 `git commit`、Gitee push、origin push、`gh pr create --base develop` 的命令族、示例及 `.codex/rules/mj-agent.rules` 来源。PR 示例的 base 为非 hotfix 默认值；hotfix 仍为 main。
+默认项目根为脚本所在工作树，可传 --root；--action 可重复，--command-json 可诊断单条明确 argv。脚本不读个人配置、凭据或转录，不运行 Git/gh/Codex 子进程，不执行发布。每行包括项目规则来源、匹配结果、有效模式、静态 hook 判定；整体 `session_approval=PER_COMMAND`。
 
-| 输出 | 含义与下一步 |
-| --- | --- |
-| `INCOMPATIBLE` / exit 1 | 已核对的项目规则要求 prompt，而调用方观察模式为 never；交付前先恢复支持审批的会话 |
-| `UNKNOWN` / exit 2 | 模式未核实，或原生规则/钩子缺失、间接、格式错误、与既定规则不符；查看 errors 并核验，不当 PASS |
-| `APPROVAL_REQUIRED` / exit 0 | 模式可请求审批，仍须取得具体动作的 Owner HITL；不表示动作已批准或可执行 |
+| 每条命令状态 | 含义 |
+|---|---|
+| NO_PROJECT_RULE_REQUIREMENT | 文件基线完整且无项目规则匹配；Git/gh 在 never/on-request/未知模式均可有此静态结论，不证明宿主已允许 |
+| INCOMPATIBLE | 该命令匹配 prompt 且有效模式为 never；当前保留的 Remove-Item 属于此情况，不能扩大到独立 Git 动作 |
+| APPROVAL_REQUIRED | 该命令匹配 prompt 且模式为 on-request；可请求不等于已经批准 |
+| UNKNOWN | 规则/钩子缺失、损坏、间接、不合基线，或所选 prompt 的模式未知；核实 errors，不当无规则 |
 
-必须分开理解三层：Owner 对任务/动作的授权、规则 `prompt` 对工具审批的要求、目标会话 `never/on-request` 是否支持请求审批。`danger-full-access` 是沙箱权限，不自动满足 prompt。`rule_scope=PROJECT_FILES_ONLY` 仅说明检查范围；`owner_approval=NOT_ASSESSED`、`host_enforcement=NOT_TESTED` 和 `remote_authentication=NOT_TESTED` 保留未核验事实。
+exit 0 表示所选示例未见静态冲突，exit 1 表示所选命令不兼容或 hook 静态暂停，exit 2 表示诊断输入/规则未知。全选 never 因 Remove-Item 返回 1，筛选 Git 不继承其结果。`rule_scope=PROJECT_FILES_ONLY`、`rule_loading=UNKNOWN`、`owner_approval=NOT_ASSESSED`、`host_enforcement=NOT_TESTED` 和 `remote_authentication=NOT_TESTED` 保留证据边界。
 
-### 0.2 审批冲突的恢复与验收
+### 0.2 实际拒绝的恢复与验收
 
-1. 记录被拒绝动作、时间及脱敏错误。若是 `CreateProcess` 前的 `approval required by policy, but AskForApproval is set to Never`，尚未启动 Git，不能归因为远端 token/权限或网络错误，也不能当作自动审批模型评估不通过。
-2. 由 Owner 在目标客户端核对有效会话模式、启动/会话覆盖、所选 profile 以及项目配置是否受信任并加载；仅记录非敏感键和来源。静态 `.codex/config.toml` 里的 on-request 不能证明会话有效值。官方配置层级列出 CLI 覆盖、可信项目配置、profile、用户配置等；不能仅看到用户配置 never 就断言它覆盖了项目配置。Desktop 覆盖来源须有该客户端证据，CLI 版本不等于 Desktop 内嵌引擎版本。
-3. Owner 选择支持审批的会话。CLI 可由 Owner 在目标工作树终端使用 `codex --ask-for-approval on-request --sandbox workspace-write` 启动（本机 0.147.0 帮助已核对）；随后仍需检查有效模式。Desktop 使用其实际提供的权限设置并重新核验，不保证单改配置或新开任务即可恢复。Agent 不自动修改个人配置、建立信任或激活 hooks。
-4. 在该工作树做以下无副作用规则重放，确认三个顶层 decision 均为 prompt。这只计算指定项目规则，不执行传入的 push/PR，不证明全部活动配置层或实际审批弹窗：
+1. 保留脱敏原错、具体命令和对象。AskForApproval Never、文件权限/占用、网络、exec-policy、危险命令检查及项目 hook 按证据分别定位；通用 blocked by policy 保持未知来源。
+2. 已知未解除的实际阻断暂停对应动作，不重复聊天批准、换 remote/工具或改写命令试探。部分成功或响应丢失先查提交、两端 SHA 或 PR，成功项不重复。
+3. 经审阅的项目规则变更或工程师恢复后，核实目标会话有效模式、覆盖来源和实际加载的新规则/hook，再按变化后的条件重新评估。仅改文件、Full Access、网络恢复或 CLI 版本不能证明 Desktop 已恢复；Agent 不修改个人配置或自动激活 hooks。
+4. hook 对识别成功的命令输出 TASK_AUTHORIZATION_CONTEXT，不强制宿主审批；G1/G2、人工 merge、UNKNOWN/FORBIDDEN 和受保护编辑仍保留。宿主其他来源规则仍可审批或拒绝，如实记录 BLOCKED_EXECUTION_ROUTE。
+5. 沿用同一动作与对象的明确任务授权，分别记录 commit、双推、PR 创建和双端删除的实际审批/无需审批/拒绝及结果。新条件下的 never 验收单列，不能以静态通过或旧规则下成功代替。
 
-   ```powershell
-   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty git push -u gitee example
-   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty git push -u origin example
-   codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty gh pr create --base develop
-   ```
+普通 push 不包含远端删除。删除支持有限识别的单/多分支，但逐 ref 绑定授权、tip 和合并证据；任一保护或变化目标暂停该批次。每端每 ref 查询确认不存在才算完成；本地清理、计划 completed 和文档提交状态不替代远端证据。完整参数与只读核验 API 见 [Developer Onboarding §6.6](../../guide/[GUIDE]_Developer_Onboarding.md#66-git-发布远程删除与恢复555)，决策见 [ADR-041](../../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)。
 
-5. 用实际观察的模式重跑预检。只有动作级 Owner 授权和合法宿主执行路线均已满足，才回原任务继续交付；先核对分支 tip、两端状态及 PR 查重。复用已有具体批准，不重复索取。#555 的有限 Git 命令由 hook 返回 HOST_APPROVAL_REQUIRED 上下文，交既有 prompt 和宿主正常审批；受保护编辑仍可拒绝 OWNER_APPROVAL_REQUIRED，UNKNOWN/FORBIDDEN 仍 block。聊天批准和 on-request 不解锁其他阻断。无路线返回 `BLOCKED_EXECUTION_ROUTE`，不得删 prompt、加宽泛 allow、生成审批凭证、改写命令或换工具/传输绕过。
-6. 验收分别记录诊断输出、规则重放、有效会话模式与来源、实际审批交互及真实交付结果。没有后两项就标未验证；离线参数场景不替代真实恢复，也不自动恢复 #552 原分支的推送/PR。
-
-已知 prompt×never 未解除时，重复“同意/继续”、Full Access 或仅网络/文件权限恢复不触发重试，也不以切换 remote 试探。Gitee 成功、origin 失败时先对账两端 SHA，只继续未完成端；PR 响应丢失先查询同 repo/head/base 并核对正文，避免重复创建。原始错误中 index.lock Permission denied、网络 Connection refused 与审批模式错误分开记录，通用 blocked by policy 保持未知。
-
-普通 push 不包含 `git push <remote> --delete <branch>`。远程删除独立核验精确引用、两端 tip、合并证据和保护分支，逐端成功查询不存在才判完成。本地已清理、计划 completed、计划文档已提交与两端远程清理四项独立报告；操作及只读核验入口见 [[../../guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §6.6。
-
-原生迁移后不再运行旧 `agents_sync.py`。规则保全使用 `scripts/sdd/check_codex_native.py --surface all` 与 `--surface enforcement`，静态成功不代表交付获准。依据：[Issue #552](https://github.com/MJ-AgentLab/mj-agent/issues/552)、[ADR-040](../../../decisions/ADR-040_Codex_Only_Development.md)、[官方 Rules](https://learn.chatgpt.com/docs/agent-configuration/rules)、[官方 Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)（核对日期：2026-09-22）。
 
 ## 1 Commit 质量检查
 

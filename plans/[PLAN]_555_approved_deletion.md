@@ -12,7 +12,7 @@ track: engineering-workflow
 
 > Issue: [#555](https://github.com/MJ-AgentLab/mj-agent/issues/555)
 > 关联: [#552](https://github.com/MJ-AgentLab/mj-agent/issues/552)
-> 状态：Owner 首次回复“实施”批准7文件方案，后要求按更新后的 Issue 继续实施，并明确批准 proposed-git-hook.diff 及说明同步。§1–§8 保留首次方案/验证的历史记录，当前范围与结果以 §9 为准。真实 on-request 宿主验收未完成，计划保持 active；本文件不是授权凭证。
+> 状态：§1–§10 保留 #558/#560 方案、失败与验证历史；最新范围以 §11 及 Issue updatedAt=2026-09-22T07:06:27Z 为准。旧 Git prompt、统一 on-request 和多分支 UNKNOWN 的要求由本轮对应条款替代。新条件下真实宿主验收未完成，计划保持 active；本文件不是授权凭证。
 
 ## 1. Repo Scan Result 与证据
 
@@ -328,3 +328,47 @@ AC-6 本轮补充单分支正例、多分支反例及示例一致性；AC-10 离
 - 文档静态审阅：A1–A4 路径/元数据/链接通过，A5–A6 无入口变化，A7–A11 无 runtime canonical 变更，A12–A14 保留既有保护面和实际宿主未验证状态。Onboarding GUIDE 长度超过建议 500 行，记 OB1 WARN（原指南已超过建议长度，本次按既有 §6.6 局部补充）；无新路径或移动，其他 OB 未见本次新增矛盾。检查已有推送 GUIDE 的 never 恢复说明与本次入口一致，未重复修改。
 - `check_codex_approvals.py --effective-approval-policy never`：7 行 INCOMPATIBLE，exit 1（预期停止诊断）；owner NOT_ASSESSED、host NOT_TESTED。
 - 本次是既有行为的覆盖补充与流程说明修复，测试首次运行通过，未宣称 red-green 修复了 hook 行为。实施来源 Codex；未委派；未执行外部业务测试或宿主成功验收。
+
+## 11. 按实际命令分离项目授权与执行条件（2026-09-22）
+
+### 输入、方法与实施停点（应用前记录）
+
+Issue 最新 updatedAt=2026-09-22T07:06:27Z；Owner 本次要求修复最新内容。基线 develop=b577fb690dffb31b80d7e72b45dda3bc310c6738；独立工作树 codex/555-command-policy。类型 maintain / C infra，风险 High。受保护 diff 按 Issue 的 HITL 约定审阅后应用；本轮先生成完整候选补丁，在未启用的公共源码副本验证，正式工作树规则、个人配置、信任和 hooks 加载均未修改。
+
+副本排除 config/secrets*、非示例 .env 与密钥文件；独立 Git 元数据只供原离线 runner 核验 tracked 输入，未提交或连接真实 remote。使用 develop 既有解释器，未安装依赖。测试流程：51 个新场景先观察 26 failed / 25 passed，再实现到 51 passed；扩大相关回归后 243 passed / 30 subtests passed，后续补充边界的最终结果见交付报告。
+
+### 任务、AC 与 Documentation Decision
+
+| 对象 | 决策、任务及对应 AC |
+|---|---|
+| .codex/rules + check_codex_native | update：移除六条 Git/gh 条目，准确保留四条剩余规则；规则损坏/重复参数拒绝，主检查器不再输出统一会话不兼容（15、21） |
+| git_command_review + codex_hook_guard | create/update：有限词法解析和动作对象，多消息/文件互斥、upstream 换序、显式源:目标、批量删除、PR 短参数/等号；上下文无宿主审批宣称，保留 G1/G2/人工 merge/秘密/受保护编辑（16–20） |
+| check_codex_approvals | update：动作筛选和精确 argv；规则匹配、模式来源、加载未知、静态 hook 和宿主未测试分列；Remove-Item 冲突只影响该命令（21） |
+| check_git_actions | update：实际 command 与 scope 匹配、显式源和目标只读核验、批量逐 ref 检查与暂停；旧拒绝须核验条件变化及实际加载，成功/未知先对账（18、19、22） |
+| sdd/native-consumers.json | update：登记新 helper 这个直接执行依赖；不改 CI gate 或冻结 capability 契约 |
+| AGENTS / ai-agent / execution-boundaries | update：动作授权仍独立；移除统一 Git prompt 前提，保留拒绝来源和恢复要求（23） |
+| commit/push/PR/delete/post-merge 五技能 | update：按具体命令诊断及批量逐 ref 恢复；其余技能与冻结 infra 保持（23） |
+| Onboarding / Git Push Workflow | update：支持参数、CLI/API、状态和实际验收；历史记录保留（23、24） |
+| ADR-041 / decisions INDEX / docs INDEX / CHANGELOG | create/update：记录取消 Git 规则的权衡、减少一层防线及宿主边界，入口关联闭合；ADR 为 draft（23） |
+| 新旧直接测试 | update：先红后绿及回归；字符串/argv、文本引号、未列参数、规则损坏、未知加载、实际拒绝恢复和逐引用结果 |
+| SPEC / RUNBOOK / Local ISSUE / ASSESSMENT / MCP 冻结契约 | none：无需新增；业务与服务集合不变 |
+
+### 授权与证据边界
+
+本候选仅准备 #555 已明确选择的规则治理方案，新增 helper 作为现有原生守卫的直接依赖一并保护、校验和登记。没有用候选规则执行真实 commit/push/PR、删除或修改当前宿主模式，没有建 receipt。移除 rules 不等于取消宿主其他来源的审批/拒绝；同一任务授权不被当作可信执行凭证。
+
+旧拒绝的 prior_blocks、加载哈希与模式是调用者观察，检查器只比较、不认证。只有明确项目 prompt 来源，且核验新条件的加载证据，才可重新评估；未知或其他宿主来源不能由规则文件变更自动解除。对账成功仍优先记 COMPLETE，剩余批次不能重复携带已成功引用。
+
+### 完成标准与未验证项
+
+AC-15～23 的候选代码、文档与离线回归成组交付，审批后只应用已审阅补丁并复核本工作树。AC-4/9/13/24 的临时对象真实链路仍需单独对象授权及目标会话加载/执行证据；当前 never 是真实模式，但候选文件不是当前会话生效规则。Issue 保持 OPEN，Plan 保持 active，不以 #560 已清理或旧条件下发布成功替代新规则验收。
+
+独立报告本地 Git 清理、Remove-Item、提交/双推/PR 和双端逐 ref 删除；没有实测的步骤标未验证。实现来源 Codex；未委派；未运行业务/外部服务、修改个人配置、启用信任或触发新交付循环。
+
+### 批准应用与实际工作树验证（2026-09-22）
+
+Owner 回复“批准应用完整补丁”后，核对基线、干净工作树、28 个目标原始摘要、补丁及恢复包摘要，再以 `git apply --whitespace=error-all` 应用。28 个应用结果的规范化 SHA-256 全部匹配批准清单，无额外文件变更；随后仅同步本段与 ADR-041 的应用状态。原始批准补丁 SHA-256 为 `e31485746e44e245748b46c72df898baab2cba969091632d98afab2617b0c797`，保留于本地交付目录。
+
+实际工作树重新执行九文件离线回归：**301 passed、30 subtests passed，37.86s，exit 0**。全仓 Ruff、五个修改源模块 mypy、原生配置/技能与 governance entries/consumers 均通过。原生检查报告 session_approval=PER_COMMAND、effective_approval_policy=never、rule_loading=UNKNOWN、host_enforcement=NOT_TESTED。
+
+三个新增文件仅登记 intent-to-add 供既有离线 runner 核验；未创建提交、推送、PR 或执行真实删除。实际规则加载与 AC-4/9/13/24 仍未验证，Issue 保持 OPEN、计划保持 active；本轮批准不扩展到 Git 发布或宿主配置变更。

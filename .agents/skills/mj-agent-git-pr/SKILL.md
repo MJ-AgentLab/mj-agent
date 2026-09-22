@@ -52,7 +52,7 @@ This skill should be used when the user asks to create a Pull Request, select a 
 
 复用当前任务对 repo、head/base、标题和确切正文的明确创建批准；commit/push 或删除批准不包含 PR，PR 批准不包含 merge。核实 head SHA 已推送，先按 repo/head/base 查询已有 PR。内容或目标实质变化仅暂停受影响动作；响应丢失先对账 URL、head SHA、base、标题和正文，未确认不存在前不重复创建。
 
-有限识别的显式 base 命令交现有 prompt/宿主正常审批，UNKNOWN 不自动放行。已知 never 阻断未解除时，不因重复“继续”或网络恢复重试；工程师恢复有效模式后重新核对对象及已有 PR。完成才报告真实 URL/head/base/body。下文 release 示例不属于 #555 的 non-hotfix/hotfix 有限路由；不能改写命令来绕过拒绝。
+有限识别要求显式 repo/head/base/title/body-file；支持长参数、对应 -R/-H/-B/-t/-F/-d 和有值长参数等号形式。base 须匹配 head 类型；重复冲突、缺值及未知参数保持 UNKNOWN。hook 仅给 TASK_AUTHORIZATION_CONTEXT；项目 rules 无 gh 条目，never 单独不阻断 PR 创建。任务授权及宿主限制仍分别核验；已知实际拒绝未解除时不因“继续”或网络恢复重试。规则变更经审阅且加载核实后，按实际条件重新评估、核对对象及已有 PR。完成才报告真实 URL/head/base/body。下文 release 示例不属于 #555 的 non-hotfix/hotfix 有限路由；不能改写命令来绕过拒绝。
 
 ```bash
 gh auth status        # GitHub CLI 已登录
