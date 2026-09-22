@@ -17,6 +17,7 @@ REQUIRED = (
     "scripts/mcp/pg-server-start.ps1", "scripts/mcp/pg-server-wrapper.mjs",
     "scripts/mcp/setup-mcp-secrets.ps1", "scripts/sdd/codex_hook_guard.py",
     "scripts/sdd/run_codex_hook.ps1", "scripts/sdd/check_codex_native.py",
+    "scripts/sdd/git_command_review.py",
 )
 RULES = {
     ("Remove-Item",): "prompt",

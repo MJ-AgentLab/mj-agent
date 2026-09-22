@@ -29,6 +29,16 @@ class NativeMcpScopes(unittest.TestCase):
     def test_valid_native_public_fixture(self):
         self.assertEqual(checker.check(self.root), [])
 
+    def test_required_inventory_includes_all_enforcement_dependencies(self):
+        self.assertLessEqual(set(checker.ENFORCEMENT), set(checker.REQUIRED))
+
+    def test_missing_git_command_helper_only_fails_enforcement(self):
+        (self.root / 'scripts/sdd/git_command_review.py').unlink()
+        self.assertEqual(checker.check_mcp(self.root), [])
+        expected = ['missing or indirect required file: scripts/sdd/git_command_review.py']
+        self.assertEqual(checker.check_enforcement(self.root), expected)
+        self.assertEqual(checker.check(self.root), expected)
+
     def test_enforcement_drift_does_not_become_v11_failure(self):
         (self.root / '.codex/hooks.json').write_text('{}')
         self.assertEqual(checker.check_mcp(self.root), [])
