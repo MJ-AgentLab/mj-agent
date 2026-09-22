@@ -19,6 +19,7 @@ REQUIRED = (
     "scripts/sdd/run_codex_hook.ps1", "scripts/sdd/check_codex_native.py",
 )
 RULES = {
+    ("Remove-Item",): "prompt",
     ("git", "checkout", "-b"): "forbidden", ("git", "switch", "-c"): "forbidden",
     ("gh", "pr", "merge"): "forbidden", ("psql",): "forbidden",
     ("pg_dump",): "forbidden", ("pg_restore",): "forbidden",
@@ -36,7 +37,7 @@ HOOK_BOOTSTRAP = (
 
 
 def approval_status(mode: str | None) -> str:
-    return {"never": "INCOMPATIBLE", "on-request": "APPROVAL_REQUIRED"}.get(mode, "UNKNOWN")
+    return {"never": "INCOMPATIBLE", "on-request": "APPROVAL_REQUIRED"}.get(mode or "", "UNKNOWN")
 
 
 def check_mcp(root: Path) -> list[str]:

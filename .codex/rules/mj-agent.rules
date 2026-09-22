@@ -1,4 +1,5 @@
 # Native cooperative rules; a prompt is not Owner approval.
+prefix_rule(pattern=["Remove-Item"], decision="prompt")
 prefix_rule(pattern=["git", "checkout", "-b"], decision="forbidden")
 prefix_rule(pattern=["git", "switch", "-c"], decision="forbidden")
 prefix_rule(pattern=["gh", "pr", "merge"], decision="forbidden")

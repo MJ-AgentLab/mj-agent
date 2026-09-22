@@ -69,6 +69,8 @@ digraph post_merge {
 
 ## Step 1: Verify Merge Status
 
+本地清理、两端远程删除、计划生命周期与计划文档提交分别报告。计划 completed 不表示远端已删除；completed 但 UNCOMMITTED 是独立交付待办，不自动 stage/commit。已有明确删除批准复用，普通 push/PR/merge 或本地删除不包含远端删除。失败/未知先对账，成功项不重复；共同 never 阻断未解除时不换 remote 试探。跨任务 issue、旧 worktree 与未提交成果不自动纳入；#555 的恢复报告不处置 #552。
+
 ```bash
 gh pr view <pr-id> --json state,mergedAt,mergeCommit,baseRefName,headRefName,closingIssuesReferences
 ```

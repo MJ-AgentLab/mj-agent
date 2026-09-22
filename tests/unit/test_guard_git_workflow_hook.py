@@ -33,12 +33,13 @@ class NativeWire(unittest.TestCase):
         for command in ['git status', 'git checkout main', 'echo git checkout -b nope']:
             self.assertIsNone(self.command(command))
 
-    def test_owner_actions_no_longer_treated_as_allow(self):
-        for command in ['gh pr create --base develop --title t', 'gh pr create --base=main --title t',
+    def test_owner_actions_defer_without_claiming_approval(self):
+        for command in ['gh pr create --base develop --title t',
                         'git commit -m "docs: mention checkout -b in guide"', 'git commit -m "docs: 中文提交说明"']:
             output = self.command(command)
-            self.assertEqual(output['decision'], 'block')
-            self.assertTrue(output['reason'].startswith('OWNER_APPROVAL_REQUIRED:'))
+            self.assertEqual(set(output), {'hookSpecificOutput'})
+            self.assertTrue(output['hookSpecificOutput']['additionalContext'].startswith('HOST_APPROVAL_REQUIRED:'))
+        self.assertTrue(self.command('gh pr create --base=main --title t')['reason'].startswith('UNKNOWN:'))
 
     def test_unparsed_compound_is_explicit_unknown(self):
         self.assertTrue(self.command('echo 中文 && git status')['reason'].startswith('UNKNOWN:'))

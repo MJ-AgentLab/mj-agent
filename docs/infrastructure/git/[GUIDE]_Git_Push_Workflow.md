@@ -124,8 +124,12 @@ uv run --frozen --no-sync python scripts/check_codex_approvals.py --effective-ap
    codex execpolicy check --rules .codex/rules/mj-agent.rules --pretty gh pr create --base develop
    ```
 
-5. 用实际观察的模式重跑预检。只有动作级 Owner 授权和合法宿主执行路线均已满足，才回原任务继续交付；先核对分支 tip、两端状态及 PR 查重。原生 hook 可继续拒绝 OWNER_APPROVAL_REQUIRED；聊天批准和 on-request 不解锁 hook。无路线返回 `BLOCKED_EXECUTION_ROUTE`，不得删 prompt、加宽泛 allow、生成审批凭证、改写命令或换工具/传输绕过。
+5. 用实际观察的模式重跑预检。只有动作级 Owner 授权和合法宿主执行路线均已满足，才回原任务继续交付；先核对分支 tip、两端状态及 PR 查重。复用已有具体批准，不重复索取。#555 的有限 Git 命令由 hook 返回 HOST_APPROVAL_REQUIRED 上下文，交既有 prompt 和宿主正常审批；受保护编辑仍可拒绝 OWNER_APPROVAL_REQUIRED，UNKNOWN/FORBIDDEN 仍 block。聊天批准和 on-request 不解锁其他阻断。无路线返回 `BLOCKED_EXECUTION_ROUTE`，不得删 prompt、加宽泛 allow、生成审批凭证、改写命令或换工具/传输绕过。
 6. 验收分别记录诊断输出、规则重放、有效会话模式与来源、实际审批交互及真实交付结果。没有后两项就标未验证；离线参数场景不替代真实恢复，也不自动恢复 #552 原分支的推送/PR。
+
+已知 prompt×never 未解除时，重复“同意/继续”、Full Access 或仅网络/文件权限恢复不触发重试，也不以切换 remote 试探。Gitee 成功、origin 失败时先对账两端 SHA，只继续未完成端；PR 响应丢失先查询同 repo/head/base 并核对正文，避免重复创建。原始错误中 index.lock Permission denied、网络 Connection refused 与审批模式错误分开记录，通用 blocked by policy 保持未知。
+
+普通 push 不包含 `git push <remote> --delete <branch>`。远程删除独立核验精确引用、两端 tip、合并证据和保护分支，逐端成功查询不存在才判完成。本地已清理、计划 completed、计划文档已提交与两端远程清理四项独立报告；操作及只读核验入口见 [[../../guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §6.6。
 
 原生迁移后不再运行旧 `agents_sync.py`。规则保全使用 `scripts/sdd/check_codex_native.py --surface all` 与 `--surface enforcement`，静态成功不代表交付获准。依据：[Issue #552](https://github.com/MJ-AgentLab/mj-agent/issues/552)、[ADR-040](../../../decisions/ADR-040_Codex_Only_Development.md)、[官方 Rules](https://learn.chatgpt.com/docs/agent-configuration/rules)、[官方 Config basics](https://learn.chatgpt.com/docs/config-file/config-basic)（核对日期：2026-09-22）。
 

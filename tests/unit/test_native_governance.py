@@ -31,6 +31,14 @@ class NativeGovernanceTests(unittest.TestCase):
     def test_native_entries(self):
         self.assertEqual(guard.entries(self.root), [])
 
+    def test_deletion_consumer_no_longer_presumes_manual_cleanup(self):
+        skill = (ROOT / '.agents/skills/mj-agent-git-delete/SKILL.md').read_text('utf-8')
+        self.assertNotIn('每个关键节点需 user 确认', skill)
+        self.assertNotIn('目录残留需手动', skill)
+        self.assertIn('复用批准', skill)
+        policy = (ROOT / 'policies/ai-agent.md').read_text('utf-8')
+        self.assertIn('通用 blocked by policy 无法归因时标未知', policy)
+
     def test_missing_local_entry(self):
         (self.root / 'tests/AGENTS.md').unlink()
         self.assertTrue(guard.entries(self.root))

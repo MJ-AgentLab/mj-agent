@@ -18,7 +18,7 @@ Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则�
 
 ### Self-enforced boundaries (READ THIS — it is the only guardrail on you)
 
-Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。聊天批准不解锁 hook；无可执行路线返回 BLOCKED_EXECUTION_ROUTE，禁止建凭证、换工具或改权限绕过。
+Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。Owner 在当前任务中明确批准具体删除清单后，该范围内无需重复确认或额外理由。执行前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及重解析点；目标或内容实质变化仅暂停受影响项。核验通过后通过正常工具执行，不预设 Owner 必须人工删除。聊天批准不替代宿主审批；实际拒绝时保留原始错误并按证据定位，无法定位则标未知，受阻步骤返回 BLOCKED_EXECUTION_ROUTE。禁止建凭证、换工具、改写命令或改权限绕过拒绝。
 
 1. **Data boundary (ADR-006 / ADR-009 / ADR-000) — never bypass it.** All business-warehouse (biz)
    data access MUST go through the agent tool-chain (`find_biz_context → list_biz_tables →
@@ -42,6 +42,9 @@ Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原�
 4. **Commit / push / PR / merge — `OWNER_APPROVAL_REQUIRED` (Owner HITL 拍板).** You may prepare
    changes and run verification freely, but treat commit, push, PR creation, and merge as gated
    actions needing the Owner's go-ahead (per ADR-034).
+   Reuse an existing approval for its exact action and objects; commit, ordinary push, PR creation,
+   local deletion and remote-ref deletion are separate scopes. Reconcile partial/unknown results
+   before resuming. A known `never` approval block is not cleared by repeated chat approval or network recovery.
 5. **Git workflow discipline (G1/G2) binds you too.** New branches ONLY via
    `git worktree add ../<branch-name> -b <branch-name>` — never `git checkout -b` / `git switch -c`
    (G1); `gh pr create` must carry an explicit `--base` (non-hotfix → develop, hotfix → main) (G2).
