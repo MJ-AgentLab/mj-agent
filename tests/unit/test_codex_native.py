@@ -85,6 +85,117 @@ def test_approval_layers_remain_separate(mode: str | None, expected: str) -> Non
     assert approval_status(mode) == expected
 
 
+@pytest.mark.parametrize(("mode", "expected", "exit_code"), [
+    (None, "UNKNOWN", 2), ("unknown", "UNKNOWN", 2),
+    ("never", "INCOMPATIBLE", 1), ("on-request", "APPROVAL_REQUIRED", 0),
+])
+def test_delivery_approval_preflight(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str],
+    mode: str | None, expected: str, exit_code: int,
+) -> None:
+    from scripts.check_codex_approvals import main
+
+    root = candidate(tmp_path)
+    args = [] if mode is None else ["--effective-approval-policy", mode]
+    assert main(args, repo_root=root) == exit_code
+    report = json.loads(capsys.readouterr().out)
+    assert report["session_approval"] == expected
+    assert report["effective_approval_policy"] == (mode or "unknown")
+    assert report["owner_approval"] == "NOT_ASSESSED"
+    assert report["host_enforcement"] == "NOT_TESTED"
+    assert report["remote_authentication"] == "NOT_TESTED"
+    rows = report["commands"]
+    assert [row["command"] for row in rows] == [
+        ["git", "commit"], ["git", "push", "-u", "gitee", "<branch>"],
+        ["git", "push", "-u", "origin", "<branch>"],
+        ["gh", "pr", "create", "--base", "develop"],
+    ]
+    assert all(row["status"] == expected for row in rows)
+    assert all(row["rule_decision"] == "prompt" for row in rows)
+    assert all(row["rule_source"] == ".codex/rules/mj-agent.rules" for row in rows)
+    assert [row["command_family"] for row in rows] == [
+        ["git", "commit"], ["git", "push"], ["git", "push"], ["gh", "pr", "create"],
+    ]
+
+
+@pytest.mark.parametrize("damage", ["missing", "malformed", "allow", "forbidden", "hook"])
+def test_delivery_preflight_invalid_rules_are_unknown(tmp_path: Path, damage: str) -> None:
+    from scripts.check_codex_approvals import diagnose
+
+    root = candidate(tmp_path)
+    rules = root / ".codex/rules/mj-agent.rules"
+    if damage == "missing":
+        rules.unlink()
+    elif damage == "malformed":
+        rules.write_text("invalid('synthetic-private-value')", encoding="utf-8")
+    elif damage == "hook":
+        (root / ".codex/hooks.json").write_text("{}", encoding="utf-8")
+    else:
+        rules.write_text(rules.read_text("utf-8").replace('"prompt"', f'"{damage}"'), encoding="utf-8")
+    report = diagnose(root, "on-request")
+    assert report["session_approval"] == "UNKNOWN"
+    assert report["errors"]
+    assert all(row["status"] == "UNKNOWN" for row in report["commands"])
+    assert "synthetic-private-value" not in json.dumps(report)
+
+
+def test_delivery_preflight_is_read_only(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from scripts.check_codex_approvals import diagnose
+
+    root = candidate(tmp_path)
+    allowed = {root / ".codex/hooks.json", root / ".codex/rules/mj-agent.rules"}
+    original = Path.read_text
+    before = {path: path.read_bytes() for path in allowed}
+
+    def read(path: Path, *args: object, **kwargs: object) -> str:
+        assert path in allowed
+        return original(path, *args, **kwargs)
+
+    def forbidden(*args: object, **kwargs: object) -> None:
+        pytest.fail("diagnostic must not write files or launch processes")
+
+    monkeypatch.setattr(Path, "read_text", read)
+    monkeypatch.setattr(Path, "write_text", forbidden)
+    monkeypatch.setattr(subprocess, "Popen", forbidden)
+    assert diagnose(root, "never")["session_approval"] == "INCOMPATIBLE"
+    assert {path: path.read_bytes() for path in allowed} == before
+
+
+def test_delivery_preflight_rejects_indirect_input_before_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scripts.check_codex_approvals import diagnose
+
+    root = candidate(tmp_path)
+
+    def forbidden(*args: object, **kwargs: object) -> str:
+        pytest.fail("indirect rules must not be read")
+
+    monkeypatch.setattr(Path, "is_symlink", lambda path: path == root / ".codex")
+    monkeypatch.setattr(Path, "read_text", forbidden)
+    report = diagnose(root, "on-request")
+    assert report["session_approval"] == "UNKNOWN"
+    assert report["errors"] == ["indirect enforcement path; no files read"]
+
+
+@pytest.mark.parametrize(("mode", "expected", "exit_code"), [
+    ("never", "INCOMPATIBLE", 1), ("on-request", "APPROVAL_REQUIRED", 0),
+    ("unknown", "UNKNOWN", 2),
+])
+def test_delivery_preflight_cli_from_other_directory(
+    tmp_path: Path, mode: str, expected: str, exit_code: int,
+) -> None:
+    root = candidate(tmp_path)
+    proc = subprocess.run(
+        [sys.executable, "-B", str(ROOT / "scripts/check_codex_approvals.py"),
+         "--root", str(root), "--effective-approval-policy", mode],
+        cwd=tmp_path, env=clean_env(tmp_path / "env"),
+        capture_output=True, text=True, check=False, timeout=20,
+    )
+    assert proc.returncode == exit_code, proc.stderr
+    assert json.loads(proc.stdout)["session_approval"] == expected
+
+
 @pytest.mark.parametrize(("command", "expected"), [
     ("git status", "ALLOW"), ("git checkout -b trial", "FORBIDDEN"),
     ("git switch -c trial", "FORBIDDEN"), ("psql", "FORBIDDEN"),
