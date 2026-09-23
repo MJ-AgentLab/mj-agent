@@ -54,9 +54,10 @@ a14_pr_gate:
       + 3-commit review)
     - credential_safety_checklist (no literal value / approved env_vars names / no hard-coded credential)
   reviewer_action:
-    M1: Reviewer manually checks PR body has block before approving
-    M2: scripts/sdd/check_a14_gate.py emits CI warning if block missing
-    M3: scripts/sdd/check_a14_gate.py blocks PR if block missing
+    current: Reviewer manually checks the A14 block against changed native MCP files and obtains Owner approval before protected changes
+  automation:
+    pr_body: none; no CI step parses or blocks on the A14 PR body
+    static_config: scripts/sdd/check_codex_native.py --surface mcp (V11 checks native config only, not PR body)
 trust_posture_downgrade:
   third_party_to_community:
   - trigger: maintainer_unreachable
