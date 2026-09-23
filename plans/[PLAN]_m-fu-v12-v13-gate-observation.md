@@ -2,21 +2,36 @@
 type: plan
 slug: m-fu-v12-v13-gate-observation
 summary: >-
-  M-FU 注册工件 M-FU-V12-V13-GATE-OBSERVATION —— 把 V12 Cross-Carrier-Structure 与 V13
-  Codex-Enforcement-Drift 两个 CI gate 的明文观察期注册表（gate 标识 / CI 首挂锚 / 适用口径 /
-  阈值+资格公式 / 自排除规则）自 plans/[PLAN]_codex_cross_carrier_kernel.md §5.8/§5.9 re-home
-  出来，满足 policies/ci-gates.md §4.1.1 注册制 + policies/ai-agent.md §4 对
-  ci-blocking-gate-toggle 的「M-FU plan 必先 register」前置；消费者 = Epic #499 PR-D2（V13 flip）
-  与将来的独立 V12 flip 单元；两条 flip 路径均收口后闭合
+  V12/V13 旧观察注册历史；V12 退役与旧 PR-D2 路线被替代后就地退出，保留原锚和
+  计数限制，不继承旧 streak 或宣称现行原生 V13 已翻转
 owner: ranzuozhou
 created: 2026-08-31
-updated: 2026-09-02
-state: active
+updated: 2026-09-23
+state: archived
+disposition: superseded-by-codex-only
+superseded_by: decisions/ADR-040_Codex_Only_Development.md
+ai_visibility: reference
 version: 1.0
 track: engineering-workflow
 ---
 
 # [PLAN] M-FU-V12-V13-GATE-OBSERVATION — V12 / V13 gate 观察期注册
+
+## 生命周期处置 — 2026-09-23
+
+本注册计划的旧消费者已退出：ADR-040 / PR #553 退役 V12 生成拓扑；#499 PR-D2 旧生成谓词的
+blocking 路线不再实施。当前原生 V13 仍为 warning（`sdd/gates.md` §2），不是旧谓词 flip 完成。
+#525 已于 2026-09-23 按前提取消关闭；其原计数 AC 未完成，该 Issue 关闭本身没有完成本文件生命周期。
+
+Owner 于 2026-09-23 明确批准本 active working 文档作就地 `archived` 的个案退出，不伪造 `completed`，
+不搬移、不执行物理 GC；通用生命周期规则不变。详细批准边界、18-PR 表和遗留项见
+[旧计划生命周期处置](./[PLAN]_codex_cross_carrier_kernel.md)。本变更批准合并后生效。
+
+以下正文保留首挂身份、历史计数规则和已知限制，仅作历史引用，不再授权依据旧 streak 执行任何 flip。
+任何未来原生 gate toggle 都须按当时谓词、姿态、注册及 Owner 批准重新建立证据；不继承这里的资格。
+本次不改变 CI、现行 V13 warning 或 `policies/ci-gates.md` 的通用规则。
+
+## 历史注册正文
 
 > 标识：`M-FU-V12-V13-GATE-OBSERVATION`（per `policies/ci-gates.md` §4.1.1 注册制 +
 > `policies/ai-agent.md` §4 `ci-blocking-gate-toggle` 的「M-FU plan 必先 register」）。

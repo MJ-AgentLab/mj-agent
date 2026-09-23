@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-13
+updated: 2026-09-23
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -49,10 +49,13 @@ ai_visibility: source-of-truth
 | [ADR-036_Dual_Agent_Thin_Adapter_And_Projection.md](./ADR-036_Dual_Agent_Thin_Adapter_And_Projection.md) | WORKFLOW | accepted (active) | 收录 dual-agent-compat v5 决策集 D-001~D-017：项目内 Kernel + 薄 adapter + manifest（sdd/development-agent.yml）+ V8/V9 checker + scoped 投影生成器 agents_sync（唯一豁免，仅 .agents/skills/ 与 .codex/config.toml）；产物入仓不可手改（--adopt 反灌）；MCP per-server 三档且 biz×5 + ssh-manager 永不投影；D-017 扩 A14 anchor 至派生面；canonical 10-enum 不变 |
 | [ADR-037_Memory_PG_MCP_Projection_To_Codex.md](./ADR-037_Memory_PG_MCP_Projection_To_Codex.md) | WORKFLOW | accepted (active) | 授权把 mj-agent 自有 memory PostgreSQL MCP servers（pg-mj-agent-memory-*×5）投影进 Codex（`project-with-adr`→`project`，dual-agent-compat 议题 1）；memory 独立库 + 独立凭据、checkpoint 确含 biz 派生行但读它无法触达 biz 表 / 绕 L1/L1b；凭据经 env_vars 按名、零字面入仓（G7/PJ044）；biz×5 + ssh-manager 永 never；可逆（翻回 + re-sync） |
 | [ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md](./ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md) | DATA | accepted (active) | memory checkpoint 中 execute_sql 逐字 biz 派生行的 at-rest 脱敏方向（ADR-037 后继）；Owner 两裁定 = Ruling 1 store-at-rest 最小化（ADR-037 投影维持）+ Ruling 2 机制 B（persist-time 确定性 per-column 摘要 + 留 executed_sql、可选叠 C TTL）；不放宽 ADR-006/009/000 数据边界；实现递延 #365 |
-| [ADR-039_Codex_Cross_Carrier_Kernel.md](./ADR-039_Codex_Cross_Carrier_Kernel.md) | WORKFLOW | accepted (active) | 以单一 Epic、18 个严格串行 PR 与人工 merge barrier 闭合 Claude–Codex cross-carrier Agent Kernel；定向 revise ADR-036 D-011/D-012/D-014，其余边界保持不变 |
 | [ADR-040_Codex_Only_Development.md](./ADR-040_Codex_Only_Development.md) | WORKFLOW | accepted (active) | Codex 原生资产所有权及门禁成组切换；Owner 批准并人工应用，Codex 验证；业务边界保持 |
 
 ## Deprecated / Superseded ADRs
+
+| ADR | Domain | Decision / State | Summary |
+|---|---|---|---|
+| [ADR-039_Codex_Cross_Carrier_Kernel.md](./ADR-039_Codex_Cross_Carrier_Kernel.md) | WORKFLOW | accepted (deprecated; in place) | 18-PR 双载体路线由 ADR-040 定向替代；前 14 单元已合并，D2/E/F/G 未交付，安全成果与后续 Issue 保留；生命周期处置见原计划 |
 
 > M5-PR3b 完成：9 个 deprecated ADR（010 / 015 / 017-019 / 021-023 / 025）已由 `docs/archive/adr/`
 > 平移至 `archive/decisions/superseded/`（+ `archive.yml` 清单 + `TOMBSTONE.md`；forward gateway 见
