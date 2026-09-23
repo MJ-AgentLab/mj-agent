@@ -1,11 +1,13 @@
 ---
 type: adr
 domain: WORKFLOW
-summary: 以单 Epic、18 个串行 PR 与人工合并门闭合 Claude–Codex Agent Kernel
+summary: Claude–Codex 18-PR 路线的历史决策；冲突交付条款由 ADR-040 定向替代，安全成果保留
 owner: ranzuozhou
 created: 2026-08-13
-updated: 2026-08-13
-state: active
+updated: 2026-09-23
+state: deprecated
+superseded_by: decisions/ADR-040_Codex_Only_Development.md
+ai_visibility: reference
 decision: accepted
 track: engineering-workflow
 tags:
@@ -19,14 +21,29 @@ tags:
 
 # ADR-039: Codex Cross-Carrier Agent Kernel
 
-## Status and approval gate
+## Lifecycle disposition — 2026-09-23
+
+本 ADR 就地标为 `deprecated`，`decision: accepted` 保留历史接受事实。
+[ADR-040](ADR-040_Codex_Only_Development.md) Decision 6 及定向关系表替代 Decision 1–8/11
+中与 Codex-only 冲突的 18-PR、18-carrier、双边 schema/fidelity/生成链及旧生命周期安排。
+这不是撤销安全成果：离线 runner、biz 四工具边界、Secrets 隔离、未拥有文件保护、诚实证据、
+逐动作 Owner 批准和人工 merge 继续由 ADR-040 与现行政策承担；Decision 9/10/12 的这些约束保留。
+
+PR #553/#554 已分别完成原生切换和迁移记录收尾。旧路线前 14 个 delivery PR 有合并证据，
+PR-D2/E/F/G 未合并交付，尤其不能把本次退出写作 PR-G 或原 AC-14 完成。
+完整逐项证据、open issue（含新增 #563/#564 的遗留承接）及原工作树保全，见
+[旧计划的生命周期处置](../plans/[PLAN]_codex_cross_carrier_kernel.md)。
+Owner 于 2026-09-23 明确批准本 ADR 状态变更与五文件生命周期差异；本分支已应用，合并后生效。
+Epic #499 仍须在文档合并和证据评论后另行按原路线不再实施关闭，ADR-040 没有自动关闭它。
+
+## Historical acceptance and approval gate
 
 Owner 于 2026-08-13 在当前 Codex task 审阅下述 exact lifecycle / ADR-036 disposition diff，并给出独立
 procedural approval；本 PR-0a change tree 因此记录本 ADR 为 `active / accepted`。该状态仅在 PR-0a
 人工 merge 后进入 shared `develop`；在此之前 `origin/develop` 仍以 ADR-036/v1 为生效基线。
 该批准只覆盖本 exact lifecycle/disposition diff，不覆盖 commit、push、PR create、merge 或 PR-0b。
 
-当前状态码：`ACTIVE_ACCEPTED_PR0A_IN_PROGRESS`。
+历史 PR-0a 状态码：`ACTIVE_ACCEPTED_PR0A_IN_PROGRESS`（不再是当前执行状态）。
 
 ## Context
 

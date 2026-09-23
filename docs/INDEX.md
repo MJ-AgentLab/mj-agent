@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-09-22
+updated: 2026-09-23
 state: draft
 track: shared
 ---
@@ -87,6 +87,8 @@ Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_
 | [[decisions/ADR-036_Dual_Agent_Thin_Adapter_And_Projection\|ADR-036 Dual-Agent Thin Adapter and Projection]] | WORKFLOW | accepted | 收录 dual-agent-compat v5 的 D-001~D-017 决策集为正式 ADR：项目内 Kernel + 薄 compatibility adapter + 机器可读 manifest（`sdd/development-agent.yml`）+ V8/V9 checker + scoped 投影生成器 agents_sync（D-011 唯一豁免：`.agents/skills/` + `.codex/config.toml` 两面）；投影产物 commit 入仓不可手改（D-012）；MCP per-server 三档、biz×5 + ssh-manager 永不投影（D-013）；A14 surface 扩至派生 `.codex/config.toml` / `.agents/**` / `agents_sync.py` / manifest（D-017） |
 | [[decisions/ADR-037_Memory_PG_MCP_Projection_To_Codex\|ADR-037 Memory PG MCP Projection to Codex]] | WORKFLOW | accepted | 授权把 mj-agent 自有 memory PostgreSQL MCP servers（pg-mj-agent-memory-*×5）投影进 Codex（dual-agent-compat 议题 1）：manifest mcp 档 project-with-adr→project；memory pg 是 agent 自有 checkpointer 状态库（独立库 + 独立凭据；checkpoint 确含 biz 派生行但读它无法触达 biz 表 / 绕 L1/L1b、只得历史已批准结果——5-lens 2026-07-17 更正原「不含 biz 数据」误述），凭据经 env_vars 按名透传、零字面入仓（G7/PJ044，机制同 github #330）；议题 3(#353) pass-by-name 改造为技术前置；biz×5+ssh 永 `never` 不变 |
 | [[decisions/ADR-038_Memory_Checkpoint_At_Rest_Desensitization\|ADR-038 Memory Checkpoint At-Rest Desensitization]] | DATA | accepted | memory checkpoint 中 execute_sql 逐字 biz 派生行的 at-rest 脱敏方向（ADR-037 命名的 Phase-2 后继）：Owner 两裁定——store-at-rest 数据最小化是目标（不回退 ADR-037 Codex 投影）；机制 B = 持久化时把 execute_sql ToolMessage 的 rows 替换为确定性 per-column 摘要（min/max/count/distinct）、保留 executed_sql 供 refetch 恢复，live 会话不动，可选叠 C（TTL）；不放宽 ADR-006/009/000 数据边界；实现经 #365 交付 |
+| [[decisions/ADR-039_Codex_Cross_Carrier_Kernel\|ADR-039 Cross-Carrier Kernel]] | WORKFLOW | accepted / deprecated | 18-PR 旧路线由 ADR-040 定向替代；安全成果保留，D2/E/F/G 未交付，处置见原计划生命周期节 |
+| [[decisions/ADR-040_Codex_Only_Development\|ADR-040 Codex-only Development]] | WORKFLOW | accepted | 原生开发资产所有权及保护成组切换；不自动关闭 #499，逐项生命周期退出独立批准 |
 
 ## 评估（capabilities/**/evidence/assessments/ + 仓级 evidence/assessments/）
 

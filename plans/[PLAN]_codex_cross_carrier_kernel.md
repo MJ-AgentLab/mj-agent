@@ -2,18 +2,140 @@
 type: plan
 slug: codex-cross-carrier-kernel
 summary: >-
-  Agent Kernel v8：在单一 authoring SoT、闭合 manifest/lock/fidelity/probe contract、非破坏性
-  reconcile、离线测试与数据边界下，为 Claude Code 与 Codex 建立 18 项 required capability 的
-  repository-native carrier；按单 Epic、18 个串行 PR、人工 merge barrier 实施
+  Claude–Codex 18-PR 路线的历史计划与退出处置；前 14 单元已合并，剩余双载体交付由
+  ADR-040 替代，保留安全成果、原验收边界、未提交工作与后续待办，不宣称 PR-G 完成
 owner: ranzuozhou
 created: 2026-08-12
-updated: 2026-08-31
-state: active
+updated: 2026-09-23
+state: archived
+disposition: superseded-by-codex-only
+superseded_by: decisions/ADR-040_Codex_Only_Development.md
+ai_visibility: reference
 version: 8.0
 track: shared
 ---
 
 # [PLAN] mj-agent Tool-Neutral Governance Kernel — Claude–Codex Cross-Carrier v8
+
+## 生命周期处置 — 2026-09-23
+
+ADR-040 Decision 6 及定向关系表已替代本计划的剩余 Claude–Codex 双载体交付设计。
+[PR #553](https://github.com/MJ-AgentLab/mj-agent/pull/553) 于 2026-09-21 合并
+（`fc85d3cec66ef7a8ccec07aa1d0f09af10e828d8`）；
+[PR #554](https://github.com/MJ-AgentLab/mj-agent/pull/554) 随后合并迁移收尾记录
+（`6055f23e11f4b47fcf0836bd4ebf4a8e274e9230`）。ADR-040 没有自动关闭 #499。
+
+本节是旧路线的退出处置，不是原计划完成验收。元数据 `archived` 表示 Owner 对本计划
+单独批准的就地废弃；不移动文件，不执行物理 archive ceremony，不经过虚假的 `completed`。
+`sdd/lifecycle.md` §2.3 只明列 draft abandon；Owner 于 2026-09-23 在当前任务明确批准
+本 active 计划直接退出的五文件个案差异及两份后续 Issue 创建；批准不由枚举校验或 ADR-040 推定，
+也不修改通用状态机规则，不包含 commit/push/PR/merge 或任何删除。
+本变更经批准合并后才进入 shared develop。#499 在收尾变更合并、后续登记核实及
+证据评论发布后另行按 `not_planned` 关闭；本文件不宣称 GitHub 已关闭。
+
+### 核查基线和证据等级
+
+- 2026-09-23 本地、GitHub、Gitee develop 同为 `9d0ed6feb7874e717b259335f6ccdf47384350ed`，工作树干净。
+- 下表 14 个 delivery PR 的 MERGED/merge SHA 已查询 GitHub，且 merge SHA 均为本次 develop 的祖先。
+- 历史 [Epic ledger](https://github.com/MJ-AgentLab/mj-agent/issues/499) 保留，各历史数值/批准只属于相应提交。
+- 当前 `scripts/sdd/run_offline_pytest.py`、`scripts/sdd/check_test_offline_boundary.py`、
+  `scripts/fetch_biz_schema.py` 与 snapshot contract tests 仍在；fetch 是不连接数据库的 exit-2 tombstone。
+- 本轮运行 offline boundary AST 检查为 GREEN；经 hardened runner 的
+  `test_offline_execution_boundary.py`、`test_biz_snapshot_boundary.py`、`test_biz_snapshot_validator.py`
+  为 **74 passed、52 deselected**，零 skipped。deselected 不代表已测。
+- 原生 skill / enforcement 检查为 STATIC_PASS；host/services 未测试、rule loading UNKNOWN。
+  当前 V12 retired、原生 V13 warning，依据 `.github/workflows/ci.yml` 与 `sdd/gates.md`，没有本轮 gate toggle。
+
+### 18-PR 处置表
+
+| 单元 | 已核对的交付证据 | 处置与保留边界 |
+|---|---|---|
+| PR-0a | [PR #500](https://github.com/MJ-AgentLab/mj-agent/pull/500) · merge `c7d5e6feb3e482346cdb41e066bcc1c16da85f73` · 2026-08-13T05:08:15Z | 旧计划、ADR 与串行 ledger 已交付；本次退出旧执行路线，保留历史。 |
+| PR-0b | [PR #502](https://github.com/MJ-AgentLab/mj-agent/pull/502) · merge `c6ef1e8571af28814dd83fd19b193fad1b09433d` · 2026-08-13T10:13:18Z | 保留 safe direct pytest、hardened offline runner、dotenv/外部依赖隔离。 |
+| PR-0c | [PR #503](https://github.com/MJ-AgentLab/mj-agent/pull/503) · merge `829482b26139f7e23af4c015d6f509d71e1524ed` · 2026-08-14T03:33:57Z | 保留 sanitized snapshot、fail-closed fetch tombstone 与四工具数据边界；EVAL 未跑，见 #504。 |
+| PR-0d | [PR #505](https://github.com/MJ-AgentLab/mj-agent/pull/505) · merge `33dd984fa64204ecdf9ec5391281415f684e0b24` · 2026-08-14T06:14:16Z | 保留 Task-0 历史基线；旧 freeze 身份不再授权当前原生资产；EVAL result 为 SKIP/deferred。 |
+| PR-P1a | [PR #510](https://github.com/MJ-AgentLab/mj-agent/pull/510) · merge `b885559087faccf7ff66e401785ee9fc637d157c` · 2026-08-24T03:30:47Z | 保留历史可行性/telemetry 证据；旧双载体 probe 不再作为执行门。 |
+| PR-A0 | [PR #511](https://github.com/MJ-AgentLab/mj-agent/pull/511) · merge `1c543ba6a0b19bb44d041ac0e8e96999d36b3533` · 2026-08-24T08:14:32Z | 保留 Owner/保护面/10-enum 边界；旧 D-017 生成路径由 ADR-040 定向替代。 |
+| PR-A1 | [PR #513](https://github.com/MJ-AgentLab/mj-agent/pull/513) · merge `1fac4faef952c3a6cc5b042802fc9f821e57a5db` · 2026-08-25T04:41:14Z | owned-only reconcile 已交付；旧执行体退役，未拥有邻居保护由原生治理继续承担。 |
+| PR-B | [PR #514](https://github.com/MJ-AgentLab/mj-agent/pull/514) · merge `36f298a9995fd3b7c0dd9ad7d4f9d4fec233422f` · 2026-08-26T01:48:29Z | dormant v2 engine 已交付；schema/renderer/oracle/lock 生成链后由 ADR-040 退出。 |
+| PR-P1b | [PR #515](https://github.com/MJ-AgentLab/mj-agent/pull/515) · merge `02caf3eac8d41f65740e80d090e8b1652f270b9b` · 2026-08-26T05:46:09Z | 保留 production-render 历史证据；不是当前 37 原生技能的逐字验收。 |
+| PR-C0 | [PR #516](https://github.com/MJ-AgentLab/mj-agent/pull/516) · merge `ffe8c8ae44055ac2a2b256c36d78f9508ef4a059` · 2026-08-27T02:26:52Z | coverage/4 tranche binding 已交付；按当时 Owner 改判自审，不能称独立第三方语义保真。 |
+| PR-C1 | [PR #517](https://github.com/MJ-AgentLab/mj-agent/pull/517) · merge `d81074621be79224730ee4b937cf0e2a987d5a8e` · 2026-08-27T06:14:02Z | 历史 18-carrier cutover 已交付；5 byte-copy + 13 translated 终态已被 37 原生技能路线替代。 |
+| PR-C2 | [PR #518](https://github.com/MJ-AgentLab/mj-agent/pull/518) · merge `70a9db4f3e00746a54bea4d18a285995d18a3f76` · 2026-08-27T10:09:45Z | 历史 V12 首挂注册已交付；V12 随拓扑退出，旧 streak 不再有 flip 消费者。 |
+| PR-D1a | [PR #519](https://github.com/MJ-AgentLab/mj-agent/pull/519) · merge `56188fa31e3b3bdffcf92aef1e2a106bd797c111` · 2026-08-28T05:57:26Z | 旧 hooks/rules 与 V13 warning 已交付；保护接入原生守卫，不能据此宣称 D2/E 完成。 |
+| PR-D1b | [PR #520](https://github.com/MJ-AgentLab/mj-agent/pull/520) · merge `fb7ae7d39516392c6ac8605a06bebd2d44a146e9` · 2026-08-28T09:40:38Z | V13 首挂锚已交付；旧生成谓词/观察资格已退出，当前原生 V13 仍 warning。 |
+| PR-D2 | 无已合并的对应 delivery PR；2026-09-23 核查 | 未合并交付；旧 byte-identical predicate blocking 路线不再实施。现存未提交测试改动单独保留；原生测试的 blocking 效果不等于旧 D2 验收。 |
+| PR-E | 无已合并的对应 delivery PR；2026-09-23 核查 | 未交付；旧 Stop receipt/ready-host 路线被替代。当前宿主授权/执行余项由 #555 按自身 AC 承接，不声称 receipt、TTL 或 ready-host PASS。 |
+| PR-F | 无已合并的对应 delivery PR；2026-09-23 核查 | 未交付；未生成旧路线 final matrix/private attestation。#553/#554 只证明其批准范围内的迁移结果。 |
+| PR-G | 无已合并的对应 delivery PR；2026-09-23 核查 | 未执行；不存在 F→G 完成链。本次独立生命周期退出按原路线不再实施处理，不能写为 PR-G 完成或原 AC-14 达成。 |
+
+### 原 AC 处置（保留 §7.1 原文，不补打完成标记）
+
+| AC | 生命周期结论 |
+|---|---|
+| AC-01/02 | 单 Epic 和历史串行交付可追溯；没有全部 18 个单元交付。人工 merge/逐动作批准继续有效。 |
+| AC-03/04 | 历史 C1 的 18-carrier 终态已交付，后被 ADR-040 原生维护机制替代。 |
+| AC-05/06 | 旧生成器的 owner/schema/路径防护是历史成果；生成器退出，未拥有文件保护和 fail-closed 原则保留。 |
+| AC-07/08 | 离线测试和 biz 数据边界保留，本轮有上述 74 项回归证据；不延伸为任何 live 结果。 |
+| AC-09/10 | 历史 probe/fidelity 证据保留；C0 第三方独立性已被当时 Owner 改判削弱，不作完整独立语义保证。 |
+| AC-11 | 首挂登记已交付；D2 identical predicate blocking 未交付，剩余旧路线被替代。 |
+| AC-12 | 旧 Stop receipt/TTL/config/clean-head/ready-host 验收未完成，终止旧设计，不虚构通过。 |
+| AC-13 | 证据诚实纪律继续保留；旧 PR-F final evidence 未完成。 |
+| AC-14 | 未达成：PR-G 未执行。本次使用 Owner 批准的独立退出处置。 |
+
+### 未完成事项与承接
+
+下列 open 状态为 2026-09-23 GitHub 实查，不扩大已有 Issue 的 scope，不改它们的状态。
+
+| 事项 | 实际承接和边界 |
+|---|---|
+| PR-0c/F1 的 mj-ddd-semantics EVAL | [#504](https://github.com/MJ-AgentLab/mj-agent/issues/504) OPEN；SKIP/deferred，不是 EVAL PASS。 |
+| F4 runtime EVAL 覆盖缺口 | #504 仅管 mj-ddd-semantics；[#161](https://github.com/MJ-AgentLab/mj-agent/issues/161) 管 system/safe-sql。其余 runtime skill 的 A11 适用性与分派由新建 [#564](https://github.com/MJ-AgentLab/mj-agent/issues/564) OPEN 承接；不是所有 EVAL 已运行，不把 #504 冒充全量覆盖。 |
+| 原生授权/宿主实际执行验收 | [#555](https://github.com/MJ-AgentLab/mj-agent/issues/555) OPEN；#558/#560/#561 已交付部分保留，未验证项仍按 #555 自身 AC 处理，不承接旧 receipt 设计。 |
+| 逐 PR 模板字段枚举漂移 | [#538](https://github.com/MJ-AgentLab/mj-agent/issues/538) OPEN；旧源已退出，但原生 git-pr 的五行字段表仍有遗漏，须按当前载体修复。 |
+| A14 契约虚假执行体声明 | [#495](https://github.com/MJ-AgentLab/mj-agent/issues/495) OPEN；当前契约仍引用缺失的 check_a14_gate.py，原生静态检查不等价于它的历史 M2/M3 声明。 |
+| 仓外 vault 引用表达 | [#498](https://github.com/MJ-AgentLab/mj-agent/issues/498) OPEN；按原生迁移后实际范围重新扫描，不能照用旧 16/25 数量。 |
+| F3 CI 步骤嵌入历史计数、F18 offline runner 在 gates 表的定位 | 新建 [#563](https://github.com/MJ-AgentLab/mj-agent/issues/563) OPEN 承接。六处历史计数字串和三处 runner CI 调用仍在；本轮未重测六 gate 的当前计数、不修改 CI；登记不等于问题已修复。 |
+
+**承接登记已完成：** Owner 批准后于 2026-09-23 创建 #563/#564，并读取核对 OPEN 状态、标题、标签和正文。
+两单分别承接说明缺口及 EVAL 未覆盖部分的分派；#555/#504 的既有 scope 不扩大。
+#499 仍须等本次文档 PR 人工合并，再发布含实际 merge SHA 与这些链接的证据评论后才关闭。
+
+### 历史 follow-up 分类
+
+| ID | 处置 |
+|---|---|
+| F1 | EVAL 登记已完成，实际 EVAL 仍在 #504。 |
+| F2 | 本次用生命周期页首取代 PR-0a in-progress 当前态；原批准及历史正文保留。 |
+| F3/F4/F18 | 仍存的独立遗留，按 #563/#564 与已有 EVAL Issue 处理；未执行结果保持未完成。 |
+| F5/F6/F9/F17/F25 | 历史分别在 #512/#515/#517/#523/#527 收口；不重写当时 ledger。 |
+| F7/F8/F11/F19/F20–F23 | 针对已退役 parser/renderer/fidelity/agents_sync/lock 的待修复设计不再实施；不写作 bug 已修。F20 两处未提交测试仍在原树保留。 |
+| F10/F12 | 旧 byte-copy discovery 余量/translated 收窄属于旧载体；原生维护与 description 检查取代旧投影机制，不宣称历史语义等价。 |
+| F13/F14/F16 | 历史证据局限/候选 README 差异/首挂标记作为历史保留；不制造 PR-F 新验收。 |
+| F15 | 保留验证时输入身份不变的证据纪律；不改历史检查输出。 |
+| F24 / #525 | #525 已于 2026-09-23 因 V12 退役关闭，原计数 AC 未完成；观察计划在本次独立作就地退出。 |
+
+#485/#496 已分别按旧客户端退出、旧 V4 被替代关闭，不是本次执行；#552 已经由 #562 完成
+独立收尾，CLOSED at 2026-09-23T01:37:58Z。本次不再关闭这些 Issue，也不关闭 #555 或任何其他 Issue。
+原 §9 的 managed identity/Owner proxy/network 等 separate plans 仍不在本 Epic 交付范围；不虚构承接。
+
+### 原工作树保全与恢复
+
+`D:/workspace/10-software-project/projects/mj-agent/maintain/499-enforcement-blocking`
+仍在 `20e2f24c352cf640d9dd33234b128ca897804b99`，有两份未暂存修改：
+`tests/unit/test_agents_sync.py` 与 `tests/unit/test_v2_engine.py`，合计 +47/-27；无 staged 改动、无普通 untracked。
+另有 `.mj-agent-local/`、缓存及 `.venv/` 等 ignored 内容，保留原地，未读秘密、未拷贝整个目录。
+本轮另备份两份测试的原始工作字节并记录 SHA-256 于 develop 的本地
+`.mj-agent-local/499-closeout/preservation.json`；备份不入提交。此登记不是对原树做重置、删除或迁移的授权。
+
+本次只改生命周期/索引文档；撤销时对本次文档提交作审阅后的修正或 revert。旧工作树、备份和历史
+evidence 都保留；不得把旧生成器恢复命令直接用于当前 Codex-only 正本。任何受保护恢复另获批准。
+
+---
+
+## 原 v8 计划（历史快照，不再作为执行授权）
+
+以下 §0–§11 和原验收/回滚语句保留在各自历史语境；当前处置以上方生命周期节及 ADR-040 为准。
 
 > **Epic:** [#499](https://github.com/MJ-AgentLab/mj-agent/issues/499) — single Epic；exact create content 已获 Owner 批准。
 > **v8 rebaseline:** `origin/develop@c549880f6d1e5342c6402d9fb6d84639090020b5`
@@ -1642,7 +1764,7 @@ Except PR-0a, all must prove:
 
 Then stop. Never call merge, enable auto-merge, create next branch/worktree, or perform cleanup.
 
-### 11.4 PR-0a current execution
+### 11.4 PR-0a execution snapshot (historical)
 
 PR-0a must:
 
@@ -1657,7 +1779,7 @@ PR-0a must:
 7. obtain separate commit、push、PR-create approvals；
 8. wait for green CI and stop at `AWAITING_HUMAN_MERGE`。
 
-Current state code = `ACTIVE_ACCEPTED_PR0A_IN_PROGRESS`。该状态在 shared `develop` 上只于 PR-0a 人工 merge 后
+Historical PR-0a state code = `ACTIVE_ACCEPTED_PR0A_IN_PROGRESS`。该状态在 shared `develop` 上只于 PR-0a 人工 merge 后
 生效，也不授权 stage 2 / PR-0b。
 
 ---
