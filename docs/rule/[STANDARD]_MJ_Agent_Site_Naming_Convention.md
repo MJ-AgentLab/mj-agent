@@ -5,7 +5,7 @@ summary: 统一 mj-agent 项目附属 Site 的显示名称、slug 与维护核�
 owner: ranzuozhou
 created: 2026-10-08
 updated: 2026-10-08
-state: draft
+state: active
 track: engineering-workflow
 version: v1.0
 ---
@@ -14,7 +14,7 @@ version: v1.0
 
 > **适用范围**：mj-agent 项目附属 Sites，包括文档解读、方案审阅、架构说明、指南、教学和交互演示。
 > **目标受众**：Site 作者、维护者、Owner 与 Codex。
-> **版本**：v1.0（draft 首版）。
+> **版本**：v1.0（在用）。
 > **最后更新**：2026-10-08。
 > **治理关系**：本规范维护 Site 命名；文档治理、任务授权和发布边界沿用项目现行规则。
 
@@ -190,3 +190,4 @@ slug 冲突时，先判断是否已有同用途 Site；若是同一制品则维�
 | 日期 | 版本 | 变更 |
 | --- | --- | --- |
 | 2026-10-08 | v1.0 | 按 Owner 确认的方案建立项目附属 Site 命名、稳定性、维护核验与入口约定；由 Codex 编写 |
+| 2026-10-08 | v1.0 | Owner 明确采纳为在用规范，状态由 draft 改为 active；同步正文状态与索引，由 Codex 维护 |
