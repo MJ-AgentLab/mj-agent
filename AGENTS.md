@@ -107,4 +107,6 @@ python scripts/sdd/check_native_skills.py
 
 `docs/INDEX.md` 是文档入口，`sdd/workflows/execution-loop.md` 是17阶段工作流；本次请求只执行获授权阶段。技能发现见 `.agents/skills/SKILL_INDEX.md`，模板见 `docs/_templates/`。runtime skill 由 `load_skill()` 去 frontmatter，开发技能由 Codex 发现，两者不能混用。
 
+创建或维护 mj-agent 项目附属 Site 前，读取并遵循 [Site 命名规范](docs/rule/[STANDARD]_MJ_Agent_Site_Naming_Convention.md)。
+
 Git 新分支只用 worktree；PR 显式 base（通常 develop，hotfix 为 main），人工 merge。提交格式与 scope 以 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 为准。ADR 编号先核对 `decisions/` 与归档命名空间。报告实施来源、HITL、BDD/TDD、委派和未验证项。
