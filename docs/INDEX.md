@@ -38,7 +38,7 @@ Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_
 | [[STANDARD]_GitHub_Markdown\|GitHub-Flavored Markdown 编写规范 v1.0]] (active) | 定义 mj-agent 文档在 GitHub 渲染的 Markdown + YAML 语法规范，覆盖 GFM 13 节排版规则；**未归档**（与 tri-track 正交，独立维护） |
 | [[STANDARD]_MJ_Agent_Commit_Message_Convention\|MJ-Agent Commit Message 规范 v1.1]] (active) | mj-agent 的 Conventional Commits 规范，定义 type、mj-agent 专属 scope（v1.1 重建为 35 项闭合白名单 + 历史别名映射）、分支对齐矩阵与示例 |
 | [[STANDARD]_MJ_Agent_Skill_Authoring_Craft\|技能写作工艺规范 v1.0]] (draft) | 定义两类 skill（in-source runtime / in-tree workflow）正文与 description 的写作工艺质量准则——可预测性为根、双负载权衡、信息阶梯、leading words、五大失效模式 + no-op 剪枝；是 ADR-013/016 schema 层与 A12 description 最低门之上的「正文质量层」 |
-| [mj-agent Site 命名规范 v1.0](rule/[STANDARD]_MJ_Agent_Site_Naming_Convention.md) (draft) | 统一项目附属 Site 的显示名称、slug、稳定身份和地址，以及创建或维护后的核验记录 |
+| [mj-agent Site 命名规范 v1.0](rule/[STANDARD]_MJ_Agent_Site_Naming_Convention.md) (active) | 统一项目附属 Site 的显示名称、slug、稳定身份和地址，以及创建或维护后的核验记录 |
 
 ## SDD Kernel 真相源（policies/ + sdd/）
 
