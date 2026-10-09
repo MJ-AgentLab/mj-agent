@@ -3,7 +3,7 @@ type: plan
 summary: 删除与 Git 发布的动作级授权、只读核验、有限 hook 路由及部分完成恢复
 owner: ranzuozhou
 created: 2026-09-22
-updated: 2026-09-22
+updated: 2026-10-09
 state: active
 track: engineering-workflow
 ---
@@ -12,7 +12,7 @@ track: engineering-workflow
 
 > Issue: [#555](https://github.com/MJ-AgentLab/mj-agent/issues/555)
 > 关联: [#552](https://github.com/MJ-AgentLab/mj-agent/issues/552)
-> 状态：§1–§10 保留 #558/#560 方案、失败与验证历史；最新范围以 §11 及 Issue updatedAt=2026-09-22T07:06:27Z 为准。旧 Git prompt、统一 on-request 和多分支 UNKNOWN 的要求由本轮对应条款替代。新条件下真实宿主验收未完成，计划保持 active；本文件不是授权凭证。
+> 状态：§1–§10 保留 #558/#560 方案、失败与验证历史；最新范围以 §11 及 Issue 现行 AC 为准，§12–§27 记录执行、取证、Owner 批准的新会话验收及顺序调整、实际模式变化、执行结果、反馈入口拒绝、正文送达、状态评论回执、新增记录核查、获批支持请求、人工支持升级、专员首答与记录交付准备。旧 Git prompt、统一 on-request 和多分支 UNKNOWN 的要求由对应条款替代。目标 Desktop 加载及恢复证据未完成，计划保持 active；本文件不是授权凭证。
 
 ## 1. Repo Scan Result 与证据
 
@@ -372,3 +372,204 @@ Owner 回复“批准应用完整补丁”后，核对基线、干净工作树�
 实际工作树重新执行九文件离线回归：**301 passed、30 subtests passed，37.86s，exit 0**。全仓 Ruff、五个修改源模块 mypy、原生配置/技能与 governance entries/consumers 均通过。原生检查报告 session_approval=PER_COMMAND、effective_approval_policy=never、rule_loading=UNKNOWN、host_enforcement=NOT_TESTED。
 
 三个新增文件仅登记 intent-to-add 供既有离线 runner 核验；未创建提交、推送、PR 或执行真实删除。实际规则加载与 AC-4/9/13/24 仍未验证，Issue 保持 OPEN、计划保持 active；本轮批准不扩展到 Git 发布或宿主配置变更。
+
+## 12. #561 合并后的 AC-1～AC-24 复核与受控验收准备（2026-09-23）
+
+本节按 Issue 当前有效正文复核，不以折叠历史方案中的统一 on-request、Git prompt 或多分支 UNKNOWN 条款改写验收。完整逐项结论、命令、PR/提交及临时对象清单见 [acceptance-2026-09-23.md](../evidence/issue-555/acceptance-2026-09-23.md)。#558、#560、#561 已合并；其中 #561 merge 为 `8a029e7bb3f29af4bd510b916e6bafbeaaf4b074`，项目层规则与检查器落地，但合并不证明目标 Desktop 实际加载或临时对象真实执行。
+
+### 项目、宿主和三条链路分账（批准前快照）
+
+| 对象 | 2026-09-23 观察 | 验收边界 |
+| --- | --- | --- |
+| 项目变更 | Git/gh 六条项目 rules 已移除，余 Remove-Item prompt 与三个 DB forbidden；hook/检查器有限识别、G1/G2 和人工 merge 保护的离线回归通过 | 静态文件及离线运行证据，不等于目标宿主加载 |
+| 宿主条件 | 当前任务权限声明 `never` / `danger-full-access`；`check_codex_native.py` 报 `PER_COMMAND`、`rule_loading=UNKNOWN`、`host_enforcement=NOT_TESTED` | 不因项目 Git 规则无匹配推断无需宿主审批；旧 on-request 发布现场仅按当时时点保留 |
+| 本地删除 | `git worktree remove`、`git branch -d` 的项目诊断与 Remove-Item 分开；三个新建清洁 worktree 可作受控对象 | 尚无本轮 Owner 本地删除授权或正常工具删除结果；有修改/未跟踪内容的旧工作树保留 |
+| Gitee 与 origin 远端删除 | 两端只读 `ls-remote --heads` 证明 #560/#561 两条旧 head 引用已缺失；`maintain/555-approved-deletion` 两端仍存在且 tip 不同 | 不重复删除旧引用；旧结果不充当新临时 S/A/B 引用的 AC-13 全部验收 |
+| commit→双推→PR | #560 旧条件下的实际发布有 SHA 和 PR URL；新发布 canary 分支已建、两个文件已精确暂存 | AC-9/24 要求的新条件、显式 base、两端 SHA、宿主审批/拒绝与 PR URL 尚未实测 |
+
+### 本次离线验证与交付状态
+
+- 定向 offline runner：230 passed、30 subtests passed，exit 0；全量 `tests/unit`：1095 passed、1 skipped（非 Windows）、30 subtests passed，exit 0。Ruff、mypy（48 源文件）、原生配置/技能/governance 两 surface、frontmatter（146 篇）和 wikilinks（0 违规）均 exit 0。详情及原始命令见验收矩阵；检查器的 `STATIC_PASS` 不代替宿主实测。
+- 文档反扫与本节按当前 ADR-041 语义对齐。无业务运行时代码、依赖、Docker、CI gate、MCP 集合或个人权限/信任改动；没有外部业务探针。BDD/TDD：本轮只复跑既有离线回归并准备受控对象，没有新增行为测试或声称新红绿。实施来源 Codex；Subagent dispatched=NONE。
+- `develop` 工作树在写本记录前干净；本记录与计划修改后为未提交交付。保留旧 `maintain/499-enforcement-blocking`（2 修改）、`maintain/552-codex-approval-preflight`（5 修改、1 未跟踪）与 `maintain/codex-dev-mode-migration`（7 修改、475 未跟踪）及其忽略内容；不处理 #552 或其他 issue 的交付。
+- 批准前 AC-4/9/13/24 的真实链路及若干会话面尚未验收。四条 #555 本地临时分支从 `develop=407e06877fbb8913fe2f702c8601a16f8ba41fb9` 建立：发布一条、远端单删一条、批量双删两条；三条删除候选在批准时 clean 且该 tip 已在 develop。Owner 已在当前任务分别批准验收矩阵的 commit、普通 push、PR 创建、本地删除和远端引用删除五类精确对象及命令；批准不扩展到计划/矩阵提交、force 或 merge。执行紧前重检并逐端对账，先后结果如下。
+
+### 首轮受控执行与网络停点（2026-09-23）
+
+- 已按批准范围执行正常工具 `git commit -m "docs(evidence): add #555 controlled delivery canary"`，得 `878b474d56e1e4201bba335b60caa9ad7ee018cd`；仅两份具名证据文件，12 行、无其他 staged/unstaged/untracked/ignored。实际作者与提交者均为 `ranzuozhou <ranzuozhou@gmail.com>`，未见显式宿主审批请求。
+- Gitee 已分别普通 push 发布分支和 S/A/B 三条删除候选，四次 `git ls-remote --heads gitee <精确 ref>` 查询均 exit 0 且各自匹配提交 SHA（发布分支 `878b474...`，S/A/B 均 `407e068...`）。成功项不重复推送。
+- origin 对发布分支的推送前 `git ls-remote --heads origin refs/heads/codex/555-ac9-publish-20260923` 初始三次 exit 1，原始错误为 `fatal: unable to access 'https://github.com/MJ-AgentLab/mj-agent/': Recv failure: Connection was reset`。随后同一查询一次 exit 0、空输出；按原命令 `git push origin codex/555-ac9-publish-20260923` 返回相同连接重置，紧后的只读对账也失败。该次 origin push 结果记 UNKNOWN，不重复推送直至成功查询实际 tip；S/A/B 的 origin 普通 push 均 NOT_EXECUTED，Draft PR、本地 S/A/B 清理与双端远程删除均未执行。静态项目规则检查仍不是目标 Desktop rules/hook 实际加载证明，网络错误也不是宿主审批拒绝。
+- 因此五类动作中 canary commit 与 Gitee 单端普通 push 有已核实结果，origin 发布 push 有 UNKNOWN 待对账。AC-9/13/24 不闭合；Issue 继续 OPEN、计划继续 active。后续只读查询成功后再按同一批准清单核对未完成端及对象；新拒绝/变化仅暂停受影响项。逐端逐引用明细、恢复命令和保留旧工作树状态见本节所链的验收矩阵。
+
+### 最新恢复与逐链路结果（2026-09-23）
+
+- origin 的同一精确只读查询随后 exit 0 且无发布引用，才重复原定普通 push 一次；该次 exit 0，随后 origin tip 为 `878b474d56e1e4201bba335b60caa9ad7ee018cd`。S/A/B 三条 origin 普通 push 也各自 exit 0、逐条查询为 `407e06877fbb8913fe2f702c8601a16f8ba41fb9`。Gitee 成功端未重推；先前连接重置的原始错误和 UNKNOWN 状态保留，不倒写为从未失败。
+- [Draft PR #566](https://github.com/MJ-AgentLab/mj-agent/pull/566) 已经显式 `--base develop` 正常创建，并复查 OPEN/Draft、head=`878b474...`、base=`develop`、标题/body 一致。commit→Gitee→origin→PR 链路有独立真实证据；未 merge、未关闭 Draft PR。
+- S 本地 worktree/branch 删除均 exit 0 且分别验证不存在；S 在本地分支缺失后仍完成 Gitee→origin 单引用远端删除。A/B 两端批量远端删除响应逐引用成功，随后每端每条引用的成功 `ls-remote` 查询均证实不存在；最后 A/B 本地 worktree/branch 各自删除并验证。所有远端删除前 tip 与两端 develop 均为 `407e...`，是已合并的同一提交。三个本地删除目标均无 dirty/untracked/ignored、无祖先或后代重解析点，DELETE 共享探测各 1311 节点全为 AVAILABLE；有内容旧工作树未动。
+- `check_git_actions.py` 只读 CLI 在当前环境两次将 Gitee 查询报 UNKNOWN；直接正常 `git ls-remote --refs --heads gitee` 同期查询成功，执行以前者失败、后者成功分别记录，不伪称检查器 live 通过。检查器缩减子进程环境且不报告原始子进程错误，具体差异来源尚未确定。
+- AC-4/9/13 的实际动作链已完成，详见矩阵逐项结论；目标 Desktop 对新 rules/hook 的实际加载仍无独立证据，AC-24 与其他仅离线覆盖面未完全闭合。当前有效模式声明 never，成功命令未见显式审批；这只证明各命令本次正常工具执行结果，不推定宿主永不审批。Issue 保持 OPEN、计划保持 active。
+
+计划保持 `state: active`，Issue 保持 OPEN。只有全部适用 AC 的真实证据补齐，或 Owner 明确批准调整剩余范围，才建议关闭。计划文档未提交是独立待办，不会由远端清理或测试 PR 自动触发提交。
+
+Owner 随后确认当前任务有效审批模式为 `never`，受控动作的成功与逐项对账不能证明目标 Codex Desktop 已加载新版项目 rules/hook；暂不调整 AC-22/24 范围，要求 #555 保持 OPEN。补充的宿主只读核查已确认 Desktop 安装版本 `26.917.51856`（build `10492`，prod）及本机配置 `mj-agent=trusted`；未找到目标 develop 会话对当前 `.codex/hooks.json` 的信任或加载记录。受控执行时段（2026-09-23 03:13–03:28 UTC）的可查日志无项目 rules/hook 加载事件，但缺失不证明未加载；另起 CLI 显示的 `OnRequest` 属不同进程，不替代目标任务的 `never`。目标会话 rules/hook 加载状态与加载版本仍为 UNKNOWN。下一步是取得可追溯的目标会话加载记录并按现行条款复核 AC-22/24；此次侧对话未修改信任、配置或仓库，也未授权新 Git 动作。
+
+## 13. 历史加载记录复核与新一轮最小对象（2026-09-23）
+
+本次目标线程 session meta、Desktop 文本日志与结构化日志的只读核查详见 `evidence/issue-555/acceptance-2026-09-23.md`。受控时段可核对目标任务的 `Never` 模式，但没有与其绑定的项目 rules/hook 加载来源、哈希或信任决定；`CodexHooks` 功能标记只说明功能存在。执行基线的 `.codex` 与守卫 Git blob 已登记，不能据此推定宿主加载。AC-22/24 仍为真实链路未验证。
+
+现行条款把 AC-3/6/15/16/21/23 的验证范围限定在回归/会话、原生检查器、规则集合、协议、诊断矩阵和文档反扫；T1–T5 对这些范围已有实际结果，因此矩阵六项改列“已验证（项目实现/离线范围）”。真实 Owner 撤销未人为制造，目标宿主加载仍独立留在 AC-22/24；本次没有重新运行测试。#555 保持 OPEN，计划 `state: active`。
+
+Owner 对两分支审阅草案回复“同意，执行”。当前 develop 与 Gitee/origin 的 `refs/heads/develop` 在创建前同为 `9b754a690d0ef0b432d7ea431c2edda1043361b2`，两条候选远端 ref 均不存在。已按 G1 创建两个本地 worktree：`D:/workspace/10-software-project/projects/mj-agent/codex/555-ac24-load-publish-20260923` 和 `D:/workspace/10-software-project/projects/mj-agent/codex/555-ac24-load-delete-20260923`；两条本地分支初始 tip 均为 `9b754...`，前者只暂存 5 行 canary 文件、index blob `134e0813e2d94e99c87b6ba08f37be8ac25693ed`，后者清洁。PR 正文模板草案位于 `C:/Users/Admin/AppData/Local/Temp/mj-agent-555-ac24-pr-body-20260923.md`，未用于创建。
+
+本次尚无新的目标 Desktop 会话实际加载记录，现有工具也未提供能确认加载路径、哈希、信任与有效模式的回执。按 AC-22/24 与已审阅的前置条件，commit、Gitee/origin 普通 push、Draft PR、两端远端删除均 **NOT_EXECUTED**；本地对象和暂存文件保留，不把“同意执行”扩展到尚无加载证明的发布/删除链路。若取得新会话可追溯加载记录，再复核对象、index blob、两端 tip 与各动作授权，并按 Gitee→origin 及响应丢失先对账的顺序继续。未执行本地 worktree/branch 删除、force 或 merge；旧工作树及 `.playwright-mcp/` 保留。
+
+## 14. 反馈回执补记、历史可追溯程度与待决选项（2026-10-08）
+
+Owner 要求继续已准备的取证与记录工作；本次补记反馈上传事实、只读核对留存证据与对象，并准备可选择的后续范围，不调整 AC、不执行新的 Git 发布/删除。详细来源、JSONL 行号、对象及逐动作命令见 [验收记录](../evidence/issue-555/acceptance-2026-09-23.md) 的 2026-10-08 两节。
+
+- Feedback ID 与原目标线程均为 `01a0cc2d-5760-7163-82ee-9ac75ff8b177`。原结构化日志 ID `25176077` 在 **2026-09-23 05:06:58 UTC** 记录上传成功、13 个附件、`attachments_failed=false`；Desktop `feedback/upload` 于 `05:06:58.029Z` 的 requestId=`c5348d11-4dc9-428d-b92a-e44563d06897`、`errorCode=null` 为另一来源。现存目标 session JSONL 留有这些只读查询输出；原 Desktop 文本日志目录和 SQLite 原行已不可直接复查。上传成功只证明送达，未取得诊断答复或项目加载证明；没有再次上传。
+- 历史 Desktop **26.917.51856（build 10492，prod）已由 Owner 核实**；目标 session meta 可核对线程、develop 路径及引擎 `0.155.0-alpha.16`，留存结构化查询可关联当时 `Never`。实际 rules/hook 来源、当时加载版本/哈希、项目与 hook 信任决定、加载/跳过状态及原因/时间仍 **UNKNOWN**。静态 blob、trusted 配置、功能标记、另起 CLI 或命令成功均未充当实际加载证据。
+- 两端只读查询均 exit 0：develop=`9b754a690d0ef0b432d7ea431c2edda1043361b2`，第一轮发布 tip=`878b474d56e1e4201bba335b60caa9ad7ee018cd`；第二轮两条候选 ref 各端均不存在，新 head 的 PR 查重为空；#566 仍 OPEN/Draft、base=develop。两个新本地 worktree 的 tip、仅一文件 staged 的 canary blob 与删除候选清洁/祖先关系未变。原 PR 正文临时文件缺失，本次恢复为 [持久草案](../evidence/issue-555/ac24-pr-body-2026-10-08.md)，SHA256=`ED1514F2DD708C0D931CB6DCFB9E411AF0DEFB38D1B2C4E18EEAA1DDE33871C6` 与原草案一致；待审命令采用新绝对路径，未用于 PR。
+- AC-3/6/15/16/21/23 按各自现行项目/离线验证范围保持已验证。AC-22/24 仍为真实链路未验证/UNKNOWN；本次只校验文档，不把文档检查追加为宿主验收。旧工作树、两个新 worktree 与 `.playwright-mcp/` 均保留；第二轮五类动作仍 NOT_EXECUTED。
+
+Owner 待决选项：**推荐新会话补验**，明确允许有可追溯加载记录的新目标 Desktop 会话完成剩余 AC-22/24，原时段 UNKNOWN 永久保留，新记录只证明新执行；AC-22 已知拒绝的条件变化及恢复仍独立验证。另一选项为**维持历史范围**，通过已有反馈 ID 继续索取原时段记录、暂停新轮动作。两项均未采纳，推荐理由与影响见验收记录；取得新加载记录和五类精确动作授权后再执行正常命令。信任由工程师独立审阅、宿主审批按实际要求处理。
+
+最小剩余事项为目标会话加载证据或明确的范围决定，以及所选范围内 AC-22/24 恢复验收；实施计划继续 `state: active`，#555 继续 OPEN。验收记录、计划及 AGENTS 协作原则仍 UNCOMMITTED；提交它们须单独对象批准。实施来源 Codex，Subagent dispatched=NONE；无业务/runtime 改动，BDD/TDD 不适用本次记录补充，未安装依赖或执行外部测试。
+
+本轮文档校验：`uv run --frozen --no-sync python scripts/check_frontmatter.py` 为 146 篇 PASS，`check_wikilinks.py` 为 0 archive-ref violations、5 根入口 0 unresolved，均 exit 0；`git diff --check` 通过。证据目录另作尾空白及相对链接检查，无问题。上述结果只证明文档检查，不替代 AC-22/24 宿主加载及恢复证据。
+
+#555 已通过正常工具补记本节取证进展，回读 `updatedAt=2026-10-08T03:44:38Z`、state=OPEN；现行 24 条 AC、原正文前缀与折叠历史逐字保持，范围决定仍待 Owner。Issue 更新不是 Git 发布或验收通过证据。
+
+## 15. Owner 批准新会话补验及五类具名动作（2026-10-08）
+
+Owner 回复“同意推荐，授权执行”，已采纳 §14 的推荐方案：剩余 AC-22/24 可由具有完整可追溯加载记录的新目标 Desktop 会话完成；原 `2026-09-23 03:13–03:28 UTC` 的加载状态永久保持 UNKNOWN，新证据不回填历史。AC-22 已知拒绝的条件变化/恢复仍须独立核验。§14 的未采纳/待决描述为批准前快照，以本节为最新状态。
+
+前节验收清单中的五类动作分别获批：发布 worktree 的单文件 canary commit；两条测试分支 Gitee→origin 普通 push；发布分支显式 base=develop 的 Draft PR（使用持久正文）；仅删除测试本地 worktree/branch；仅删除测试两端 ref、固定 tip=`9b754a690d0ef0b432d7ea431c2edda1043361b2`。精确对象、命令、正文哈希及逐动作状态见 [验收记录](../evidence/issue-555/acceptance-2026-09-23.md) 末节。五类均 APPROVED，复用本批准；不包含记录/计划/AGENTS 原则提交、信任/配置修改、日志上传、force 或 merge。
+
+已取得 10 月 8 日新 session 文件、Desktop originator、目标 develop、引擎 `0.162.0-alpha.2` 与本轮 turn 的实际 never/danger-full-access；同线程原生日志的 Never 与进程 `pid:115512:d28f44c9-467c-4323-878e-0ba63ea77ce0` 可关联。当前安装包登记 `26.1002.7124.0`、ASAR 应用 version=`26.1002.52244`，这些与历史 Owner 核实的 `26.917.51856/build 10492/prod` 分列。新目标 rules/hook 来源/实际哈希/信任/加载状态仍 UNKNOWN，没有用版本或模式证明加载。
+
+当前 Desktop 前端有 Hooks 设置只读 `hooks/list` 入口，但该 Agent 工具不能调用，且列表仅按 cwds 读取配置，仍需目标实际加载关联。已准备 [新目标诊断请求草案](../evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md)，未发送/上传；未使用另起 CLI、手动运行 hook、私有 IPC 或改配置获取替代结果。
+
+最新只读预检显示两工作树 tip 和 staged canary 未变、删除候选 clean，两端 develop 同 tip、候选 ref 均不存在，持久 PR 正文哈希未变。加载前置证据仍未满足，所以五类动作均 NOT_EXECUTED，停点为 UNMET_HOST_LOAD_EVIDENCE；没有新宿主拒绝，不虚报 BLOCKED_EXECUTION_ROUTE。取得实际加载记录后按同一授权从紧前预检继续。#555 保持 OPEN、本计划 active；记录仍 UNCOMMITTED，旧工作树及 `.playwright-mcp/` 保留。
+
+本轮 frontmatter 146 篇 PASS、wikilinks 0 violations/5 根入口 0 unresolved、diff 空白与证据相对链接检查通过；原生检查器 STATIC_PASS/PER_COMMAND，加载 UNKNOWN、宿主 NOT_TESTED，不能替代真实证据。#555 范围及授权记录已回读，updatedAt=`2026-10-08T04:07:50Z`、state=OPEN；仅 AC-22/24 附加新会话范围与对应矩阵同步，其余 AC 及折叠历史保持。实施来源 Codex，未委派，BDD/TDD 不适用本次记录维护。
+
+## 16. 实际 on-request 切换与正常审批入口（2026-10-08 04:14 UTC）
+
+Owner 告知已切换 ask for approval 并要求继续。目标 10 月 8 日 session JSONL 第 411 行 `thread_settings_applied`（04:14:22.115Z）、第 417 行 turn（04:14:22.221Z，turn_id=`01a119b8-298e-78e2-a42b-48ad103c3d14`）与原生 SQLite 行 `27274879`（OnRequest，目标 thread/process）证实本轮实际为 **on-request / workspace-write**，network_access=false。上节 never/danger-full-access 是切换前事实；没有用另起 CLI 或声明代替目标会话证据。
+
+只读 gh issue view 在受限网络返回代理连接拒绝，按宿主机制对同一命令请求 require_escalated 后成功；原生静态检查受限 uv 缓存访问被拒，对同一命令经正常审批入口执行后 STATIC_PASS/PER_COMMAND，但加载 UNKNOWN、宿主 NOT_TESTED。两个原始错误及逐命令范围完整留在 [验收记录](../evidence/issue-555/acceptance-2026-09-23.md) 末节；没有改配置、权限或换工具。没有独立“人工弹窗/规则免弹窗”分类，不从成功猜测。
+
+两候选 worktree、tip 与 canary index 未变，删除候选 clean；两端精确引用查询均 exit 0、develop 同 tip、候选 ref 不存在。模式变化已核实，实际项目 rules/hook 的加载路径、定义哈希、信任和加载/跳过状态仍 UNKNOWN；获批的新会话方案保留这一前置，五类动作均 APPROVED / NOT_EXECUTED，取得记录后无需重复批准，从紧前核验及必要的正常宿主审批继续。
+
+本轮未执行 commit、push、PR 创建或删除，也无新的 Git 宿主拒绝；停点仍 UNMET_HOST_LOAD_EVIDENCE，不能把模式切换、只读命令/静态检查成功写成真实 Git 或加载恢复。#555 OPEN、计划 active，原时段 UNKNOWN、旧工作树和 `.playwright-mcp/` 保留，文档仍 UNCOMMITTED。实施来源 Codex，未委派，无功能修改或新回归。
+
+## 17. Owner 调整执行顺序（2026-10-08）
+
+Owner 明确选择“先执行已批准的受控动作（推荐）”：五类具名动作可先按正常宿主审批执行，独立验证命令能力，实际拒绝保留原错并停止受影响步骤。加载记录不再作为这些动作的执行前置，AC-22/24 的实际加载/信任/定义与拒绝恢复验收继续保留 UNKNOWN，#555 OPEN、本计划 active；原时段 UNKNOWN 永久保留。仅调整先后顺序，复用 §15 的逐动作授权，不扩展提交/删除范围或信任/配置修改。§16 的加载优先停点为决定前快照，执行结果另记，不用成功命令推定项目定义已加载。
+
+## 18. 本轮真实执行完成与剩余验收（2026-10-08 04:27–04:32 UTC）
+
+按 §17 决定与 §15 的五类具名授权完成本轮正常工具执行。目标 turn/原生模式证据仍为实际 on-request/workspace-write；各写命令逐条通过 require_escalated 正常宿主入口请求后成功，工具没有独立记录人工弹窗/已有规则放行分类，该分类 UNKNOWN。命令、逐端 tip、时间戳、原始 chunk 与目标 session JSONL 行号完整登记在 [验收记录 E2](../evidence/issue-555/acceptance-2026-09-23.md)。
+
+| 独立链路 | 实际结果 |
+| --- | --- |
+| commit → 双推 → 显式 base PR | canary commit=`6d331438990c458599025bccf3196fabbd694514`，仅一证据文件/5 行，实际作者及提交者 ranzuozhou，实施者 Codex；Gitee→origin 各 push exit 0、每端成功查询同 SHA；[Draft PR #571](https://github.com/MJ-AgentLab/mj-agent/pull/571) 已创建/附加，回读 OPEN/Draft、head 同 SHA、base=develop、title/body 与已批准草案完全一致 |
+| 删除测试双端发布 | 两端分别普通 push 并成功查询 `refs/heads/codex/555-ac24-load-delete-20260923`，tip 固定 `9b754a690d0ef0b432d7ea431c2edda1043361b2`，与本地及两端 develop 同 tip，无新增内容 |
+| 本地删除 | 删除紧前 1311 节点无祖先/后代重解析点、DELETE probe 全 AVAILABLE、1046 tracked flags=H，无 dirty/untracked/ignored/额外内容/并发变化；内容由 develop 保留，秘密仅检查元数据。正常 worktree remove、branch -d 各 exit 0，目录/元数据/精确本地 ref 各自确认不存在 |
+| Gitee 引用删除 | 本地已删后从 develop 成功复查当前 ref/tip，正常 `git push gitee --delete codex/555-ac24-load-delete-20260923` exit 0；紧后该端精确 ls-remote exit 0、空输出，DELETED |
+| origin 引用删除 | 独立正常 `git push origin --delete codex/555-ac24-load-delete-20260923` exit 0；紧后该端精确 ls-remote exit 0、空输出，DELETED |
+
+五类命令本轮全部有实际结果，无新的 Git 宿主拒绝或未知响应。成功端未重复，旧已删除对象未再操作；两发布 worktree/引用与 PR #566/#571、有内容旧工作树均保留，`.playwright-mcp/` 文件未清理或暂存，哈希未变。未 force、merge、调整配置/信任或上传日志。
+
+AC-4/9/13 本轮证据与首轮/T1–T5 分列，六项既有项目/离线验证结论保持。**AC-22/24 仍真实链路未验证/UNKNOWN**：模式变化及真实命令成功不证明项目 rules/hook 实际加载、信任或规则变化后的恢复。最小剩余事项为新目标运行的加载路径/定义哈希/版本、两种信任、加载/跳过原因/时间及与拒绝来源的可追溯关联；得到充分记录或 Owner 明确调整范围后才重评关闭。原 9 月时段 UNKNOWN 永久保留，#555 OPEN、本计划 active。
+
+记录/计划/AGENTS 原则仍 UNCOMMITTED，未纳入 canary commit；其另行提交是独立待办。诊断请求草案仍未发送，材料先做敏感信息检查后再决定发送范围。实施来源 Codex，未委派；无产品行为改变，不新增 BDD/TDD 行为测试，复用既有离线回归。
+
+本轮最终文档检查：frontmatter 146 canonical PASS，wikilinks 0 violations/5 根入口 0 unresolved，diff 空白与三份证据文件相对链接检查通过，均 exit 0；没有重跑功能测试或启用外部依赖。#555 已同步 E2 及原始模式/顺序决定，回读 `updatedAt=2026-10-08T04:41:10Z`、state=OPEN、正文与预备文件精确一致；现行 24 条 AC 与折叠历史逐字保持，仅六行矩阵和追加记录更新。完整 body SHA256 见验收记录 E2 同步回执。本计划仍 active / UNCOMMITTED。
+
+## 19. 授权后取得宿主审批回执（2026-10-08）
+
+Owner 再次授权继续剩余诊断推进。本次找到可读的非空 Desktop 日志，复核取得 E2 目标 conversationId 的 commandExecution 审批请求及同 id 的 accept 回执，覆盖请求 57/58/59/61/64/65/67/69/70/71，部分另有通知 approve action。未独立确认此前空文件与本次文件身份相同，不推定增长原因。来源路径、每行 UTC、请求链和与精确命令的跨来源关联程度详见验收记录 E3；此前无独立回执是补证前状态，未以成功推定审批。操作者身份不从 accept 推断。
+
+本轮新 turn 第 815 行及原生 SQLite 27305181 为实际 never / danger-full-access；E2 原 turn 与逐动作结构化记录仍为 OnRequest，两时段分列。hooks/list 只有无 conversation/cwd/定义内容的路由成功记录，未取得实际加载路径、定义 hash/版本、项目/hook 信任与加载/跳过状态/原因/时间，仍 UNKNOWN；AC-22/24 未闭合。
+
+更新完整诊断草案，准备 [精简反馈正文](../evidence/issue-555/ac24-feedback-text-2026-10-08.md)。当前正常工具目录没有反馈发送/回执查询接口，原生 Desktop 控制不可用，因此 NOT_SENT / UNAVAILABLE_DIAGNOSTIC_INTERFACE；不是授权缺失或实际宿主拒绝，未用私有接口或另起 CLI 制造结果。附件需先敏感审阅，本次未上传。最小剩余事项是取得目标加载回执或 Owner 明确调整范围；#555 OPEN、本计划 active / UNCOMMITTED，未重复 Git 动作，旧工作树及 `.playwright-mcp/` 保留。
+
+E3 的 diff 空白与 evidence 引用检查通过；#555 同步后最终回读 updatedAt=`2026-10-08T04:55:40Z`、state=OPEN、正文与预备文件精确一致，现行 24 条 AC 与折叠历史保持，正文 hash 见验收记录 E3。本计划仍 active，未提交；反馈展示请求仅 queued，发送仍 NOT_SENT。
+
+## 20. 反馈提交授权与正常入口拒绝（2026-10-08 05:01 UTC）
+
+Owner 再次明确“授权执行”，反馈正文提交授权继续有效。本次工具目录已提供 node_repl + @oai/sky；初始化与只读窗口列举成功，目标应用返回 ChatGPT（OpenAI.Codex_2p2nqsd0c76g0!App）。正常窗口读取入口随后返回原错 `Computer Use was not approved to use ChatGPT`，目标 JSONL 第 1041/1042 行、05:01:30.011/020Z 和当前 turn 的关联见 [验收记录 E4](../evidence/issue-555/acceptance-2026-09-23.md)。E3 的工具缺失是此前快照；本次为实际反馈 UI 拒绝，NOT_SENT / BLOCKED_EXECUTION_ROUTE，细化审批来源 UNKNOWN，不归因于项目 rules/hook 或 E2 Git 动作。
+
+Computer Use 技能默认排除 ChatGPT 桌面 UI；已授权的正常工具尝试仍被宿主拒绝。按 AGENTS.md 停止受影响步骤，未输入、提交、上传或换工具绕过。推荐 Owner 在原聊天 /feedback 粘贴已准备正文，未经敏感审阅的附件先不附带；另一选项是提供正常诊断入口允许目标应用的可核对条件变化，再由 Codex 续行。重复批准不替代宿主条件变化。AC-22/24 加载仍 UNKNOWN、#555 OPEN、本计划 active；已成功 Git 链路不重复，记录未提交，旧工作树与 .playwright-mcp/ 保留。
+
+E4 GitHub 同步准备也被自动审批检查拒绝：`JavaScript execution exceeds the 64000-byte strict auto-review limit`，05:05:00.096Z、目标 JSONL 第 1104 行；提交的 JavaScript UTF-8 大小 102845 字节，超过报告上限。未取得 body-file 写入回执，未执行 issue edit，未拆分/改写或换工具绕过。本节与验收 E4 仅保存在本地；GitHub 最近已核实 OPEN / updatedAt=2026-10-08T04:55:40Z，尚未同步本节。正文准备步骤同为 BLOCKED_EXECUTION_ROUTE，计划保持 active。
+
+## 21. on-request 核实与反馈正文送达（2026-10-08 05:08–05:13 UTC）
+
+原 session 第 1147 行（05:08:12.549Z）直接核实新 turn=01a119e9-743b-7270-9732-f42cca305f52 为 on-request / 审批者 user / workspace-write。受限 GitHub 只读查询通过正常 require_escalated 执行原命令后成功，仍 OPEN。原 102,845 字节正文准备调用原样重试仍受 64,000 字节检查拒绝（JSONL 1187，05:09:54.082Z）；此限制未解除，GitHub 正文同步仍 BLOCKED_EXECUTION_ROUTE，不拆分载荷或换工具绕过。
+
+Computer Use 正常窗口读取本轮通过宿主审批成功，在原聊天 Help → Send Feedback 提交已批准的精简正文，Other、两个附件选项关闭。UI 明确 Feedback submitted；原生 SQLite 27354057 与 Desktop 主日志 18256 于 05:12:54 UTC 独立证明 feedback/upload 成功、uploaded_attachments=0、attachments_failed=false，反馈 ID 同目标线程。正文指纹、回执来源与精确时间见 [验收记录 E5](../evidence/issue-555/acceptance-2026-09-23.md)。此前 UI 原拒绝保留为历史；当前窗口可用不等于项目加载或 Git 拒绝恢复。
+
+诊断正文状态改为 SUBMITTED / 0 attachments，尚无加载诊断答复。AC-22/24 实际定义/信任/加载/跳过及与已知拒绝对应仍 UNKNOWN，原时段 UNKNOWN 永久保留；#555 OPEN、本计划 active。E4/E5 已保存本地，未 Git 提交；旧工作树和 .playwright-mcp/ 保留，未重复 Git 动作。准备 [独立状态评论草案](../evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md)，推荐 Owner 另行批准以评论登记本轮结果并保留原正文停点；也可等待原入口限制解除。草案 NOT_POSTED，不将评论路线自动纳入已有正文更新批准。
+
+具名评论草案 SHA256=B73D23E2FFB73009BA6C69A9E8E163ACFE2A941209B5447F948C0EADBBE6C486；拟议 gh issue comment 的精确命令和未知结果对账见验收 E5。E5 diff/引用/尾空白校验通过，develop 无新增 staged 内容，.playwright-mcp/ hash 未变；最终正常审批只读回查 #555 仍 OPEN / updatedAt=2026-10-08T04:55:40Z。评论未发布，正文未编辑。
+
+## 22. 获批状态评论发布与对账（2026-10-08 05:27 UTC）
+
+Owner 明确批准 §21 的具名状态评论，保留原正文准备停点。紧前文件 SHA256 与批准完全一致、Issue OPEN、评论查重 []；正常 gh issue comment 通过宿主审批只发布一次，exit 0，得到 [评论 6053008982](https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6053008982)。正常 API 回读 createdAt/updatedAt=2026-10-08T05:27:34Z、author=ranzuozhou，1360 字符正文与获批文件逐字一致；精确命令、原始工具输出及 session 行号见 [验收记录 E6](../evidence/issue-555/acceptance-2026-09-23.md)。实际实施者 Codex，未委派。
+
+Issue 仍 OPEN，updatedAt=05:27:34Z；其完整正文与 E3 原文逐字一致，24 条现行 AC 和折叠历史未改。E4/E5 已通过获批评论登记，完整正文准备继续 BLOCKED_EXECUTION_ROUTE，不将评论成功认作限制解除。反馈已提交、附件 0，但加载诊断未取得；AC-22/24 UNKNOWN、原时段 UNKNOWN 永久保留、本计划 active。最小剩余事项为可追溯目标加载诊断及逐项核对，或 Owner 明确调整范围；本轮没有新 Git 动作，工作区记录未提交，旧工作树与 .playwright-mcp/ 保留。
+
+## 23. 新增记录核查与剩余验收选项（2026-10-08 06:19 UTC 快照）
+
+Owner 回复“执行”后，Codex 继续只读取证并准备范围选项，未委派。目标 JSONL 第 1518 行证实当前新 turn `01a11a25-9f6f-7c50-8b68-38b6ceefc24d` 为 never/user/danger-full-access，独立于 E2 的 OnRequest 执行窗口。SQLite 05:12:54–06:19:56 UTC 固定秒区间中，目标线程 429 行、线程/进程合计 2476 行；唯一相关候选仍是附件 0 的既有 feedback/upload 回执。Desktop 新增 12 条 hooks/list 的 conversationId=null，无定义/哈希/信任/加载结果；另 16 条 core.hooksPath 候选均为 Git 日志，没有作为 Codex hook 回执。补充检查的两处目标 hook 输出目录不存在；这些缺失均不能证明未加载。具体路径、行号、SQL 条件、原始输出坐标和字段结论见 [验收记录 E7](../evidence/issue-555/acceptance-2026-09-23.md)。
+
+正常只读 GitHub 查询仍 OPEN、仅有 §22 的具名评论、完整正文与 E3 一致；没有取得新的可追溯诊断。当前可用工具没有目标加载/反馈答复查询接口；官方反馈文档没有提供所需的答复查询承诺。没有新上传、Git 写操作、配置/信任修改或历史拒绝路线重试，既有发布对象、旧 dirty 工作树和 .playwright-mcp/ 保留，记录仍未提交。
+
+已准备 [Owner 选项与明确范围调整草案](../evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md)。推荐继续保留现行 AC-22/24，索取 E2 实例的独立加载报告；若该实例也无记录，先准备可观测新会话采集方案再另行批准具名动作。替代选项明确将实际加载及该加载与恢复的关联从本 Issue 关闭条件中移出，UNKNOWN 和原始拒绝保留；此选项尚未批准，不能当作恢复或验收通过。现行计划继续 active、#555 OPEN，不建议关闭。
+
+本轮文档校验 PASS：146 canonical frontmatter、archive-ref 0、根入口链接 0；对本轮四份文件另外校验相对链接/尾空白和 diff，均通过。暂存区为空，冻结评论与 .playwright-mcp/ 哈希不变；没有用这些静态结果代替 AC-22/24 加载证明。详细命令/退出码见验收记录 E7。
+
+## 24. 方案 A 获批与支持账户停点（2026-10-08 06:54 UTC）
+
+Owner 选择推荐方案 A 并授权执行，保留 AC-22/24 的现行加载要求；方案 B 未批准。Codex 只读检查新增日志，仍没有可追溯加载报告；两个同进程/不关联目标线程的 SQLite 候选原文在后查时不可得，标 UNKNOWN，未推断加载或未加载。当前 turn 的 never 与 E2 OnRequest 分列。详细来源/查询窗口见 [验收记录 E8](../evidence/issue-555/acceptance-2026-09-23.md)。
+
+通过正常 OpenAI 官方支持网页聊天已发送 [1469 字符具名请求](../evidence/issue-555/ac24-support-request-2026-10-08.md)，发送前与批准内容核对一致；界面 You said 回读正文，随后要求账户邮箱，没有诊断答复/案件回执。Owner 选择在页面登录或填写邮箱，最新可见状态仍等待账户输入；已保留支持页面。没有读取或填写凭据，也没有附件上传。支持请求与原 Desktop feedback、完整 Issue 正文准备的已知拒绝分开，未重试该受阻路线。
+
+恢复入口：Owner 完成该页面账户步骤后，Codex 沿用方案 A 授权继续核对支持答复；需要附件时先准备脱敏具名材料，另交 Owner 审阅。没有新 Git 动作、Issue 写入或信任/配置修改；计划 active、#555 OPEN、AC-22/24 加载 UNKNOWN、工作区记录 UNCOMMITTED，旧 dirty worktrees 与 .playwright-mcp/ 保留。截图仅保存到本地审阅，不作为历史加载证明。
+
+文档校验 PASS：frontmatter 146 件、archive-ref 0、根入口未解析链接 0；另核对本轮五份 Markdown 相对链接/尾空白及 diff，通过。具名支持正文/截图、冻结评论与 Playwright 文件哈希一致，暂存区空。命令、退出码与输出坐标见验收记录 E8。
+
+## 25. 账户步骤完成与人工支持升级（2026-10-08 07:12 UTC）
+
+Owner 回复“完成登录，继续执行”，Codex 沿用方案 A 的推进授权。原支持聊天显示“已收到邮件”，账户停点解除；已发送后续字段请求，正常点击页面“升级”，并回读“已请求人工支持专员介入”与“已升级给支持专员”。页面说明答复也将通过邮件发送，但没有案件编号、人工答复或加载诊断。状态 HUMAN_SUPPORT_ESCALATION_CONFIRMED / WAITING_FOR_DIAGNOSTIC_RESPONSE。精确 JSONL 坐标、UTC、call_id 和本地原始截图哈希见 [验收记录 E9](../evidence/issue-555/acceptance-2026-09-23.md)。§24 是此前账户停点快照。
+
+当前记录 turn 的 never 与 E2 的 OnRequest 窗口分列；升级回执仅证明支持转交，不证明目标实例实际加载。AC-22/24 的来源、定义哈希、信任、加载/跳过及恢复关联仍 UNKNOWN；#555 只读复核仍 OPEN，计划 active，B 范围调整未批准。下一步取得并逐字段核对该支持聊天/邮件的具名诊断；无法取得时再提交可观测新实例方案或明确范围调整供 Owner 决定。
+
+本轮未读取账户邮箱/凭据或邮箱内容，未上传附件、修改信任/配置或新增 Git/Issue 写操作；不重复已完成命令，64 KB 原始拒绝仍保留。证据/计划仍 UNCOMMITTED，旧有内容工作树及 .playwright-mcp/ 保留。若支持需要附件，先准备最小具名脱敏清单供 Owner 审阅授权，不将方案 A 推进批准扩展为附件批准。
+
+文档校验通过：146 canonical frontmatter、archive-ref 0、根入口未解析链接 0；四份更改记录的相对链接/尾空白及 diff 通过，冻结具名文件与原始截图哈希一致。命令、退出码和来源见 E9；校验不改变加载 UNKNOWN。
+
+## 26. 支持专员首答与诊断待办（2026-10-09 07:51–07:54 UTC 观察）
+
+只读检查原支持聊天，新增署名 Chinedu / OpenAI Support 的答复。专员将检查既有反馈、确定历史记录可访问性，并区分 10 月 8 日与 9 月 23 日实例；目前尚不能确认历史加载、信任、记录保留覆盖或六类字段能否重建。当前无需上传材料、重跑 Git 或修改信任/配置。页面没有消息发送时间、案件编号或原始事件报告；观察时间不作为发送时间。来源、原始 JSONL 坐标、截图哈希及逐字段核对见 [验收记录 E10](../evidence/issue-555/acceptance-2026-09-23.md)。
+
+状态 SUPPORT_SPECIALIST_REPLY_RECEIVED / WAITING_FOR_HISTORICAL_DIAGNOSTICS；AC-22/24 的加载及恢复关联仍 UNKNOWN，计划 active，#555 只读复核仍 OPEN。下一步取得该目标对话的具名诊断材料；不能把“尚不能确认”改写为记录不存在，也不以首答替代验收。Owner 当前无新增上传或重跑动作；材料请求出现后再准备具名脱敏清单。
+
+此前定时检查仅有 suggested_create 卡片回执；本次本地 automation.toml 未匹配该任务，没有创建/启用/运行 ID 可核对，实际调度状态 UNKNOWN。未重复创建、变更或声称暂停任务；若继续等待实质诊断，应先定位精确任务并明确停止条件。仅更新本地记录，未 Git/Issue 写入，64 KB 停点、旧工作树和 .playwright-mcp/ 保留。
+
+记录校验通过：147 canonical frontmatter、archive-ref 0、根入口未解析链接 0；四份更改记录的相对链接/尾空白与 diff 通过，原始截图及冻结文件哈希一致、暂存内容为空。命令/退出码与来源见 E10，不作为加载验收。
+
+## 27. 验收一致性核对与记录交付准备（2026-10-09）
+
+Owner 接受同步准备建议。Codex 按 [现行 24 条快照](../evidence/issue-555/current-clauses-2026-10-09.json)及 [一致性审阅](../evidence/issue-555/consistency-review-2026-10-09.md)复核：22 项在各自条款范围内已验证，AC-22/24 actual-loading/recovery 仍 UNKNOWN；六项原静态条款的通过不扩展为宿主加载。原时段已核实 Desktop 版本与加载 UNKNOWN 分列，支持 E10 首答不补齐诊断，#555 OPEN、计划 active。
+
+新 documentation 工作树与分支 `documentation/555-acceptance-records-20261009` 已通过正常 git worktree add 创建，基线 `0b2f542e466fe36258046c7e8592ed6770e983f2`（本地/origin develop）。Gitee develop=`4e55aae9d78f59ce9b47be43171b5fb33fe95049` 是其祖先，0/2；本次不推送或同步 develop。两端新分支及现存同 head PR 均未发现，获批执行前须重查。精确绝对工作树、对象、命令及工具回执见 [验收记录 E11](../evidence/issue-555/acceptance-2026-09-23.md)。
+
+推荐记录包 15 份（14 evidence、1 本计划），准备两项 docs 提交、Gitee→origin 普通新分支双推、显式 base=develop 的 Draft PR；另备独立状态评论草案。未 git add、commit、push、创建 PR 或公开评论；旧 canary 授权不覆盖本记录交付。公开仓库中的本机路径/线程标识/支持截图展示范围随文件哈希清单交 Owner 审阅；commit、普通 push、PR 创建与评论发布分别批准。AGENTS 两行治理原则另行保留，Playwright 与三条有内容旧工作树不纳入、不删除。
+
+纯记录范围无 runtime、守卫或配置变更，复用既有 T1/T2，不重复功能测试；文档校验与文件哈希结果登记 E11。本地审阅清单不作为授权凭证，工作树和原始拒绝保留，未绕过完整正文 64 KB 停点。下一步可以在具名动作获批后交付这些记录，剩余验收继续等待目标实例实质诊断或 Owner 明确调整范围；新会话结果不回填原时段 UNKNOWN。
+
+源记录校验 exit 0：147 canonical frontmatter、archive-ref 0/根入口 unresolved 0，15 文件相对链接/尾空白和 JSON/24 条矩阵核对通过；五份冻结文件及 Playwright 哈希一致，cached diff 空。详细命令、UTC、chunk 及扫描边界见 E11；复制后的目标工作树检查与最终清单另备本地审阅。
