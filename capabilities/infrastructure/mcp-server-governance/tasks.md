@@ -2,15 +2,15 @@
 type: capability-tasks
 capability: infrastructure.mcp-server-governance
 state: drafting
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-09-23
 ---
 
 # Tasks: MCP Server Inventory + Governance
 
-> Phase M1 baseline. medium-risk REQs; A14 gate manual at M1, automated at M3.
+> Codex-only native ownership: A14 PR-body declaration is reviewed manually; V11 checks the native config in CI, not the PR body.
 
 ## Backlog
 
@@ -19,27 +19,22 @@ updated: 2026-05-20
 - **Status**：in-progress
 
 ### T-002 — REQ-001 8-server inventory + A14 PR gate declaration
-- **Phase**：M1 (contract; informational) / M2 (CI warning) / M3 (CI blocking)
+- **Phase**：current native ownership (manual A14 declaration; V11 static config check)
 - **Priority**：medium / **Linked REQ**：REQ-001
-- **Contract changed?**：no
+- **Contract changed?**：yes (#495 corrects the automation claim; Owner approval required)
 - **HITL trigger**：any .codex/config.toml modification → A14 gate per `contracts/governance.contract.yml §a14_pr_gate` (former MCP STANDARD §4, archived M6 X5)
-- **Status**：done (M1 contract); TBD-M3 tests + automation
-- **TDD test_list**：
-  - **TBD-M3** `tests/contract/test_mcp_inventory.py::test_thirteen_server_entries`
-  - **TBD-M3** `tests/contract/test_mcp_inventory.py::test_per_entry_trust_posture_declared` — assert each entry's trust posture matches mcp-server.contract.yml
-  - **TBD-M3** `tests/contract/test_mcp_inventory.py::test_credential_mode_per_entry`
-  - **TBD-M3** `scripts/sdd/check_a14_gate.py` — PR body parser; warning at M2 / blocking at M3
-  - **TBD-M3** `tests/contract/test_a14_gate.py::test_pr_body_contains_mcp_block_when_mcp_json_changed`
+- **Status**：done (native inventory check and A14 declaration template); PR-body automation declined
+- **Verification**：`scripts/sdd/check_codex_native.py --surface mcp` (V11, config only); `tests/unit/test_native_mcp_scopes.py` (positive and negative config cases); `tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py` (template structure only)
+- **Declined**：`scripts/sdd/check_a14_gate.py` and the old `.mcp.json` PR-body parser test. Revive only if Owner separately approves PR-body automation for current `.codex/config.toml`/native MCP triggers and decides its CI posture; V11 must not be relabeled as that parser.
 
 ### T-003 — REQ-002 wrapper consistency
-- **Phase**：M1 (contract) / M3 (tests)
+- **Phase**：current native ownership
 - **Priority**：medium / **Linked REQ**：REQ-002
 - **Contract changed?**：no
 - **HITL trigger**：scripts/mcp/pg-server-* modifications → baseline diff against `docs/_baselines/pg_server_baseline.md`
-- **Status**：done (M1 contract); TBD-M3 tests
-- **TDD test_list**：
-  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_all_pg_entries_use_same_wrapper` — load .codex/config.toml; iterate pg-* entries; assert all invoke `scripts/mcp/pg-server-start.ps1`
-  - **TBD-M3** `tests/contract/test_mcp_pg_wrapper_consistency.py::test_pg_wrapper_baseline_aligned` — diff `scripts/mcp/pg-server-wrapper.mjs` against `docs/_baselines/pg_server_baseline.md` (warn on drift; fail on major change)
+- **Status**：done (native V11 and BDD verify all five wrapper references and env names)
+- **Verification**：`scripts/sdd/check_codex_native.py --surface mcp`; `tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_002_pg_wrapper_consistency`
+- **Declined**：the separate historical-baseline drift gate; `docs/_baselines/pg_server_baseline.md` remains provenance, with quarterly manual comparison under T-004.
 
 ### T-004 — Quarterly audit cycle (cron-driven)
 - **Phase**：M4+ (automation; not blocking M1)
@@ -69,6 +64,4 @@ updated: 2026-05-20
 
 ---
 
-> Phase M1 baseline. 5 TBD-M3 test entries + 1 TBD-M4 cron + 1 TBD-M2 cross-cap.
-
-Native cutover verification uses the actual native checker and existing BDD bindings in trace.yml. Historical TBD-M3 test names above are not claimed implemented; native service/host execution remains separate.
+> T-002/T-003 use current native checks and BDD bindings in trace.yml. T-004 quarterly automation and T-005 cross-capability sync remain separate backlog items; native service/host execution remains separately evidenced.

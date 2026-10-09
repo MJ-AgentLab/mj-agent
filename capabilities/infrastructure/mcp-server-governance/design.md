@@ -2,10 +2,10 @@
 type: capability-design
 capability: infrastructure.mcp-server-governance
 state: drafting
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-09-23
 ---
 
 # Design: MCP Server Inventory + Governance
@@ -18,7 +18,7 @@ The PowerShell bootstrap resolves the Git root, calls the native startup script,
 
 ## Review and verification
 
-A14 applies to inventory, trust, credential mode and wrapper changes. Owner approval does not unlock a blocked hook. Missing execution route returns BLOCKED_EXECUTION_ROUTE. The native checker covers config shape and exact arguments; tests use synthetic values. Manual host trust, hook loading, model canary, actual credential platform and live service checks are separately evidenced.
+A14 applies to inventory, trust, credential mode and wrapper changes. The PR reviewer checks the A14 declaration in the PR body, and protected changes require Owner approval. No CI step parses or blocks on the A14 PR body. V11 checks native config shape and exact arguments only; tests use synthetic values. Owner approval does not unlock a blocked hook. Missing execution route returns BLOCKED_EXECUTION_ROUTE. Manual host trust, hook loading, model canary, actual credential platform and live service checks are separately evidenced.
 
 ## Contracts
 

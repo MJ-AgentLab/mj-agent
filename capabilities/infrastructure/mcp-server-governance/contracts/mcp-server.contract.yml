@@ -159,10 +159,11 @@ a14_gate:
     - trust_posture (one of: first-party / third-party / first-party-wrapper / community)
     - credential_mode (none / api_key_via_env / wrapped_script_env_name_resolution)
     - rationale (for added / changed entries)
-  enforcement_phase:
-    M1: manual_reviewer_check
-    M2: warning_via_check_a14_gate.py
-    M3: blocking
+  enforcement:
+    pr_body: manual_reviewer_check
+    owner_approval: required_for_protected_native_mcp_changes
+    static_config: scripts/sdd/check_codex_native.py --surface mcp (V11; config only, no PR body parsing)
+    pr_body_automation: none
 quarterly_audit:
   cycle: 3_months
   dri: ranzuozhou
