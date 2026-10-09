@@ -1,0 +1,40 @@
+{
+  "started_at_utc": "2026-10-09T09:55:41.040037+00:00",
+  "completed_at_utc": "2026-10-09T09:55:42.790344+00:00",
+  "local_HEAD": "c449dff6baec64b874f899431109fb3542e0ff4f",
+  "restored_exact_paths": [
+    "AGENTS.md",
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+    "evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+    "evidence/issue-555/ac24-pr-body-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+    "evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+    "evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+    "evidence/issue-555/ac24-support-request-2026-10-08.md",
+    "evidence/issue-555/current-clauses-2026-10-09.json",
+    "evidence/issue-555/consistency-review-2026-10-09.md",
+    "evidence/issue-555/records-pr-body-2026-10-09.md",
+    "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "all_16_raw_bytes_and_working_blobs_match": true,
+  "all_19_backup_hashes_match": true,
+  "excluded_8_hashes_unchanged": true,
+  "tracked_diff_paths": [
+    "AGENTS.md",
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "index_clean": true,
+  "stash_retained": [
+    "62a9170a4ca83c2ad425a7a4670e62df70a90e99",
+    "9bd7628f4abc7073df120295a947d36fe65c6695"
+  ],
+  "manifest_sha256": "a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0",
+  "backup_root": "D:\\workspace\\10-software-project\\projects\\mj-agent\\backups\\issue-555\\post-merge-20261009T094040Z"
+}

@@ -1,0 +1,15 @@
+{
+  "preflight_at_utc": "2026-10-09T09:50:02.445918+00:00",
+  "old_stash_tip": "9bd7628f4abc7073df120295a947d36fe65c6695",
+  "excluded_untracked_hashes": {
+    ".playwright-mcp/page-2026-09-23T04-07-42-592Z.yml": "da16c930a7aa8d21768a822ea99374e2b788a44186d04b492b74ce086665a943",
+    "evidence/issue-555/post-merge-review-2026-10-09.md": "a04efb6d2dcbfb425df99c24d15632104b12d81e587af3e08a48f139595e1530",
+    "evidence/issue-555/post-merge-state-2026-10-09.json": "3aa6d0c64091ba9e999e275d98b337e355da12038ad4f1ab4f0151f06a417c37",
+    "evidence/issue-555/post-merge-status-comment-draft-2026-10-09.md": "be95aba28209638039a4df06a42a197b2cdc93b7c6c90bcad2c58c7d52b9b28b",
+    "evidence/issue-555/post-merge-sync-manifest-2026-10-09.json": "a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0",
+    "evidence/issue-555/records-delivery-manifest-2026-10-09.json": "36b1531f0a30e2e5141f4fd143e0c2978d7e5b4224fe6d9d9a581fcc215ced40",
+    "evidence/issue-555/records-delivery-receipt-2026-10-09.json": "2811a389e563185476a9916cda409ff0c6bbf690172b8d9bef395103a6582f0b",
+    "evidence/issue-555/records-delivery-review-2026-10-09.md": "17367c58c008e9ede8038acdc6b1d4289644153a0ea6cbea10edd6b7e362a8d0"
+  },
+  "approved_manifest_sha256": "a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0"
+}

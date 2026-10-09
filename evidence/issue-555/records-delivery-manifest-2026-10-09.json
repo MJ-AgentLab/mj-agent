@@ -1,0 +1,250 @@
+{
+  "prepared_at_utc": "2026-10-09T08:40:31.400788+00:00",
+  "status": "PREPARED_UNCOMMITTED_UNPUBLISHED; not authorization",
+  "repository": "MJ-AgentLab/mj-agent",
+  "repository_visibility": "PUBLIC",
+  "worktree": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009",
+  "branch": "documentation/555-acceptance-records-20261009",
+  "base_tip": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+  "future_publish_tip": "NOT_CREATED; only the two approved payload commits, reconcile exact resulting tip before push",
+  "remotes": [
+    {
+      "name": "gitee",
+      "url": "https://gitee.com/ranzuozhou/mj-agent.git",
+      "develop_tip": "4e55aae9d78f59ce9b47be43171b5fb33fe95049",
+      "publish_ref": "refs/heads/documentation/555-acceptance-records-20261009",
+      "observed_publish_ref": "ABSENT"
+    },
+    {
+      "name": "origin",
+      "url": "https://github.com/MJ-AgentLab/mj-agent",
+      "develop_tip": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+      "publish_ref": "refs/heads/documentation/555-acceptance-records-20261009",
+      "observed_publish_ref": "ABSENT"
+    }
+  ],
+  "commit_groups": [
+    {
+      "id": "C1",
+      "message": "docs(evidence): preserve #555 acceptance and diagnostic records",
+      "file_count": 14
+    },
+    {
+      "id": "C2",
+      "message": "docs(plans): retain #555 host loading acceptance as active",
+      "file_count": 1
+    }
+  ],
+  "pr": {
+    "head": "documentation/555-acceptance-records-20261009",
+    "base": "develop",
+    "draft": true,
+    "title": "docs: record #555 acceptance and pending host diagnostics",
+    "body_file": "evidence/issue-555/records-pr-body-2026-10-09.md",
+    "body_sha256": "b9fdfc44e6904dcf566518ec75baa66a431aa18960580bb95e4d984be7e8b0ad",
+    "observed_existing_same_head_pr": []
+  },
+  "optional_issue_comment": {
+    "issue": 555,
+    "body_file": "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+    "body_sha256": "5fe34a2b195673c595520dd74122b94b74fb47d24ce2492f15abe77248e18a0b",
+    "authorization": "separate; not covered by Git action approval"
+  },
+  "public_review": [
+    "Git author email in acceptance and Plan (existing public Git provenance)",
+    "machine paths and thread/turn/process identifiers",
+    "support screenshots: account display name and private correspondence; Owner to decide public scope",
+    "credential-format scan limited; forbidden files were not read"
+  ],
+  "excluded": [
+    "AGENTS.md",
+    ".playwright-mcp/",
+    "evidence/issue-555/proposed-policy.diff",
+    "evidence/issue-555/proposed-git-hook.diff",
+    "evidence/issue-555/records-delivery-manifest-2026-10-09.json",
+    "evidence/issue-555/records-delivery-review-2026-10-09.md"
+  ],
+  "checks": [
+    {
+      "chunk": "e258c5",
+      "result": "source frontmatter 147 PASS",
+      "exit": 0
+    },
+    {
+      "chunk": "088d13",
+      "result": "source wikilinks archive-ref 0 / root unresolved 0",
+      "exit": 0
+    },
+    {
+      "chunk": "f400fd",
+      "result": "15 file links/whitespace, 24 clauses/rows, frozen hash, credential formats, diff and empty index PASS",
+      "exit": 0
+    },
+    {
+      "chunk": "315541",
+      "result": "15 file byte-preserving copy / empty index",
+      "exit": 0
+    },
+    {
+      "chunk": "fc40b4",
+      "result": "target frontmatter 147 PASS",
+      "exit": 0
+    },
+    {
+      "chunk": "3f85ec",
+      "result": "target wikilinks archive-ref 0 / root unresolved 0",
+      "exit": 0
+    },
+    {
+      "chunk": "b81432",
+      "result": "supplementary verification assertion failed on raw AGENTS worktree bytes vs Git blob; CRLF checkout difference, no host refusal",
+      "exit": 1
+    },
+    {
+      "chunk": "e6a545",
+      "result": "reconciled CRLF/LF, Git AGENTS diff empty; all 15 source/target bytes same, links/whitespace/diff and empty index PASS",
+      "exit": 0
+    }
+  ],
+  "issue_state": "OPEN",
+  "plan_state": "active",
+  "AC_22_24_loading_recovery": "UNKNOWN",
+  "original_2026_09_23_loading": "UNKNOWN; not backfilled",
+  "files": [
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/acceptance-2026-09-23.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/acceptance-2026-09-23.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/acceptance-2026-09-23.md",
+      "bytes": 114923,
+      "sha256": "53091a1e488b7a47fb1b314397787230b87123e55ee0fd178805842b88ecb5bf",
+      "expected_git_blob": "4e09d2305671d531f9db8db4a9ae717951261afb"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "bytes": 13590,
+      "sha256": "8a6f328811aa9a9dfc2f7d916d83e8503a9b8e9f13bd024d65f4ec39b769a1c2",
+      "expected_git_blob": "c7106363f10018f9f7eb1c009c81af640c38f8c6"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "bytes": 1264,
+      "sha256": "ba3a1e1743cce50fcc92a28a49a6f2ef1d9dd4b6d9276cc7adbb6bf9b051cfbe",
+      "expected_git_blob": "c2dcc135ef2eb90736e304ffa5acc6702b01678c"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "bytes": 2243,
+      "sha256": "b73d23e2ffb73009ba6c69a9e8e163acfe2a941209b5447f948c0eadbbe6c486",
+      "expected_git_blob": "eb947efb01ce34b6a52a09c2465bb3cc80ce1fee"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "bytes": 2235,
+      "sha256": "ed1514f2dd708c0d931cb6dcfb9e411af0defb38d1b2c4e18eeaa1dde33871c6",
+      "expected_git_blob": "975b71ab6782bc2dd7b73150bd11a994e34023ea"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "bytes": 8413,
+      "sha256": "0e902675e3c6a536e220f9c6f6cf92497fbe5663abc9689f62d7bb5e70d05c5e",
+      "expected_git_blob": "44910eb5da2bbd14f747bcf3b4e1a3342e13412e"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "bytes": 220036,
+      "sha256": "c724c81353ba90d81d71de9eca25377d443f7219c31bb2eefea788a7c4e2ab3b",
+      "expected_git_blob": "cdc3ee131d935dec0d7263b0545fa3f86eccaa03"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "bytes": 186208,
+      "sha256": "2d42edfff7a99313613a64fbd223631f46fe8ab1bbf3bf4b53de6d1e4bed6e61",
+      "expected_git_blob": "ed464bc63ecb9c2ef8e1f0768eae9c392d0f53d5"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "bytes": 185368,
+      "sha256": "49613dfd6c9122f0086f2f1c48f49055578e3fd500a158991da0a81c7416cb01",
+      "expected_git_blob": "4b7462fa9221169034b31776bef89008a11ce1d6"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "bytes": 2922,
+      "sha256": "0d3e5c561b884c4232b1985fd7a60fb86558885066c5a4cbdaba037a22ee5ee4",
+      "expected_git_blob": "ec17e33bdebe72eb49b831697e082d226a23f8b9"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/current-clauses-2026-10-09.json",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/current-clauses-2026-10-09.json",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/current-clauses-2026-10-09.json",
+      "bytes": 11694,
+      "sha256": "bc42f54fb5b9ab717a878321948ea1440b60df53bea25bd99b00c1aa4563ac8b",
+      "expected_git_blob": "83eb3b03da15e80c3e98b5b238754f6d75cf7e0b"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/consistency-review-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/consistency-review-2026-10-09.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/consistency-review-2026-10-09.md",
+      "bytes": 8916,
+      "sha256": "cedb56d5727a89d3d8f4e16838bf99278a8dff190bc319c982e7d73ae280b0dc",
+      "expected_git_blob": "a9d14b2725e42849537ea1e6c118a8562fc2ed7c"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/records-pr-body-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-pr-body-2026-10-09.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/records-pr-body-2026-10-09.md",
+      "bytes": 3493,
+      "sha256": "b9fdfc44e6904dcf566518ec75baa66a431aa18960580bb95e4d984be7e8b0ad",
+      "expected_git_blob": "27ee5e09c840e218019a4a39bc69cf014bc8a753"
+    },
+    {
+      "commit_group": "C1",
+      "path": "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "bytes": 1687,
+      "sha256": "5fe34a2b195673c595520dd74122b94b74fb47d24ce2492f15abe77248e18a0b",
+      "expected_git_blob": "d5d7cb86875e32bb595a0a6107d16c9895dfea20"
+    },
+    {
+      "commit_group": "C2",
+      "path": "plans/[PLAN]_555_approved_deletion.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/plans/[PLAN]_555_approved_deletion.md",
+      "worktree_path": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009/plans/[PLAN]_555_approved_deletion.md",
+      "bytes": 82999,
+      "sha256": "0fb49be5941e9f5a32c24fc5f584467920c50a605a83180acb461f13f04e121b",
+      "expected_git_blob": "2b82ae150807345c1cae11cf2d3522e9aefac021"
+    }
+  ]
+}

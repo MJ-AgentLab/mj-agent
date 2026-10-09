@@ -1,0 +1,46 @@
+{
+  "recorded_at_utc": "2026-10-09T09:45:38.823810+00:00",
+  "status": "POST_MERGE_READONLY_AND_BACKUP_COMPLETE; sync/push/deletion not executed",
+  "prs": [
+    {
+      "number": 566,
+      "state": "MERGED",
+      "head": "4f867694f3537fcb77c6b81d379b1b4d4454ff2e",
+      "merge": "4334a57729137255aa79855d06609a578dd218c2",
+      "mergedAt": "2026-10-09T09:10:28Z"
+    },
+    {
+      "number": 571,
+      "state": "MERGED",
+      "head": "7cbf5ebed4d436c92cd3ac7404cb75264e12b1ce",
+      "merge": "2f707200b166eca9120319779f6ae971f6ac43ba",
+      "mergedAt": "2026-10-09T09:22:41Z"
+    },
+    {
+      "number": 574,
+      "state": "MERGED",
+      "head": "967fc845b9a895157ce6ebd131cd99f6f169a929",
+      "merge": "c449dff6baec64b874f899431109fb3542e0ff4f",
+      "mergedAt": "2026-10-09T09:26:52Z"
+    }
+  ],
+  "open_pr_list": [],
+  "merge_evidence_chunk": "4817d2",
+  "backup_manifest_sha256": "a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0",
+  "backup_root": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z",
+  "save_stash_restore_paths": 16,
+  "backup_paths": 19,
+  "incoming_tip": "c449dff6baec64b874f899431109fb3542e0ff4f",
+  "mirror_tip": "4e55aae9d78f59ce9b47be43171b5fb33fe95049",
+  "mirror_ancestor_gap": 25,
+  "source_intent_to_add": "acceptance flags 20004000; cached diff empty",
+  "support_source": "Normal cua_repl getTab bound existing help.openai.com tab 1/browser 2; thread and turn visible in same conversation; only Chinedu first reply, no new diagnostics; no send/upload",
+  "support_message_timestamp": "NOT_PROVIDED; tool observation is not message timestamp",
+  "AC_22_24": "UNKNOWN",
+  "issue": "OPEN",
+  "plan": "active",
+  "deletion": "PAUSED; dual tips differ and ignored pyc retained",
+  "comment_draft_sha256": "be95aba28209638039a4df06a42a197b2cdc93b7c6c90bcad2c58c7d52b9b28b",
+  "records": "E13 / Plan section 29 / review are local UNCOMMITTED",
+  "subagents": "NONE"
+}

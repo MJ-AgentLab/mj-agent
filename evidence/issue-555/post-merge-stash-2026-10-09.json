@@ -1,0 +1,33 @@
+{
+  "stash_SHA": "62a9170a4ca83c2ad425a7a4670e62df70a90e99",
+  "old_stash_SHA": "9bd7628f4abc7073df120295a947d36fe65c6695",
+  "base": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+  "tracked_working_paths": [
+    "AGENTS.md",
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "index_paths": [
+    "evidence/issue-555/acceptance-2026-09-23.md"
+  ],
+  "untracked_paths": [
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+    "evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+    "evidence/issue-555/ac24-pr-body-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+    "evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+    "evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+    "evidence/issue-555/ac24-support-request-2026-10-08.md",
+    "evidence/issue-555/consistency-review-2026-10-09.md",
+    "evidence/issue-555/current-clauses-2026-10-09.json",
+    "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+    "evidence/issue-555/records-pr-body-2026-10-09.md"
+  ],
+  "all_16_saved_blobs_match": true,
+  "backup_19_hashes_match": true,
+  "excluded_8_unchanged": true,
+  "no_incoming_untracked_collision": true,
+  "index_and_tracked_diff_empty": true
+}

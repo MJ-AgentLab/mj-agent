@@ -1,0 +1,227 @@
+{
+  "created_at_utc": "2026-10-09T09:40:40.556362+00:00",
+  "source_worktree": "D:/workspace/10-software-project/projects/mj-agent/develop",
+  "source_HEAD": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+  "incoming_tip": "c449dff6baec64b874f899431109fb3542e0ff4f",
+  "gitee_develop_tip": "4e55aae9d78f59ce9b47be43171b5fb33fe95049",
+  "backup_root": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z",
+  "status": "BACKED_UP_AND_BYTE_VERIFIED; pending Owner save/ff/restore and separate mirror push decisions",
+  "save_scope_files": 16,
+  "backup_files": 19,
+  "working_differs_from_incoming": [
+    "AGENTS.md",
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "excluded_from_save_scope": [
+    ".playwright-mcp/",
+    "other worktrees",
+    "records-delivery-manifest-2026-10-09.json",
+    "records-delivery-review-2026-10-09.md",
+    "records-delivery-receipt-2026-10-09.json"
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/AGENTS.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/AGENTS.md",
+      "bytes": 9215,
+      "sha256": "fc68b6b9955aa0f4336f48c0b2bf467f1b3787e4d51a8100cbcc2a11a76b5f84",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "f1fa40e3ded427597178e5bf8484a44f5f936762",
+      "incoming_git_blob": "94e8c8f566464b1e0505e017eefe19f90606d98d",
+      "working_differs_from_incoming": true
+    },
+    {
+      "path": "evidence/issue-555/acceptance-2026-09-23.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/acceptance-2026-09-23.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/acceptance-2026-09-23.md",
+      "bytes": 128712,
+      "sha256": "a3e325ef2059d7f662962bee1a517bca67816e981b214faf286134130dbc37d8",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "5bae15e2624f2fd3cd4482fc4cb6e2d7c7704af2",
+      "incoming_git_blob": "4e09d2305671d531f9db8db4a9ae717951261afb",
+      "working_differs_from_incoming": true
+    },
+    {
+      "path": "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+      "bytes": 14559,
+      "sha256": "0c81bd039e0a993ed2366174dad45e00678804213df7e0e60f90d888a73aedab",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "1330bd412b7ed9b7c6139d3140718788619cf4db",
+      "incoming_git_blob": "c7106363f10018f9f7eb1c009c81af640c38f8c6",
+      "working_differs_from_incoming": true
+    },
+    {
+      "path": "evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+      "bytes": 1264,
+      "sha256": "ba3a1e1743cce50fcc92a28a49a6f2ef1d9dd4b6d9276cc7adbb6bf9b051cfbe",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "c2dcc135ef2eb90736e304ffa5acc6702b01678c",
+      "incoming_git_blob": "c2dcc135ef2eb90736e304ffa5acc6702b01678c",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+      "bytes": 2243,
+      "sha256": "b73d23e2ffb73009ba6c69a9e8e163acfe2a941209b5447f948c0eadbbe6c486",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "eb947efb01ce34b6a52a09c2465bb3cc80ce1fee",
+      "incoming_git_blob": "eb947efb01ce34b6a52a09c2465bb3cc80ce1fee",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-pr-body-2026-10-08.md",
+      "bytes": 2235,
+      "sha256": "ed1514f2dd708c0d931cb6dcfb9e411af0defb38d1b2c4e18eeaa1dde33871c6",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "975b71ab6782bc2dd7b73150bd11a994e34023ea",
+      "incoming_git_blob": "975b71ab6782bc2dd7b73150bd11a994e34023ea",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+      "bytes": 9422,
+      "sha256": "ab387f27aa33863b17a9ab036c254b8b61ee3617fccd0b22a6118ff7a9281f34",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "440dbb301b879b1481e74d0358d65d0fd8136dad",
+      "incoming_git_blob": "44910eb5da2bbd14f747bcf3b4e1a3342e13412e",
+      "working_differs_from_incoming": true
+    },
+    {
+      "path": "evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-support-email-gate-2026-10-08.jpg",
+      "bytes": 220036,
+      "sha256": "c724c81353ba90d81d71de9eca25377d443f7219c31bb2eefea788a7c4e2ab3b",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "cdc3ee131d935dec0d7263b0545fa3f86eccaa03",
+      "incoming_git_blob": "cdc3ee131d935dec0d7263b0545fa3f86eccaa03",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-support-escalation-2026-10-08.jpg",
+      "bytes": 186208,
+      "sha256": "2d42edfff7a99313613a64fbd223631f46fe8ab1bbf3bf4b53de6d1e4bed6e61",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "ed464bc63ecb9c2ef8e1f0768eae9c392d0f53d5",
+      "incoming_git_blob": "ed464bc63ecb9c2ef8e1f0768eae9c392d0f53d5",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-support-reply-2026-10-09.jpg",
+      "bytes": 185368,
+      "sha256": "49613dfd6c9122f0086f2f1c48f49055578e3fd500a158991da0a81c7416cb01",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "4b7462fa9221169034b31776bef89008a11ce1d6",
+      "incoming_git_blob": "4b7462fa9221169034b31776bef89008a11ce1d6",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/ac24-support-request-2026-10-08.md",
+      "bytes": 2922,
+      "sha256": "0d3e5c561b884c4232b1985fd7a60fb86558885066c5a4cbdaba037a22ee5ee4",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "ec17e33bdebe72eb49b831697e082d226a23f8b9",
+      "incoming_git_blob": "ec17e33bdebe72eb49b831697e082d226a23f8b9",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/current-clauses-2026-10-09.json",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/current-clauses-2026-10-09.json",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/current-clauses-2026-10-09.json",
+      "bytes": 11694,
+      "sha256": "bc42f54fb5b9ab717a878321948ea1440b60df53bea25bd99b00c1aa4563ac8b",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "83eb3b03da15e80c3e98b5b238754f6d75cf7e0b",
+      "incoming_git_blob": "83eb3b03da15e80c3e98b5b238754f6d75cf7e0b",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/consistency-review-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/consistency-review-2026-10-09.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/consistency-review-2026-10-09.md",
+      "bytes": 8916,
+      "sha256": "cedb56d5727a89d3d8f4e16838bf99278a8dff190bc319c982e7d73ae280b0dc",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "a9d14b2725e42849537ea1e6c118a8562fc2ed7c",
+      "incoming_git_blob": "a9d14b2725e42849537ea1e6c118a8562fc2ed7c",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/records-pr-body-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-pr-body-2026-10-09.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/records-pr-body-2026-10-09.md",
+      "bytes": 3493,
+      "sha256": "b9fdfc44e6904dcf566518ec75baa66a431aa18960580bb95e4d984be7e8b0ad",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "27ee5e09c840e218019a4a39bc69cf014bc8a753",
+      "incoming_git_blob": "27ee5e09c840e218019a4a39bc69cf014bc8a753",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+      "bytes": 1687,
+      "sha256": "5fe34a2b195673c595520dd74122b94b74fb47d24ce2492f15abe77248e18a0b",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "d5d7cb86875e32bb595a0a6107d16c9895dfea20",
+      "incoming_git_blob": "d5d7cb86875e32bb595a0a6107d16c9895dfea20",
+      "working_differs_from_incoming": false
+    },
+    {
+      "path": "plans/[PLAN]_555_approved_deletion.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/plans/[PLAN]_555_approved_deletion.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/plans/[PLAN]_555_approved_deletion.md",
+      "bytes": 87801,
+      "sha256": "d4a23d7aefb8899f4b8e86f58da84a1447b9075c953f17caa1db176813c52afe",
+      "save_stash_restore_scope": true,
+      "working_git_blob": "46b1d34f05a752dae50321da341058072be75daa",
+      "incoming_git_blob": "2b82ae150807345c1cae11cf2d3522e9aefac021",
+      "working_differs_from_incoming": true
+    },
+    {
+      "path": "evidence/issue-555/records-delivery-manifest-2026-10-09.json",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-delivery-manifest-2026-10-09.json",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/records-delivery-manifest-2026-10-09.json",
+      "bytes": 13304,
+      "sha256": "36b1531f0a30e2e5141f4fd143e0c2978d7e5b4224fe6d9d9a581fcc215ced40",
+      "save_stash_restore_scope": false
+    },
+    {
+      "path": "evidence/issue-555/records-delivery-review-2026-10-09.md",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-delivery-review-2026-10-09.md",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/records-delivery-review-2026-10-09.md",
+      "bytes": 13416,
+      "sha256": "17367c58c008e9ede8038acdc6b1d4289644153a0ea6cbea10edd6b7e362a8d0",
+      "save_stash_restore_scope": false
+    },
+    {
+      "path": "evidence/issue-555/records-delivery-receipt-2026-10-09.json",
+      "source_path": "D:/workspace/10-software-project/projects/mj-agent/develop/evidence/issue-555/records-delivery-receipt-2026-10-09.json",
+      "backup_path": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z/evidence/issue-555/records-delivery-receipt-2026-10-09.json",
+      "bytes": 6372,
+      "sha256": "2811a389e563185476a9916cda409ff0c6bbf690172b8d9bef395103a6582f0b",
+      "save_stash_restore_scope": false
+    }
+  ]
+}
