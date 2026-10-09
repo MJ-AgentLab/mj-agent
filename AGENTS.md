@@ -4,6 +4,8 @@
 
 Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则正文在 `policies/`、`sdd/` 和 capability contracts。
 
+需要 Owner 作新决策时，Codex 先完成可审阅的准备工作，再提供具体可行的选项，明确标注推荐项并简述理由与影响；Owner 选择后，由 Codex 在获批范围内使用正常工具执行并验证。确需工程师独立审阅或宿主审批的步骤，说明对应规则和所需条件。
+
 ## Native asset ownership
 
 `.agents/skills/`、`.agents/references/`、`.agents/README.md` 与 `.codex/{config.toml,hooks.json,rules/}` 直接维护。不再由投影、翻译、lock、sync 或 adopt 维护。正式维护权切换的依据为 ADR-040；历史客户端资产仅留作 P5 具名清理候选，不参与执行，不双份维护。
