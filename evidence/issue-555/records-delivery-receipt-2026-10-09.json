@@ -1,0 +1,186 @@
+{
+  "recorded_at_utc": "2026-10-09T08:53:56.228060+00:00",
+  "implementer": "Codex",
+  "delegation": "NONE",
+  "BDD_TDD": "NONE; records only",
+  "owner_authorization": "2026-10-09 user: 接受推荐，授权执行; record-delivery option A (separate C1/C2 commit, ordinary dual push, explicit-base Draft PR) and independent recommended comment option D",
+  "approved_manifest_sha256": "36b1531f0a30e2e5141f4fd143e0c2978d7e5b4224fe6d9d9a581fcc215ced40",
+  "manifest_is_frozen_preparation_snapshot": true,
+  "worktree": "D:/workspace/10-software-project/projects/mj-agent/documentation/555-acceptance-records-20261009",
+  "branch": "documentation/555-acceptance-records-20261009",
+  "base": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+  "payload_paths": 15,
+  "commits": [
+    {
+      "sha": "77c382626b8f52f34bbda279c2b4956f274903b5",
+      "message": "docs(evidence): preserve #555 acceptance and diagnostic records",
+      "paths": 14,
+      "git_commit_timestamp": "2026-10-09T16:46:24+08:00",
+      "utc": "2026-10-09T08:46:24Z"
+    },
+    {
+      "sha": "837c4b49b20c2484a878aad398c643e4ffc71852",
+      "message": "docs(plans): retain #555 host loading acceptance as active",
+      "paths": 1,
+      "git_commit_timestamp": "2026-10-09T16:47:00+08:00",
+      "utc": "2026-10-09T08:47:00Z"
+    }
+  ],
+  "authorship": "Actual author/committer ranzuozhou; full Git provenance verified in f3f9d7/276fa2; no authorship config edited",
+  "publish_tip": "837c4b49b20c2484a878aad398c643e4ffc71852",
+  "remotes": [
+    {
+      "name": "gitee",
+      "url": "https://gitee.com/ranzuozhou/mj-agent.git",
+      "ref": "refs/heads/documentation/555-acceptance-records-20261009",
+      "tip": "837c4b49b20c2484a878aad398c643e4ffc71852",
+      "status": "PUSHED_AND_INDEPENDENTLY_VERIFIED",
+      "push_chunk": "ec067c",
+      "query_chunk": "d2f434"
+    },
+    {
+      "name": "origin",
+      "url": "https://github.com/MJ-AgentLab/mj-agent",
+      "ref": "refs/heads/documentation/555-acceptance-records-20261009",
+      "tip": "837c4b49b20c2484a878aad398c643e4ffc71852",
+      "status": "PUSHED_AND_INDEPENDENTLY_VERIFIED",
+      "push_chunk": "851567",
+      "query_chunk": "c5edd3"
+    }
+  ],
+  "pr": {
+    "number": 574,
+    "url": "https://github.com/MJ-AgentLab/mj-agent/pull/574",
+    "state": "OPEN",
+    "draft": true,
+    "head": "documentation/555-acceptance-records-20261009",
+    "head_sha": "837c4b49b20c2484a878aad398c643e4ffc71852",
+    "base": "develop",
+    "title": "docs: record #555 acceptance and pending host diagnostics",
+    "body_sha256": "b9fdfc44e6904dcf566518ec75baa66a431aa18960580bb95e4d984be7e8b0ad",
+    "createdAt": "2026-10-09T08:49:03Z",
+    "readback_exact": true,
+    "attached_to_chat": true
+  },
+  "issue_comment": {
+    "url": "https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6077631045",
+    "createdAt": "2026-10-09T08:49:41Z",
+    "body_sha256": "5fe34a2b195673c595520dd74122b94b74fb47d24ce2492f15abe77248e18a0b",
+    "readback_exact": true,
+    "issue_state": "OPEN"
+  },
+  "steps": [
+    {
+      "step": "C1 explicit add",
+      "chunk": "c55b87",
+      "exit_code": 0
+    },
+    {
+      "step": "C1 staged paths/blobs check",
+      "chunk": "78b227",
+      "exit_code": 0
+    },
+    {
+      "step": "C1 commit",
+      "chunk": "43ca8b",
+      "exit_code": 0
+    },
+    {
+      "step": "C1 authorship/stat/status",
+      "chunk": "f3f9d7",
+      "exit_code": 0
+    },
+    {
+      "step": "C2 literal Plan add",
+      "chunk": "f27d67",
+      "exit_code": 0
+    },
+    {
+      "step": "C1 committed/C2 index hash check",
+      "chunk": "0623ec",
+      "exit_code": 0
+    },
+    {
+      "step": "C2 commit",
+      "chunk": "dc4c66",
+      "exit_code": 0
+    },
+    {
+      "step": "15-path/2-commit/blob/clean-worktree check",
+      "chunk": "276fa2",
+      "exit_code": 0
+    },
+    {
+      "step": "Gitee pre-push heads",
+      "chunk": "2cf1b0",
+      "exit_code": 0
+    },
+    {
+      "step": "origin pre-push heads",
+      "chunk": "78fb61",
+      "exit_code": 0
+    },
+    {
+      "step": "Gitee ordinary push",
+      "chunk": "ec067c",
+      "exit_code": 0
+    },
+    {
+      "step": "Gitee independent ref verification",
+      "chunk": "d2f434",
+      "exit_code": 0
+    },
+    {
+      "step": "origin ordinary push",
+      "chunk": "851567",
+      "exit_code": 0
+    },
+    {
+      "step": "origin independent ref verification",
+      "chunk": "c5edd3",
+      "exit_code": 0
+    },
+    {
+      "step": "PR exact body/head/no duplicate preflight",
+      "chunk": "9a7afc",
+      "exit_code": 0
+    },
+    {
+      "step": "Draft PR create with explicit develop",
+      "chunk": "76421f",
+      "exit_code": 0
+    },
+    {
+      "step": "PR readback body/hash/fields",
+      "chunk": "e5a2a0",
+      "exit_code": 0
+    },
+    {
+      "step": "Issue comment exact body/no duplicate preflight",
+      "chunk": "8e6276",
+      "exit_code": 0
+    },
+    {
+      "step": "Issue comment publish",
+      "chunk": "344969",
+      "exit_code": 0
+    },
+    {
+      "step": "Issue comment readback/hash/OPEN",
+      "chunk": "48eea7",
+      "exit_code": 0
+    }
+  ],
+  "observed_host_refusals_in_this_delivery": [],
+  "git_add_warnings": "Normal LF/CRLF checkout warnings in c55b87; staged blobs matched approved expected_git_blob",
+  "ignored_content": "Only metadata of generated scripts/__pycache__ *.pyc observed in 450b83; excluded and preserved",
+  "effective_mode_evidence": "Current task permissions declare never/danger-full-access; this does not establish historical Desktop effective mode or actual project rules/hooks loading",
+  "rules_hooks_actual_loading": "UNKNOWN",
+  "AC_22_24_loading_recovery": "UNKNOWN",
+  "prior_64KB_body_preparation_route": "BLOCKED_EXECUTION_ROUTE; untouched",
+  "issue_state": "OPEN",
+  "plan_state": "active",
+  "new_local_receipt_and_E12_plan_updates": "UNCOMMITTED; not included in the frozen 15-file authorization",
+  "protected_content": "AGENTS governance principle, .playwright-mcp and old dirty worktrees preserved; no deletes/merge/force/trust/config edits",
+  "support_status": "E10 specialist first reply; historical diagnostics pending; not rechecked or messaged in this delivery"
+}

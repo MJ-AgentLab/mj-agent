@@ -1,0 +1,165 @@
+{
+  "recorded_at_utc": "2026-10-09T10:04:06.361267+00:00",
+  "status": "AUTHORIZED_SAVE_FF_RESTORE_AND_SEPARATE_GITEE_MIRROR_PUSH_AND_COMMENT_COMPLETE",
+  "approval_source": "Owner: 接受推荐，授权执行；合并后清单 A 与独立 D",
+  "approved_manifest_sha256": "a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0",
+  "source_HEAD_before": "0b2f542e466fe36258046c7e8592ed6770e983f2",
+  "source_HEAD_after": "c449dff6baec64b874f899431109fb3542e0ff4f",
+  "backup_root": "D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z",
+  "backup_files": 19,
+  "all_19_backup_hashes_match": true,
+  "restore_receipt": "post-merge-restore-2026-10-09.json",
+  "original_16_bytes_verified_before_E14_bookkeeping": true,
+  "stash_SHA": "62a9170a4ca83c2ad425a7a4670e62df70a90e99",
+  "old_stash_SHA": "9bd7628f4abc7073df120295a947d36fe65c6695",
+  "stashes_and_backups_retained": true,
+  "actual_remote_refs": {
+    "origin": {
+      "refs/heads/develop": "c449dff6baec64b874f899431109fb3542e0ff4f",
+      "refs/heads/codex/555-ac9-publish-20260923": "4f867694f3537fcb77c6b81d379b1b4d4454ff2e",
+      "refs/heads/codex/555-ac24-load-publish-20260923": "7cbf5ebed4d436c92cd3ac7404cb75264e12b1ce",
+      "refs/heads/documentation/555-acceptance-records-20261009": "967fc845b9a895157ce6ebd131cd99f6f169a929"
+    },
+    "gitee": {
+      "refs/heads/develop": "c449dff6baec64b874f899431109fb3542e0ff4f",
+      "refs/heads/codex/555-ac9-publish-20260923": "878b474d56e1e4201bba335b60caa9ad7ee018cd",
+      "refs/heads/codex/555-ac24-load-publish-20260923": "6d331438990c458599025bccf3196fabbd694514",
+      "refs/heads/documentation/555-acceptance-records-20261009": "837c4b49b20c2484a878aad398c643e4ffc71852"
+    }
+  },
+  "actual_ref_query_chunks": {
+    "origin": "a8e169",
+    "gitee": "b8e513"
+  },
+  "mirror_command": "pwsh scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin",
+  "mirror_exit_code": 0,
+  "mirror_push_chunk": "c7b545",
+  "independent_develop_post_query_chunks": {
+    "gitee": "3f0e32",
+    "origin": "16b815"
+  },
+  "comment": {
+    "verified_at_utc": "2026-10-09T09:56:54.267069+00:00",
+    "issue_state": "OPEN",
+    "issue_updatedAt": "2026-10-09T09:56:29Z",
+    "issue_body_sha256": "acedc9f31874651e048d0d821b60e58148681ba3d6b211014128be3d5a79dfea",
+    "comment_url": "https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6078621332",
+    "comment_createdAt": "2026-10-09T09:56:29Z",
+    "comment_body_sha256": "be95aba28209638039a4df06a42a197b2cdc93b7c6c90bcad2c58c7d52b9b28b",
+    "approved_comment_hash_matched": true
+  },
+  "other_dirty_worktrees_retained": [
+    {
+      "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\499-enforcement-blocking",
+      "tracked_changes": 2,
+      "untracked_files": 0
+    },
+    {
+      "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\552-codex-approval-preflight",
+      "tracked_changes": 5,
+      "untracked_files": 1
+    },
+    {
+      "path": "D:\\workspace\\10-software-project\\projects\\mj-agent\\maintain\\codex-dev-mode-migration",
+      "tracked_changes": 7,
+      "untracked_files": 475
+    }
+  ],
+  "all_worktrees_retained": true,
+  "publication_branches_and_remote_refs_retained": true,
+  "excluded_8_hashes_unchanged": true,
+  "playwright_SHA256": "da16c930a7aa8d21768a822ea99374e2b788a44186d04b492b74ce086665a943",
+  "tracked_local_diff_paths": [
+    "AGENTS.md",
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "index_clean": true,
+  "new_project_commit_or_PR_or_deletion": false,
+  "protected_config_or_trust_changes": false,
+  "host_mode_source": "current task permissions declaration only",
+  "host_mode": "never / danger-full-access",
+  "target_Desktop_actual_loading": "UNKNOWN",
+  "AC_22_24": "UNKNOWN",
+  "issue": "OPEN",
+  "plan": "active",
+  "full_issue_body_prep_route": "BLOCKED_EXECUTION_ROUTE; original 64 KB refusal preserved; not retried",
+  "support_latest_observation": "E13; no support interaction this turn",
+  "post_restore_records": "E14 / Plan section 30 / diagnostic and options prefaces / receipts are UNCOMMITTED",
+  "subagents": "NONE",
+  "BDD_TDD": "NONE",
+  "ordinary_errors": [
+    {
+      "chunk": "86997b",
+      "exit_code": 1,
+      "original_error": "The term 'python' is not recognized as a name of a cmdlet, function, script file, or executable program.",
+      "condition": "Script never started. PATH missing python; project interpreter exists; no host refusal."
+    },
+    {
+      "chunk": "c7b545",
+      "exit_code": 0,
+      "original_errors": [
+        "The predictive suggestion feature cannot be enabled because the console output doesn't support virtual terminal processing or it's redirected.",
+        "The handle is invalid."
+      ],
+      "condition": "Nested pwsh non-interactive PSReadLine messages; push succeeded; no profile edit."
+    },
+    {
+      "tool": "apply_patch",
+      "original_error": "apply_patch verification failed: Failed to find expected lines in ac24-remaining-scope-options-2026-10-08.md",
+      "condition": "6e61c0 confirmed no partial E14/section30 edit; normal patch used exact observed heading; no host refusal."
+    },
+    {
+      "chunk": "7cc263",
+      "exit_code": 1,
+      "original_error": "subprocess.CalledProcessError: Command '('git', 'ls-remote', '--heads', 'origin', 'refs/heads/develop', 'refs/heads/codex/555-ac9-publish-20260923', 'refs/heads/codex/555-ac24-load-publish-20260923', 'refs/heads/documentation/555-acceptance-records-20261009')' returned non-zero exit status 128.",
+      "underlying_stderr": "NOT_RETURNED_BY_WRAPPER; cause UNKNOWN",
+      "condition": "Receipt writer stopped before any write. Subsequent unchanged read-only argv via normal tool returned exit0 (a8e169), independently queried gitee exit0 (b8e513). No mutation retried; no claim that unknown error clears prior host refusals."
+    },
+    {
+      "chunk": "cadd1e",
+      "exit_code": 1,
+      "original_error": "AssertionError at line 9",
+      "condition": "Read-only wrapper used strip(), removing leading space from first porcelain status row. No receipt write; corrected parser retains leading space. No host refusal or file mutation."
+    }
+  ],
+  "validation_receipt": "post-merge-validation-2026-10-09.json",
+  "validation_chunks": [
+    "a51a26",
+    "b9d263",
+    "d4e8af"
+  ],
+  "final_record_links_and_diff_check": "PASS",
+  "final_record_check_at_utc": "2026-10-09T10:07:51.532791+00:00",
+  "final_git_status_tracked_entries": [
+    " M AGENTS.md",
+    " M evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    " M evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+    " M evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+    " M evidence/issue-555/ac24-pr-body-2026-10-08.md",
+    " M evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    " M evidence/issue-555/ac24-support-request-2026-10-08.md",
+    " M evidence/issue-555/acceptance-2026-09-23.md",
+    " M evidence/issue-555/consistency-review-2026-10-09.md",
+    " M evidence/issue-555/current-clauses-2026-10-09.json",
+    " M evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+    " M evidence/issue-555/records-pr-body-2026-10-09.md",
+    " M plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "status_only_restored_paths": [
+    "evidence/issue-555/ac24-feedback-text-2026-10-08.md",
+    "evidence/issue-555/ac24-issue-comment-draft-2026-10-08.md",
+    "evidence/issue-555/ac24-pr-body-2026-10-08.md",
+    "evidence/issue-555/ac24-support-request-2026-10-08.md",
+    "evidence/issue-555/consistency-review-2026-10-09.md",
+    "evidence/issue-555/current-clauses-2026-10-09.json",
+    "evidence/issue-555/records-issue-comment-draft-2026-10-09.md",
+    "evidence/issue-555/records-pr-body-2026-10-09.md"
+  ],
+  "status_only_8_raw_backup_hashes_and_HEAD_filtered_blobs_match": true,
+  "working_tree_status_note": "13 unstaged M entries; 5 Git content diffs. Other 8 retain approved raw bytes, matching HEAD after Git normalization. Preserved; no normalize/stage/reset.",
+  "status_reconciliation_chunk": "bad461",
+  "status_hash_verification_chunk": "22598c"
+}

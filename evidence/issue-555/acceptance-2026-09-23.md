@@ -1,5 +1,11 @@
 # Issue #555 验收证据矩阵与受控对象清单（2026-09-23）
 
+最新执行（E14，2026-10-09）：Owner 批准合并后清单推荐 A 与独立推荐 D。16 路径已具名保存、逐字节恢复；本地 develop 已 fast-forward，两端实际 develop tip 均为 `c449dff6baec64b874f899431109fb3542e0ff4f`。stash/备份、所有旧工作树和发布引用保留；[准备快照评论](https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6078621332) 已回读核对。E14/Plan §30 为未提交增量，无新项目提交或 PR。AC-22/24 UNKNOWN、#555 OPEN、Plan active；E13 的未同步状态保留为准备时快照。
+
+合并后核查（E13，2026-10-09）：当前无 OPEN PR，#566/#571/#574 均已 MERGED；三条最终 head 是各自合入 develop 后的新增 merge，原发布 tip 及最终 head 均包含于 origin/develop=`c449dff6baec64b874f899431109fb3542e0ff4f`。Gitee develop 仍为 `4e55aae9`，三条发布引用两端 tip 不同，尚未同步或删除。原 develop 有 E12/Plan 等未提交成果，先备份并准备具名保存/同步方案。原支持对话仍只有 E10 首答，无实质诊断；AC-22/24 UNKNOWN、Issue OPEN、Plan active。E12 交付证据和 E11 快照保留。
+
+最新交付（E12，2026-10-09）：Owner 批准具名清单推荐 A（提交/普通双推/Draft PR 分别授权）及独立推荐 D（状态评论）。15 文件快照已以两次 docs 提交、双端同 tip `837c4b49` 和 [Draft PR #574](https://github.com/MJ-AgentLab/mj-agent/pull/574) 交付，[独立评论](https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6077631045) 已回读核对。实际加载及恢复关联仍 UNKNOWN，#555 OPEN、计划 active。当前 E12/计划新增回执是交付后的本地 UNCOMMITTED 增量，不在原批准的冻结文件哈希内；完整过程见本文 E12。E11 的待授权描述为此前准备快照。
+
 当前导读（E11，2026-10-09）：以下首段依据日期是首次验收快照。最新逐条核对以 [现行 24 条快照](current-clauses-2026-10-09.json)、[一致性审阅](consistency-review-2026-10-09.md) 和本文 E11 为准。现行条款范围内 22 项已验证，AC-22/24 的实际加载及恢复关联仍 UNKNOWN；支持首答不替代诊断。#555 OPEN、计划 active。E1–E10 各时点结果及原始拒绝保留，新的记录交付仍待独立动作批准。
 
 依据：[#555 当前正文](https://github.com/MJ-AgentLab/mj-agent/issues/555)（`updatedAt=2026-09-22T07:06:27Z`）、[ADR-041](../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)、[实施计划](../../plans/[PLAN]_555_approved_deletion.md) §11，以及已合并的 [#558](https://github.com/MJ-AgentLab/mj-agent/pull/558)、[#560](https://github.com/MJ-AgentLab/mj-agent/pull/560)、[#561](https://github.com/MJ-AgentLab/mj-agent/pull/561)。Issue 折叠的旧方案只作历史证据。`已验证` 指该项要求的离线或报告性检查已有实际结果；`仅静态验证` 指项目源码、文档或检查器已核对，但目标宿主加载/执行未得到证明；`真实链路未验证` 指该项明确要求的独立受控会话或双远端动作尚无完整结果。没有整项 AC 被新决策取消；旧方案中 AC-4/9/13 的统一 on-request 前置条件已被 ADR-041 与 Issue 当前条款替代。
@@ -619,3 +625,106 @@ Owner 接受同步执行建议，批准记录交付准备和一致性核对；�
 支持进展仍以 E10 首答为准，本轮没有新增诊断或当前状态截图。AC-22/24 actual-loading/recovery=UNKNOWN，原时段 UNKNOWN 永久保留；历史记录尚不可得不能写成不存在。定时检查启用/运行状态仍 UNKNOWN，不新建重复任务。完整 Issue 正文准备的 64 KB 拒绝仍 BLOCKED_EXECUTION_ROUTE；拟议小评论是独立待批准动作，不解除该停点。#555 OPEN、计划 active，不建议 merge 或关闭。最小剩余验收是取得目标实例来源/哈希、信任、加载/跳过/原因/时间与恢复关联，或 Owner 明确调整范围。
 
 本轮源记录校验已执行：`uv run --frozen --no-sync python scripts/check_frontmatter.py` exit 0、147 canonical docs PASS（chunk `e258c5`）；`uv run --frozen --no-sync python scripts/check_wikilinks.py` exit 0、archive-ref 0、5 根入口 unresolved 0（chunk `088d13`）。2026-10-09T08:35:06.893196+00:00 的 15 文件补充核对（chunk `f400fd`）exit 0：24 条/24 行、22 已验证/22 与 24 未完成，全部相对 Markdown 链接存在、尾空白 0、具名凭据格式命中 0；五份冻结评论/支持正文/截图及 Playwright 哈希一致，Plan active/updated=2026-10-09，`git diff --check` exit 0、cached diff 空。邮箱格式仅在验收/计划的既有 Git 作者记录三处；不把这些元数据或有限格式扫描当作无敏感信息保证。新工作树复制后的检查与最终 payload 哈希另列本地具名交付审阅清单；纯记录不重跑功能测试，不证明加载。
+
+## E12：具名记录交付已执行并逐项对账（2026-10-09 08:46–08:49 UTC）
+
+Owner 回复“接受推荐，授权执行”，分别批准清单 A 的 C1/C2 提交、Gitee/origin 普通双推、head=documentation/555-acceptance-records-20261009、base=develop 的 Draft PR；独立推荐 D 的精确状态评论也获批准。PUBLIC 展示范围随已审阅的 15 文件清单获批。实施者 Codex，未委派，BDD/TDD=NONE。冻结 manifest SHA256=`36b1531f0a30e2e5141f4fd143e0c2978d7e5b4224fe6d9d9a581fcc215ced40`；它是 E11 准备时的文件哈希快照，不改写为此后本地增量的批准。
+
+执行工作树为 E11 的独立 documentation 工作树，基线 `0b2f542e466fe36258046c7e8592ed6770e983f2`。前置核对 chunk `3e08e3`（08:45:05.630682 UTC，exit 0）确认 15 文件原字节哈希匹配、branch/HEAD 正确、index 空、status 精确；双端新 ref 均不存在，origin/develop 仍同基线，Gitee/develop 仍 `4e55aae9d78f59ce9b47be43171b5fb33fe95049`（chunks `438ba0`/`889bdb`）。已有同 head PR 查询为空，Issue OPEN、具名评论未发布（`450b83`/`6f86c6`），均 exit 0。
+
+| 独立动作 | 实际结果与证据 | 原工具回执 |
+| --- | --- | --- |
+| C1 提交 14 evidence 文件 | `77c382626b8f52f34bbda279c2b4956f274903b5`，`docs(evidence): preserve #555 acceptance and diagnostic records`，14 文件、1127 insertions；Git 提交时间 08:46:24 UTC，实际作者/提交者 ranzuozhou，未修改署名配置 | 具名 add `c55b87`；index 14 路径/期望 blob `78b227`；commit `43ca8b`；fuller/stat `f3f9d7`；均 exit 0 |
+| C2 提交既有 Plan | `837c4b49b20c2484a878aad398c643e4ffc71852`，`docs(plans): retain #555 host loading acceptance as active`，仅 Plan、203 insertions/2 deletions，Git 时间 08:47:00 UTC，实际作者/提交者 ranzuozhou | literal Plan add `f27d67`；C1 tree/C2 index/15 文件哈希 `0623ec`；commit `dc4c66`；完整两提交/15 路径/期望 blob/clean/基线祖先 `276fa2`；均 exit 0 |
+| Gitee 普通 push | 仅 `documentation/555-acceptance-records-20261009:refs/heads/documentation/555-acceptance-records-20261009`，新分支；独立 `git ls-remote --heads gitee <精确 ref>` 返回 tip=`837c4b49b20c2484a878aad398c643e4ffc71852` | 紧前 refs `2cf1b0`；push `ec067c`；查询 `d2f434`；均 exit 0 |
+| origin 普通 push | 同一具名新 ref；独立 `git ls-remote --heads origin <精确 ref>` 返回同 tip；没有把 Gitee 成功当作 origin 成功 | 紧前 refs `78fb61`；push `851567`；查询 `c5edd3`；均 exit 0 |
+| Draft PR 创建 | [#574](https://github.com/MJ-AgentLab/mj-agent/pull/574)，OPEN/Draft，head=`documentation/555-acceptance-records-20261009`、head SHA=`837c4b49b20c2484a878aad398c643e4ffc71852`、显式 base=`develop`；createdAt=08:49:03Z；标题与正文全量匹配，正文 SHA256=`b9fdfc44e6904dcf566518ec75baa66a431aa18960580bb95e4d984be7e8b0ad`；已 attach 到本聊天 | 精确正文/head/不存在检查 `9a7afc`；正常 gh pr create `76421f`；readback `e5a2a0`；均 exit 0，attach_artifact 成功 |
+| 独立状态评论 | [6077631045](https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6077631045)，createdAt=08:49:41Z；回读正文 SHA256=`5fe34a2b195673c595520dd74122b94b74fb47d24ce2492f15abe77248e18a0b` 与批准草案一致，Issue OPEN | 精确正文/重复检查 `8e6276`；正常 gh issue comment `344969`；readback `48eea7`；均 exit 0 |
+
+PR 命令正常携带 `--repo MJ-AgentLab/mj-agent --head documentation/555-acceptance-records-20261009 --base develop --title "docs: record #555 acceptance and pending host diagnostics" --body-file evidence/issue-555/records-pr-body-2026-10-09.md --draft`。评论正常携带 `--repo MJ-AgentLab/mj-agent --body-file evidence/issue-555/records-issue-comment-draft-2026-10-09.md`。没有 force、amend、merge、close、删除、配置/信任修改或 hook 激活，没有另行发布附件或支持消息。所有成功动作均按各自回执核对，不重做历史临时删除。
+
+本轮 add 的 LF/CRLF 提示保留在 `c55b87`，属于正常换行提示；暂存及提交 blob 均与批准 manifest 的 expected_git_blob 一致。`450b83` 只读发现文档检查生成的 ignored scripts/__pycache__/*.pyc，仅按元数据排除并保留，没有清理或暂存。本轮这些具名 Git/gh 命令未出现宿主拒绝；当前工具权限声明为 never/danger-full-access，与历史 Desktop 独立事件分列，不据成功推定实际 rules/hooks 加载。E4/E5 的完整正文准备 64 KB 拒绝仍 BLOCKED_EXECUTION_ROUTE，未重试或改写绕过；新独立评论不解除它。
+
+本地 [机器可读执行回执](records-delivery-receipt-2026-10-09.json)记录各动作/工具 chunk/exit/精确 SHA、PR/评论时间与哈希。目标工作树保留批准的 E11 快照，记录交付两提交已双推；本文件新增 E12、Plan §28、诊断/选项导读与 receipt 是交付后的原 develop 本地 UNCOMMITTED 增量，未消费冻结快照授权再提交或推送。准备 manifest 中 source_path 的哈希按 E11 时点解释，冻结副本在目标工作树/两次提交中可核对。
+
+AC-22/24 actual-loading/recovery 继续 UNKNOWN，原 2026-09-23 时段 UNKNOWN 永久保留；已核实 Desktop 版本与加载状态分列。当前无新增支持诊断，继续 E10 的 WAITING_FOR_HISTORICAL_DIAGNOSTICS；定时检查启用/运行仍 UNKNOWN。#555 OPEN、Plan active；最小剩余验收是取得具名实例来源/定义哈希、项目与 hook 信任、实际加载或跳过及原因/时间、有效模式和恢复关联，或 Owner 明确调整剩余范围。不建议 merge 或关闭。
+
+交付后本地增量校验：frontmatter 147 PASS（`5d0872`）、wikilinks archive-ref 0/5 根入口 unresolved 0（`e3e4d0`），均 exit 0；E12 四份 Markdown 的相对链接/尾空白、receipt JSON、冻结 manifest/目标 15 文件及 Git blob、冻结评论/支持正文/三图、Playwright 哈希、旧工作树 2/0、5/1、7/475 内容统计核对均 PASS（`1b577a`，exit 0）。目标工作树 clean、源 index 空、源 diff --check exit 0。只读 Issue 完整正文哈希仍为 `acedc9f31874651e048d0d821b60e58148681ba3d6b211014128be3d5a79dfea`、OPEN、updatedAt=2026-10-09T08:49:41Z（`1b25ef`，exit 0）；确认本轮只新增批准评论，没有改原正文。这些检查不补齐加载验收。
+
+## E13：#555 合并后核查、未提交保护与同步准备（2026-10-09）
+
+Owner 告知“当前项目的 PR 都已经合并，进行后续工作”。本轮按 mj-agent-flow-post-merge 做实际状态核对、备份和具名同步/保留准备，实施者 Codex，未委派。已有记录交付批准只覆盖 E12 的固定动作，未扩展到 develop 镜像 push、新提交/PR、本地删除或六条远端引用删除。mj-agent-git-sync H1 要求 dirty 工作区先选择保存方式；未 stash、重置、覆盖源成果或更新 develop 工作树。
+
+### 已合并事实与 tip 变化
+
+`gh pr list --state open` 回读 `[]`（`bdfe03`），并逐一查询 #566/#571/#574（`b5faee`/`bdfe03`）。正常 `git fetch origin`（`03e4a4`）与 `git fetch gitee`（`12e7c6`）均 exit 0；只更新可追溯对象与远端跟踪引用，不更新本地 develop 工作树，未使用 prune。祖先/新增提交与路径核对 `4817d2` exit 0。
+
+| PR | 原本地/发布 tip | 最终 PR head | merge / mergedAt UTC |
+| --- | --- | --- | --- |
+| #566 | `878b474d56e1e4201bba335b60caa9ad7ee018cd` | `4f867694f3537fcb77c6b81d379b1b4d4454ff2e` | `4334a57729137255aa79855d06609a578dd218c2` / 09:10:28Z |
+| #571 | `6d331438990c458599025bccf3196fabbd694514` | `7cbf5ebed4d436c92cd3ac7404cb75264e12b1ce` | `2f707200b166eca9120319779f6ae971f6ac43ba` / 09:22:41Z |
+| #574 | `837c4b49b20c2484a878aad398c643e4ffc71852` | `967fc845b9a895157ce6ebd131cd99f6f169a929` | `c449dff6baec64b874f899431109fb3542e0ff4f` / 09:26:52Z |
+
+三组原 tip、最终 head、merge 均是 origin/develop 的祖先；最终 head 的新增提交是合入 develop 的 merge，不是新增 #555 加载诊断。#574 最终 head 保留原 15 份记录 blob，没有再改其验收/PR 正文（`348ebe`）。同 head 合入的其他已合并基线内容不作为本任务的新开发：本地 HEAD 到 origin/develop 的路径差异为 18 份 #555 记录/Plan 与 CI、docker compose 两文件，未编辑这些 infra。
+
+只读实时 refs（`b5faee`）确认 origin/develop=`c449dff6baec64b874f899431109fb3542e0ff4f`，Gitee/develop=`4e55aae9d78f59ce9b47be43171b5fb33fe95049`。Gitee 三条发布 ref 仍为各自原 tip，origin 三条发布 ref 为最终 head；两端不同，不声称引用已删除或镜像已同步，删除批次保留暂停。旧首轮 S/A/B 测试删除和 E2 删除的历史证据不重复执行，也不消费为本次发布分支清理授权。
+
+### 工作区与收尾决策
+
+三条 #555 工作树只读核查（`6285fe`，exit 0）：两个 canary 均无 tracked/untracked/ignored，分别 1049/1048 文件节点；记录工作树 tracked/untracked 为 0/0，但有十份文档检查生成的 ignored pyc，1072 文件节点；三者 tracked flags 均 H，无重解析点。它们仍保留，未检查或宣称具备删除时刻的占用条件。三条其他任务的有内容旧工作树及 .playwright-mcp/ 继续保留。本轮不清理它们、不改个人配置、不激活 hooks。
+
+本地 develop 仍为 `0b2f542e466fe36258046c7e8592ed6770e983f2`，包含本会话 Owner 选项原则两行 AGENTS diff，以及交付后的 E12/Plan/导读/执行回执和准备清单。incoming 已追踪原 14 evidence，因此不能直接把这些未跟踪成果当作可覆盖文件。准备对 AGENTS、14 evidence 与 Plan 共 16 精确路径保存完整原字节；.playwright-mcp/ 和其他本地控制/回执不进入暂存或 stash 清单。保存恢复范围只覆盖原文件，已合并其他基线文件不回写旧内容。
+
+推荐后续是 Owner 选择具名保存方式后，将本地 develop 仅 fast-forward 到已核实合并 tip，再原字节恢复这 16 路径的工作区内容、保留备份和 stash；不新增提交、不自动 stash pop/drop。因为 acceptance 当前为 intent-to-add，拟先只暂存该文件以保存其完整内容，再运行固定路径 stash。Gitee develop 镜像 push 是另一独立批准：沿用项目 `sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin`，仅 fast-forward，执行前后复核 source/target tip。脚本本轮只读核对（`5993b3`），未执行。三条 #555 已合并发布分支/工作树推荐先保留，后续对齐两端引用及清理另给具名范围。
+
+### 支持、验收与各收尾项
+
+正常 cua_repl 绑定原 help.openai.com tab 的只读回执仍显示目标 thread/turn 请求及 Chinedu 首答，没有新增消息、案件编号、加载路径/哈希、信任或实际加载/跳过/原因事件。未发送消息或附件、未访问邮箱，界面观察时间不作为消息时间；只证明本次可见支持对话尚无诊断，不能证明历史记录不存在。支持状态继续 WAITING_FOR_HISTORICAL_DIAGNOSTICS。
+
+CHANGELOG：#574 纯记录，不新增条目。EVAL：三个 #555 PR 不涉及 runtime skill/prompt body，不触发新 EVAL backlog。Follow-up：剩余加载验收留在 #555，不新建其他 Issue。Schedule：本轮不更改任务；启用/运行仍 UNKNOWN。Issue 关闭与 Plan completed：AC-22/24 未完成，且 Owner 未调整范围，因此不提出关闭或 completed，保持 OPEN/active。当前实际模式和 Git 成功与加载 UNKNOWN 继续分列；64 KB 正文准备停点保留，未重试。
+
+备份路径、精确哈希、已合并 tip、预期保存/ff/恢复/镜像命令及失败对账另列本地合并后审阅清单。可离线文档校验与内容保留核对在本节后续登记；没有新增 live probe、运行 infra 或真实加载验收。
+
+本轮离线记录校验 exit 0：frontmatter 147 PASS（`2f9c1e`）、wikilinks archive-ref 0/5 根入口 unresolved 0（`7444a0`）；E13 四份 Markdown 相对链接/尾空白、diff --check、Playwright 哈希、Plan active 与三条其他任务旧工作树 2/0、5/1、7/475 的保留状态核对 PASS（`2be937`）。源 cached diff 空，但 acceptance 的 intent-to-add 条目仍存在；同步准备明确处理该条目，不将 cached diff 空描述为没有任何 index 元数据。备份和后续同步不会自动消费提交或远端删除授权。
+
+## E14：获批保护/快进/恢复、独立镜像与评论执行（2026-10-09）
+
+Owner 对 [合并后审阅清单](post-merge-review-2026-10-09.md) 回复“接受推荐，授权执行”，分别批准推荐 A 的精确 16 路径保存/本地 ff/原字节恢复、Gitee develop 普通守卫 ff，以及独立 D 的精确状态评论。Codex 执行，未委派。没有新项目 commit/PR、PR merge、删除、信任/配置修改、支持消息或附件。实际结果另记 [执行回执](post-merge-sync-receipt-2026-10-09.json)，E13 和审阅清单保留为准备时快照。
+
+### 本地保存与恢复证据
+
+[获批 manifest](post-merge-sync-manifest-2026-10-09.json) SHA256=`a15f21288b491ec44bc197c54d457971f29911ca0b96c186d8e1ba5421c099a0`；19 文件外部原字节备份仍在 `D:/workspace/10-software-project/projects/mj-agent/backups/issue-555/post-merge-20261009T094040Z`。执行前源/备份、HEAD、原 stash 和八份排除文件已核对，未读取秘密；只暂存 acceptance 以保存 intent-to-add 完整内容，随后精确 16 路径 stash 成功。
+
+新 stash=`62a9170a4ca83c2ad425a7a4670e62df70a90e99`，标签 `issue-555-preserve-before-ff-20261009T094040Z`，base=`0b2f542e466fe36258046c7e8592ed6770e983f2`。working 三路径、index 一路径（acceptance）、untracked 子树十三路径的全部 blob 均与 manifest 匹配，见 [stash 核对](post-merge-stash-2026-10-09.json)。原 autostash=`9bd7628f4abc7073df120295a947d36fe65c6695` 保留。
+
+`git merge --ff-only c449dff6baec64b874f899431109fb3542e0ff4f` 正常 fast-forward，没有新 merge commit。恢复前再次核对 HEAD、incoming 16 blobs、clean index/working tree、绝对路径边界/重解析点和全部十九份备份哈希；只将十六个获批 backup_path 原字节复制回 source_path。恢复于 `2026-10-09T09:55:41.040037+00:00` 至 `09:55:42.790344+00:00` 完成；16 raw SHA/working blobs、19 backup SHA、八份排除文件哈希全部匹配，见 [恢复回执](post-merge-restore-2026-10-09.json)。没有 stash pop/drop，两个 stash 和备份均保留。恢复后精确五份 tracked 修改为 AGENTS、验收、诊断请求、剩余选项及 Plan，index clean；其他合并文件不回写。
+
+### 镜像和评论分别对账
+
+执行前实际查询 origin/develop=`c449dff6baec64b874f899431109fb3542e0ff4f`、Gitee/develop=`4e55aae9d78f59ce9b47be43171b5fb33fe95049`，与获批目标一致。`pwsh scripts/sync-gitee-mirror.ps1 -Branch develop -Remote gitee -Source origin` 检查祖先后仅普通推送 Gitee develop，补齐 25 commits，exit 0。随后独立 `git ls-remote --heads gitee refs/heads/develop` 和 origin 同命令查询实际两端 tip 均为 `c449dff6baec64b874f899431109fb3542e0ff4f`。未推 origin develop/发布分支，未 force；单端成功不替代另一端验证。
+
+精确评论 SHA256=`be95aba28209638039a4df06a42a197b2cdc93b7c6c90bcad2c58c7d52b9b28b`，发布前确认无相同正文。正常 `gh issue comment 555 --repo MJ-AgentLab/mj-agent --body-file evidence/issue-555/post-merge-status-comment-draft-2026-10-09.md` 返回 [评论 6078621332](https://github.com/MJ-AgentLab/mj-agent/issues/555#issuecomment-6078621332)，createdAt=`2026-10-09T09:56:29Z`。回读正文 raw SHA 匹配、Issue OPEN，完整正文 hash 仍为 `acedc9f31874651e048d0d821b60e58148681ba3d6b211014128be3d5a79dfea`，见 [评论回执](post-merge-comment-receipt-2026-10-09.json)。评论明确为“准备快照”，未同步描述是当时事实，本节单列后续执行；冻结正文不改写。
+
+### 原始回执、错误和验收边界
+
+| 动作/核对 | 工具 chunk / exit | 结果 |
+| --- | --- | --- |
+| 源/备份/remote 前检 | `c379b4` / `e041ef` / `738fe3`，0 | [预检](post-merge-preflight-2026-10-09.json) 保留 |
+| 临时暂存、精确 stash 与树核对 | `544bc5` / `ac188e` / `7f7cd5` / `699de0`，0 | 十六 blobs 匹配；普通 LF/CRLF 警告保留 |
+| 本地 ff | `8727dd`，0 | 0b2f542→c449dff6 |
+| 恢复脚本启动错误 | `86997b`，1 | `The term 'python' is not recognized as a name of a cmdlet, function, script file, or executable program.`；脚本未启动，未恢复文件 |
+| 解释器定位与正常恢复 | `6f5186` / `ad3561`，0 | 只读确认 PATH 无 python、项目 `.venv/Scripts/python.exe` 存在；用现有项目解释器执行同一获批步骤，哈希全匹配。属程序定位错误，没有宿主拒绝或权限变更 |
+| push 前两端与评论去重 | `501b86` / `9a95ea` / `b5ad8e`，0 | tip/正文与批准一致 |
+| Gitee 普通守卫 ff | `c7b545`，0 | 成功；子 pwsh 的两条 PSReadLine 非交互 profile 错误原文保留，不是宿主拒绝；未改 profile |
+| push 后 Gitee / origin | `3f0e32` / `16b815`，0 | 实际两端均 c449dff6 |
+| 评论发布/回读 | `df0bcb` / `985bfd`，0 | URL/时间/正文 hash/OPEN 均核对 |
+| 回执写入时额外只读 origin 查询 | `7cc263`，1 | git ls-remote exit 128；包装脚本未回传底层 stderr，原因 UNKNOWN，未写回执或重试任何写动作；原错误保留在执行回执 |
+| 原 argv 只读对账、独立 Gitee 查询及回执 | `a8e169` / `b8e513` / `e00ac7`，0 | 两端 develop 和三条发布引用实际 tip 核对，所有旧工作树/冻结文件/备份保留；后续成功不解除任何既有宿主拒绝 |
+
+当前权限声明 never/danger-full-access 仅来自当前任务，不回写 E2 的 OnRequest，不证明目标 Desktop 实际加载。没有新的来源/定义哈希、信任、加载或跳过/原因/事件时间及恢复关联证据，AC-22/24 保持 UNKNOWN；原 2026-09-23 加载 UNKNOWN 永久保留。支持最近来源仍是 E13 的只读观察，本轮无新诊断消息。完整正文准备的原始 64 KB 拒绝仍 BLOCKED_EXECUTION_ROUTE，未重试或绕过。
+
+所有工作树、三条发布分支/两端引用、其他任务未提交内容及 `.playwright-mcp/` 保留，后者未暂存、stash 或清理。E14/Plan §30/执行回执为恢复之后的 UNCOMMITTED 增量，不改写获批 manifest、备份或 stash；无新增项目提交授权。BDD/TDD=NONE（记录收尾），不重复 T1/T2 功能测试。最小剩余验收为目标实例可追溯来源/定义哈希、项目与 hook 信任、加载或跳过/原因/时间、有效模式及恢复关联，或 Owner 明确调整剩余范围。#555 OPEN、Plan active，不建议关闭。
+
+本轮记录校验全部 exit 0：147 canonical frontmatter（`a51a26`），wikilinks archive-ref 0、五根入口 unresolved 0（`b9d263`）；四份 Markdown 的 79 个相对链接、尾空白、post-merge JSON、Plan active、E14 唯一性、diff --check 和 index clean（`d4e8af`），详见 [校验回执](post-merge-validation-2026-10-09.json)。冻结内容/19 份备份/八份排除 hash、两个 stash、旧有内容工作树 2/0、5/1、7/475 及三条双端发布引用核对见 `e00ac7` / `a8e169` / `b8e513`。这些静态与保留检查不证明目标宿主加载。
+
+最终工作区状态另行区分：`git diff --name-only/--numstat` 的 Git 内容差异精确为五份；`git status --porcelain=v2` 实际显示十三份未暂存 `.M`（`bad461`）。另外八份均是获批原字节恢复的冻结文件，其 raw SHA 与原备份一致、经 Git 属性处理的 blob 与 HEAD 一致（`22598c` exit 0）；LF/CRLF 和属性输出保留，未规范化、重新暂存或 reset。十三份状态条目与八份逐路径核对已写入执行回执；index 与 HEAD 一致不代表工作树 clean。

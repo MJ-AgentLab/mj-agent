@@ -1,5 +1,11 @@
 # #555 新一轮 Desktop 加载取证请求（正文已提交，加载仍 UNKNOWN）
 
+E14（2026-10-09）：获批十六路径保存/本地 ff/原字节恢复完成，stash/备份保留；Gitee 独立普通 ff 后，两端实际 develop 均 c449dff6；精确准备快照评论已回读，见 [验收 E14](acceptance-2026-09-23.md)。所有工作树/发布引用保留，新增记录未提交。本轮无新支持消息/诊断或信任/配置修改；actual-loading/recovery UNKNOWN、#555 OPEN、Plan active，原时段 UNKNOWN 永久保留。E13 是执行前准备快照。
+
+E13（2026-10-09）：#566/#571/#574 均已 MERGED，origin develop=c449dff6；合并记录与未提交保护/同步准备见 [验收记录 E13](acceptance-2026-09-23.md)。原支持对话只读回读仍仅 Chinedu 首答，没有新增诊断；actual-loading/recovery UNKNOWN、#555 OPEN、计划 active。未新增支持消息/附件，未同步 dirty develop、镜像 push 或清理；原时段 UNKNOWN 永久保留。
+
+E12（2026-10-09）：Owner 已批准记录交付推荐 A 与独立评论 D。冻结 15 文件已两项 docs 提交、双端 tip=837c4b49、[Draft PR #574](https://github.com/MJ-AgentLab/mj-agent/pull/574) 及具名状态评论交付并回读，详见 [验收记录 E12](acceptance-2026-09-23.md)。本导读/回执等后续本地增量未再提交；E11 待授权是准备时快照。实际加载及恢复关联仍 UNKNOWN，支持继续等待 E10 后实质诊断，没有新增反馈/支持消息或材料上传；#555 OPEN、计划 active。
+
 E11（2026-10-09）：Owner 批准同步准备记录交付与一致性核对。已备独立 documentation 工作树和精确文件包；尚未提交/推送/发布，actual-loading/recovery 仍 UNKNOWN。支持状态继续以 E10 首答为准，没有新增诊断或附件。当前条款与链路边界见 [一致性审阅](consistency-review-2026-10-09.md)及 [验收记录 E11](acceptance-2026-09-23.md)；本轮准备不扩展既有 Git 授权。
 
 最新推进（E10，2026-10-09 07:51–07:54 UTC 观察）：原支持聊天新增署名 Chinedu / OpenAI Support 的答复，将检查现有反馈、区分两次实例，并确定历史记录可访问性。尚未确认加载/信任、保留覆盖或六类字段能否重建；没有原始诊断、案件编号或消息发送时间。状态 SUPPORT_SPECIALIST_REPLY_RECEIVED / WAITING_FOR_HISTORICAL_DIAGNOSTICS，AC-22/24 UNKNOWN、#555 OPEN、计划 active。当前不需上传材料、重跑 Git 或修改信任/配置；本轮渠道只读，原始坐标和逐字段结论见 [验收记录 E10](acceptance-2026-09-23.md)。E5–E9 为各时点快照。

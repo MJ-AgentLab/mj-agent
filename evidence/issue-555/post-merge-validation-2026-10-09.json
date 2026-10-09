@@ -1,0 +1,29 @@
+{
+  "verified_at_utc": "2026-10-09T10:04:44.052926+00:00",
+  "markdown_files": [
+    "evidence/issue-555/acceptance-2026-09-23.md",
+    "evidence/issue-555/ac24-desktop-diagnostic-request-2026-10-08.md",
+    "evidence/issue-555/ac24-remaining-scope-options-2026-10-08.md",
+    "plans/[PLAN]_555_approved_deletion.md"
+  ],
+  "relative_link_targets_checked": 79,
+  "relative_links": "PASS",
+  "trailing_whitespace": "PASS",
+  "post_merge_JSON": "PASS",
+  "plan_active": "PASS",
+  "one_E14_section": "PASS",
+  "git_diff_check": "PASS",
+  "index_clean": true,
+  "frontmatter": {
+    "chunk": "a51a26",
+    "exit_code": 0,
+    "canonical_docs": 147
+  },
+  "wikilinks": {
+    "chunk": "b9d263",
+    "exit_code": 0,
+    "archive_ref_violations": 0,
+    "root_unresolved": 0
+  },
+  "preservation_receipt_chunk": "e00ac7"
+}
