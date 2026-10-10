@@ -2,10 +2,10 @@
 type: sdd-kernel
 artifact: gates
 state: active
-version: "0.16"
+version: "0.17"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-02
+updated: 2026-10-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -254,3 +254,33 @@ ai_visibility: source-of-truth
 > *v0.2（2026-06-10）：completion-audit PR2 truth-up — 阻塞模式真值化 + G3/G7/G25 实装登记 +
 > G26 withdrawn + G27/G28 deferred。详细 gate 例外处理见 `policies/ci-gates.md`。
 > 历史：v0.1 Phase M0 skeleton（state: draft）。*
+
+> *v0.17（2026-10-10）：#563 — 六处 G1/G2/G8/G19/G21/G3 CI 步骤名称精简为用途与当前姿态，移除历史计数及阶段说明；历史来源保留于 Issue 记录及既有正文。追加 §6 登记 Tests/BDD/Contract 共用的 offline runner 执行边界、前置检查及证据限制。命令、条件、continue-on-error 与 gate 姿态不变，无新 gate 编号或 CI step；具体 CI／SDD 差异经 Owner 批准。*
+
+## §6 测试执行边界
+
+`.github/workflows/ci.yml` 的 Tests、BDD scenarios 与 Contract tests 三个步骤共用
+`scripts/sdd/run_offline_pytest.py`。runner 为 pytest 子进程构造受控环境，固定测试配置并核对插件，
+执行既有外部依赖测试策略；凭据存在不会启用外部测试。
+
+runner 在启动 pytest 前调用 `scripts/sdd/check_test_offline_boundary.py`，检查源代码、测试输入、
+CI 调用和开发入口的静态／AST 边界。发现违规则终止，不启动 pytest；通过前置检查后才执行测试，
+并返回 pytest 的实际退出码。该检查是现有 runner 的前置条件，不是新增的独立 gate 或 CI step。
+
+三个测试步骤在当前 CI 中均为 blocking：runner 前置检查失败或实际测试失败会使相应步骤失败。
+运行态姿态仍以 ci.yml 为准。本节登记共用执行边界，不改变命令、条件、continue-on-error 或 gate 姿态。
+runner 提供受控测试入口，不提供宿主网络隔离保证；其前置检查也不证明所有测试或外部服务可用。
+
+G1/G2/G8/G19/G21/G3 的步骤名称只表示检查用途与当前姿态，G21 另标明风险子集。
+PASS/WARN/FAIL/SKIP 计数以检查器本次实际输出为准；引用历史计数时须同时绑定运行日期和提交。
+六处名称的历史阶段来源与复核计数保留在 [Issue #563](https://github.com/MJ-AgentLab/mj-agent/issues/563)。
+
+验证记录须区分以下证据：
+
+| 证据 | 能证明的范围 |
+|---|---|
+| 静态检查通过 | 对当前输入，检查器判定的结构／边界合规；G19 的结构 PASS 和 G21 的 runbook justification fallback 不是场景实际执行证据 |
+| 已运行的离线测试通过 | 本次实际执行的断言通过；Contract 步骤使用合成快照 fixtures，不能代替真实业务 schema 核验 |
+| `SKIP_POLICY_EXTERNAL_DEPENDENCY` | 外部依赖测试按策略跳过；凭据存在不启用该测试，SKIP 不计作实际通过 |
+| capability 状态 SKIP／pytest deselected | 检查器适用条件未满足／测试未被选中；分别记录原因，不与外部依赖策略 SKIP 混记 |
+| 真实环境验收 | 经单独授权后实际运行的 live probe／验收结果；不得由静态绿色、离线通过或跳过推定 |
