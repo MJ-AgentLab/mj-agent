@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: python
 state: draft
-version: 0.2
+version: 0.3
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-21
+updated: 2026-10-10
 track: code
 ai_visibility: source-of-truth
 ---
@@ -13,8 +13,8 @@ ai_visibility: source-of-truth
 # Adapter: Python
 
 > Phase M2 内容化 — Python adapter 治理 `src/mj_agent/` 全部 Python 模块的 public symbol
-> contract. §Standards / §BDD Rules / §TDD Rules 各段顶部 cross-ref 蓝图
-> `spec-anchored-calm-lampson.md` 手册 §22.1 Python Adapter Standards.
+> contract. 历史实施蓝图：`D:/Document/My-Local-Vault/sdd-development/mj-agent/spec-anchored-calm-lampson.md` v2.2（2026-05-20，本机 vault）。
+> 章节出处：`D:/Document/My-Local-Vault/sdd-development/通用 Spec-Anchored 项目构建、重构、运行与治理手册.md` v1.2 §22.1 Python Adapter Standards（2026-05-20，本机 vault）。
 
 ## §Scope
 
@@ -211,3 +211,5 @@ warning mode 下预期 0 noise；M3 切 blocking 不引入新 friction.
 ---
 
 > *Phase M2 content — `state: draft`.*
+>
+> *v0.3（2026-10-10）：#498 补全历史蓝图的本机 vault 路径与已核验版本，区分实施蓝图与手册章节出处（§22.1）；规则、契约、执行命令和 `state` 不变。仓外来源不作为当前可执行规则入口。*

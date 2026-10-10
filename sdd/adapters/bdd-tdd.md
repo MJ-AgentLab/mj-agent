@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: bdd-tdd
 state: draft
-version: 0.3
+version: 0.4
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-01
+updated: 2026-10-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -16,8 +16,8 @@ ai_visibility: source-of-truth
 > 7 子节固定结构：§Standards / §Test Pyramid Integration / §Automation Strategy /
 > §Evidence Schema / §Red-Green-Refactor Workflow / §Contract-Test-First Rule /
 > §Cross-Adapter Rules.
-> cross-ref 蓝图 `spec-anchored-calm-lampson.md` **手册 §25** TDD/BDD 与 SDD 的结合机制
-> （8 子节 §25.1-§25.8 全部覆盖；mapping 详各 §X 顶部 cross-ref 行）.
+> 历史实施蓝图：`D:/Document/My-Local-Vault/sdd-development/mj-agent/spec-anchored-calm-lampson.md` v2.2（2026-05-20，本机 vault）。
+> 章节出处：`D:/Document/My-Local-Vault/sdd-development/通用 Spec-Anchored 项目构建、重构、运行与治理手册.md` v1.2 §25 TDD/BDD 与 SDD 的结合机制（2026-05-20，本机 vault；§25.1–§25.8 全部覆盖）。
 
 横切定位：不绑定单一 capability；前 6 adapter 文档内 §BDD Rules / §TDD Rules 子节是本 adapter
 的 per-stack 落地；本 adapter 是 canonical 源，冲突时以本节为准.
@@ -290,3 +290,5 @@ canonical 源，冲突以本节为准（M5+ 新 adapter 走 matrix sync PR 同�
 > `Path.read_text`（`:63`）、确实用正则（`:55` 的 namespace pattern）。唯一更正的是**形容词主语**
 > 「markdown-body-only」—— 它暗示那些 SKILL 没有 frontmatter，而该状态从未存在（成因是 V4 执行体
 > `yaml.safe_load()` 的 parser bug，`03f1bc7` / `a5614c4`）。矩阵其余 5 行未动。*
+>
+> *v0.4（2026-10-10）：#498 补全历史蓝图的本机 vault 路径与已核验版本，区分实施蓝图与手册章节出处（§25（§25.1–§25.8））；规则、契约、执行命令和 `state` 不变。仓外来源不作为当前可执行规则入口。*

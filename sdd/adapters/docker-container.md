@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: docker-container
 state: draft
-version: 0.4
+version: 0.5
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-04
+updated: 2026-10-10
 track: code
 ai_visibility: source-of-truth
 ---
@@ -14,8 +14,8 @@ ai_visibility: source-of-truth
 
 > Phase M2 内容化 — Docker Container adapter 治理 `docker/`（M5-PR2 自 `infra/docker/` 平移完成）
 > 全部容器化制品：`Dockerfile` + 4-file compose 链 + 运行时 expected state.
-> §Standards / §BDD Rules / §TDD Rules 各段顶部 cross-ref 蓝图
-> `spec-anchored-calm-lampson.md` 手册 §23 Docker/Container Adapter Standards（注意：本
+> 历史实施蓝图：`D:/Document/My-Local-Vault/sdd-development/mj-agent/spec-anchored-calm-lampson.md` v2.2（2026-05-20，本机 vault）。
+> 章节出处：`D:/Document/My-Local-Vault/sdd-development/通用 Spec-Anchored 项目构建、重构、运行与治理手册.md` v1.2 §23 Docker/Container Adapter Standards（2026-05-20，本机 vault；注意：本
 > adapter 唯一 cross-ref §23 而非 §22.X；其他 6 adapter 走 §22.1-§22.7）.
 
 ## §Scope
@@ -282,3 +282,5 @@ M3+ 路径）.
 ---
 
 > *Phase M2 content — `state: draft`.*
+>
+> *v0.5（2026-10-10）：#498 补全历史蓝图的本机 vault 路径与已核验版本，区分实施蓝图与手册章节出处（§23）；规则、契约、执行命令和 `state` 不变。仓外来源不作为当前可执行规则入口。*
