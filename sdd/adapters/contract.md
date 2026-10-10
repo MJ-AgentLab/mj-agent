@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: contract
 state: draft
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-06-04
+updated: 2026-10-10
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -14,9 +14,9 @@ ai_visibility: source-of-truth
 
 > Phase M6 内容化 — Contract adapter 治理 agent-facing tool CONTRACT 文档的 authoring 深度 +
 > A10 PR gate rule body（`state: active` ⇒ `schema_ref` 存在且指向存在 schema 文件）+
-> `contract_kind` enum. ported from Agent_Side §5 + §7.1 A10（这是 kernel home；Agent_Side
-> 后续 archive）. §Standards / §BDD Rules / §TDD Rules 各段顶部 cross-ref 蓝图
-> `spec-anchored-calm-lampson.md` 手册 Contract Adapter Standards.
+> `contract_kind` enum。本文已承接历史 Agent_Side §5 + §7.1 A10 的规则，当前 kernel home 为本文。
+> 历史实施蓝图：`D:/Document/My-Local-Vault/sdd-development/mj-agent/spec-anchored-calm-lampson.md` v2.2（2026-05-20，本机 vault）。
+> §Standards / §BDD Rules / §TDD Rules 为本文的 Contract adapter 规则；历史蓝图用于重构归属说明。
 
 ## §Scope
 
@@ -73,7 +73,7 @@ agent-facing tool CONTRACT 的 `contract_kind` 几乎总是 `tool`（mj-agent �
 
 ## §Standards
 
-> 本节对应蓝图手册 Contract Adapter Standards. agent-facing tool CONTRACT authoring 深度 ported
+> 本节为本文的 Contract Adapter Standards。agent-facing tool CONTRACT authoring 深度 ported
 > from Agent_Side §5（这是 kernel home）.
 
 **CONTRACT 文档 authoring 深度**（ported from Agent_Side §5 + `TEMPLATE_CONTRACT.md` body 结构）—
@@ -132,7 +132,7 @@ result envelope 或 guardrail 边界变更若改变 agent-facing 接口契约，
 
 ## §BDD Rules
 
-> 本节对应蓝图手册 Contract Adapter BDD Rules（agent-facing tool 接口契约 tagging）.
+> 本节为本文的 Contract Adapter BDD Rules（agent-facing tool 接口契约 tagging）。
 
 **`@adapter:contract` 何时用** — agent-facing tool 接口契约 scenario：
 
@@ -169,7 +169,7 @@ Scenario: active tool CONTRACT must point at an existing schema file (A10)
 
 ## §TDD Rules
 
-> 本节对应蓝图手册 Contract Adapter TDD Rules（agent-facing tool contract-test-first +
+> 本节为本文的 Contract Adapter TDD Rules（agent-facing tool contract-test-first +
 > A10 schema-existence check）.
 
 **Contract-test-first 限于 schema layer**：
@@ -242,3 +242,5 @@ envelope 字段集合）必先 failing；CONTRACT prose 走人工 review.
 
 > *Phase M6 content — `state: draft`. A10 rule body kernel home (ported from Agent_Side §5 +
 > §7.1).*
+>
+> *v0.2（2026-10-10）：#498 补全历史蓝图的本机 vault 路径与已核验版本，明确 Contract 分类为本文已承接的规则；规则、契约、执行命令和 `state` 不变。仓外来源不作为当前可执行规则入口。*

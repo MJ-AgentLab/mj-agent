@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: new-capability
 state: draft
-version: 0.1
+version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-10
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -48,7 +48,7 @@ ai_visibility: source-of-truth
 
 ## Outputs
 
-新 capability 完整 12-artifact 套件（per `mj-agent-refactored-structure.md` §4.5）：
+新 capability 完整 12-artifact 套件（历史目标蓝图 `D:/Document/My-Local-Vault/sdd-development/mj-agent/mj-agent-refactored-structure.md` v2.2 §4.5，2026-05-20，本机 vault）：
 
 ```
 capabilities/<domain>/<slug>/
@@ -71,3 +71,5 @@ capabilities/<domain>/<slug>/
 ---
 
 > *Phase M0 skeleton — `state: draft`.*
+>
+> *v0.2（2026-10-10）：#498 补全历史蓝图的本机 vault 路径与已核验版本，保留既有 §4.5 出处归属；规则、契约、执行命令和 `state` 不变。仓外来源不作为当前可执行规则入口。*
