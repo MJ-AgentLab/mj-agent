@@ -4,7 +4,8 @@ summary: Issue 498 修正八处当前 SDD 来源说明并登记十四处历史�
 owner: ranzuozhou
 created: 2026-10-10
 updated: 2026-10-10
-state: active
+state: completed
+completed: 2026-10-10
 track: engineering-workflow
 ---
 
