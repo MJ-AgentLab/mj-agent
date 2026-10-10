@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.8
+version: 0.9
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-22
+updated: 2026-10-10
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -122,13 +122,12 @@ commit/push/PR/merge 的既有决定权保持；不以静态检查、权限模�
 
 ### §6.2 载体与差距
 
-- **载体**：root `.github/PULL_REQUEST_TEMPLATE.md`（4 条正文 + `HITL Trigger Inventory` 全文）与
-  `.github/PULL_REQUEST_TEMPLATE/` 下的 6 个类型模板（4 条正文 + Inventory 指针；#497 ⑥ 补入）。
-- **无机器校验**：无任何 CI 执行体读取该 checklist；兜底 = merge review。
-- **剩余差距（如实记录）**：6 个类型模板（bugfix / documentation / feature / hotfix / maintain /
-  release）结构与根模板**完全不同**（**改前**只有「文档变更内容 / 变更原因 / 自检结果」三段），故
-  4 条按 §6.1 表逐条内联、`HITL Trigger Inventory` **不复制**只留指针（同 §5.2 口径）；指针取用是
-  纯人工动作，且 agent 侧的逐模板字段表尚未同步 —— **#538**。
+- **载体**：根模板 `.github/PULL_REQUEST_TEMPLATE.md` 承载 §6.1 四项报告、完整 `HITL Trigger Inventory`
+  与 `Docker Impact`；`.github/PULL_REQUEST_TEMPLATE/` 下的类型模板提供对应报告及根模板取用指针。
+- **结构与同步**：模板结构以实际文件为准；原生开发技能与 PR 描述 GUIDE 的字段速查须同步维护，
+  并按所选模板逐项核对标题、折叠检查块、必答报告及根模板取用项。
+- **校验证据边界**：当前 CI 不核验逐模板字段语义；完整性仍由逐项核对及 merge review 确认，
+  不能由静态结构检查通过推定。类型模板保留取用指针，PR 正文取用根模板完整小节并逐项作答。
 
 ## §7 Pre-flight Verification Discipline
 
@@ -348,3 +347,7 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 > 「**改前**」二字讨清；对另 5 个模板的过度概括则**先于本改动**存在（各自小节数不同，可复算
 > `grep -c '^#' .github/PULL_REQUEST_TEMPLATE/<f>.md`），非本单诱发，与 agent 侧逐模板字段表
 > 一并入 **#538**。⚠ 此处**刻意不写死小节数** —— #497 的 ①③④ 正是被写死活值打脸的三处。*
+>
+> *v0.9（2026-10-10）：#538 —— §6.2 按实际模板修正载体与字段同步责任，补明根模板的 Docker Impact
+> 取用及逐模板语义校验边界；移除「只有三段」与「字段表尚未同步」的活体断言，历史修订记录保留。
+> 本次具体政策差异经 Owner 批准；`state`、Owner 决策权与审批边界不变。*

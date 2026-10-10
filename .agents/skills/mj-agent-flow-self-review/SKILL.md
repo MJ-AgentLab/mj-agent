@@ -131,7 +131,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 7 | scope-drift Severity = None / Low（如 ≥ Medium，必先 HITL） | mj-agent-flow-scope-drift 输出 |
 | 8 | 本地验证段 ≠ AI 自检段（execution-loop §6 严格不混用） | self-review §3 |
 | 9 | 用户可感知变更 → CHANGELOG `[Unreleased]` 区块更新（feat/fix/perf 必更；docs/test/infra 视情） | Commit Convention 规则 |
-| 10 | 无 PR description 字段缺失 | mj-agent-git-pr / 5 PR templates |
+| 10 | 无 PR description 字段缺失：逐项对照所选模板标题、折叠检查、AI Self-Check 及根模板 Inventory / Docker Impact | mj-agent-git-pr / `.github/PULL_REQUEST_TEMPLATE/` 实际模板（含 release）及根模板 |
 | 11 | 已 grep 文档大改后 stale references（AGENTS.md "Documentation Maintenance" 规则；mj-agent 扩展含 src/mj_agent/{skills,prompts}/） | execution-loop §6 Rule 5a |
 | **12**（mj-agent 专属） | system.md `version` bump 时 `eval_references` 同步审查；in-source canonical 改动同步开 EVAL backlog ticket（execution-loop §7.3 Rule 11） | execution-loop §6 item 10 + §7.3 Rule 11 |
 
@@ -288,7 +288,7 @@ Co-Authored-By: <verified contributor name> <verified contributor email>
 - `repo:sdd/workflows/execution-loop.md` §6（item 5 的 5a/5b/5c/5d + item 10 version bump + item 11 commit type/scope）
 - `repo:sdd/workflows/execution-loop.md` §6（双段约束；实操矩阵见 §5）
 - `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md`（type/scope 矩阵）
-- `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
+- `repo:.github/PULL_REQUEST_TEMPLATE/`（实际类型模板目录，含 release）与 `repo:.github/PULL_REQUEST_TEMPLATE.md`（共用小节取用依据）
 - `.agents/skills/mj-agent-flow-scope-drift/SKILL.md`（Stage 9 子例程）
 - `.agents/skills/mj-agent-git-commit/SKILL.md`（Stage 12 子例程）
 

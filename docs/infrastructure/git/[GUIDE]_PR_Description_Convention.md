@@ -1,7 +1,7 @@
 ---
 type: guide
 domain: SYS
-summary: mj-agent PR 描述规范指南 — 6 模板（feature/bugfix/documentation/maintain/hotfix/release）× gh CLI × 自检清单（含 ruff/mypy/pytest）
+summary: mj-agent PR 描述规范指南 — 模板选择、字段填写、gh CLI 与自检要求
 tags:
   - guide
   - git
@@ -11,9 +11,9 @@ aliases:
   - mj-agent PR Description Convention
   - mj-agent PR 描述规范指南
 created: 2026-04-30
-updated: 2026-04-30
+updated: 2026-10-10
 state: draft
-version: v1.0
+version: v1.1
 track: code
 owner: 项目负责人
 ---
@@ -22,8 +22,8 @@ owner: 项目负责人
 
 > **适用范围**：为不同分支类型选择正确的 PR 模板，并写出清晰、有效的 PR 描述
 > **目标受众**：开发
-> **版本**：v1.0
-> **最后更新**：2026-04-30
+> **版本**：v1.1
+> **最后更新**：2026-10-10
 > **历史背景**：6 模板分类 + gh CLI 用法源自团队成熟实践；§3 案例与 §4.3 自检对齐表已换成 mj-agent 工具链 ruff/mypy/pytest。
 > **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[../../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|mj-agent Commit Message 规范 v1.0]]
 
@@ -32,7 +32,7 @@ owner: 项目负责人
 ## TL;DR
 
 - **阅读时间**：~10 分钟
-- **涵盖范围**：6 种 PR 模板的使用场景、字段填写指引、`gh` CLI 命令示例
+- **涵盖范围**：分支及发布场景对应的 PR 模板、字段填写指引、`gh` CLI 命令示例
 - **适用场景**：创建 Pull Request 时选择对应模板并填写描述
 
 ## Prerequisites
@@ -87,7 +87,7 @@ PR 描述的核心目的是**帮助审核者快速理解变更并做出判断**�
 
 ### 2.1 模板 × 分支类型 × 目标分支
 
-项目提供 6 种 PR 模板，每种模板对应一种分支类型或发布场景：
+项目按分支类型或发布场景提供对应 PR 模板，选择矩阵以实际模板目录为准：
 
 | 模板文件 | 适用分支类型 | 目标分支 | 适用场景 |
 |---------|------------|---------|---------|
@@ -98,7 +98,7 @@ PR 描述的核心目的是**帮助审核者快速理解变更并做出判断**�
 | `hotfix.md` | `hotfix/*` | **main** | 生产环境紧急 Bug |
 | `release.md` | develop → main | **main** | 版本发布（Phase 1+ 启用） |
 
-模板文件位于 `.github/PULL_REQUEST_TEMPLATE/` 目录（mj-agent 已存在 6 份）。
+模板文件位于 `.github/PULL_REQUEST_TEMPLATE/` 目录；增加或调整模板时，同步选择矩阵、字段速查及原生开发技能。
 
 ### 2.2 分支类型 × Commit 类型 × PR 模板三维关系
 
@@ -115,6 +115,8 @@ PR 描述的核心目的是**帮助审核者快速理解变更并做出判断**�
 ---
 
 ## 3 各模板详解
+
+以下说明业务字段的填法；完整字段与共用必答项见 §5「模板核心字段速查」。填写前读取选定的类型模板，保留标题层级、按 track 作答的折叠检查块与 AI Self-Check；再从根模板 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 `HITL Trigger Inventory` 和 `Docker Impact` 小节，逐项作答。
 
 ### 3.1 Feature PR 模板
 
@@ -186,7 +188,7 @@ gh pr create \
 |------|---------|
 | **文档变更内容** | 列出新增或修改的文档文件名及变更摘要 |
 | **变更原因** | 为什么需要这次文档更新（补充遗漏 / 规范变更 / 内容过时等） |
-| **自检结果** | 重点检查文件命名规范、wikilink 有效性、INDEX.md 更新 |
+| **自检结果** | 文档检查嵌在本节内：按 track 核对 Code-Side A1-A6、Agent-Side A7-A11 与 Engineering-Workflow A12-A14，说明不适用项；保留折叠结构 |
 
 这是最轻量的模板，文档 PR 的审核重点在于格式和内容准确性，不需要代码检查字段。
 
@@ -275,6 +277,8 @@ gh pr create \
 | **Release 标题** | 格式：`Release vX.Y.Z — <版本主题>`，如 `Release v0.2.0 — 引入 metrics-glossary skill` |
 | **Highlights** | 本版本的核心变更列表，从 CHANGELOG.md 中提取重点（Phase 0.5+ 启用） |
 | **审核要点** | 使用 checklist 逐项确认：CHANGELOG 完整性、版本号一致、无调试残留、SKILL/PROMPT 契约稳定 |
+| **文档自检** | 保留三级标题及按 track 作答的折叠检查块，核对本发布周期的文档与 A12-A14 工程流程记录 |
+| **AI Self-Check Checklist** | 回答 §5 列出的四项共用报告，并取用根模板 Inventory / Docker Impact |
 | **Details** | 指向 CHANGELOG.md 的链接，供审核者查看完整 Release Notes |
 
 **`gh` CLI 示例**：
@@ -362,12 +366,20 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 
 | 模板 | 核心字段 |
 |------|---------|
-| `feature.md` | 变更摘要、影响范围、审核要点、自检结果 |
-| `bugfix.md` | Bug 描述、根因分析、修复方案、影响范围、自检结果 |
-| `documentation.md` | 文档变更内容、变更原因、自检结果 |
-| `maintain.md` | 变更摘要、影响评估、审核要点、自检结果 |
-| `hotfix.md` | 事故描述、影响范围、根因分析、修复方案、回滚预案、自检结果 |
-| `release.md` | Highlights、审核要点 checklist、Details |
+| `feature.md` | 变更摘要、影响范围、审核要点、自检结果、文档自检、AI Self-Check Checklist |
+| `bugfix.md` | Bug 描述、根因分析、修复方案、影响范围、自检结果、文档自检、AI Self-Check Checklist |
+| `documentation.md` | 文档变更内容、变更原因、自检结果（内含文档自检与工程流程检查）、AI Self-Check Checklist |
+| `maintain.md` | 变更摘要、影响评估、审核要点、自检结果、文档自检、AI Self-Check Checklist |
+| `hotfix.md` | 事故描述、影响范围、根因分析、修复方案、**回滚预案（必填）**、自检结果、文档自检、AI Self-Check Checklist |
+| `release.md` | Release 标题、Highlights、审核要点、文档自检、AI Self-Check Checklist、Details |
+
+以上文件名集合须与实际目录及选择矩阵一致。逐模板保留真实结构：documentation 的文档检查嵌在 `自检结果` 内；其余模板单列 `文档自检`；release 的 Release 标题下使用三级发布字段，不套用普通分支的自检结果结构。
+
+文档折叠块按 track 回答 **Code-Side A1-A6**、**Agent-Side A7-A11**、**Engineering-Workflow A12-A14**；核对选定模板的具体条目与风险面，不适用项说明理由，保留折叠块。
+
+所有模板的 `AI Self-Check Checklist` 都有四项必答报告：**Codex 参与情况**、**HITL scenario hit**、**BDD/TDD impact**、**Subagent dispatched**；填写 `NONE` 或具体贡献/命中项，依据 `policies/ai-agent.md` §6.1。
+
+类型模板提供根模板取用指针。PR 正文须从 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 **HITL Trigger Inventory** 与 **Docker Impact** 小节并逐项作答：Inventory 的不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。仅复制指针、出现一次关键词或保留空 checkbox，均不能证明字段完整。
 
 ---
 
@@ -387,3 +399,4 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 | 日期 | 版本 | 内容 |
 |------|------|------|
 | 2026-04-30 | v1.0 | 派生自 上游业务系统 v5.0 同名 GUIDE：6 模板分类与 gh CLI 用法逐字保留；§3.1 实际案例改为 mj-agent 占位（首份案例待回填）；§4.3 自检对齐表删除 Docker / SQL / 硬编码三行，新增 ruff / mypy / pytest / skill loader frontmatter 四行；section 标题去掉 上游业务系统 服务专属字眼 |
+| 2026-10-10 | v1.1 | #538：按实际模板同步字段速查，补齐文档自检、A12-A14、AI Self-Check 四项报告及根模板 Inventory / Docker Impact 取用；保留 documentation 嵌入检查、release 标题层级与 hotfix 回滚要求，当前模板数量改为定性说明 |

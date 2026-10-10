@@ -13,12 +13,12 @@ description: "适用于 mj-agent 的按分支模板准备/创建PR。输入：he
 
 ## 触发与职责详述
 
-This skill should be used when the user asks to create a Pull Request, select a PR template, fill PR fields, prepare a PR body, or perform a release for mj-agent. Make sure to use this skill whenever the user says "创建PR", "新建PR", "提PR", "create PR", "pull request", "PR模板", "PR description", "发版", "release", "合并到main", "merge to main", "fill PR template" in the mj-agent context. Uses gh CLI with --body-file and the correct template per branch type. mj-agent has 5 PR templates (feature/bugfix/documentation/maintain/hotfix) plus implicit release flow. Includes dual-track A1-A10 self-check + Phase B+ A12-A14 (post v2.1 promote). Do not use for: review-respond on incoming review comments (use mj-agent-flow-review-respond in PR-B3+), merge readiness gate after CI green (use mj-agent-git-check-merge in PR-B3+), or post-merge cleanup (use mj-agent-flow-post-merge in PR-B3+).
+This skill should be used when the user asks to create a Pull Request, select a PR template, fill PR fields, prepare a PR body, or perform a release for mj-agent. Make sure to use this skill whenever the user says "创建PR", "新建PR", "提PR", "create PR", "pull request", "PR模板", "PR description", "发版", "release", "合并到main", "merge to main", "fill PR template" in the mj-agent context. Uses gh CLI with --body-file and the correct template per branch type. Discover branch-specific and release templates from .github/PULL_REQUEST_TEMPLATE/. Includes dual-track A1-A10 self-check + Phase B+ A12-A14 (post v2.1 promote). Do not use for: review-respond on incoming review comments (use mj-agent-flow-review-respond in PR-B3+), merge readiness gate after CI green (use mj-agent-git-check-merge in PR-B3+), or post-merge cleanup (use mj-agent-flow-post-merge in PR-B3+).
 
 
 ## Overview
 
-为 mj-agent 创建 Pull Request，按 branch type 选择 5 个 PR 模板之一。Codex 是非交互模式，**永远不**用 `--body` inline；正确流程：读模板 → 填内容 → 写临时文件 → `--body-file` 传入。
+为 mj-agent 创建 Pull Request，按分支类型或 release 场景选择对应 PR 模板，以实际模板目录为准。Codex 是非交互模式，**永远不**用 `--body` inline；正确流程：读模板 → 填内容 → 写临时文件 → `--body-file` 传入。
 
 **Workflow position**: Stage 14 of HITL_Prompt 17-stage flow.
 
@@ -72,10 +72,13 @@ git log --oneline develop..HEAD   # 确认有 commits to PR
 ## Command Format（非交互模式必须）
 
 ```bash
-# Step 1: 读对应模板
-cat .github/PULL_REQUEST_TEMPLATE/<branch-type>.md
+# Step 1: 读对应类型模板（release 选 release.md），再读根模板
+cat .github/PULL_REQUEST_TEMPLATE/<template-name>.md
+cat .github/PULL_REQUEST_TEMPLATE.md
 
-# Step 2: 填写完成后写临时文件
+# Step 2: 保留类型模板的标题层级和折叠检查块，逐项填写
+# 从根模板取用完整 HITL Trigger Inventory 与 Docker Impact 小节并逐项作答
+# 核对下方必填表及所选模板全部要求，填写完成后写临时文件
 # Windows: $env:TEMPmj-agent-pr-body-<branch>.md
 # Unix: /tmpmj-agent-pr-body-<branch>.md
 
@@ -122,15 +125,22 @@ gh pr create \
 
 > mj-agent **不**像 mj-system 有 `[partial-reset]` / `[full-reset]` deploy strategy 关键词注入——mj-agent 没有 SQL DDL / 部署策略矩阵（与 mj-system 差异）。
 
-## Per-Template Required Fields（mj-agent 5 templates）
+## Per-Template Required Fields
+
+文件集合与结构以 `.github/PULL_REQUEST_TEMPLATE/` 实际文件为准；下表与上方选择矩阵须同步，含 release。填写时逐项核对所选模板的全部标题、折叠检查块及正文要求。
 
 | Template | 必填字段 |
 |---|---|
-| `feature.md` | 变更摘要 / 影响范围 / 审核要点 / 自检结果（含 CHANGELOG updated） |
-| `bugfix.md` | Bug 描述 / 根因分析 / 修复方案 / 影响范围 / 自检结果（含 CHANGELOG updated） |
-| `documentation.md` | 文档变更内容 / 变更原因 / 自检结果（双轨 A1-A10 checklist） |
-| `maintain.md` | 变更摘要 / 影响评估 / 审核要点 / 自检结果 |
-| `hotfix.md` | 事故描述 / 影响范围 / 根因分析 / 修复方案 / **回滚预案 mandatory** / 自检结果 |
+| `feature.md` | 变更摘要 / 影响范围 / 审核要点 / 自检结果（含 CHANGELOG updated） / 文档自检 / AI Self-Check Checklist |
+| `bugfix.md` | Bug 描述 / 根因分析 / 修复方案 / 影响范围 / 自检结果（含 CHANGELOG updated） / 文档自检 / AI Self-Check Checklist |
+| `documentation.md` | 文档变更内容 / 变更原因 / 自检结果（内含文档自检与工程流程检查） / AI Self-Check Checklist |
+| `maintain.md` | 变更摘要 / 影响评估 / 审核要点 / 自检结果 / 文档自检 / AI Self-Check Checklist |
+| `hotfix.md` | 事故描述 / 影响范围 / 根因分析 / 修复方案 / **回滚预案 mandatory** / 自检结果 / 文档自检 / AI Self-Check Checklist |
+| `release.md` | Release 标题 / Highlights / 审核要点 / 文档自检 / AI Self-Check Checklist / Details |
+
+共用必答要求：每种模板的 `AI Self-Check Checklist` 均回答 **Codex 参与情况**、**HITL scenario hit**、**BDD/TDD impact**、**Subagent dispatched**（`NONE` 或实际贡献/命中项）。文档折叠检查按 track 回答 Code-Side A1-A6、Agent-Side A7-A11、Engineering-Workflow A12-A14；不适用项说明原因，不把整段删除。documentation 的检查嵌在 `自检结果` 内；release 保留其 Release 标题及三级发布字段。
+
+类型模板中的指针要求 PR 正文另附根模板 `.github/PULL_REQUEST_TEMPLATE.md` 的完整 `HITL Trigger Inventory` 与 `Docker Impact` 小节。Inventory 逐 enum 作答，不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。四项报告、Inventory 与 Docker Impact 分别核对，不能用关键词出现或空 checkbox 判完整。
 
 ## CHANGELOG Requirement
 
