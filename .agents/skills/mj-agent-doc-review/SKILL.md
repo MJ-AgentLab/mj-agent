@@ -124,7 +124,7 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 判定规则：
 - 跨段（"diff 看着合理"放本地验证）→ WARN 让作者拆
 - 缺失或空 → FAIL（PR description 不完整）
-- mj-agent 5 PR templates 字段："变更摘要" / "影响范围" / "审核要点" / "本地验证" / "AI 自检" / "回滚" 等
+- 模板以 `.github/PULL_REQUEST_TEMPLATE/` 实际目录为准，含 release；逐项对照所选类型模板的全部标题、折叠检查块、AI Self-Check 四项必答及根模板 `HITL Trigger Inventory` / `Docker Impact` 取用要求。本地验证与 AI 自检双段另行核对，不替代模板完整性检查。
 
 ## Phase 7: Engineering-Workflow A12-A14（v2.1，2026-05-08 PR-B3c-promote 后启用）
 
@@ -216,7 +216,7 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 - `repo:policies/documentation.md` §5.3（A7-A11 agent track 跨轨门禁）+ `repo:sdd/adapters/runtime-skill.md` / `repo:sdd/adapters/prompt.md` / `repo:sdd/adapters/contract.md`
 - `repo:docs/rule/[STANDARD]_GitHub_Markdown.md` §14（项目根 README 与 Markdown 特例；PR #173 新加；语法 manual review）
 - `repo:sdd/workflows/execution-loop.md` §1（§12 前置检查在 loop 中的位置）+ §5（Local Verification）+ §3（HITL 规则）
-- `.github/PULL_REQUEST_TEMPLATE/`（5 PR templates）
+- `repo:.github/PULL_REQUEST_TEMPLATE/`（实际类型模板目录，含 release）与 `repo:.github/PULL_REQUEST_TEMPLATE.md`（共用小节取用依据）
 
 ## Anti-patterns
 

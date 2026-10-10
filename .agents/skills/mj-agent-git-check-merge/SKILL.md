@@ -55,27 +55,31 @@ gh pr view <number> --json number,title,headRefName,mergeable,body,reviews,statu
 | [1] 合并冲突 | `mergeable` 字段：MERGEABLE / CONFLICTING / UNKNOWN（CONFLICTING → 解冲突走 `mj-agent-git-sync` §H2a 按意图纪律） |
 | [2] CI 检查 | `statusCheckRollup` JSON 数组 |
 | [3] Review 状态 | `reviews` 字段（≥1 Approve = Pass / 否则 Pending） |
-| [4] PR 描述完整性 | `body` + `headRefName`（按 mj-agent 5 branch type 分支感知必填字段） |
+| [4] PR 描述完整性 | `body` + `headRefName`（按分支类型或 release 场景读取实际模板，逐项核对） |
 | [5] Merge Commit 检测（信息项） | `gh api repos/MJ-AgentLab/mj-agent/pulls/<n>/commits` parents ≥ 2 |
 
 ### Step 4 — 输出结果
 
 见下方"输出格式"。
 
-## 描述完整性检查（分支类型感知，mj-agent 5 类）
+## 描述完整性检查（分支类型与 release 场景感知）
 
-| 分支类型 | 必检字段 |
+模板以 `.github/PULL_REQUEST_TEMPLATE/` 实际目录为准；按下表选择后，逐项核对所选模板的全部标题、折叠检查块与正文要求，字段速查见 `mj-agent-git-pr`。不要只检查几个摘要字段。
+
+| 分支类型 | 核对模板 |
 |---|---|
-| `feature/*` | 变更摘要、影响范围、审核要点、自检清单（含 CHANGELOG 勾选）|
-| `bugfix/*` | Bug 描述、根因分析、修复方案、影响范围、自检清单（含 CHANGELOG 勾选） |
-| `documentation/*` | 文档变更内容、变更原因、自检清单（dual-track A1-A10 + A12-A14 v2.1 promote 后） |
-| `maintain/*` | 变更摘要、影响评估、审核要点、自检清单 |
-| `hotfix/*` | 事故描述、影响范围、根因分析、修复方案、**回滚预案**（mandatory）、自检清单 |
-| `develop`（release） | Highlights、审核要点 checklist、版本号 bump |
+| `feature/*` | `feature.md`（含 CHANGELOG 勾选） |
+| `bugfix/*` | `bugfix.md`（含 CHANGELOG 勾选） |
+| `documentation/*` | `documentation.md`（文档检查嵌在自检结果内） |
+| `maintain/*` | `maintain.md` |
+| `hotfix/*` | `hotfix.md`（**回滚预案 mandatory**） |
+| `develop`（release） | `release.md`（Release 标题、三级发布字段及版本号检查） |
+
+每种模板均核对 `AI Self-Check Checklist` 四项必答报告，文档折叠块按 track 核对至 A12-A14；另核对从根模板 `.github/PULL_REQUEST_TEMPLATE.md` 取用的完整 `HITL Trigger Inventory` 与 `Docker Impact`，Inventory 不适用行标 `— No`，不得删行。
 
 > mj-agent **不**用 `optimization/*`（与 mj-system 差异；详见 ADR-010 + Commit Convention v1.0）
 
-判定逻辑：Section header 存在 + header 下有非空、非 HTML 注释、非空 checkbox 的文本 = Pass。
+判定逻辑：所选模板各标题及应有折叠块均保留，每项要求有实际回答或不适用理由；四项报告与根模板取用项齐全才判 Pass。空标题、HTML 占位注释、未作答 checkbox 或一次关键词命中均不能判完整。
 
 ## 输出格式
 
@@ -190,10 +194,10 @@ StatusContext (__typename: "StatusContext"):
 - **不要** 用 `gh pr checks` 与其他命令并行（exit code 8 会取消其他调用）
 - **不要** 把 Pending 当 Fail（Pending 单独一档；Approve 依赖外部）
 - **不要** 在 mergeable=UNKNOWN 时强制判 Pass/Fail（让 user 等 GitHub 计算完）
-- **不要** 跳过 PR 描述完整性检查（mj-agent 5 branch type 各有必填字段）
+- **不要** 跳过按所选类型或 release 模板核对描述必填字段及根模板取用项
 
 ## Reference Files
 
 - `repo:sdd/workflows/execution-loop.md` §1（Stage 16 Merge Gate 在 17-stage loop 的位置）
 - `repo:docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`（描述字段依据）
-- `.github/PULL_REQUEST_TEMPLATE/{feature,bugfix,documentation,maintain,hotfix}.md`（5 PR templates）
+- `repo:.github/PULL_REQUEST_TEMPLATE/`（实际类型模板目录，含 release）与 `repo:.github/PULL_REQUEST_TEMPLATE.md`（共用小节取用依据）
