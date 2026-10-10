@@ -4,7 +4,8 @@ summary: Issue 538 原生开发技能、PR 描述指南与政策的模板字段�
 owner: ranzuozhou
 created: 2026-10-10
 updated: 2026-10-10
-state: active
+state: completed
+completed: 2026-10-10
 track: engineering-workflow
 ---
 
