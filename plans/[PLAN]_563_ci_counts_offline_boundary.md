@@ -4,7 +4,8 @@ summary: Issue 563 六处 CI 名称去除历史计数与阶段说明，补齐离
 owner: ranzuozhou
 created: 2026-10-10
 updated: 2026-10-10
-state: active
+completed: 2026-10-10
+state: completed
 track: engineering-workflow
 ---
 
