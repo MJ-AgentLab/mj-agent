@@ -13,7 +13,7 @@ track: engineering-workflow
 
 > **适用范围**：mj-agent 工程交付与治理改造。
 > **目标受众**：Owner、工程师、执行与独立核验 Agent。
-> **版本**：v0.1 草案。
+> **版本**：v0.2 草案。
 > **最后更新**：2026-10-12。
 > **规则依据**：本项目 ADR-042 及现行政策。
 > **关联文档**：[[policies/ai-agent|AI Agent Boundaries]]、[[policies/git-branching|Git Branching]]、[[sdd/workflows/execution-loop|Execution Loop]]。
@@ -24,7 +24,7 @@ track: engineering-workflow
 
 ## Prerequisites
 
-读者应了解本项目永久数据与秘密边界，并能定位任务 Plan、政策和接受证据。工程师负责信任加载、秘密维护及具有权限的专用平台路线。
+读者应了解本项目永久数据与秘密边界，并能定位任务 Plan、政策和接受证据。独立Agent审阅真实配置/守卫负例，执行Agent走正常宿主和受控后台路线；Owner在聊天决定实际成果/SHA。既有秘密不读取，新后台/实际启动能力未实现不得PASS。
 
 ## 目录
 
@@ -49,23 +49,37 @@ track: engineering-workflow
 
 小任务用单 PR；可独立交付的单元用多个直接入主线 PR；强依赖任务用 `feature/task-<任务标识>-integration`。任务记录登记每条精确子 head → integration base、预期贡献和最终 base，创建命令显式传 base。集成分支验证累计差异与组合 AC，子 PR 已合并只表示候选集成。实施前核实平台规则、CI触发及merge是否导致部署。历史release develop→main是独立发布流程，须Owner接受、具名发布授权及未来规则映射；当前有限解析器不声称支持。
 
-专用执行 App 仅安装本仓库，日常无 Administration、Checks write 或 bypass。Owner 使用不同于 PR 作者和最后推送者的身份提供有效批准，依据成果及风险证据决定；补推须重新取得平台有效审核。治理交付所需 Workflows write 属临时、仓库全域权限，工程师结束后移除该权限、吊销 token 并关闭临时通道。Agent 不创建或读取秘密，不代为激活信任。
+专用执行 App 仅安装本仓库，日常无 Administration、Checks write 或 bypass。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定用不同于PR作者/最后推送者的Owner身份执行平台有效审核，补推重新取得有效决定/审核。治理交付所需 Workflows write 属临时、仓库全域权限，Agent结束后按授权移除临时权限、撤销token并关闭通道，逐项留证。仅新建单仓App私钥/短期token经受控后台创建、DPAPI保存、签名、注入和撤销，模型/聊天/日志不可见；现有应用/MCP/DB/个人秘密永不读取。
 
 平台尚未配置或宿主未加载时记录未验证/依赖阻塞，不能以文件修改声称完成。首期门禁仍可能由候选自身降低，Owner 对门禁、保护及接受基线的人工审核提供过渡补偿；独立受控强制核验系统延期。
 
 ## §3 启动前置与平台核验
 
-1. Owner 成组审阅 `.github/agent-first/` 的 App manifest 和 develop/main/task-integration ruleset，核实际必要检查、最后推送审核、讨论解决、禁止force/bypass与merge副作用。准备文件不表示平台已应用。
-2. 工程师独立注册专用 App、仅安装于本仓库、维护短期安装身份。日常仅必要contents/PR权限；本次Workflows write为明确临时、仓库全域权限，不声称按文件技术隔离。私钥/token不入聊天或日志，Agent不代维护秘密。
+1. 核Owner本次目标/对象/权限/规则授权及实际基线。读取`.github/agent-first/`的App manifest和ruleset，独立Agent读取真实配置/守卫、复现必要负例并输出证据；不以文本签字或静态PASS代实际加载。
+2. 执行Agent通过正常受控路线新建`mj-agent-delivery-executor` App，仅安装本仓。作者/推送/PR/merge身份无Administration、Checks write和bypass；规则应用使用Q3明确授权的管理路线，不能给执行App增加管理权限。
+3. `scripts/sdd/delivery_executor.py`后台只处理本次新App材料：创建私钥/短期token、DPAPI保存、签名、进程注入和撤销。值不进入模型、聊天、命令输出或日志，公开接口只返回脱敏状态/非秘密ID。原应用/MCP/DB/个人秘密不读取、不搬迁、不借用；后台未实现或未验证时保持UNMET_DEPENDENCY/NOT_TESTED。
+4. 独立Agent完成真实配置/守卫负例审阅后，执行Agent通过宿主正常机制启用仅本项目信任并核实际加载/canary。权限不扩大、个人config不修改，宿主不支持或拒绝时标未验证/BLOCKED_EXECUTION_ROUTE，禁止换工具/编码/改权限绕过。
+5. 从项目根运行`uv run --frozen --no-sync python scripts/sdd/check_delivery_platform.py`只核准备文件；加`--inspect --repository MJ-AgentLab/mj-agent`只读核远端，未提供新App后台时仍不能证明执行身份。提供`--executor-vault <仓外具名目录> --permission-phase bootstrap`会实际调用后台创建并撤销新App短期token，返回单仓权限和同一App/installation/repository身份观察；这项副作用须属于已有新App授权。CONFIG_VALID仅准备文件有效，CONFIG_VERIFIED仅已观察平台配置有效；均不证明宿主加载、canary或Owner接受。
+6. Owner在聊天依据实际成果/SHA与证据作决定后，Agent核决定未撤销且版本/风险仍匹配，使用不同于作者/最后推送者的Owner身份执行平台审核。不能由技术检查、App作者或自写授权记录替代Owner决定；补推使旧有效性需重判。精确具名canary验证红灯/讨论/最后推送审核与无bypass合并，未做项保持NOT_RUN。
+7. Agent在范围授权内撤回临时Workflows write、撤销新App短期token并关闭临时通道，分别核真实结果，不输出凭据。原工程师向导已superseded，仓外旧向导文件保留历史，不删除；撤销或正常执行机制不足只阻塞相应项。
 
-   Manifest 的 webhook 已关闭，URL 为保留的 `invalid.invalid` 占位地址，用于满足对象格式；不表示接收端存在或注册已获 GitHub 接受。工程师手工注册时保持 webhook 关闭。[GitHub Manifest 参数](https://docs.github.com/en/apps/sharing-github-apps/registering-a-github-app-from-a-manifest#github-app-manifest-parameters)。
-3. 规则应用需要另核具体平台操作授权及具备权限的工程师路线，不把执行App升为Administration或加入bypass。日常执行身份与Owner有效审核身份分离；末次推送后重新取得有效审核。
-4. 工程师独立审阅原生配置/守卫成组差异，确认目标会话实际加载和支持的canary；没有独立加载证据标NOT_TESTED，Agent不自动信任/激活，也不改个人配置求通过。
-5. 从项目根运行 `uv run --frozen --no-sync python scripts/sdd/check_delivery_platform.py` 只核准备文件；加 `--inspect --repository MJ-AgentLab/mj-agent` 只读核远端。CONFIG_VALID是准备格式，不能替代安装身份、宿主加载或真实平台canary。
-6. 任务记录精确具名的受保护临时分支/PR后，才按授权核单PR、独立PR与子head→integrationbase模式，验证旧批准被补推失效、最后推送审核、红灯/讨论阻断和无bypass合并。未执行记录NOT_READY/NOT_RUN；清理独立列对象和授权。
-7. 治理交付结束，工程师移除App的Workflows write、吊销临时token并关闭临时通道；分别核权限撤回及凭据不可再用，不打印凭据。撤回未完成仍作为交付待办。
+Manifest的webhook关闭和URL占位只说明准备格式，不证明GitHub注册已接受。App创建、平台规则、信任加载与恢复均须实际运行证据，不能因新执行主体决定提前PASS。
+
+GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保持未知。[GitHub规则API](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset)说明该可见性限制。已获具名管理核验授权时，可明确加`--management-inspect`：新App实际身份核验先通过，再由`ranzuozhou`管理身份仅作同仓规则GET；保护字段必须与App观察相同，只补隐藏的actor事实并记录来源。App本身的can-bypass仍必须由App观察，管理身份不得代替日常执行，不给App新增Administration；权限拒绝不触发备用路线。
 
 分层路由在既有Plan放 `agent-first-routes` 块，准确字段与例子见Plan模板；前置未满足保持active=false，名字及登记本身不生成操作授权。新证据artifact只记录授权范围观察，不认证授权来源。
+
+### 受控后台入口
+
+后台从已审阅版本启动，Python使用`-I`隔离启动，进程环境只保留非秘密系统变量。新App存储目录必须位于仓外，末级名称固定为`mj-agent-delivery-executor`；不打开或复制其中DPAPI文件。以下参数说明不产生新增操作授权：
+
+- `serve --vault-dir <仓外具名目录>`：仅监听本机回环的随机端口，返回公开注册/结果入口。GitHub转换返回的新私钥在后台加密保存；回调临时代码被消费后重定向至不含代码的结果页。注册不自动完成安装。
+- `audit --vault-dir <目录> --permission-phase bootstrap|daily`：实际核App、installation、授权层及token单仓范围，并在返回前撤销token。`public-get`仅查询具名仓库和规则的公共元数据，不接受任意API或秘密输出。
+- `push`、`pr-create`、`merge`：只支持本仓具名动作、显式分支/base及实际版本核对；沿用任务登记路由及正常仓库门禁。不提供任意命令、凭据dump或bypass。
+
+注册attempt、token创建、平台动作或撤销结果未知时，保留检查点并先对账；不能删除标记重试、用旧身份补做或因进程成功宣称业务通过。关闭注册服务只停止监听；临时Workflows权限移除和token撤销各自核实际结果。
+
+通用软件证据使用`evidence/delivery/agent-first.suite.json`，不把Linux上的Windows原生SKIP计作通过。注册或使用Windows后台前，另运行`evidence/delivery/executor-windows.suite.json`取得同一版本的实际DPAPI/junction/句柄合成检查；该包证明所测宿主的软件行为，仍不证明真实App、来源认证或hooks启用。其他宿主必须重新核验。
 
 ## §4 独立核验与验收包
 
@@ -74,6 +88,8 @@ track: engineering-workflow
 每个交付单元提供成果使用入口、逐 AC 预期/实际、版本环境时点、复现方式与证据位置、未实测/延期、风险与恢复、待决定事项。CI 仓外 artifact 绑定 head/base、测试版本、产物/输入/依赖摘要、环境、命令退出及逐 AC 状态。基线、产物或环境变化后重判证据有效性；HTTP 成功、命令成功、零行和 workflow 结束不独自证明业务正确。
 
 本次治理软件交付执行新的证据要求，并设计#582治理证据格式。Owner已将#582 CLI实现/commit转交“整理 #564 EVAL 承接方案”，新CLI接受基线与实际交付由接手会话维护；原边界和未提交材料保留，转交不计交付PASS。历史 capability 逐步迁移；synthetic 和虚构 actual 条件只证明离线软件行为，不产生真实 runtime 来源或基线。缺少非核心能力可以延期对应入口，核心自身 AC 通过后分段交付；延期影响整体基线时由 Owner 决定。
+
+后续主线状态：#589已将synthetic-only CLI合入develop，#582/其Plan仍OPEN/active，actual/live未运行。原转交记录是当时检查点；当前治理组合验证以实际更新后的develop为准，不重建已实现CLI或把其合入等同整体EVAL接受。
 
 ## §5 检查点、恢复与接受
 
@@ -94,3 +110,4 @@ track: engineering-workflow
 | 日期 | 版本 | 变更 |
 |---|---|---|
 | 2026-10-12 | v0.1 | 建立任务授权、独立核验、仓外证据和平台启动指引；#582 转交另会话 |
+| 2026-10-12 | v0.2 | Owner Q4/Q5/Q6取消工程师向导；受控新App后台、独立Agent审阅/正常宿主项目启用和依据真实聊天决定执行平台审核，实际能力未验证 |

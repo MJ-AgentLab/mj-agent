@@ -1,6 +1,6 @@
 ---
 name: mj-agent-git-push
-description: 适用于 mj-agent 的推送/推送前检查/双推。输入：branch、commit、lint/type/tests/docs/changelog状态、remotes。流程：八项pre-push→文档/日志→worktree→双推→状态。输出：两端SHA/失败端/未执行端分别确认。Use when：检查当前分支是否可双推，给检查报告。Do not use for：我还没commit，替我提交所有改动；转git-commit建议，不顺带stage/commit。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的推送/推送前检查/双推。输入：branch、commit、lint/type/tests/docs/changelog状态、remotes。流程：八项pre-push→文档/日志→worktree→双推→状态。输出：两端SHA/失败端/未执行端分别确认。Use when：检查当前分支是否可双推，给检查报告。Do not use for：我还没commit，替我提交所有改动；转git-commit建议，不顺带stage/commit。新单仓App材料仅受控后台注入，现有个人/MCP秘密不读，实际拒绝不绕过。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
@@ -143,7 +143,7 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 | `rejected - non-fast-forward` | 远程有你没有的 commit | Step 6: fetch + merge |
 | `fatal: no upstream branch` | 首次 push 没加 `-u` | `git push -u gitee <branch> && git push -u origin <branch>` |
 | `remote: Permission denied` | 没写权限 | `gh auth status`，检查 GitHub 权限 |
-| `remote: Unauthorized`（Gitee） | Gitee token 过期 | 检查凭据管理器，重新认证 |
+| `remote: Unauthorized`（Gitee） | 现有鉴权不可用 | 保留错误/未执行状态，不读取或更改已有个人凭据；新单仓App例外不扩展Gitee |
 | `error: src refspec ... does not match any` | 分支不在远程 | 加 `-u` 设 upstream |
 
 ## 人工介入场景（STOP & ASK）

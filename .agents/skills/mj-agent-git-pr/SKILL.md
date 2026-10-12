@@ -1,11 +1,15 @@
 ---
 name: mj-agent-git-pr
-description: 适用于 mj-agent 的按分支模板准备/创建PR。输入：head/base、commits、diff、模板、验证、CHANGELOG。流程：前置→模板→字段→自检→明确base/body-file→确认创建。输出：模板/字段/base正确；实际创建有URL。Use when：为maintain分支准备PR正文和base。Do not use for：CI绿了直接merge并删除分支；本技能不merge/删除，交Owner决策。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的按分支模板准备/创建PR。输入：head/base、commits、diff、模板、验证、CHANGELOG。流程：前置→模板→字段→自检→明确base/body-file→确认创建。输出：模板/字段/base正确；实际创建有URL。Use when：为maintain分支准备PR正文和base。Do not use for：CI绿了直接merge并删除分支；本技能不merge/删除，交Owner决策。新单仓App后台鉴权材料不可见；Owner聊天决定后Agent执行独立Owner身份平台审核。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
 
 # mj-agent Git PR
+
+## 执行身份与审核
+
+作者/推送/PR/merge使用仅本仓mj-agent-delivery-executor App，无admin/checks-write/bypass。仅新App材料由受控后台创建/DPAPI保存/签名/注入/撤销，值不进模型/聊天/日志；既有应用/MCP/DB/个人秘密不读。Owner在聊天对实际成果/SHA决定后，Agent用不同Owner身份执行平台审核；后台/实际平台未验证不PASS，不绕拒绝。
 
 ## 本技能的执行约定
 

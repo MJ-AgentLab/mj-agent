@@ -137,7 +137,7 @@ gh pr create --repo MJ-AgentLab/mj-agent --base develop --head <branch> --title 
 
 ### 响应 Review
 
-- **有效Approve** → 核当前head及最后推送审核、讨论解决、required checks、任务merge授权与执行身份；Agent通过正常工具执行 `gh pr merge <PR_NUM> --merge`。首期Owner以不同于作者/最后推送者身份提供结果式有效批准，业务接受另记录。
+- **有效Approve** → 核当前head及最后推送审核、讨论解决、required checks、任务merge授权与执行身份；Agent通过正常工具执行 `gh pr merge <PR_NUM> --merge`。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定以不同于作者/最后推送者的Owner身份执行平台审核，补推须重新取得有效决定/审核，批准与业务接受分记；作者/推送/PR/merge专用App无admin/checks-write/bypass。
 - **Request changes** → 本地修复后 `git push`，旧 Approve 自动失效，需重新 review
 
 ---

@@ -14,6 +14,7 @@
     "scripts/sdd/check_git_actions.py",
     "scripts/sdd/task_delivery.py",
     "scripts/sdd/check_delivery_platform.py",
+    "scripts/sdd/delivery_executor.py",
     "scripts/sdd/check_capability_schema.py",
     "scripts/sdd/check_traceability.py",
     "scripts/sdd/check_bdd_acceptance.py",
@@ -42,7 +43,15 @@
       "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_platform.py", "-q", "--junitxml", "{output_dir}/platform.xml"],
       "expected_exit": 0,
       "junit": "platform.xml",
-      "min_tests": 65,
+      "min_tests": 108,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "executor-offline",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_executor.py", "-k", "not actual_windows and not real_git_sources_stay_fixed_after_untrusted_sources_are_added", "-q", "--junitxml", "{output_dir}/executor.xml"],
+      "expected_exit": 0,
+      "junit": "executor.xml",
+      "min_tests": 73,
       "timeout_seconds": 300
     },
     {
@@ -81,6 +90,7 @@
         "tests/unit/test_agent_first_delivery.py",
         "tests/unit/test_delivery_evidence.py",
         "tests/unit/test_delivery_platform.py",
+        "tests/unit/test_delivery_executor.py",
         "tests/unit/test_sdd_g1g2g9_validators.py",
         "tests/unit/test_sdd_g21_evidence_predicate.py",
         "tests/conftest.py",
@@ -258,6 +268,83 @@
             "tests.unit.test_delivery_platform::test_owner_coverage_cannot_be_replaced_or_overridden",
             "tests.unit.test_delivery_platform::test_sources_strictness_and_no_bypass_are_enforced[bypass]",
             "tests.unit.test_delivery_platform::test_configuration_is_separate_from_runtime_readiness"
+          ]}]
+        },
+        {
+          "id": "GOV-011",
+          "expected": "Only new named-App material enters the encrypted external store. Registration state/nonce is single-use, callbacks remove temporary codes, old credentials and traces are not inherited, errors and subprocess output disclose no credential, and uncertain attempts are not silently retried. This software selftest does not prove an actual App registration or secure host deployment.",
+          "command_ids": ["executor-offline", "platform-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "executor-offline", "ids": [
+            "tests.unit.test_delivery_executor::test_registration_consumes_state_nonce_and_never_returns_credentials",
+            "tests.unit.test_delivery_executor::test_existing_vault_and_uncertain_attempt_are_not_overwritten",
+            "tests.unit.test_delivery_executor::test_child_environment_never_inherits_authentication_or_trace",
+            "tests.unit.test_delivery_executor::test_loopback_callback_always_removes_code_without_request_logs",
+            "tests.unit.test_delivery_executor::test_command_failure_revokes_token_without_exposing_captured_output",
+            "tests.unit.test_delivery_executor::test_cli_does_not_offer_vault_dump_arbitrary_exec_or_api",
+            "tests.unit.test_delivery_executor::test_transport_never_enables_ambient_keylog_proxy_or_redirect",
+            "tests.unit.test_delivery_executor::test_callback_redirects_before_blocked_conversion_and_never_repeats[False]",
+            "tests.unit.test_delivery_executor::test_callback_redirects_before_blocked_conversion_and_never_repeats[True]"
+          ]}, {"command_id": "platform-offline", "ids": [
+            "tests.unit.test_delivery_platform::test_actual_executor_child_starts_isolated_before_candidate_imports"
+          ]}]
+        },
+        {
+          "id": "GOV-012",
+          "expected": "Fresh opaque-provider observations bind the same App, installation and repository, all three minimal permission layers, selected single-repository scope and confirmed token revocation. Invalid initial audit stops further requests; rotation, admin metadata, missing observations and uncertainty cannot establish readiness. Offline provider simulation does not establish host loading, Owner authorization or real platform canary success.",
+          "command_ids": ["executor-offline", "platform-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {"command_id": "executor-offline", "ids": [
+              "tests.unit.test_delivery_executor::test_audit_proves_actual_mocked_grants_and_scope_then_revokes",
+              "tests.unit.test_delivery_executor::test_revocation_failure_is_public_unknown_without_secret",
+              "tests.unit.test_delivery_executor::test_unsafe_observed_grants_never_become_ready[bool_count]",
+              "tests.unit.test_delivery_executor::test_token_mint_timeout_is_not_retried_and_has_safe_uncertainty"
+            ]},
+            {"command_id": "platform-offline", "ids": [
+              "tests.unit.test_delivery_platform::test_opaque_provider_audit_can_verify_config_without_claiming_host_or_acceptance",
+              "tests.unit.test_delivery_platform::test_failed_executor_audit_stops_before_more_token_or_provider_requests",
+              "tests.unit.test_delivery_platform::test_legal_but_different_executor_cannot_reuse_first_observation",
+              "tests.unit.test_delivery_platform::test_admin_metadata_cannot_be_laundered_by_otherwise_valid_app_claims",
+              "tests.unit.test_delivery_platform::test_executor_request_uses_only_the_controlled_cli_not_a_claim_file"
+            ]}
+          ]
+        },
+        {
+          "id": "GOV-013",
+          "expected": "Unsafe Git settings and unaudited active hooks are rejected before new token creation, without reading old credential values or disabling existing gates. Existing linked-worktree Git sources and broker-owned execution paths prevent later repository scripts and signing programs from inheriting a token; missing common sources remain rejected. Registration rechecks parents before writes and exact active Plan routes govern integration PRs. Actual Windows DPAPI and handle/junction/source-lock guarantees require the separate executor-windows suite on Windows; this cross-platform suite does not claim them or a same-user OS sandbox.",
+          "command_ids": ["executor-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "executor-offline", "ids": [
+            "tests.unit.test_delivery_executor::test_real_git_unsafe_key_blocks_before_token_and_action[http.extraheader]",
+            "tests.unit.test_delivery_executor::test_real_git_unsafe_key_blocks_before_token_and_action[http.sslverify]",
+            "tests.unit.test_delivery_executor::test_real_git_unsafe_key_blocks_before_token_and_action[credential.helper]",
+            "tests.unit.test_delivery_executor::test_real_pre_push_hook_blocks_before_token_without_reading_hook_contents",
+            "tests.unit.test_delivery_executor::test_registration_revalidates_changed_parent_before_any_marker_write",
+            "tests.unit.test_delivery_executor::test_integration_pr_requires_exact_active_plan_registry[True-maintain/task-feature/task-delivery-integration-True]",
+            "tests.unit.test_delivery_executor::test_integration_pr_requires_exact_active_plan_registry[False-maintain/task-feature/task-delivery-integration-False]",
+            "tests.unit.test_delivery_executor::test_isolated_direct_script_loads_fixed_route_library_without_user_pythonpath",
+            "tests.unit.test_delivery_executor::test_original_absent_commondir_context_is_never_accepted",
+            "tests.unit.test_delivery_executor::test_new_repository_hook_never_executes_in_fixed_child_context",
+            "tests.unit.test_delivery_executor::test_real_git_signing_program_is_rejected_before_any_token_or_execution"
+          ]}]
+        },
+        {
+          "id": "GOV-014",
+          "expected": "Hidden bypass actors remain unknown without separately requested named-Owner read-only metadata. That observation can supply only missing actors on exactly matching protection; another Owner, inconsistent protections, actual bypass, continued absence and a missing verified executor cannot establish readiness. Management visibility never grants the execution App Administration or replaces its identity/can-bypass observation.",
+          "command_ids": ["platform-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "platform-offline", "ids": [
+            "tests.unit.test_delivery_platform::test_hidden_bypass_list_is_unknown_without_management_observation",
+            "tests.unit.test_delivery_platform::test_named_owner_read_only_observation_supplies_only_hidden_matching_fact",
+            "tests.unit.test_delivery_platform::test_management_cannot_replace_owner_or_mismatched_protection",
+            "tests.unit.test_delivery_platform::test_management_visibility_cannot_launder_bypass_or_absence[hidden_bypass]",
+            "tests.unit.test_delivery_platform::test_management_visibility_cannot_launder_bypass_or_absence[still_hidden]",
+            "tests.unit.test_delivery_platform::test_management_cannot_act_as_missing_executor"
           ]}]
         }
       ]

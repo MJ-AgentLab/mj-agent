@@ -47,11 +47,11 @@ infra 冻结合同位于 `capabilities/infrastructure/mcp-server-governance/cont
 ## §5 A12–A14 与执行边界
 
 - A12：开发技能 schema、命名、description、资源及冻结；原 V4 的全 WARN/未传 strict 不能冒充有效硬失败。新硬失败接入必须单列 Owner 门禁批准。
-- A13：原生项目 config/hooks/rules 的权限与守卫人工审阅；秘密值不进入配置或日志，有限识别输出任务授权上下文，确定禁令/未知输入继续block。路径命中不认证语义或授权；静态规则检查不等于完整沙箱或宿主加载。
+- A13：原生项目config/hooks/rules由独立Agent读取真实成果并核权限/守卫负例；秘密值不进入配置或日志，有限识别输出任务授权上下文，确定禁令/未知输入继续block。路径命中不认证语义或授权；静态规则检查不等于完整沙箱或宿主加载。
 - A14：MCP 服务集合、trust posture、凭据模式与启动器；治理 home 仍为 mcp-server-governance capability。既有服务用途不扩大，新的用途/服务需单独批准。
 
 规范约束、机器检查、宿主能力和人工审查分别留证。聊天批准不等于 hook 解锁；没有已审阅路线返回 BLOCKED_EXECUTION_ROUTE。
-禁止创建审批凭证、停用保护、改会话模式或换工具规避拒绝。项目/hook 信任由工程师独立操作，不由仓库脚本激活。
+禁止创建审批凭证、停用保护、改会话模式或换工具规避拒绝。独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。
 
 ## §6 MCP 治理
 

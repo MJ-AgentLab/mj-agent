@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-env-setup
-description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。新单仓执行App后台创建/DPAPI/签名/注入/撤销不见值，独立Agent核验后正常宿主项目启用；旧秘密永不读。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
@@ -14,8 +14,14 @@ description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：�
 
 ## 触发与职责详述
 
-This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says "环境配置", "env setup", ".env 配置", "设置环境", "解密 secrets", "decrypt secrets.enc", "team password", "团队口令", "POSTGRES_ANALYST_USER", "ARK_API_KEY", "LANGSMITH_API_KEY", "uv sync", "first time setup", "新机器搭建", "本地环境", "scripts/setup-env.ps1", "setup-mcp-secrets" in the mj-agent context. Wraps two ADR-030 setup scripts: (1) scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt config/secrets.enc; 8 app secrets: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory passwords + pg superuser; merged into .env), and (2) scripts/mcp/setup-mcp-secrets.ps1 (decrypt config/secrets-mcp.enc; 6 permitted project variables: GitHub token and memory URLs for five environments; written directly to OS User-level env, never to .env). Plus uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify the setup scripts, secrets bundles, or write .env directly (only invokes the scripts with proper params). Note: both decrypt steps require interactive password (TTY); Codex does not collect passwords or execute decryption/OS credential writes — user must run setup scripts in their own PowerShell terminal. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).
+This skill should be used when the user asks to set up the .env file, decrypt secrets.enc, install dependencies, or prepare local environment for mj-agent development. Make sure to use this skill whenever the user says "环境配置", "env setup", ".env 配置", "设置环境", "解密 secrets", "decrypt secrets.enc", "team password", "团队口令", "POSTGRES_ANALYST_USER", "ARK_API_KEY", "LANGSMITH_API_KEY", "uv sync", "first time setup", "新机器搭建", "本地环境", "scripts/setup-env.ps1", "setup-mcp-secrets" in the mj-agent context. Wraps two ADR-030 setup scripts: (1) scripts/setup-env.ps1 (AES-256-CBC + PBKDF2 decrypt config/secrets.enc; 8 app secrets: analyst pg creds + ARK/LANGSMITH/LLM keys + storage-stack memory passwords + pg superuser; merged into .env), and (2) scripts/mcp/setup-mcp-secrets.ps1 (decrypt config/secrets-mcp.enc; 6 permitted project variables: GitHub token and memory URLs for five environments; written directly to OS User-level env, never to .env). Plus uv sync + minimal .env validation. Outputs setup checklist + verification commands; does NOT modify the setup scripts, secrets bundles, or write .env directly (only invokes the scripts with proper params). Note: both decrypt steps require interactive password (TTY); the model never collects or reads existing application/MCP/DB/personal secrets. Historical Owner-terminal methods remain outside the new App task; only newly created single-repository App material is handled by the controlled backend. Do not use for: Studio probe end-to-end testing (use mj-agent-infra-studio-probe), Docker compose lifecycle (use mj-agent-infra-docker-compose), or storage stack management (use mj-agent-infra-storage-stack).
 
+
+## 单仓执行App例外
+
+本次新增mj-agent-delivery-executor App只安装本仓，App材料经受控后台创建/DPAPI保存/签名/注入/撤销，值不进入模型/聊天/日志；后台接口只输出脱敏状态与非秘密ID。独立Agent审阅真实配置/守卫负例后，执行Agent通过正常宿主机制启用项目范围信任，不改个人config/权限，不绕拒绝。不支持或未实现记未验证。
+
+以下旧应用/MCP解密与Owner终端方法保留既有领域说明；它们不作为本次新App启动前置，也不授权Agent读取现有应用/MCP/DB/个人秘密。原工程师向导已superseded，仓外历史文件不删除。
 
 ## Overview
 

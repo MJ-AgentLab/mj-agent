@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "harness": [
+    ".gitattributes",
+    "scripts/sdd/delivery_evidence.py",
+    "scripts/sdd/delivery_executor.py",
+    "scripts/sdd/task_delivery.py",
+    "scripts/sdd/run_offline_pytest.py",
+    "scripts/sdd/check_test_offline_boundary.py"
+  ],
+  "dependencies": ["pyproject.toml", "uv.lock", ".python-version"],
+  "commands": [
+    {
+      "id": "executor-windows",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_executor.py", "-k", "actual_windows or real_git_sources_stay_fixed_after_untrusted_sources_are_added", "-q", "--junitxml", "{output_dir}/windows.xml"],
+      "expected_exit": 0,
+      "junit": "windows.xml",
+      "min_tests": 6,
+      "timeout_seconds": 300
+    }
+  ],
+  "units": [
+    {
+      "id": "executor-windows-native",
+      "baseline": ["decisions/ADR-042_Agent_First_Delivery_Governance.md", "policies/ai-agent.md", "plans/[PLAN]_agent_first_delivery.md"],
+      "inputs": ["tests/unit/test_delivery_executor.py", "tests/conftest.py"],
+      "acceptance": [
+        {
+          "id": "WIN-001",
+          "expected": "On the tested Windows host, actual user-DPAPI protects and restores synthetic bytes; junction replacement is rejected before marker/blob writes; held metadata handles prevent parent rename and Git configuration replacement/write, and fixed sources reject a newly added worktree configuration. These synthetic-data runtime tests do not register an App, use a real private key, attest credential confinement or prove host hook loading. Other hosts must execute this suite themselves; SKIP never counts as PASS.",
+          "command_ids": ["executor-windows"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "executor-windows", "ids": [
+            "tests.unit.test_delivery_executor::test_actual_windows_dpapi_roundtrip_of_synthetic_bytes",
+            "tests.unit.test_delivery_executor::test_actual_windows_junction_swap_is_rejected_before_writing[begin]",
+            "tests.unit.test_delivery_executor::test_actual_windows_junction_swap_is_rejected_before_writing[save]",
+            "tests.unit.test_delivery_executor::test_actual_windows_parent_handle_prevents_rename_during_write_guard",
+            "tests.unit.test_delivery_executor::test_actual_windows_config_lock_prevents_replacement_before_token",
+            "tests.unit.test_delivery_executor::test_real_git_sources_stay_fixed_after_untrusted_sources_are_added"
+          ]}]
+        }
+      ]
+    }
+  ]
+}

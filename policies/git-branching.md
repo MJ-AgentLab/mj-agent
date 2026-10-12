@@ -83,7 +83,7 @@ feature/bugfix/documentation/maintain 通常显式 `--base develop`，hotfix显�
 
 分层模式在任务记录登记精确子 head → integration base、对象/范围/依赖与最终 base，创建命令显式携带 base；未登记的匹配不放行。子 PR 先范围核对、独立核验和适用门禁，任务 PR 验证累计差异、组合行为和完整 AC。子 PR 合并仅表示候选集成。
 
-实施前核平台规则、CI 触发及 merge 外部副作用。集成分支保留有效批准、严格版本检查、讨论解决及禁止 force push；日常身份无 bypass。
+实施前核平台规则、CI 触发及 merge 外部副作用。集成分支保留有效批准、严格版本检查、讨论解决及禁止force push；App日常无admin/checks-write/bypass。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定以不同于作者/最后推送者的Owner身份执行平台审核，补推须重新取得有效决定/审核，批准与业务接受分记。
 
 ### 历史事故
 

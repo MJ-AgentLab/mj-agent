@@ -404,6 +404,6 @@ ADR-025 (PR-1/2/3/4 multi-env+DGX+MCP bundle) 引入 4-file docker-compose
 
 ### 6.4 Codex 原生 MCP 设置与证据
 
-`scripts/mcp/setup-mcp-secrets.ps1` 默认解密现有 MCP bundle 并只写六项允许的 User env；`-Reload` 只报告 SET/MISSING，`-Force` 可能覆盖已有值。这些真实操作需 Owner 单独批准，不能作为离线验收命令。SET 不证明服务可运行。更新变量后须由工程师重启宿主并另做获准的服务验证。
+`scripts/mcp/setup-mcp-secrets.ps1` 默认解密现有 MCP bundle 并只写六项允许的 User env；`-Reload` 只报告 SET/MISSING，`-Force` 可能覆盖已有值。这些真实操作需 Owner 单独批准，不能作为离线验收命令。SET 不证明服务可运行。本段重启宿主和服务验证仅属于旧应用/MCP变量维护方法，不作新单仓执行App的启动前置；现有应用/MCP/DB/个人秘密不读取。
 
-`python scripts/sdd/check_codex_native.py --surface mcp` 只检查公开结构，不读取变量值、不启动服务。项目和 hooks 信任由工程师手工审阅；仓库脚本不得修改个人配置或自动激活。Windows 平台与后台生命周期尚需独立验证，其他平台不可由 Windows 静态结果推定通过。
+`python scripts/sdd/check_codex_native.py --surface mcp` 只检查公开结构，不读取变量值、不启动服务。独立Agent先审阅真实原生配置/守卫并复现负例，执行Agent再通过宿主正常机制启用仅本项目信任并核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持或未验证如实记录。Windows 平台与后台生命周期尚需独立验证，其他平台不可由 Windows 静态结果推定通过。

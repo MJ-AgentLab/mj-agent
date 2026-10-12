@@ -4,7 +4,7 @@
 
 Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则正文在 `policies/`、`sdd/` 和 capability contracts。
 
-需要 Owner 作新决策时，Codex 先完成可审阅的准备工作，再提供具体可行的选项，明确标注推荐项并简述理由与影响；Owner 选择后，由 Codex 在获批范围内使用正常工具执行并验证。确需工程师独立审阅或宿主审批的步骤，说明对应规则和所需条件。
+需要 Owner 作新决策时，Codex 先完成可审阅的准备工作，再提供具体可行的选项，明确标注推荐项并简述理由与影响；Owner 选择后，由 Codex 在获批范围内使用正常工具执行并验证。独立Agent完成技术核验；需宿主正常机制的步骤核实际支持，技术拒绝保留原错，不改权限或个人配置绕过。
 
 ## Native asset ownership
 
@@ -21,10 +21,10 @@ Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则�
 编辑前读取目标目录 `capabilities/AGENTS.md`、`docker/AGENTS.md`、`src/mj_agent/AGENTS.md` 或 `tests/AGENTS.md`。
 
 1. **业务数据边界 — never bypass it**：biz 访问始终经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`，analyst 只读。Do NOT connect to any database directly；禁止直连 DB、写、DDL 或绕过 L1/L1b。
-2. **秘密与服务边界 — never read or exfiltrate**：不读取/打印/记录/传输 `.env`、`config/secrets*.enc` 或真实凭据。应用/MCP 凭据分离，仅变量名传递。项目 MCP 只含既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager、个人/其他来源服务永久禁入。
-3. **信任与技术拒绝**：工程师独立审阅和激活项目/hooks 信任、维护秘密及宿主审批；Agent 不改个人配置、不自动信任。实际拒绝保留原错、按证据定位；无法定位标未知，受阻步骤返回 `BLOCKED_EXECUTION_ROUTE`，禁止建凭证、换工具、编码、改写命令或改权限绕过。
+2. **秘密与服务边界 — never read or exfiltrate**：模型不读取/打印/记录/传输 `.env`、`config/secrets*.enc` 或真实凭据。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。应用/MCP 凭据分离，仅变量名传递。项目 MCP 只含既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager、个人/其他来源服务永久禁入。
+3. **信任与技术拒绝**：独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。实际拒绝保留原错、按证据定位；无法定位标未知，受阻步骤返回 `BLOCKED_EXECUTION_ROUTE`，禁止建凭证、换工具、编码、改写命令或改权限绕过。
 4. **删除与重入**：具名授权删除前核验绝对路径、Git 跟踪/未提交/未跟踪/忽略内容、必要备份、占用及目标/后代重解析点。复用具体清单；实质变化只暂停受影响项。部分成功或结果未知先对账，成功项不重复。
-5. **Git**：新分支只用 `git worktree add ../<branch-name> -b <branch-name>`；PR 显式 base，通常 develop、hotfix main；release独立发布需接受/授权及未来具名规则映射，当前有限解析器不声称支持；任务集成例外按 `policies/git-branching.md` 登记精确 head/base。首期 Owner 以不同于作者/最后推送者身份提供有效平台批准，Agent 在授权和门禁满足时 merge；补推重新取得有效审核。
+5. **Git**：新分支只用 `git worktree add ../<branch-name> -b <branch-name>`；PR 显式 base，通常 develop、hotfix main；release独立发布需接受/授权及未来具名规则映射，当前有限解析器不声称支持；任务集成例外按 `policies/git-branching.md` 登记精确 head/base。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定以不同于作者/最后推送者的Owner身份执行平台审核，补推须重新取得有效决定/审核，批准与业务接受分记；App承担作者/推送/PR/merge，无Administration、Checks write或bypass。
 6. **交付与接受**：独立核验从 AC 建立期望、读取真实成果并复现；阶段是检查点，不固定人工暂停。仓库批准、集成、运行验证、交付及 Owner 接受分别记录；Plan completed 须 AC 满足、成果可用且 Owner 明确接受版本。门禁自降防护首期依赖 Owner 审阅补偿，独立可信核验仍延期。
 
 ## 会话维护

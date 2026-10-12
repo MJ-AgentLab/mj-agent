@@ -89,7 +89,7 @@ ai_visibility: source-of-truth
 
 四类runtime面按 `policies/ai-agent.md` §4风险定位：sql-guardrail-relax、runtime-skill-content-change、prompt-version-or-body-change、biz-catalog-sync。基线内安全保持自主；安全不变量、数据范围、业务口径、外发、breaking或AC变化先Owner决定。冻结锚继续机器检查，受控更新不代表行为PASS。
 
-原生守卫路径命中提供TASK_AUTHORIZATION_CONTEXT，确定禁令/未知输入仍block。它不是通用语义分类、聊天授权认证或完整沙箱；工程师独立核宿主加载/canary。实际拒绝原错返回BLOCKED_EXECUTION_ROUTE。
+原生守卫路径命中提供TASK_AUTHORIZATION_CONTEXT，确定禁令/未知输入仍block。它不是通用语义分类、聊天授权认证或完整沙箱；独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。实际拒绝原错返回BLOCKED_EXECUTION_ROUTE。
 
 ## §5 Gate 启用策略（历史阶段计划；现状 SoT = ci.yml）
 

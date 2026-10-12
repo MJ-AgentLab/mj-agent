@@ -220,6 +220,10 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 保持原路径、其他frontmatter及历史正文，保存验收包/证据位置、版本环境、授权、在途副作用/未知/延期及下一步停止条件。重入核真实状态，已成功操作不重复；文档提交、远端清理及业务接受各自列状态。
 
+## 执行App撤销与状态
+
+治理结束由Agent在具体范围内撤回临时Workflows write、撤销新App短期token并关闭通道，后台不公开值；既有秘密不读。实际权限/token不可再用须真实核验，未实现/未测不PASS。Owner聊天接受绑定实际成果/SHA，平台审核由Agent依真实决定以不同Owner身份执行，接受与merge分记。
+
 ## Step 10: Follow-up Branch Handoff
 
 post-merge cleanup 跑完 Step 1-9 之后，执行 AI 经常处于"任务完成"心态。如果本次 PR 还有 follow-up 工作要立即开始（典型场景：Step 4 follow-up issue 列表非空 / Step 5 EVAL backlog ticket 触发 / 用户在 checklist 后表达"下一步要做 X"），**必须**显式 handoff 到 Stage 2 开新 worktree，而不是在当前 worktree（典型是 `develop/`）内顺手 `git checkout -b <follow-up-branch>`。

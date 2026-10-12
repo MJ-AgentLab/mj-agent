@@ -1,6 +1,6 @@
 ---
 name: mj-agent-flow-review-respond
-description: 适用于 mj-agent 的Stage15回应自己的PR反馈/CI失败。输入：自有PR、comments、head、CI日志、Plan/SPEC。流程：fetch→逐条分类→影响→修复计划→逐条回复→风险输出。输出：每条comment有采纳/解释/延后理由及草案。Use when：我的PR收到三条意见，分类并拟回复。Do not use for：请评审另一作者的新PR；建议git-review-pr，避免反向调用。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的Stage15回应自己的PR反馈/CI失败。输入：自有PR、comments、head、CI日志、Plan/SPEC。流程：fetch→逐条分类→影响→修复计划→逐条回复→风险输出。输出：每条comment有采纳/解释/延后理由及草案。Use when：我的PR收到三条意见，分类并拟回复。Do not use for：请评审另一作者的新PR；建议git-review-pr，避免反向调用。平台审核依Owner聊天实际成果/SHA决定由Agent以不同Owner身份执行，补推重判。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
@@ -248,7 +248,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 - ❌ 不替代 `mj-agent-git-review-pr`（方向相反——本 skill 处理 own PR comments；review-pr 审别人 PR）
 - ❌ 不替代 `mj-agent-flow-self-review`（self-review = Stage 11 commit 前自检；本 skill = Stage 15 处理外部 reviewer feedback）
 - ❌ 不替代 `mj-agent-git-check-merge`（check-merge = Stage 16 技术合并门）
-- ❌ 不直接调 GitHub API 修 PR（add comment / dismiss review / approve / merge 仍需 user 操作）
+- ❌ 不在缺对应动作授权或真实Owner决定时调GitHub API（外部comment/review/merge分别核具体动作授权；Owner聊天对实际成果/SHA决定后由Agent以独立Owner身份执行平台审核，不要求用户技术操作）
 - ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + mj-agent-runtime-* 分析→影响分类→实施/决定）
 
 ## Sub-skill / Tool Calls

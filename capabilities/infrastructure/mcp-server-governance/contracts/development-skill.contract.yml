@@ -4,6 +4,7 @@
 # body_section_heads = every ^## line. Checker enforces all three freeze values.
 # All old 8 x 2 hashes and section heads reproduced against baseline 5b8833c before editing.
 # New hashes/heads/frozen_at updated as a group; timestamp is not host activation or acceptance.
+# Subsequent actor revision: all 16 prior hashes/8 heading sets reproduced at 8bf8888 before edits.
 contract_id: development-skill
 schema_version: 1
 adapter: development-skill
@@ -18,8 +19,8 @@ hitl_required:
 skills:
 - file: .agents/skills/mj-agent-infra-app-start/SKILL.md
   name: mj-agent-infra-app-start
-  description_hash: sha256:473e67d44b29899e17bfc281fad8a84dddfe39da196f04c440b78fa8b2d2069f
-  body_content_hash: sha256:837e88c67c5dc87dd6dfb1d849dcedde919ca41c2cd579c5141eb93d4894207f
+  description_hash: sha256:3518246df5d363756da663eed16f0286b3208049d23639ae30f0be425f465dff
+  body_content_hash: sha256:09e3965ebc0bda196ce2204882b069ea5ab6c544bbc2b9b9668ff0436eb3f633
   body_section_heads:
   - '## 本技能的执行约定'
   - '## 触发与职责详述'
@@ -35,7 +36,7 @@ skills:
   - '## Reference Files'
   - '## Anti-patterns'
   - '## Handoff'
-  frozen_at: '2026-10-12T04:29:22Z'
+  frozen_at: '2026-10-12T07:00:04Z'
 - file: .agents/skills/mj-agent-infra-app-stop/SKILL.md
   name: mj-agent-infra-app-stop
   description_hash: sha256:746937cf1a2220600df2d57687621c7abaaed45f1428ffaf773983ea8c7c3e73
@@ -80,11 +81,12 @@ skills:
   frozen_at: '2026-10-12T04:49:22Z'
 - file: .agents/skills/mj-agent-infra-env-setup/SKILL.md
   name: mj-agent-infra-env-setup
-  description_hash: sha256:0d0aabb4e39fe12bf6883ec46e0e6b4022b49530cd77b4bc85086cc809fbbeb8
-  body_content_hash: sha256:b40e5085afece0d9beee3230abb5bc6acd0caae258a8f1947ff3267114ac2997
+  description_hash: sha256:a6bce477a1698345780f26d119dbbe4ed214c03a15b12f2ee93b271e7703d949
+  body_content_hash: sha256:8848fa216b7d0c5358e6e59885255ec5a14ba5ee9260cc4feae26e83823cec12
   body_section_heads:
   - '## 本技能的执行约定'
   - '## 触发与职责详述'
+  - '## 单仓执行App例外'
   - '## Overview'
   - '## 前置条件'
   - '## 快速开始（交互模式）'
@@ -97,7 +99,7 @@ skills:
   - '## Env Setup Result'
   - '## Reference Files'
   - '## Handoff'
-  frozen_at: '2026-10-12T04:29:22Z'
+  frozen_at: '2026-10-12T06:30:56Z'
 - file: .agents/skills/mj-agent-infra-env-teardown/SKILL.md
   name: mj-agent-infra-env-teardown
   description_hash: sha256:24cb3e88583040cc71a547088838fe97b94317c651561f982935e11bf97d83ca
@@ -137,7 +139,7 @@ skills:
 - file: .agents/skills/mj-agent-infra-storage-stack/SKILL.md
   name: mj-agent-infra-storage-stack
   description_hash: sha256:8f484a805bd57eb678e59dd3249f58d6a192df7266db96f8cc044c15bedeba48
-  body_content_hash: sha256:0d0cc1dfa82d49572c1972855c1af6b8410ac913695719f82e9b41a4fd009f7f
+  body_content_hash: sha256:0301b8c4dfe1a57ae3aa7c58c4a7a72d3607b099161fc5dfc8dc958ece645aba
   body_section_heads:
   - '## 本技能的执行约定'
   - '## 触发与职责详述'
@@ -155,7 +157,7 @@ skills:
   - '## Reference Files'
   - '## Anti-patterns'
   - '## Handoff'
-  frozen_at: '2026-10-12T04:29:22Z'
+  frozen_at: '2026-10-12T06:30:56Z'
 - file: .agents/skills/mj-agent-infra-studio-probe/SKILL.md
   name: mj-agent-infra-studio-probe
   description_hash: sha256:47d2ea1ff4b6c6dc5249b9eee1fd40d923ad07f6774b80827a1f15cc8bbf6e56

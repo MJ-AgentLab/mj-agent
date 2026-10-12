@@ -278,3 +278,259 @@ def test_missing_config_returns_unknown_exit_without_payload(tmp_path: Path, cap
     result = json.loads(capsys.readouterr().out)
     assert result["state"] == "UNKNOWN"
     assert result["execution"] == "NOT_ATTEMPTED"
+
+
+def _executor_observation(phase: str = "daily") -> dict[str, Any]:
+    permissions = {"metadata": "read", "contents": "write", "pull_requests": "write"}
+    if phase == "bootstrap":
+        permissions["workflows"] = "write"
+    return {
+        "state": "EXECUTOR_VERIFIED", "source": "GITHUB_API_RUNTIME", "repository": REPOSITORY,
+        "permission_phase": phase, "token_revocation": "CONFIRMED",
+        "app": {"id": 42, "slug": "mj-agent-delivery-executor", "owner": "synthetic",
+                "permissions": permissions.copy()},
+        "installation": {"id": 63, "app_id": 42, "account": "synthetic",
+                         "repository_selection": "selected", "suspended_at": None,
+                         "permissions": permissions.copy()},
+        "token_grant": {"permissions": permissions.copy(), "total_count": 1,
+                        "repositories": [{"id": 91, "full_name": REPOSITORY}]},
+    }
+
+
+@pytest.mark.parametrize("phase", ["daily", "bootstrap"])
+def test_real_app_installation_and_token_observations_establish_executor(phase: str) -> None:
+    assert platform.executor_identity_errors(_executor_observation(phase), REPOSITORY, phase) == []
+
+
+@pytest.mark.parametrize("defect", ["claim_file", "repository", "phase", "revocation", "app_id",
+                                   "slug", "owner", "installation_id", "installation_app", "account",
+                                   "all_repositories", "suspended", "missing_suspension", "token_scope",
+                                   "token_repository", "token_repository_id", "missing_app", "missing_grant"])
+def test_incomplete_changed_or_mismatched_executor_cannot_pass(defect: str) -> None:
+    payload = _executor_observation()
+    if defect in {"claim_file", "repository", "phase", "revocation"}:
+        key = {"claim_file": "source", "repository": "repository", "phase": "permission_phase",
+               "revocation": "token_revocation"}[defect]
+        payload[key] = {"claim_file": "LOCAL_CLAIM", "repository": "synthetic/other",
+                        "phase": "bootstrap", "revocation": "UNKNOWN"}[defect]
+    elif defect in {"app_id", "slug", "owner"}:
+        key = {"app_id": "id", "slug": "slug", "owner": "owner"}[defect]
+        payload["app"][key] = {"app_id": True, "slug": "other-app", "owner": "other"}[defect]
+    elif defect in {"installation_id", "installation_app", "account", "all_repositories", "suspended"}:
+        key = {"installation_id": "id", "installation_app": "app_id", "account": "account",
+               "all_repositories": "repository_selection", "suspended": "suspended_at"}[defect]
+        payload["installation"][key] = {"installation_id": False, "installation_app": 999,
+                                        "account": "other", "all_repositories": "all",
+                                        "suspended": "2026-01-01T00:00:00Z"}[defect]
+    elif defect == "missing_suspension":
+        del payload["installation"]["suspended_at"]
+    elif defect == "token_scope":
+        payload["token_grant"]["total_count"] = 2
+    elif defect == "token_repository":
+        payload["token_grant"]["repositories"][0]["full_name"] = "synthetic/other"
+    elif defect == "token_repository_id":
+        payload["token_grant"]["repositories"][0]["id"] = True
+    else:
+        del payload[{"missing_app": "app", "missing_grant": "token_grant"}[defect]]
+    assert platform.executor_identity_errors(payload, REPOSITORY, "daily")
+
+
+@pytest.mark.parametrize("layer", ["app", "installation", "token_grant"])
+@pytest.mark.parametrize("extra", ["administration", "checks", "workflows"])
+def test_every_actual_permission_layer_must_remain_minimal(layer: str, extra: str) -> None:
+    payload = _executor_observation()
+    payload[layer]["permissions"][extra] = "write"
+    assert platform.executor_identity_errors(payload, REPOSITORY, "daily")
+
+
+def _mock_executor(monkeypatch: pytest.MonkeyPatch, *, defect: str = "", admin: bool = False) -> list[str]:
+    _mock_remote(monkeypatch, admin=admin)
+    calls: list[str] = []
+
+    def observe(root: Path, vault: Path, phase: str, action: str, endpoint: str | None = None) -> dict[str, Any]:
+        calls.append(action)
+        result = _executor_observation(phase)
+        if defect == "invalid_audit" or defect == "identity_changed" and action == "public-get":
+            result["token_revocation"] = "UNKNOWN"
+        if defect == "identity_rotated" and action == "public-get":
+            result["app"]["id"] = result["installation"]["app_id"] = 43
+            result["installation"]["id"] = 64
+            result["token_grant"]["repositories"][0]["id"] = 92
+        if action == "public-get":
+            result["data"] = platform._get(str(endpoint))
+            if endpoint == f"repos/{REPOSITORY}" and not admin:
+                # Installation-token responses need not include an OAuth-user role map.
+                del result["data"]["permissions"]
+        return result
+
+    monkeypatch.setattr(platform, "_executor_json", observe)
+    return calls
+
+
+def test_opaque_provider_audit_can_verify_config_without_claiming_host_or_acceptance(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _mock_executor(monkeypatch)
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+    assert calls[0] == "audit" and "public-get" in calls
+    assert report["state"] == "CONFIG_VERIFIED"
+    assert report["execution_identity"] == report["app_permissions"] == "VERIFIED"
+    assert report["platform_canary"] == "NOT_RUN" and report["host_hook"] == "NOT_TESTED"
+    assert report["owner_authorization"] == "NOT_ASSESSED"
+
+
+def test_failed_executor_audit_stops_before_more_token_or_provider_requests(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _mock_executor(monkeypatch, defect="invalid_audit")
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+    assert calls == ["audit"]
+    assert report["state"] == "NOT_READY"
+
+
+def test_changed_executor_during_observation_fails_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    _mock_executor(monkeypatch, defect="identity_changed")
+    with pytest.raises(ValueError, match="identity changed"):
+        platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+
+
+def test_legal_but_different_executor_cannot_reuse_first_observation(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _mock_executor(monkeypatch, defect="identity_rotated")
+    with pytest.raises(ValueError, match="identity changed"):
+        platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+    assert calls == ["audit", "public-get"]
+
+
+def test_admin_metadata_cannot_be_laundered_by_otherwise_valid_app_claims(monkeypatch: pytest.MonkeyPatch) -> None:
+    _mock_executor(monkeypatch, admin=True)
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+    assert report["state"] == "NOT_READY"
+
+
+def test_executor_request_uses_only_the_controlled_cli_not_a_claim_file(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    calls: list[list[str]] = []
+
+    def run(command: list[str], **kwargs: Any) -> Any:
+        calls.append(command)
+        return type("ExecutorResult", (), {"returncode": 0, "stdout": json.dumps(_executor_observation())})()
+
+    monkeypatch.setattr(platform.subprocess, "run", run)
+    platform._executor_json(tmp_path, tmp_path / "sealed-vault", "daily", "public-get", f"repos/{REPOSITORY}")
+    assert calls[0][1] == "-I"
+    assert Path(calls[0][2]) == tmp_path / "scripts/sdd/delivery_executor.py"
+    assert calls[0][3] == "public-get" and calls[0][-2:] == ["--endpoint", f"/repos/{REPOSITORY}"]
+    assert "--permission-phase" in calls[0]
+
+
+def test_executor_python_startup_rejects_ambient_credentials_and_import_injection(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    captured: list[tuple[list[str], dict[str, Any]]] = []
+    for name in ("GH_TOKEN", "GITHUB_TOKEN", "GIT_CONFIG_COUNT", "GIT_CONFIG_VALUE_0", "GIT_TRACE",
+                 "HTTPS_PROXY", "SSLKEYLOGFILE", "PYTHONPATH", "PYTHONHOME", "PYTHONUSERBASE",
+                 "ARK_API_KEY", "GH_DEBUG"):
+        monkeypatch.setenv(name, "SYNTHETIC_OLD_CREDENTIAL_OR_STARTUP_INJECTION")
+
+    def run(command: list[str], **kwargs: Any) -> Any:
+        captured.append((command, kwargs))
+        return type("ExecutorResult", (), {"returncode": 0, "stdout": json.dumps(_executor_observation())})()
+
+    monkeypatch.setattr(platform.subprocess, "run", run)
+    platform._executor_json(tmp_path, tmp_path / "new-app-vault", "daily", "audit")
+    command, options = captured[0]
+    assert command[1] == "-I"  # Disables Python environment variables and the user site before imports.
+    assert options["cwd"] == tmp_path
+    assert set(options["env"]) <= set(platform._EXECUTOR_ENV)
+    assert "SYNTHETIC_OLD_CREDENTIAL_OR_STARTUP_INJECTION" not in json.dumps(options["env"])
+
+
+def test_actual_executor_child_starts_isolated_before_candidate_imports(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
+) -> None:
+    script = tmp_path / "scripts/sdd/delivery_executor.py"
+    script.parent.mkdir(parents=True)
+    script.write_text(
+        "import json, os, sys\n"
+        "print(json.dumps({'isolated':sys.flags.isolated, "
+        "'credential_present':'GH_TOKEN' in os.environ, "
+        "'injection_loaded':'sitecustomize' in sys.modules}))\n", encoding="utf-8",
+    )
+    injection = tmp_path / "untrusted-import"
+    injection.mkdir()
+    (injection / "sitecustomize.py").write_text("print('SHADOW_STARTUP_IMPORTED')\n", encoding="utf-8")
+    monkeypatch.setenv("PYTHONPATH", str(injection))
+    monkeypatch.setenv("GH_TOKEN", "SYNTHETIC_OLD_CREDENTIAL")
+    assert platform._executor_json(tmp_path, tmp_path / "new-app-vault", "daily", "audit") == {
+        "isolated": 1, "credential_present": False, "injection_loaded": False,
+    }
+
+
+def _hidden_actors(monkeypatch: pytest.MonkeyPatch, *, manager: str = "ranzuozhou",
+                   defect: str = "") -> list[str]:
+    _mock_executor(monkeypatch)
+    metadata_get = platform._get
+    management_calls: list[str] = []
+
+    def observe(root: Path, vault: Path, phase: str, action: str, endpoint: str | None = None) -> dict[str, Any]:
+        result = _executor_observation(phase)
+        if action == "public-get":
+            result["data"] = copy.deepcopy(metadata_get(str(endpoint)))
+            if isinstance(result["data"], dict):
+                result["data"].pop("bypass_actors", None)
+                if endpoint == f"repos/{REPOSITORY}":
+                    result["data"].pop("permissions", None)
+        return result
+
+    def get(endpoint: str) -> Any:
+        management_calls.append(endpoint)
+        if endpoint == "user":
+            return {"login": manager, "type": "User"}
+        result = copy.deepcopy(metadata_get(endpoint))
+        if isinstance(result, dict) and "bypass_actors" in result:
+            if defect == "changed_protection":
+                _parameters(result, "pull_request")["require_last_push_approval"] = False
+            elif defect == "hidden_bypass":
+                result["bypass_actors"] = [{"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"}]
+            elif defect == "still_hidden":
+                del result["bypass_actors"]
+        return result
+
+    monkeypatch.setattr(platform, "_executor_json", observe)
+    monkeypatch.setattr(platform, "_get", get)
+    return management_calls
+
+
+def test_hidden_bypass_list_is_unknown_without_management_observation(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _hidden_actors(monkeypatch)
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"))
+    assert report["state"] == "NOT_READY"
+    assert "user" not in calls
+    assert all(row["state"] == "NOT_READY" for row in report["checks"])
+
+
+def test_named_owner_read_only_observation_supplies_only_hidden_matching_fact(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _hidden_actors(monkeypatch)
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"), management_inspect=True)
+    assert report["state"] == "CONFIG_VERIFIED"
+    assert report["execution_identity"] == "VERIFIED"
+    assert report["management_observation"] == "NAMED_OWNER_METADATA_GET"
+    assert all(row["bypass_actors_source"] == "NAMED_OWNER_MANAGEMENT_GET" for row in report["checks"])
+    assert calls.count("user") == 1
+
+
+def test_management_cannot_replace_owner_or_mismatched_protection(monkeypatch: pytest.MonkeyPatch) -> None:
+    _hidden_actors(monkeypatch, manager="different-user")
+    with pytest.raises(ValueError, match="named Owner"):
+        platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"), management_inspect=True)
+    _hidden_actors(monkeypatch, defect="changed_protection")
+    with pytest.raises(ValueError, match="observations differ"):
+        platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"), management_inspect=True)
+
+
+@pytest.mark.parametrize("defect", ["hidden_bypass", "still_hidden"])
+def test_management_visibility_cannot_launder_bypass_or_absence(monkeypatch: pytest.MonkeyPatch, defect: str) -> None:
+    _hidden_actors(monkeypatch, defect=defect)
+    report = platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"), management_inspect=True)
+    assert report["state"] == "NOT_READY"
+
+
+def test_management_cannot_act_as_missing_executor(monkeypatch: pytest.MonkeyPatch) -> None:
+    _mock_remote(monkeypatch)
+    with pytest.raises(ValueError, match="separate executor"):
+        platform.inspect_platform(REPOSITORY, management_inspect=True)

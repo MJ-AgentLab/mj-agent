@@ -140,7 +140,7 @@ G21「evidence `pass_rate: 1.0` **或** runbook justification fallback」、G22�
 |---|---|---|---|
 | 定期 | 季度（每 3 月） | DRI | 原生 config/hooks/rules 的禁止与 Owner 批准边界（§5、§5.1） / 项目 MCP 清单及 env_vars 传名漂移 / hooks 实际健康 / ci.yml gate 状态；静态检查、批准与真实宿主拦截分别留证 |
 | 模型 release | model major bump 1 周内 | DRI | 新 model 是否需新 permission 边界 / hook 是否在新 model 下仍触发 |
-| MCP server 季度审计 | 季度 | DRI + reviewer | `.codex/config.toml` **全部** server 的 trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`）。当期数量按 `uv run --frozen --no-sync python -c "import pathlib,tomllib; print(len(tomllib.loads(pathlib.Path('.codex/config.toml').read_text(encoding='utf-8'))['mcp_servers']))"` 复算；原生结构校验见 `scripts/sdd/check_codex_native.py --surface mcp`。这些检查仅解析公共配置，不连接服务，也不替代工程师对信任与凭据模式的独立审阅；不在本表写死服务数量。 |
+| MCP server 季度审计 | 季度 | DRI + reviewer | `.codex/config.toml` **全部** server 的 trust posture + credential mode（per A14 PR gate + `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml`）。当期数量按 `uv run --frozen --no-sync python -c "import pathlib,tomllib; print(len(tomllib.loads(pathlib.Path('.codex/config.toml').read_text(encoding='utf-8'))['mcp_servers']))"` 复算；原生结构校验见 `scripts/sdd/check_codex_native.py --surface mcp`。这些检查仅解析公共配置，不连接服务，也不替代独立Agent对真实信任配置/凭据模式/守卫负例的核验及宿主实际加载；不在本表写死服务数量。 |
 | Gate 启用前 | gate blocking 切换前 1 周 | DRI | dry-run violation 数量 + 影响范围 |
 
 **审计输出**：`evidence/ai-context-audit/<YYYY-MM>_ci_audit.md`（与 `policies/documentation.md`
@@ -293,7 +293,7 @@ head 取样得到的两形相等只说明尚未跨过 cron，**不**说明裸形
 ## §5 原生配置边界（团队与个人分离）
 
 团队直接维护 `.codex/config.toml`、`hooks.json` 与 `rules/`；个人配置和信任不由仓库修改。
-配置、规则、守卫及其保护边界变化须 Owner 审阅。任务授权与技术执行条件分开；正常工具执行成组方案，实际拒绝返回BLOCKED_EXECUTION_ROUTE，不绕过。禁止自动信任项目、激活 hooks 或放宽权限来使验证通过。
+配置/规则/守卫的实质信任、权限或必要门禁变化由Owner在聊天对实际成果/SHA作决定；技术审阅由独立Agent读取真实成果/负例完成。任务授权与技术执行条件分开；正常工具执行成组方案，实际拒绝返回BLOCKED_EXECUTION_ROUTE，不绕过。独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。已有秘密不读取；新App材料仅受控后台处理，后台/实际启动未验证不PASS。
 
 ### §5.1 A13 原生保护审阅
 

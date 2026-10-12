@@ -317,7 +317,7 @@ Issue #582 的离线 EVAL runner 见 [SPEC 设计](../capabilities/data-agent/ev
 
 ## 快速链接
 
-- Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，项目与 hook 信任由工程师独立审阅；见 [[decisions/ADR-040_Codex_Only_Development|ADR-040]]）。
+- Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，独立Agent审阅真实配置/守卫负例后执行Agent经正常宿主机制启用本项目范围信任；新App受控后台值不可见，不支持未验证；见[[decisions/ADR-042_Agent_First_Delivery_Governance|ADR-042]]）。
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）
 
 - 原生开发维护、受控离线测试、平台边界与恢复交接：[[guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §4 / §6.4。

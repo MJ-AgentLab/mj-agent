@@ -24,6 +24,7 @@
     "scripts/sdd/check_bdd_acceptance.py",
     "scripts/sdd/check_delivery_platform.py",
     "scripts/sdd/delivery_evidence.py",
+    "scripts/sdd/delivery_executor.py",
     "scripts/sdd/task_delivery.py",
     "scripts/sdd/check_bdd_scenario_trace.py",
     "scripts/sdd/check_bdd_unautomated.py",

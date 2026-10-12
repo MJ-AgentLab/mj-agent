@@ -1,6 +1,6 @@
 ---
 name: mj-agent-git-review-pr
-description: 适用于 mj-agent 的审别人PR架构/数据边界。输入：他人PR URL/head、diff、branch、规范。流程：定位→变更概览→F1-F3/D1-D9→草案→授权发布建议→人工决策。输出：每发现有文件/影响/依据，未测项清楚。Use when：评审另一作者PR的guardrail与模块边界。Do not use for：我的PR收到反馈请代拟回复；建议flow-review-respond，区分方向。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的审别人PR架构/数据边界。输入：他人PR URL/head、diff、branch、规范。流程：定位→变更概览→F1-F3/D1-D9→草案→授权发布建议→人工决策。输出：每发现有文件/影响/依据，未测项清楚。Use when：评审另一作者PR的guardrail与模块边界。Do not use for：我的PR收到反馈请代拟回复；建议flow-review-respond，区分方向。独立Agent审真实成果；Owner在聊天决定，Agent以不同Owner身份执行平台审核。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
@@ -139,9 +139,9 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 
 按严重度分组：Critical > Important > Suggestion。
 
-### Stage 4: 人工确认 → 发布 comment
+### Stage 4: Owner决定 → Agent执行平台审核
 
-向 Owner 询问 展示评审摘要 + 提供选项：
+展示实际成果/SHA、独立核验与风险摘要，等待Owner作实质批准/接受决定；随后Agent依真实决定以不同于作者/最后推送者的Owner身份执行平台审核。普通评论发布仍核明确消息授权；模型不读取现有秘密。选项针对真实取舍：
 
 ```
 options:
@@ -195,7 +195,7 @@ GitHub Comment 格式（建议）：
   建议下一步：
   - 文档改动 → mj-agent-doc-review（PR-C1 落地）
   - 技术合并检查 → mj-agent-git-check-merge
-  - 授权内合并 → 协调者核任务merge授权、当前head有效平台批准/最后推送审核及门禁后正常执行；Owner业务接受另记
+  - 授权内审核/合并→Agent依Owner聊天实际成果/SHA决定执行不同Owner身份的审核；协调者核merge授权、最后推送审核和门禁后执行。Owner业务接受另记
 ```
 
 ## What This Skill DOES NOT DO

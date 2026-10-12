@@ -1,6 +1,6 @@
 ---
 name: mj-agent-git-check-merge
-description: 适用于 mj-agent 的Stage16技术合并就绪检查。输入：PR、head/base、CI、reviews、描述、commits。流程：PR定位→获取数据→冲突/CI/review/描述/merge commit→报告。输出：已观测门控及未验证required-check状态分开。Use when：检查PR是否具备技术合并条件。Do not use for：评审这个PR模块边界设计；建议git-review-pr，不用CI绿代替架构审查。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的Stage16技术合并就绪检查。输入：PR、head/base、CI、reviews、描述、commits。流程：PR定位→获取数据→冲突/CI/review/描述/merge commit→报告。输出：已观测门控及未验证required-check状态分开。Use when：检查PR是否具备技术合并条件。Do not use for：评审这个PR模块边界设计；建议git-review-pr，不用CI绿代替架构审查。平台Approve由Agent依Owner真实聊天成果/SHA决定以独立Owner身份执行。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 
@@ -91,7 +91,7 @@ gh pr view <number> --json number,title,headRefName,mergeable,body,reviews,statu
 |---|---|---|
 | 无合并冲突 | ✅ Pass | 可正常合并 |
 | CI 检查通过 | ❌ Fail | 2 项未通过：`ruff`, `mypy` |
-| Review有效且满足平台规则 | ⚠️ Pending | 0/1 Approve（等待审核人）|
+| Review有效且满足平台规则 | ⚠️ Pending | 当前head无有效Approve（待Owner真实聊天决定，随后Agent执行审核）|
 | PR 描述完整 | ❌ Fail | 缺：审核要点、自检清单未勾选 |
 | Merge Commit | ℹ️ Info | 1 个 merge commit，涉及 3 文件 |
 
@@ -148,7 +148,7 @@ StatusContext (__typename: "StatusContext"):
 - 当前head满足平台有效批准、最后推送审核及讨论解决→Pass；旧/作者/末推送者批准不单独Pass
 - `0 Approve` → ⚠️ Pending
 
-理由：Approve 依赖外部，不是开发者能自修的；Pending 单独一档。
+理由：Owner在聊天对实际成果/SHA作决定后，Agent依真实决定用不同于作者/最后推送者的Owner身份执行平台审核；未决定或版本不匹配保持Pending，不能自行生成Owner决定。后台或平台机制不支持则如实未验证，Pending单列。
 
 ## Merge Commit 判定
 
@@ -193,7 +193,7 @@ StatusContext (__typename: "StatusContext"):
 ## Anti-patterns
 
 - **不要** 用 `gh pr checks` 与其他命令并行（exit code 8 会取消其他调用）
-- **不要** 把 Pending 当 Fail（Pending 单独一档；Approve 依赖外部）
+- **不要** 把 Pending 当 Fail（Pending单列；Owner决定与Agent执行审核分开）
 - **不要** 在 mergeable=UNKNOWN 时强制判 Pass/Fail（让 user 等 GitHub 计算完）
 - **不要** 跳过按所选类型或 release 模板核对描述必填字段及根模板取用项
 

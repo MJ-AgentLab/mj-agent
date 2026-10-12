@@ -265,9 +265,9 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 
 先读根及目标目录 AGENTS，按 [ADR-040](../../decisions/ADR-040_Codex_Only_Development.md) 直接维护 `.agents/skills/`、`.agents/references/` 和 `.codex/`。技能索引为 `.agents/skills/SKILL_INDEX.md`；不执行生成、投影、adopt 或 lock 同步。非客户端 `sdd/adapters/` 规范继续保留。
 
-普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的边界变化先由 Owner 审阅准确差异。SQL/runtime/Prompt/catalog按实际语义分类，基线内安全保持自主；安全/业务/外发/权限/接受标准实质变化先Owner决定。暂存、提交、普通双推、PR及merge可集中列入具名任务授权，普通内容更新核实际版本但不自动重新批准；新分支使用 worktree，迁移 PR base 为 develop。
+普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的实质边界变化先由Owner在聊天决定实际成果/SHA，技术实现由独立Agent核真实差异/负例。SQL/runtime/Prompt/catalog按实际语义分类，基线内安全保持自主；安全/业务/外发/权限/接受标准实质变化先Owner决定。暂存、提交、普通双推、PR及merge可集中列入具名任务授权，普通内容更新核实际版本但不自动重新批准；新分支使用 worktree，迁移 PR base 为 develop。
 
-Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 MCP 凭据。代理不自动信任/激活 hook、不更改个人配置或权限、不解密或写 OS 凭据。配置检查成功不等于服务已连接。
+独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。原应用/MCP秘密方法及边界保留，本次不将其作为新App启动前置；配置检查不等于连接或宿主加载。
 
 迁移证据覆盖 Windows Codex CLI 0.147.0 的已批准发现、五技能族及近邻 canary、hook 允许/拒绝和具名原生规则拒绝，以及 Linux 隔离离线检查与清理前 GitHub Ubuntu CI。Desktop、Linux Codex 宿主及 L6 外部服务未验证；每次复用都须比对受测文件身份。最终版本是否提交、CI/review/合并通过，以实际 SHA 的新记录为准。
 
@@ -275,7 +275,7 @@ Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 M
 
 ## §6.5 G1/G2 PreToolUse hook 防护
 
-原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。必须先人工审阅项目与 hook 信任；本地静态检查不证明宿主已加载。
+原生 `scripts/sdd/codex_hook_guard.py` 保留 G1/G2、Owner 和秘密边界。独立Agent先审阅真实项目/hooks配置及守卫负例，再由执行Agent按正常宿主机制启用项目范围；本地静态检查不证明加载。
 
 已批准具体删除清单时，先核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、占用及符号链接/重解析点，再用正常工具逐项执行。相同范围和内容不重复确认或索取额外理由，也不预设 Owner 人工删除；目标变化或授权撤销只暂停受影响项。核验快照不是授权凭证，工具审批由宿主处理。
 
@@ -285,7 +285,7 @@ Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 M
 | `on-request` | 可以请求正常审批；不是已经批准或自动放行 |
 | 未知 | `UNKNOWN`，项目配置不能替代有效会话证据 |
 
-实际拒绝时保存原始错误；显式 hook decision、审批模式错误或文件占用证据可用于归因，通用 `blocked by policy` 只能标阻断层未知。受阻步骤保持 `BLOCKED_EXECUTION_ROUTE`；不修改权限、停用保护、改写命令或换工具绕过。工程师通过正常配置流程核实有效模式后，再在获批临时样本上记录宿主版本、正常请求/审批和实际删除结果。
+实际拒绝时保存原始错误；显式 hook decision、审批模式错误或文件占用证据可用于归因，通用 `blocked by policy` 只能标阻断层未知。受阻步骤保持 `BLOCKED_EXECUTION_ROUTE`；不修改权限、停用保护、改写命令或换工具绕过。执行Agent通过宿主正常机制核实有效模式后，再在获批临时样本上记录宿主版本、正常请求/审批和实际删除结果。
 
 ### 删除清单只读核验
 
@@ -368,7 +368,7 @@ python scripts/check_codex_approvals.py --effective-approval-policy never --comm
 
 输出 `session_approval=PER_COMMAND`，每行列出规则来源/匹配、status、静态 hook 结果；有效模式及其来源单列。Git/gh 正常文件基线为 `NO_MATCH` / `NO_PROJECT_RULE_REQUIREMENT`，不等于宿主许可。Remove-Item 的 prompt 在 never 下为 INCOMPATIBLE，在 on-request 下为 APPROVAL_REQUIRED，模式未知为 UNKNOWN。规则文件缺失、损坏、间接路径或不符合基线时为 UNKNOWN；`rule_loading=UNKNOWN` 与 `host_enforcement=NOT_TESTED` 不被静态通过抹掉。默认包含全部示例，故 never 时只有 Remove-Item 导致 exit 1；筛选正常 Git 动作可为 exit 0。未知规则或所选 prompt 模式未知为 exit 2。示例不是当前任务对象或授权。
 
-`check_codex_native.py` 只报配置静态结果和 PER_COMMAND，不从一个动作推导整个会话统一不兼容。它不修改模式、个人配置或信任。目标会话实际加载情况、Desktop 引擎版本及覆盖来源仍由工程师独立核实。
+`check_codex_native.py` 只报配置静态结果和 PER_COMMAND，不从一个动作推导整个会话统一不兼容。它不修改模式、个人配置或信任。目标会话实际加载情况、Desktop 引擎版本及覆盖来源由执行Agent在独立Agent审阅后核实，无法核实标未验证。
 
 ### 对象核验和恢复
 
@@ -501,7 +501,7 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 
 **提交链路**（§6 + §6.5）
 
-- [ ] 已配 `.codex/hooks.json` PreToolUse hook（项目与 hooks 均需人工审阅信任；不得自动激活）
+- [ ] 已配 `.codex/hooks.json` PreToolUse hook（独立Agent先核真实配置/负例，执行Agent仅经正常宿主机制启用本项目信任，不改个人config）
 - [ ] 已读 [[../rule/[STANDARD]_MJ_Agent_Commit_Message_Convention|Commit Message 规范]] §4 scope 派生规则
 
 **学习包**
