@@ -1,0 +1,34 @@
+# #582 Stage 6 declared contract. Current authorization covers this document.
+# No source implementation exists yet; the CLI anchor is DEFERRED.
+# Do not treat structural contract PASS as a Python/API or runner PASS.
+contract_id: python
+adapter: python
+covers_requirements:
+  - REQ-001
+  - REQ-002
+  - REQ-003
+  - REQ-004
+  - REQ-005
+  - REQ-006
+modules:
+  - path: src.mj_agent.evaluation.runner
+    freeze_anchor: src/mj_agent/evaluation/runner.py
+    exports:
+      - name: main
+        signature: "def main(argv: list[str] | None = None) -> int"
+        public: true
+    public_invariants:
+      - "只读取显式脱敏本地输入并输出离线报告，不加载应用配置或连接外部服务"
+      - "所有 dataset case 有结果，未知检查不静默跳过，首次尝试与错误轨迹保留"
+      - "逐 case 和逐 check 状态不掩盖缺口；synthetic fixture 不产生 runtime baseline"
+      - "报告遵循 design 的完整性、严格窗口、兼容性、精确阈值与退出码"
+      - "合成验收由 Agent 模拟角色并独立核验，来源和审阅链可追踪，不要求真人参与"
+      - "相同输入的规范化 JSON、Markdown 和退出码一致"
+non_actions:
+  - module: src.mj_agent.evaluation.runner
+    items:
+      - "不采样、不执行输入 SQL、不导入 agent/tools/config/LLM/DB"
+      - "不改 runtime、dataset、既有契约、CI gate、waiver 或任何 Issue 状态"
+      - "缺能力时延期入口，不放宽核心窗口条件或填造运行证据"
+hitl_required:
+  - declared-contract-change

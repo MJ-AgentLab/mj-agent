@@ -13,6 +13,7 @@
 | id | name | domain | lifecycle | archive | last_verified | adapter_coverage |
 |---|---|---|---|---|---|---|
 | [data-agent.biz-catalog](./data-agent/biz-catalog/spec.yml) | QCM Catalog Mirror | data-agent | active | active | 2026-06-03 | python, runtime-skill, tdd-bdd |
+| [data-agent.evaluation](./data-agent/evaluation/spec.yml) | Offline Runtime Observation Replay and EVAL Reporting | data-agent | idea | active | None | python, tdd-bdd |
 | [data-agent.llm-provider](./data-agent/llm-provider/spec.yml) | LLM Provider Abstraction (ark + local-openai-compat) | data-agent | active | active | 2026-06-03 | python, tdd-bdd |
 | [data-agent.memory-checkpointer](./data-agent/memory-checkpointer/spec.yml) | Memory Checkpoint At-Rest Desensitization | data-agent | active | active | 2026-07-22 | python, tdd-bdd |
 | [data-agent.safe-sql](./data-agent/safe-sql/spec.yml) | Safe SQL 4-Layer Guardrails | data-agent | active | active | 2026-06-03 | python, langchain-agent, tdd-bdd |

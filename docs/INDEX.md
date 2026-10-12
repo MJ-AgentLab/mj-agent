@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-10-08
+updated: 2026-10-12
 state: draft
 track: shared
 ---
@@ -12,6 +12,8 @@ track: shared
 # mj-agent 文档索引
 
 Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)（draft）、[实施计划](../plans/[PLAN]_555_approved_deletion.md) §11 和 [开发指南](guide/[GUIDE]_Developer_Onboarding.md) §6.6。
+
+Issue #582 的离线 EVAL runner 见 [SPEC 设计](../capabilities/data-agent/evaluation/design.md)、[需求](../capabilities/data-agent/evaluation/requirements.md)、[回放 RUNBOOK](../capabilities/data-agent/evaluation/runbook.md) 与 [Agent 合成静态审阅](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_agent_synthetic_review.md)；capability 仍为 idea，两份正式契约已落盘，严格窗口保留，离线核心已通过合成验收，CLI／actual 入口延期、live EVAL 未执行。见 [核心验收报告](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)。
 
 > **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
 > 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.
