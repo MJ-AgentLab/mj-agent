@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-env-setup
-description: "适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。授权：口令/秘密不入agent；只6项目变量；P1工具未真实运行；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — Env Setup
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述

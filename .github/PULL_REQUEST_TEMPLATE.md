@@ -20,7 +20,7 @@
 
 - **Plan 声明**：<列出 plan 中明确列入本 PR 的文件 / 目录范围>
 - **实际改动**：<列出本 PR 实际改动的文件 / 目录范围>
-- **是否偏离**：no / yes（如 yes → 走 `mj-agent-flow-scope-drift` HITL）
+- **是否偏离**：no / yes（如yes→scope-drift按实际影响分类）
 
 ## Adapter Coverage（哪些 sdd/adapters/ 被影响）
 
@@ -36,15 +36,24 @@
 ## Docker Impact
 
 - [ ] no
-- [ ] yes — Dockerfile（**非**外部镜像引用行；→ ≥ 2 reviewer per `policies/docker-runtime.md` §4）/ compose.yaml / override.yml 修改
-- [ ] yes — **`docker/Dockerfile` 外部 registry 镜像引用修改**（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内）**→ 供应链红线 HITL：改前 Owner 拍板 + ≥ 2 reviewer**（`policies/docker-runtime.md` §4；勾此项须同时勾下方 `secrets-grants-or-prod-config`）
-- [ ] yes — **compose.prod.yml 修改 → 生产红线 HITL（≥ 2 reviewer + 项目负责人）**
+- [ ] yes — Dockerfile（**非**外部镜像引用行；→ 按风险独立工程/供应链核验 per `policies/docker-runtime.md` §4）/ compose.yaml / override.yml 修改
+- [ ] yes — **`docker/Dockerfile` 外部 registry 镜像引用修改**（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内）**→ 供应链信任来源变化先Owner决定，来源内维护自主并独立核验**（`policies/docker-runtime.md` §4；勾此项须同时勾下方 `secrets-grants-or-prod-config`）
+- [ ] yes — **compose.prod.yml 修改 → 生产策略/权限变化先Owner决定，具名发布授权另核**
+
+## 接受基线与执行授权
+
+- AC/目标基线与来源、版本：
+- 操作/对象/环境/权限/副作用/资源/停止条件及授权来源：
+- PR模式/精确head→base/是否已具备平台前置：
+- 仓库批准、部署授权、实际运行验收、Owner接受状态分别记录：
 
 ## Evidence Links
 
 - BDD evidence: `evidence/bdd/...`（如 capability 有 behavior.feature）
 - TDD evidence: `evidence/tdd/...`（red / green / refactor 三阶段）
 - Verification evidence: `evidence/verification/...`
+- 首期CI仓外artifact：实际head/base/测试版本、产物/输入/依赖摘要、环境时点、命令exit、逐AC预期/实际/状态；独立核验复现记录。
+- 未测/延期、门禁自降过渡风险及恢复能力：
 
 ## Spec Drift
 
@@ -55,17 +64,17 @@
 ## AI Self-Check Checklist（per `policies/ai-agent.md` §4 + §6）
 
 - [ ] Codex 参与情况: **NONE / 描述贡献**（说明本次已授权的实际贡献）
-- [ ] HITL scenario hit: **NONE / 列出**（per `policies/ai-agent.md` §4 canonical 10-enum）
+- [ ] Risk / decision inventory: **NONE / 列出**（per `policies/ai-agent.md` §4 canonical 10-enum）
 - [ ] BDD/TDD impact: **NONE / 列出**（per blueprint §11.6 #11）
-- [ ] Subagent dispatched: **NONE / 列出**（per `policies/ai-agent.md` §2 A3）
+- [ ] Subagent dispatched: **NONE / 列出**（per `policies/ai-agent.md` §2按需委派）
 
-## HITL Trigger Inventory（canonical 10-enum，与 `policies/ai-agent.md` §4 一一对应）
+## Risk / Decision Inventory（canonical 10-enum定位影响；逐项记录基线内/需实质决定及依据，路径命中不自动审批）
 
 - [ ] sql-guardrail-relax（`src/mj_agent/tools/sql/{guardrail,precheck}.py`）
 - [ ] runtime-skill-content-change（`src/mj_agent/skills/*/SKILL.md` body）
 - [ ] prompt-version-or-body-change（`src/mj_agent/prompts/system.md` version 或 body）
 - [ ] biz-catalog-sync（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）
-- [ ] mcp-server-trust-posture-change（原生 `.codex/**` 配置/守卫、MCP 启动器、冻结 infra 技能与契约；维护权切换不取消 Owner 必停）
+- [ ] mcp-server-trust-posture-change（原生 `.codex/**` 配置/守卫、MCP 启动器、冻结 infra 技能与契约；实际信任/权限/治理标准变化先Owner决定）
 - [ ] declared-contract-change（`capabilities/*/contracts/*` + agent tool 列表）
 - [ ] database-migration（mj_agent_memory schema / Alembic / postgres-init）
 - [ ] secrets-grants-or-prod-config（`config/secrets*.enc` / GRANT / analyst role / `docker/compose.prod.yml` / `docker/Dockerfile` 外部 registry 镜像引用；#413 供应链面）
@@ -116,7 +125,7 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contrac
 <summary><b>Legacy Engineering-Workflow checklist</b> (A12-A14) — Phase M5 末迁入 policies/</summary>
 
 - [ ] A12：`.agents/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
-- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/风险上下文/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
 - [ ] A14：`.codex/config.toml` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
 
 </details>

@@ -2,28 +2,11 @@
 
 > Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
-## Hard stops (OWNER_APPROVAL_REQUIRED before any edit)
+## 风险与执行条件
 
-| Surface | Why |
-|---|---|
-| `docker/compose.prod.yml` (any field) | prod red line — canonical enum `secrets-grants-or-prod-config` (`policies/ai-agent.md` §4) |
-| `mj-system-backend-network` external wiring | cross-repo boundary (ADR-008) |
-| healthcheck fields (mj-agent / mj-agent-postgres / mj-agent-redis) | production observability |
-| `docker/Dockerfile` external image refs — `FROM <image>` + `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in scope); contract mirror = `docker.contract.yml` `base_image` | supply chain — canonical enum `secrets-grants-or-prod-config` (`policies/ai-agent.md` §4); approval level `policies/docker-runtime.md` §4 |
+按 `policies/docker-runtime.md` §4实际影响分类：生产策略/权限、跨仓network所有权、观测接受标准及供应链信任来源变化先Owner决定。任务内具名dev维护、兼容healthcheck修复、保持信任来源的镜像更新可自主完成，独立核验按风险覆盖工程/供应链视角，不要求真人或固定人数。
 
-> **This table names surfaces; the kernel sets the levels.** Approval levels for the
-> compose.prod.yml, image-ref and external-network rows live in `policies/docker-runtime.md` §4;
-> the healthcheck row still has no §4 entry, so it keeps this section header's
-> `OWNER_APPROVAL_REQUIRED` until the kernel covers it. (§3 was filled in v0.4, but the row was
-> **deliberately** not added to §4 — which canonical enum anchors that surface is an Owner posture
-> call; the criterion and trigger are recorded at the end of that file's §3.) Note the §4 split:
-> only the external registry image refs above carry `OWNER_APPROVAL_REQUIRED`
-> **among `docker/Dockerfile` lines** —
-> **every other `docker/Dockerfile` line is ≥ 2 reviewer and is not a hard stop** (per #408 AC-4 /
-> #413). That statement is about Dockerfile lines only; it does not touch the other three rows.
-> Codex: this file loads only once your cwd is under `docker/`
-> — the same stop is restated in the repo-root `AGENTS.md` §Self-enforced boundaries item 3, which
-> always loads.
+内部COPY stage不是外部镜像信任来源；构建成功不证明来源可信或prod运行通过。具名运行授权、接受基线与平台审核分别核验。
 
 ## Env & secrets carrier rule
 
@@ -36,8 +19,7 @@
 
 ## Destructive teardown
 
-`down -v` (and `--rmi`) destroys mj-agent-postgres / mj-agent-redis volumes — Owner
-confirmation is required before a Level 2/3 teardown, whichever tool executes it.
+`down -v` (and `--rmi`) destroys mj-agent-postgres / mj-agent-redis volumes — 独立列明具名对象、损失、必要备份及恢复条件后才能执行Level2/3；已有相同授权复用。
 
 ## Verification (either tool, from repo root)
 

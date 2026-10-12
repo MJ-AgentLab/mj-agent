@@ -61,7 +61,7 @@ def test_unknown_or_ambiguous_forms_still_stop(command):
 @pytest.mark.parametrize('command', [
     'git push origin --delete maintain/one develop',
     'git push gitee --delete refs/heads/main maintain/two',
-    'git checkout -bnew', 'git switch --create=new', 'gh pr merge 1',
+    'git checkout -bnew', 'git switch --create=new', 'gh pr merge 1 --admin',
     ['gh', 'pr', 'create', '-R', 'synthetic/repo', '-H', 'hotfix/example', '-B', 'develop',
      '-t', 'title', '-F', 'body.md'],
     'git commit -F config/secrets.enc',

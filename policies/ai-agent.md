@@ -2,10 +2,10 @@
 type: policy
 artifact: ai-agent
 state: draft
-version: 0.9
+version: "0.10"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-10
+updated: 2026-10-12
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -23,23 +23,13 @@ AGENTS.md 为原生入口，政策、SDD、capability contracts 继续承载规�
 无需旧客户端插件或投影链。对等的安全与数据约束继续适用；授权不消除保护。
 每次任务报告 Codex 参与、HITL、BDD/TDD 与委派情况。
 
-## §2 Subagent Split 准则（A3 — Anthropic 大型代码库最佳实践；native）
+## §2 按需委派与 effort
 
-**强制触发条件**（满足任一即必须走 read-only explore subagent，而非 main session 直接 read）：
+协调者按可划分范围、并行收益和整体完成效率选择是否委派，不规定固定人数或文件数量触发。每次传递目标、接受基线与决定位置，输入/范围/依赖/产物，实际工作区/比较基线/版本，核验与证据要求，授权/资源/停止条件及返回点。并行写使用独立工作区或明确文件归属，共享环境写由协调者安排。
 
-| 触发 | 行动 |
-|---|---|
-| scope 涉及 ≥ 2 capability | dispatch `Explore` subagent 输出 RepoScanResult 文件 → main session 读 RepoScanResult 编辑 |
-| 预计 Read 文件 ≥ 50 个（含 `docs/` / `archive/`） | 同上 |
-| 任务起点是"我需要先了解 X"（探索性问题） | 走 `mj-agent-flow-repo-scan` skill |
-| Phase M5 / M6 大规模迁移 / 归档前的 stale-reference 扫描 | dispatch 2-3 parallel explore subagents 分 path-scope |
+独立核验者读取真实成果，按 AC 独立建立期望和复现；另一 Agent、模型或通过总结不能单独证明质量。按风险覆盖工程、领域、Prompt、供应链等视角，不规定真人或人数。
 
-**理由**（per Anthropic 博客 "Effective context engineering for AI agents"）：split exploration
-from editing — read-only subagent 输出 findings 文件，main agent 用文件全貌编辑，避免 main
-session context 被探索性 read 污染.
-
-**反例**（违反 A3）：在 main session 连续 `Read` ≥ 50 个 docs/archive/ 文件做"调研" — context
-膨胀直接吞掉编辑期可用预算.
+平台支持时，协调者在当前模型实际支持档位及既定预算内自主配置 effort：明确低风险任务较低，常规实施常规，复杂跨模块/故障/审查较高，实质困难或证据矛盾可升级并记依据。所有档位采用相同 AC。effort 不自动更换模型、扩大权限或新增操作；没有真实配置能力则不声称生效。任务已定资源限制优先，无统一固定人数或数字预算。
 
 ## §3 Symbol-first Search 准则（A5 — Anthropic 大型代码库最佳实践；native）
 
@@ -58,47 +48,48 @@ non-Python 文件）时 grep 仍是首选.
 type inference 在 some edge case 有差异（per R-G23）. 出现差异时以 mypy 为准（CI 阻塞 source
 of truth），LSP 仅作交互式辅助.
 
-## §4 HITL Required Scenarios — Canonical 10-Enum（M3-FU-HITL-ENUM 收敛）
+## §4 实质决定与任务授权 — Canonical 10-Enum
 
-任何 PR 触及以下 enum 之一必须 HITL 人审（CI blocking gate 不覆盖此层；`sdd/gates.md §4`
-是本 enum 的 in-source 子集，前 4 行）：
+历史 enum 保留为风险定位标签，路径命中不自动要求审批。先核实差异对接受基线、数据、安全、业务、权限与门禁的实际影响。接受基线内的普通实现、四类 runtime 面的安全行为保持、兼容契约、必要重构、局部修复及验证由 Agent 自主完成，并提供行为与负例证据。
 
-| Enum | Surface anchor | Notes |
+| Enum | 需要 Owner 实质决定的变化 | 基线内执行 |
 |---|---|---|
-| `sql-guardrail-relax` | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | 4 层 SQL 防御核心；`sdd/workflows/cross-capability-change.md` |
-| `runtime-skill-content-change` | `src/mj_agent/skills/*/SKILL.md` body | per `runtime-skill.contract.yml hitl_required[]`；propose+拍板+apply via `mj-agent-runtime-skill-doc-improve` |
-| `prompt-version-or-body-change` | `src/mj_agent/prompts/system.md`（version 或 body 任一） | 含义吸收原 `prompt-version-bump` + "Prompt 行为边界变更" 两 trigger |
-| `biz-catalog-sync` | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | per `runtime-skill.contract.yml`；上游 mj-system QCM 同步 |
-| `mcp-server-trust-posture-change` | `.codex/config.toml` 服务/trust/凭据；`.codex/hooks.json`、`.codex/rules/*.rules`、原生守卫与启动器、冻结 infra 原生技能及其契约 | 原生资产直接维护；不再经 typed source/renderer/lock。所有权切换不取消 Owner 批准。 |
-| `declared-contract-change` | `capabilities/*/contracts/*.{yml,feature}` + agent tool 列表 + agent.contract.yml | 含义吸收原 "cross-capability contract 变更" + "Agent tool 列表 + schema 变更" |
-| `database-migration` | `mj_agent_memory` schema / Alembic / `docker/postgres-init/*` | mj-agent memory pg state 变更 |
-| `secrets-grants-or-prod-config` | `config/secrets*.enc` / GRANT SQL / analyst role / `docker/compose.prod.yml` / 数据-LLM 边界 ADR-000；**#413 扩展供应链面**：`docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | 含义吸收原 "secrets / 权限 / GRANT" + "生产运行方式变更" + "数据-LLM 边界 ADR-000" 三 trigger；供应链面规则体 = `policies/docker-runtime.md` §4（anchor 扩展沿用 D-017 先例：**enum 数量不变**，只扩既有行的 surface anchor） |
-| `ci-blocking-gate-toggle` | `.github/workflows/ci.yml` `continue-on-error` flip 或新增 blocking gate | per Stage C C-a 流程；M-FU plan 必先 register |
-| `bulk-content-purge-or-migration` | ≥10 file delete/move 或 archive ceremony | 含义吸收原 "删除 / 迁移 / 归档历史内容" + "大规模目录迁移（≥10 文件）" |
+| `sql-guardrail-relax` | SQL 安全不变量、数据范围或防御失效方向变化 | 保持不变量的修复/重构，安全负例回归 |
+| `runtime-skill-content-change` | 业务口径、工具数据范围、外发边界或接受标准变化 | 保持上述边界的正文改善；独立领域/Prompt 视角核验 |
+| `prompt-version-or-body-change` | 行为承诺、安全/业务/外发边界或模型选择变化 | 基线内正文与版本维护，EVAL 及行为证据 |
+| `biz-catalog-sync` | 指标口径、可见数据范围或上游规范选择变化 | Owner 背书快照内兼容同步，漂移与依赖核对 |
+| `mcp-server-trust-posture-change` | 服务、trust、权限、凭据模式、原生守卫或冻结 infra 边界变化 | 已批准方案执行；维护冻结摘要，工程师独立信任/加载核验 |
+| `declared-contract-change` | breaking 承诺、跨域接受标准或权限变化 | 兼容契约补齐，行为/负例回归与引用闭合 |
+| `database-migration` | 超出授权的状态影响、高风险或不可逆迁移 | 具名可逆 dev 迁移按工具链、备份和恢复条件执行 |
+| `secrets-grants-or-prod-config` | 权限、生产策略、外发或供应链信任来源变化 | 已批准方案执行；秘密仍由工程师维护 |
+| `ci-blocking-gate-toggle` | 必要门禁、接受标准、执行来源或保护降低/替换 | 已批准门禁改造与负例验证，失败由 Agent 定位修复 |
+| `bulk-content-purge-or-migration` | 未授权删除/移动对象、不可逆损失或范围扩大 | 独立列明具名清理、备份及损失条件后执行 |
 
-补充 procedural HITL（不绑单一 surface anchor；走 PR review 流程，不入上表 canonical enum）：
-- ADR `state` 变化（`draft → active` / `active → deprecated` / `supersede`）
-- Phase 边界（Stage entry / closure；per Phase M2/M3 kickoff outline）
+元规则、ADR 和阶段状态的实质治理变化由 Owner 决定；普通符合已定规则的正文、计划及状态记录自主维护。阶段身份或风险等级本身不产生固定人工停点。技术拒绝无法归因时标未知，暂停受影响动作而继续独立且已授权工作。
 
-> **Post-merge tail（EVAL-backlog 自动开单）**：`runtime-skill-content-change` /
-> `prompt-version-or-body-change` 触及的 PR merge 后，自动开 `[EVAL backlog]` follow-up Issue
-> （A11 transitional-waiver 期兜底；无论本 PR 是否带 EVAL 引用）。规则体见
-> `sdd/workflows/execution-loop.md §7.3`（HITL_Prompt §4.15 Rule 11 的 kernel home）。
+### §4.1 接受基线与执行授权
 
-> **执行机制**：AI 给具体差异，Owner 对目标/动作/关键内容/范围拍板。当前任务已明确批准的具体删除清单无需重复确认或额外理由；批准不扩展到其他目录、worktree、后来新增内容或不同动作。删除前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及符号链接/重解析点；变化只暂停受影响项。核验通过后由 Codex 使用正常工具执行，不预设人工删除。项目授权与宿主审批分开，hook 不认证聊天授权；UNKNOWN/FORBIDDEN 继续阻断，守卫未命中不构成授权。实际拒绝时保留原始错误，依据证据区分 hook、exec-policy/危险命令检查、审批模式、权限/占用；通用 blocked by policy 无法归因时标未知。受阻步骤返回 BLOCKED_EXECUTION_ROUTE，不换工具、改写命令、编码、改权限或建 receipt 绕过；独立且已授权的工作可继续。
+复用 Issue、Plan、tasks、PR、evidence，分别记录接受基线与操作授权。基线说明目标/使用者、范围/延期、可观察 AC、质量与必要运行条件、风险/停止条件；授权说明允许操作、精确对象、环境、权限、副作用、资源限制、失效与撤销。工具存在、凭据、技术权限、任务关联或 CI 通过均不产生授权。
 
-commit、普通 push、PR 创建、本地删除、远程引用删除分别核对动作与对象；一次批准可以明确列出多项，已有相同批准不重复索取。commit 绑定分支/HEAD/实际 staged 内容与文件集；push 绑定提交范围、目标 remote 和 tip；PR 绑定 repo/head/base/标题/正文。撤销或实质变化仅暂停受影响项。项目 rules 不含 Git/gh，不以 never 单独阻断 Git/gh。有限识别的 Git 命令由 hook 返回 `TASK_AUTHORIZATION_CONTEXT`，提示核对动作、对象与任务授权，不输出审批凭证或宣称宿主必须审批。G1/G2、人工 merge、受保护编辑及 UNKNOWN/FORBIDDEN 保留。Remove-Item 仍匹配 prompt，与 git branch -d / git worktree remove 按实际命令分别诊断。宿主其他规则、危险命令检查、沙箱与组织策略按实际证据处理。参见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)。
+一次任务授权可具名包含 stage/commit、普通 push、PR 创建和 merge；普通授权绑定任务范围，执行时核验实际 diff、HEAD/staged、remote/tip、repo/head/base/body 和有效平台批准。目标、对象、环境、权限、风险边界未实质变化且未撤销时复用，普通内容迭代不自动要求重新批准。权限变更、删除及高风险不可逆动作须独立列明；没有该动作授权先准备具体可审阅结果，再请求 Owner 决定。
 
-远程删除独立绑定仓库、remote、精确 refs/heads 引用、批准时及当前 tip、真实合并证据；保护 main/develop 和其他明确保护分支。批量删除逐引用核验授权、tip 与合并证据；任一目标受保护、变化或范围不符，暂停该批次。两端按 Gitee → origin 分别核验及执行；只有成功查询证明不存在，才记录已删除或执行前已不存在。查询失败不等于不存在，本地分支已删或计划 completed 不替代远端证据。部分成功/结果未知先对账，成功项不重复。已知实际拒绝未解除时，不换 remote、工具或改写命令试探。网络/文件权限恢复或重复聊天批准不证明拒绝解除；经审阅规则变更或工程师恢复后，核实目标会话加载、有效模式、拒绝来源和当前对象，再处理剩余项。merge 仍由 Owner 人工执行，计划文档未提交单列交付待办，不自动提交或处置其他任务。
+### §4.2 技术路线与删除
 
-## §5 可修改路径白名单 / 必须 HITL 清单
+授权不替代宿主审批。UNKNOWN/FORBIDDEN 或实际拒绝保留原始错误，按 hook、规则、组织策略、宿主权限/占用证据定位；通用 blocked by policy 无法归因时标未知，返回 `BLOCKED_EXECUTION_ROUTE`。不得换工具、编码、改写命令、建 receipt、改权限或规则绕过。工程师信任激活、秘密维护及宿主审批独立完成；项目不自动信任、不修改个人配置。
 
-本节不复制 §4 枚举。秘密、biz 旁路绝对禁止；普通未保护文件按当前任务授权修改。
-`.codex/**`、原生 guard、infra 冻结及契约保留 Owner 必停；普通开发技能不再因生成物身份被 blanket 禁止。
-`policies/**`、`sdd/**` 元规则、根及局部 AGENTS 的边界变化仍需 Owner 拍板。
-Dockerfile 只有外部 registry 镜像引用是既定必停面，其余行保持至少两位 reviewer；不得借原生守卫路径粒度的保守阻断改写政策层级。
-commit/push/PR/merge 的既有决定权保持；不以静态检查、权限模式或 hook 未触发推定批准。
-技术权限、范围授权和服务凭据分别判断。个人配置与信任不由仓库工具修改。
+删除前核实绝对目标、Git 跟踪与未提交/未跟踪/忽略内容、必要备份、文件占用和目标/后代重解析点。复用当前任务具体清单，不重复确认；变化只暂停受影响项。远端删除另绑定 repo/remote/精确 refs、批准与当前 tip、真实合并证据，main/develop 和其他保护分支保留。双 remote 逐端对账；查询失败不证明不存在。部分成功或超时先核对副作用，成功项不重复，已知拒绝须有条件变化证据后再执行。
+
+### §4.3 独立核验与结果接受
+
+Owner 默认依据成品、AC、证据、限制和风险接受，保留深入技术审阅权。首期有效人工仓库批准由不同于作者及最后推送者的 Owner 身份完成，补推重新取得平台有效审核；Agent 在任务授权及门禁满足时执行 merge。仓库批准、部署授权、实际运行验收和业务接受分别记录，候选已集成不表示交付或接受。
+
+关键门禁应受控并实际阻止违规推进。首期候选仍可改自己的检查定义，Owner 对门禁、保护及接受基线的人工审核是已接受的过渡补偿；独立受控强制核验系统、actual 采样、部署自动化及实际恢复演练延期，不能宣称已验证。
+
+## §5 可修改路径与永久边界
+
+按 §4 的实际影响分类执行，普通 Plan、实现、测试、文档及局部修复不逐项交 Owner。原生资产、冻结摘要和契约直接维护，已批准成组方案由 Agent 正常工具执行；信任/权限/治理标准变化仍核对具体授权。
+
+业务库始终只经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`、analyst 只读工具链，禁直接 DB 客户端、写/DDL 和旁路。秘密不打开/打印/记录/传输，不借用其他来源凭据。project MCP 只含既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager 及个人/其他来源服务永久禁入。应用和 MCP 凭据分离、仅变量名传递。Docker 供应链及生产变化按 `policies/docker-runtime.md` §4 的实际影响核验。
 
 ## §6 每次任务输出要求
 
@@ -112,17 +103,17 @@ commit/push/PR/merge 的既有决定权保持；不以静态检查、权限模�
 | # | 条目 | 取值 | 判据出处 |
 |---|---|---|---|
 | 1 | **Codex 参与情况** | `NONE` 或描述其具体贡献 | §1（记录本任务已授权的实际贡献） |
-| 2 | **HITL scenario hit** | `NONE` 或逐项列出 | §4 canonical 10-enum |
+| 2 | **Risk / decision inventory** | `NONE` 或逐项列出 | §4 canonical 10-enum |
 | 3 | **BDD/TDD impact** | `NONE` 或逐项列出 | `sdd/adapters/bdd-tdd.md` |
-| 4 | **Subagent dispatched** | `NONE` 或逐项列出 | §2（A3 subagent split 准则） |
+| 4 | **Subagent dispatched** | `NONE` 或逐项列出 | §2（按需委派与实际配置） |
 
-**PR 面另附 `HITL Trigger Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。它与上表
-第 2 条是**不同粒度**、不是重复：第 2 条是「本次是否命中」的摘要，Inventory 是**逐 enum 的可查
+**PR 面另附 `Risk / Decision Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。它与上表
+第 2 条是**不同粒度**、不是重复：第 2 条是「本次风险与决定」的摘要，Inventory 是**逐 enum 的可查
 证据**。**不适用的行标 `— No`，不要删行**——删行会让 reviewer 无法区分「不适用」与「漏答」。
 
 ### §6.2 载体与差距
 
-- **载体**：根模板 `.github/PULL_REQUEST_TEMPLATE.md` 承载 §6.1 四项报告、完整 `HITL Trigger Inventory`
+- **载体**：根模板 `.github/PULL_REQUEST_TEMPLATE.md` 承载 §6.1 四项报告、完整 `Risk / Decision Inventory`
   与 `Docker Impact`；`.github/PULL_REQUEST_TEMPLATE/` 下的类型模板提供对应报告及根模板取用指针。
 - **结构与同步**：模板结构以实际文件为准；原生开发技能与 PR 描述 GUIDE 的字段速查须同步维护，
   并按所选模板逐项核对标题、折叠检查块、必答报告及根模板取用项。
@@ -292,12 +283,11 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 应用设置仍经 `scripts/setup-env.ps1`；MCP 凭据维护由 Owner 在自己的终端运行 `scripts/mcp/setup-mcp-secrets.ps1`，仅原定具名变量，不写入应用环境文件。
 真实解密、OS 凭据写入及平台可用性须独立留证；准备步骤不等于已经执行。
 
-## §9 Protected-Path 拍板与执行路线
+## §9 风险上下文与实际执行路线
 
-原生 config/hooks/rules、冻结技能、契约、元规则和受保护运行时代码遵循 §4/§5。
-用户批准的范围在目标不变时可复用；hook 不能认证聊天批准，受保护编辑继续硬阻断。§4 所述有限 Git 命令仅交宿主正常审批，不输出自动 allow 或自建审批凭证。
-遭技术拒绝即返回 BLOCKED_EXECUTION_ROUTE，不停用保护、不更改个人模式、不借另一工具或编码尝试同一动作。
-项目与 hook 激活是工程师独立审阅步骤，仓库脚本不得自动信任。CI 只承担结构/行为证据，不替代 Owner 决定或宿主 canary。
+原生config/hooks/rules、冻结技能、契约和元规则按§4/§5实际影响核对。有限守卫对风险路径和识别Git动作给TASK_AUTHORIZATION_CONTEXT，不认证聊天或语义；确定禁令、未知/异常输入保持block，未命中不等于授权。任务范围未实质变化复用授权；实际拒绝保留原错并返回BLOCKED_EXECUTION_ROUTE，不建凭证、换工具、编码、改写命令或放宽权限绕过。
+
+工程师独立审阅及激活项目/hooks信任，核实际加载和宿主canary；Agent不能自动激活或更改个人配置。CI提供结构/行为证据，有效平台审核、授权及Owner业务接受另记录。
 
 ---
 
@@ -351,3 +341,5 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 > *v0.9（2026-10-10）：#538 —— §6.2 按实际模板修正载体与字段同步责任，补明根模板的 Docker Impact
 > 取用及逐模板语义校验边界；移除「只有三段」与「字段表尚未同步」的活体断言，历史修订记录保留。
 > 本次具体政策差异经 Owner 批准；`state`、Owner 决策权与审批边界不变。*
+
+> *v1.0（2026-10-12）：ADR-042——按语义影响分类，任务授权复用、阶段检查点、独立核验与结果式接受；永久数据/秘密/技术边界不变，宿主与平台启用须真实证据。*

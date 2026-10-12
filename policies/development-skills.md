@@ -2,17 +2,17 @@
 type: policy
 artifact: development-skills
 state: draft
-version: 1.0
+version: "1.1"
 owner: ranzuozhou
 created: 2026-09-18
-updated: 2026-09-18
+updated: 2026-10-12
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
 
-# 原生开发技能政策（P3 待批准草案）
+# 原生开发技能政策
 
-本草案提取原开发技能规则的有效约束；必须与 ADR-040、根入口、infra 契约、检查器及 CI 一同批准和切换。当前不是活动规则。
+原生维护权依据 ADR-040；本次治理改造依据 ADR-042，成组同步政策、技能、冻结契约、守卫与门禁。实际宿主加载另取证，不以文本或静态检查宣称激活。
 
 ## §1 三种技能来源
 
@@ -38,16 +38,16 @@ group 保持 doc、flow、git、infra、runtime；新增第六 family 仍需另�
 
 ## §4 Runtime 与 infra 冻结
 
-runtime 家族仍是 propose→Owner 拍板→apply；技能调用本身不授权修改 src 的 Prompt、SQL、catalog 或 runtime skill。
+runtime 家族先分析/反扫并按语义影响分类；基线内安全保持自主，实质变化先Owner决定。技能调用不新增授权。
 infra 冻结合同位于 `capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml`。
-修改前复算旧 description/body 摘要；批准后对新正文、节标题及冻结时间成组更新。
+修改前复算旧 description/body 摘要；任务授权内对新正文、节标题及冻结时间成组更新。
 算法、结构和必填字段见合同 header 与 `sdd/schemas/development-skill-contract.schema.json`。
 `scripts/sdd/check_native_skills.py` 检查 schema、资源、索引及冻结摘要；不认证 Owner 批准。
 
 ## §5 A12–A14 与执行边界
 
 - A12：开发技能 schema、命名、description、资源及冻结；原 V4 的全 WARN/未传 strict 不能冒充有效硬失败。新硬失败接入必须单列 Owner 门禁批准。
-- A13：原生项目 config/hooks/rules 的权限与守卫人工审阅；秘密值不进入配置或日志，需批准动作保持 hook block。静态规则检查不等于完整沙箱或宿主加载。
+- A13：原生项目 config/hooks/rules 的权限与守卫人工审阅；秘密值不进入配置或日志，有限识别输出任务授权上下文，确定禁令/未知输入继续block。路径命中不认证语义或授权；静态规则检查不等于完整沙箱或宿主加载。
 - A14：MCP 服务集合、trust posture、凭据模式与启动器；治理 home 仍为 mcp-server-governance capability。既有服务用途不扩大，新的用途/服务需单独批准。
 
 规范约束、机器检查、宿主能力和人工审查分别留证。聊天批准不等于 hook 解锁；没有已审阅路线返回 BLOCKED_EXECUTION_ROUTE。

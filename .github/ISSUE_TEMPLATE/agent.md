@@ -29,14 +29,14 @@ assignees: []
 - `data-agent.memory-checkpointer`（Phase 2+）
 - `data-agent.entry-points`（Phase 4+）
 
-## 4 项专属必停 Pre-Check（必填）
+## Runtime 风险影响 Pre-Check（必填）
 
-- [ ] `src/mj_agent/tools/sql/{guardrail,precheck}.py` 修改？→ **sql-guardrail-relax** HITL
-- [ ] `src/mj_agent/skills/*/SKILL.md` body 修改？→ **runtime-skill-content-change** HITL
-- [ ] `src/mj_agent/prompts/system.md` version + body 修改？→ **prompt-version-or-body-change** HITL
-- [ ] `src/mj_agent/biz_catalog/qcm_catalog.yaml` 修改？→ **biz-catalog-sync** HITL
+- [ ] SQL 防御修改：是否改变安全不变量或可见数据范围？
+- [ ] Runtime SKILL 正文修改：是否改变业务口径、数据范围或外发边界？
+- [ ] System prompt 修改：是否改变安全/业务/外发承诺或模型选择？
+- [ ] Catalog 修改：是否改变指标口径、可见数据范围或上游规范选择？
 
-→ 任一勾选必须走 `mj-agent-runtime-*` skill 提议 diff，停在 `OWNER_APPROVAL_REQUIRED`；拍板后由 skill 经 `ask` 门落盘，**不未经拍板直接 Edit**.
+按 `policies/ai-agent.md` §4 与 ADR-042 判断实际影响。保持接受基线的维护在任务授权内自主执行，提供适用行为、负例及独立核验；实质变化先准备具体方案，由 Owner 决定。路径标签、技术权限和静态检查不产生授权，实际技术拒绝不得绕过。
 
 ## Acceptance Criteria
 
@@ -48,10 +48,10 @@ assignees: []
 
 ## HITL Trigger Check
 
-- [ ] Agent tool 列表 / schema 变更？（per `policies/ai-agent.md` §HITL Required Scenarios #7）
+- [ ] Agent tool/schema 是否改变 breaking 承诺、数据/权限或接受标准？
 - [ ] Prompt 行为边界变更（不仅 version bump）？
-- [ ] middleware 链变更（影响 HITL config / error surfacing）？
-- [ ] checkpointer schema 变更？（DB migration HITL）
+- [ ] middleware 是否改变安全/权限或必要错误暴露承诺？
+- [ ] checkpointer 迁移是否超出具名可逆 dev 授权或具有不可逆风险？
 
 ## EVAL References
 

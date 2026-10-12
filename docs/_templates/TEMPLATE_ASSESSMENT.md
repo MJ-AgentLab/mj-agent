@@ -6,7 +6,7 @@ tags:
   - assessment
 aliases: []
 created: YYYY-MM-DD
-updated: YYYY-MM-DD
+updated: 2026-10-12
 state: draft
 version: v1.0
 track: shared
@@ -249,7 +249,7 @@ period: YYYY-MM-DD ~ YYYY-MM-DD
 ### D8.3 §3.1 必停 4 项 mj-agent 专属触发率
 
 - runtime-skill-content-change：<次数 / PR 数>
-- prompt-version-bump：<次数>
+- prompt-version-or-body-change：<次数>
 - biz-catalog-sync：<次数>
 - sql-guardrail-relax：<次数>
 

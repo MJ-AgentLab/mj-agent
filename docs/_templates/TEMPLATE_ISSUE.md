@@ -6,7 +6,7 @@ tags:
   - issue
 aliases: []
 created: YYYY-MM-DD
-updated: YYYY-MM-DD
+updated: 2026-10-12
 state: draft
 version: v1.0
 track: shared
@@ -37,7 +37,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 - **问题性质**：<bug 待修 / 优化候选 / 设计讨论 / 调试线索 / 历史记录>
 - **风险等级**：<Low / Medium / High>
 - **预估工作量**：S（< 1 day）/ M（1-3 day）/ L（1 week）/ XL（> 1 week）
-- **mj-agent §3.1 必停 4 项触发**：<无 / runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax>
+- **mj-agent §3.1 必停 4 项触发**：<无 / runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync / sql-guardrail-relax>
 
 ---
 
@@ -88,7 +88,7 @@ related_adr: "<[[ADR 文档]] 或 无>"
 ### §3.3 风味识别（mj-agent 专属，per ADR-015 §决策点 3）
 
 - ☐ **A 风味**：pure code（tools / memory / integrations / agent.py / tests / config）
-- ☐ **B 风味**：in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml）—— **永远 §3.1 必停 HITL**；建议先 propose-via-runtime-* （PR-C2）
+- ☐ **B 风味**：in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml）—— **按§3.1语义影响分类**；建议先 propose-via-runtime-* （PR-C2）
 - ☐ **C 风味**：infra（docker/ / pyproject.toml / langgraph.json / .env.example / scripts/）
 
 ---

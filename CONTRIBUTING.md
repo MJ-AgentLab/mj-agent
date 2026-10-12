@@ -124,20 +124,20 @@ git push -u origin <branch>
 git push -u gitee  <branch>      # 镜像，可后推
 ```
 
-详细推送清单见 [docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md](docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md)。
+任务授权内普通内容迭代核版本但不逐内容重批；删除、权限与发布风险变化另核具名范围。详细推送清单见 [docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md](docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md)。
 
 ### 创建 PR
 
 ```bash
-gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>" --body "..."
+gh pr create --repo MJ-AgentLab/mj-agent --base develop --head <branch> --title "<type>(<scope>): <summary>" --body-file <prepared-pr.md>
 ```
 
-- **必须**带 `--base develop`（G2 hook 拦截）—— 仅 `hotfix/*` 允许 `--base main`
+- PR显式base：通常develop，hotfix main；分层只允许Plan登记的精确子head→feature/task-ID-integration。独立release develop→main须Owner接受与具名发布授权及未来规则映射，当前有限解析器不声称支持。
 - PR body 推荐用 ` ## Summary` + `## Test plan` + `## PR 门禁自检` 三段；详细字段说明见 [docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md](docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md)
 
 ### 响应 Review
 
-- **Approve** → 维护者执行 `gh pr merge <PR_NUM> --squash`（默认 squash；非 squash 需 PR body 注明）
+- **有效Approve** → 核当前head及最后推送审核、讨论解决、required checks、任务merge授权与执行身份；Agent通过正常工具执行 `gh pr merge <PR_NUM> --merge`。首期Owner以不同于作者/最后推送者身份提供结果式有效批准，业务接受另记录。
 - **Request changes** → 本地修复后 `git push`，旧 Approve 自动失效，需重新 review
 
 ---
@@ -194,7 +194,7 @@ gh pr create --base develop --head <branch> --title "<type>(<scope>): <summary>"
 | A7-A10 | agent | in-source SKILL / PROMPT / EVAL / CONTRACT 专属 |
 | A11 | agent | `state: active` SKILL `eval_references` 非空（Phase 2 起强制） |
 | A12 | engineering-workflow | `.agents/skills/` ADR-013 native schema 合规 + description 质量 |
-| A13 | engineering-workflow | `.codex/hooks.json` Owner 动作硬阻断、非法输入 fail closed、秘密不回显 |
+| A13 | engineering-workflow | 原生有限守卫风险路径/已识别Git动作提供TASK_AUTHORIZATION_CONTEXT，确定禁令/未知输入block，秘密不回显；不认证授权/语义，宿主加载另验证 |
 | A14 | engineering-workflow | `.codex/config.toml` server 增删声明 trust posture + credential mode |
 
 ### 项目根 5 文件例外

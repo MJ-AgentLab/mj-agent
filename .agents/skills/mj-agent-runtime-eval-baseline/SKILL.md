@@ -1,24 +1,25 @@
 ---
 name: mj-agent-runtime-eval-baseline
-description: "适用于 mj-agent 的为runtime改动设计EVAL基线。输入：目标skill/prompt、模板、现有eval引用/fixtures。流程：读target→kind→反扫→dataset→judge→baseline/threshold→模板→impact→HITL。输出：8段草案/kind/dataset/judge/阈值与未测状态完整。Use when：为system.md改动设计EVAL草案。Do not use for：直接跑线上EVAL补baseline数值；不执行，回报框架/live依赖和验证路径。授权：只设计不跑EVAL、不改runtime；落盘需Owner；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的为runtime改动设计EVAL基线。输入：目标skill/prompt、模板、现有eval引用/fixtures。流程：读target→kind→反扫→dataset→judge→baseline/threshold→模板→impact→HITL。输出：8段草案/kind/dataset/judge/阈值与未测状态完整。Use when：为system.md改动设计EVAL草案。Do not use for：直接跑线上EVAL补baseline数值；不执行，回报框架/live依赖和验证路径。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Runtime — EVAL Baseline
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for mj-agent in-source canonical changes (src/mj_agent/skills/**/SKILL.md or src/mj_agent/prompts/system.md): it analyzes target SKILL/PROMPT, drafts proposed eval_kind / dataset structure / baseline_metric+value / judges / regression_threshold, runs reverse-scan for existing eval_references, and **after Owner approval checks the execution route before writing the EVAL draft to docs/evaluation/** (ADR-034 propose→拍板→apply; approval does not unlock hooks). It does **NOT** execute the EVAL or modify any in-source canonical (the actual EVAL run depends on Phase 2 EVAL framework readiness / PR-D2-enforcement; in-source canonical changes go through the sibling runtime-* skills). Make sure to use this skill whenever the user says "propose EVAL", "EVAL baseline", "set EVAL for SKILL", "A11 EVAL 强制 准备", "transitional waiver decay 准备", "EVAL backlog ticket", "design eval for system.md", "eval baseline for biz-domain-context", "B 风味 EVAL 准备", "Phase 2 EVAL design", "TEMPLATE_EVAL fill-in draft", or proposes any EVAL-related work for mj-agent in-source canonical (src/mj_agent/skills or prompts). Do not use for: executing tests/eval or running the EVAL (use the hardened offline runner when regression execution is requested; framework is PR-D2-enforcement); modifying in-source SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); designing or running EVAL framework infrastructure itself (PR-D2-enforcement); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .agents/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
+This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for mj-agent in-source canonical changes (src/mj_agent/skills/**/SKILL.md or src/mj_agent/prompts/system.md): it analyzes target SKILL/PROMPT, drafts proposed eval_kind / dataset structure / baseline_metric+value / judges / regression_threshold, runs reverse-scan for existing eval_references, and **within task authorization checks material impact and the execution route before writing the EVAL draft to docs/evaluation/** (ADR-042 分析→影响分类→实施/决定; approval does not unlock hooks). It does **NOT** execute the EVAL or modify any in-source canonical (the actual EVAL run depends on Phase 2 EVAL framework readiness / PR-D2-enforcement; in-source canonical changes go through the sibling runtime-* skills). Make sure to use this skill whenever the user says "propose EVAL", "EVAL baseline", "set EVAL for SKILL", "A11 EVAL 强制 准备", "transitional waiver decay 准备", "EVAL backlog ticket", "design eval for system.md", "eval baseline for biz-domain-context", "B 风味 EVAL 准备", "Phase 2 EVAL design", "TEMPLATE_EVAL fill-in draft", or proposes any EVAL-related work for mj-agent in-source canonical (src/mj_agent/skills or prompts). Do not use for: executing tests/eval or running the EVAL (use the hardened offline runner when regression execution is requested; framework is PR-D2-enforcement); modifying in-source SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); modifying qcm_catalog.yaml (use mj-agent-runtime-biz-catalog-sync); designing or running EVAL framework infrastructure itself (PR-D2-enforcement); validating frontmatter (use mj-agent-doc-validate); or writing engineering-workflow .agents/skills/ SKILL.md (different track, different schema — use mj-agent-doc-author with TEMPLATE_WORKFLOW_SKILL).
 
 
 ## Overview
 
-**Propose → 拍板 → apply**（ADR-034）：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；**Owner 拍板后且执行路线可用时由本 skill 写入 到 `docs/evaluation/`**（不再要 Owner 手动粘贴）。仍**不**跑实际 EVAL（Phase 2 framework / PR-D2-enforcement）、**不**改 in-source canonical（走 sibling runtime-* skill）。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per execution-loop §3.0 拍板模型 + §3.1 必停（runtime-skill-content-change / prompt-version-or-body-change）+ §4.2 Runtime 约束 + §7.3 Rule 11（PR merge 后 EVAL backlog 草案；获明确发布授权后才开单）+ ADR-024 EVAL spec §4 + policies/documentation.md §5.3 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
+**分析 → 影响分类 → 实施/决定**（ADR-042）：propose EVAL baseline design（填好的 `TEMPLATE_EVAL.md` 草稿）for mj-agent in-source canonical change（src/mj_agent/skills/<name>/SKILL.md 或 src/mj_agent/prompts/system.md）；**任务范围授权有效且执行路线可用时由本 skill 写入 到 `docs/evaluation/`**（不再要 Owner 手动粘贴）。仍**不**跑实际 EVAL（Phase 2 framework / PR-D2-enforcement）、**不**改 in-source canonical（走 sibling runtime-* skill）。这是 mj-agent **Track B in-source canonical 配套 EVAL 守门人** skill，per execution-loop §3.0 拍板模型 + §3.1实质风险（runtime-skill-content-change / prompt-version-or-body-change）+ §4.2 Runtime 约束 + §7.3 Rule 11（PR merge 后 EVAL backlog 草案；获明确发布授权后才开单）+ ADR-024 EVAL spec §4 + policies/documentation.md §5.3 A8/A11（transitional waiver；Phase 2 EVAL framework 落地后强制）。
 
 **Why this skill exists**：
 
@@ -28,7 +29,7 @@ This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for 
 - execution-loop §7.3 Rule 11：merge 后准备 EVAL backlog 草案（发布另需明确授权），但"开单"不等于"已设计"——本 skill 把 ticket 转化为可 review 的 EVAL 草稿
 - Phase 2 EVAL framework 选型（pytest-based vs 独立 runner / judge model 选什么 / run frequency）尚未决议；**本 skill 框架无关**：只产生 TEMPLATE_EVAL.md 文档草稿，框架决议落地后由 PR-D2-enforcement 跑实际测试
 
-**hard constraint**: 本 skill 先产生 proposed EVAL document（基于 TEMPLATE_EVAL.md 8 段填空版）+ HITL Questions for Domain Expert + Prompt Engineer review，**落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点，拍板后且执行路线可用时由本 skill 写入 到 `docs/evaluation/`**（Owner 决策与执行路线分开；硬阻断时不得落盘）；但**不**执行 tests/eval（不跑实际 EVAL；Phase 2 framework）、**不**改任何 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml；走 sibling runtime-* skill）。
+**hard constraint**: 本 skill 先产生 proposed EVAL document（基于 TEMPLATE_EVAL.md 8 段填空版）+ HITL Questions for 独立领域/Prompt视角核验（不要求真人或固定人数），**落盘前按实际影响分类，只有安全/业务/权限/breaking/AC/gate变化或缺动作授权才停在 `OWNER_APPROVAL_REQUIRED`，任务授权有效且执行路线可用时由本 skill 写入 到 `docs/evaluation/`**（Owner 决策与执行路线分开；硬阻断时不得落盘）；但**不**执行 tests/eval（不跑实际 EVAL；Phase 2 framework）、**不**改任何 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml；走 sibling runtime-* skill）。
 
 ## When to Use
 
@@ -42,21 +43,21 @@ This skill proposes EVAL baseline design (TEMPLATE_EVAL.md filled-in draft) for 
 
 **MAY skip when**：
 
-- 仅 frontmatter typo（如 owner 字段拼写）→ 不触 §3.1 必停，不需要新 baseline
+- 仅 frontmatter typo（如 owner 字段拼写）→ 不触 §3.1实质风险，不需要新 baseline
 - 仅 markdown formatting（缩进 / 空格）—— substantive change rule 不触 `updated`，不需要新 baseline
 - target 已有 active EVAL 且 baseline_value 仍在 regression_threshold 内 → 重用现有 EVAL，不开新
 
 **MUST NOT use for**：
 
 - ❌ 直接 run pytest / 跑实际 EVAL（本 skill 不跑实测；EVAL framework 落地由 PR-D2-enforcement）
-- ❌ 未经 Owner 拍板就 写入 docs/evaluation/（拍板后才落盘）
+- ❌ 超出任务授权或未经实质决定就 写入 docs/evaluation/（范围授权内可落盘，实质变化先决定）
 - ❌ 改 src/mj_agent/skills/**/SKILL.md → mj-agent-runtime-skill-doc-improve
 - ❌ 改 system.md → mj-agent-runtime-prompt-version-bump
 - ❌ 改 qcm_catalog.yaml → mj-agent-runtime-biz-catalog-sync
 - ❌ 设计 / 决议 EVAL framework 选型本身（pytest-based vs 独立 runner，judge model 选什么）→ PR-D2-enforcement 工作；本 skill 框架无关
 - ❌ 改 .agents/skills/SKILL.md（engineering-workflow track；不同 schema）→ mj-agent-doc-author
 
-## Workflow（propose → 拍板 → apply）
+## Workflow（分析 → 影响分类 → 实施/决定）
 
 ```dot
 digraph eval_baseline {
@@ -79,9 +80,9 @@ digraph eval_baseline {
 
   s8 [label="Step 8: Impact analysis + HITL Questions\n• A8 EVAL 引用同步审查 (Phase 2 起强制非空)\n• A11 transitional waiver decay 进度\n• execution-loop §7.3 Rule 11 EVAL backlog ticket 关联" shape=box];
 
-  s9 [label="Step 9: Output proposed EVAL document\n+ HITL Questions for Domain Expert + Prompt Engineer review" shape=diamond];
+  s9 [label="Step 9: Output proposed EVAL document\n+ HITL Questions for 独立领域/Prompt视角核验（不要求真人或固定人数）" shape=diamond];
 
-  hitl [label="拍板 — Owner decides:\n• Accept → 本 skill 直接 写入 to docs/evaluation/\n  + Phase 2 EVAL framework 落地后跑 baseline\n• Refine → 回 Step 4-6 调整\n• Reject → 取消 (记 EVAL backlog ticket 关闭原因)" shape=doublecircle];
+  hitl [label="影响分类：基线内自主；实质变化Owner decides:\n• Accept → 本 skill 直接 写入 to docs/evaluation/\n  + Phase 2 EVAL framework 落地后跑 baseline\n• Refine → 回 Step 4-6 调整\n• Reject → 取消 (记 EVAL backlog ticket 关闭原因)" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7 -> s8 -> s9 -> hitl;
 }
@@ -201,7 +202,7 @@ test -f tests/eval/golden_seed.jsonl && head -3 tests/eval/golden_seed.jsonl
 
 ### Hard vs Soft regression（per TEMPLATE_EVAL §6.2）
 
-- **Hard**：metric 下降 ≥ threshold 或 red-line case 通过率下降 → 阻断 PR / 触 §3.1 必停 HITL
+- **Hard**：metric 下降 ≥ threshold 或 red-line case 通过率下降 → 阻断 PR / 触 §3.1语义影响核对
 - **Soft**：metric 下降 < threshold 但 > 0 / latency 上升但 outcome 不变 → WARN，可 user override
 
 ## Step 7: Fill TEMPLATE_EVAL.md Draft
@@ -220,7 +221,7 @@ state: draft
 version: v1.0
 track: agent
 derives_from: ""
-owner: <Domain Expert + Prompt Engineer>
+owner: <独立领域/Prompt视角>
 eval_kind: <Step 2 选定>
 target_skill: <Step 1 target name>
 dataset_path: docs/evaluation/datasets/<filename>.jsonl
@@ -253,7 +254,7 @@ judges: [<Step 5 选定 list>]
 - **关联 SKILL/PROMPT version**：target 的 frontmatter `version` 字段应同步 bump（per ADR-011）；如未 bump → propose 同步 bump 建议
 - **关联 SPEC/RUNBOOK**：如本 EVAL 由某 SPEC 触发 → 在 §1.2 关联
 
-## HITL Questions（Domain Expert + Prompt Engineer review；per execution-loop §3.3 7-段格式）
+## HITL Questions（独立领域/Prompt视角核验（不要求真人或固定人数）；per execution-loop §3.3 7-段格式）
 
 问题 1: eval_kind 选择 + 子类叠加是否合理？
 - 当前观察：选了 <list>
@@ -262,7 +263,7 @@ judges: [<Step 5 选定 list>]
 - 可选方案：A. 仅 outcome；B. outcome + component；C. 4 类全开
 - 我的建议：<具体>
 - 默认假设：<具体>
-- 是否必须等待人工确认：是
+- 是否必须等待人工确认：<实质决定是；已有授权范围内否>
 
 问题 2: red-line case 数量 + 设计是否覆盖 mj-agent 数据边界（R1 biz_ods 拒绝 / R2 导出全部 / SQL guardrail 越界）？
 - 当前观察：设计了 N 条 red-line case
@@ -280,9 +281,9 @@ judges: [<Step 5 选定 list>]
 
 ## Step 9: Output Proposed EVAL Document + HITL
 
-输出 proposed EVAL document + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Codex 载体：向 Owner 询问）：
+输出 proposed EVAL document + impact + HITL Questions，**基线内自主实施；实质变化或缺动作授权才停在 `OWNER_APPROVAL_REQUIRED`**（Codex 载体：向 Owner 询问）：
 
-- **Accept** → 本 skill **直接 写入 到 `docs/evaluation/<filename>.md` 落盘** → 同步 update target frontmatter `eval_references` field（用 mj-agent-runtime-skill-doc-improve 或 mj-agent-runtime-prompt-version-bump 的 propose→拍板→apply 路径改 src/）
+- **Accept** → 本 skill **直接 写入 到 `docs/evaluation/<filename>.md` 落盘** → 同步 update target frontmatter `eval_references` field（用 mj-agent-runtime-skill-doc-improve 或 mj-agent-runtime-prompt-version-bump 的 分析→影响分类→实施/决定 路径改 src/）
 - **Refine** → 回 Step 4-6 调整
 - **Reject** → 取消，记录 review notes（可选写到 plans/[INTAKE]_*.md 或 EVAL backlog ticket close 原因）
 
@@ -346,10 +347,10 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 ### HITL Questions
 <per Step 8 7-段格式>
 
-### Next Action（HITL pause）
-- ☐ Domain Expert + Prompt Engineer review
-- ☐ Owner 拍板 Accept → 本 skill 直接 写入 to docs/evaluation/<filename>.md
-- ☐ User accept → 同步 propose target frontmatter eval_references update（via mj-agent-runtime-skill-doc-improve / -prompt-version-bump）
+### Next Action（修复/补证据；实质越界才决定）
+- ☐ 独立领域/Prompt视角核验（不要求真人或固定人数）
+- ☐ 实质变化Owner决定或基线内自主实施 → 本 skill 直接 写入 to docs/evaluation/<filename>.md
+- ☐ User accept → 同步 propose target frontmatter eval_references update（via mj-agent-runtime-skill-doc-improve / -prompt-version-or-body-change）
 - ☐ Phase 2 EVAL framework 落地后跑 baseline 实测（PR-D2-enforcement）
 - ☐ Refine → 调 Step 4-6
 - ☐ Reject → 关联 EVAL backlog ticket close 原因
@@ -357,13 +358,13 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 
 ## What This Skill DOES NOT DO
 
-- ❌ **未经 Owner 拍板就 写入 到 docs/evaluation/ 或 tests/eval/**（拍板后才落盘；ADR-034 propose→拍板→apply）
+- ❌ **超出任务授权或未经实质决定就 写入 到 docs/evaluation/ 或 tests/eval/**（范围授权内可落盘，实质变化先决定；ADR-042 分析→影响分类→实施/决定）
 - ❌ 不直接执行 tests/eval（不跑实际 EVAL；Phase 2 EVAL framework 落地由 PR-D2-enforcement）
 - ❌ 不修改 in-source canonical（src/mj_agent/skills/**/SKILL.md / prompts/system.md / biz_catalog/qcm_catalog.yaml）—— 这是 sibling runtime-* skill 工作
 - ❌ 不设计 / 决议 EVAL framework 选型（pytest-based vs 独立 runner / judge model / run frequency）—— 那是 PR-D2-enforcement 工作；本 skill 框架无关
 - ❌ 不修改 .agents/skills/SKILL.md → mj-agent-doc-author（不同 track + schema）
 - ❌ 不自动 commit（HITL 后由 mj-agent-git-commit）
-- ❌ 不替代 Domain Expert + Prompt Engineer review（仅产生 review 材料）
+- ❌ 不替代 独立领域/Prompt视角核验（不要求真人或固定人数）（仅产生 review 材料）
 - ❌ 不取代 execution-loop §7.3 Rule 11 开单草案及明确发布授权（本 skill 是开单后 → 草稿就绪 阶段）
 
 ## Sub-skill / Tool Calls
@@ -374,20 +375,20 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 | shell `python -c "from mj_agent.skills import load_skill_meta; ..."` | Step 1 通过 loader API（带 frontmatter strip） |
 | rg | Step 3 反向扫描 eval_references / docs/evaluation/ / tests/eval/ |
 | shell `ls tests/eval/`, `head -3 tests/eval/golden_seed.jsonl` | Step 3 现有 fixture / golden_seed 现状 |
-| 向 Owner 询问 | Step 9 HITL Questions（Domain Expert + Prompt Engineer review） |
+| 向 Owner 询问 | Step 9 HITL Questions（独立领域/Prompt视角核验（不要求真人或固定人数）） |
 
-> 编辑 / 写入 仅在 Owner 拍板后调用（ADR-034 propose→拍板→apply）。
+> 编辑/写入在任务授权内调用，实质变化先决定（ADR-042 分析→影响分类→实施/决定）。
 > **不**调用 pytest / EVAL runner（不跑实际 EVAL）。
 
 ## Reference Files
 
 - `repo:docs/_templates/TEMPLATE_EVAL.md`（Phase D PR-D1 落地；本 skill 直接消费此模板填空）
-- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（runtime propose→拍板→apply 约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟；supersede ADR-015 §决策点 4 read-only 残留）+ ADR-015 §决策点 5（EVAL backlog draft with explicit publication authorization，历史源 HITL_Prompt §4.15 Rule 11）
-- `repo:sdd/workflows/execution-loop.md` §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change（触发本 skill）+ §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）+ §4.1 的 Stage 13/15 映射（regression 处理；历史源 HITL_Prompt §4.13）+ §7.3 Rule 11（EVAL backlog draft with explicit publication authorization）
+- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（runtime 分析→影响分类→实施/决定 约束 — 本 skill 是该约束的 reference 实现，第 4 个 runtime-* 兄弟；supersede ADR-015 §决策点 4 read-only 残留）+ ADR-015 §决策点 5（EVAL backlog draft with explicit publication authorization，历史源 HITL_Prompt §4.15 Rule 11）
+- `repo:sdd/workflows/execution-loop.md` §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change（触发本 skill）+ §4.1 的 Stage 8 映射（B 风味按语义影响分类；历史源 HITL_Prompt §4.7 Rule 9）+ §4.1 的 Stage 13/15 映射（regression 处理；历史源 HITL_Prompt §4.13）+ §7.3 Rule 11（EVAL backlog draft with explicit publication authorization）
 - `repo:decisions/ADR-024_Eval_Framework_Spec.md`（EVAL authoring spec；本 skill 落地的源依据）+ `repo:policies/documentation.md` §5.3（A8/A11 EVAL 引用同步审查；transitional waiver decay 进度）
 - `repo:decisions/ADR-006_Fail_Safe_Reads.md` / `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（数据边界；red-line case 设计依据 R1/R2 + 4 层 guardrail）
 - `repo:decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md`（version bump + archive workflow；EVAL 自身 versioning + target version 紧耦合）
-- 兄弟 propose→拍板→apply skills:
+- 兄弟 分析→影响分类→实施/决定 skills:
   - `repo:.agents/skills/mj-agent-runtime-skill-doc-improve/SKILL.md`（B 风味 SKILL 改动 → 衔接本 skill）
   - `repo:.agents/skills/mj-agent-runtime-prompt-version-bump/SKILL.md`（system.md 改动 → 衔接本 skill）
   - `repo:.agents/skills/mj-agent-runtime-biz-catalog-sync/SKILL.md`（qcm_catalog.yaml 改动 → 通常不直接触本 skill；除非 SKILL.md 同步引用 dim_xxx 改动）
@@ -397,20 +398,20 @@ filename: docs/evaluation/<eval_kind>_<target_name>_v1.0.md
 
 ## Anti-patterns
 
-- ❌ **未经 Owner 拍板就直接 写入 docs/evaluation/ 或 tests/eval/**（拍板后才落盘；ADR-034）
+- ❌ **超出任务授权或未经实质决定就直接 写入 docs/evaluation/ 或 tests/eval/**（范围授权内可落盘，实质变化先决定；ADR-034）
 - ❌ 不跑实际 EVAL（offline test runner / 自定义 EVAL runner）—— 那是 PR-D2-enforcement 工作；本 skill 是 framework-independent 设计阶段
 - ❌ 不跳过 Step 3 反向扫描（缺这步 → 重复设计 EVAL / 漏覆盖现有 fixture）
 - ❌ 不跳过 Step 8 Impact Analysis（缺这步 → reviewer 没法判定 baseline 量级 + threshold 合理性）
 - ❌ 不在 dataset 加 PII / 真实 tenant 信息 / 真实 institution_id（即便是 propose draft 也不能；reviewer 看到时仍是泄露）
 - ❌ 不 propose baseline_value 实数（本 skill 不跑实测；只能填 `<TBD>` placeholder；实测在 PR-D2-enforcement 跑）
 - ❌ 不 propose 修改 EVAL framework 选型（pytest-based vs 独立 runner / judge model / run frequency 是 PR-D2-enforcement 决议；本 skill 在 §8.3 Open Questions 仅占位）
-- ❌ 不替代 Domain Expert + Prompt Engineer review（人工评分 / red-line case 设计 / judge prompt 校准必须 expert review）
+- ❌ 不替代 独立领域/Prompt视角核验（不要求真人或固定人数）（按AC建立独立评分、red-line期望及judge校准，按风险覆盖视角，不要求真人或固定人数）
 - ❌ 不替代 execution-loop §7.3 Rule 11 EVAL backlog auto-issue（本 skill 在 issue 之后；issue close 条件是 baseline_value 实测进 active state）
 
 ## Handoff
 
 ```
-Proposed EVAL Document 已输出（HITL pause）。
+Proposed EVAL Document 已输出（修复/补证据；实质越界才决定）。
 HITL 通过后：
 - 本 skill 拍板后直接 写入 docs/evaluation/<filename>.md（大改时 mj-agent-doc-author 带 Q-B1 协助）
 - 同步 propose target frontmatter eval_references update：

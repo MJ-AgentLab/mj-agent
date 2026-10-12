@@ -1,14 +1,15 @@
 ---
 name: mj-agent-git-pr
-description: "适用于 mj-agent 的按分支模板准备/创建PR。输入：head/base、commits、diff、模板、验证、CHANGELOG。流程：前置→模板→字段→自检→明确base/body-file→确认创建。输出：模板/字段/base正确；实际创建有URL。Use when：为maintain分支准备PR正文和base。Do not use for：CI绿了直接merge并删除分支；本技能不merge/删除，交Owner决策。授权：Owner PR create；non-hotfix develop/hotfix main；不merge；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的按分支模板准备/创建PR。输入：head/base、commits、diff、模板、验证、CHANGELOG。流程：前置→模板→字段→自检→明确base/body-file→确认创建。输出：模板/字段/base正确；实际创建有URL。Use when：为maintain分支准备PR正文和base。Do not use for：CI绿了直接merge并删除分支；本技能不merge/删除，交Owner决策。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Git PR
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -26,6 +27,7 @@ This skill should be used when the user asks to create a Pull Request, select a 
 
 | 分支类型 | `--base` 值 |
 |---|---|
+| Plan登记的精确子head | 对应`feature/task-ID-integration`；active关系仅观察事实，不认证授权 |
 | feature / bugfix / documentation / maintain | `develop` |
 | hotfix | `main` |
 
@@ -50,9 +52,9 @@ This skill should be used when the user asks to create a Pull Request, select a 
 
 ## Prerequisite Check
 
-复用当前任务对 repo、head/base、标题和确切正文的明确创建批准；commit/push 或删除批准不包含 PR，PR 批准不包含 merge。核实 head SHA 已推送，先按 repo/head/base 查询已有 PR。内容或目标实质变化仅暂停受影响动作；响应丢失先对账 URL、head SHA、base、标题和正文，未确认不存在前不重复创建。
+复用当前任务对任务repo/head/base及PR创建动作的明确授权；标题/正文与实际diff核对；commit/push 或删除批准不包含 PR，PR 批准不包含 merge。核实 head SHA 已推送，先按 repo/head/base 查询已有 PR。目标/对象/环境/权限/风险实质变化仅暂停受影响动作；响应丢失先对账 URL、head SHA、base、标题和正文，未确认不存在前不重复创建。
 
-有限识别要求显式 repo/head/base/title/body-file；支持长参数、对应 -R/-H/-B/-t/-F/-d 和有值长参数等号形式。base 须匹配 head 类型；重复冲突、缺值及未知参数保持 UNKNOWN。hook 仅给 TASK_AUTHORIZATION_CONTEXT；项目 rules 无 gh 条目，never 单独不阻断 PR 创建。任务授权及宿主限制仍分别核验；已知实际拒绝未解除时不因“继续”或网络恢复重试。规则变更经审阅且加载核实后，按实际条件重新评估、核对对象及已有 PR。完成才报告真实 URL/head/base/body。下文 release 示例不属于 #555 的 non-hotfix/hotfix 有限路由；不能改写命令来绕过拒绝。
+有限识别要求显式 repo/head/base/title/body-file；支持长参数、对应 -R/-H/-B/-t/-F/-d 和有值长参数等号形式。base按head类型默认匹配；分层例外只允许Plan中登记的精确子head→具名integrationbase；重复冲突、缺值及未知参数保持 UNKNOWN。hook 仅给 TASK_AUTHORIZATION_CONTEXT；项目 rules 无 gh 条目，never 单独不阻断 PR 创建。任务授权及宿主限制仍分别核验；已知实际拒绝未解除时不因“继续”或网络恢复重试。规则变更经审阅且加载核实后，按实际条件重新评估、核对对象及已有 PR。完成才报告真实 URL/head/base/body。下文 release 示例不属于 #555 的 non-hotfix/hotfix 有限路由；不能改写命令来绕过拒绝。
 
 ```bash
 gh auth status        # GitHub CLI 已登录
@@ -77,7 +79,7 @@ cat .github/PULL_REQUEST_TEMPLATE/<template-name>.md
 cat .github/PULL_REQUEST_TEMPLATE.md
 
 # Step 2: 保留类型模板的标题层级和折叠检查块，逐项填写
-# 从根模板取用完整 HITL Trigger Inventory 与 Docker Impact 小节并逐项作答
+# 从根模板取用完整 Risk / Decision Inventory 与 Docker Impact 小节并逐项作答
 # 核对下方必填表及所选模板全部要求，填写完成后写临时文件
 # Windows: $env:TEMPmj-agent-pr-body-<branch>.md
 # Unix: /tmpmj-agent-pr-body-<branch>.md
@@ -138,9 +140,9 @@ gh pr create \
 | `hotfix.md` | 事故描述 / 影响范围 / 根因分析 / 修复方案 / **回滚预案 mandatory** / 自检结果 / 文档自检 / AI Self-Check Checklist |
 | `release.md` | Release 标题 / Highlights / 审核要点 / 文档自检 / AI Self-Check Checklist / Details |
 
-共用必答要求：每种模板的 `AI Self-Check Checklist` 均回答 **Codex 参与情况**、**HITL scenario hit**、**BDD/TDD impact**、**Subagent dispatched**（`NONE` 或实际贡献/命中项）。文档折叠检查按 track 回答 Code-Side A1-A6、Agent-Side A7-A11、Engineering-Workflow A12-A14；不适用项说明原因，不把整段删除。documentation 的检查嵌在 `自检结果` 内；release 保留其 Release 标题及三级发布字段。
+共用必答要求：每种模板的 `AI Self-Check Checklist` 均回答 **Codex 参与情况**、**Risk / decision inventory**、**BDD/TDD impact**、**Subagent dispatched**（`NONE` 或实际贡献/命中项）。文档折叠检查按 track 回答 Code-Side A1-A6、Agent-Side A7-A11、Engineering-Workflow A12-A14；不适用项说明原因，不把整段删除。documentation 的检查嵌在 `自检结果` 内；release 保留其 Release 标题及三级发布字段。
 
-类型模板中的指针要求 PR 正文另附根模板 `.github/PULL_REQUEST_TEMPLATE.md` 的完整 `HITL Trigger Inventory` 与 `Docker Impact` 小节。Inventory 逐 enum 作答，不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。四项报告、Inventory 与 Docker Impact 分别核对，不能用关键词出现或空 checkbox 判完整。
+类型模板中的指针要求 PR 正文另附根模板 `.github/PULL_REQUEST_TEMPLATE.md` 的完整 `Risk / Decision Inventory` 与 `Docker Impact` 小节。Inventory 逐 enum 作答，不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。四项报告、Inventory 与 Docker Impact 分别核对，不能用关键词出现或空 checkbox 判完整。
 
 ## CHANGELOG Requirement
 

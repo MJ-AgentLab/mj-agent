@@ -8,69 +8,28 @@ Codex 是本项目开发执行者，Owner 保持决策与验收单点。规则�
 
 ## Native asset ownership
 
-`.agents/skills/`、`.agents/references/`、`.agents/README.md` 与 `.codex/{config.toml,hooks.json,rules/}` 直接维护。不再由投影、翻译、lock、sync 或 adopt 维护。正式维护权切换的依据为 ADR-040；历史客户端资产仅留作 P5 具名清理候选，不参与执行，不双份维护。
+`.agents/skills/`、`.agents/references/`、`.agents/README.md` 与 `.codex/{config.toml,hooks.json,rules/}` 直接维护；依据 ADR-040。Agent-first 治理依据 [ADR-042](decisions/ADR-042_Agent_First_Delivery_Governance.md)，执行正文在 `policies/ai-agent.md` §2/§4 与 `sdd/workflows/execution-loop.md`。
 
-`.codex/**`、原生守卫、冻结 infra、契约、政策/SDD 元规则及 CI gate 仍须相应 Owner 批准。MCP 只包含既有 GitHub、Playwright、Serena、memory×5；biz×5 与 ssh-manager 永久禁入。不迁入个人或其他来源的服务。秘密按变量名传递；应用与 MCP 凭据分离。
+## 接受基线、授权与技术边界
 
-项目和 hooks 信任均由工程师独立审阅；不得改个人配置、自动信任或激活 hooks。
+启动任务分别记录结果 AC 与允许操作、对象、环境、权限、副作用、资源及停止条件。目标、对象、环境、权限和风险边界未实质变化且未撤销时复用任务授权；普通技术选择、Plan、实现、测试、文档及局部修复自主推进。提交/普通推送/PR/merge 可集中授权，删除和权限变更独立列明。工具、权限和 CI 通过不产生授权。
 
-## Local constraints
+风险标签用于定位，不以路径命中自动审批。四类 runtime 面与兼容契约的基线内安全保持、重构及修复自主完成并提供行为/负例证据；SQL 安全不变量、数据范围、业务口径、外发边界、breaking 承诺、接受标准、必要门禁、信任/权限及生产策略变化由 Owner 作实质决定。
 
-编辑前读取 `capabilities/AGENTS.md`、`docker/AGENTS.md`、`src/mj_agent/AGENTS.md` 或 `tests/AGENTS.md`。局部规则与根入口共同生效。
+存在未决定的实质变化或缺动作授权时标 `OWNER_APPROVAL_REQUIRED`，先准备具体可审阅方案；风险未知或技术拒绝只暂停受影响步骤。
 
-### Self-enforced boundaries (READ THIS — it is the only guardrail on you)
+编辑前读取目标目录 `capabilities/AGENTS.md`、`docker/AGENTS.md`、`src/mj_agent/AGENTS.md` 或 `tests/AGENTS.md`。
 
-Codex 必须自守 `policies/ai-agent.md` §4 的 OWNER_APPROVAL_REQUIRED。原生 hooks/rules 是协作保护，不是完整沙箱。Owner 在当前任务中明确批准具体删除清单后，该范围内无需重复确认或额外理由。执行前核验绝对路径、Git 跟踪状态、未提交/未跟踪/被忽略内容、必要备份、文件占用及重解析点；目标或内容实质变化仅暂停受影响项。核验通过后通过正常工具执行，不预设 Owner 必须人工删除。聊天批准不替代宿主审批；实际拒绝时保留原始错误并按证据定位，无法定位则标未知，受阻步骤返回 BLOCKED_EXECUTION_ROUTE。禁止建凭证、换工具、改写命令或改权限绕过拒绝。
-
-1. **Data boundary (ADR-006 / ADR-009 / ADR-000) — never bypass it.** All business-warehouse (biz)
-   data access MUST go through the agent tool-chain (`find_biz_context → list_biz_tables →
-   describe_biz_table → execute_sql`). Do NOT connect to any database directly (psql / psycopg / any
-   client) — that bypasses the L1/L1b SQL guardrails and may use non-analyst credentials. biz access
-   is **read-only** via the `analyst` role; no writes, no DDL, no schema changes.
-2. **Secrets — never read or exfiltrate.** Do NOT open, print, log, or transmit `.env`,
-   `config/secrets*.enc`, or any credential; do not use secrets to reach services outside the
-   sanctioned tool-chain.
-3. **4 项 in-source 专属必停 + protected surfaces — Owner HITL 拍板 required before editing.** Do NOT
-   edit `src/mj_agent/tools/sql/{guardrail,precheck}.py`, `src/mj_agent/prompts/system.md`,
-   `src/mj_agent/skills/*/SKILL.md` bodies, or `src/mj_agent/biz_catalog/qcm_catalog.yaml` without
-   explicit Owner sign-off (per `policies/ai-agent.md` §4 canonical 10-enum). Same for `.codex/**` trust posture, native guard/configuration, frozen infra contracts, `config/secrets*.enc` / GRANT SQL, and `docker/compose.prod.yml`.
-   **Also `docker/Dockerfile` external registry image refs** — `FROM <image>` and
-   `COPY --from=<registry image>` (internal `COPY --from=<stage>`, e.g. `--from=builder`, is NOT in
-   scope; every other Dockerfile line needs ≥ 2 reviewer, not Owner sign-off). This one is stated
-   here explicitly because it binds you and **nothing else does**: it has no `permissions.ask` entry
-   and no CI gate, and `docker/AGENTS.md` — where its local table lives — only loads once your cwd is
-   under `docker/`. Rule body + approval levels: `policies/docker-runtime.md` §4; canonical enum
-   anchor `secrets-grants-or-prod-config` (per #408 / #413).
-4. **Commit / push / PR / merge — `OWNER_APPROVAL_REQUIRED` (Owner HITL 拍板).** You may prepare
-   changes and run verification freely, but treat commit, push, PR creation, and merge as gated
-   actions needing the Owner's go-ahead (per ADR-034).
-   Reuse an existing approval for its exact action and objects; commit, ordinary push, PR creation,
-   local deletion and remote-ref deletion are separate scopes. Reconcile partial/unknown results
-   before resuming. Project rules contain no Git/gh entries; `never` alone does not block Git/gh.
-   Assess the actual command, loaded rules/hook and observed host restrictions separately.
-   Remove-Item still matches prompt. Known unresolved refusals need evidence of changed conditions;
-   repeated chat approval or network recovery alone does not clear them.
-   Decision: [ADR-041](decisions/ADR-041_Command_Specific_Git_Execution_Policy.md).
-5. **Git workflow discipline (G1/G2) binds you too.** New branches ONLY via
-   `git worktree add ../<branch-name> -b <branch-name>` — never `git checkout -b` / `git switch -c`
-   (G1); `gh pr create` must carry an explicit `--base` (non-hotfix → develop, hotfix → main) (G2).
-   原生守卫识别范围有限；你仍必须自守 `policies/git-branching.md`。
-6. **Parity of authority = parity of constraint.** Being authorized relaxes no security surface.
-   When in doubt, stop and ask the Owner.
-
-**Owner remains the single decision-maker** (HITL 拍板); each PR declares which agent implemented,
-and git authorship records provenance.
-
+1. **业务数据边界 — never bypass it**：biz 访问始终经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`，analyst 只读。Do NOT connect to any database directly；禁止直连 DB、写、DDL 或绕过 L1/L1b。
+2. **秘密与服务边界 — never read or exfiltrate**：不读取/打印/记录/传输 `.env`、`config/secrets*.enc` 或真实凭据。应用/MCP 凭据分离，仅变量名传递。项目 MCP 只含既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager、个人/其他来源服务永久禁入。
+3. **信任与技术拒绝**：工程师独立审阅和激活项目/hooks 信任、维护秘密及宿主审批；Agent 不改个人配置、不自动信任。实际拒绝保留原错、按证据定位；无法定位标未知，受阻步骤返回 `BLOCKED_EXECUTION_ROUTE`，禁止建凭证、换工具、编码、改写命令或改权限绕过。
+4. **删除与重入**：具名授权删除前核验绝对路径、Git 跟踪/未提交/未跟踪/忽略内容、必要备份、占用及目标/后代重解析点。复用具体清单；实质变化只暂停受影响项。部分成功或结果未知先对账，成功项不重复。
+5. **Git**：新分支只用 `git worktree add ../<branch-name> -b <branch-name>`；PR 显式 base，通常 develop、hotfix main；release独立发布需接受/授权及未来具名规则映射，当前有限解析器不声称支持；任务集成例外按 `policies/git-branching.md` 登记精确 head/base。首期 Owner 以不同于作者/最后推送者身份提供有效平台批准，Agent 在授权和门禁满足时 merge；补推重新取得有效审核。
+6. **交付与接受**：独立核验从 AC 建立期望、读取真实成果并复现；阶段是检查点，不固定人工暂停。仓库批准、集成、运行验证、交付及 Owner 接受分别记录；Plan completed 须 AC 满足、成果可用且 Owner 明确接受版本。门禁自降防护首期依赖 Owner 审阅补偿，独立可信核验仍延期。
 
 ## 会话维护
 
-用户明确要求归档本次对话、推荐标题、为本次对话命名或重命名当前任务时，读取并遵循
-[会话维护规则](sdd/workflows/session-maintenance.md)。引用、示例、否定和机制讨论不触发；
-“收尾”按实际对象处理，不自动解释为对话归档。
-
-普通归档与推荐标题默认只生成回复文字，不自动改名、保存文件或执行客户端归档；原任务已有的
-记录义务继续适用。明确重命名请求按会话维护规则调用可用客户端功能，已有授权不重复确认，成功后
-才报告已重命名。额外保存或客户端归档，按用户明确请求和实际工具能力处理。
+用户明确要求归档本次对话、推荐标题、命名或重命名当前任务时，读取 [会话维护规则](sdd/workflows/session-maintenance.md)。普通归档和推荐标题默认只生成文字；明确重命名复用已有授权并调用实际客户端功能，成功才报告。额外保存/客户端归档按明确请求处理。
 
 ## Architecture
 
@@ -111,4 +70,4 @@ python scripts/sdd/check_native_skills.py
 
 创建或维护 mj-agent 项目附属 Site 前，读取并遵循 [Site 命名规范](docs/rule/[STANDARD]_MJ_Agent_Site_Naming_Convention.md)。
 
-Git 新分支只用 worktree；PR 显式 base（通常 develop，hotfix 为 main），人工 merge。提交格式与 scope 以 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 为准。ADR 编号先核对 `decisions/` 与归档命名空间。报告实施来源、HITL、BDD/TDD、委派和未验证项。
+Git 新分支只用 worktree；PR显式base（通常develop，hotfix main；release独立发布需接受/授权及未来具名规则映射，当前有限解析器不声称支持，分层关系精确登记）；授权内merge须有效平台审核及门禁满足。提交格式与 scope 以 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 为准。ADR 编号先核对 `decisions/` 与归档命名空间。报告实施来源、HITL、BDD/TDD、委派和未验证项。

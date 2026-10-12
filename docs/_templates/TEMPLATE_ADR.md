@@ -4,7 +4,7 @@ domain: AGENT
 summary: 20-60 字决策摘要，描述此 ADR 解决的问题或确立的原则
 owner: 项目负责人
 created: YYYY-MM-DD
-updated: YYYY-MM-DD
+updated: 2026-10-12
 state: draft
 decision: accepted
 track: shared
@@ -12,8 +12,8 @@ track: shared
 
 # ADR NNN: <决策标题>
 
-> 复制本模板到 `docs/adr/[ADR]_NNN_<Decision_Title>.md`。
-> NNN 为 3 位递增序号；`decision` 取值 `accepted / superseded / rejected`。
+> 复制本模板到 `decisions/ADR-NNN_<Decision_Title>.md`。
+> 先核活动decisions与archive决策命名空间，NNN选未占用3位编号；`decision` 取值 `accepted / superseded / rejected`。
 > `domain` 从本框架 §9 domain 枚举中选取一个最主要的。
 
 ## Context

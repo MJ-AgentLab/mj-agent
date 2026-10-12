@@ -9,7 +9,7 @@ tags:
   - workflow
 aliases: []
 created: 2026-05-08
-updated: 2026-08-07
+updated: 2026-10-12
 state: draft
 version: v0.2
 track: shared
@@ -149,7 +149,7 @@ mj-agent 专属规则（如有；可删此段）：
 - Plan / SPEC / ADR 用于约束任务边界
 - 代码与真实数据流用于校验文档是否仍然成立
 - 不要写"参考所有 docs/**"
-- 如果参考文档、Issue、Plan、代码现状冲突，必须触发 HITL
+- 先核事实并修复基线内冲突，目标/AC/安全/权限实质矛盾才请求Owner决定
 
 ## §2 Skill Hint 规则（沿用执行闭环 §2 + §4）
 

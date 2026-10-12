@@ -198,7 +198,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not spec_files:
         print("no capabilities/*/spec.yml found")
-        return 0
+        return 1 if args.strict else 0
 
     print(f"check_capability_schema.py — validating {len(spec_files)} spec.yml (G1)")
     total = Summary()

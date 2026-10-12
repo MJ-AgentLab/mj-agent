@@ -11,7 +11,7 @@ aliases:
   - mj-agent SPEC Authoring Guide
   - mj-agent SPEC 撰写指南
 created: 2026-05-11
-updated: 2026-09-21
+updated: 2026-10-12
 state: draft
 version: v0.4
 track: shared
@@ -71,7 +71,7 @@ git diff --name-only HEAD
 ├─ src/mj_agent/tools/sql/{guardrail,precheck,execute,introspect}.py
 │  └─ #2 SQL guardrail / 数据边界
 ├─ src/mj_agent/skills/**/SKILL.md  OR  src/mj_agent/prompts/*.md  OR  src/mj_agent/biz_catalog/qcm_catalog.yaml
-│  └─ #3 In-source canonical（runtime LLM 上下文）— mj-agent 专属，永远 HITL
+│  └─ #3 In-source canonical（runtime LLM 上下文）— mj-agent runtime，按语义影响分类
 ├─ docker/**  OR  docker/compose*.yml
 │  └─ #4 Docker compose + storage stack
 ├─ .github/workflows/**  OR  scripts/*.{py,ps1}
@@ -118,7 +118,7 @@ git diff --name-only HEAD
 ### §4.3 In-source canonical（runtime LLM 上下文）— mj-agent 专属
 
 - **适用范围**：`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`、`src/mj_agent/biz_catalog/qcm_catalog.yaml`
-- **永远触发** [[policies/ai-agent|ai-agent policy]] §4 必停 trigger 10 / 11 / 12（视改动文件而定）
+- 先核安全/业务/数据/外发/接受承诺实际影响，保持基线的正文与兼容合同自主；实质变化按ai-agent §4决定
 - **必填段**：§1 Context（必说明为何 LLM 行为变化）+ §2 Scope + §3.3 行为不变量（LLM 输出契约，非 schema）+ §5 Error handling（degradation 行为）+ §7 Verification（必含 §7.3 EVAL coverage；A8/A11 transitional waiver 期内可注释 TODO）+ §8.3 LangSmith trace metadata + **新增 "frontmatter strip 契约" 子段**（说明 loader 行为不变；不允许把 frontmatter 字段塞进 body）
 - **可选 / 多数 N/A 段**：§3.1 输入 schema / §3.2 输出 schema（不适用 LLM body）；§4 Configuration（除非引入新 hyperparameter）；§6 Rollback（version 回退路径必填）
 - **常见 anti-pattern**：
@@ -205,24 +205,10 @@ SPEC Delta:
 
 ---
 
-## §6 与 §3.1 必停规则的关系
+## §6 与实质风险规则的关系
 
-[[policies/ai-agent|ai-agent policy]] §4 现为 **canonical 10-enum**（4 项 in-source 必停打头 + 6 项工程面；无「通用/专属」双轨编号——执行期通用暂停清单另见 [[sdd/workflows/execution-loop|execution-loop]] §3.1，两套分类并存不混编号）。下表标注哪些任务类型自动触发哪些 canonical enum：
+canonical 10-enum用于定位影响，路径命中不自动审批；SPEC Context记录实际安全/业务/权限/breaking/AC/gate影响及授权。SQL/runtime/Prompt/catalog保持安全不变量和既定业务/外发范围的修复、重构与兼容维护自主，提供行为/负例、版本/EVAL与冻结证据。改变这些承诺、信任或生产策略先Owner决定。相关独立核验按风险模拟工程/领域/Prompt/供应链视角，不要求真人或固定人数。
 
-| 任务类型 | 自动触发的 ai-agent §4 canonical enum |
-|---|---|
-| #1 Python 应用代码 | 多数无 §4 enum（执行期暂停走 execution-loop §3.1）；触 `capabilities/*/contracts/*` → declared-contract-change |
-| #2 SQL guardrail | **sql-guardrail-relax**（永远必停） |
-| #3 In-source canonical | **runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync**（永远必停） |
-| #4 Docker compose + storage stack | secrets-grants-or-prod-config（`docker/compose.prod.yml`；**及 `docker/Dockerfile` 外部 registry 镜像引用**，per #413）/ database-migration（mj_agent_memory schema） |
-| #5 CI/CD + scripts | ci-blocking-gate-toggle（gate blocking flip 时） |
-| #6 Config / secrets / deps | secrets-grants-or-prod-config（secret / GRANT / prod 配置）；新依赖属 execution-loop §3.1 执行期暂停，非 §4 enum |
-| #7 Engineering-workflow infra | mcp-server-trust-posture-change（`.codex/config.toml` 面）；A12-A14 PR 门禁阻塞 |
-| #8 文档治理 | bulk-content-purge-or-migration（≥10 文件迁移/归档）；其余一般无 §4 enum（framework STANDARD 触 A6 AGENTS.md 同步） |
-
-**SPEC §1 Context 必须显式标注本 SPEC 触发的 ai-agent §4 必停项**，让 reviewer 一眼判定 HITL 强度。
-
----
 
 ## §7 何时不需要写 SPEC
 

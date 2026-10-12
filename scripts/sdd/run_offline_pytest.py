@@ -1118,7 +1118,29 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--collect-only", action="store_true")
     parser.add_argument("--tb", choices=("auto", "long", "short", "line", "native", "no"))
     parser.add_argument("-r", dest="report_chars")
+    parser.add_argument("--junitxml", help="new JUnit file outside repository; no secret or indirect paths")
     return parser
+
+
+def _junit_target(raw: str, repo_root: Path) -> str:
+    """A bounded reporting destination, never a new input or plugin route."""
+    if "://" in raw or raw.startswith(("\\\\", "//")):
+        raise RunnerError("JUnit destination must be a local path")
+    path = Path(raw).absolute()
+    if any(part == '..' or (part != path.anchor and (':' in part or part.endswith((' ', '.'))))
+           for part in path.parts):
+        raise RunnerError("JUnit destination contains a noncanonical path component")
+    if path.is_relative_to(repo_root.absolute()) or any(
+            part.lower().startswith((".env", "secrets")) or part.lower().endswith((".pem", ".key", ".enc"))
+            for part in path.parts):
+        raise RunnerError("JUnit destination is inside repository or sensitive")
+    if path.exists() or path.is_symlink():
+        raise RunnerError("JUnit destination must not exist")
+    if not path.parent.is_dir() or not _path_is_non_reparse_beneath(Path(path.anchor), path.parent):
+        raise RunnerError("JUnit destination parent must be regular and exist")
+    if path.resolve().is_relative_to(repo_root.resolve()):
+        raise RunnerError("JUnit destination is inside repository")
+    return str(path)
 
 
 def _is_ignored(path: str, ignores: list[str]) -> bool:
@@ -1160,6 +1182,8 @@ def _pytest_arguments(args: argparse.Namespace, repo_root: Path) -> list[str]:
         forwarded.extend(["--tb", args.tb])
     if args.report_chars is not None:
         forwarded.extend(["-r", args.report_chars])
+    if args.junitxml is not None:
+        forwarded.extend(["--junitxml", _junit_target(args.junitxml, repo_root)])
     return [*targets, *forwarded]
 
 

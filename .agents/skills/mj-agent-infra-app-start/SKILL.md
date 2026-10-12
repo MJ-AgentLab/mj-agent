@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-app-start
-description: "适用于 mj-agent 的有序启动本地dev runtime。输入：worktree、provider状态、runtime选择、已有端口/compose。流程：cwd/provider→prereq→already-running→runtime→storage→live→launch→verify。输出：根URL/容器状态/覆盖检查真实，未验证不填绿。Use when：启动当前dev容器栈并报告就绪状态。Do not use for：只要compose ps输出；建议docker-compose，不启动app。授权：缺凭据Owner终端；live单列授权；后台未验证不假造；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的有序启动本地dev runtime。输入：worktree、provider状态、runtime选择、已有端口/compose。流程：cwd/provider→prereq→already-running→runtime→storage→live→launch→verify。输出：根URL/容器状态/覆盖检查真实，未验证不填绿。Use when：启动当前dev容器栈并报告就绪状态。Do not use for：只要compose ps输出；建议docker-compose，不启动app。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — App Start
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述

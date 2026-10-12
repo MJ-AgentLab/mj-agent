@@ -1,0 +1,14 @@
+{
+  "name": "mj-agent-delivery-executor",
+  "url": "https://github.com/MJ-AgentLab/mj-agent",
+  "description": "Task-scoped mj-agent delivery execution; no checks publisher or ruleset bypass.",
+  "public": false,
+  "hook_attributes": {"active": false, "url": "https://invalid.invalid/mj-agent-unused-webhook"},
+  "default_permissions": {
+    "metadata": "read",
+    "contents": "write",
+    "pull_requests": "write",
+    "workflows": "write"
+  },
+  "default_events": []
+}

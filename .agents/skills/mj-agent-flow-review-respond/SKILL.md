@@ -1,19 +1,20 @@
 ---
 name: mj-agent-flow-review-respond
-description: "适用于 mj-agent 的Stage15回应自己的PR反馈/CI失败。输入：自有PR、comments、head、CI日志、Plan/SPEC。流程：fetch→逐条分类→影响→修复计划→逐条回复→风险输出。输出：每条comment有采纳/解释/延后理由及草案。Use when：我的PR收到三条意见，分类并拟回复。Do not use for：请评审另一作者的新PR；建议git-review-pr，避免反向调用。授权：req/API/schema/权限/B改动先Owner；发帖明确授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage15回应自己的PR反馈/CI失败。输入：自有PR、comments、head、CI日志、Plan/SPEC。流程：fetch→逐条分类→影响→修复计划→逐条回复→风险输出。输出：每条comment有采纳/解释/延后理由及草案。Use when：我的PR收到三条意见，分类并拟回复。Do not use for：请评审另一作者的新PR；建议git-review-pr，避免反向调用。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Respond to Review Comments (HITL Stage 15)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill processes review comments and CI failures on **your own** PR (HITL Stage 15) — fetches PR reviews via gh CLI, classifies each comment (bug / suggestion / style / architecture / requirement / test / CI failure), evaluates impact on Plan/SPEC/ADR + mj-agent-specific surfaces (in-source canonical / biz_catalog / SQL guardrail), drafts modification plan + reply per comment, outputs HITL questions when comments touch requirement/API/schema/permission/user-visible-behavior or §3.1 必停 4 项. Make sure to use this skill whenever the user says "处理 review", "回应 review", "处理 PR feedback", "我的 PR 收到了 review", "review 回复", "respond to review", "comment triage", "PR comment 分类", "CI failure 分析", "Stage 15", "review respond" in the mj-agent context, or pastes a PR URL belonging to themselves with reviews to handle. Direction-distinct from mj-agent-git-review-pr (audits **others'** PRs for architecture compliance — opposite direction). Outputs per-comment classification + modification plan + reply draft + HITL flags; publishes replies only with explicit authorization of the exact PR and reply content, using a discovered tool or gh after execution-route checks; does NOT auto-commit or auto-modify code (those stay gated). Do not use for: reviewing someone else's PR (use mj-agent-git-review-pr in PR-B3+), pre-commit self-check (use mj-agent-flow-self-review, Stage 11), or pre-merge readiness (use mj-agent-git-check-merge in PR-B3+).
+This skill processes review comments and CI failures on **your own** PR (HITL Stage 15) — fetches PR reviews via gh CLI, classifies each comment (bug / suggestion / style / architecture / requirement / test / CI failure), evaluates impact on Plan/SPEC/ADR + mj-agent-specific surfaces (in-source canonical / biz_catalog / SQL guardrail), drafts modification plan + reply per comment, outputs HITL questions when comments touch requirement/API/schema/permission/user-visible-behavior or §3.1实质风险 4 项. Make sure to use this skill whenever the user says "处理 review", "回应 review", "处理 PR feedback", "我的 PR 收到了 review", "review 回复", "respond to review", "comment triage", "PR comment 分类", "CI failure 分析", "Stage 15", "review respond" in the mj-agent context, or pastes a PR URL belonging to themselves with reviews to handle. Direction-distinct from mj-agent-git-review-pr (audits **others'** PRs for architecture compliance — opposite direction). Outputs per-comment classification + modification plan + reply draft + HITL flags; publishes replies only with explicit authorization of the exact PR and reply content, using a discovered tool or gh after execution-route checks; implements baseline-preserving fixes within task scope; commits and external replies require their respective action authorization. Do not use for: reviewing someone else's PR (use mj-agent-git-review-pr in PR-B3+), pre-commit self-check (use mj-agent-flow-self-review, Stage 11), or pre-merge readiness (use mj-agent-git-check-merge in PR-B3+).
 
 
 ## Overview
@@ -44,11 +45,11 @@ digraph review_respond {
   s6 [label="Step 6: Risk classification" shape=diamond];
 
   out_go [label="Output: per-comment table\n+ modification plan\n+ reply drafts\n+ retest commands" shape=box];
-  out_hitl [label="Output: HITL pause\n+ blocking comments\n+ 3-5 questions" shape=box];
+  out_hitl [label="Output: 修复/补证据；实质越界才决定\n+ blocking comments\n+ 3-5 questions" shape=box];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6;
   s6 -> out_go [label="all Low/Medium\nno blocker"];
-  s6 -> out_hitl [label="any High\n(req/API/schema/perm/UB/§3.1 mj-agent)"];
+  s6 -> out_hitl [label="material goal/security/permission/breaking/AC/gate change"];
 }
 ```
 
@@ -118,24 +119,14 @@ gh pr checks <pr-id>                                         # CI status detail
 | 维度 | 检查 | 升档 |
 |---|---|---|
 | Plan / SPEC / ADR | comment 暴露假设错误 / SPEC 缺漏 | 同步更新对应文档 |
-| 需求 | 改可见行为 / 输入输出 / 边界 | **HITL High** |
-| API | 公共接口签名 / 字段语义 / 响应结构 | **HITL High** |
-| Schema | DB 列 / 表 / 索引（mj-agent 是消费者，触发上游 mj-system 调整诉求） | **HITL High** |
-| 权限 | 认证 / 授权 / 角色 / 数据可见性（analyst RO 角色） | **HITL High** |
-| 用户可见行为 | 报错信息 / 状态码 / Studio UI 文案 | **HITL High** |
-| 测试覆盖 | 缺关键路径 / 边界 case | P1，必补 |
-| 内部实现 | 重构 / 命名 / 内联抽取 | 按 reviewer 偏好 |
+| 需求 | 目标/接受标准/风险容忍改变 | Owner实质决定 |
+| API | 兼容修复/扩展 vs breaking承诺 | 兼容基线内自主，breaking先决定 |
+| Schema | 自有具名可逆dev变化 vs 数据/权限边界 | 核工具链/备份/授权；实质变化先决定，biz禁止写 |
+| 权限 | 认证/角色/可见数据范围变化 | Owner实质决定；永久只读边界保持 |
+| 用户可见行为 | 基线内修复/文案 vs 目标/AC改变 | 基线内自主；AC变化先决定 |
+| runtime/Prompt/catalog/SQL | 安全行为保持与兼容维护 vs 边界/口径改变 | 前者自主且有负例证据；后者先决定 |
 
-### mj-agent 专属维度（升档强）
-
-| 维度 | 检查 | 升档 |
-|---|---|---|
-| **in-source canonical** | comment 触及 src/mj_agent/skills/**/SKILL.md 或 system.md body | **HITL High**（§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change） |
-| **biz_catalog** | comment 触及 qcm_catalog.yaml 镜像（与 mj-system STANDARD §2-§4 漂移） | **HITL High**（§3.1 必停面 biz-catalog-sync） |
-| **SQL guardrail / precheck** | comment 触及 tools/sql/{guardrail,precheck}.py 放宽规则 | **HITL High**（§3.1 必停面 sql-guardrail-relax） |
-| **system.md `version` bump** | comment 触及 system.md frontmatter `version` 字段 | **HITL High**（§3.1 必停面 prompt-version-or-body-change） |
-
-> **High 触发不可绕过**：即便 reviewer 是项目负责人，需求/API/schema/权限/用户行为/§3.1 4 项 mj-agent 专属变更也要在 PR description 显式记录决策。
+每条保留实际影响、依据、拟修复和回复草案；独立核验读取真实成果而非作者总结。
 
 ## Step 4: Draft Modification Plan
 
@@ -145,7 +136,7 @@ per comment（P0/P1）：
 - Comment 来源：reviewer @<user>, file `<path>:<line>` / PR-level
 - 类别：<bug/建议/...>
 - 优先级：<P0/P1/P2>
-- 影响：<Plan §X / SPEC §Y / 仅本 PR 局部 / mj-agent §3.1 必停项 N>
+- 影响：<Plan §X / SPEC §Y / 仅本 PR 局部 / mj-agent §3.1实质风险项 N>
 - 修改文件：
   - `path/to/file.py` 第 X 行：<具体改动>
   - 新增文件：<如需要>
@@ -169,14 +160,14 @@ per comment（P0/P1）：
 | **defer-to-followup** | "Out of scope for this PR. Tracking in #<follow-up-id>." | 同意但本 PR 不做 |
 | **CI-fix** | "<root cause>. Fixed by <commit/config-change>." | CI failure 解释 |
 
-> **push-back 必须有理由**——不能只说 "no"。reasoning 必须是技术性的（性能 / 兼容 / scope / API 稳定性 / mj-agent 数据边界 / §3.1 必停规则）。
+> **push-back 必须有理由**——不能只说 "no"。reasoning 必须是技术性的（性能 / 兼容 / scope / API 稳定性 / mj-agent 数据边界 / §3.1实质风险规则）。
 
 ## Step 6: Risk Classification & Output
 
 ```text
 Risk = max(per-comment risk)
 
-Risk = High  → HITL pause（任一 High-impact comment：req/API/schema/perm/UB 或 mj-agent §3.1 必停 4 项）
+Risk = High  → 修复/补证据；实质越界才决定（任一 High-impact comment：req/API/schema/perm/UB 或 mj-agent §3.1实质风险 4 项）
 Risk = Medium → continue + 提示用户重点核对 P0 项
 Risk = Low   → continue（auto-applicable per-comment plan）
 ```
@@ -206,7 +197,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 | 3 | @rev | tests/ | 测试 | P1 | 仅本 PR | accept |
 | 4 | @rev | naming | 风格 | P2 | 仅本 PR | accept |
 | 5 | CI | mypy | CI failure | P0 | 仅本 PR | accept |
-| 6 | @rev | system.md:5 | bug | P0 | **in-source canonical**（§3.1 必停面 runtime-skill-content-change） | **HITL** |
+| 6 | @rev | system.md:5 | bug | P0 | **in-source canonical**（§3.1实质风险面 runtime-skill-content-change） | **HITL** |
 
 ### Risk: **High**（Comment #2 API change + #6 in-source canonical）
 
@@ -218,14 +209,14 @@ Risk = Low   → continue（auto-applicable per-comment plan）
    - 选项：A. 接受 → 改 SPEC + impl + test / B. push-back → 解释为何不接受 / C. defer → 建 follow-up Issue
    - 推荐：A（reviewer 是 domain expert，需求合理）
    - 默认假设：A
-   - 必须 HITL：是
+   - 实际边界变化需决定：是
 
 2. **Comment #6: reviewer 要改 system.md system prompt body**
    - 当前观察：本 PR 是 documentation/* PR，未在 scope 内动 system.md
    - 不确定点：扩 scope 改 system.md vs 拒绝 vs follow-up
-   - 为什么重要：B 风味 in-source canonical 改动是 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 mj-agent-runtime-prompt-version-bump（PR-C2）
+   - 为什么重要：B 风味 in-source canonical 改动是 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 mj-agent-runtime-prompt-version-bump（PR-C2）
    - 选项：A. 接受扩 scope（变 feature/* PR；本 PR rebase）/ B. defer → follow-up PR / C. 改 SPEC 重对齐
-   - 推荐：B（B 风味单独 PR + Domain Expert review）
+   - 推荐：B（B 风味单独 PR + 独立领域视角核验）
    - 默认假设：B
 
 ### Modification Plan（待 HITL 后展开）
@@ -258,7 +249,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 - ❌ 不替代 `mj-agent-flow-self-review`（self-review = Stage 11 commit 前自检；本 skill = Stage 15 处理外部 reviewer feedback）
 - ❌ 不替代 `mj-agent-git-check-merge`（check-merge = Stage 16 技术合并门）
 - ❌ 不直接调 GitHub API 修 PR（add comment / dismiss review / approve / merge 仍需 user 操作）
-- ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + mj-agent-runtime-* propose→拍板→apply）
+- ❌ B 风味 comment **不**在本 stage 改 src/mj_agent/{skills,prompts}/（建议 follow-up PR + mj-agent-runtime-* 分析→影响分类→实施/决定）
 
 ## Sub-skill / Tool Calls
 
@@ -274,7 +265,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## Reference Files
 
-- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 13/15 映射；历史源 HITL_Prompt §4.13 Rules 1-7 + Output 6 字段）+ §3.1 必停 4 项 mj-agent 专属
+- `repo:sdd/workflows/execution-loop.md` §4.1（Stage 13/15 映射；历史源 HITL_Prompt §4.13 Rules 1-7 + Output 6 字段）+ §3.1实质风险 4 项 mj-agent 专属
 - `repo:sdd/workflows/execution-loop.md` §6（修复后须出双段证据；AI Self-review 双段约束；实操矩阵见 §5）
 - `repo:docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`（PR description / 回复规范）
 - `.agents/skills/mj-agent-git-review-pr/SKILL.md`（PR-B3 落地，方向相反对照）
@@ -284,17 +275,17 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 
 ## Anti-patterns
 
-- **不要** 在 B 风味 comment 触发时自动接受改动（强制 HITL；建议 follow-up PR）
+- **不要** 在B风味未经实际语义/impact核对盲改（实质变化才HITL；建议 follow-up PR）
 - **不要** push-back 不给理由（必须技术性）
 - 只有具体 PR/内容获得明确发布授权且执行路线可用才发送，不将修复方案批准等同于发帖授权
-- **不要** 跳过 §3.1 必停 4 项 mj-agent 专属维度判断
-- **不要** 在 #2 类需求 / #6 类 in-source canonical comment 上给 GO（必 HITL）
+- **不要** 跳过 §3.1实质风险 4 项 mj-agent 专属维度判断
+- **不要** 在真实AC或安全/业务边界变化未决定时给GO
 
 ## Handoff
 
 ```
 Review Response Report 已输出（对话）。
-HITL 通过 → user 决定每条 comment 处理后：
+基线内自主修复；实质变化决定后：
   → 改代码 → mj-agent-flow-implement (Stage 8 重新走)
   → 文档同步 → mj-agent-doc-sync (PR-C1) 或手工 编辑
   → 重测 → mj-agent-flow-verify (Stage 10) 跑相关命令

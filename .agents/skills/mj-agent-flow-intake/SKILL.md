@@ -1,19 +1,20 @@
 ---
 name: mj-agent-flow-intake
-description: "适用于 mj-agent 的Stage0原始需求受理。输入：用户目标、现状、影响对象与约束。流程：类型→scope→真歧义→术语→7模块→可测AC→风险→拆分文档→HITL→草案。输出：Intake含风险/边界/文档/停点/可验证AC。Use when：评估给查询工具增加一个参数的任务。Do not use for：已确认方案请直接编码；建议implement，不重新扩写需求或开issue。授权：模糊关键scope先问；10停点及Docker镜像显式勾选；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage0原始需求受理。输入：用户目标、现状、影响对象与约束。流程：类型→scope→真歧义→术语→7模块→可测AC→风险→拆分文档→HITL→草案。输出：Intake含风险/边界/文档/停点/可验证AC。Use when：评估给查询工具增加一个参数的任务。Do not use for：已确认方案请直接编码；建议implement，不重新扩写需求或开issue。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Task Intake (HITL Stage 0)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill performs mj-agent task Intake (HITL Stage 0) — converts user requirements into a structured Intake Result with risk-level / scope / documentation needs / HITL decision points, and decides whether to write `plans/[INTAKE]_*.md`. Make sure to use this skill whenever the user says "评估任务", "intake", "Issue 创建前", "task admissibility", "需求收口", "新任务评估", "task intake", "需求评估", or asks to convert a vague description / existing plan / chat / spec into an actionable engineering task in the mj-agent repo. mj-agent-specific risk taxonomy adds 4 §3.1 必停 triggers: runtime-skill-content-change (src/mj_agent/skills/**/SKILL.md body) / prompt-version-bump (system.md version) / biz-catalog-sync (qcm_catalog.yaml) / sql-guardrail-relax (tools/sql/{guardrail,precheck}.py). Outputs Intake Result + Issue Draft + HITL Questions and stops. Do not use for: GitHub Issue creation (use mj-agent-git-issue), branch creation (use mj-agent-git-branch), repo fact-check (use mj-agent-flow-repo-scan, Stage 3), or full Plan body authoring (use mj-agent-flow-plan, Stage 4).
+This skill performs mj-agent task Intake (HITL Stage 0) — converts user requirements into a structured Intake Result with risk-level / scope / documentation needs / HITL decision points, and decides whether to write `plans/[INTAKE]_*.md`. Make sure to use this skill whenever the user says "评估任务", "intake", "Issue 创建前", "task admissibility", "需求收口", "新任务评估", "task intake", "需求评估", or asks to convert a vague description / existing plan / chat / spec into an actionable engineering task in the mj-agent repo. mj-agent-specific risk taxonomy adds 4 §3.1实质风险 triggers: runtime-skill-content-change (src/mj_agent/skills/**/SKILL.md body) / prompt-version-or-body-change (system.md version) / biz-catalog-sync (qcm_catalog.yaml) / sql-guardrail-relax (tools/sql/{guardrail,precheck}.py). Outputs Intake Result + Issue Draft + HITL Questions and stops. Do not use for: GitHub Issue creation (use mj-agent-git-issue), branch creation (use mj-agent-git-branch), repo fact-check (use mj-agent-flow-repo-scan, Stage 3), or full Plan body authoring (use mj-agent-flow-plan, Stage 4).
 
 
 ## Overview
@@ -46,7 +47,7 @@ digraph intake {
   s5 [label="Step 5: 判断风险等级\n(Low / Medium / High + mj-agent 专属 §3.1 4 项)" shape=box];
   s6 [label="Step 6: 是否拆分 Issue?" shape=diamond];
   s7 [label="Step 7: 需要 Plan/SPEC/ADR?" shape=box];
-  s8 [label="Step 8: HITL 触发?\n(§3.1 必停场景)" shape=diamond];
+  s8 [label="Step 8: HITL 触发?\n(§3.1实质风险场景)" shape=diamond];
 
   落盘判定 [label="§2.1 落盘判定\nrisk=High OR\n多模块/in-source canonical/biz catalog OR\nHITL点≥3 OR\n多迭代周期" shape=diamond];
 
@@ -54,7 +55,7 @@ digraph intake {
   对话输出 [label="对话输出 Intake Result" shape=box];
 
   s9 [label="Step 9: 输出 Issue Draft\n(mj-agent 5 类 type → 填 .github/ISSUE_TEMPLATE/)" shape=box];
-  hitl [label="Step 10: 等用户确认\n(STOP — do not create Issue)" shape=doublecircle];
+  hitl [label="Step 10: 授权/实质决定核对\n已有闭环授权继续，独立调用返回" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4;
   s4 -> s5 [label="可验证"];
@@ -74,7 +75,7 @@ digraph intake {
 - 用户要求"创建 GitHub Issue / 发布 Issue / 基于需求生成 Issue"
 - 用户"根据想法启动新任务 / 根据描述开始开发 / 修复 / 维护 / 文档更新"
 - 用户把"plan / spec / 聊天记录 / 问题描述"转成工程任务
-- 用户提到改动 in-source canonical（src/mj_agent/skills/**/SKILL.md 或 system.md）/ biz catalog（qcm_catalog.yaml）/ SQL guardrail / system prompt version bump（这些都是 §3.1 必停 trigger）
+- 用户提到改动 in-source canonical（src/mj_agent/skills/**/SKILL.md 或 system.md）/ biz catalog（qcm_catalog.yaml）/ SQL guardrail / system prompt version bump（这些都是 §3.1实质风险 trigger）
 
 **MAY skip full intake**（仍做最小判断）：
 
@@ -133,7 +134,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 - **当场挑战**：intake 遇术语与既有 `repo:docs/glossary/upstream_business_warehouse.md` / `qcm_catalog.yaml` **冲突或模糊** → 不放过，当场厘清。
 - **边界场景压测**：用具体 edge case 逼出概念边界（"X 算不算 Y？这种情况归哪类？"）。
-- **即时更新工件**：术语一旦敲定**立即** inline 更新对应工件——术语 → glossary；指标 / 维度 → `qcm_catalog.yaml`（**4 必停面之一**，改动走 `mj-agent-runtime-biz-catalog-sync` propose→拍板→apply，**不被本纪律绕过**）；难逆决策 → `decisions/` ADR（开列判据见 `mj-agent-doc-author`）。
+- **即时更新工件**：术语一旦敲定**立即** inline 更新对应工件——术语 → glossary；指标 / 维度 → `qcm_catalog.yaml`（**4 类runtime风险面之一**，改动走 `mj-agent-runtime-biz-catalog-sync` 分析→影响分类→实施/决定，**不被本纪律绕过**）；难逆决策 → `decisions/` ADR（开列判据见 `mj-agent-doc-author`）。
 - 跨上游仓术语：走 attribution → glossary 元文档 wikilink（跨仓解耦规约）。
 
 ## Step 3: 影响范围（mj-agent 7 模块 + 跨边界）
@@ -142,16 +143,16 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 |---|---|---|
 | **agent** | `src/mj_agent/agent.py` / graph 装配 / `_ACTIVE_SKILLS` 列表 | Medium 起 |
 | **llm** | `src/mj_agent/llm.py` / Ark client 工厂 / 模型配置 | Medium 起 |
-| **prompt** | `src/mj_agent/prompts/*.md`（in-source canonical） | **High** + §3.1 必停 |
-| **skill** | `src/mj_agent/skills/*/SKILL.md`（in-source canonical） | **High** + §3.1 必停 |
-| **sql** | `src/mj_agent/tools/sql/{guardrail,execute,introspect,precheck}.py` | **High** + §3.1 必停（guardrail/precheck 放宽） |
+| **prompt** | `src/mj_agent/prompts/*.md`（in-source canonical） | 按实际安全/业务/权限/AC影响分类 |
+| **skill** | `src/mj_agent/skills/*/SKILL.md`（in-source canonical） | 按实际安全/业务/权限/AC影响分类 |
+| **sql** | `src/mj_agent/tools/sql/{guardrail,execute,introspect,precheck}.py` | 按实际安全/业务/权限/AC影响分类（guardrail/precheck 放宽） |
 | **db** | `src/mj_agent/integrations/mj_system_db.py` / 连接池 / role | Medium 起 |
 | **config** | `src/mj_agent/config.py` / pydantic-settings | Medium 起 |
-| **biz_catalog** | `src/mj_agent/biz_catalog/qcm_catalog.yaml` 镜像 | **High** + §3.1 必停 |
+| **biz_catalog** | `src/mj_agent/biz_catalog/qcm_catalog.yaml` 镜像 | 按实际安全/业务/权限/AC影响分类 |
 | 跨边界 | mj-system biz pg consumer（ADR-008 / ADR-009 数据边界） | Medium 起；触红线 → High |
 | 跨边界 | mj-agent-postgres / mj-agent-redis 容器（storage stack） | Medium 起 |
 | infra | `docker/` / `pyproject.toml` / `langgraph.json` | Low / Medium |
-| **docker 供应链** | `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **High** + 改前 Owner 拍板（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4。**不在** execution-loop §3.1 的 4 项 in-source 必停之列——那 4 项是 `src/mj_agent/` 面）。Dockerfile 其余行仍 Low / Medium |
+| **docker 供应链** | `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | 按实际供应链信任来源/生产/权限变化判风险，变化先Owner决定（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4。**不在** execution-loop §3.1 的 4 项 in-source 必停之列——那 4 项是 `src/mj_agent/` 面）。Dockerfile 其余行仍 Low / Medium |
 | docs | `docs/` / `AGENTS.md` / `INDEX.md` | Low（纯 docs）/ Medium（含 STANDARD/ADR） |
 
 ## Step 4: AC 可验证性（gate）
@@ -176,7 +177,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 |---|---|---|
 | Low | 局部、可逆；不动 schema/secret/prod | — |
 | Medium | 改服务内部行为 / 多模块 / 非生产配置 | — |
-| **High** | DB schema / migration / secret / prod / public API / new dep / 范围过大 | **§3.1 必停 4 项**：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax；**任一触及自动升 High** |
+| **High** | DB schema / migration / secret / prod / public API / new dep / 范围过大 | **§3.1实质风险 4 项**：runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync / sql-guardrail-relax；**按实际安全/业务/权限/接受影响定风险，路径不自动High** |
 
 ## Step 6 / 7: Issue 拆分 + 文档需求评估
 
@@ -184,7 +185,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 - 单个 PR > 500 LOC 跨 5+ 文件
 - 跨 ≥ 2 个无关 mj-agent 模块（如 agent + sql）
-- 含 in-source canonical 改动 + 纯代码（必拆：B 风味永远 HITL）
+- 含 in-source canonical 改动 + 纯代码（必拆：B 风味按语义影响分类）
 - 多个独立 AC 互不依赖
 
 ### 文档需求
@@ -193,7 +194,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 ## Step 8: HITL 触发
 
-按 `repo:sdd/workflows/execution-loop.md` §3.1 必停规则（通用 12 + mj-agent 专属 4；条数以 kernel §3.1 与 `policies/ai-agent.md` §4 canonical enum 为准，勿硬记位号）：
+按 `repo:sdd/workflows/execution-loop.md` §3.1实质风险规则（实际语义分类，不以历史计数决策；条数以 kernel §3.1 与 `policies/ai-agent.md` §4 canonical enum 为准，勿硬记位号）：
 
 通用必停：
 1. 任务目标/范围/AC 不清楚
@@ -254,8 +255,8 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 
 ### Risk Assessment
 - Level: Low / Medium / High
-- Triggered §3.1 必停项: <list；mj-agent 专属 4 项注明>
-- 升档原因: <如 High 因 biz_catalog 改动>
+- Triggered §3.1实质风险项: <list；mj-agent 专属 4 项注明>
+- 升档原因: <如 High因真实数据范围/业务口径风险变化>
 
 ### Documentation Decision (粗评，Stage 3 Repo Scan 细化)
 - Plan: Create / Update / None
@@ -280,7 +281,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 - 建议路径: plans/[INTAKE]_<id>_<brief>.md
 
 ### Next Step
-- HITL 确认后调 mj-agent-git-issue 创建 GitHub Issue
+- 明确Issue创建授权后调git-issue，已有授权复用
 - 或调 mj-agent-git-branch 直接进 Stage 2（issue-id optional）
 ```
 
@@ -291,7 +292,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 - ❌ 不写代码 / 改 src/ / 改 docs/
 - ❌ 不进入 Repo Scan / Plan / SPEC（那些是 Stage 3 / 4 / 6）
 - ❌ 不替代 `mj-agent-flow-repo-scan`（intake 是 Stage 0 准入；repo-scan 是 Stage 3 事实核查）
-- ❌ 不自动落盘 plans/[INTAKE]_*.md（仅在 §2.1 触发 + 用户确认后由用户用 写入 落盘）
+- ❌ 仅在§2.1记录需要且有任务写入授权时由Agent落盘Intake；不新增平行材料或假接受
 
 ## Sub-skill / Tool Calls
 
@@ -315,14 +316,14 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 
 - **不要** 跳过 Step 5 风险评估（缺少风险信息会让下游 Stage 5/7/9/11 HITL Gate 误放过）
 - **不要** 在 Intake 阶段写完整 SPEC / 实现计划（那是 Stage 4/6 的职责）
-- **不要** 自动调用 mj-agent-git-issue（HITL Gate 1 在 Stage 5；intake 后必须等用户确认）
+- **不要** 未获Issue发布授权调用git-issue；已有完整闭环授权无需Stage5固定等待
 - **不要** 为 in-source canonical 改动跳过 §3.1 trigger 10/11/12/13（mj-agent 专属硬约束）
 
 ## Handoff to mj-agent-git-issue
 
 ```
 Intake 完成
-HITL Gate（用户确认）通过后：
+接受基线/任务授权已明确后：
   → mj-agent-git-issue 创建 GitHub Issue（用 Step 9 Issue Draft）
   → mj-agent-git-branch 创建 worktree（issue-id 可选）
   → mj-agent-flow-repo-scan 进 Stage 3 事实核查

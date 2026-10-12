@@ -2,7 +2,7 @@
 
 > 本文档定义 mj-agent 项目中使用的术语、缩写及项目特定概念。
 > **每个定义仅描述术语在 mj-agent 项目中的含义，不作通用百科解释。**
-> **最后更新**：2026-06-23 | **维护**：任何人引入新术语时均可更新（治理见 [policies/documentation.md](policies/documentation.md)）
+> **最后更新**：2026-10-12 | **维护**：任何人引入新术语时均可更新（治理见 [policies/documentation.md](policies/documentation.md)）
 > **职能边界**：本表是**全项目术语索引**；专题深度词典在 [`docs/glossary/<topic>.md`](docs/glossary/)（如 `upstream_business_warehouse.md`）。条目中如有专题深度补充，会 link 到对应专题词典。
 
 ---
@@ -125,7 +125,7 @@
 
 ### Guardrail（L1 hybrid）
 
-**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + blocked-keyword，用 sqlglot AST 强制 schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。任何放宽是必停 HITL 项（[policies/ai-agent.md](policies/ai-agent.md) §4）。
+**定义**：data boundary 第一层防御；`tools/sql/guardrail.py` 用正则强制 single-statement + SELECT-only + blocked-keyword，用 sqlglot AST 强制 schema/biz_dwd 表白名单（`BIZ_ALLOWED_DWD_TABLES`）。改变安全不变量或放宽防御须Owner实质决定；保持不变量的修复/重构自主且提供负例证据（[policies/ai-agent.md](policies/ai-agent.md) §4）。
 **相关术语**：Data boundary / Precheck / SQL execute
 
 ### G1 / G2（PreToolUse hook 规则）
@@ -144,8 +144,20 @@
 
 ### HITL gates（5 / 7 / 9 / 11 / 13）
 
-**定义**：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md) 17-stage 闭环中**强制暂停等人**的 5 个 stage：5 Plan confirm / 7 SPEC + ADR confirm / 9 Scope Drift / 11 AI Self-review / 13 Push。其他 stage 按通用规则 + mj-agent 专属规则按需 HITL（[policies/ai-agent.md](policies/ai-agent.md) §4）。
-**相关术语**：HITL_Prompt / Engineering-workflow
+**定义**：[sdd/workflows/execution-loop.md](sdd/workflows/execution-loop.md) 17-stage闭环的历史名称，现为5 Plan/7设计/9范围/11自检/13推送检查点，不固定等待人工。已有任务授权内自主推进；目标、AC、安全/业务/权限或必要门禁实质变化由Owner决定（[policies/ai-agent.md](policies/ai-agent.md) §4）。
+**相关术语**：HITL_Prompt / Engineering-workflow / Task authorization / Acceptance baseline
+
+### Harness
+
+**定义**：围绕Agent的工具、权限、工程门禁、证据、运行控制与恢复系统；文档要求或通过总结不等于可强制阻断。首期gate自降防护采用Owner审核补偿，可信独立执行延期。
+
+### Task authorization / Acceptance baseline
+
+**定义**：授权说明允许动作/对象/环境/权限/副作用/资源，接受基线说明成功结果/AC/风险。两者分别记录，未实质变化复用授权；工具或CI通过不产生授权。规则正本：[ai-agent §4](policies/ai-agent.md)。
+
+### Owner acceptance
+
+**定义**：Owner依据真实成果与版本证据明确接受；仓库批准、候选集成、运行验证和交付分记，Plan completed须AC满足、成果可用且明确接受版本。
 
 ---
 
@@ -153,7 +165,7 @@
 
 ### in-source canonical
 
-**定义**：位于 `src/mj_agent/` 但属于 canonical 治理范围的 markdown 文件：`skills/**/SKILL.md`（active 名单 = `agent.py:_ACTIVE_SKILLS` 单一真值源）+ `prompts/system.md` + `biz_catalog/qcm_catalog.yaml`（数量/名单不在此硬写，避免漂移）。由 Python loader 剥 frontmatter 后喂给 LLM。修改是 [policies/ai-agent.md](policies/ai-agent.md) §4 必停项之一。
+**定义**：位于 `src/mj_agent/` 但属于 canonical 治理范围的 markdown 文件：`skills/**/SKILL.md`（active 名单 = `agent.py:_ACTIVE_SKILLS` 单一真值源）+ `prompts/system.md` + `biz_catalog/qcm_catalog.yaml`（数量/名单不在此硬写，避免漂移）。由 Python loader 剥 frontmatter 后喂给 LLM。修改按 [policies/ai-agent.md](policies/ai-agent.md) §4实际语义影响分类，基线内安全保持自主，数据/业务/外发/接受变化先决定。
 **相关术语**：Canonical / Frontmatter strip / SKILL / Track B
 
 ### INDEX.md

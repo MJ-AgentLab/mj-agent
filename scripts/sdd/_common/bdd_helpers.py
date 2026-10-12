@@ -33,6 +33,7 @@ bdd 层 mapping gap; healthy = PASS).
 
 from __future__ import annotations
 
+import hashlib
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -348,17 +349,17 @@ def load_bdd_evidence(
     primary check;falls back to runbook justification (R-15-1) if evidence
     absent or pass_rate<1.0.
 
-    Search heuristic: glob ``capability_dir/evidence/bdd/*.md`` and parse
-    frontmatter via ``_common.frontmatter.parse_frontmatter`` (existing). If
-    ``scenario_name`` provided, prefer files whose stem contains keyword
-    (sanitized);else return first found with valid ``pass_rate`` field.
+    Glob ``capability_dir/evidence/bdd/*.md`` and parse frontmatter. A named
+    scenario must occur exactly in ``covered_scenarios``; unrelated filenames
+    or notes cannot supply its evidence. Unscoped callers can inspect legacy
+    pass_rate notes, but presence alone does not establish executed behavior.
 
     Schema (per bdd-tdd.md L137-150): expects ``pass_rate: float`` + optional
     ``scenario_count`` + ``risk_breakdown`` + ``adapter_coverage``.
 
     Graceful None (R-N v7 R-1 carryover): no evidence dir / no .md files /
-    no parseable frontmatter / no pass_rate field → None. Caller (G21
-    validator) handles fallback to runbook justification per R-15-1.
+    no parseable frontmatter / no pass_rate field → None. G21 handles legal
+    deferred runbook justification separately.
 
     ★ Evidence harness boundary (R-18-6 + R-13-10): This helper READS
     evidence files;does NOT generate fake pass_rate data (populated evidence
@@ -375,24 +376,87 @@ def load_bdd_evidence(
     if not md_files:
         return None
 
-    # Heuristic: prefer files whose stem contains scenario_name keyword
-    if scenario_name:
-        sanitized = scenario_name.lower().replace(" ", "_")[:30]
-        matching = [f for f in md_files if sanitized in f.stem.lower()]
-        candidates = matching if matching else md_files
-    else:
-        candidates = md_files
-
-    for path in candidates:
+    for path in md_files:
         try:
             text = path.read_text(encoding="utf-8")
         except OSError:
             continue
         meta, _ = parse_frontmatter(text)
-        if isinstance(meta, dict) and "pass_rate" in meta:
-            return meta
+        if not isinstance(meta, dict) or "pass_rate" not in meta:
+            continue
+        if scenario_name is not None:
+            covered = meta.get("covered_scenarios")
+            if not isinstance(covered, list) or scenario_name not in covered:
+                continue
+        return meta
 
     return None
+
+
+def bdd_evidence_status(
+    evidence: dict | None, scenario_name: str, capability_dir: Path | None = None
+) -> str:
+    """Classify scenario-bound run facts, without authenticating their source.
+
+    Legacy pass_rate-only notes remain useful historical documents, but cannot
+    establish behavior PASS. Synthetic executed checks establish software SELFTEST.
+    Current CI artifacts apply stronger version/log/JUnit integrity checks.
+    """
+    if not isinstance(evidence, dict) or capability_dir is None:
+        return "UNVERIFIED"
+    covered = evidence.get("covered_scenarios")
+    execution = evidence.get("execution")
+    if (not isinstance(covered, list) or scenario_name not in covered
+            or not isinstance(execution, dict)):
+        return "UNVERIFIED"
+    counts = execution.get("test_counts")
+    if not isinstance(counts, dict):
+        return "UNVERIFIED"
+    required = ("tests", "passed", "failed", "skipped")
+    if any(type(counts.get(key)) is not int or counts[key] < 0 for key in required):
+        return "UNVERIFIED"
+    if counts["tests"] <= 0 or counts["tests"] != sum(counts[key] for key in required[1:]):
+        return "UNVERIFIED"
+    if (not isinstance(execution.get("command"), str) or not execution["command"]
+            or not isinstance(execution.get("output_ref"), str) or not execution["output_ref"]
+            or type(execution.get("exit_code")) is not int):
+        return "UNVERIFIED"
+    # These files are recorded test artifacts; their integrity does not authenticate
+    # an author-controlled source. Do not accept numbers without original outputs.
+    from scripts.sdd.delivery_evidence import EvidenceError, _relative_file, junit_integrity
+
+    try:
+        log = _relative_file(capability_dir, execution["output_ref"])
+        junit = _relative_file(capability_dir, execution.get("junit_ref"))
+        if (hashlib.sha256(log.read_bytes()).hexdigest() != execution.get("output_sha256")
+                or hashlib.sha256(junit.read_bytes()).hexdigest() != execution.get("junit_sha256")):
+            return "UNVERIFIED"
+        integrity = junit_integrity(junit)
+    except (EvidenceError, OSError):
+        return "UNVERIFIED"
+    if any(integrity[key] != counts[key] for key in required):
+        return "UNVERIFIED"
+    mappings = execution.get("scenario_test_ids")
+    selected = mappings.get(scenario_name) if isinstance(mappings, dict) else None
+    if (not isinstance(selected, list) or not selected
+            or any(not isinstance(identity, str) or identity not in integrity["cases"]
+                   for identity in selected)):
+        return "UNVERIFIED"
+    if counts["failed"] or execution["exit_code"] != 0:
+        return "FAIL"
+    if counts["skipped"] or evidence.get("status") != "PASS":
+        return "UNVERIFIED"
+    if any(integrity["cases"][identity] != "PASS" for identity in selected):
+        return "UNVERIFIED"
+    rate = evidence.get("pass_rate")
+    if type(rate) not in {int, float} or rate != 1.0:
+        return "UNVERIFIED"
+    source = evidence.get("source_kind")
+    if source in {"synthetic_fixture", "software_test"}:
+        return "SELFTEST"
+    if source == "actual_observation":
+        return "PASS"
+    return "UNVERIFIED"
 
 
 __all__ = [
@@ -402,6 +466,7 @@ __all__ = [
     "Scenario",
     "ScenarioTags",
     "TraceResult",
+    "bdd_evidence_status",
     "check_justification_fields",
     "extract_tags",
     "load_bdd_evidence",

@@ -2,17 +2,17 @@
 type: policy
 artifact: data-boundary
 state: draft
-version: 0.2
+version: "0.3"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
 
 # Policy: Data Boundary
 
-> 数据-LLM 三原则（ADR-000）✓ · **4 层 SQL 守则总则 ✓**（v0.2 / #482 内容填充）· 4 项专属必停 ✓.
+> 数据-LLM 三原则（ADR-000）✓ · **4 层 SQL 守则总则 ✓**（v0.2 / #482 内容填充）· 4 类 runtime 语义风险核对。
 > 各层的 REQ 级验收标准与 BDD 例在 capability `data-agent.safe-sql`；本 policy 只定命名口径、
 > 不旁路不变式与配置参数总览，不复述实现细节.
 
@@ -130,21 +130,11 @@ fail-open 变成真漏洞**，其风险等级等同于放宽 L1/L1b。
 > 本表与实现冲突时**以实现为准**，并同步修正本表 —— 散文治理表不是 ground truth
 > （同 `policies/archive.md` 脚注判例）。
 
-## §3 4 项 mj-agent 专属必停（native；与 `sdd/gates.md` §4 同步）
+## §3 4 类 runtime 风险面（与 `sdd/gates.md` §4 同步）
 
-任一修改触发以下文件必须 HITL（**逐写拍板，不可静默绕过；不在 CI gate 自动化覆盖范围**）：
+按 `policies/ai-agent.md` §4 实际影响分类，路径命中不自动审批。SQL guardrail/precheck、runtime SKILL、Prompt和catalog的基线内安全行为保持、重构、修复或兼容同步可自主完成，须行为/负例、版本/EVAL和适用冻结一致性证据。
 
-| Hard Stop | 路径 | 触发原因 | 工作流 |
-|---|---|---|---|
-| sql-guardrail-relax | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | L1/L1b 防御层；放宽 = 安全主线动摇 | `sdd/workflows/cross-capability-change.md` |
-| runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | LLM 行为契约 | `mj-agent-runtime-skill-doc-improve` skill（propose+拍板+apply） |
-| prompt-version-bump | `src/mj_agent/prompts/system.md` version + body | 系统提示词行为边界 | `mj-agent-runtime-prompt-version-bump` skill（propose+拍板+apply） |
-| biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | mirror 上游业务系统数据字典 | `mj-agent-runtime-biz-catalog-sync` skill（propose+拍板+apply） |
-
-**执行机制**：四项 runtime 必停保持 Owner 决策；AGENTS、自守边界与原生 hook 协作执行。
-原生 runtime-* 开发技能先提供差异与 impact，Owner 批准后按已审阅执行路线应用。
-hook 对 Owner 动作仍硬阻断；不能用批准代替技术放行。合并审查核对 A12–A14 与保护边界。
-秘密和 biz 旁路始终禁止。该迁移不改本节上表任何 runtime 路径或业务权限。
+改变 SQL安全不变量、可见数据范围、业务口径、外发边界、breaking承诺或接受标准先给具体差异/影响由Owner决定。数据只读工具链、最小必要出网、通道隔离、秘密保护与禁止旁路永久保持；未知风险只停受影响项。技术拒绝保留原错返回 BLOCKED_EXECUTION_ROUTE，不绕过。
 
 ## §4 跨能力变更触发条件
 

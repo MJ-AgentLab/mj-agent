@@ -30,7 +30,7 @@ class NativeGuards(unittest.TestCase):
 
     def test_known_forbidden_routes(self):
         for command in ['git checkout -q -b feature/x','git switch -c feature/x',
-                        'gh pr create --title test', 'gh pr merge 1', 'psql placeholder',
+                        'gh pr create --title test', 'gh pr merge 1 --admin', 'psql placeholder',
                         'pg_dump placeholder', 'pg_restore placeholder']:
             self.assertEqual(self.state(command),'FORBIDDEN')
 
@@ -45,14 +45,14 @@ class NativeGuards(unittest.TestCase):
                      'capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml']:
             with self.subTest(path=path):
                 self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
-                    'tool_name': 'Edit', 'tool_input': {'file_path': path}})[0], 'OWNER_APPROVAL_REQUIRED')
+                    'tool_name': 'Edit', 'tool_input': {'file_path': path}})[0], 'TASK_AUTHORIZATION_CONTEXT')
 
     def test_ordinary_doc_edit_is_not_new_owner_surface(self):
         self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
             'tool_name': 'Edit', 'tool_input': {'file_path': 'docs/guide/example.md'}})[0], 'ALLOW')
 
     def test_apply_patch_command_wrapper_preserves_path_protection(self):
-        for path, expected in [('.codex/synthetic.txt', 'OWNER_APPROVAL_REQUIRED'),
+        for path, expected in [('.codex/synthetic.txt', 'TASK_AUTHORIZATION_CONTEXT'),
                                ('.env', 'FORBIDDEN'),
                                ('docs/guide/synthetic.md', 'ALLOW')]:
             with self.subTest(path=path):
@@ -75,7 +75,7 @@ class NativeGuards(unittest.TestCase):
                  '*** Move to: .codex/synthetic.txt\n@@\n-a\n+b\n*** End Patch')
         self.assertEqual(guard.classify({'hook_event_name': 'PreToolUse',
             'tool_name': 'apply_patch', 'tool_input': {'command': patch}})[0],
-            'OWNER_APPROVAL_REQUIRED')
+            'TASK_AUTHORIZATION_CONTEXT')
 
     def test_invalid_payload_is_closed(self):
         for value in [{}, {'hook_event_name':'PreToolUse'},

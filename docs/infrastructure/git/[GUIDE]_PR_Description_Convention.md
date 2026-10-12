@@ -11,7 +11,7 @@ aliases:
   - mj-agent PR Description Convention
   - mj-agent PR 描述规范指南
 created: 2026-04-30
-updated: 2026-10-10
+updated: 2026-10-12
 state: draft
 version: v1.1
 track: code
@@ -116,7 +116,7 @@ PR 描述的核心目的是**帮助审核者快速理解变更并做出判断**�
 
 ## 3 各模板详解
 
-以下说明业务字段的填法；完整字段与共用必答项见 §5「模板核心字段速查」。填写前读取选定的类型模板，保留标题层级、按 track 作答的折叠检查块与 AI Self-Check；再从根模板 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 `HITL Trigger Inventory` 和 `Docker Impact` 小节，逐项作答。
+以下说明业务字段的填法；完整字段与共用必答项见 §5「模板核心字段速查」。填写前读取选定的类型模板，保留标题层级、按 track 作答的折叠检查块与 AI Self-Check；再从根模板 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 `Risk / Decision Inventory` 和 `Docker Impact` 小节，逐项作答。
 
 ### 3.1 Feature PR 模板
 
@@ -263,6 +263,8 @@ gh pr create \
 
 ---
 
+> release develop→main为独立发布流程；Owner接受、具名发布授权和未来精确规则映射须另核，当前有限解析器不声称支持。
+
 ### 3.6 Release PR 模板
 
 **适用场景**：版本发布，将 `develop` 合并到 `main`。由项目负责人创建。
@@ -377,9 +379,9 @@ https://github.com/MJ-AgentLab/mj-agent/compare/<base>...<head>?template=feature
 
 文档折叠块按 track 回答 **Code-Side A1-A6**、**Agent-Side A7-A11**、**Engineering-Workflow A12-A14**；核对选定模板的具体条目与风险面，不适用项说明理由，保留折叠块。
 
-所有模板的 `AI Self-Check Checklist` 都有四项必答报告：**Codex 参与情况**、**HITL scenario hit**、**BDD/TDD impact**、**Subagent dispatched**；填写 `NONE` 或具体贡献/命中项，依据 `policies/ai-agent.md` §6.1。
+所有模板的 `AI Self-Check Checklist` 都有四项必答报告：**Codex 参与情况**、**Risk / decision inventory**、**BDD/TDD impact**、**Subagent dispatched**；填写 `NONE` 或具体贡献/命中项，依据 `policies/ai-agent.md` §6.1。
 
-类型模板提供根模板取用指针。PR 正文须从 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 **HITL Trigger Inventory** 与 **Docker Impact** 小节并逐项作答：Inventory 的不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。仅复制指针、出现一次关键词或保留空 checkbox，均不能证明字段完整。
+类型模板提供根模板取用指针。PR 正文须从 `.github/PULL_REQUEST_TEMPLATE.md` 取用完整 **Risk / Decision Inventory** 与 **Docker Impact** 小节并逐项作答：Inventory 的不适用行标 `— No`，不要删行；Docker Impact 保留全部选项并说明实际影响。仅复制指针、出现一次关键词或保留空 checkbox，均不能证明字段完整。
 
 ---
 

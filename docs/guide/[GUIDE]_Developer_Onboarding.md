@@ -10,7 +10,7 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-09-22
+updated: 2026-10-12
 state: draft
 version: v0.8
 track: code
@@ -236,7 +236,7 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 >   驱动 data agent 业务回答（biz-domain-context / qcm-analysis / safe-sql-analysis 等）；
 >   13 字段 schema + 五段式 body；由 `load_skill()` Python loader 加载剥 frontmatter
 > - **Track C 工程 skill**：`.agents/skills/mj-agent-<group>-<verb>/SKILL.md` —— 开发流程
->   编排（17-stage HITL 闭环；5 family：flow / git / doc / runtime / infra）；
+>   编排（17-stage检查点与自主交付闭环；5 family：flow / git / doc / runtime / infra）；
 >   ADR-013 native 2 字段 schema；由 Codex 从项目原生技能目录发现；按当前宿主提供的技能调用方式显式选择
 >
 > 二者**同名同形不同义**，必须严格区分；混淆会导致施加错误约束 / 套错 schema。
@@ -265,7 +265,7 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 
 先读根及目标目录 AGENTS，按 [ADR-040](../../decisions/ADR-040_Codex_Only_Development.md) 直接维护 `.agents/skills/`、`.agents/references/` 和 `.codex/`。技能索引为 `.agents/skills/SKILL_INDEX.md`；不执行生成、投影、adopt 或 lock 同步。非客户端 `sdd/adapters/` 规范继续保留。
 
-普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的边界变化先由 Owner 审阅准确差异。SQL guardrail、runtime skill、Prompt、catalog 等既有受保护边界保持。暂存、提交、双推、PR 和合并分别按具名批准执行；新分支使用 worktree，迁移 PR base 为 develop。
+普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的边界变化先由 Owner 审阅准确差异。SQL/runtime/Prompt/catalog按实际语义分类，基线内安全保持自主；安全/业务/外发/权限/接受标准实质变化先Owner决定。暂存、提交、普通双推、PR及merge可集中列入具名任务授权，普通内容更新核实际版本但不自动重新批准；新分支使用 worktree，迁移 PR base 为 develop。
 
 Owner 独立审阅项目与 hook 信任，并在自己的终端维护应用及 MCP 凭据。代理不自动信任/激活 hook、不更改个人配置或权限、不解密或写 OS 凭据。配置检查成功不等于服务已连接。
 
@@ -330,7 +330,7 @@ python scripts/sdd/check_deletion_targets.py --diagnose-error 'CreateProcess rej
 
 ## §6.6 Git 发布、远程删除与恢复（#555）
 
-项目 rules 不再含 Git/gh 条目，never 单独不阻断 Git/gh；Remove-Item 保留 prompt。G1/G2、人工 merge、秘密、业务数据与受保护编辑由 hook 和政策继续约束。任务授权、项目规则匹配与宿主执行能力分别判定；无规则匹配不等于宿主已允许。决策见 [ADR-041](../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)，历史 #558/#560 的旧行为及执行证据不改写。
+项目 rules 不再含 Git/gh 条目，never 单独不阻断 Git/gh；Remove-Item 保留 prompt。G1/G2、精确分层路由、任务风险上下文及秘密/biz永久边界由有限守卫与政策约束；守卫不认证授权或语义。任务授权、项目规则匹配与宿主执行能力分别判定；无规则匹配不等于宿主已允许。决策见 [ADR-041](../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)，历史 #558/#560 的旧行为及执行证据不改写。
 
 | 动作 | 核验对象 | 完成证据 |
 |---|---|---|

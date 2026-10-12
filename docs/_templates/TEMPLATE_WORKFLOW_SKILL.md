@@ -137,10 +137,9 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
 
 **runtime 类目专属硬约束**：
 
-- Do NOT modify `src/mj_agent/skills/**`
-- Do NOT modify `src/mj_agent/prompts/**`
-- Do NOT modify `src/mj_agent/agent.py`、`src/mj_agent/tools/**`
-- Only propose diffs / run reverse-scans / list affected files；最终 write 由项目负责人 HITL 决定
+- 先分析真实成果、差异及impact，保持安全/业务/外发/接受基线的改动可在任务授权内自主执行。
+- 实质边界/权限/breaking/AC/gate变化由Owner决定；技术拒绝不绕过。
+- 独立核验覆盖领域/Prompt/工程视角，不要求真人或固定人数，保持版本/EVAL/冻结证据。
 
 ## Handoff to <next-skill>（可选）
 
@@ -185,7 +184,7 @@ skill-creator skill 提供的 5-iteration trigger eval 循环（10 should-trigge
   - `infra`：env-setup / docker-compose / storage-stack / studio-probe（~4 skills）
 - `<verb>`：动作短词，kebab-case
   - 单词：`intake` / `commit` / `push` / `validate` / `delete`
-  - 多词：`studio-probe` / `skill-doc-improve` / `prompt-version-bump` / `biz-catalog-sync`
+  - 多词：`studio-probe` / `skill-doc-improve` / `prompt-version-or-body-change` / `biz-catalog-sync`
 
 ---
 

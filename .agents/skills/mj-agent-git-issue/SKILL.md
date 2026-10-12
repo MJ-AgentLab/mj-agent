@@ -1,14 +1,15 @@
 ---
 name: mj-agent-git-issue
-description: "适用于 mj-agent 的用8模板起草/创建GitHub Issue。输入：需求、类型、urgency、template、title/body。流程：类型→完整模板→title→preview→确认发布→实际URL。输出：模板字段完整；实际创建才报告URL。Use when：用bug模板准备一次失败的Issue草案。Do not use for：只评估任务风险，不开单；建议flow-intake，不发布Issue。授权：创建需明确授权，template硬停项不删；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的用8模板起草/创建GitHub Issue。输入：需求、类型、urgency、template、title/body。流程：类型→完整模板→title→preview→确认发布→实际URL。输出：模板字段完整；实际创建才报告URL。Use when：用bug模板准备一次失败的Issue草案。Do not use for：只评估任务风险，不开单；建议flow-intake，不发布Issue。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Git Issue
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -222,7 +223,7 @@ handoff **suggestive，不强制**——`mj-agent-git-branch` 的 issue-id 是�
 - **不要** 绕开 `.github/ISSUE_TEMPLATE/` 自造 body 结构（#422：并行结构必然漂移，且会丢掉模板携带的 `HITL Trigger Check`）
 - **不要** 把模板的 YAML frontmatter 一起写进 body（`name/about/title/labels` 是 GitHub 表单元数据）
 - **不要** 因为某个勾选项不适用就删掉它（标 `— No`：已回答与没人看过必须可区分）
-- **不要** 在没有 Intake Result 时直接创建 Issue（跳过 §3.1 必停 HITL trigger）
+- **不要** 在没有 Intake Result 时直接创建 Issue（跳过 §3.1语义影响核对 trigger）
 - **不要** 在 Issue body 中塞详细实现计划（那是 Plan / SPEC 的职责）
 - **不要** 用 `feat(scope)` 这种 commit message 格式做 Issue title prefix（commit type ≠ Issue type label；详见 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` §5.1）
 

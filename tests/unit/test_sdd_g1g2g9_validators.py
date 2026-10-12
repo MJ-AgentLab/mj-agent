@@ -70,6 +70,31 @@ def test_g1_happy_path(tmp_path: Path) -> None:
     assert summary.pass_count == 1
 
 
+def test_strict_schema_and_trace_really_return_nonzero(tmp_path: Path) -> None:
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parents[2]
+    _write_spec(tmp_path, {"id": "invalid"})
+    _write_trace(tmp_path, {"schema_version": "invalid"})
+    for script in ("check_capability_schema.py", "check_traceability.py"):
+        process = subprocess.run([sys.executable, str(root / "scripts/sdd" / script), "--all", "--strict"],
+                                 cwd=tmp_path, capture_output=True, text=True, check=False)
+        assert process.returncode == 1
+        assert "WARN:" in process.stdout or "FAIL:" in process.stdout
+
+
+def test_strict_missing_corpus_does_not_claim_validity(tmp_path: Path) -> None:
+    import subprocess
+    import sys
+
+    root = Path(__file__).resolve().parents[2]
+    for script in ("check_capability_schema.py", "check_traceability.py"):
+        process = subprocess.run([sys.executable, str(root / "scripts/sdd" / script), "--all", "--strict"],
+                                 cwd=tmp_path, capture_output=True, text=True, check=False)
+        assert process.returncode == 1
+
+
 def test_g1_missing_required_field_warns(tmp_path: Path) -> None:
     spec = _baseline_spec()
     del spec["summary"]

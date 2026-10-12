@@ -1,19 +1,20 @@
 ---
 name: mj-agent-flow-post-merge
-description: "适用于 mj-agent 的Stage17已合并PR收尾。输入：PR state/merge SHA/关联issue/plan/当前清理身份。流程：确认MERGED→关联issue→CHANGELOG→followup→EVAL→schedule建议→delete→sync→plan→交接。输出：每项完成/未执行/阻塞有证据，不能笼统收尾完成。Use when：PR已MERGED，仅准备清理与follow-up清单。Do not use for：PR仍OPEN但CI全绿；停止post-merge，建议check-merge；不抢先关闭issue。授权：每个外部/删除/push/state动作核具体授权和hook路线；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage17已合并PR收尾。输入：PR state/merge SHA/关联issue/plan/当前清理身份。流程：确认MERGED→关联issue→CHANGELOG→followup→EVAL→schedule建议→delete→sync→plan→交接。输出：每项完成/未执行/阻塞有证据，不能笼统收尾完成。Use when：PR已MERGED，仅准备清理与follow-up清单。Do not use for：PR仍OPEN但CI全绿；停止post-merge，建议check-merge；不抢先关闭issue。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Post-merge Cleanup (HITL Stage 17)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog draft with explicit publication authorization** (per execution-loop §7.3 Rule 11) when PR touches in-source canonical, **marks plan state active→completed via 编辑 after Owner 拍板** (per lifecycle §2.2 Rule 12; ADR-034 propose→拍板→apply), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; some are auto-runnable (delete branch / sync) while others are human-in-loop (CHANGELOG edits / follow-up issue creation / EVAL backlog ticket / **plan state mark** — skill proposes the active→completed diff, then Edits it after Owner 拍板). Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
+This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes the linked Issue, updates CHANGELOG `[Unreleased]`, opens follow-up issues for deferred work + **mj-agent-specific EVAL backlog draft with explicit publication authorization** (per execution-loop §7.3 Rule 11) when PR touches in-source canonical, **marks plan state active→completed via 编辑 after ACs are met, result is usable and Owner accepts the version** (per lifecycle §2.2 Rule 12; ADR-042 分析→影响分类→实施/决定), triggers branch deletion via mj-agent-git-delete + sync via mj-agent-git-sync. Make sure to use this skill whenever the user says "PR 合并后", "post-merge", "Issue 关闭", "release notes", "follow-up", "PR merged 收尾", "post-merge cleanup", "Stage 17", "EVAL backlog", "plan completed" in the mj-agent context, or right after a PR is merged. Outputs a checklist of post-merge actions; baseline-preserving CHANGELOG and local fixes run within task authorization; deletion and external follow-up/EVAL publication require their own concrete scopes; plan state changes require ACs/usability/Owner acceptance and are recorded independently of merge. Do not use for: review response on incoming comments (use mj-agent-flow-review-respond, Stage 15), pre-merge readiness (use mj-agent-git-check-merge in PR-B3+), branch deletion alone (use mj-agent-git-delete in PR-B3+), or hotfix→develop sync alone (use mj-agent-git-sync in PR-B3+).
 
 
 ## Overview
@@ -28,7 +29,7 @@ This skill orchestrates mj-agent post-merge cleanup (HITL Stage 17) — closes t
 6. schedule 决策
 7. branch 清理
 8. develop 同步
-9. **plan 生命周期标记**（per lifecycle §2；ADR-021；自动 active → completed）
+9. **plan 生命周期标记**（per lifecycle §2；ADR-021；AC满足/成果可用/Owner接受后active→completed）
 10. **follow-up branch handoff**（如本次有 follow-up 工作 → 退出 skill + 委派 `mj-agent-git-branch` 开**新 worktree**；NOT in-place `git checkout -b` 在当前 worktree）
 
 **Reference**: `repo:sdd/workflows/execution-loop.md` §7（Post-merge sedimentation policy；§7.3 Rule 11 EVAL backlog 是 mj-agent 专属）+ `repo:sdd/lifecycle.md` §2（Working-doc lifecycle）+ Git Branch Strategy + PR Description Convention.
@@ -48,7 +49,7 @@ digraph post_merge {
   s6 [label="Step 6: Schedule agent?\n(see Schedule Triggers)" shape=diamond];
   s7 [label="Step 7: Branch cleanup\n→ delegate to mj-agent-git-delete (PR-B3)" shape=box];
   s8 [label="Step 8: Develop sync\n→ delegate to mj-agent-git-sync (PR-B3)" shape=box];
-  s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed\n• per lifecycle §2" shape=box];
+  s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed only after AC/usability/Owner acceptance\n• per lifecycle §2" shape=box];
   s10 [label="Step 10: Follow-up branch handoff\n• 有 follow-up 工作？\n  Yes → 退出 skill + mj-agent-git-branch\n        (开新 worktree;\n         NOT in-place git checkout -b)\n  No  → 闭环结束" shape=diamond];
 
   out [label="Output: Post-merge Checklist\n+ next actions for user" shape=doublecircle];
@@ -164,7 +165,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 ### 关联
 
 - 触发 PR: #<id>
-- 触发条件: §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change
+- 触发条件: §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change
 - A11 EVAL 门禁: transitional waiver 期内允许 `eval_references` 注释 TODO；Phase D 起强制
 ```
 
@@ -213,49 +214,11 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 > **⚠ Worktree-safe sync（#185 F-8 lesson;M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX）**：develop sync 必须是**工作树内**操作（`mj-agent-git-sync` Step 4 `git merge origin/develop`，或 `git pull --ff-only`）——**切勿**用 bare-repo `git update-ref` 直接改 HEAD 指针，那只更新 ref 不更新工作树文件，会留下 stale 文件（#185 曾因此残留 13 个 stale 文件，事后 `git reset --hard HEAD` 救回）。若发现工作树与 HEAD 不一致，先保护未提交成果并报告，不自动 reset；具名恢复方案另获批准。
 
-## Step 9: Plan Lifecycle Mark
+## Step 9: 结果状态与Owner接受
 
-按 `repo:sdd/lifecycle.md` §2「Working-doc Lifecycle」+ `repo:sdd/lifecycle.md` §2.2（Stage 17 Post-merge 自动化，PR-state→completed Rule 12），PR merge 意味着关联 working plan 任务已落地，需要把 `state: active` → `state: completed`。**实现方式**：本 skill 先**输出 frontmatter diff 草案**（见 §标记动作）；**Owner 拍板后由本 skill 用 编辑 工具直接应用 diff 改 frontmatter**（ADR-034 propose→拍板→apply；不再要 user 手动 编辑）。
+按 `repo:sdd/lifecycle.md` §2核关联Plan/Intake，分别记录候选集成、验证、交付、待接受、接受、部分完成、延期、失败及未知。PR merged不自动表示任务完成。只有对应AC满足、成果可用且Owner明确接受版本后，才在任务授权内active→completed并更新日期；多PR任务须整体基线满足，非核心延期独立跟踪。缺state先按真实状态补齐，禁止补写假接受。
 
-### 定位关联 plan
-
-按顺序：
-
-1. **issue id 匹配**：从 Step 2 已识别 issue id → `plans/[PLAN]_<id>_*.md` / `plans/[INTAKE]_<id>_*.md`
-2. **branch 匹配**：从 Step 1 `headRefName` → 解析数字 → 同上
-3. **PR body 匹配**：搜 `plans/[PLAN]_*.md` / `plans/[INTAKE]_*.md` 引用
-4. **如全无 → skip + 输出"PR 无关联 working plan"**
-
-### 标记动作（propose → 拍板 → AI 编辑）
-
-```bash
-# 1. 读 frontmatter 当前 state（skill 自动跑）
-head -10 plans/[PLAN]_<id>_*.md
-
-# 2. skill 输出 diff 草案给 user：
-#    state: active     → state: completed
-#    updated: <旧>     → updated: <PR mergedAt 日期>
-#  + completed: <PR mergedAt ISO date>     # 新增字段（per lifecycle §2.2 Rule 12）
-
-# 3. Owner 拍板后本 skill 用 编辑 工具直接应用 diff（ADR-034；
-#    state: active → completed 经 编辑 落盘；draft 态仍不自动改，见下）
-```
-
-**不动**：
-
-- 文件位置（保留 `plans/` 原路径，避免断跨文档引用）
-- frontmatter 其他字段
-- 文件正文内容
-- 已是 `state: completed` / `archived` / `draft` 的（draft 留作者重启余地；completed/archived 是终止态）
-
-### 异常处理
-
-| 场景 | 处理 |
-|---|---|
-| Step 2 issue 列表空 | 仅按 branch 名匹配；如仍无 → skip Step 9 + 输出原因 |
-| 多 PR 关联同一 plan | 仅当 plan 内显式标"本 PR 是最后阶段"才改 completed；否则保 active + 提示 |
-| plan 无 `state` 字段 | 输出警告，不自动加（让 user 处理） |
-| plan 当前 `state: draft` | **不**自动改 completed（draft 不应跳 active 直达 completed）；输出建议"先改 active 或人工处理" |
+保持原路径、其他frontmatter及历史正文，保存验收包/证据位置、版本环境、授权、在途副作用/未知/延期及下一步停止条件。重入核真实状态，已成功操作不重复；文档提交、远端清理及业务接受各自列状态。
 
 ## Step 10: Follow-up Branch Handoff
 
@@ -343,7 +306,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ### Plan Lifecycle Update（per lifecycle §2）
 - ⏸ skipped — PR 无关联 working plan
 （如有，则）
-- ✅ `plans/[PLAN]_<id>_<desc>.md`: state `active` → `completed`，updated 刷到 <YYYY-MM-DD>
+- ✅ `plans/[PLAN]_<id>_<desc>.md`: AC/成果可用/Owner接受满足后state `active`→`completed`，updated刷到 <YYYY-MM-DD>
 
 ### Follow-up Branch Handoff（Step 10）
 - 检测：Step 4 follow-up issues / Step 5 EVAL backlog / 用户口述下一步？**NO**
@@ -364,7 +327,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ## What This Skill DOES NOT DO
 
 - ❌ 不直接编辑 CHANGELOG（仅输出建议；user 决定后用 编辑）
-- ❌ 未经 Owner 拍板就创建 follow-up issue（拍板后 AI 经 mj-agent-git-issue 创建）
+- ❌ 超出任务授权或未经实质决定就创建 follow-up issue（拍板后 AI 经 mj-agent-git-issue 创建）
 - ❌ 不直接调 定时跟进工具（仅发现后建议）（仅识别 signal + 建议；user 决定）
 - ❌ 不删 main / develop / 受保护分支（仅清 feature/bugfix/maintain/documentation/hotfix）
 - ❌ 不强制清 worktree（如 user 说"保留 worktree 供其他工作"，跳过 Step 7）
@@ -397,7 +360,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ## Anti-patterns
 
 - **不要** 跳过 Step 5 EVAL backlog（mj-agent 专属硬约束；execution-loop §7.3 Rule 11）
-- **不要** 在 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
+- **不要** 在 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
 - **不要** 物理移动 plan 文件到 archive（仅改 frontmatter；GC 是 Phase 2 工作）
 - **不要** 自动改 plan `state: draft` → `completed`（违反生命周期；draft 不应跳过 active）
 - **不要** 删受保护分支 main / develop（硬性阻断）

@@ -46,7 +46,7 @@ def entries(root: Path) -> list[str]:
             errors.append('missing native entry or boundary: ' + rel)
     for rel, heading, row in (
         ('policies/ai-agent.md', r'## §4 .*?(?=\n## |\Z)', r'^\|\s*`([a-z0-9-]+)`'),
-        ('.github/PULL_REQUEST_TEMPLATE.md', r'## HITL Trigger Inventory.*?(?=\n## |\Z)', r'^- \[ \] ([a-z0-9-]+)'),
+        ('.github/PULL_REQUEST_TEMPLATE.md', r'## Risk / Decision Inventory.*?(?=\n## |\Z)', r'^- \[ \] ([a-z0-9-]+)'),
     ):
         try:
             section = re.search(heading, read(root, rel), re.S)

@@ -2,10 +2,10 @@
 type: policy
 artifact: archive
 state: active
-version: 1.1
+version: "1.2"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-10
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -55,7 +55,7 @@ ai_visibility: source-of-truth
 - **反例边界**：单段加新内容、§ 加新类目、§ 加新生命周期阶段，均属**字段补充**（❌ 否）。仅当
   **整文档结构** / **规则枚举集合** / **filename / scope** 发生变化时才升级触发。
 - **HITL 入口**：判定结果直接喂 [[decisions/ADR-011_Doc_Versioning_And_Archive_Convention|ADR-011]]
-  §5.6.1 HITL trigger；归档是 HITL 动作（git branch + PR review，A3 模式），不自动执行。
+  §5.6.1 HITL trigger；归档/具名移动与删除核独立授权，已有同范围复用，Agent按正常工具链执行；平台审核另留证。
 
 ### §1.2 Active canonical 路径稳定原则
 
@@ -136,7 +136,7 @@ related_decisions:
 > §5.6.3 目录语义 / §5.6.4 Living-vs-Frozen 仍有效）。M6 PR4 将按本 playbook 执行 tri-track
 > STANDARD 归档。
 
-**前置**：§1.1 判定触发 + HITL（PR review）确认。
+**前置**：§1.1触发判定、具体对象/损失/备份及动作授权核对。
 
 1. **迁移**：`git mv` 旧 STANDARD → `archive/rule/`，文件名加 `[DEPRECATED]_` 前缀（ADR-019 命名
    约定）+ 保留 / 补 `_vX.Y` 版本后缀（§1.2.3 legacy 反向规则；cite-by-vintage）。
@@ -227,12 +227,12 @@ BLOCKING）：
 > follow-up）。state 机本身见 [[sdd/lifecycle|sdd/lifecycle]] §2。
 
 **触发条件**（三者皆满足）：`state: completed` 持续 ≥ 6 个月（180 天）+ 全仓 grep ref count = 0 +
-HITL 人工 review 确认（**不自动跑 GC**）。
+核具名GC对象、必要备份和授权；已有范围由Agent正常执行。
 
 **操作流程**：
 
 1. 跑 `scripts/find_old_completed_plans.py` 获候选清单；
-2. 人工 grep 验证每个候选的引用计数（避免误删 active 引用）；
+2. Agent反扫核验每个候选的引用计数（避免误删 active 引用）；
 3. 首次 GC 时创建 `plans/archive/`（不预建空目录）；
 4. `git mv plans/<name>.md plans/archive/<name>.md`；
 5. frontmatter `state: completed → archived` + 加 `archived: <YYYY-MM-DD>`；

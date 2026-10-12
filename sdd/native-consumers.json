@@ -22,6 +22,9 @@
     "scripts/sdd/check_archive_manifest.py",
     "scripts/sdd/check_archived_references.py",
     "scripts/sdd/check_bdd_acceptance.py",
+    "scripts/sdd/check_delivery_platform.py",
+    "scripts/sdd/delivery_evidence.py",
+    "scripts/sdd/task_delivery.py",
     "scripts/sdd/check_bdd_scenario_trace.py",
     "scripts/sdd/check_bdd_unautomated.py",
     "scripts/sdd/check_capability_evidence_required.py",
@@ -49,7 +52,7 @@
     "scripts/setup-env.ps1"
   ],
   "separate_checks": {
-    "scripts/sdd/codex_hook_guard.py": "deny-only path vocabulary; covered by native guard positive/negative tests"
+    "scripts/sdd/codex_hook_guard.py": "cooperative risk context and bounded command recognition; native positive/negative tests do not authenticate authorization or host loading"
   },
   "scope": "Explicit executable CI/setup consumers; direct docs/manual consumer closure recorded in P3 evidence. Not a permission allowlist."
 }

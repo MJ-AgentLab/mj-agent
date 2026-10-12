@@ -124,7 +124,7 @@ M3 contract test 实装策略：
 - system prompt 拼接逻辑重构 → 同上（prompt body 是 `prompt` adapter；拼接逻辑是
   `langchain-agent`）
 
-**`@adapter:langchain-agent` + `@hitl` 双标签** — middleware 行为差异触达必停 surface 时
+**`@adapter:langchain-agent` + `@hitl` 按实质影响标记** — middleware 行为差异触达必停 surface 时
 （如新 middleware 改变了 `sql-guardrail-relax` 行为信号路径）.
 
 **示例 `.feature` scenario fragment**：

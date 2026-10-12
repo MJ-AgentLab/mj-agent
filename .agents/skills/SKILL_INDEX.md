@@ -1,6 +1,6 @@
 # 原生开发技能索引
 
-直接维护；数量由目录发现与本索引闭合校验，不是永久常量。
+直接维护；数量由目录发现与本索引闭合校验，不是永久常量。技能先核接受基线/任务授权，按ADR-042语义分类；普通闭环自主，独立核验读取真实成果，技术拒绝不绕过。
 
 - [mj-agent-doc-author](mj-agent-doc-author/SKILL.md)
 - [mj-agent-doc-migrate](mj-agent-doc-migrate/SKILL.md)

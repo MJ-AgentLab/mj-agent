@@ -11,7 +11,7 @@ aliases:
   - mj-agent Git Push Workflow
   - mj-agent Git 推送工作流
 created: 2026-04-30
-updated: 2026-09-22
+updated: 2026-10-12
 state: draft
 version: v1.0
 track: code
@@ -115,7 +115,7 @@ exit 0 表示所选示例未见静态冲突，exit 1 表示所选命令不兼容
 1. 保留脱敏原错、具体命令和对象。AskForApproval Never、文件权限/占用、网络、exec-policy、危险命令检查及项目 hook 按证据分别定位；通用 blocked by policy 保持未知来源。
 2. 已知未解除的实际阻断暂停对应动作，不重复聊天批准、换 remote/工具或改写命令试探。部分成功或响应丢失先查提交、两端 SHA 或 PR，成功项不重复。
 3. 经审阅的项目规则变更或工程师恢复后，核实目标会话有效模式、覆盖来源和实际加载的新规则/hook，再按变化后的条件重新评估。仅改文件、Full Access、网络恢复或 CLI 版本不能证明 Desktop 已恢复；Agent 不修改个人配置或自动激活 hooks。
-4. hook 对识别成功的命令输出 TASK_AUTHORIZATION_CONTEXT，不强制宿主审批；G1/G2、人工 merge、UNKNOWN/FORBIDDEN 和受保护编辑仍保留。宿主其他来源规则仍可审批或拒绝，如实记录 BLOCKED_EXECUTION_ROUTE。
+4. hook 对识别成功的命令输出 TASK_AUTHORIZATION_CONTEXT，不强制宿主审批；G1/G2、精确任务集成路由、任务授权风险上下文与确定禁令/UNKNOWN保护保持。宿主其他来源规则仍可审批或拒绝，如实记录 BLOCKED_EXECUTION_ROUTE。
 5. 沿用同一动作与对象的明确任务授权，分别记录 commit、双推、PR 创建和双端删除的实际审批/无需审批/拒绝及结果。新条件下的 never 验收单列，不能以静态通过或旧规则下成功代替。
 
 普通 push 不包含远端删除。删除支持有限识别的单/多分支，但逐 ref 绑定授权、tip 和合并证据；任一保护或变化目标暂停该批次。每端每 ref 查询确认不存在才算完成；本地清理、计划 completed 和文档提交状态不替代远端证据。完整参数与只读核验 API 见 [Developer Onboarding §6.6](../../guide/[GUIDE]_Developer_Onboarding.md#66-git-发布远程删除与恢复555)，决策见 [ADR-041](../../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)。

@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-storage-stack
-description: "适用于 mj-agent 的自有memory/redis结构与维护指导。输入：dev目标、源码/版本、授权memory接口、备份状态。流程：选init/schema/backup/redis/trouble→证据→方案→返回。输出：结构解释有依据；未执行backup/restore明确缺依赖。Use when：解释memory表并准备dev备份恢复方案。Do not use for：直接查biz_ods或恢复prod数据库；拒绝越数据/生产边界，不用memory服务代查。授权：禁直接DB客户端；biz链路独立；restore/migration硬停；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的自有memory/redis结构与维护指导。输入：dev目标、源码/版本、授权memory接口、备份状态。流程：选init/schema/backup/redis/trouble→证据→方案→返回。输出：结构解释有依据；未执行backup/restore明确缺依赖。Use when：解释memory表并准备dev备份恢复方案。Do not use for：直接查biz_ods或恢复prod数据库；拒绝越数据/生产边界，不用memory服务代查。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — Storage Stack
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -131,7 +132,7 @@ digraph storage {
 | 症状 | 原因 | 修复 |
 |---|---|---|
 | `permission denied: ./01-bootstrap-mj-agent-memory.sh` | Linux 上 init 脚本无 exec 权限 | 提出具名文件权限差异，交 implement 审阅；本技能不修改 init 脚本 |
-| `database "mj_agent_memory" does not exist` | init 没跑 / volume 残留旧状态 | `docker compose down -v`（**HITL-confirm**！丢数据）+ 重 up |
+| `database "mj_agent_memory" does not exist` | init 没跑 / volume 残留旧状态 | `docker compose down -v`（**具名授权**！丢数据）+ 重 up |
 | `password authentication failed for user <MJ_AGENT_MEMORY_USER>` | .env 中 `MJ_AGENT_MEMORY_PASSWORD` 与容器内 user 密码不一致；通常因 vol 残留旧密码 | `docker compose down -v`（**HITL**）+ 由 Owner 核对凭据状态 + 重 up |
 | `01-bootstrap-mj-agent-memory.sh` 报 syntax error | 编辑脚本时换行符 CRLF / Linux 不识 | 提出换行符差异并交 implement 审阅，不在本技能改脚本或 Git 配置 |
 
@@ -146,9 +147,9 @@ digraph storage {
 
 保留能力目标：备份 mj-agent 自有 memory，恢复前核对数据库/环境/备份身份并防止丢失现有 checkpointer 数据。
 Agent 不执行 pg_dump/psql/pg_restore，不获取数据库凭据；当前 8 项 MCP 未验证等价备份恢复能力，登记 `UNMET_DEPENDENCY: backup/restore execution`。
-交 Owner 基础设施流程处理：确认 dev 目标、备份时间与完整性、恢复演练记录、数据损失范围和回退来源，再由 Owner 决策执行。
+确认dev目标、备份时间/完整性、数据损失和恢复来源。允许工具链的具名可逆dev操作可在授权内自主；不可逆/高风险或权限越界先Owner决定。缺真实接口仅交方案，工程师独立秘密/权限处理。
 不能把源码恢复当作数据恢复；不承诺按 thread 的 pg_dump 过滤选项或未经实测的 SQL 列。生产只交基础设施 snapshot 流程，不由本技能执行。
-返回备份/恢复计划、已收到的脱敏证据与未执行状态。部分恢复失败时保留现场，对账后再由 Owner 处理，不能自动 DROP/重灌/重复恢复。
+返回备份/恢复计划、已收到的脱敏证据与未执行状态。部分恢复失败时保留现场，对账后按有效授权和风险处理，不能自动 DROP/重灌/重复恢复。
 
 ## Redis Status / Wiring Guidance
 
@@ -196,7 +197,7 @@ per `repo:docker/compose.yaml` 与 `repo:src/mj_agent/memory/checkpointer.py`：
 - ❌ 不 wire Redis Python client（A 风味纯代码 → mj-agent-flow-implement Step 3a）
 - ❌ 不操作 mj-system biz pg（ADR-006 / ADR-009 红线）
 - ❌ 不替代 langgraph 项目本身的 checkpointer schema 演进（schema 归 langgraph upstream）
-- ❌ 不自动 `down -v`（HITL-confirm only；丢 checkpointer 数据）
+- ❌ 不自动 `down -v`（具名删除授权及备份/损失/恢复条件；丢 checkpointer 数据）
 
 ## Sub-skill / Tool Calls
 
@@ -206,7 +207,7 @@ per `repo:docker/compose.yaml` 与 `repo:src/mj_agent/memory/checkpointer.py`：
 | shell `docker compose logs mj-agent-postgres` | Init / runtime troubleshooting |
 | Owner 基础设施备份恢复流程 | 只交计划与证据，不由 agent 执行 |
 | 读取 | `01-bootstrap-mj-agent-memory.sh` / `compose.yaml` 结构理解 |
-| 向 Owner 询问 | `down -v` Level C HITL-confirm |
+| 向 Owner 询问 | `down -v` Level C 具名授权 |
 
 ## Reference Files
 

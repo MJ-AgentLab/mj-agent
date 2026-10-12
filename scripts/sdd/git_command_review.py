@@ -4,6 +4,11 @@ from __future__ import annotations
 import re
 from typing import Any
 
+if __package__:
+    from .task_delivery import valid_pr_base
+else:
+    from task_delivery import valid_pr_base  # type: ignore[no-redef]
+
 CONTEXT = 'TASK_AUTHORIZATION_CONTEXT'
 
 
@@ -87,7 +92,7 @@ def _value(args: list[str], index: int) -> tuple[str, str, int]:
     return flag, value, index
 
 
-def publication(tokens: list[str]) -> dict[str, Any]:
+def publication(tokens: list[str], *, task_routes: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     result: dict[str, Any] = {'status': 'UNKNOWN', 'reason': 'unrecognized publication form',
                               'kind': None, 'scope': {}}
     args: list[str]
@@ -164,7 +169,7 @@ def publication(tokens: list[str]) -> dict[str, Any]:
             if '--base' not in values:
                 return dict(result, status='FORBIDDEN', reason='G2 explicit base required')
             head = values.get('--head')
-            if head and values['--base'] != ('main' if head.removeprefix('refs/heads/').startswith('hotfix/') else 'develop'):
+            if head and not valid_pr_base(values.get('--repo', ''), head, values['--base'], task_routes or []):
                 return dict(result, status='FORBIDDEN', reason='G2 base does not match head type')
             required = {'--repo', '--head', '--base', '--title', '--body-file'}
             if not required.issubset(values) or not head or not branch(head):
@@ -175,6 +180,29 @@ def publication(tokens: list[str]) -> dict[str, Any]:
                 raise ValueError('body file must be literal')
             result.update(kind='pr_create', scope={key[2:].replace('-', '_'): value
                                                    for key, value in values.items()})
+        elif tokens[:3] == ['gh', 'pr', 'merge']:
+            args = tokens[3:]
+            if any(flag in args for flag in ('--admin', '--auto', '--delete-branch', '--squash', '--rebase')):
+                return dict(result, status='FORBIDDEN', reason='bypass, automatic merge or separate cleanup not permitted')
+            if not args or not re.fullmatch(r'[1-9][0-9]*', args[0]):
+                raise ValueError('explicit PR number required')
+            values = {'pr': args[0]}
+            index = 1
+            while index < len(args):
+                if args[index] == '--merge' and 'method' not in values:
+                    values['method'] = 'merge'
+                    index += 1
+                    continue
+                flag, value, index = _value(args, index)
+                flag = {'-R': '--repo'}.get(flag, flag)
+                if flag not in {'--repo', '--match-head-commit'} or flag in values:
+                    raise ValueError('unknown or repeated merge option')
+                values[flag] = value
+            if (values.get('method') != 'merge' or not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', values.get('--repo', ''))
+                    or not re.fullmatch(r'[0-9a-f]{40}|[0-9a-f]{64}', values.get('--match-head-commit', ''))):
+                raise ValueError('explicit repository, merge method and expected head required')
+            result.update(kind='merge', scope={'repo': values['--repo'], 'pr': values['pr'],
+                                               'head_sha': values['--match-head-commit'], 'method': 'merge'})
         else:
             return result
     except ValueError as exc:

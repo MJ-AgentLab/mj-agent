@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "harness": [
+    ".gitattributes",
+    ".github/workflows/ci.yml",
+    ".github/workflows/docker-build.yml",
+    "scripts/sdd/delivery_evidence.py",
+    "scripts/sdd/run_offline_pytest.py",
+    "scripts/sdd/check_test_offline_boundary.py",
+    "scripts/sdd/check_native_governance.py",
+    "sdd/native-consumers.json",
+    "scripts/sdd/codex_hook_guard.py",
+    "scripts/sdd/git_command_review.py",
+    "scripts/sdd/check_git_actions.py",
+    "scripts/sdd/task_delivery.py",
+    "scripts/sdd/check_delivery_platform.py",
+    "scripts/sdd/check_capability_schema.py",
+    "scripts/sdd/check_traceability.py",
+    "scripts/sdd/check_bdd_acceptance.py",
+    "scripts/sdd/_common/bdd_helpers.py"
+  ],
+  "dependencies": ["pyproject.toml", "uv.lock", ".python-version"],
+  "commands": [
+    {
+      "id": "governance-offline",
+      "argv": [
+        "uv", "run", "--frozen", "--no-sync", "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/unit/test_agent_first_delivery.py",
+        "tests/unit/test_delivery_evidence.py",
+        "tests/unit/test_sdd_g1g2g9_validators.py",
+        "tests/unit/test_sdd_g21_evidence_predicate.py",
+        "-q", "--junitxml", "{output_dir}/governance.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "governance.xml",
+      "min_tests": 122,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "platform-offline",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_platform.py", "-q", "--junitxml", "{output_dir}/platform.xml"],
+      "expected_exit": 0,
+      "junit": "platform.xml",
+      "min_tests": 65,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "platform-config",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/check_delivery_platform.py", "--root", "."],
+      "expected_exit": 0
+    },
+    {
+      "id": "capability-schema",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/check_capability_schema.py", "--all", "--strict"],
+      "expected_exit": 0
+    },
+    {
+      "id": "capability-trace",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/check_traceability.py", "--all", "--strict"],
+      "expected_exit": 0
+    },
+    {
+      "id": "legacy-acceptance-state",
+      "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/check_bdd_acceptance.py", "--all", "--strict"],
+      "expected_exit": 0
+    }
+  ],
+  "units": [
+    {
+      "id": "agent-first-governance",
+      "baseline": [
+        "decisions/ADR-042_Agent_First_Delivery_Governance.md",
+        "policies/ai-agent.md",
+        "policies/git-branching.md",
+        "sdd/workflows/execution-loop.md",
+        "sdd/lifecycle.md",
+        "plans/[PLAN]_agent_first_delivery.md"
+      ],
+      "inputs": [
+        "tests/unit/test_agent_first_delivery.py",
+        "tests/unit/test_delivery_evidence.py",
+        "tests/unit/test_delivery_platform.py",
+        "tests/unit/test_sdd_g1g2g9_validators.py",
+        "tests/unit/test_sdd_g21_evidence_predicate.py",
+        "tests/conftest.py",
+        "sdd/templates/spec.yml.template",
+        "sdd/traceability.schema.json",
+        "capabilities/data-agent/llm-provider/trace.yml",
+        "capabilities/data-agent/llm-provider/contracts/behavior.feature",
+        ".github/CODEOWNERS",
+        ".github/agent-first/executor-app-manifest.json",
+        ".github/agent-first/protect-develop.ruleset.json",
+        ".github/agent-first/protect-main.ruleset.json",
+        ".github/agent-first/protect-task-integration.ruleset.json"
+      ],
+      "acceptance": [
+        {
+          "id": "GOV-001",
+          "expected": "Task authorization reuses bounded content changes; resource, permission and risk changes remain material decisions. Protected-path labels do not authenticate authorization.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_agent_first_delivery::test_task_scope_reuses_content_changes_but_not_resource_changes",
+            "tests.unit.test_agent_first_delivery::test_task_reuse_only_exempts_known_content_fields",
+            "tests.unit.test_agent_first_delivery::test_protected_edit_is_risk_context_not_authentication"
+          ]}]
+        },
+        {
+          "id": "GOV-002",
+          "expected": "Exact active task routes allow registered child and final PRs; revoked, ambiguous, foreign and unregistered routes are rejected. Direct branch creation remains forbidden.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_agent_first_delivery::test_registered_child_and_final_pr_use_exact_task_routes",
+            "tests.unit.test_agent_first_delivery::test_revoked_and_ambiguous_routes_cannot_open_an_integration_base",
+            "tests.unit.test_agent_first_delivery::test_registered_child_command_matches_but_feature_final_cannot_target_main",
+            "tests.unit.test_agent_first_delivery::test_real_pr_route_process_blocks_unregistered_and_inactive_routes",
+            "tests.unit.test_agent_first_delivery::test_windows_alias_edit_is_blocked_and_direct_branch_creation_is_g1"
+          ]}]
+        },
+        {
+          "id": "GOV-003",
+          "expected": "Merge preparation binds the exact repository, PR and head commit and rejects bypass, automatic merge and implicit deletion. Software checks do not establish effective GitHub protection.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_agent_first_delivery::test_merge_requires_explicit_repository_version_and_no_bypass",
+            "tests.unit.test_agent_first_delivery::test_merge_command_matches_every_declared_object"
+          ]}]
+        },
+        {
+          "id": "GOV-004",
+          "expected": "Evidence and JUnit output remain outside the checkout, preserve existing files and reject secret paths and Windows aliases before metadata access.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_agent_first_delivery::test_junit_output_must_be_new_external_regular_path",
+            "tests.unit.test_agent_first_delivery::test_junit_rejects_parent_aliases_before_metadata",
+            "tests.unit.test_delivery_evidence::test_artifact_must_be_outside_checkout_and_never_overwrite",
+            "tests.unit.test_delivery_evidence::test_secret_input_is_rejected_before_read",
+            "tests.unit.test_delivery_evidence::test_windows_aliases_are_rejected_before_metadata[.env::$DATA]",
+            "tests.unit.test_delivery_evidence::test_windows_aliases_are_rejected_before_metadata[ordinary ]",
+            "tests.unit.test_delivery_evidence::test_windows_aliases_are_rejected_before_metadata[ordinary.]"
+          ]}]
+        },
+        {
+          "id": "GOV-005",
+          "expected": "Evidence binds real head/base commit objects, the head or exact ordered PR merge, its tree and a clean checkout; version or input changes invalidate it.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_delivery_evidence::test_real_command_output_binds_versions_and_selftest",
+            "tests.unit.test_delivery_evidence::test_binding_accepts_only_real_head_or_exact_pr_merge[head]",
+            "tests.unit.test_delivery_evidence::test_binding_accepts_only_real_head_or_exact_pr_merge[merge]",
+            "tests.unit.test_delivery_evidence::test_binding_rejects_arbitrary_missing_and_unrelated_commit_claims[missing_head]",
+            "tests.unit.test_delivery_evidence::test_binding_rejects_arbitrary_missing_and_unrelated_commit_claims[missing_base]",
+            "tests.unit.test_delivery_evidence::test_binding_rejects_arbitrary_missing_and_unrelated_commit_claims[unrelated_base]",
+            "tests.unit.test_delivery_evidence::test_binding_rejects_arbitrary_missing_and_unrelated_commit_claims[reversed_merge]",
+            "tests.unit.test_delivery_evidence::test_dirty_checkout_cannot_claim_tested_commit",
+            "tests.unit.test_delivery_evidence::test_candidate_change_during_execution_invalidates_run[dirty]",
+            "tests.unit.test_delivery_evidence::test_candidate_change_during_execution_invalidates_run[sha]",
+            "tests.unit.test_delivery_evidence::test_candidate_change_during_execution_invalidates_run[tree]",
+            "tests.unit.test_delivery_evidence::test_changed_acceptance_baseline_invalidates_evidence",
+            "tests.unit.test_delivery_evidence::test_changed_definition_dependency_or_input_invalidates_evidence[harness.py]",
+            "tests.unit.test_delivery_evidence::test_changed_definition_dependency_or_input_invalidates_evidence[lock.txt]",
+            "tests.unit.test_delivery_evidence::test_changed_definition_dependency_or_input_invalidates_evidence[input.json]",
+            "tests.unit.test_delivery_evidence::test_untracked_bound_input_and_executed_script_cannot_claim_the_commit",
+            "tests.unit.test_delivery_evidence::test_ignored_shadow_python_module_cannot_hide_outside_the_tree",
+            "tests.unit.test_delivery_evidence::test_working_digest_alone_cannot_replace_the_committed_blob",
+            "tests.unit.test_delivery_evidence::test_repository_command_script_requires_its_own_committed_binding",
+            "tests.unit.test_delivery_evidence::test_unbound_noncode_material_does_not_require_blanket_cleanliness",
+            "tests.unit.test_delivery_evidence::test_explicit_ignored_dependency_and_cache_paths_can_remain",
+            "tests.unit.test_delivery_evidence::test_checkout_eol_rules_preserve_strict_blob_proof",
+            "tests.unit.test_delivery_evidence::test_ignored_cache_cannot_hide_source_or_executable_modules[.py]",
+            "tests.unit.test_delivery_evidence::test_ignored_cache_cannot_hide_source_or_executable_modules[.pth]"
+          ]}]
+        },
+        {
+          "id": "GOV-006",
+          "expected": "Missing or altered original output, mismatched version claims and false PASS/Owner claims fail evidence integrity. Synthetic checks cannot establish runtime baseline eligibility.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[missing]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[missing_log]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[wrong_head]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[wrong_base]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[wrong_tree]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[fake_pass]",
+            "tests.unit.test_delivery_evidence::test_missing_mismatched_and_forged_evidence_block[false_claim]",
+            "tests.unit.test_delivery_evidence::test_synthetic_cannot_claim_actual_behavior",
+            "tests.unit.test_delivery_evidence::test_local_artifact_cannot_be_relabelled_as_cloud_execution[source]",
+            "tests.unit.test_delivery_evidence::test_local_artifact_cannot_be_relabelled_as_cloud_execution[kind]"
+          ]}]
+        },
+        {
+          "id": "GOV-007",
+          "expected": "Successful process exit cannot hide zero, skipped, duplicated, missing or failed testcases; malformed suites and missing commands fail with invocation status 2. Declared expected nonzero selftest exit is preserved.",
+          "command_ids": ["governance-offline"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_delivery_evidence::test_process_zero_cannot_hide_incomplete_or_failed_tests[<testsuite tests=\"0\" failures=\"0\" errors=\"0\" skipped=\"0\"/>]",
+            "tests.unit.test_delivery_evidence::test_process_zero_cannot_hide_incomplete_or_failed_tests[<testsuite tests=\"1\" failures=\"0\" errors=\"0\" skipped=\"1\"><testcase classname=\"probe\" name=\"test_result\"><skipped/></testcase></testsuite>]",
+            "tests.unit.test_delivery_evidence::test_process_zero_cannot_hide_incomplete_or_failed_tests[<testsuite tests=\"2\" failures=\"0\" errors=\"0\" skipped=\"0\"><testcase classname=\"probe\" name=\"test_result\"/><testcase classname=\"probe\" name=\"test_result\"/></testsuite>]",
+            "tests.unit.test_delivery_evidence::test_invalid_suite_schema_returns_usage_error",
+            "tests.unit.test_delivery_evidence::test_missing_command_returns_execution_error",
+            "tests.unit.test_delivery_evidence::test_expected_nonzero_selftest_exit_is_preserved"
+          ]}]
+        },
+        {
+          "id": "GOV-008",
+          "expected": "Capability schema and trace validation actually return nonzero for invalid or absent corpora and validate the current corpus strictly.",
+          "command_ids": ["governance-offline", "capability-schema", "capability-trace"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_sdd_g1g2g9_validators::test_strict_schema_and_trace_really_return_nonzero",
+            "tests.unit.test_sdd_g1g2g9_validators::test_strict_missing_corpus_does_not_claim_validity"
+          ]}]
+        },
+        {
+          "id": "GOV-009",
+          "expected": "Complete legacy four-field justification remains a legal deferral with zero behavior PASS; bare declarations and unexecuted/unsupported outcomes do not count as acceptance, and software selftests remain distinct from actual behavior.",
+          "command_ids": ["governance-offline", "legacy-acceptance-state"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "governance-offline", "ids": [
+            "tests.unit.test_sdd_g21_evidence_predicate.TestStrictModeBlockingFlip::test_runbook_justified_strict_exit_0",
+            "tests.unit.test_sdd_g21_evidence_predicate.TestStrictModeBlockingFlip::test_no_evidence_no_runbook_strict_exit_1",
+            "tests.unit.test_sdd_g21_evidence_predicate.TestG21PredicateExtension::test_bare_pass_rate_is_not_behavior_evidence",
+            "tests.unit.test_sdd_g21_evidence_predicate::test_declared_result_without_original_outputs_cannot_pass",
+            "tests.unit.test_sdd_g21_evidence_predicate::test_unexecuted_status_is_never_behavior_pass[NOT_RUN]",
+            "tests.unit.test_sdd_g21_evidence_predicate::test_unexecuted_status_is_never_behavior_pass[UNSUPPORTED]",
+            "tests.unit.test_sdd_g21_evidence_predicate::test_original_bound_test_outcomes_keep_source_claims_separate[synthetic_fixture-SELFTEST]"
+          ]}]
+        },
+        {
+          "id": "GOV-010",
+          "expected": "Prepared rulesets require the named Owner review on develop, main and the exact task-integration target; wrong or excluded targets, weakened checks and bypass are rejected. Offline configuration and simulated API checks do not prove installation, effective platform protection or canary success.",
+          "command_ids": ["platform-offline", "platform-config"],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [{"command_id": "platform-offline", "ids": [
+            "tests.unit.test_delivery_platform::test_all_delivery_targets_require_owner_review[protect-develop]",
+            "tests.unit.test_delivery_platform::test_all_delivery_targets_require_owner_review[protect-main]",
+            "tests.unit.test_delivery_platform::test_all_delivery_targets_require_owner_review[protect-task-integration]",
+            "tests.unit.test_delivery_platform::test_wrong_or_excluded_ruleset_target_cannot_validate[unrelated-protect-develop]",
+            "tests.unit.test_delivery_platform::test_wrong_or_excluded_ruleset_target_cannot_validate[excluded-protect-main]",
+            "tests.unit.test_delivery_platform::test_wrong_or_excluded_ruleset_target_cannot_validate[broad-protect-task-integration]",
+            "tests.unit.test_delivery_platform::test_owner_coverage_cannot_be_replaced_or_overridden",
+            "tests.unit.test_delivery_platform::test_sources_strictness_and_no_bypass_are_enforced[bypass]",
+            "tests.unit.test_delivery_platform::test_configuration_is_separate_from_runtime_readiness"
+          ]}]
+        }
+      ]
+    }
+  ]
+}

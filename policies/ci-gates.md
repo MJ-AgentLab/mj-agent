@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: 0.8
+version: "0.9"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-21
+updated: 2026-10-12
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -31,7 +31,7 @@ ai_visibility: source-of-truth
 
 | # | 规则 | 执行载体 | 载体强度 |
 |---|---|---|---|
-| **F1** | 任何 gate 的 blocking 姿态翻转 = HITL `ci-blocking-gate-toggle`，**逐 gate 一次拍板 + 一条独立执行记录 comment** | Owner 拍板纪律 + merge review | **纪律**（无 CI gate 读取姿态变更本身） |
+| **F1** | 任何 gate 的 blocking 姿态翻转 = HITL `ci-blocking-gate-toggle`，**具名门禁与标准成组决定，逐gate执行记录保留于现有任务证据** | Owner 拍板纪律 + merge review | **纪律**（无 CI gate 读取姿态变更本身） |
 | **F2** | **新增** warning gate、**收窄/扩大**触发面、迁移载体（step→job、ci.yml→独立 workflow）——只要 `continue-on-error` 的**值**不变 —— **不是**翻转，不需该拍板 | 判例族 #438 / #440 / #441 / #447 / #444 / #455 | **纪律**（判例，非机器判定） |
 | **F3** | 证据标准二选一：**已按 §4.1.1 注册**观察期 → 走 §4.1 的 streak 吸收；**未注册** → 回落 §4 表「Gate 启用前」行（切换前 1 周 DRI dry-run + violation 数量 + 影响范围，**无连续次数阈值**） | §4.1.1 / §4 表「Gate 启用前」行 | 文档规则 + `plans/` 注册工件 |
 | **F4** | 翻转前必须先确认**该 gate 的姿态载体是哪一种**，再决定改什么；`continue-on-error` 不总是那根杠杆（见下表） | 无 | **零校验** —— 全靠落笔前核实 |
@@ -56,7 +56,9 @@ true`」。**该定义只对下表前两种载体成立**；对后两种会误�
 > 现有 gate 行**无一被误判**（这两个执行体本就没有 gate 行，见 §6），故这是**定义的普适性不足**、
 > 不是既有真值错误。改写该定义属 `sdd/gates.md` 的独立变更。
 
-### §1.2 翻转不等于锁死合并按钮
+### §1.2 翻转与平台required检查
+
+当前Agent-first目标：`ci`和`docker-build`均required，严格版本检查、有效批准/最后推送审核、讨论解决、日常无bypass。准备规则文件不表示平台已应用，当前启动前置NOT_READY；须只读核实际规则并完成独立canary。以下保留2026-08-11旧平台观察快照，非新日常执行授权或门禁目标。
 
 两个 ruleset（`protect-develop` / `protect-main`）的 `required_status_checks` **各自只列
 `ci` 一个 context**（实测 `gh api repos/:owner/:repo/rulesets/:id`）。故居于 `ci` job 之外的
@@ -64,7 +66,9 @@ gate（`docker-build.yml` / `check-stale-docs.yml` / `check-commit-messages.yml`
 后**只是变红，不机械阻塞合并**。把它们加入 required contexts 是**可选硬化**、属仓库设置面的
 独立动作，**不是**翻转的前置。`sdd/gates.md` 已逐行记这条边界注记；此处是其一般化陈述。
 
-## §2 例外处理规则
+## §2 旧例外处理观察（2026-08-11定格）
+
+本节X1/X2及差距是旧仓规则的历史观察，不作为Agent-first日常身份bypass路线。新目标无日常bypass，紧急恢复须独立人工权限及具体授权；有效平台审核和Owner接受分记。
 
 > **本节按现状填写，而非按原 TBD 设想（2026-08-11，issue #482）**。原 TBD 描述的是一套
 > 「双 reviewer + 时限偿还 spec debt」的 emergency override 流程。实测：**override 机制确实
@@ -80,9 +84,7 @@ gate（`docker-build.yml` / `check-stale-docs.yml` / `check-commit-messages.yml`
 **三条差距（明写而非默默吸收）**：
 
 1. **「双 reviewer」在 gate-失败面没有载体。** ruleset 只要求 `required_approving_review_count:
-   1`。仓内仅有的 ≥2 reviewer 规则是 `sdd/workflows/hotfix.md` HITL Triggers（触及 prod compose
-   → ≥2；触及 4 项专属必停 → ≥2 + 1 domain expert）与 `policies/docker-runtime.md` §4
-   （Dockerfile 非镜像引用行 → ≥2）—— **三者都以「改动面」为条件，没有一条以「gate 失败」为条件**。
+   1`。2026-08-11当时的hotfix/runtime/Docker条款曾规定≥2reviewer或附领域专家；这些数量规则现已由ADR-042取消，当前按风险独立覆盖工程/领域/Prompt/供应链视角，不要求真人或固定人数。旧观察不表达活动规则。
 2. **X3 治的是 spec-first 绕过，不是 gate 失败。** `hotfix.md` 的「允许临时绕过部分 spec-first
    流程」指的是先写代码后补 spec；它**不**为「带着红 gate 合并」设定任何偿还义务。**gate 失败后
    ship，目前无偿还义务、无跟踪工件。**
@@ -291,15 +293,13 @@ head 取样得到的两形相等只说明尚未跨过 cron，**不**说明裸形
 ## §5 原生配置边界（团队与个人分离）
 
 团队直接维护 `.codex/config.toml`、`hooks.json` 与 `rules/`；个人配置和信任不由仓库修改。
-配置、规则、守卫及其保护边界变化须 Owner 审阅。Owner 批准不解锁 hook；无自动执行路线
-时按批准的人工应用路线处理。禁止自动信任项目、激活 hooks 或放宽权限来使验证通过。
+配置、规则、守卫及其保护边界变化须 Owner 审阅。任务授权与技术执行条件分开；正常工具执行成组方案，实际拒绝返回BLOCKED_EXECUTION_ROUTE，不绕过。禁止自动信任项目、激活 hooks 或放宽权限来使验证通过。
 
 ### §5.1 A13 原生保护审阅
 
-PR review 必须核对：秘密不得读取/回显，biz 不得绕过 tool-chain，四项运行时必停面及
-Owner 动作仍阻断，异常输入 fail closed，MCP 只含八项既有项目服务并按 env_vars 传名。
+PR review 必须核对：秘密不得读取/回显，biz 不得绕过 tool-chain，四类runtime语义风险与任务授权核对，确定禁令/未知输入继续阻断，异常输入 fail closed，MCP 只含八项既有项目服务并按 env_vars 传名。
 守卫的有限语法识别不等于通用 shell 沙箱；未命中不构成授权。
-所有权切换、CI 替代与必要旧测试处置须成组审批；静态 PASS 不替代实际宿主和服务证据。
+治理标准变化、CI替代与必要旧测试处置须成组决定；静态 PASS 不替代实际宿主和服务证据。
 
 ## §6 CI gate 命名映射
 

@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: prompt
 state: draft
-version: 0.4
+version: "0.5"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-10
+updated: 2026-10-12
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -51,8 +51,8 @@ strip 契约）：
 `sdd/templates/contracts/prompt.contract.yml.template`）.
 
 M2 新增 `capabilities/data-agent/llm-provider/contracts/prompt.contract.yml`（Stage C 落地）—
-描述 `system.md` v1.8 frozen + body section heads + sha256；与 4 项专属必停的
-`prompt-version-bump` gate 配对.
+描述 `system.md` v1.8 frozen + body section heads + sha256；与 4 类 runtime 风险面的
+`prompt-version-or-body-change` gate 配对.
 
 ## §Standards
 
@@ -87,8 +87,8 @@ freeze_anchor:
 
 **M2 新 prompt.contract.yml 锚定 system.md v1.8** — Stage C 落地：
 
-- `version: 1.8` frozen → 任何 `system.md` `version` 字段变更触发 `prompt-version-bump` 必停
-- `content_hash` frozen → body 任何修改（含 typo）触发同必停
+- `version: 1.8` frozen → version维护核风险及冻结一致性，不自动审批
+- `content_hash` frozen → body任何修改仍核冻结一致性，保持语义的维护不自动审批
 - M3 contract test 跑 PASS 条件：当前 `system.md` 的 frontmatter version + body sha256 与
   contract 一致
 
@@ -96,7 +96,7 @@ freeze_anchor:
 
 ```yaml
 hitl_required:
-  - prompt-version-bump              # canonical 描述在 sdd/gates.md §4
+  - prompt-version-or-body-change              # canonical 描述在 sdd/gates.md §4
 ```
 
 **Optional fields**：
@@ -121,7 +121,7 @@ home）.
 - **frontmatter 体现**：跨 model 迁移触发 `version` bump（绝不复用旧 version）；可选记
   `model_binding` 字段标注本 version 绑定的目标 model id / provider（如
   `model_binding: ark/deepseek-v3` vs `model_binding: local-openai-compat/<model-id>`）
-- **与 `freeze_anchor` 联动**：`model_binding` 变更 = 语义级变更 → 触发 `prompt-version-bump`
+- **与 `freeze_anchor` 联动**：`model_binding` 变更 = 语义级变更 → 触发 `prompt-version-or-body-change`
   必停（与 body / `version` 字段变更同 gate）；contract `freeze_anchor` 锁的是"某 version 在某
   model 上的 body"，换 model 即换 freeze 对象
 - **与 EVAL 联动**（M4+）：跨 model 独立 version 各自需独立 `eval_references`（同一 prompt 在
@@ -154,13 +154,13 @@ home）.
 **`@adapter:prompt` 何时 NOT 用**：
 
 - prose 改动（typo fix / 语法调整 / 章节排版）不为之加 `@adapter:prompt` tag；走
-  `prompt-version-bump` 必停手工 review 路径即可
+  `prompt-version-or-body-change` 语义风险与独立核验 路径即可
 - LLM 行为变化（如 "改 prompt 后 tool 顺序错乱"）→ 用 `@adapter:langchain-agent`
 - SKILL body 行为变化 → 用 `@adapter:runtime-skill`（虽然 SKILL.md 同时被 prompt adapter 治
   理 schema 一致性）
 
-**`@adapter:prompt` + `@hitl` 必然双标签** — prompt 触达 4 项专属必停的 `prompt-version-bump`
-gate；任何 `@adapter:prompt` scenario 都隐含 hitl 信号.
+**`@adapter:prompt` + `@hitl` 按实际风险标记** — prompt 触达 4 类 runtime 风险面的 `prompt-version-or-body-change`
+gate；仅涉及实质边界/接受变化的scenario标@hitl，冻结一致性普通回归不自动审批.
 
 **示例 `.feature` scenario fragment**：
 
@@ -171,7 +171,7 @@ Scenario: prompt.contract.yml drifts when system.md version is bumped without YA
   And prompt.contract.yml freeze_anchor.version is 1.8
   When check_prompt_contracts.py is run
   Then the result is FAIL
-  And the error message references prompt-version-bump gate (sdd/gates.md §4)
+  And the error message references prompt-version-or-body-change gate (sdd/gates.md §4)
 ```
 
 ## §TDD Rules
@@ -183,7 +183,7 @@ Scenario: prompt.contract.yml drifts when system.md version is bumped without YA
 - `prompt.contract.yml` 的 `version` / `section_heads[]` / `content_hash` 字段变更 → 必先有
   failing test
 - M3 contract test pattern：解析 system.md frontmatter + 计算 body sha256 + 比对 contract
-- 不要求 prompt prose 改动也跑 test-first（prose 改动走 `prompt-version-bump` 必停手工 review
+- 不要求 prompt prose 改动也跑 test-first（prose 改动走 `prompt-version-or-body-change` 语义风险与独立核验
   + EVAL regression in M4+）
 
 **Prompt regression case 走 EVAL framework**（per ADR-024 EVAL framework 联动）：
@@ -229,21 +229,13 @@ strip_frontmatter(content: str) -> str
 **Baseline noise** — Stage C 后 V3 实测 PASS（`system.md` v1.8 frozen + `llm-provider/
 prompt.contract.yml` 落地）；M2 期 warning mode 下预期 0 noise.
 
-**Manual HITL gate** (permanent blocking；M2 不可 script 完全 auto-detect)：
-
-- Gate ID: `prompt-version-bump`（per `sdd/gates.md` §4）
-- Triggers: 任意 `src/mj_agent/prompts/system.md` body / frontmatter `version` 字段变更
-- Detection: PR reviewer mandatory check + script `check_prompt_contracts.py` 提前预警
-  drift
-- Rationale: prompt body 改动可能引入 LLM 行为 regression 但 schema 仍合规；script 看不出语义
-  drift；必须 human review
-- Future: M5+ 视 EVAL framework 成熟度可考虑加 EVAL-based auto-detect；M2 不在范围
+**语义影响与独立核验**：风险标签 `prompt-version-or-body-change` 用于定位。基线内保持安全/业务/外发的正文、版本或兼容合同维护自主；breaking、权限、业务口径、数据/外发边界、接受标准或必要门禁变化先Owner决定。核验者依据AC独立建立期望、读取真实成果并复现，按风险覆盖领域/Prompt/工程视角，不要求真人或人数。冻结/schema检查仍机器执行，不能代行为证据；技术拒绝不得绕过。
 
 **M2 → M3 切换条件**：
 
 - Stage C 4 新 contract 中的 `llm-provider/prompt.contract.yml` PASS
 - `_common.frontmatter` 接口稳定
-- `prompt-version-bump` gate 在 `gates.md` §4 完整定义（C5 落地后；M3-FU-HITL-ENUM）
+- `prompt-version-or-body-change` gate 在 `gates.md` §4 完整定义（C5 落地后；M3-FU-HITL-ENUM）
 
 ---
 
