@@ -1,0 +1,2 @@
+# Manifest hashes bind raw fixture bytes across checkouts.
+*.jsonl text eol=lf

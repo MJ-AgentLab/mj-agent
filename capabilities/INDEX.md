@@ -4,7 +4,7 @@ state: drafting
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -25,6 +25,10 @@ ai_visibility: source-of-truth
 | [infrastructure.docker-compose](./infrastructure/docker-compose/spec.yml) | Docker Compose 4-File Profile (ADR-026) | infrastructure | drafting | active | 2026-05-20 | docker-container, tdd-bdd |
 | [infrastructure.mcp-server-governance](./infrastructure/mcp-server-governance/spec.yml) | MCP Server Inventory + Governance (ADR-028) | infrastructure | drafting | active | 2026-05-20 | development-skill, tdd-bdd |
 | [data-agent.memory-checkpointer](./data-agent/memory-checkpointer/spec.yml) | Memory Checkpoint At-Rest Desensitization | data-agent | active | active | 2026-07-22 | python, tdd-bdd |
+
+## Draft Capability Review
+
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 离线回放、规则评判与回归报告；lifecycle=idea，last_verified=null。见 [design](./data-agent/evaluation/design.md)、[requirements](./data-agent/evaluation/requirements.md)、[runbook](./data-agent/evaluation/runbook.md) 与 [tasks](./data-agent/evaluation/tasks.md)。两份正式契约与 BDD／contract trace 已落盘；合成验收由 Agent 模拟角色并独立核验，严格窗口保留，ReplayInputs／replay公共离线核心64项单元测试与6项BDD通过；CLI／actual 入口延期，完整capability未验收。见 [核心验收报告](./data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)与[公共API修复证据](./data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract.md)。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

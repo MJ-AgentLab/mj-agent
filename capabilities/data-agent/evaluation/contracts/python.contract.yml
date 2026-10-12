@@ -1,0 +1,50 @@
+# #582 core contract, explicitly approved by Owner for #587 unblock.
+# The declared surface matches the offline core; CLI main remains a SPEC/task proposal.
+contract_id: python
+adapter: python
+covers_requirements:
+  - REQ-001
+  - REQ-002
+  - REQ-003
+  - REQ-004
+  - REQ-005
+  - REQ-006
+modules:
+  - path: src.mj_agent.evaluation.schema
+    freeze_anchor: src/mj_agent/evaluation/schema.py
+    exports:
+      - name: ReplayInputs
+        kind: dataclass
+        fields:
+          - "config: bytes"
+          - "dataset: bytes"
+          - "observations: bytes"
+          - "manifest: bytes"
+          - "reference: bytes"
+          - "reviews: bytes = b''"
+          - "baseline: bytes = b''"
+        public: true
+  - path: src.mj_agent.evaluation.core
+    freeze_anchor: src/mj_agent/evaluation/core.py
+    exports:
+      - name: replay
+        signature: "def replay(inputs: ReplayInputs) -> dict[str, Any]"
+        public: true
+    public_invariants:
+      - "只消费显式bytes并返回离线报告；不读写文件、不加载应用配置或连接外部服务"
+      - "所有dataset case有结果，未知检查不静默跳过，首次尝试与错误轨迹保留"
+      - "逐case和逐check状态不掩盖缺口；synthetic fixture不产生runtime baseline"
+      - "报告遵循design的完整性、严格窗口、兼容性、精确阈值与退出分类"
+      - "合成验收由Agent模拟角色并独立核验，来源和审阅链可追踪，不要求真人参与"
+      - "相同输入的规范化JSON、Markdown和退出分类一致"
+non_actions:
+  - module: src.mj_agent.evaluation.core
+    items:
+      - "不采样、不执行输入SQL、不导入agent/tools/config/LLM/DB"
+      - "不改既有runtime、dataset、其他capability契约、CI gate或waiver"
+      - "CLI main、文件路径与输出保护、actual采样继续延期"
+  - module: src.mj_agent.evaluation.schema
+    items:
+      - "ReplayInputs只存显式bytes，不解析路径或自动读取文件"
+hitl_required:
+  - declared-contract-change

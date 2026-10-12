@@ -1,0 +1,66 @@
+# Offline core: tests and six BDD scenarios executed using synthetic inputs.
+# Declared Python API is ReplayInputs/replay; CLI main is a SPEC/task candidate; actual remains deferred.
+capability: data-agent.evaluation
+generated: 2026-10-12
+schema_version: "1.2"
+links:
+  - req: REQ-001
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["Dataset identity and every planned case are preserved"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-001]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
+  - req: REQ-002
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["Semantic checks require a bound role-review verdict"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-002, tasks.md#T-003]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
+  - req: REQ-003
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["A repaired final SQL does not hide the first failed attempt"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-002]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
+  - req: REQ-004
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["A confirmed red-line failure remains hard without a baseline"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-004]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
+  - req: REQ-005
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["Synthetic success cannot become a runtime baseline"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-001, tasks.md#T-003, tasks.md#T-004]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
+  - req: REQ-006
+    bdd:
+      feature: contracts/behavior.feature
+      scenarios: ["Replay cannot load application credentials or connect to services"]
+      automation_status: automated
+    contracts: [contracts/python.contract.yml]
+    tests: [tests/unit/test_eval_core.py, tests/bdd/data_agent/evaluation/test_evaluation_bdd.py]
+    tasks: [tasks.md#T-005]
+    prs: ["https://github.com/MJ-AgentLab/mj-agent/pull/587"]
+    evidence: [evidence/reports/2026-10-12_offline_core_acceptance.md, evidence/bdd/2026-10-12_core_scenarios_pass.md, evidence/reports/2026-10-12_public_core_contract.md]
