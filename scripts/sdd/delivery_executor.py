@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import base64
 import ctypes
+import hashlib
 import hmac
 import json
 import os
@@ -436,9 +437,28 @@ def _public_text(value: Any) -> str:
     return value
 
 
+def _protection_digest(row: dict) -> str:
+    """Bind all raw protection parameters without disclosing their contents."""
+    def json_data(value: Any) -> bool:
+        if type(value) is dict:
+            return all(type(key) is str and json_data(item) for key, item in value.items())
+        if type(value) is list:
+            return all(json_data(item) for item in value)
+        return value is None or type(value) in {str, int, float, bool}
+
+    try:
+        subset = {key: row[key] for key in ("id", "name", "target", "enforcement", "conditions", "rules") if key in row}
+        _require(json_data(subset), "REMOTE_RESPONSE_INVALID")
+        raw = json.dumps(subset, sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+                         allow_nan=False).encode("utf-8")
+        return hashlib.sha256(raw).hexdigest()
+    except Exception:
+        raise PublicError("REMOTE_RESPONSE_INVALID") from None
+
+
 def _public_ruleset(row: Any) -> dict:
     _require(isinstance(row, dict), "REMOTE_RESPONSE_INVALID")
-    public = {}
+    public = {"protection_sha256": _protection_digest(row)}
     for key in ("id", "name", "target", "enforcement", "current_user_can_bypass"):
         if key not in row:
             continue
@@ -548,8 +568,27 @@ def _public_git_marker(path: Path, *, prefix: str = "") -> str:
         return text[len(prefix):].strip()
 
 
+def _inert_compatibility_key(key: str) -> bool:
+    """Only two reviewed key forms, inert for the fixed command set.
+
+    This does not approve an alias value or make alias dispatch available.
+    Git/tool versions or command-set changes require renewed evidence.
+    """
+    if key == "alias.pushall":
+        return True
+    match = re.fullmatch(r"branch\.([A-Za-z0-9][A-Za-z0-9._/-]*)\.vscode-merge-base", key)
+    if match is None:
+        return False
+    branch = match[1]
+    return (".." not in branch and "//" not in branch and not branch.endswith("/")
+            and all(not part.startswith(".") and not part.endswith((".", ".lock"))
+                    for part in branch.split("/")))
+
+
 def _git_config_untrusted(key: str) -> bool:
-    """Only proven non-executable metadata; unknown keys cannot inherit a token."""
+    """Only reviewed keys inert for the fixed command set; no alias dispatch."""
+    if _inert_compatibility_key(key):
+        return False
     key = key.lower()
     safe = {"core.repositoryformatversion", "core.filemode", "core.bare", "core.logallrefupdates",
             "core.ignorecase", "core.precomposeunicode", "core.longpaths", "core.autocrlf", "core.eol",

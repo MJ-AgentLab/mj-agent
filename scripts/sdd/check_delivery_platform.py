@@ -9,7 +9,9 @@ Static configuration checks do not prove installation, hook loading or canaries.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import os
 import re
 import subprocess
@@ -23,6 +25,29 @@ _DAILY_PERMISSIONS = {"metadata": "read", "contents": "write", "pull_requests": 
 _DISABLED_WEBHOOK_URL = "https://invalid.invalid/mj-agent-unused-webhook"
 _EXECUTOR_ENV = ("PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC", "LANG", "LC_ALL")
 _MANAGEMENT_OWNER = "ranzuozhou"
+
+
+def _protection_digest(row: dict[str, Any]) -> str:
+    """Bind complete provider protection, including unprojected parameters."""
+    def is_json(value: Any) -> bool:
+        if value is None or type(value) in (str, bool, int):
+            return True
+        if type(value) is float:
+            return math.isfinite(value)
+        if type(value) is list:
+            return all(is_json(item) for item in value)
+        if type(value) is dict:
+            return all(type(key) is str and is_json(item) for key, item in value.items())
+        return False
+
+    fields = {key: row[key] for key in ("id", "name", "target", "enforcement", "conditions", "rules") if key in row}
+    try:
+        if not is_json(fields):
+            raise ValueError("non-JSON provider protection")
+        encoded = json.dumps(fields, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+    except RecursionError:
+        raise ValueError("provider protection nesting unsupported") from None
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 def code_owner_errors(text: str) -> list[str]:
@@ -273,22 +298,32 @@ def inspect_platform(repository: str, *, executor_vault: Path | None = None,
         endpoint = f"repos/{repository}/rulesets/{rule_id}"
         actual = get(endpoint)
         actors_source = "EXECUTOR_APP" if audit is not None else "METADATA_GET"
+        protection_binding = "PROVIDER_PARAMETERS"
         # GitHub omits bypass_actors without ruleset-write visibility. Absence
         # is unknown, never an empty list. The separately authorized Owner GET
         # can supply this fact without granting Administration to the App.
         # https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset
         if management_inspect and "bypass_actors" not in actual:
             managed = _get(endpoint)
-            protected_fields = ("id", "name", "target", "enforcement", "conditions", "rules")
-            if not isinstance(managed, dict) or any(managed.get(key) != actual.get(key) for key in protected_fields):
+            # The broker exposes only reviewed parameters. Its digest binds the
+            # original full protection before projection, so unseen parameters
+            # cannot disappear from the comparison or be silently changed.
+            protected_fields = ("id", "name", "target", "enforcement")
+            digest = actual.get("protection_sha256")
+            if (not isinstance(managed, dict) or not isinstance(digest, str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", digest)
+                    or any(managed.get(key) != actual.get(key) for key in protected_fields)
+                    or _protection_digest(managed) != digest):
                 raise ValueError("management and executor protection observations differ")
             actual = {**actual, "bypass_actors": managed.get("bypass_actors")}
             actors_source = "NAMED_OWNER_MANAGEMENT_GET"
+            protection_binding = "FULL_PROVIDER_PROTECTION_SHA256"
         errors = ruleset_errors(actual, expected_name=name)
         if actual.get("current_user_can_bypass") != "never":
             errors.append("current identity bypass is allowed or unknown")
         rows.append({"name": name, "state": "NOT_READY" if errors else "CONFIG_VERIFIED", "errors": errors,
                      "bypass_actors_source": actors_source,
+                     "protection_binding": protection_binding,
                      "current_identity_can_bypass": actual.get("current_user_can_bypass", "UNKNOWN")})
     repo = get(f"repos/{repository}")
     if repo.get("full_name", "").casefold() != repository.casefold():

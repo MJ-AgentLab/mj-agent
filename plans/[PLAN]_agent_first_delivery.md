@@ -78,7 +78,13 @@ track: engineering-workflow
 - 平台备份已由正常具名Owner路线只读获取，目录为仓外`agent-operated/platform-backup-0810/`；当前观测protect-develop/main两规则、无integration、无其他规则及三种merge均启用，管理身份仍具仓库admin/maintain/push。仅证明当前读权限/备份和可用恢复身份，未改平台、未演练恢复；写前重核状态与备份一致。
 - 本轮组合软件检查点：`45f0557`纳入Q4/Q5/Q6及后台，正常合入实际develop后的`ef5eed0`全量离线1643通过/6策略跳过/30subtests，BDD23通过/7策略跳过，contract63通过/1Windows软链接权限不足跳过；ruff/mypy55源文件通过。日志在仓外`agent-operated/verification/integration-final/`。独立Agent复验了真实Windows来源/路径/hook/signing及异步回调负例，注册子流程代码GO；不等于安装、平台或宿主GO。
 - 初次通用collector命令通过，却因回调测试新增参数化后套件旧引用缺失而返回NOT_TESTED；失败包`agent-operated/delivery/`保留。仅把该引用绑定已实际运行的三个参数用例，不改断言或接受条件；更新后候选SHA及14软件AC、Windows6用例结果以final两包实际binding为准，未生成/错配不算PASS。
-- Q7正常Owner二次认证已完成，浏览器仅核公开页面title为Create GitHub App，不读密码/验证码。截图在仓外`agent-operated/browser-proof/github-sudo-required.png`保存认证要求。尚未创建/安装App、激活项目信任或写入平台；创建/安装在提交前遵循浏览器工具的安全访问确认，接受及发布授权仍分开记录。
+- Q7正常Owner二次认证已完成，浏览器仅核公开页面title为Create GitHub App，不读密码/验证码。截图在仓外`agent-operated/browser-proof/github-sudo-required.png`保存认证要求。当时尚未创建/安装App、激活项目信任或写入平台；创建/安装在提交前遵循浏览器工具的安全访问确认，接受及发布授权仍分开记录。
+- Q8实际动作确认后，Agent通过正常GitHub manifest创建私有`mj-agent-delivery-executor`，App `5284037`仅安装到mj-agent，installation `170545174`、repository `1172583390`。bootstrap实际审计exit0为EXECUTOR_VERIFIED：App/installation/token层均仅Metadata read、Contents/PR write、临时Workflows write，单仓短期token已CONFIRMED撤销；既有秘密未读取，新App值仅后台DPAPI托管。公开运行证据在仓外`agent-operated/final/app-audit-bootstrap.json`，安装截图在`agent-operated/browser-proof/github-app-installed.png`。浏览器本机结果页实际拒绝`net::ERR_BLOCKED_BY_CLIENT`保留，没有改安全设置或重复注册；后台公开结果与正常GitHub页面闭合。注册通道已核具名进程/端口关闭，后续audit走已核验后台，不需要重开注册。
+- 本候选真实无token预检曾返回TOOLCHAIN_CONFIG_UNTRUSTED；只读名称诊断为`alias.pushall`及8条分支IDE缓存键，未读值/改配置/放宽门禁/执行发布。作者与独立Agent各自仓外复现27个分类用例、5个实际本地合成Git命令，固定命令不触发alias、正控触发、接收库零refs，原守卫仍拒绝。Owner Q9明确批准仅这两类惰性键定向兼容；实施回归、独立核验及新版本正常预检闭合前，发布保持BLOCKED_EXECUTION_ROUTE，其他实际拒绝不豁免。
+- 实际平台只读复核先返回UNKNOWN；无改动诊断证明同一App的audit、rulesets及protect-develop GET均成功且token撤销CONFIRMED。原因是公开投影省略原始pull_request的required_reviewers/dismissal_restriction/require_extra_approval_for_unattributed_changes参数，造成完整保护比较不等。修复以后台原始保护规范摘要作严格同源比较，不删除参数或放行错配；对应负例与版本证据必须重新取得。平台规则尚未应用、宿主仍NOT_TESTED、canary/推送/PR/merge/Owner接受均未完成。
+- Q9后的新候选通用/Windows软件包另存仓外`agent-operated/after-q9/delivery/`与`agent-operated/after-q9/windows-delivery/`，绑定实际新head/base及输入摘要。原`final/`14AC/304通用用例与Windows6项独立通过包保留为26487aa历史证据，不能因旧软件通过宣称新版本通过。实际状态与下一步记录在新验收说明；未生成或不匹配时保持未知。
+- Q9定向实现完成后，作者真实本仓无token/无网络预检为PUBLIC_METADATA_PREFLIGHT_PASS；独立Agent从实际两模块复验234项离线测试exit0，并验证完整未知参数一致可比较、改变立即拒绝、原始私有sentinel不透传。套件绑定新行为IDs及123/117/111最低用例数；新版本与证据包仍须实际闭合。该软件及元数据预检结论不替宿主加载、平台保护/演练或Owner接受。
+- Q9后本地完整unit运行1593通过、1项非Windows覆盖条件跳过、30subtests通过，exit0；日志和JUnit保存于`agent-operated/after-q9/verification/`。该补充运行处于提交前，随后版本绑定collector仍须对实际新SHA执行。ruff/mypy55、frontmatter154、wikilinks/looprefs及native配置/技能检查均exit0；此前BDD/contract运行保留原版本，不谎报已重跑。
 
 ## 原软件验证与当前未验证检查点
 

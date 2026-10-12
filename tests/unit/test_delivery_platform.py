@@ -12,6 +12,11 @@ from scripts.sdd import check_delivery_platform as platform
 
 REPOSITORY = "synthetic/repo"
 NAMES = ("protect-develop", "protect-main", "protect-task-integration")
+_COMPLETE_RULE_DIGESTS = {
+    "protect-develop": "d71bbed7804e575ba9c9089898f30577d8b02451bfb0fbe048f6722512c2e8b6",
+    "protect-main": "c9504a1a3408c5fce7aa491373af687ba6ccc9deaf79c963c71edc73f2c1c401",
+    "protect-task-integration": "f8040cf519313ad446b2cba0d7b143fcd6d93dacf368368985ef89013c56826c",
+}
 
 
 def _ruleset(name: str = "protect-develop") -> dict[str, Any]:
@@ -467,12 +472,31 @@ def _hidden_actors(monkeypatch: pytest.MonkeyPatch, *, manager: str = "ranzuozho
     metadata_get = platform._get
     management_calls: list[str] = []
 
+    def full_metadata(endpoint: str) -> Any:
+        result = copy.deepcopy(metadata_get(endpoint))
+        if isinstance(result, dict) and "rules" in result:
+            _parameters(result, "pull_request").update({
+                "required_reviewers": [], "dismissal_restriction": None,
+                "require_extra_approval_for_unattributed_changes": False,
+            })
+        return result
+
     def observe(root: Path, vault: Path, phase: str, action: str, endpoint: str | None = None) -> dict[str, Any]:
         result = _executor_observation(phase)
         if action == "public-get":
-            result["data"] = copy.deepcopy(metadata_get(str(endpoint)))
+            result["data"] = full_metadata(str(endpoint))
             if isinstance(result["data"], dict):
                 result["data"].pop("bypass_actors", None)
+                if "rules" in result["data"]:
+                    result["data"]["protection_sha256"] = _COMPLETE_RULE_DIGESTS[result["data"]["name"]]
+                    for key in ("required_reviewers", "dismissal_restriction", "require_extra_approval_for_unattributed_changes"):
+                        del _parameters(result["data"], "pull_request")[key]
+                    if defect == "digest_missing":
+                        del result["data"]["protection_sha256"]
+                    elif defect == "digest_wrong":
+                        result["data"]["protection_sha256"] = "0" * 64
+                    elif defect == "digest_malformed":
+                        result["data"]["protection_sha256"] = ["not-a-digest"]
                 if endpoint == f"repos/{REPOSITORY}":
                     result["data"].pop("permissions", None)
         return result
@@ -481,7 +505,7 @@ def _hidden_actors(monkeypatch: pytest.MonkeyPatch, *, manager: str = "ranzuozho
         management_calls.append(endpoint)
         if endpoint == "user":
             return {"login": manager, "type": "User"}
-        result = copy.deepcopy(metadata_get(endpoint))
+        result = full_metadata(endpoint)
         if isinstance(result, dict) and "bypass_actors" in result:
             if defect == "changed_protection":
                 _parameters(result, "pull_request")["require_last_push_approval"] = False
@@ -489,6 +513,8 @@ def _hidden_actors(monkeypatch: pytest.MonkeyPatch, *, manager: str = "ranzuozho
                 result["bypass_actors"] = [{"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"}]
             elif defect == "still_hidden":
                 del result["bypass_actors"]
+            elif defect == "projected_parameter_changed":
+                _parameters(result, "pull_request")["require_extra_approval_for_unattributed_changes"] = True
         return result
 
     monkeypatch.setattr(platform, "_executor_json", observe)
@@ -534,3 +560,32 @@ def test_management_cannot_act_as_missing_executor(monkeypatch: pytest.MonkeyPat
     _mock_remote(monkeypatch)
     with pytest.raises(ValueError, match="separate executor"):
         platform.inspect_platform(REPOSITORY, management_inspect=True)
+
+
+def test_complete_rule_digest_preserves_unprojected_review_parameters() -> None:
+    payload = _ruleset()
+    _parameters(payload, "pull_request").update({
+        "required_reviewers": [], "dismissal_restriction": None,
+        "require_extra_approval_for_unattributed_changes": False,
+    })
+    assert platform._protection_digest(payload) == _COMPLETE_RULE_DIGESTS["protect-develop"]
+    _parameters(payload, "pull_request")["required_reviewers"] = [99]
+    assert platform._protection_digest(payload) != _COMPLETE_RULE_DIGESTS["protect-develop"]
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), ("not", "json"), {1: "not-a-json-key"}])
+def test_non_json_protection_cannot_supply_a_digest(value: Any) -> None:
+    payload = _ruleset()
+    _parameters(payload, "pull_request")["unknown_parameter"] = value
+    with pytest.raises((ValueError, TypeError)):
+        platform._protection_digest(payload)
+
+
+@pytest.mark.parametrize("defect", ["projected_parameter_changed", "digest_missing", "digest_wrong", "digest_malformed"])
+def test_hidden_protection_mismatch_stops_before_more_provider_calls(
+    monkeypatch: pytest.MonkeyPatch, defect: str,
+) -> None:
+    calls = _hidden_actors(monkeypatch, defect=defect)
+    with pytest.raises(ValueError, match="observations differ"):
+        platform.inspect_platform(REPOSITORY, executor_vault=Path("synthetic-vault"), management_inspect=True)
+    assert calls == ["user", f"repos/{REPOSITORY}/rulesets/1"]

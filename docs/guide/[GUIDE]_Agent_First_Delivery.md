@@ -67,6 +67,8 @@ Manifest的webhook关闭和URL占位只说明准备格式，不证明GitHub注�
 
 GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保持未知。[GitHub规则API](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset)说明该可见性限制。已获具名管理核验授权时，可明确加`--management-inspect`：新App实际身份核验先通过，再由`ranzuozhou`管理身份仅作同仓规则GET；保护字段必须与App观察相同，只补隐藏的actor事实并记录来源。App本身的can-bypass仍必须由App观察，管理身份不得代替日常执行，不给App新增Administration；权限拒绝不触发备用路线。
 
+后台在筛选公开规则参数前，计算原始`id/name/target/enforcement/conditions/rules`完整规范JSON的`protection_sha256`；未公开的规则参数仍绑定其中。管理GET必须与该完整摘要匹配，再补隐藏actor。缺失、非JSON、错配或格式无效的摘要不能通过；不能为了让两份投影一致而删除保护参数。
+
 分层路由在既有Plan放 `agent-first-routes` 块，准确字段与例子见Plan模板；前置未满足保持active=false，名字及登记本身不生成操作授权。新证据artifact只记录授权范围观察，不认证授权来源。
 
 ### 受控后台入口
@@ -78,6 +80,8 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 - `push`、`pr-create`、`merge`：只支持本仓具名动作、显式分支/base及实际版本核对；沿用任务登记路由及正常仓库门禁。不提供任意命令、凭据dump或bypass。
 
 注册attempt、token创建、平台动作或撤销结果未知时，保留检查点并先对账；不能删除标记重试、用旧身份补做或因进程成功宣称业务通过。关闭注册服务只停止监听；临时Workflows权限移除和token撤销各自核实际结果。
+
+执行前只读取Git配置名称并拒绝未知或可执行来源。Owner Q9定向允许规范名称`alias.pushall`及合法分支名下的`vscode-merge-base`缓存键：固定内建命令不会选择该alias，IDE键不决定后台base/head。不读取真实值、不调用alias、不修改持久配置；其他alias/未知键、credential/header/include/gpg及active hook仍拒绝。该分类依赖已核验工具版本和固定命令集合；两者或键的使用方式变化后重新评估，不能借此解除其他实际拒绝。
 
 通用软件证据使用`evidence/delivery/agent-first.suite.json`，不把Linux上的Windows原生SKIP计作通过。注册或使用Windows后台前，另运行`evidence/delivery/executor-windows.suite.json`取得同一版本的实际DPAPI/junction/句柄合成检查；该包证明所测宿主的软件行为，仍不证明真实App、来源认证或hooks启用。其他宿主必须重新核验。
 
@@ -111,3 +115,4 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 |---|---|---|
 | 2026-10-12 | v0.1 | 建立任务授权、独立核验、仓外证据和平台启动指引；#582 转交另会话 |
 | 2026-10-12 | v0.2 | Owner Q4/Q5/Q6取消工程师向导；受控新App后台、独立Agent审阅/正常宿主项目启用和依据真实聊天决定执行平台审核，实际能力未验证 |
+| 2026-10-12 | v0.3 | Q9定向惰性配置兼容与完整规则摘要比较；实际App/宿主/平台状态由Plan和仓外运行证据分别记录 |

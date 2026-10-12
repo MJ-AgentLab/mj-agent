@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import base64
+import copy
+import hashlib
 import json
 import os
 import subprocess
@@ -869,3 +871,129 @@ def test_callback_redirects_before_blocked_conversion_and_never_repeats(
         server.shutdown()
         server.server_close()
         thread.join(timeout=5)
+
+
+@pytest.mark.parametrize("key", ["alias.pushall", "branch.develop.vscode-merge-base", "branch.main.vscode-merge-base",
+                                 "branch.maintain/synthetic-compatibility.vscode-merge-base"])
+def test_only_reviewed_inert_compatibility_keys_are_accepted(key: str) -> None:
+    assert executor._git_config_untrusted(key) is False
+
+
+@pytest.mark.parametrize("key", ["alias.other", "alias.pushallx", "alias.pushall.command", "Alias.pushall", "alias.PushAll",
+    "branch..vscode-merge-base", "branch.foo/../bar.vscode-merge-base", "branch.foo//bar.vscode-merge-base",
+    "branch.foo.lock.vscode-merge-base", "branch.foo/.hidden.vscode-merge-base", "branch.foo/.vscode-merge-base",
+    "branch.foo.vscode-merge-basex", "branch.foo.vscode-merge-base.command", "branch.foo.vscode-merge-base\n",
+    "gpg.program", "gpg.ssh.program", "push.gpgsign", "http.extraheader", "credential.helper", "core.hookspath",
+    "include.path", "core.fsmonitor", "unknown.candidateexec"])
+def test_compatibility_never_accepts_neighbor_alias_unknown_or_executable_keys(key: str) -> None:
+    assert executor._git_config_untrusted(key) is True
+
+
+def test_actual_git_fixed_commands_never_select_allowed_synthetic_alias(tmp_path: Path) -> None:
+    root, env = synthetic_repo(tmp_path)
+    marker = tmp_path / "synthetic-inert-alias-must-not-execute.txt"
+    configured = subprocess.run(["git", "-C", str(root), "config", "--local", "alias.pushall",
+                                 "!printf synthetic > '" + marker.as_posix() + "'"],
+                                env=env, capture_output=True, text=True, check=False)
+    assert configured.returncode == 0
+    configured = subprocess.run(["git", "-C", str(root), "config", "--local",
+                                 "branch.maintain/task.vscode-merge-base", "SYNTHETIC_IDE_METADATA"],
+                                env=env, capture_output=True, text=True, check=False)
+    assert configured.returncode == 0
+    with executor._trusted_toolchain(root) as binding:
+        profile = tmp_path / "synthetic-inert-child-profile"
+        profile.mkdir()
+        (profile / "empty.gitconfig").write_bytes(b"")
+        child = executor.child_environment(None, profile, toolchain=binding)
+        for arguments in (["config", "--no-includes", "--name-only", "--list"], ["rev-parse", "HEAD"],
+                          ["branch", "--show-current"]):
+            result = subprocess.run(["git", "-C", str(root), *arguments], env=child,
+                                    capture_output=True, text=True, check=False)
+            assert result.returncode == 0
+            assert not marker.exists()
+    # Positive control selects only the self-created harmless fixture alias.
+    result = subprocess.run(["git", "-C", str(root), "pushall"], env=env,
+                            capture_output=True, text=True, check=False)
+    assert result.returncode == 0
+    assert marker.read_text(encoding="utf-8") == "synthetic"
+    with pytest.raises(executor.PublicError, match="ACTION_FORBIDDEN"):
+        executor.Controller(None, api=lambda *a, **k: pytest.fail("API forbidden")).execute(
+            "pushall", {}, root, "daily")
+
+
+def protected_ruleset() -> dict:
+    return {"id": 123, "name": "Protect development", "target": "branch", "enforcement": "active",
+            "conditions": {"ref_name": {"include": ["refs/heads/develop"], "exclude": []}},
+            "rules": [{"type": "pull_request", "parameters": {
+                "required_approving_review_count": 1, "require_last_push_approval": True,
+                "required_reviewers": [{"reviewer_id": 7, "reviewer_type": "Team"}],
+                "dismissal_restriction": {"teams": [11]},
+                "require_extra_approval_for_unattributed_changes": True,
+                "unknown_private_parameter": {"token": "SYNTHETIC_PRIVATE_EXTRA"}}}],
+            "bypass_actors": [], "current_user_can_bypass": False,
+            "webhook_secret": "SYNTHETIC_PRIVATE_EXTRA"}
+
+
+def test_protection_digest_binds_all_raw_rules_without_disclosing_unknown_parameters() -> None:
+    row = protected_ruleset()
+    result = executor._public_ruleset(row)
+    subset = {key: row[key] for key in ("id", "name", "target", "enforcement", "conditions", "rules")}
+    expected = hashlib.sha256(json.dumps(subset, sort_keys=True, separators=(",", ":"),
+                                        ensure_ascii=True, allow_nan=False).encode("utf-8")).hexdigest()
+    assert result["protection_sha256"] == expected
+    assert "SYNTHETIC_PRIVATE_EXTRA" not in json.dumps(result)
+    assert "required_reviewers" not in result["rules"][0]["parameters"]
+    changed = copy.deepcopy(row)
+    changed["rules"][0]["parameters"]["required_reviewers"][0]["reviewer_id"] = 8
+    assert executor._public_ruleset(changed)["protection_sha256"] != result["protection_sha256"]
+
+
+def test_protection_digest_ignores_actors_extra_fields_and_dict_order_but_distinguishes_missing() -> None:
+    row = protected_ruleset()
+    original = executor._public_ruleset(row)["protection_sha256"]
+    changed = dict(reversed(list(row.items())))
+    changed["bypass_actors"] = [{"actor_id": 999, "actor_type": "Integration", "bypass_mode": "always"}]
+    changed["current_user_can_bypass"] = "always"
+    changed["unknown_top_level"] = "SYNTHETIC_PRIVATE_EXTRA"
+    assert executor._public_ruleset(changed)["protection_sha256"] == original
+    missing = copy.deepcopy(row)
+    del missing["conditions"]
+    null = copy.deepcopy(row)
+    null["conditions"] = None
+    assert executor._public_ruleset(missing)["protection_sha256"] != executor._public_ruleset(null)["protection_sha256"]
+
+
+@pytest.mark.parametrize("bad", [float("nan"), float("inf"), float("-inf"), (1, 2), {1: "bad"}, {"bad-set"}])
+def test_noncanonical_protected_parameters_are_rejected_without_raw_payload(bad) -> None:
+    row = protected_ruleset()
+    row["rules"][0]["parameters"]["unknown_private_parameter"] = bad
+    with pytest.raises(executor.PublicError) as caught:
+        executor._public_ruleset(row)
+    assert "SYNTHETIC_PRIVATE_EXTRA" not in str(caught.value)
+
+
+def test_protection_digest_matches_independent_ascii_escaped_canonical_literal() -> None:
+    row = {"id": 3, "name": "保护", "target": "branch", "enforcement": "active", "conditions": {},
+           "rules": [{"type": "pull_request", "parameters": {"unknown": "审阅"}}]}
+    canonical = (r'{"conditions":{},"enforcement":"active","id":3,"name":"\u4fdd\u62a4",'
+                 r'"rules":[{"parameters":{"unknown":"\u5ba1\u9605"},"type":"pull_request"}],"target":"branch"}')
+    assert executor._public_ruleset(row)["protection_sha256"] == hashlib.sha256(canonical.encode("ascii")).hexdigest()
+
+
+def test_noncanonical_api_rule_is_unknown_and_revokes_without_raw_fields(tmp_path: Path) -> None:
+    class RulesAPI(SyntheticAPI):
+        def __call__(self, method: str, path: str, **kwargs):
+            if path == f"/repos/{executor.REPOSITORY}/rulesets/123":
+                row = protected_ruleset()
+                row["rules"][0]["parameters"]["unknown_private_parameter"]["nonfinite"] = float("nan")
+                return row
+            return super().__call__(method, path, **kwargs)
+
+    api = RulesAPI()
+    with pytest.raises(executor.PublicError) as caught:
+        broker(tmp_path, api).public_get(f"/repos/{executor.REPOSITORY}/rulesets/123", "bootstrap")
+    assert caught.value.code == "REMOTE_RESPONSE_INVALID"
+    assert caught.value.details["state"] == "UNKNOWN"
+    assert caught.value.details["token_revocation"] == "CONFIRMED"
+    assert "SYNTHETIC" not in json.dumps(caught.value.details)
+    assert api.calls[-1][:2] == ("DELETE", "/installation/token")

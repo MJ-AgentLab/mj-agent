@@ -35,7 +35,7 @@
       ],
       "expected_exit": 0,
       "junit": "governance.xml",
-      "min_tests": 122,
+      "min_tests": 123,
       "timeout_seconds": 300
     },
     {
@@ -43,7 +43,7 @@
       "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_platform.py", "-q", "--junitxml", "{output_dir}/platform.xml"],
       "expected_exit": 0,
       "junit": "platform.xml",
-      "min_tests": 108,
+      "min_tests": 117,
       "timeout_seconds": 300
     },
     {
@@ -51,7 +51,7 @@
       "argv": ["uv", "run", "--frozen", "--no-sync", "python", "scripts/sdd/run_offline_pytest.py", "tests/unit/test_delivery_executor.py", "-k", "not actual_windows and not real_git_sources_stay_fixed_after_untrusted_sources_are_added", "-q", "--junitxml", "{output_dir}/executor.xml"],
       "expected_exit": 0,
       "junit": "executor.xml",
-      "min_tests": 73,
+      "min_tests": 111,
       "timeout_seconds": 300
     },
     {
@@ -316,7 +316,7 @@
         },
         {
           "id": "GOV-013",
-          "expected": "Unsafe Git settings and unaudited active hooks are rejected before new token creation, without reading old credential values or disabling existing gates. Existing linked-worktree Git sources and broker-owned execution paths prevent later repository scripts and signing programs from inheriting a token; missing common sources remain rejected. Registration rechecks parents before writes and exact active Plan routes govern integration PRs. Actual Windows DPAPI and handle/junction/source-lock guarantees require the separate executor-windows suite on Windows; this cross-platform suite does not claim them or a same-user OS sandbox.",
+          "expected": "Unsafe Git settings and unaudited active hooks are rejected before new token creation, without reading old credential values or disabling existing gates. The Owner-approved exact inert alias and legal IDE cache key forms do not enable alias dispatch or neighboring unknown keys. Existing linked-worktree Git sources and broker-owned execution paths prevent later repository scripts and signing programs from inheriting a token; missing common sources remain rejected. Registration rechecks parents before writes and exact active Plan routes govern integration PRs. Actual Windows DPAPI and handle/junction/source-lock guarantees require the separate executor-windows suite on Windows; this cross-platform suite does not claim them or a same-user OS sandbox.",
           "command_ids": ["executor-offline"],
           "mode": "SELFTEST_SOFTWARE",
           "source_kind": "software_test",
@@ -331,13 +331,18 @@
             "tests.unit.test_delivery_executor::test_isolated_direct_script_loads_fixed_route_library_without_user_pythonpath",
             "tests.unit.test_delivery_executor::test_original_absent_commondir_context_is_never_accepted",
             "tests.unit.test_delivery_executor::test_new_repository_hook_never_executes_in_fixed_child_context",
-            "tests.unit.test_delivery_executor::test_real_git_signing_program_is_rejected_before_any_token_or_execution"
+            "tests.unit.test_delivery_executor::test_real_git_signing_program_is_rejected_before_any_token_or_execution",
+            "tests.unit.test_delivery_executor::test_only_reviewed_inert_compatibility_keys_are_accepted[alias.pushall]",
+            "tests.unit.test_delivery_executor::test_only_reviewed_inert_compatibility_keys_are_accepted[branch.maintain/synthetic-compatibility.vscode-merge-base]",
+            "tests.unit.test_delivery_executor::test_compatibility_never_accepts_neighbor_alias_unknown_or_executable_keys[alias.pushallx]",
+            "tests.unit.test_delivery_executor::test_compatibility_never_accepts_neighbor_alias_unknown_or_executable_keys[branch.foo/../bar.vscode-merge-base]",
+            "tests.unit.test_delivery_executor::test_actual_git_fixed_commands_never_select_allowed_synthetic_alias"
           ]}]
         },
         {
           "id": "GOV-014",
-          "expected": "Hidden bypass actors remain unknown without separately requested named-Owner read-only metadata. That observation can supply only missing actors on exactly matching protection; another Owner, inconsistent protections, actual bypass, continued absence and a missing verified executor cannot establish readiness. Management visibility never grants the execution App Administration or replaces its identity/can-bypass observation.",
-          "command_ids": ["platform-offline"],
+          "expected": "Hidden bypass actors remain unknown without separately requested named-Owner read-only metadata. That observation can supply only missing actors on exactly matching complete provider protection, whose digest binds unprojected rule parameters as well. Missing, malformed or wrong digests, another Owner, inconsistent protections, actual bypass, continued absence and a missing verified executor cannot establish readiness. Management visibility never grants the execution App Administration or replaces its identity/can-bypass observation.",
+          "command_ids": ["platform-offline", "executor-offline"],
           "mode": "SELFTEST_SOFTWARE",
           "source_kind": "software_test",
           "tests": [{"command_id": "platform-offline", "ids": [
@@ -346,7 +351,18 @@
             "tests.unit.test_delivery_platform::test_management_cannot_replace_owner_or_mismatched_protection",
             "tests.unit.test_delivery_platform::test_management_visibility_cannot_launder_bypass_or_absence[hidden_bypass]",
             "tests.unit.test_delivery_platform::test_management_visibility_cannot_launder_bypass_or_absence[still_hidden]",
-            "tests.unit.test_delivery_platform::test_management_cannot_act_as_missing_executor"
+            "tests.unit.test_delivery_platform::test_management_cannot_act_as_missing_executor",
+            "tests.unit.test_delivery_platform::test_complete_rule_digest_preserves_unprojected_review_parameters",
+            "tests.unit.test_delivery_platform::test_non_json_protection_cannot_supply_a_digest[nan]",
+            "tests.unit.test_delivery_platform::test_non_json_protection_cannot_supply_a_digest[inf]",
+            "tests.unit.test_delivery_platform::test_hidden_protection_mismatch_stops_before_more_provider_calls[projected_parameter_changed]",
+            "tests.unit.test_delivery_platform::test_hidden_protection_mismatch_stops_before_more_provider_calls[digest_missing]",
+            "tests.unit.test_delivery_platform::test_hidden_protection_mismatch_stops_before_more_provider_calls[digest_wrong]",
+            "tests.unit.test_delivery_platform::test_hidden_protection_mismatch_stops_before_more_provider_calls[digest_malformed]"
+          ]}, {"command_id": "executor-offline", "ids": [
+            "tests.unit.test_delivery_executor::test_protection_digest_binds_all_raw_rules_without_disclosing_unknown_parameters",
+            "tests.unit.test_delivery_executor::test_protection_digest_matches_independent_ascii_escaped_canonical_literal",
+            "tests.unit.test_delivery_executor::test_noncanonical_api_rule_is_unknown_and_revokes_without_raw_fields"
           ]}]
         }
       ]
