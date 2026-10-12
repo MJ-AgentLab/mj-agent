@@ -5,6 +5,11 @@
 
 ## [Unreleased]
 
+### Added — 离线 EVAL 回放核心（#582）
+
+- 新增独立的内存输入校验、SQL AST／轨迹和绑定角色评判、完整性汇总及精确基线回归报告；保留22条计划分母、首次失败与严格窗口，合成结果不产生 runtime 指标或基线。
+- 以固定合成资料完成离线单元及 BDD 验收。CLI／actual 入口继续延期，既有 runtime 与 dataset 不变；本条不表示已提交、发布或完成 live EVAL。
+
 ### Changed — 按命令诊断 Git 授权与执行条件（#555）
 
 - 移除项目 rules 中六条 Git/gh 条目，保留 Remove-Item 和数据库命令规则；hook 保留 G1/G2、人工 merge 与安全检查，识别成功只提供任务授权核验上下文。
