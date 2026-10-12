@@ -14,7 +14,8 @@ from typing import Any
 import pytest
 from pytest_bdd import given, scenarios, then, when
 
-from mj_agent.evaluation.core import _Inputs, _replay
+from mj_agent.evaluation.core import replay as _replay
+from mj_agent.evaluation.schema import ReplayInputs as _Inputs
 
 _FIXTURES = Path(__file__).resolve().parents[3] / "unit/fixtures/eval_core"
 

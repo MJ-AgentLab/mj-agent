@@ -2,7 +2,7 @@
 type: capability-runbook
 capability: data-agent.evaluation
 state: draft
-version: "0.2"
+version: "0.3"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -34,7 +34,7 @@ last_verified: null
 
 1. 按设计中的白名单准备归一化输入。保留所有 execute_sql 尝试及错误代码，不把最终成功 SQL 放到首次位置。
 2. synthetic 来源由 Agent 模拟业务／Prompt 标签，并在 SWE 核验轮从原始输入独立复核，生成绑定摘要和两轮引用的角色记录；不要求真人参与。actual 来源保留 target 原有的全部语义、5 条红线与至少 3 条非红线审计条件；能力未就绪时延期，不要求 Owner 代做技术整理。缺记录保持 REVIEW_REQUIRED。
-3. 当前由Agent调用私有core._replay(_Inputs)，显式提供config／dataset／observations／manifest／reference／reviews／baseline的bytes，返回dict与markdown；核心不读写文件。运行受控测试：uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/test_eval_core.py tests/bdd/data_agent/evaluation/test_evaluation_bdd.py -q。design §2.1的CLI命令继续延期，不可执行。
+3. 当前由Agent调用公开core.replay(schema.ReplayInputs)，显式提供config／dataset／observations／manifest／reference／reviews／baseline的bytes，返回dict与markdown；核心不读写文件。运行受控测试：uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/test_eval_core.py tests/bdd/data_agent/evaluation/test_evaluation_bdd.py -q。design §2.1的CLI命令继续延期，不可执行。
 4. 读取 report.json 和 report.md。核对 planned=22、observed、judged、missing／incomplete／review_required／unsupported 等；这些缺口计数可以重叠。
 5. 查看 measurement、safety、regression 与全部 reasons，不能仅凭退出码或某个 PASS 行判断 suite 完成。
 6. 对同一bytes输入重复回放并比较规范化返回值；测试验证一致。将返回值保存成文件时由Agent在指定新目录核对目标未存在；这不证明未来CLI已实现防覆盖或路径策略。分类码是返回数据，尚不是CLI进程退出码。
@@ -68,7 +68,7 @@ Agent／CI pytest 只通过 scripts/sdd/run_offline_pytest.py；不因凭据存�
 ## 延期记录
 
 - 原因：Owner已授权并验收离线核心测试范围；CLI公开main锚点及文件IO未实现，actual采样继续在当前授权之外。
-- 替代验证手段：63项单元与6项BDD在合成输入上通过，包含核心无IO／应用导入／网络哨兵；JSON／Markdown报告为SELFTEST_ONLY。不能替代CLI路径／输出保护、actual来源真实性或runtime EVAL。
+- 替代验证手段：64项单元与6项BDD经公开核心API在合成输入上通过，包含核心无IO／应用导入／网络哨兵；JSON／Markdown报告为SELFTEST_ONLY。不能替代CLI路径／输出保护、actual来源真实性或runtime EVAL。
 - 升级触发条件：后续对CLI文件接口／公开main作具体授权并具备路径、输出和端到端验收条件时，由Agent接入验证；actual入口另按原target采样与审阅条件处理。
 - 预计时间：不承诺未经授权的执行日期；具备上述条件后安排，当前延期状态明确保留。未实质变化的文档／契约操作继续复用已有授权。
 

@@ -2,7 +2,7 @@
 type: capability-design
 capability: data-agent.evaluation
 state: draft
-version: "0.2"
+version: "0.3"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -10,7 +10,7 @@ updated: 2026-10-12
 
 # Design: Offline EVAL Replay v1
 
-> #582 已按 Owner 集中授权实现离线核心，并完成固定合成验收；CLI／actual 入口延期。当前状态以 §5.3 为准。capability lifecycle 仍为 idea，last_verified=null，不将核心自测视为完整 runner 或 runtime 验收。
+> #582 已按Owner集中授权实现并公开离线核心，正式契约绑定实际API；CLI／actual入口延期。当前状态以§5.4为准。capability仍idea、last_verified=null，核心验证不等于完整runner／runtime验收。
 
 ## §1 Context
 
@@ -22,15 +22,15 @@ updated: 2026-10-12
 
 ### 2.1 包与公开入口
 
-采用独立 mj_agent.evaluation.runner CLI，不接入 agent／tools／server，不导入 mj_agent.config、dotenv、LLM 或数据库客户端。复用已锁定的 sqlglot，不新增依赖。
+当前公开API为schema.ReplayInputs及core.replay(inputs: ReplayInputs) -> dict[str, Any]，消费显式bytes并返回报告；不接入agent／tools／server，不导入应用配置、LLM或数据库客户端。复用已锁定pydantic／sqlglot，不新增依赖。独立mj_agent.evaluation.runner CLI继续为延期目标。
 
 候选命令仅表达接口，当前不可执行：
 
     uv run --frozen --no-sync python -m mj_agent.evaluation.runner --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <output-dir> [--reviews <reviews.jsonl>] [--baseline <baseline-report.json>]
 
-无自动 profile、env fallback、采样或联网参数。公开 Python 入口候选为 main(argv: list[str] | None = None) -> int；各解析／judge 辅助函数保持私有，不提前冻结多个公开 API。
+无自动profile、env fallback、采样或联网参数。CLI的main(argv: list[str] | None = None) -> int只保留在SPEC／T-006中作为候选，不列入当前正式Python契约。除ReplayInputs／replay外，解析／judge等辅助符号保持私有。
 
-交付分为核心与入口：先形成独立的输入／状态／规则／报告核心规范和合成预期，未来获批编码时优先验证不依赖应用的核心；CLI 包装、服务接入或实际观测能力未就绪时明确延期。核心先交付不得减少 22 条计划用例、放宽窗口／比较条件，或把缺口计为 PASS。离线核心现已实现，私有 core._replay(_Inputs) 接收显式 bytes，返回 JSON-compatible dict 与 Markdown，不执行文件 IO；公开 main 契约未变，runner.py 仍不存在。
+核心与入口分别交付。公开ReplayInputs是七字段的冻结dataclass：config／dataset／observations／manifest／reference为必填bytes，reviews／baseline默认b''；私有_Inputs兼容别名保留。replay调用既有私有实现，规则、输入／报告语义及窗口／比较条件不变，返回JSON-compatible dict与Markdown，不执行文件IO。runner.py不存在，CLI及actual入口继续延期。
 
 ### 2.2 输入契约 v1
 
@@ -176,19 +176,19 @@ report.json 的候选顶层为 schema_version、eval_id、run_id、input_binding
 
 主要验收先覆盖独立核心；CLI 能力具备后补临时目录端到端 fixture。合成期望由 Agent 模拟业务／Prompt 角色编写，再从原始输入按 SWE 核验轮复核，禁止由待测实现生成期望。SQL 复杂语义和边界比较可增加必要的纯函数测试，不复制实现。#161 22 条的通过率网格不包含恰好 0.03，因此数学阈值等值测试使用单独精确比例比较单元，不伪造 22 条 baseline 的分母。
 
-### 3.1 正式 Python 契约（已落盘，入口延期）
+### 3.1 正式 Python 契约（已批准的离线核心公开API）
 
-正式文件为 [python.contract.yml](contracts/python.contract.yml)。公开入口 main 的签名与原具体提案一致；窗口／兼容规则未放宽，新增的合成角色审阅约定来自 Owner 当前指令。
+正式文件为[python.contract.yml](contracts/python.contract.yml)，声明schema.ReplayInputs及core.replay；freeze_anchor分别指向现有schema.py／core.py。保留六项规则与安全不变量，内存API不承担CLI的文件IO和进程退出语义。
 
-freeze_anchor 指向尚不存在的 src/mj_agent/evaluation/runner.py，CLI 状态为 DEFERRED_NO_IMPLEMENTATION。契约结构可验证，但 Python symbol／执行入口不能冒充 PASS。保留 anchor，不为补绿删除 exports 或制造空模块；核心规范、合成预期与契约文档先交付，源码仍受“暂不编码”限制。
+Owner已对具体公开API／契约差异作集中批准，记录见§5.4。原runner.main声明作为SPEC／T-006候选继续延期，不创建假实现或放宽CI。公共构造器／不可变性／签名及全部原69项行为测试在新API上验证；V1的public_invariants仍是检查器信息WARN，默认CI模式不因该WARN失败，strict模式仍可能非零，不伪称零警告。
 
 ### 3.2 正式行为契约（已落盘）
 
 正式文件为 [behavior.feature](contracts/behavior.feature)，6 个 scenario 逐一绑定 REQ-001–006 与 CTR-python。REQ-002 的 human verdict 改为 role-review verdict：合成验收使用绑定观测的 Agent 模拟角色记录，不要求真人操作。其余场景保留原首轮、红线、未测和离线边界语义。
 
-每个 scenario 显式带其 high／critical risk tag，确保现有 checker 能检查全部六条；仍有 3 条 critical。trace 的 automation_status 统一为 unautomated，tests／PR／runner evidence 为空；静态角色核验不记为已执行的 BDD。
+每个scenario保留high／critical risk tag，仍有3条critical。六场景已绑定并通过离线公共API执行；trace的automation_status为automated，tests／PR／运行evidence有真实链接。合成BDD证据不等于actual runtime EVAL。
 
-Owner 当前指令在已给出的具体范围内覆盖两份契约、trace 及关联文档更新；没有扩展为编码、runtime 修改、live、提交、推送或 PR 授权。后续技术操作由 Agent 完成，范围未实质变化时复用对应授权。
+原Stage6批准形成两份契约；后续核心编码与提交／PR批准见§5.3，当前公开API／契约修复范围见§5.4。技术操作由Agent承担，相同范围复用授权；既有runtime、live与审核规则不在范围内。
 
 ## §4 Tradeoffs
 
@@ -243,3 +243,11 @@ Owner 明确选择“授权离线核心编码（推荐）”：新增独立 eval
 核心私有返回值中的exit_code为报告分类，不是已实现CLI进程退出码。文件／路径／输出防覆盖行为、公开main契约锚点与actual采样均延期；不填空壳来消除检查失败。latency保持未测。
 
 固定22条合成输入由Agent模拟Domain／Prompt标注，再以独立SWE轮复核；同一Agent的分轮核验，不冒充其他人或子Agent。63项单元及6项BDD通过，正式runtime metrics=null、baseline_eligible=false。真实记录与剩余缺口见 [核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)；历史§5.1／§5.2证据不替代本轮运行结果。
+
+### 5.4 #587 CI阻断的具体契约修复授权
+
+Owner明确采纳“离线核心公共契约方案”：公开七个bytes字段的ReplayInputs与replay(inputs)，将正式Python契约从延期runner.main改绑到真实核心符号；同步文档、迁移原69项测试并增加必要公开接口校验，验证、提交、普通双推至#587、更新正文，CI通过后转Ready。不改runtime／CI／审核规则、不执行live、不merge或关闭Issue。审核账号答复为“不指定”，本轮不发审核请求、不构造Approve。
+
+修改只公开现有核心的可消费接口：冻结dataclass与七字段默认值保持，私有_Inputs兼容别名与_replay实现保留，所有规则与报告字节不变。原69项测试在公共API上先RED后GREEN，另加1项字段／默认值／不可变性／签名校验，合计70项。V1默认模式全仓11P／12W／0F，信息WARN保留；strict模式的信息WARN不是源码缺失，不篡改其结果。
+
+旧§5.1–§5.3及原报告里的main锚点失败是历史记录。当前formal contract不再声明未交付的CLI，CLI候选与全部T-006验收仍保留。最新证据见[公共核心契约报告](evidence/reports/2026-10-12_public_core_contract.md)；是否可合并仍取决于完整当前CI和有效Approve。

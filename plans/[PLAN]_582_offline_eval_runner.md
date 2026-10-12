@@ -203,7 +203,7 @@ python scripts/sdd/check_bdd_acceptance.py --all --strict
 | AC-5 | 精确阈值、红线、无基线、21/22下降 | 8d | 核心PASS；不扩展其他EVAL阈值 |
 | AC-6 | 规范化回放一致与报告分类 | 8d | 核心PASS；CLI进程退出／文件输出延期 |
 | AC-7 | 核心无IO／应用导入／网络哨兵、受控pytest、ruff/mypy | 8e | 核心PASS；CLI路径／重解析点／碰撞检查延期 |
-| AC-8 | 文档、索引、trace、报告与范围核查 | 8e | 核心交付记录完成；main契约锚点仍缺，完整capability未验收 |
+| AC-8 | 文档、索引、trace、报告与范围核查 | 8e | 核心公开契约已对齐真实API；CLI／actual继续延期，完整capability未验收 |
 
 #582 保持 OPEN；本次不勾选远端验收项。完成 runner 后仍需 Owner 验收及获批的交付流程；不自动关闭 #161、#504 或 #583–#586，不改变 #564 已按“覆盖与承接完成”关闭的结论。
 
@@ -259,3 +259,11 @@ Owner在收到核心交付及main契约检查失败说明后明确要求“提�
 按逻辑拆分核心／测试与契约／文档／证据两次提交。采用既有eval scope覆盖EVAL相关代码，不引入新scope。PR使用feature模板并保留全部HITL Inventory及Docker Impact；关联使用Refs #582，不声明关闭。公开main锚点仍延期，V1检查为CI阻断项，故创建Draft供审阅，不宣称已满足合并条件。先前“未提交／无PR”的记录描述交付轮次，不代表本次发布授权被禁止。
 
 核心／测试已提交为007820e77e0e22ec36ee8d1f99d70de95f4595c8（17份文件）；实际author／committer为仓库配置身份ranzuozhou，Codex实施来源在本Plan与PR中声明，不伪造协作者trailer。契约／文档／证据随后独立提交；本节不预填尚未取得的远端结果。
+
+### 8.5 #587 BLOCKED修复的集中批准
+
+Owner已采纳具体提案：公开schema.ReplayInputs冻结dataclass（七bytes字段，reviews／baseline默认b''）及core.replay(inputs: ReplayInputs) -> dict[str, Any]，Python契约绑定这两个真实源码／符号；CLI main移为SPEC／T-006延期候选，现有69项测试迁移公共入口。同步相关文档、验证、提交、按Gitee→origin普通双推、更新#587正文，CI通过后转Ready。此授权不包含runtime／CI／审核规则修改、live、merge或任何Issue关闭。
+
+审核账号答复“不指定”：不发送GitHub审核请求，真实Approve未获得前不宣称BLOCKED完全解除。原§8.4的已知V1失败与Draft状态为历史发布记录，当前是否Ready以实际远端状态为准。
+
+TDD：两份测试先改公共导入，受控runner实际RED为缺replay的两处收集错误；实现后原69项GREEN。公开ABI字段／默认值／不可变性／签名另补1项，合计64项unit＋6项BDD。私有兼容别名保留，规则／固定期望不变，未新增依赖。具体验证与最新合成回放一致性见[[capabilities/data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract|公共API契约修复证据]]。

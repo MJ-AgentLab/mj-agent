@@ -7,17 +7,32 @@ import json
 import socket
 import sys
 from copy import deepcopy
-from dataclasses import replace
+from dataclasses import FrozenInstanceError, fields, replace
 from fractions import Fraction
+from inspect import signature
 from pathlib import Path
-from typing import Any
+from typing import Any, get_type_hints
 
 import pytest
 
-from mj_agent.evaluation.core import _Inputs, _replay
+from mj_agent.evaluation.core import replay as _replay
 from mj_agent.evaluation.report import _classify_drop, _regression
+from mj_agent.evaluation.schema import ReplayInputs as _Inputs
 
 FIXTURES = Path(__file__).parent / "fixtures" / "eval_core"
+
+
+def test_public_contract_constructor_immutability_and_signature() -> None:
+    assert _Inputs.__name__ == "ReplayInputs"
+    names = ["config", "dataset", "observations", "manifest", "reference", "reviews", "baseline"]
+    assert [f.name for f in fields(_Inputs)] == names
+    assert get_type_hints(_Inputs) == dict.fromkeys(names, bytes)
+    inputs = _Inputs(b"", b"", b"", b"", b"")
+    assert inputs.reviews == inputs.baseline == b""
+    with pytest.raises(FrozenInstanceError):
+        inputs.config = b"changed"
+    assert list(signature(_replay).parameters) == ["inputs"]
+    assert get_type_hints(_replay) == {"inputs": _Inputs, "return": dict[str, Any]}
 
 
 def _bundle() -> _Inputs:

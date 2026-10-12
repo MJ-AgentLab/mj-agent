@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## Draft Capability Review
 
-- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 离线回放、规则评判与回归报告；lifecycle=idea，last_verified=null。见 [design](./data-agent/evaluation/design.md)、[requirements](./data-agent/evaluation/requirements.md)、[runbook](./data-agent/evaluation/runbook.md) 与 [tasks](./data-agent/evaluation/tasks.md)。两份正式契约与 BDD／contract trace 已落盘；合成验收由 Agent 模拟角色并独立核验，严格窗口保留，离线核心63项单元测试与6项BDD通过；CLI／actual 入口延期，完整capability未验收。见 [核心验收报告](./data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)。
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 离线回放、规则评判与回归报告；lifecycle=idea，last_verified=null。见 [design](./data-agent/evaluation/design.md)、[requirements](./data-agent/evaluation/requirements.md)、[runbook](./data-agent/evaluation/runbook.md) 与 [tasks](./data-agent/evaluation/tasks.md)。两份正式契约与 BDD／contract trace 已落盘；合成验收由 Agent 模拟角色并独立核验，严格窗口保留，ReplayInputs／replay公共离线核心64项单元测试与6项BDD通过；CLI／actual 入口延期，完整capability未验收。见 [核心验收报告](./data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)与[公共API修复证据](./data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract.md)。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

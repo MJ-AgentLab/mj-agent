@@ -8,6 +8,7 @@
 ### Added — 离线 EVAL 回放核心（#582）
 
 - 新增独立的内存输入校验、SQL AST／轨迹和绑定角色评判、完整性汇总及精确基线回归报告；保留22条计划分母、首次失败与严格窗口，合成结果不产生 runtime 指标或基线。
+- 公开七个bytes字段的ReplayInputs及replay(inputs)核心API，正式Python契约绑定真实实现；CLI main保留为延期候选，不再列为当前已实现接口。
 - 以固定合成资料完成离线单元及 BDD 验收。CLI／actual 入口继续延期，既有 runtime 与 dataset 不变；本条不表示已提交、发布或完成 live EVAL。
 
 ### Changed — 按命令诊断 Git 授权与执行条件（#555）

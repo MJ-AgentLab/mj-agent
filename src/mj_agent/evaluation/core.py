@@ -1,4 +1,4 @@
-"""Private offline core, deliberately separate from the deferred CLI entry."""
+"""Offline replay core with a stable in-memory entry; CLI remains deferred."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import Any
 
 from .judges import _judge
 from .report import _markdown, _summarize
-from .schema import _INPUT_ERRORS, _Inputs, _Invalid, _load
+from .schema import _INPUT_ERRORS, ReplayInputs, _Inputs, _Invalid, _load
 
 
 def _replay(inputs: _Inputs) -> dict[str, Any]:
@@ -28,3 +28,8 @@ def _replay(inputs: _Inputs) -> dict[str, Any]:
             "baseline_eligible": False,
             "limitations": ["OFFLINE_REPLAY_ONLY", "CLI_ENTRY_DEFERRED"],
         }
+
+
+def replay(inputs: ReplayInputs) -> dict[str, Any]:
+    """Replay explicitly supplied bytes without file or network access."""
+    return _replay(inputs)

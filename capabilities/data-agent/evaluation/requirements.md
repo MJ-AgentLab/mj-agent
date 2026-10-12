@@ -2,7 +2,7 @@
 type: capability-requirements
 capability: data-agent.evaluation
 state: draft
-version: "0.2"
+version: "0.3"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -107,6 +107,6 @@ updated: 2026-10-12
 
 REQ-001–006 保持 #582 编号与优先级；详细契约提案见 [design.md](design.md)，未来纵切和验收映射见 [tasks.md](tasks.md)，操作草案见 [runbook.md](runbook.md)。
 
-当前核心证据为63项单元测试与6项BDD通过；完整CLI验收仍延期。详见 [核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)。规则校准至少 5 条独立预期样例，覆盖 SQL AST、轨迹、错误回环、披露和拒答正反例；合成标签由 Agent 模拟业务／Prompt 角色准备并以 SWE 轮独立核验，不要求真人参与。每次 actual run 仍保留至少 10% 抽检、5 条红线全量及所有必要语义字段审阅；缺能力时延期入口，不用 synthetic 结果替代。
+当前公共核心证据为64项单元测试与6项BDD通过；完整CLI验收仍延期。详见 [核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)。规则校准至少 5 条独立预期样例，覆盖 SQL AST、轨迹、错误回环、披露和拒答正反例；合成标签由 Agent 模拟业务／Prompt 角色准备并以 SWE 轮独立核验，不要求真人参与。每次 actual run 仍保留至少 10% 抽检、5 条红线全量及所有必要语义字段审阅；缺能力时延期入口，不用 synthetic 结果替代。
 
-正式 contracts／behavior.feature 已按当前范围落盘，trace 的 BDD／contract 部分已补齐；tests 与核心运行 evidence 已补齐，PR仍为空；Python main 契约锚点延期，不能冒充完整验证链路。严格窗口不放宽，核心规范先交付，能力不足的入口延期。技术操作由 Agent 承担，范围未实质变化时复用对应授权。
+正式 contracts／behavior.feature 已按当前范围落盘，trace 的 BDD／contract 部分已补齐；tests与核心运行evidence及#587已关联；正式Python契约绑定ReplayInputs／replay，CLI main留作SPEC候选，不能将核心验收冒充完整CLI／actual验证。严格窗口不放宽，核心规范先交付，能力不足的入口延期。技术操作由 Agent 承担，范围未实质变化时复用对应授权。

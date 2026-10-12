@@ -15,8 +15,8 @@ summary: >
   #582 首版离线 EVAL runner 的审阅草案，消费批准且脱敏的本地观测。
   requirements/design/runbook/tasks、两份正式契约与 REQ-BDD-CONTRACT trace 已准备。
   合成验收由 Agent 模拟角色并独立核验；严格窗口保留，缺能力时入口延期。
-  独立离线核心、63项单元测试与6项BDD已落地；无实测EVAL基线。
-  CLI公开main锚点延期，完整capability未验收，last_verified为null。
+  ReplayInputs／replay公开离线核心、64项单元测试与6项BDD已落地；无实测EVAL基线。
+  正式Python契约绑定现有核心，CLI main仅为延期候选；完整capability未验收，last_verified为null。
 requirements:
   - id: REQ-001
     statement: "读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源"

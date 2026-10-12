@@ -19,7 +19,9 @@ class _Invalid(ValueError):
 
 
 @dataclass(frozen=True)
-class _Inputs:
+class ReplayInputs:
+    """Explicit byte inputs to the public replay API; no file or service access."""
+
     config: bytes
     dataset: bytes
     observations: bytes
@@ -27,6 +29,9 @@ class _Inputs:
     reference: bytes
     reviews: bytes = b""
     baseline: bytes = b""
+
+
+_Inputs = ReplayInputs
 
 
 def _canonical(value: object) -> bytes:

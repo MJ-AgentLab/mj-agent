@@ -24,6 +24,11 @@ source_kind: synthetic_fixture
 
 # Evidence: Six offline core BDD scenarios
 
+Original private-core run retained below. These same six scenarios subsequently
+ran against the approved public ReplayInputs/replay API; the latest 70-test run is
+in [public-core console evidence](2026-10-12_public_core_pytest.txt) and
+[contract alignment evidence](../reports/2026-10-12_public_core_contract.md).
+
 ## §1 Context
 
 Owner explicitly authorized the offline core and necessary synthetic acceptance.

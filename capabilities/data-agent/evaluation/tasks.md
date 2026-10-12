@@ -2,7 +2,7 @@
 type: capability-tasks
 capability: data-agent.evaluation
 state: draft
-version: "0.2"
+version: "0.3"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -55,8 +55,8 @@ updated: 2026-10-12
 - GREEN：核心不读文件、不导入应用config／dotenv／数据库／LLM客户端、不连接网络；哨兵与确定性检查通过。
 - BDD：Replay cannot load application credentials or connect to services，核心执行PASS。
 - pytest_plugins绑定曾被既有受控边界检查拒绝；已改成既有tests/bdd/<domain>/<capability>单模块步骤布局，未修改守卫或执行器。
-- 本轮63项单元＋6项BDD通过，ruff与全src mypy通过；trace、索引、Plan、RUNBOOK、CHANGELOG及报告同步。
-- 完整capability未验收，保持idea／last_verified=null；Python main契约检查仍因延期入口失败。
+- 本轮64项单元＋6项BDD经公开API通过，ruff与全src mypy通过；trace、索引、Plan、RUNBOOK、CHANGELOG及报告同步。
+- 完整capability未验收，保持idea／last_verified=null；正式Python契约已绑定ReplayInputs／replay，V1默认模式无FAIL；CLI main仅保留为延期候选。
 
 ## Backlog — 延期范围
 
@@ -77,7 +77,7 @@ updated: 2026-10-12
 - 实施来源：Codex；Subagent dispatched：NONE；method：red-green。
 - Tests：tests/unit/test_eval_core.py、tests/bdd/data_agent/evaluation/test_evaluation_bdd.py。
 - Evidence：[核心验收](evidence/reports/2026-10-12_offline_core_acceptance.md)、[BDD](evidence/bdd/2026-10-12_core_scenarios_pass.md)、[合成回放](evidence/reports/2026-10-12_synthetic_replay.md)。
-- PR／commit：NONE。所有关联Issue状态未改，不自动关闭#582。
+- PR：#587；核心／测试与文档已在007820e／3dd6b6b提交。公开API修复的提交与CI结果见最新证据；所有关联Issue状态未改，不关闭#582。
 
 ## Anti-Backlog
 

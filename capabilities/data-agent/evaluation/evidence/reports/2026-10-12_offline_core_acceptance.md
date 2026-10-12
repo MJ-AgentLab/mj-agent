@@ -10,6 +10,10 @@ source_kind: synthetic_fixture
 
 # Evidence: #582 offline core delivery and synthetic acceptance
 
+This report preserves the original private-core delivery and missing CLI-anchor
+failure. The subsequently approved public API/contract alignment and latest
+verification are in [the public-core report](2026-10-12_public_core_contract.md).
+
 ## §1 Context
 
 Owner explicitly selected “授权离线核心编码（推荐）”: independent evaluation
