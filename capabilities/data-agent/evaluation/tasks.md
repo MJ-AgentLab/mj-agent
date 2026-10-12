@@ -2,7 +2,7 @@
 type: capability-tasks
 capability: data-agent.evaluation
 state: draft
-version: "0.3"
+version: "0.5"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -11,9 +11,9 @@ updated: 2026-10-12
 # Tasks: Offline EVAL Replay
 
 > Owner已集中授权独立离线核心编码、必要测试、Agent合成验收和回归报告。
-> 核心已交付，CLI／actual延期；不修改既有runtime，不执行live或Git发布。
+> 核心及CLI已完成软件验证，actual采样／runtime验收延期；不修改既有runtime、不执行live或Git发布。当前执行见T-006，原核心任务保留历史轮次结果。
 
-## Done — 本轮核心范围
+## Done — #587历史核心范围
 
 ### T-001 输入校验与完整计划分母（Plan 8a）
 
@@ -58,21 +58,37 @@ updated: 2026-10-12
 - 本轮64项单元＋6项BDD经公开API通过，ruff与全src mypy通过；trace、索引、Plan、RUNBOOK、CHANGELOG及报告同步。
 - 完整capability未验收，保持idea／last_verified=null；正式Python契约已绑定ReplayInputs／replay，V1默认模式无FAIL；CLI main仅保留为延期候选。
 
+## Verified — 本轮 synthetic-only CLI 软件
+
+### T-006 CLI本地文件接口与实际退出
+
+- Priority：high；Linked REQ：REQ-001、REQ-004、REQ-005、REQ-006。
+- 状态：VERIFIED_OFFLINE_SOFTWARE；Owner最终接受和发布尚未记录，完整capability未接受。
+- 授权：本线程集中批准synthetic-only CLI与契约/文档/必要测试，另批准协调接续；Plan §8.7。原Agent-first委派候选为历史，22文件备份保留。
+- T-006a 来源与文件拒绝：main(argv, *, repo_root)；必需synthetic开关；manifest优先；actual早拒绝；有界本地IO、root/软硬链接/reparse/设备/网络/别名/替换保护。
+- T-006b 报告与退出：新目录且父已存在，独占报告写入；3=SELFTEST_ONLY、6=合成红线失败、2=参数/来源/IO，help0；actual的0/4/5/7不可达。报告对非原子提交，故障保留部分目录。
+- T-006c 固定角色与回归：复用既有22-case/34-role-review固定输入与期望，Codex模拟Domain/Prompt后从原SQL/轨迹/回复作独立SWE轮；未派子Agent。原64项core加105项CLI unit及10项BDD（原6+新4）通过。
+- T-006d 契约与文档：真实main签名后扩展python.contract.yml，并对齐已交接cli.contract.yml；同步SPEC/RUNBOOK/trace/索引/CHANGELOG/fixture与证据。
+- RED：旧main缺repo_root、缺开关仍读取输入（2 FAIL）；正向Windows输出曾因GENERIC_WRITE不含READ_ATTRIBUTES失败，定位后补最小属性读取权限。synthetic红线固定预期校正为既有SELFTEST_HARD_FAIL，无judge改动。
+- 平台：Windows固定NTFS原生正/负向已运行；Linux原生入口DEFERRED_FS_CAPABILITY/NOT_RUN，缺能力入口延期。32类规则、窗口、兼容/阈值、核心API未改；三处报告延期文案及core docstring更正改变报告字节，不重写历史报告。
+- 证据：[synthetic CLI验收](evidence/reports/2026-10-12_synthetic_cli_acceptance.md)、[BDD](evidence/bdd/2026-10-12_synthetic_cli_scenarios_pass.md)。
+- OFFLINE/RECALL及流构造泄漏反例实测RED后修复，拒绝哨兵验证调用次数而非只看退出2。
+- 仅指定测试与固定CLI期望为硬化runner精确暂存；未commit/push/PR/Issue发布、runtime/CI/守卫改动或actual/live执行。
+
 ## Backlog — 延期范围
 
-### T-006 CLI与actual入口
+### T-007 actual文件入口、baseline CLI参数及runtime接受
 
-- Priority：high；Linked REQ：REQ-001、REQ-006。
-- 状态：DEFERRED_NO_IMPLEMENTATION。runner.py／公开main、普通文件读写、URL／UNC／秘密路径／重解析点拒绝、输入与报告防覆盖、CLI端到端及进程退出验证均未实现。
-- actual采样、来源真实性、真实审阅、模型／数据库／runtime EVAL继续延期，不要求Owner代替Agent做技术操作。
-- 触发：后续范围作具体授权且具备能力，由Agent实施与独立验证；严格条件不降低，不补假锚点。
-- RED／GREEN：NOT_RUN。
+- actual/runtime_observation文件入口、baseline参数、真实采样、来源/脱敏真实性、target审阅与runtime EVAL继续延期。
+- 需具体入口方案、可用技术能力及对应授权；Agent承担技术操作，Owner只补必要信息、作实质决定与授权，严格窗口/阈值/接受条件不降低。
+- Linux原生文件入口未实际验证；无保护能力时fail closed，不以Windows或模型测试替代。
+- RED/GREEN：NOT_RUN，不计T-006软件通过。#582保持OPEN，Plan active、capability idea/last_verified=null。
 
 ## In-Progress
 
-无核心编码剩余任务；延期入口不会被归入Done。
+当前synthetic-only软件交付供Owner接受；发布范围未授权。actual延期不归入Done，历史候选验收不计本轮通过。
 
-## Verification and provenance
+## Verification and provenance — #587历史核心轮次，当前CLI见T-006
 
 - 实施来源：Codex；Subagent dispatched：NONE；method：red-green。
 - Tests：tests/unit/test_eval_core.py、tests/bdd/data_agent/evaluation/test_evaluation_bdd.py。

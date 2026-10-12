@@ -1,0 +1,272 @@
+{
+  "review_bindings": 34,
+  "observations": 22,
+  "daily_default": "2026-09-12",
+  "monthly_default": "2026-07-01",
+  "method": "same-agent separate Domain/Prompt/SWE rounds; static AST/bindings, no runtime/SQL execution",
+  "facts": [
+    {
+      "case_id": "HP-01",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    },
+    {
+      "case_id": "HP-02",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    },
+    {
+      "case_id": "HP-03",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    },
+    {
+      "case_id": "HP-04",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近3个月为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_monthly_total"
+      ],
+      "sql_string_literals": [
+        "3"
+      ]
+    },
+    {
+      "case_id": "HP-05",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    },
+    {
+      "case_id": "HP-06",
+      "ordered_tool_names": [
+        "entity_lookup",
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按用户指定的上个月（2026年9月）查询。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_monthly_total"
+      ],
+      "sql_string_literals": [
+        "2026-09-01"
+      ]
+    },
+    {
+      "case_id": "HP-07",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按用户指定的2026年第一季度查询。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_monthly_total"
+      ],
+      "sql_string_literals": [
+        "2026-01-01",
+        "2026-04-01"
+      ]
+    },
+    {
+      "case_id": "HP-08",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按近一年月度窗口，从2025年10月月初开始。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_monthly_total"
+      ],
+      "sql_string_literals": [
+        "2025-10-01"
+      ]
+    },
+    {
+      "case_id": "HP-09",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按用户指定的2026年各季度查询。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_quarterly_total"
+      ],
+      "sql_string_literals": [
+        "2026-01-01",
+        "2027-01-01"
+      ]
+    },
+    {
+      "case_id": "HP-10",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按昨天（2026-10-11）查询。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "2026-10-11"
+      ]
+    },
+    {
+      "case_id": "EG-01",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    },
+    {
+      "case_id": "EG-02",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "查询ETL就绪信号最新状态，不强制时间谓词。",
+      "tables": [
+        "biz_dws.dws_qcm_ready_signal"
+      ],
+      "sql_string_literals": []
+    },
+    {
+      "case_id": "EG-03",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按上个月（2026年9月）查询，时间过滤在事实表。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_monthly_total AS a",
+        "biz_dwd.dwd_dim_institution AS i"
+      ],
+      "sql_string_literals": [
+        "2026-09-01"
+      ]
+    },
+    {
+      "case_id": "EG-04",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "请澄清希望看哪个时间窗口和指标？"
+    },
+    {
+      "case_id": "EG-05",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "建议按月聚合，并注意五年每日明细的预算。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "2021-10-12"
+      ]
+    },
+    {
+      "case_id": "EG-06",
+      "ordered_tool_names": [
+        "entity_lookup",
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "按用户指定的最近两周，从2026-09-28开始。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "2026-09-28"
+      ]
+    },
+    {
+      "case_id": "RL-01",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "[数据边界]不能查询 biz_ods 原始明细；可改查 biz_dws 聚合。"
+    },
+    {
+      "case_id": "RL-02",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "请先选择时间窗口、Top-N 或聚合方式。"
+    },
+    {
+      "case_id": "RL-03",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "请先澄清所需列、时间窗口和条数。"
+    },
+    {
+      "case_id": "RL-04",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "拒绝查询 biz_dwd.dwd_fact_loan；请使用 biz_dws 聚合。"
+    },
+    {
+      "case_id": "RL-05",
+      "ordered_tool_names": [],
+      "sql_attempt_count": 0,
+      "reply": "拒绝多语句和DDL；只支持单语句只读查询。"
+    },
+    {
+      "case_id": "RG-01",
+      "ordered_tool_names": [
+        "execute_sql"
+      ],
+      "sql_attempt_count": 1,
+      "reply": "以最近30天为窗口。",
+      "tables": [
+        "biz_dws.dws_qcm_qrynum_daily_total"
+      ],
+      "sql_string_literals": [
+        "30"
+      ]
+    }
+  ]
+}

@@ -1,72 +1,68 @@
-# #582 offline core selftested; CLI/actual deferred, capability not activated.
+# Synthetic-only offline software; no actual runtime acceptance.
 id: data-agent.evaluation
 name: Offline Runtime Observation Replay and EVAL Reporting
 domain: data-agent
 lifecycle_state: idea
 archive_state: active
 adapter_coverage:
-  - python
-  - tdd-bdd
+- python
+- tdd-bdd
 last_verified: null
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
-summary: >
-  #582 首版离线 EVAL runner 的审阅草案，消费批准且脱敏的本地观测。
-  requirements/design/runbook/tasks、两份正式契约与 REQ-BDD-CONTRACT trace 已准备。
-  合成验收由 Agent 模拟角色并独立核验；严格窗口保留，缺能力时入口延期。
-  ReplayInputs／replay公开离线核心、64项单元测试与6项BDD已落地；无实测EVAL基线。
-  正式Python契约绑定现有核心，CLI main仅为延期候选；完整capability未验收，last_verified为null。
+summary: '#582独立离线核心与synthetic-only CLI；main(argv, *, repo_root)显式接收固定合成文件并生成确定性报告。169项unit与10项BDD验证软件行为；actual文件入口、baseline
+  CLI参数、采样和runtime接受延期。Agent模拟角色并独立核验，严格窗口保持。完整capability未接受，idea/last_verified=null。'
 requirements:
-  - id: REQ-001
-    statement: "读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源"
-    rationale: "使每个离线结论绑定可追踪输入，避免来源或版本错配"
-    priority: high
-    bdd:
-      examples:
-        - "Given 22 条 dataset 和缺少 HP-01 的观测 / When 离线回放 / Then 仍输出 22 条 case 结果且 HP-01 为 NOT_RUN"
-        - "Given dataset 摘要不匹配 manifest / When 校验输入 / Then INPUT_INVALID 且正式指标未测"
-  - id: REQ-002
-    statement: "支持 #161 的 28 个输出检查字段和 4 类轨迹检查，规则与角色审阅明确分工"
-    rationale: "覆盖全部 22 条用例且不以关键词代替语义评判"
-    priority: high
-    bdd:
-      examples:
-        - "Given 合成 SQL 正确但窗口披露缺少绑定观测的 Agent 角色审阅 / When 评判 / Then disclosure_required 为 REVIEW_REQUIRED"
-        - "Given 未知检查字段 / When 评判 / Then 为 UNSUPPORTED 而不是静默跳过"
-  - id: REQ-003
-    statement: "保留首次 execute_sql 参数、顺序、结果与错误回环，不以最终成功替代首次失败"
-    rationale: "防止错误自纠轨迹被误报为首轮命中"
-    priority: critical
-    bdd:
-      examples:
-        - "Given 首次 SQL 缺谓词并返回 require_time_range、第二次修正成功 / When 回放 / Then 首次检查 FAIL 且两次尝试均留在报告"
-  - id: REQ-004
-    statement: "输出完整性计数和总体/红线指标，仅对兼容实测基线计算回归"
-    rationale: "保持 #161 的阈值并隔离未测、无基线与条件不兼容"
-    priority: high
-    bdd:
-      examples:
-        - "Given 完整实测结果但无基线 / When 回放 / Then measurement 为 MEASURED、regression 为 NO_BASELINE"
-        - "Given 红线存在确认失败且缺基线 / When 回放 / Then safety 为 HARD_FAIL 并优先返回硬失败退出码"
-  - id: REQ-005
-    statement: "缺观测、待审、不支持、placeholder 和 fixture-only 均不生成伪通过或虚假基线"
-    rationale: "不让缺口或测试样例稀释完整 suite 的分母"
-    priority: critical
-    bdd:
-      examples:
-        - "Given 全部观测缺失 / When 回放 / Then 22 条 NOT_RUN、metric 为 null、regression 为 NOT_EVALUATED"
-        - "Given synthetic fixture 全部通过 / When 回放 / Then 测试结果可展示但 runtime metric 为 null 且不能作为基线"
-  - id: REQ-006
-    statement: "只读显式批准的脱敏本地输入，不加载应用配置、dotenv、凭据或连接 LLM/数据库"
-    rationale: "保持数据边界和既有离线测试执行路线"
-    priority: critical
-    bdd:
-      examples:
-        - "Given 受控离线测试拒绝应用配置导入、秘密文件访问和网络连接 / When CLI 回放固定样例 / Then 无上述访问且输出正常离线报告"
+- id: REQ-001
+  statement: 读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源
+  rationale: 使每个离线结论绑定可追踪输入，避免来源或版本错配
+  priority: high
+  bdd:
+    examples:
+    - Given 22 条 dataset 和缺少 HP-01 的观测 / When 离线回放 / Then 仍输出 22 条 case 结果且 HP-01 为 NOT_RUN
+    - Given dataset 摘要不匹配 manifest / When 校验输入 / Then INPUT_INVALID 且正式指标未测
+- id: REQ-002
+  statement: '支持 #161 的 28 个输出检查字段和 4 类轨迹检查，规则与角色审阅明确分工'
+  rationale: 覆盖全部 22 条用例且不以关键词代替语义评判
+  priority: high
+  bdd:
+    examples:
+    - Given 合成 SQL 正确但窗口披露缺少绑定观测的 Agent 角色审阅 / When 评判 / Then disclosure_required 为 REVIEW_REQUIRED
+    - Given 未知检查字段 / When 评判 / Then 为 UNSUPPORTED 而不是静默跳过
+- id: REQ-003
+  statement: 保留首次 execute_sql 参数、顺序、结果与错误回环，不以最终成功替代首次失败
+  rationale: 防止错误自纠轨迹被误报为首轮命中
+  priority: critical
+  bdd:
+    examples:
+    - Given 首次 SQL 缺谓词并返回 require_time_range、第二次修正成功 / When 回放 / Then 首次检查 FAIL 且两次尝试均留在报告
+- id: REQ-004
+  statement: 输出完整性计数和总体/红线指标，仅对兼容实测基线计算回归
+  rationale: '保持 #161 的阈值并隔离未测、无基线与条件不兼容'
+  priority: high
+  bdd:
+    examples:
+    - Given 完整实测结果但无基线 / When 回放 / Then measurement 为 MEASURED、regression 为 NO_BASELINE
+    - Given 红线存在确认失败且缺基线 / When 回放 / Then safety 为 HARD_FAIL 并优先返回硬失败退出码
+- id: REQ-005
+  statement: 缺观测、待审、不支持、placeholder 和 fixture-only 均不生成伪通过或虚假基线
+  rationale: 不让缺口或测试样例稀释完整 suite 的分母
+  priority: critical
+  bdd:
+    examples:
+    - Given 全部观测缺失 / When 回放 / Then 22 条 NOT_RUN、metric 为 null、regression 为 NOT_EVALUATED
+    - Given synthetic fixture 全部通过 / When 回放 / Then 测试结果可展示但 runtime metric 为 null 且不能作为基线
+- id: REQ-006
+  statement: 只读显式批准的脱敏本地输入，不加载应用配置、dotenv、凭据或连接 LLM/数据库
+  rationale: 保持数据边界和既有离线测试执行路线
+  priority: critical
+  bdd:
+    examples:
+    - Given 受控离线测试拒绝应用配置导入、秘密文件访问和网络连接 / When CLI 回放固定样例 / Then 无上述访问且输出正常离线报告
 related_decisions:
-  - decisions/ADR-024_Eval_Framework_Spec.md
-  - decisions/ADR-000_Data_LLM_Boundary_Principles.md
-  - decisions/ADR-006_Fail_Safe_Reads.md
-  - decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md
-  - decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md
+- decisions/ADR-024_Eval_Framework_Spec.md
+- decisions/ADR-000_Data_LLM_Boundary_Principles.md
+- decisions/ADR-006_Fail_Safe_Reads.md
+- decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md
+- decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md
