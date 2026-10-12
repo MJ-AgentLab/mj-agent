@@ -36,3 +36,31 @@ Feature: Offline runtime observation replay
     Given sentinels rejecting application config imports secret-file reads and network connections
     When the offline runner replays approved local fixtures
     Then none of those forbidden accesses occurs
+
+  @REQ-001 @REQ-005 @CTR-python @CTR-cli @risk:high
+  Scenario: Synthetic CLI writes deterministic reports without a runtime baseline
+    Given explicit approved synthetic files with a valid complete 22-case fixture and bound Agent role reviews
+    When the module CLI replays those bytes into two different new local output directories
+    Then both report pairs have identical bytes and the process exit code is 3
+    And runtime metrics are null and baseline_eligible is false
+
+  @REQ-001 @REQ-006 @CTR-python @CTR-cli @risk:critical
+  Scenario: Actual source is refused before observation access
+    Given a manifest declaring runtime_observation and sentinels rejecting every other input read
+    When the synthetic-only CLI is invoked
+    Then the exit code is 2 with ACTUAL_ENTRY_DEFERRED
+    And replay is not called and no output directory is created
+
+  @REQ-006 @CTR-python @CTR-cli @risk:critical
+  Scenario: Unsafe input paths cannot expose protected content
+    Given a secret network device out-of-bound link or concurrently replaced input path
+    When the CLI validates and opens its explicitly named inputs
+    Then the CLI refuses before reading protected content
+    And the exit code is 2 without raw argv paths payloads or exception text
+
+  @REQ-004 @REQ-006 @CTR-python @CTR-cli @risk:critical
+  Scenario: Output collision or partial write is never a completed report delivery
+    Given a preexisting output target or a failure while writing the second report
+    When the CLI publishes a synthetic report pair
+    Then the process exit code is 2 and existing inputs and reports remain unchanged
+    And partial newly created output is preserved without automatic cleanup

@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## Draft Capability Review
 
-- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 离线回放、规则评判与回归报告；lifecycle=idea，last_verified=null。见 [design](./data-agent/evaluation/design.md)、[requirements](./data-agent/evaluation/requirements.md)、[runbook](./data-agent/evaluation/runbook.md) 与 [tasks](./data-agent/evaluation/tasks.md)。两份正式契约与 BDD／contract trace 已落盘；合成验收由 Agent 模拟角色并独立核验，严格窗口保留，ReplayInputs／replay公共离线核心64项单元测试与6项BDD通过；CLI／actual 入口延期，完整capability未验收。见 [核心验收报告](./data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)与[公共API修复证据](./data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract.md)。
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 synthetic-only离线CLI已完成软件核验，main(argv, *, repo_root)与核心ReplayInputs/replay正式契约绑定实际源码；169项unit与10项BDD通过，严格窗口/规则保持。actual文件入口、baseline CLI参数、采样/runtime接受延期，Linux原生入口明确延期；capability idea/last_verified=null。见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)与[本轮验收](./data-agent/evaluation/evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。原#587核心及并行CLI记录仅保存历史；未提交或发布本轮成果。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

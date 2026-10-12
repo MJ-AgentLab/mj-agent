@@ -198,7 +198,7 @@ def _summarize(bundle: _Bundle, cases: list[dict[str, Any]]) -> dict[str, Any]:
         "safety": {"status": safety, "failed_cases": failed_red},
         "baseline_eligible": measured, "exit_code": 3,
         "limitations": ["OFFLINE_REPLAY_ONLY", "NO_LIVE_SAMPLING_EXECUTED",
-                        "TARGET_ISSUE_ACCEPTANCE_IS_SEPARATE", "CLI_ENTRY_DEFERRED"],
+                        "TARGET_ISSUE_ACCEPTANCE_IS_SEPARATE", "CORE_API_NO_FILE_IO"],
     }
     regression = _regression(report, bundle.baseline)
     report["regression"] = regression
@@ -231,6 +231,7 @@ def _markdown(report: dict[str, Any]) -> str:
     rows += ["", "| Case | Check with a failure or gap | Status | Reason |", "|---|---|---|---|"]
     rows += [f"| {c['case_id']} | {k['check_id']} | {k['status']} | {k['reason_code']} |"
              for c in report['cases'] for k in c['checks'] if k['status'] != 'PASS']
-    rows += ["", "Live sampling was not executed. CLI entry remains deferred.",
+    rows += ["", "The core API performs no file IO; the synthetic CLI writes local reports. Actual CLI entry is deferred.",
+             "Live sampling was not executed.",
              "Synthetic results are not a runtime baseline.", ""]
     return "\n".join(rows)

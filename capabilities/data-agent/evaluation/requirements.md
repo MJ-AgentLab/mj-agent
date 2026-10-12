@@ -2,7 +2,7 @@
 type: capability-requirements
 capability: data-agent.evaluation
 state: draft
-version: "0.3"
+version: "0.5"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -10,7 +10,7 @@ updated: 2026-10-12
 
 # Requirements: Offline EVAL Replay
 
-> #582 离线核心已获授权编码并通过合成验收；六条 BDD 在纯内存核心上执行。CLI／actual 入口延期，不修改既有 runtime 或执行 live EVAL。完整 capability 验收与核心测试区分。
+> #582 离线核心与本地CLI已通过软件自测，10项BDD覆盖核心与文件入口。actual文件入口、baseline CLI参数、采样／runtime验收继续延期；软件验证与完整capability接受分别记录，不改既有runtime或执行live EVAL。
 
 依据：[Issue #582](https://github.com/MJ-AgentLab/mj-agent/issues/582)、[批准 Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。本 package 不适用 track，与 canonical 文档类型轴正交。
 
@@ -107,6 +107,6 @@ updated: 2026-10-12
 
 REQ-001–006 保持 #582 编号与优先级；详细契约提案见 [design.md](design.md)，未来纵切和验收映射见 [tasks.md](tasks.md)，操作草案见 [runbook.md](runbook.md)。
 
-当前公共核心证据为64项单元测试与6项BDD通过；完整CLI验收仍延期。详见 [核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)。规则校准至少 5 条独立预期样例，覆盖 SQL AST、轨迹、错误回环、披露和拒答正反例；合成标签由 Agent 模拟业务／Prompt 角色准备并以 SWE 轮独立核验，不要求真人参与。每次 actual run 仍保留至少 10% 抽检、5 条红线全量及所有必要语义字段审阅；缺能力时延期入口，不用 synthetic 结果替代。
+当前离线软件证据为169项unit与10项BDD通过，见[CLI软件验收记录](evidence/reports/2026-10-12_synthetic_cli_acceptance.md)；[原核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)保留历史。规则校准至少5条独立预期样例，覆盖SQL AST、轨迹、错误回环、披露与拒答正反例；合成标签由Agent模拟业务／Prompt角色准备并以SWE轮核验。每次actual run仍保留至少10%抽检、5条红线全量及所有必要语义审阅；来源真实性未验证，不用synthetic代替。
 
-正式 contracts／behavior.feature 已按当前范围落盘，trace 的 BDD／contract 部分已补齐；tests与核心运行evidence及#587已关联；正式Python契约绑定ReplayInputs／replay，CLI main留作SPEC候选，不能将核心验收冒充完整CLI／actual验证。严格窗口不放宽，核心规范先交付，能力不足的入口延期。技术操作由 Agent 承担，范围未实质变化时复用对应授权。
+正式python.contract.yml绑定ReplayInputs／replay，cli.contract.yml绑定main，behavior.feature和trace承接实际离线运行。严格窗口不放宽；main(argv, *, repo_root)仅接收显式--synthetic-fixture及synthetic_fixture来源。manifest先读，actual标签在其他载荷读取/replay/输出创建前返回2/ACTUAL_ENTRY_DEFERRED；baseline CLI参数延期。新输出目录的父目录须已存在；Windows固定NTFS入口已核验，Linux原生文件入口明确延期，缺保护能力返回2。actual采样／来源真实性／runtime验收仍延期。技术操作由Agent承担，范围未实质变化时复用对应授权；Owner最终接受尚未记录。

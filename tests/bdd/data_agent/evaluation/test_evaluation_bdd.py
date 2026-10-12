@@ -165,4 +165,189 @@ def isolated(replay_inputs: dict[str, Any]) -> None:
                    for name in set(sys.modules) - replay_inputs["modules_before"])
 
 
+
+@given("explicit approved synthetic files with a valid complete 22-case fixture and bound Agent role reviews")
+def cli_files(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    if sys.platform != "win32":
+        pytest.skip("SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+    directory = tmp_path / "cli-inputs"
+    directory.mkdir()
+    args = ["--synthetic-fixture"]
+    for field, option in {"config": "--eval-config", "dataset": "--dataset", "observations": "--observations",
+                          "manifest": "--manifest", "reference": "--reference", "reviews": "--reviews"}.items():
+        path = directory / f"{field}.json"
+        path.write_bytes(getattr(replay_inputs["inputs"], field))
+        args.extend([option, str(path)])
+    replay_inputs.update(cli_root=tmp_path, cli_directory=directory, cli_args=args)
+
+
+@when("the module CLI replays those bytes into two different new local output directories")
+def cli_processes(replay_inputs: dict[str, Any]) -> None:
+    import os
+    import subprocess
+
+    root = replay_inputs["cli_root"]
+    env = {name: os.environ[name] for name in ("PATH", "SYSTEMROOT", "WINDIR", "PATHEXT")
+           if name in os.environ}
+    env.update(PYTHONPATH=str(Path(__file__).parents[4] / "src"), PYTHONNOUSERSITE="1",
+               PYTHONDONTWRITEBYTECODE="1", TEMP=str(root), TMP=str(root))
+    results = []
+    for name in ("first", "second"):
+        output = root / name
+        completed = subprocess.run(
+            [sys.executable, "-B", "-X", "utf8", "-m", "mj_agent.evaluation.runner",
+             *replay_inputs["cli_args"], "--output-dir", str(output)],
+            cwd=root, env=env, capture_output=True, check=False, timeout=30,
+        )
+        results.append((completed.returncode, (output / "report.json").read_bytes(),
+                        (output / "report.md").read_bytes()))
+    replay_inputs["cli_results"] = results
+    replay_inputs["report"] = json.loads(results[0][1])
+
+
+@then("both report pairs have identical bytes and the process exit code is 3")
+def cli_deterministic(replay_inputs: dict[str, Any]) -> None:
+    first, second = replay_inputs["cli_results"]
+    assert first == second
+    assert first[0] == replay_inputs["report"]["exit_code"] == 3
+    assert b"\r" not in first[1] + first[2]
+    fixed = json.loads((_FIXTURES / "expected.json").read_bytes())["case_statuses"]
+    assert {c["case_id"]: c["status"] for c in replay_inputs["report"]["cases"]} == fixed
+
+
+@given("a manifest declaring runtime_observation and sentinels rejecting every other input read")
+def cli_actual(replay_inputs: dict[str, Any], tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from mj_agent.evaluation import _file_io, runner
+
+    cli_files(replay_inputs, tmp_path)
+    manifest_path = replay_inputs["cli_directory"] / "manifest.json"
+    manifest = json.loads(manifest_path.read_bytes())
+    manifest["source_kind"] = "runtime_observation"
+    manifest_path.write_bytes(json.dumps(manifest).encode())
+    backend = _file_io._WindowsIO
+    original = backend.read
+    replay_inputs["reads"] = []
+
+    def manifest_only(self: Any, parts: tuple[str, ...]) -> bytes:
+        assert parts == ("cli-inputs", "manifest.json")
+        replay_inputs["reads"].append(parts)
+        return original(self, parts)
+
+    def reject(*args: Any, **kwargs: Any) -> Any:
+        raise AssertionError("actual cannot enter replay")
+
+    monkeypatch.setattr(backend, "read", manifest_only)
+    monkeypatch.setattr(runner, "replay", reject)
+
+
+@when("the synthetic-only CLI is invoked")
+def cli_actual_run(replay_inputs: dict[str, Any], capsys: pytest.CaptureFixture[str]) -> None:
+    from mj_agent.evaluation.runner import main
+
+    output = replay_inputs["cli_root"] / "actual-refused"
+    replay_inputs["cli_output"] = output
+    replay_inputs["cli_exit"] = main([*replay_inputs["cli_args"], "--output-dir", str(output)],
+                                     repo_root=replay_inputs["cli_root"])
+    replay_inputs["diagnostic"] = json.loads(capsys.readouterr().err)
+
+
+@then("the exit code is 2 with ACTUAL_ENTRY_DEFERRED")
+def cli_deferred(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["cli_exit"] == 2
+    assert replay_inputs["diagnostic"]["reason_code"] == "ACTUAL_ENTRY_DEFERRED"
+
+
+@then("replay is not called and no output directory is created")
+def cli_not_replayed(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["reads"] == [("cli-inputs", "manifest.json")]
+    assert not replay_inputs["cli_output"].exists()
+
+
+@given("a secret network device out-of-bound link or concurrently replaced input path")
+def cli_unsafe_files(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    import os
+
+    cli_files(replay_inputs, tmp_path)
+    alias = replay_inputs["cli_directory"] / "hard-link.json"
+    os.link(replay_inputs["cli_directory"] / "config.json", alias)
+    replay_inputs["unsafe"] = [".env.production", "//server/share/input.json", "NUL",
+                               str(tmp_path.parent / "outside.json"), str(alias)]
+
+
+@when("the CLI validates and opens its explicitly named inputs")
+def cli_unsafe_run(replay_inputs: dict[str, Any], capsys: pytest.CaptureFixture[str]) -> None:
+    from mj_agent.evaluation.runner import main
+
+    results = []
+    for index, path in enumerate(replay_inputs["unsafe"]):
+        args = list(replay_inputs["cli_args"])
+        args[args.index("--eval-config") + 1] = path
+        output = replay_inputs["cli_root"] / f"refused-{index}"
+        result = main([*args, "--output-dir", str(output)], repo_root=replay_inputs["cli_root"])
+        results.append((result, capsys.readouterr().err, output))
+    replay_inputs["unsafe_results"] = results
+
+
+@then("the CLI refuses before reading protected content")
+def cli_protected(replay_inputs: dict[str, Any]) -> None:
+    assert all(result == 2 and not output.exists() for result, _, output in replay_inputs["unsafe_results"])
+
+
+@then("the exit code is 2 without raw argv paths payloads or exception text")
+def cli_diagnostics(replay_inputs: dict[str, Any]) -> None:
+    for path, (result, error, _) in zip(replay_inputs["unsafe"], replay_inputs["unsafe_results"], strict=True):
+        assert result == 2
+        assert path not in error
+        assert json.loads(error)["input_status"] == "INPUT_INVALID"
+
+
+@given("a preexisting output target or a failure while writing the second report")
+def cli_write_cases(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    cli_files(replay_inputs, tmp_path)
+    output = tmp_path / "existing"
+    output.mkdir()
+    (output / "report.md").write_bytes(b"preserve prior evidence")
+    replay_inputs["existing"] = output
+
+
+@when("the CLI publishes a synthetic report pair")
+def cli_failed_delivery(replay_inputs: dict[str, Any], monkeypatch: pytest.MonkeyPatch,
+                        capsys: pytest.CaptureFixture[str]) -> None:
+    from mj_agent.evaluation import _file_io, runner
+
+    root = replay_inputs["cli_root"]
+    args = replay_inputs["cli_args"]
+    replay_inputs["existing_exit"] = runner.main([*args, "--output-dir", str(replay_inputs["existing"])],
+                                                 repo_root=root)
+    capsys.readouterr()
+    backend = _file_io._WindowsIO
+    original = backend.write
+
+    def fail_second(self: Any, parts: tuple[str, ...], files: tuple[tuple[str, bytes], ...]) -> None:
+        original(self, parts, files[:1])
+        raise OSError("do-not-echo")
+
+    monkeypatch.setattr(backend, "write", fail_second)
+    partial = root / "partial"
+    replay_inputs["partial"] = partial
+    replay_inputs["partial_exit"] = runner.main([*args, "--output-dir", str(partial)], repo_root=root)
+    replay_inputs["partial_diagnostic"] = json.loads(capsys.readouterr().err)
+
+
+@then("the process exit code is 2 and existing inputs and reports remain unchanged")
+def cli_old_preserved(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["existing_exit"] == replay_inputs["partial_exit"] == 2
+    assert (replay_inputs["existing"] / "report.md").read_bytes() == b"preserve prior evidence"
+    assert not (replay_inputs["existing"] / "report.json").exists()
+    for field in ("config", "dataset", "observations", "manifest", "reference", "reviews"):
+        assert (replay_inputs["cli_directory"] / f"{field}.json").read_bytes() == getattr(replay_inputs["inputs"], field)
+
+
+@then("partial newly created output is preserved without automatic cleanup")
+def cli_partial_preserved(replay_inputs: dict[str, Any]) -> None:
+    assert (replay_inputs["partial"] / "report.json").is_file()
+    assert not (replay_inputs["partial"] / "report.md").exists()
+    assert replay_inputs["partial_diagnostic"]["core_exit_code"] == 3
+
+
 scenarios("../../../../capabilities/data-agent/evaluation/contracts/behavior.feature")

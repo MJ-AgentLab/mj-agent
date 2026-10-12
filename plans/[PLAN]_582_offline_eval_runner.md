@@ -19,7 +19,7 @@ track: code
 - 后续新 capability 推荐归属 `data-agent.evaluation`，adapter 为 `python`、`tdd-bdd`，按 [[sdd/workflows/new-capability|new-capability workflow]] 推进；新共享契约的具体差异另交 Owner 审阅。
 - Owner：ranzuozhou；拟执行者：Codex；合成业务／Prompt 与 SWE 核验角色按后续 §8.2 由 Agent 模拟，不要求真人参与。
 
-当前范围：Owner已明确授权离线核心编码，实施与验收见§8.3；上列仅为原Plan落盘轮次授权。CLI／actual、runtime修改及Git发布未授权。
+当前范围：Owner明确要求实施Agent-first计划，授权#582 CLI软件、具体main契约及离线验证，见§8.6。上列为原Plan落盘轮次授权；actual采样及既有runtime修改未授权，发布操作由协调者另核具体动作。
 
 ## 2. 背景与 Repo Scan 事实
 
@@ -267,3 +267,41 @@ Owner已采纳具体提案：公开schema.ReplayInputs冻结dataclass（七bytes
 审核账号答复“不指定”：不发送GitHub审核请求，真实Approve未获得前不宣称BLOCKED完全解除。原§8.4的已知V1失败与Draft状态为历史发布记录，当前是否Ready以实际远端状态为准。
 
 TDD：两份测试先改公共导入，受控runner实际RED为缺replay的两处收集错误；实现后原69项GREEN。公开ABI字段／默认值／不可变性／签名另补1项，合计64项unit＋6项BDD。私有兼容别名保留，规则／固定期望不变，未新增依赖。具体验证与最新合成回放一致性见[[capabilities/data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract|公共API契约修复证据]]。
+
+### 8.6 2026-10-12 Agent-first试点的离线CLI软件交付
+
+Owner明确要求IMPLEMENT Agent-first计划，覆盖#582 CLI文件接口、main公共契约、相关文档和离线验收。协调Agent委派Codex在feature/582-offline-eval-cli工作树实施，基线为develop@5b8833c523f4401de7b70deb5a82b908f3a9c763。旧草案／执行记录保留；不重建已合并#587核心、不改四项runtime面、不连接服务。
+
+CLI新增普通本地输入、URL／UNC／秘密／重解析点及Windows网络驱动器拒绝、10MiB有界读取、固定报告独占创建、IO安全错误及实际进程退出。ReplayInputs／replay、32类规则、严格窗口、阈值及兼容性不变；当前报告移除过时CLI延期说明，历史报告不改。cli.contract.yml正式绑定main，原核心契约仍独立冻结。
+
+TDD RED为缺runner模块；GREEN为136项unit与9项BDD，ruff与全src mypy通过。测试中的actual分支为具名虚构条件，实际runtime采样、来源／脱敏真实性及actual接受未验证；不关闭#582、Plan保持active、capability仍idea／last_verified=null。
+
+复现与候选版本绑定见[[capabilities/data-agent/evaluation/evidence/reports/2026-10-12_offline_cli_acceptance|CLI软件验收记录]]。独立核验、平台门禁、Owner接受及发布由协调者分别记录；本委派不提交／推送／创建PR／merge。新CLI测试仅作具名本地暂存供既有硬化runner验证，不产生执行授权凭证。
+
+### 8.7 2026-10-12 接续的 synthetic-only 接受基线
+
+Owner在“整理 #564 EVAL 承接方案”线程明确选择“采纳并授权离线 CLI 实施（推荐）”，集中批准main(argv, *, repo_root)、显式synthetic开关、manifest先读且actual早拒绝、baseline文件参数延期、私有有界安全IO、新目录报告与真实进程退出、固定期望/必要CLI测试/四个BDD、正式契约与具名文档/证据同步。仅精确暂存tests/unit/test_eval_runner.py与tests/unit/fixtures/eval_cli/expected.json供受控runner验证；不commit/push/PR或发布/关闭Issue，不改既有runtime/CI/守卫，不执行actual/live。
+
+同名并行候选出现后，Owner另明确选择“授权协调并由本线程接续（推荐）”。原协调任务已确认#582写入和测试停止、无在途操作，并转交feature/582-offline-eval-cli（HEAD 5b8833c）。22份原未提交候选已原bytes备份在develop/.mj-agent-local/582-t006-cli-proposal/parallel-handoff-snapshot；历史验收记录保留，旧145项证据不计本轮新方案通过。
+
+目标源码为独立runner.py/私有_file_io.py；保留ReplayInputs/replay、schema/judges、32类检查、严格窗口/阈值/兼容键。接口为main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int；仅synthetic_fixture进入文件回放，actual标签在其余载荷读取/replay/输出创建前拒绝；所有路径受可注入普通本地root约束，输出必须新目录且父目录已存在。平台能力不足延期入口，不回退普通open。三处报告延期值和core docstring更正，历史报告不重写。交接中的cli.contract.yml保留并与同一main/本轮不变量对齐，不新增另一个CLI契约或删除原成果。
+
+T-006a文件/来源拒绝，T-006b报告/进程，T-006c固定合成角色/相关回归，T-006d真实源码后的契约/BDD/文档/证据闭合。当前RED：公开签名缺repo_root、缺synthetic开关时仍读取输入；受控runner实测2 FAIL/72 deselected。actual文件入口、采样、baseline CLI输入及来源真实性继续延期；#582 OPEN、Plan active、capability idea/last_verified=null，其他Issue与probe-fixture原结论保持。
+
+本轮接续交付结果：T-006a–d VERIFIED_OFFLINE_SOFTWARE（供Owner最终接受）；main与私有IO仅交付Windows固定NTFS synthetic文件入口。Linux/macOS缺等价祖先rename保护能力，入口DEFERRED_FS_CAPABILITY，不留不满足root约束的降级实现；这是已批准“缺能力延期入口”的适用，不降低窗口或接受条件。
+
+最终fresh证据：64 core + 105 CLI unit + 10 BDD = 179 passed（20条第三方DeprecationWarning）；全仓ruff、全src mypy55文件通过。G1/G2/G3/G9各1P/0W/0F；G19/G21各10P/0W/0F，G22空subset；V1默认12P/13W/0F，信息WARN保留。原并行145项及中间171项只为历史/中间结果，不替代最终候选。169项unit与10项BDD为当前结果。
+
+OFFLINE/RECALL与流构造泄漏反例分别实测RED再修复；拒绝哨兵补充assert_not_called/读取次数，防止“异常被转2”伪装成未触发IO。核心schema/judges/ABI、原固定fixture/期望、窗口/阈值/兼容键未改；仅指定的三个报告文案与core docstring更正改变当前报告字节，历史报告保留。原34条Agent角色review绑定与22条原SQL/轨迹/回复在独立SWE轮复核，无本线程子Agent委派。
+
+当前版本绑定与双段自检、平台延期、逐命令证据见[[capabilities/data-agent/evaluation/evidence/reports/2026-10-12_synthetic_cli_acceptance|synthetic-only CLI验收]]；candidate UNCOMMITTED，源码/契约/测试/fixture摘要f05fd48367e8a1a3b33d63d1f330835d8085541d8f8cbc1e06c9fe1fca4840eb。spec/draft文档升0.5，last_verified仍null。只读核查#582/#161/#504/#583–#586 OPEN，#564 CLOSED；本轮未更新Issue、未commit/push/PR/merge、不改runtime/CI/守卫、不执行actual/live，Plan保持active。
+
+发布准备补充：CI采用Linux runner。本线程执行mypy --platform linux先观测私有Windows IO的6处attr-defined错误；补入sys.platform条件与显式成员类型后，Windows与Linux类型模型均55 source files通过，全仓ruff通过，179项相关离线测试重新通过。Linux类型检查是静态证据，不是Linux原生CLI实跑；actual/baseline与Linux/macOS文件入口仍延期，未改CI、守卫、核心规则或既有runtime。新候选摘要已同步版本绑定；旧摘要42f6de13…仅对应前一交付轮次。Git暂存/提交/普通双推/Draft PR具体发布方案已在本地准备，当前发布授权仍待Owner决定。
+
+### 8.8 2026-10-12 T-006 Git发布的集中批准与提交事实
+
+Owner明确选择“授权提交、双推和 Draft PR（推荐）”：按已审阅31份文件清单精确暂存，feature/582-offline-eval-cli两次逻辑提交（代码/测试10份，契约/文档/证据21份），按Gitee→origin普通双推，以develop为base按保存正文创建Draft PR，并核查当前head的CI。允许仅补真实授权/提交/PR事实；不改既有runtime/CI、不执行actual/live，不转Ready、请求账号审核、合并、删除或关闭Issue。原暂不Git发布约束仅在这些动作和对象内解除，后续相同范围复用。
+
+C1代码/测试实际提交28925619c45ce7c35a376754c439885c0300f510，消息feat(eval): add synthetic-only offline CLI；author/committer使用已核实仓库配置ranzuozhou，无伪造协作者trailer。精确10文件；源码/契约/测试/fixture原bytes验证摘要仍f05fd48367e8a1a3b33d63d1f330835d8085541d8f8cbc1e06c9fe1fca4840eb。C2将记录契约/文档/证据及本批准事实；当前记录时C2、双推和PR尚未执行，不预填未来SHA/URL/CI或Approve。
+
+两端develop及本次base均5b8833c，提交前两端同名远端分支和PR均不存在。若后续tip/内容或宿主能力变化，仅暂停对应动作并按实际证据处理；不force、不改hook或工具路线规避拒绝。完整capability与#582接受尚未完成，Plan继续active/idea/null。
