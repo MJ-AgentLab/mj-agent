@@ -1,4 +1,4 @@
-"""Offline replay core with a stable in-memory entry; CLI remains deferred."""
+"""Offline replay core without IO; the separate synthetic CLI handles local files."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ def _replay(inputs: _Inputs) -> dict[str, Any]:
             "safety": {"status": "UNDETERMINED", "failed_cases": []},
             "regression": {"status": "NOT_EVALUATED", "delta": None},
             "baseline_eligible": False,
-            "limitations": ["OFFLINE_REPLAY_ONLY", "CLI_ENTRY_DEFERRED"],
+            "limitations": ["OFFLINE_REPLAY_ONLY", "CORE_API_NO_FILE_IO"],
         }
 
 

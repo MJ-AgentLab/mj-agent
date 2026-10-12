@@ -1,0 +1,92 @@
+{
+  "base_commit": "5b8833c523f4401de7b70deb5a82b908f3a9c763",
+  "candidate": "UNCOMMITTED",
+  "fingerprint_algorithm": "sha256(sorted path + NUL + raw-byte-sha256 + LF records, UTF-8)",
+  "source_fingerprint": "f05fd48367e8a1a3b33d63d1f330835d8085541d8f8cbc1e06c9fe1fca4840eb",
+  "files": [
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/behavior.feature",
+      "sha256": "7e0df6d8f2f45a6074ed2e6216df1f42efbee31728f1690bb9025a07f9b6842a"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/cli.contract.yml",
+      "sha256": "8976206d63050887eda4e01bee5eb2e7beffe97b18a3aa1882c66c6982b4d628"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/python.contract.yml",
+      "sha256": "3a0f5dc4c3552799c9acfa47c83777d12e81c27f6fba0c31ab26a890a5b36514"
+    },
+    {
+      "path": "src/mj_agent/evaluation/__init__.py",
+      "sha256": "13fffd2cd7950a5b7943018f349388d081595a0fe5104de1438a7c714ac67182"
+    },
+    {
+      "path": "src/mj_agent/evaluation/_file_io.py",
+      "sha256": "23d144901d28c13b639f7ca63d03ae8f31a6946932269cd59eab9e63c3bafc06"
+    },
+    {
+      "path": "src/mj_agent/evaluation/core.py",
+      "sha256": "885153b06e4174c4d772414fbaa7c62fb7a004d7eebebaa0d1570913e9985110"
+    },
+    {
+      "path": "src/mj_agent/evaluation/judges.py",
+      "sha256": "9b92a1e293b4cb62b181242f31c153f1ab48d4814f8108723bbe1417d85b2288"
+    },
+    {
+      "path": "src/mj_agent/evaluation/report.py",
+      "sha256": "fa8f1b310f700d1e773399e8cf6d6d596393392cabd1260909c207a4b9380174"
+    },
+    {
+      "path": "src/mj_agent/evaluation/runner.py",
+      "sha256": "56f3fe3696672f36b7def14cba8b8ee8e41a9fb762662082c354bfa8eeded4cb"
+    },
+    {
+      "path": "src/mj_agent/evaluation/schema.py",
+      "sha256": "ebe2dd6c21864d9737d6ae9ba695d37fe232fd7cc97e16e58871e0099d42e86c"
+    },
+    {
+      "path": "tests/bdd/data_agent/evaluation/test_evaluation_bdd.py",
+      "sha256": "1d6851d35783dbf144ef1a5eb79382f3775db15f5fecbf4850684a8c60e21132"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_cli/expected.json",
+      "sha256": "77fc4ccf1658e4d19377ffda3eeeced2d84bf01bb6025e0c4bb5716bfb403698"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/config.json",
+      "sha256": "f0e5991fa9ab05615122727288af5a149c1e75275490cf6f483ec94f5f8cd052"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/dataset.jsonl",
+      "sha256": "6f6d8fb3a288a575a5e5db336b8429ad8d795955ae5929ec8e1e89b642df9079"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/expected.json",
+      "sha256": "3af44b16154c4cdaab60d6b7f8e59d8bd535669e5434c54f49cc0274662acb62"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/manifest.json",
+      "sha256": "55af4d887a7bb722c46119301984e61faa23529cea74b2e3672443b85a0a861c"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/observations.jsonl",
+      "sha256": "fdd1f5f66144109d50f13dd5fd3eb6c119d86f43bf5ffeac2649b5a2bf82118a"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reference.json",
+      "sha256": "57fbbddfd7f659e0ef198617a6317145ca7123e2286d56e438c1516ded5e041f"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reviews.jsonl",
+      "sha256": "18041c8230c197261562e2e014e2cac5fe05e652f9385d193d9a8a5f0e9a371d"
+    },
+    {
+      "path": "tests/unit/test_eval_core.py",
+      "sha256": "247d420c6efdc193290abfe2d69c0eaac8b0a1e676d8b887e7df61cbb0d48cad"
+    },
+    {
+      "path": "tests/unit/test_eval_runner.py",
+      "sha256": "53ae42e60b3eaed4f69b7ed2080047a15d7dffd9fc92b678f4632859ef4b0055"
+    }
+  ]
+}

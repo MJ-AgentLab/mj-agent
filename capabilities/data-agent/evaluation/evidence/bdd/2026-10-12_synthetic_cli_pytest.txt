@@ -1,0 +1,177 @@
+CHECK pytest
+COMMAND uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/test_eval_core.py tests/unit/test_eval_runner.py tests/bdd/data_agent/evaluation/test_evaluation_bdd.py -q
+EXIT 0
+........................................................................ [ 40%]
+........................................................................ [ 80%]
+...................................                                      [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gherkin\gherkin_line.py:79: 20 warnings
+  [WORKTREE]\.venv\Lib\site-packages\gherkin\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument
+    uncommented_line = re.split(r"\s#", self._trimmed_line_text.strip(), 2)[0]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+179 passed, 20 warnings in 6.67s
+
+
+CHECK ruff
+COMMAND uv run --frozen --no-sync ruff check
+EXIT 0
+All checks passed!
+
+
+CHECK mypy
+COMMAND uv run --frozen --no-sync mypy src/mj_agent
+EXIT 0
+Success: no issues found in 55 source files
+
+
+CHECK G1
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_capability_schema.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+check_capability_schema.py — validating 1 spec.yml (G1)
+  [PASS] capabilities\data-agent\evaluation\spec.yml: schema valid (6 requirements; lifecycle=idea, archive=active)
+
+=== Summary ===
+PASS: 1 / WARN: 0 / FAIL: 0
+
+
+CHECK G2
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_traceability.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+check_traceability.py — validating 1 trace.yml (G2/G5; schema v1.2)
+  [PASS] capabilities\data-agent\evaluation\trace.yml: schema valid (6 REQ links; 0 cross_capability_refs)
+
+=== Summary ===
+PASS: 1 / WARN: 0 / FAIL: 0
+
+
+CHECK G3
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_contracts.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+  [PASS] capabilities\data-agent\evaluation: contracts/ non-empty (3 files; 2 *.contract.yml parse OK); behavior.feature present (critical|high REQs)
+check_contracts: 1P / 0W / 0F (over 1 capabilities; contracts non-empty + parse + behavior.feature critical|high rule)
+
+
+CHECK G19
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_bdd_scenario_trace.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+  [PASS] capabilities\data-agent\evaluation: scenario 'Dataset identity and every planned case are preserved' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Semantic checks require a bound role-review verdict' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'A repaired final SQL does not hide the first failed attempt' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'A confirmed red-line failure remains hard without a baseline' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Synthetic success cannot become a runtime baseline' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Replay cannot load application credentials or connect to services' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Synthetic CLI writes deterministic reports without a runtime baseline' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Actual source is refused before observation access' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Unsafe input paths cannot expose protected content' REQ+CTR tags bound + trace cross-ref OK
+  [PASS] capabilities\data-agent\evaluation: scenario 'Output collision or partial write is never a completed report delivery' REQ+CTR tags bound + trace cross-ref OK
+check_bdd_scenario_trace: 10P / 0W / 0F (scope=full; over 1 capabilities)
+
+
+CHECK G21
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_bdd_acceptance.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+  [PASS] capabilities\data-agent\evaluation: scenario 'Dataset identity and every planned case are preserved' (@risk:high) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Semantic checks require a bound role-review verdict' (@risk:high) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'A repaired final SQL does not hide the first failed attempt' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'A confirmed red-line failure remains hard without a baseline' (@risk:high) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Synthetic success cannot become a runtime baseline' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Replay cannot load application credentials or connect to services' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Synthetic CLI writes deterministic reports without a runtime baseline' (@risk:high) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Actual source is refused before observation access' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Unsafe input paths cannot expose protected content' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+  [PASS] capabilities\data-agent\evaluation: scenario 'Output collision or partial write is never a completed report delivery' (@risk:critical) evidence pass_rate=1.0 (M-FU#4 primary path)
+check_bdd_acceptance: 10P / 0W / 0F (over 1 capabilities; @risk:critical|high × evidence pass_rate OR runbook fallback per R-15-1 + R-18-* lock; 保 WARNING mode per Stage E α' E-0a; WARN-raise = R-18-4 intended gap exposure;E-0b curation closes WARN→0)
+
+
+CHECK G22
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_bdd_unautomated.py --capability [WORKTREE]/capabilities/data-agent/evaluation --strict
+EXIT 0
+check_bdd_unautomated: 0P / 0W / 0F (over 1 capabilities; @risk:critical|high × automation_status:unautomated subset per R-10-2; M-FU#7 runbook curation defer)
+
+
+CHECK G9
+COMMAND .venv/Scripts/python.exe scripts/sdd/generate_index.py --all --check --strict
+EXIT 0
+  [PASS] capabilities/INDEX.auto.md matches regenerated content (7 specs)
+
+=== Summary ===
+PASS: 1 / WARN: 0 / FAIL: 0
+
+
+CHECK V1
+COMMAND .venv/Scripts/python.exe scripts/sdd/check_python_contracts.py --all
+EXIT 0
+check_python_contracts.py — validating 3 python.contract.yml
+
+capabilities\data-agent\evaluation\contracts\python.contract.yml
+  [WARN] src.mj_agent.evaluation.core: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.evaluation.runner: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [PASS] 3 modules verified (exports + constants where present)
+
+capabilities\data-agent\llm-provider\contracts\python.contract.yml
+  [WARN] src.mj_agent.llm: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.llm: adr cross-ref 'ADR-027' not yet linked to decisions/ existence check (TBD-M3)
+  [WARN] src.mj_agent.config: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.server.cli: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [PASS] 3 modules verified (exports + constants where present)
+
+capabilities\data-agent\safe-sql\contracts\python.contract.yml
+  [WARN] src.mj_agent.tools.sql.guardrail: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.tools.sql.precheck: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.tools.sql.execute: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.tools.sql.introspect: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.integrations.mj_system_db: public_invariants documented (informational; M3 will add machine-verifiable test)
+  [WARN] src.mj_agent.middleware.tool_errors: adr cross-ref 'ADR-029' not yet linked to decisions/ existence check (TBD-M3)
+  [WARN] src.mj_agent.middleware.tool_errors: wiring spec documented (informational; M3 will validate make_graph middleware=[...] match)
+  [PASS] 6 modules verified (exports + constants where present)
+
+=== Summary ===
+PASS: 12 / WARN: 13 / FAIL: 0
+
+
+CHECK docs
+COMMAND .venv/Scripts/python.exe scripts/check_frontmatter.py
+EXIT 0
+OK: 151 canonical docs all pass frontmatter schema check
+
+
+CHECK wiki
+COMMAND .venv/Scripts/python.exe scripts/check_wikilinks.py
+EXIT 0
+OK: 0 archive-ref violations (13 archived files auto-discovered)
+OK: A4 link resolution — 0 unresolved targets in 5 root files
+
+
+PUBLICATION PREPARATION — final candidate after platform typing guards
+CHECK ruff
+COMMAND uv run --frozen --no-sync ruff check
+EXIT 0
+All checks passed!
+
+
+CHECK windows-types
+COMMAND uv run --frozen --no-sync mypy src/mj_agent
+EXIT 0
+Success: no issues found in 55 source files
+
+
+CHECK linux-types
+COMMAND uv run --frozen --no-sync mypy --platform linux src/mj_agent
+EXIT 0
+Success: no issues found in 55 source files
+
+
+CHECK pytest
+COMMAND uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit/test_eval_core.py tests/unit/test_eval_runner.py tests/bdd/data_agent/evaluation/test_evaluation_bdd.py -q
+EXIT 0
+........................................................................ [ 40%]
+........................................................................ [ 80%]
+...................................                                      [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gherkin\gherkin_line.py:79: 20 warnings
+  [WORKTREE]\.venv\Lib\site-packages\gherkin\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument
+    uncommented_line = re.split(r"\s#", self._trimmed_line_text.strip(), 2)[0]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+179 passed, 20 warnings in 6.69s

@@ -1,1 +1,1 @@
-"""Offline observation evaluation core; no application or CLI wiring."""
+"""Offline observation replay core and explicit local-file CLI adapter."""

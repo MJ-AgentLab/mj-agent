@@ -13,7 +13,7 @@ track: shared
 
 Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)（draft）、[实施计划](../plans/[PLAN]_555_approved_deletion.md) §11 和 [开发指南](guide/[GUIDE]_Developer_Onboarding.md) §6.6。
 
-Issue #582 的离线 EVAL runner 见 [SPEC 设计](../capabilities/data-agent/evaluation/design.md)、[需求](../capabilities/data-agent/evaluation/requirements.md)、[回放 RUNBOOK](../capabilities/data-agent/evaluation/runbook.md) 与 [Agent 合成静态审阅](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_agent_synthetic_review.md)；capability 仍为 idea，两份正式契约已落盘，严格窗口保留，ReplayInputs／replay公共核心已通过合成验收，CLI／actual 入口延期、live EVAL 未执行。见 [核心验收报告](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_offline_core_acceptance.md)与[公共API修复证据](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_public_core_contract.md)。
+Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_root)与核心ReplayInputs/replay正式契约绑定实际源码；169项unit与10项BDD通过，严格窗口/规则保持。actual文件入口、baseline CLI参数、采样/runtime接受延期，Linux原生入口明确延期；capability idea/last_verified=null。见[设计](../capabilities/data-agent/evaluation/design.md)、[RUNBOOK](../capabilities/data-agent/evaluation/runbook.md)与[本轮验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。原#587核心及并行CLI记录仅保存历史；未提交或发布本轮成果。
 
 > **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
 > 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.

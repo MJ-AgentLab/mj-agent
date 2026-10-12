@@ -2,7 +2,7 @@
 type: capability-design
 capability: data-agent.evaluation
 state: draft
-version: "0.3"
+version: "0.5"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -10,7 +10,7 @@ updated: 2026-10-12
 
 # Design: Offline EVAL Replay v1
 
-> #582 已按Owner集中授权实现并公开离线核心，正式契约绑定实际API；CLI／actual入口延期。当前状态以§5.4为准。capability仍idea、last_verified=null，核心验证不等于完整runner／runtime验收。
+> #582 已补齐离线CLI文件适配层，公开核心保持兼容，CLI契约绑定实际main。当前状态以§5.6为准。actual采样、来源真实性及runtime验收仍延期；capability保持idea、last_verified=null，软件自测不等于实际EVAL通过。
 
 ## §1 Context
 
@@ -22,15 +22,15 @@ updated: 2026-10-12
 
 ### 2.1 包与公开入口
 
-当前公开API为schema.ReplayInputs及core.replay(inputs: ReplayInputs) -> dict[str, Any]，消费显式bytes并返回报告；不接入agent／tools／server，不导入应用配置、LLM或数据库客户端。复用已锁定pydantic／sqlglot，不新增依赖。独立mj_agent.evaluation.runner CLI继续为延期目标。
+公开API为schema.ReplayInputs及core.replay(inputs: ReplayInputs) -> dict[str, Any]，消费显式bytes并返回报告；文件适配层runner.main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int通过python -m mj_agent.evaluation.runner启动。不接入agent／tools／server，不导入应用配置、LLM或数据库客户端。复用已锁定pydantic／sqlglot，不新增依赖。
 
-候选命令仅表达接口，当前不可执行：
+实际命令：
 
-    uv run --frozen --no-sync python -m mj_agent.evaluation.runner --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <output-dir> [--reviews <reviews.jsonl>] [--baseline <baseline-report.json>]
+    uv run --frozen --no-sync python -m mj_agent.evaluation.runner --synthetic-fixture --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <output-dir> [--reviews <reviews.jsonl>]
 
-无自动profile、env fallback、采样或联网参数。CLI的main(argv: list[str] | None = None) -> int只保留在SPEC／T-006中作为候选，不列入当前正式Python契约。除ReplayInputs／replay外，解析／judge等辅助符号保持私有。
+无自动profile、env fallback、采样或联网参数。main正式冻结于cli.contract.yml，参数错误返回2且不回显用户参数；--help返回0。除ReplayInputs／replay／main外，解析／judge等辅助符号保持私有。
 
-核心与入口分别交付。公开ReplayInputs是七字段的冻结dataclass：config／dataset／observations／manifest／reference为必填bytes，reviews／baseline默认b''；私有_Inputs兼容别名保留。replay调用既有私有实现，规则、输入／报告语义及窗口／比较条件不变，返回JSON-compatible dict与Markdown，不执行文件IO。runner.py不存在，CLI及actual入口继续延期。
+核心与入口分别冻结。公开ReplayInputs是七字段的冻结dataclass：config／dataset／observations／manifest／reference为必填bytes，reviews／baseline默认b''；私有_Inputs兼容别名保留。replay调用既有私有实现，规则、输入／报告语义及窗口／比较条件不变，返回JSON-compatible dict与Markdown，不执行文件IO。CLI只负责路径、有限文件IO、稳定报告及实际退出；将当前报告里两处CLI_ENTRY_DEFERRED换为CORE_API_NO_FILE_IO，并更正Markdown延期句；不改字段、计算或历史报告。报告字节与摘要随这三处文案变化。
 
 ### 2.2 输入契约 v1
 
@@ -38,7 +38,7 @@ updated: 2026-10-12
 
 输入只允许明确传入的普通本地文件。拒绝 URL、UNC／网络路径、秘密文件（.env、secrets*.enc、凭据文件）、符号链接／重解析点；不递归扫描目录、不自动解析路径引入的其他文件。输出目录必须普通本地目录，不能覆盖任一输入或已有报告；不自动删除。合法但尚未完成的观测仍可报告缺口。
 
-建议资源上限：每个输入文件 10 MiB、单个 JSONL record 256 KiB、JSON 深度 32、每 case 100 个工具调用。超过上限显式拒绝，避免截断后宣称轨迹完整；这些限额已在核心实现；文件路径、重解析点、输出碰撞检查属于延期 CLI，不声称核心已验证该文件接口。
+资源上限：每个输入文件10MiB、单个JSONL record 256KiB、JSON深度32、每case 100个工具调用。CLI在读取前检查文件类型、大小及全部祖先，并最多读取10MiB+1字节；核心校验其余限额，超限拒绝。Windows组件尾点／空格在metadata访问前拒绝，避免Win32折叠秘密名称；相对.语法保留，..组件拒绝。输出仅允许新目录且父目录已存在；已有空目录也拒绝。两个固定报告独占创建，任何同名文件／目录／链接均拒绝。若第二次写入失败，返回2并保留部分输出，不自动删除；换新目录重试前先核实实际副作用。repo_root为可注入的绝对本地边界，缺省cwd，不发现Git、不展开变量或~、不接受外部引用；所有输入与输出均为其后代。Windows固定NTFS采用祖先共享只读句柄、逐组件NtCreateFile相对打开及reparse/卷/最终路径/单链接/前后身份检查；目录句柄固定后不能重命名替换。Linux/macOS文件入口因缺少等价的祖先rename约束能力而明确延期，直接返回FS_CAPABILITY_UNAVAILABLE；不保留不满足root边界的dir_fd实现。纯内存核心不受影响。无所需保护能力返回2/FS_CAPABILITY_UNAVAILABLE，不降级读取。此边界不承诺对有OS管理权限的挂载或内核改写作隔离。
 
 | 文件／字段 | 具体候选内容 |
 |---|---|
@@ -147,7 +147,9 @@ compatibility key 包含 schema／eval_id／judge_profile 与规则版本、conf
 
 current 未测或 selftest：regression=NOT_EVALUATED；current MEASURED 但无有效基线：NO_BASELINE；有有效且条件兼容基线才比较。overall_drop=baseline_pass_rate-current_pass_rate，>=0.03 为 HARD_REGRESSION；0<drop<0.03 为 SOFT_REGRESSION；红线任何下降或 current 确认失败均硬失败；其余 NO_REGRESSION。latency 未有完整批准的时间观测则保持未测，首版不新增采集；若两份兼容实测报告均有该指标，沿用 #161 outcome 不变且 latency 上升时的 soft warning。
 
-| 退出码（优先级从上到下） | 含义 |
+以下是保持不变的核心报告分类；当前CLI仅可返回2/3/6，help返回0。actual/baseline文件入口延期，CLI不能取得actual的0/4/5/7。
+
+| 核心退出分类（优先级从上到下） | 含义 |
 |---|---|
 | 2 | INPUT_INVALID／无法可靠读取或写报告；不回显敏感载荷 |
 | 6 | 已确认红线失败或 HARD_REGRESSION；优先于 suite 缺口与无基线 |
@@ -165,28 +167,29 @@ report.json 的候选顶层为 schema_version、eval_id、run_id、input_binding
 
 数据流为“显式本地输入 → 校验／摘要绑定 → case 对齐 → 首次尝试／安全全轨迹检查 → 人工记录绑定 → 完整性与指标 → 兼容比较 → report.json／report.md”。
 
-源码已形成 schema.py、judges.py、report.py、core.py 和 __init__.py；以下 runner.py 仍为延期目标：
+源码包括schema.py、judges.py、report.py、core.py、runner.py、私有_file_io.py和__init__.py：
 
-- src/mj_agent/evaluation/runner.py：CLI 参数、显式文件 IO、退出状态；只公开 main。
+- src/mj_agent/evaluation/runner.py：synthetic-only参数、manifest来源闸、报告序列化与退出；只公开main。
+- src/mj_agent/evaluation/_file_io.py：私有本地root、平台句柄、有限读取与独占输出保护。
 - src/mj_agent/evaluation/schema.py：版本化输入与输出结构、资源上限、规范化。
 - src/mj_agent/evaluation/judges.py：SQL AST／轨迹／字面规则、人工审阅绑定。
 - src/mj_agent/evaluation/report.py：状态、精确指标、compatibility key、固定报告。
 
 文件 IO 与纯评判分离；不复用 runtime tools 包的 precheck 导入链，不修改其宽松解析失败行为。runner 的无法可靠解析只进入明确缺口／人工审阅，不因 warning 而通过。
 
-主要验收先覆盖独立核心；CLI 能力具备后补临时目录端到端 fixture。合成期望由 Agent 模拟业务／Prompt 角色编写，再从原始输入按 SWE 核验轮复核，禁止由待测实现生成期望。SQL 复杂语义和边界比较可增加必要的纯函数测试，不复制实现。#161 22 条的通过率网格不包含恰好 0.03，因此数学阈值等值测试使用单独精确比例比较单元，不伪造 22 条 baseline 的分母。
+验收覆盖独立核心与临时目录CLI端到端fixture。合成期望由Agent模拟业务／Prompt角色编写，再从原始输入按SWE核验轮复核，禁止由待测实现生成期望。SQL复杂语义和边界比较可增加必要的纯函数测试，不复制实现。#161 22条的通过率网格不包含恰好0.03，因此数学阈值等值测试使用单独精确比例比较单元，不伪造22条baseline的分母。
 
 ### 3.1 正式 Python 契约（已批准的离线核心公开API）
 
-正式文件为[python.contract.yml](contracts/python.contract.yml)，声明schema.ReplayInputs及core.replay；freeze_anchor分别指向现有schema.py／core.py。保留六项规则与安全不变量，内存API不承担CLI的文件IO和进程退出语义。
+正式文件[python.contract.yml](contracts/python.contract.yml)声明schema.ReplayInputs及core.replay，freeze_anchor分别指向schema.py／core.py；[cli.contract.yml](contracts/cli.contract.yml)独立声明runner.main并绑定runner.py。六项规则与安全不变量保留，内存API不承担文件IO或进程退出。
 
-Owner已对具体公开API／契约差异作集中批准，记录见§5.4。原runner.main声明作为SPEC／T-006候选继续延期，不创建假实现或放宽CI。公共构造器／不可变性／签名及全部原69项行为测试在新API上验证；V1的public_invariants仍是检查器信息WARN，默认CI模式不因该WARN失败，strict模式仍可能非零，不伪称零警告。
+Owner对核心公共API及当前synthetic-only CLI契约作集中批准，记录见§5.4／§5.6。main现有实际源码、端到端及真实进程退出验证；公共构造器／不可变性／签名及原行为测试保持。V1的public_invariants仍为检查器信息WARN，默认模式无FAIL不等于strict零警告；不修改检查器或CI消除信息WARN。
 
 ### 3.2 正式行为契约（已落盘）
 
-正式文件为 [behavior.feature](contracts/behavior.feature)，6 个 scenario 逐一绑定 REQ-001–006 与 CTR-python。REQ-002 的 human verdict 改为 role-review verdict：合成验收使用绑定观测的 Agent 模拟角色记录，不要求真人操作。其余场景保留原首轮、红线、未测和离线边界语义。
+正式文件为[behavior.feature](contracts/behavior.feature)，原6个scenario绑定REQ-001–006与CTR-python，另4个synthetic-only CLI场景覆盖确定性报告、actual早拒绝、危险路径与输出碰撞/部分失败，并映射CTR-python/CTR-cli。合成验收使用绑定观测的Agent模拟角色记录，不要求真人操作；首轮、红线、未测和离线边界语义不变。
 
-每个scenario保留high／critical risk tag，仍有3条critical。六场景已绑定并通过离线公共API执行；trace的automation_status为automated，tests／PR／运行evidence有真实链接。合成BDD证据不等于actual runtime EVAL。
+每个scenario保留high／critical risk tag，当前6条critical。10个场景已通过离线公共API／CLI执行，trace的automation_status为automated；原核心PR及当前候选软件证据分别记录，不预填新PR。合成BDD证据不等于actual runtime EVAL。
 
 原Stage6批准形成两份契约；后续核心编码与提交／PR批准见§5.3，当前公开API／契约修复范围见§5.4。技术操作由Agent承担，相同范围复用授权；既有runtime、live与审核规则不在范围内。
 
@@ -251,3 +254,21 @@ Owner明确采纳“离线核心公共契约方案”：公开七个bytes字段�
 修改只公开现有核心的可消费接口：冻结dataclass与七字段默认值保持，私有_Inputs兼容别名与_replay实现保留，所有规则与报告字节不变。原69项测试在公共API上先RED后GREEN，另加1项字段／默认值／不可变性／签名校验，合计70项。V1默认模式全仓11P／12W／0F，信息WARN保留；strict模式的信息WARN不是源码缺失，不篡改其结果。
 
 旧§5.1–§5.3及原报告里的main锚点失败是历史记录。当前formal contract不再声明未交付的CLI，CLI候选与全部T-006验收仍保留。最新证据见[公共核心契约报告](evidence/reports/2026-10-12_public_core_contract.md)；是否可合并仍取决于完整当前CI和有效Approve。
+
+### 5.5 2026-10-12 Agent-first计划中的CLI软件交付（历史，已由§5.6替代接受基线）
+
+Owner明确要求实施Agent-first计划，覆盖#582离线CLI、具体main公共契约、必要文件边界与离线验证。实施工作树feature/582-offline-eval-cli，基线develop@5b8833c523f4401de7b70deb5a82b908f3a9c763；执行者为协调Agent委派的Codex。当前未提交／推送／创建PR或进行平台变更。
+
+RED为缺失mj_agent.evaluation.runner；实现后136项unit与9项BDD通过，包含固定22-case自测、文件负例及子进程实际退出。公开核心字段、32类规则、严格窗口、阈值和兼容逻辑保持；仅移除当前报告中过时CLI延期标签。actual分支测试仍为明确虚构条件，来源声明不能证明真实采样、脱敏或授权。
+
+当前验证见[CLI软件验收记录](evidence/reports/2026-10-12_offline_cli_acceptance.md)。完整capability仍未接受：actual采样、来源真实性及runtime EVAL未做；last_verified=null、Plan保持active。原§5.1–§5.4及旧报告保存历史时点事实。
+
+### 5.6 2026-10-12 本线程接续的 synthetic-only 交付
+
+Owner分别明确选择“采纳并授权离线 CLI 实施（推荐）”与“授权协调并由本线程接续（推荐）”；对方已停止#582写入/测试、确认无在途操作并交接工作树。22份候选原bytes已有具名备份。§5.5旧145项结果保留为原接受基线证据；新基线以本节与Plan §8.7为准，不混入Agent-first治理改动。
+
+本轮公开main(argv, *, repo_root)，显式synthetic开关和manifest早闸；actual/runtime_observation与baseline CLI参数拒绝。私有有界IO隔离路径与平台处理；Windows原生固定NTFS正向与负向覆盖，Linux实际入口NOT_RUN。两份报告成功关闭后才返回核心分类；IO错误2包含安全core_exit_code，部分新输出保留，不自动删除，不承诺报告对的原子提交或耐久性。
+
+初始RED为旧main缺repo_root与缺开关仍读输入（2 FAIL）；新单元与BDD先后验证真实子进程、source早拒绝、路径/软硬链接/reparse/网络/设备/别名/替换、限额、报告碰撞、部分写入及关闭故障。169项unit与10项BDD通过；新文案改变报告字节/摘要，历史报告不重写。全部32类judge、严格窗口、兼容键、精确0.03阈值、ReplayInputs/replay保持不变。
+
+证据见[synthetic CLI验收](evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。技术操作与合成Domain/Prompt角色、独立SWE轮由Codex承担，当前线程未派子Agent；这不是其他真人签署或独立外部批准。#582/Plan OPEN/active、capability idea/last_verified=null；无commit/push/PR/Issue更新、runtime改动或actual/live EVAL。

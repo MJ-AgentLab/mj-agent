@@ -22,10 +22,21 @@ Bound negative role verdicts fail even if AST checks pass.
 
 Tests also construct fictional `runtime_observation` conditions solely to exercise
 measured, zero-value, regression and hard-failure branches. Their source/approval
-references explicitly say unit-condition-only. They are never saved as actual
-runtime reports or used as baselines. The delivered replay report uses
+references explicitly say unit-condition-only. Those actual/baseline branches stay
+in core tests; the CLI refuses runtime_observation after reading only manifest
+and has no baseline option. CLI outputs remain synthetic software-test reports.
+The delivered replay report uses
 `synthetic_fixture`, official metrics null and `baseline_eligible=false`.
 
 JSONL is pinned to LF locally because manifest hashes bind raw bytes. The core
-accepts explicit bytes and performs no file or network access. Future CLI path,
-secret-file, output-collision and reparse-point protections remain deferred.
+accepts explicit bytes and performs no file or network access. The separate CLI
+now implements local-path, secret-file, output-collision and reparse-point checks,
+including rejection of Windows trailing-dot/space aliases before reading.
+The CLI requires --synthetic-fixture, an absolute injectable repo_root (default cwd),
+and a new output directory whose parent exists. Aliases, traversal, devices, networks,
+reparse points, multi-link inputs and path replacement cannot bypass handle guards.
+Windows fixed NTFS is locally tested; Linux/macOS native IO is explicitly deferred, unsupported guards
+fail closed. ../eval_cli/expected.json is a fixed, manually authored CLI expectation.
+Actual file entry, baseline CLI inputs, sampling, provenance authenticity and live
+runtime acceptance remain deferred/unverified. Historical core reports retain their
+CLI_ENTRY_DEFERRED labels; current core uses CORE_API_NO_FILE_IO (bytes change).
