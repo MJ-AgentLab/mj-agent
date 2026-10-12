@@ -74,6 +74,14 @@ track: engineering-workflow
 
 本地复现入口：`scripts/sdd/delivery_evidence.py` 的 run/check，套件 `evidence/delivery/agent-first.suite.json`。先核干净的已提交候选版本；Windows交付输入依据`.gitattributes`保持LF；输出必须仓外且尚不存在。真实本地运行显式使用`--execution-kind local`及`local://offline/<safe-id>`；CI使用github-actions类型。分别提供实际head/base SHA、repo与output-dir，两种来源不互相冒充。完整命令、SHA/输入/依赖/blob摘要、逐AC及限制保存在生成的仓外delivery.json和命令原始日志，版本变化后重评，不把文档中的旧数字当新证据。
 
+### 交接检查点（软件候选已验证，平台待启动）
+
+- 软件实现提交 `cf1bbd97031a820b9d7c44e7a4904bc04b234a7d`，真实本地collector run/check与独立check均exit0：10AC/75条测试引用软件通过，42提交文件摘要闭合，source LOCAL_OFFLINE_RUNTIME，Owner接受/运行基线资格/来源认证均false。
+- 完整离线日志在 `C:/Users/Admin/AppData/Local/Temp/mj-agent-agent-first-20261012-0510-01a12e01/`；初次collector严格拒绝3个EOL属性切换后的旧index状态。逐文件证明原始bytes等于HEADblob，正常刷新index，确认无内容差异且输出未创建后重试成功，没有降低检查。
+- 本次检查点是文档记录更新，未改变软件或接受标准。最终分支HEAD与测试版本读取仓外长期验收包：`D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/agent-first-delivery/2026-10-12/delivery/delivery.json`；说明文件为同层`acceptance.md`。引用稳定位置而不在自身正文写入未来SHA，避免提交哈希循环。若文件尚不存在或与HEAD不符，保持未知并核在途动作，不能据正文宣称通过。
+- 当前无push/PR/merge/平台配置/信任激活/live副作用；#582已转交且本会话不再写入/测试。重入先核实际branch/HEAD、clean、artifact版本和未决授权。实际执行身份仍缺专用App，当前个人admin不得替代；工程师独立信任/秘密/宿主条件和平台canary仍待完成。
+- 接受状态：待Owner明确实际版本及范围。整体Plan仍active；若只接受软件并延期平台，须Owner作明确范围决定并分别跟踪，延期不计通过。
+
 独立审阅分 Standards 与 Spec 两轴，均直接读取实际候选并按基线建立期望。此前发现的路径别名、合并对象错配、授权风险复用、仓内JUnit路径、无关SHA、未跟踪输入及Owner审核缺口都以负例驱动修复；最终运行结果绑定真实Git版本。Windows通过仓库 `.gitattributes` 固定交付输入LF，保留严格working/blob字节比对，不修改个人配置或降低接受标准。
 
 本轮运行记录：实施后Owner新增一次职责转交决定，未逐项审批普通实现。协调者按明确文件归属并行执行，真实并发上限为根加3子Agent；独立核验实际选择high effort，作者继承会话配置，未更换模型或新增付费资源。开始时点、完整成本和总token未被独立记录，标UNKNOWN；测试耗时只使用实际运行输出，不推算总体交付周期。缺陷/返工保留上述审阅与红→绿记录；恢复演练尚未运行。
