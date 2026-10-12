@@ -19,7 +19,13 @@ This skill should be used when the user asks to push code, run pre-push checks, 
 
 ## Overview
 
-8 步 pre-push checklist + 双推（Gitee first, GitHub second）执行 for mj-agent。gitee 是 GitHub 的**被动冗余镜像**：当前 CI 跑在 GitHub-hosted runner（`actions/checkout` 拉 **origin**），**不读 gitee**——保持双推是为镜像一致 +「未来无法直连 GitHub 时改从 gitee 拉」（per `repo:docs/infrastructure/git/[GUIDE]_Git_Push_Workflow.md` §6.5），因此两个 remote 必须都收到 push。
+默认执行 8 步 pre-push checklist + 双推（Gitee first, GitHub second）。gitee 是 GitHub 的**被动冗余镜像**：当前 CI 跑在 GitHub-hosted runner（`actions/checkout` 拉 **origin**），**不读 gitee**——默认两个 remote 都须收到 push。具名任务例外先按下节核对象及有效决定，不从 App 可用或技术权限推定例外。
+
+## 任务限定发布例外
+
+Owner Q10 对 `agent-first-delivery` / `maintain/agent-first-delivery` 及 Plan 中原已授权具名 canary，限定向 `MJ-AgentLab/mj-agent` 的 origin 发布，Gitee 镜像延期；接受基线、精确对象及实际版本见 `repo:plans/[PLAN]_agent_first_delivery.md`。先完成适用 pre-push 核验，再由具名新 App 正常发布 GitHub 并核实际 origin ref/SHA；Step 7/8 不执行或探测 Gitee 鉴权，报告 origin 实际结果与 Gitee DEFERRED/NOT_EXECUTED，不勾选 dual push 完成。新 App 例外不扩 Gitee，不借用现有个人/MCP秘密；补镜像另核具名身份、对象及动作授权。其他任务仍按默认双推。
+
+同任务 Q11 将宿主运行验收单列 DEFERRED，不计 PASS；保留原生信任、无个人 config 修改及无 bypass 边界。该延期不免除实际 GitHub CI/canary、有效批准、版本核验或 Owner 最终接受。
 
 > **前置技能**：`mj-agent-git-commit` 已在提交阶段验证 commit message 格式 + type/branch 纪律。本技能 Step 1-2 是二次确认。
 
@@ -60,13 +66,13 @@ git fetch origin && git merge origin/develop   # feature/bugfix/documentation/ma
 git fetch origin && git merge origin/main      # hotfix/* only
 # 冲突 → git status → 解 → git add . → git commit -m "merge: 合并 origin/develop 解决冲突"
 
-# 7. 双推执行
+# 7. 默认双推执行；上述 Q10 任务仅按具名 origin 发布范围执行
 # 首次 push（需 -u 设 upstream）：
 git push -u gitee <branch> && git push -u origin <branch>
 # 后续 push（推荐 alias）：
 git pushall
 
-# 8. 确认远程收到
+# 8. 确认适用远程收到；Q10 仅核 origin，Gitee 报 DEFERRED/NOT_EXECUTED
 git log origin/<branch> --oneline -3
 git log gitee/<branch> --oneline -3
 ```
@@ -104,11 +110,11 @@ git push -u gitee <branch> && git push -u origin <branch>
 git pushall
 ```
 
-**顺序强制**：Gitee first, GitHub second——保持 gitee 冗余镜像一致的既有约定（当前 CI 不读 gitee，见 Overview）。
+**默认顺序强制**：Gitee first, GitHub second——保持 gitee 冗余镜像一致的既有约定；具名任务例外仅按「任务限定发布例外」执行，不改 remote/alias 或默认规则。
 
 ## Worktree Validation
 
-复用当前任务对分支、提交范围和目标 remote 的明确 push 批准；不包含 commit、PR、merge 或 `push --delete`。执行前核对实际本地 tip、两端远程 tip 和网络，按 Gitee → origin 分开执行正常命令。下文 alias/复合命令是历史人工用法，不作为原生 hook 拒绝后的改写路线；Codex 正常调用使用有限识别的单条 `git push [-u] <gitee|origin> <branch>`。
+复用当前任务对分支、提交范围和目标 remote 的明确 push 批准；不包含 commit、PR、merge 或 `push --delete`。执行前核对实际本地 tip 和授权范围内远程 tip；默认按 Gitee → origin 分开执行，Q10 具名任务只核 origin。下文 alias/复合命令是历史人工用法，不作为原生 hook 拒绝后的改写路线；普通调用使用有限识别的单条 push，新 App 使用已核验受控后台的固定动作。
 
 每端执行后用成功的远程引用查询核对收到的 SHA，不能只看旧 remote-tracking ref。部分成功时成功端不重复推送，结果未知先对账。项目 rules 无 Git 条目，never 单独不阻断 push；支持 -u/--set-upstream 合法换序和显式源:目标 refspec。HEAD 仅可作显式源；执行前用源提交及目标 refs/heads 引用绑定授权，核验实际两端 tip；空源、force 前缀、通配和未列参数保持 UNKNOWN。只读 inspect_push 核对源 SHA、目标 tip 和快进证据，不 fetch 或推送。已有实际拒绝未解除时后端记 NOT_EXECUTED，不换 remote 试探；经审阅的规则变更须核实目标会话实际加载，仅网络恢复或重复同意不足以解除拒绝。核对授权及两端 tip 后只做剩余项。不默认 force，不自动提交工作区的新内容。
 
@@ -161,7 +167,7 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 ## Anti-patterns
 
 - **不要** force-push 到 `main` / `develop`（H7 硬性阻断）
-- **不要** 跳过 Gitee push（gitee 冗余镜像会与 origin 失配；当前 CI 虽不读 gitee，仍须保持一致——见 Overview）
+- **不要** 在默认双推或没有具名例外时跳过 Gitee；Q10 任务按限定范围报告延期，不把镜像失配写成已双推。
 - **不要** 在 bare repo 根 push（会失败；必须 cd 进 worktree）
 - **不要** 在 push 前忘记跑 Level A 验证（Stage 10）—— `uv run ruff check` + `uv run mypy src/mj_agent` 失败 push 后 CI 会红
 - **不要** 用 `git push --force` 不加 `--force-with-lease`（覆盖他人修改风险）
@@ -171,7 +177,7 @@ git push --force-with-lease   # 比 --force 安全（检查远程未被他人改
 ```
 推送完成
 下一步：创建 Pull Request（`gh pr create` 显式 `--base`，per policies/git-branching.md G2）。
-  已验证项：commit format ✓、type/branch ✓、CHANGELOG ✓、dual push ✓
+  已验证项：commit format、type/branch、CHANGELOG及适用远端实际SHA逐项填真实结果；默认双推分别核两端，Q10任务报告origin结果与Gitee DEFERRED/NOT_EXECUTED
   待执行项：选 PR template、填 PR body、--body-file 创建 PR
 ```
 

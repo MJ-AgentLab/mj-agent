@@ -1,6 +1,6 @@
 ---
 type: plan
-summary: 交付 Agent-first 治理软件与证据格式设计，#582 CLI 已转交且平台前置与接受未完成
+summary: Agent-first 治理按任务范围推进 GitHub 发布，Gitee 镜像与宿主验收延期，Owner 接受未完成
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -16,13 +16,15 @@ track: engineering-workflow
 
 > 来源：Owner 本轮 `PLEASE IMPLEMENT THIS PLAN` 及所附完整 Agent-first 计划。ADR-042 记录已批准治理决定；本 Plan 保存接受基线、动作授权、真实实施状态和恢复入口。批准实施不表示已接受成果或完成平台启用。
 
+> Q10/Q11 最新范围决定：Owner 明确选择本任务 GitHub 发布、Gitee 被动镜像延期，并延期宿主运行验收，继续 GitHub 闭环。例外仅绑定 `agent-first-delivery`、治理分支 `maintain/agent-first-delivery` 及原计划六个具名 canary head/integration：`feature/agent-first-canary-single`、`feature/agent-first-canary-independent-a`、`feature/agent-first-canary-independent-b`、`feature/agent-first-canary-child-a`、`maintain/agent-first-canary-child-b`、`feature/task-agent-first-canary-integration`，仅向 `MJ-AgentLab/mj-agent` 的 origin 发布；不新增其他分支、取消默认双推或扩新 App 例外到 Gitee。宿主项目/hooks 运行验收 DEFERRED、实际仍 NOT_TESTED，保留原信任规则；延期不计 PASS，也不等于 Owner 已接受版本。最新状态见「Q10/Q11 当前交接检查点」，后续旧软件段落保持历史语境。
+
 ## 原接受基线与当前生效范围
 
 - 目标：Agent 在明确任务授权内自主构建/验证，Owner 作实质决定并依据成果和风险证据接受；直接消费者一致，不以新增 override 掩盖旧固定停点。
 - 治理：同步政策、阶段检查点、开发技能/发现描述/图/交接、模板、冻结契约、原生守卫及 CI。保留领域参数、命令、反扫、异常恢复与验收步骤；旧 ADR 和冻结历史证据不改写。
 - #582原基线（TRANSFERRED，保留历史任务边界）：保持 ReplayInputs/replay 纯内存公开行为及既定32检查、22-case、严格窗口/状态/阈值；文件CLI补齐本地路径/限额/输出防覆盖/IO错误/真实进程退出并取得独立运行证据。
 - Harness：schema/trace违规真实非零失败；`ci`、`docker-build`覆盖支持目标，版本绑定仓外artifact记录产物/输入/依赖摘要、环境/命令退出/逐AC，负例能发现错误。
-- 平台：仅本仓专用安装身份、有效独立Owner批准及最后推送审核、严格版本检查/讨论解决/禁止force/bypass；原生配置/守卫负例由独立Agent核验，执行Agent经正常宿主机制启用项目范围信任并验证加载/canary。文件准备不能计平台运行通过。
+- 平台：仅本仓专用安装身份、有效独立Owner批准及最后推送审核、严格版本检查/讨论解决/禁止force/bypass。GitHub 规则及发布演练仍须实际证据；Q11 将本次宿主项目/hooks 加载与运行 canary 验收独立延期，保留独立 Agent 核验后正常宿主启用的规则。文件准备不能计平台运行通过。
 - 永久边界：biz只读工具链、SQL不变量、秘密保护、禁入MCP、项目范围信任先独立Agent核验再正常宿主启用，禁止个人config/权限扩张及技术拒绝绕过。
 - 延期：独立受控强制核验系统、actual采样、部署自动化、实际恢复演练、历史capability证据渐进迁移。候选能改自身gate定义的风险首期由Owner审核补偿，尚无防自降可信执行证明。
 
@@ -35,8 +37,8 @@ track: engineering-workflow
 | 治理工作区 | `D:/workspace/10-software-project/projects/mj-agent/maintain/agent-first-delivery`，分支 `maintain/agent-first-delivery` |
 | #582 工作区 | TRANSFERRED至“整理 #564 EVAL 承接方案”；转交时路径（历史）为`D:/workspace/10-software-project/projects/mj-agent/feature/582-offline-eval-cli` / `feature/582-offline-eval-cli`，现已由接手会话按其授权清理登记/分支，见最新develop状态。本会话不操作其遗留目录 |
 | 比较基线 | 两工作区创建/核查时 HEAD `5b8833c523f4401de7b70deb5a82b908f3a9c763`；每次执行重新核现实 |
-| push / PR / merge | 具名专用App身份、平台规则与有效批准前置满足后正常执行；当前NOT_READY，不使用个人admin身份替代 |
-| 平台/信任/新App材料 | Agent沿Q3具名管理路线创建/安装App并应用规则；只用新App受控后台材料，既有秘密不读；独立Agent核真实配置/负例后正常宿主项目启用。当前NOT_READY/NOT_TESTED，不因决定提前PASS |
+| push / PR / merge | Q10 仅 origin / `MJ-AgentLab/mj-agent` 发布本任务分支及原已授权具名 canary，Gitee 为 DEFERRED/NOT_EXECUTED；通过专用 App、实际门禁和 Owner 对实际成果/SHA 的有效决定推进 GitHub 闭环，不用个人 admin 替代日常 App 身份，不隐含删除或 force 授权 |
+| 平台/信任/新App材料 | 新 App 单仓安装与 bootstrap 审计已实际完成；旧候选平台回读 CONFIG_VERIFIED，详见本轮检查点。Q11 宿主运行验收 DEFERRED、实际加载仍 NOT_TESTED；新 App 材料仅受控后台处理、既有秘密不读，原信任/权限/拒绝边界保留 |
 | runtime/live | 本次不授权实际runtime/LLM/biz采样、容器生命周期或部署；synthetic只证明软件行为 |
 | 删除/权限变更 | 不从普通实施授权推定；清理须独立精确对象、必要备份、损失及恢复条件 |
 
@@ -48,20 +50,32 @@ track: engineering-workflow
 
 1. 治理单元：ADR/政策/SDD/入口/技能/模板一致性 → guard/CI/schema/trace/证据改造 → 离线及负例核验 → 独立审阅。
 2. #582 单元（TRANSFERRED，不在本会话实施/commit）：T-006文件适配 → 公共CLI契约/文档/trace → unit/BDD/真实CLI进程与22-case复现 → 独立核验。
-3. Agent启动前置：专用单仓App与受控后台、平台规则、独立Agent配置/守卫负例审阅、正常宿主项目启用/加载及具名canary；证据齐全后才推进依赖发布步骤。
-4. 最新完成基线包含治理软件部分、#582治理证据格式设计及新增受控后台/独立Agent审阅/正常宿主项目启用/平台执行的实际验证；未实现或未运行仍不通过，整体延期须Owner另作范围决定。CLI真实交付依赖由接手会话继续tracked，不要求Owner重述已有决定。交付：实际版本验收包、限制延期、风险恢复及Owner待决定；有效平台批准与业务接受分别记录，未接受不completed。
+3. GitHub 前置：专用单仓 App 与受控后台、实际平台规则、独立 Agent 技术核验及具名 GitHub canary；按 Q10/Q11 限定范围核依赖，宿主运行验收与 Gitee 镜像单列延期，不用延期替代 GitHub 门禁或有效审核。
+4. 最新完成基线包含治理软件部分、#582治理证据格式设计及新增受控后台/独立Agent审阅/平台执行的实际验证；Q10/Q11 将 Gitee 镜像和宿主运行验收独立列为 DEFERRED，当前 GitHub 闭环继续，其他未实现或未运行项仍不通过。CLI真实交付依赖由接手会话继续tracked，不要求Owner重述已有决定。交付：实际版本验收包、限制延期、风险恢复及Owner待决定；有效平台批准与业务接受分别记录，未接受不completed。
 
 文档决策：治理ADR/指南/本Plan新增；活动政策/工作流/技能/描述/模板/索引及原生保护说明更新；#582 CLI contract/指南/trace由该独立单元维护；历史ADR、归档记录、原验收证据不改写。并行写按文件归属与独立工作区；共享平台写由协调者排序。
 
 <!-- agent-first-routes
-{"schema_version":1,"routes":[{"task_id":"agent-first-canary","repo":"MJ-AgentLab/mj-agent","active":false,"integration":"feature/task-agent-first-canary-integration","mainline":"develop","children":["feature/agent-first-canary-child-a","maintain/agent-first-canary-child-b"]}]}
+{"schema_version":1,"routes":[{"task_id":"agent-first-canary","repo":"MJ-AgentLab/mj-agent","active":true,"integration":"feature/task-agent-first-canary-integration","mainline":"develop","children":["feature/agent-first-canary-child-a","maintain/agent-first-canary-child-b"]}]}
 -->
 
-路由供有限守卫观察事实，不认证授权。平台/身份/宿主前置仍NOT_READY，因此不启用或创建此集成分支。
+路由供有限守卫观察事实，不认证授权。按已有 Q3 具名演练范围及 Q10/Q11 的前置调整激活原精确关系，不扩大 head/base；active=true 不表示分支/PR 已创建、演练通过或已交付。
 
-平台 canary 准备清单（均未创建/未执行）：单 PR `feature/agent-first-canary-single → develop`；独立 PR `feature/agent-first-canary-independent-a/b → develop`；分层使用上述精确两子分支及任务集成分支，最终 `integration → develop`。在Agent按已有Q3授权核规则/身份/宿主加载及副作用后，登记真实 SHA/PR，再验证补推使旧审核失效、Owner 有效批准、CI/构建红灯和讨论未解决阻断、无 bypass merge。G2 CI 根据真实事件 head/base 核登记关系；名字不产生授权。删除这些本地/远端分支及临时记录须另列当时真实清单、备份与授权。
+平台 canary 准备清单（当前尚未创建/执行）：单 PR 与最终成功 develop 交付复用真实治理 `maintain/agent-first-delivery → develop`。独立 PR 模式保留 `feature/agent-first-canary-independent-a → develop` 及 `feature/agent-first-canary-independent-b → develop` 的真实创建、各自 CI/有效审核及阻断观察。分层模式由 `feature/agent-first-canary-child-a`、`maintain/agent-first-canary-child-b` 分别指向登记的 `feature/task-agent-first-canary-integration`，验证子 PR 门禁及成功临时集成；再保留最终 `integration → develop` 的真实创建/门禁观察，不以治理单 PR 或子 PR 代替该路由证据，也不要求临时 canary 成功 merge develop。在 Agent 核已有 Q3 授权、实际规则/身份及副作用后登记真实 SHA/PR，验证补推使旧审核失效、Owner 有效批准、CI/构建红灯和讨论未解决阻断、无 bypass merge。Q11 只延期宿主运行验收。删除临时对象另列真实清单、备份及授权。
 
 ## 新后台任务与验收条件
+
+### Q10/Q11 当前交接检查点
+
+- 本次范围记录修改开始时真实 HEAD 为 `edd2e1eec561e5f32c9cc92030823e52064c9220`，比较主线为 `a96d759c080f4568e6810084f90fadce7b2c75cf`。这是已观察旧版本，不是本文档提交后的自引用 SHA；新版本产物另存仓外 `agent-operated/after-q10-q11/`，尚未生成或 binding 不符不得宣称通过。后续发布/验收读取实际 HEAD、diff 及新证据 binding。
+- 已读取仓外 `agent-operated/after-q9/app-audit-bootstrap.json`：App `5284037`、installation `170545174`、repository `1172583390`，EXECUTOR_VERIFIED，三层仅 Metadata read、Contents/PR write、临时 Workflows write，单仓 token 撤销 CONFIRMED。新 App 例外不扩 Gitee，既有个人/MCP/DB/App 秘密不读。
+- 同层 `platform-apply/journal.json` 保存规则应用 APPLIED_PENDING_EXECUTOR_READBACK；独立 `platform-readback.json` 在旧候选 edd2e1e 上 exit0、CONFIG_VERIFIED，三规则保护摘要匹配且 App can-bypass=never。这里只证明已观察的平台配置/执行身份，不证明 GitHub canary、发布、宿主加载或 Owner 接受；后续版本/配置变化时重核适用性。写前备份在 `agent-operated/platform-backup-before-apply/`，恢复演练未运行。
+- Q10：仅本任务及原已授权具名 canary 的 origin 发布，默认 Gitee-first 双推继续用于其他任务。Gitee 镜像 DEFERRED/NOT_EXECUTED；不得报告双推完成，不探测或借用现有 Gitee 凭据。恢复镜像需独立具名执行身份、对象及动作授权，并核真实 ref/tip 后补齐，当前不新建该身份。
+- Q11：宿主项目/hooks 加载及运行 canary 验收 DEFERRED，实际结果仍 NOT_TESTED。仅延期本任务接受范围，不修改个人 config、原生信任或权限规则，不调用会暴露个人 hooks 的接口，不绕实际技术拒绝。GitHub canary/CI/有效批准仍分别留证。
+- 当前下一步为本次范围文档验证与实际版本检查，再继续已授权 GitHub 发布/审核/集成闭环。Owner 最终接受未作出，Plan 保持 active；临时 Workflows 权限撤回、短期 token 撤销及通道关闭独立核实际结果。
+- 协调者已报告 fresh 公开只读预发布核对，证据为同层 `after-q10-q11/prepublish.json`：正常 Owner 身份 `ranzuozhou`，develop 仍为 a96d759，治理远端 ref/PR 当时不存在；这只记录该次观察，不代替实际发布成功或随后远端变化核验。本文件不引用自己的未来提交 SHA。
+
+### 以下为 Q10/Q11 前的软件与平台历史检查点
 
 - 文档修订从真实clean HEAD `8bf8888e573991ee09fb1cb5b5fea6a419c48d56`开始；8infra旧16摘要/8节标题集先实算匹配。新主体修订仅3infra技能必要正文/描述变更，按canonical算法再冻结于`2026-10-12T06:30:56Z`，冻结不证明后台或宿主运行。
 - 本轮文档/native静态fresh验证逐命令exit0：skills/resources STATIC_PASS，codex config STATIC_PASS（rule_loading UNKNOWN、host NOT_TESTED、Owner审批NOT_ASSESSED），frontmatter154、wiki零、looprefs零/20sections、diff格式通过；这些不证明App后台/注册/信任启用/平台已运行。
@@ -101,7 +115,7 @@ track: engineering-workflow
 
 本地复现入口：`scripts/sdd/delivery_evidence.py` 的 run/check，套件 `evidence/delivery/agent-first.suite.json`。先核干净的已提交候选版本；Windows交付输入依据`.gitattributes`保持LF；输出必须仓外且尚不存在。真实本地运行显式使用`--execution-kind local`及`local://offline/<safe-id>`；CI使用github-actions类型。分别提供实际head/base SHA、repo与output-dir，两种来源不互相冒充。完整命令、SHA/输入/依赖/blob摘要、逐AC及限制保存在生成的仓外delivery.json和命令原始日志，版本变化后重评，不把文档中的旧数字当新证据。
 
-### 交接检查点（软件候选已验证，平台待启动）
+### 原软件历史交接检查点（当时软件候选已验证，平台待启动）
 
 - 软件实现提交 `cf1bbd97031a820b9d7c44e7a4904bc04b234a7d`，真实本地collector run/check与独立check均exit0：10AC/75条测试引用软件通过，42提交文件摘要闭合，source LOCAL_OFFLINE_RUNTIME，Owner接受/运行基线资格/来源认证均false。
 - 完整离线日志在 `C:/Users/Admin/AppData/Local/Temp/mj-agent-agent-first-20261012-0510-01a12e01/`；初次collector严格拒绝3个EOL属性切换后的旧index状态。逐文件证明原始bytes等于HEADblob，正常刷新index，确认无内容差异且输出未创建后重试成功，没有降低检查。
@@ -115,7 +129,7 @@ track: engineering-workflow
 
 验证矩阵按实际变化运行相关离线unit/BDD/CLI、ruff/mypy、frontmatter/wikilink、native配置/技能及gate负例。external pytest通过hardened runner结构化SKIP，不计PASS。独立核验者从AC建期望，读取真实成果并复现；另一Agent的通过总结不能替代运行证据。
 
-阶段完成、集成前或交接时更新：目标/AC/授权、工作区/ref/SHA、已集成/验证/交付/接受状态、证据位置、在途副作用/失败/未知/延期、下一步与停止条件。当前本会话在途仅治理实现/验证；#582的转交时无push/未提交材料保留是历史检查点，现已由接手会话合入并按其授权清理，见上文最新develop状态。本会话仍没有平台注册、规则应用、合并或live副作用。
+阶段完成、集成前或交接时更新：目标/AC/授权、工作区/ref/SHA、已集成/验证/交付/接受状态、证据位置、在途副作用/失败/未知/延期、下一步与停止条件。#582 转交时无push/未提交材料保留及“无平台注册/规则应用”属于历史检查点；后续 App 安装、规则应用和回读已分别留证，当前状态以 Q10/Q11 检查点及实际证据为准。本会话不操作 #582 遗留目录，不把配置回读计作发布或 Owner 接受。
 
 ## 交付、恢复与待决定
 
@@ -123,7 +137,7 @@ track: engineering-workflow
 
 恢复：代码/规则通过成组回退PR和独立具权路线，具名资源操作先核实际备份；未进行真实恢复演练。治理交付结束由Agent按授权移除App临时Workflows write、撤销新App短期token并关闭通道，逐项留证。
 
-下一步：治理完整离线验证与独立审阅、治理软件验收包及#582证据格式要求设计；CLI修复与独立复验由接手会话继续。治理发布依赖：Agent受控App后台/平台/正常宿主项目启用前置 → 授权内发布及有效结果式审核 → 集成核实 → Owner明确接受实际版本。核心若单独满足自身AC可分段交付；延期影响整体接受基线须Owner决定，不能计作通过。
+下一步：按 Q10/Q11 核当前软件版本与 App/平台证据 → origin 发布及实际 GitHub CI/canary → Owner 对实际成果/SHA 决定、不同身份有效审核 → 授权内集成核实 → Owner 明确接受版本及延期清单。Gitee 镜像与宿主运行验收单列 DEFERRED，不计 PASS；默认双推/原生信任规则及其他必要 GitHub 门禁保持。#582 独立后续由接手会话维护，本会话不重建已合入的 synthetic-only CLI。
 
 ## 关联文档
 
