@@ -1,0 +1,1 @@
+Integration canary A: public fixture observes actual CI failure, repair, and latest-push approval in the external acceptance bundle.
