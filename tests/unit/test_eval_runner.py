@@ -1,0 +1,570 @@
+"""Synthetic-only CLI acceptance. Fixed outcomes are never sampled runtime evidence."""
+
+from __future__ import annotations
+
+import builtins
+import ctypes
+import hashlib
+import json
+import os
+import socket
+import subprocess
+import sys
+from inspect import signature
+from pathlib import Path
+from typing import Any, get_type_hints
+from unittest.mock import Mock
+
+import pytest
+
+from mj_agent.evaluation import _file_io as fio
+from mj_agent.evaluation import runner
+from mj_agent.evaluation.core import replay
+from mj_agent.evaluation.schema import ReplayInputs
+
+FIXTURES = Path(__file__).parent / "fixtures" / "eval_core"
+EXPECTED = json.loads((Path(__file__).parent / "fixtures/eval_cli/expected.json").read_bytes())
+FILES = {"config": "config.json", "dataset": "dataset.jsonl", "observations": "observations.jsonl",
+         "manifest": "manifest.json", "reference": "reference.json", "reviews": "reviews.jsonl"}
+OPTIONS = {"config": "--eval-config", "dataset": "--dataset", "observations": "--observations",
+           "manifest": "--manifest", "reference": "--reference", "reviews": "--reviews"}
+
+
+def _arguments(directory: Path, output: Path, *, reviews: bool = True) -> list[str]:
+    args = ["--synthetic-fixture"]
+    for field, filename in FILES.items():
+        if field != "reviews" or reviews:
+            args.extend([OPTIONS[field], str(directory / filename)])
+    return [*args, "--output-dir", str(output)]
+
+
+def _replace(args: list[str], option: str, value: str) -> None:
+    args[args.index(option) + 1] = value
+
+
+def _main(args: list[str], root: Path) -> int:
+    return runner.main(args, repo_root=root)
+
+
+def _reject(*args: Any, **kwargs: Any) -> Any:
+    raise AssertionError("forbidden operation")
+
+
+@pytest.fixture
+def inputs_dir(tmp_path: Path) -> Path:
+    directory = tmp_path / "inputs"
+    directory.mkdir()
+    for filename in FILES.values():
+        (directory / filename).write_bytes((FIXTURES / filename).read_bytes())
+    return directory
+
+
+def test_public_cli_signature() -> None:
+    main = runner.main
+    assert list(signature(main).parameters) == ["argv", "repo_root"]
+    assert signature(main).parameters["argv"].default is None
+    assert signature(main).parameters["repo_root"].kind.name == "KEYWORD_ONLY"
+    assert get_type_hints(main) == {"argv": list[str] | None, "repo_root": Path | None, "return": int}
+
+
+@pytest.mark.parametrize("option", ["missing_mode", "--baseline", "--actual", "--profile", "--runtime-observation"])
+def test_unavailable_mode_and_options_are_refused_before_io(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, option: str,
+) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    if option == "missing_mode":
+        args.remove("--synthetic-fixture")
+    else:
+        args.extend([option, "do-not-echo"])
+    backend = Mock(side_effect=_reject)
+    core = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "_backend", backend)
+    monkeypatch.setattr(runner, "replay", core)
+    assert _main(args, tmp_path) == EXPECTED["invalid_exit"]
+    backend.assert_not_called()
+    core.assert_not_called()
+
+
+@pytest.mark.parametrize("source", ["runtime_observation", "unknown", None])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_source_gate_reads_only_manifest_before_replay_or_other_inputs(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], source: str | None,
+) -> None:
+    manifest = json.loads((inputs_dir / "manifest.json").read_bytes())
+    manifest["source_kind"] = source
+    (inputs_dir / "manifest.json").write_bytes(json.dumps(manifest).encode())
+    backend = fio._WindowsIO
+    original = backend.read
+    seen = []
+
+    def manifest_only(self: Any, parts: tuple[str, ...]) -> bytes:
+        seen.append(parts)
+        assert parts == ("inputs", "manifest.json")
+        return original(self, parts)
+
+    monkeypatch.setattr(backend, "read", manifest_only)
+    monkeypatch.setattr(runner, "replay", _reject)
+    output = tmp_path / "output"
+    assert _main(_arguments(inputs_dir, output), tmp_path) == 2
+    assert seen == [("inputs", "manifest.json")]
+    diagnostic = json.loads(capsys.readouterr().err)
+    assert diagnostic["reason_code"] == ("ACTUAL_ENTRY_DEFERRED" if source == "runtime_observation"
+                                         else "SOURCE_KIND_INVALID")
+    assert not output.exists()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_synthetic_cli_matches_core_and_fixed_outcomes_with_deterministic_bytes(
+    inputs_dir: Path, tmp_path: Path,
+) -> None:
+    inputs = ReplayInputs(**{field: (inputs_dir / filename).read_bytes() for field, filename in FILES.items()})
+    fixed_cases = json.loads((FIXTURES / "expected.json").read_bytes())["case_statuses"]
+    for name in ("first", "second"):
+        output = tmp_path / name
+        assert _main(_arguments(inputs_dir, output), tmp_path) == EXPECTED["synthetic_exit"]
+        report = json.loads((output / "report.json").read_bytes())
+        assert report == replay(inputs)
+        assert {c["case_id"]: c["status"] for c in report["cases"]} == fixed_cases
+        assert report["counts"]["judged_cases"] == report["counts"]["planned_cases"] == EXPECTED["planned_cases"]
+        assert report["measurement"]["status"] == EXPECTED["measurement"]
+        assert report["measurement"]["metrics"] is EXPECTED["runtime_metrics"]
+        assert report["baseline_eligible"] is EXPECTED["baseline_eligible"]
+        assert EXPECTED["core_limit"] in report["limitations"]
+        assert (output / "report.md").read_bytes() == report["markdown"].encode()
+    for filename in ("report.json", "report.md"):
+        first = (tmp_path / "first" / filename).read_bytes()
+        assert first == (tmp_path / "second" / filename).read_bytes()
+        assert b"\r" not in first
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_relative_paths_and_optional_reviews_preserve_gaps(inputs_dir: Path, tmp_path: Path) -> None:
+    args = _arguments(Path("inputs"), Path("output"), reviews=False)
+    assert _main(args, tmp_path) == 3
+    report = json.loads((tmp_path / "output/report.json").read_bytes())
+    assert report["counts"]["review_required_cases"] > 0
+    assert report["counts"]["planned_cases"] == 22
+
+
+@pytest.mark.parametrize("target", ["empty_directory", "report.json", "report.md", "input"])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_existing_output_never_overwrites_or_removes_files(
+    inputs_dir: Path, tmp_path: Path, target: str,
+) -> None:
+    output = inputs_dir if target == "input" else tmp_path / "output"
+    if target != "input":
+        output.mkdir()
+    if target in {"report.json", "report.md"}:
+        (output / target).write_bytes(b"preserve evidence")
+    before = {p.name: p.read_bytes() for p in output.iterdir()}
+    assert _main(_arguments(inputs_dir, output), tmp_path) == 2
+    assert {p.name: p.read_bytes() for p in output.iterdir()} == before
+
+
+@pytest.mark.parametrize("path", [
+    "https://example.invalid/do-not-echo", "file:///private", "s3://bucket/key",
+    r"\\server\share\input.json", "//server/share/input.json", r"\\?\C:\private\input.json",
+    ".env.production", "config/secrets-mcp.enc", ".ssh/id_rsa", "credentials.json",
+    "private.pem", "client.key", "tokens.json", "config.json:stream", "../outside.json",
+    r"C:relative.json",
+])
+@pytest.mark.parametrize("destination", [False, True])
+def test_unsafe_paths_are_rejected_before_metadata_or_reads_without_echo(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], path: str, destination: bool,
+) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    _replace(args, "--output-dir" if destination else "--eval-config", path)
+    backend = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "_backend", backend)
+    assert _main(args, tmp_path) == 2
+    backend.assert_not_called()
+    captured = capsys.readouterr()
+    assert path not in captured.err + captured.out
+    assert "INPUT_INVALID" in captured.err
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows native alias rules")
+@pytest.mark.parametrize("alias", ["credentials.json ", "config/secrets-test.enc.", ".ssh./id_rsa.",
+                                  "client.key.", "ordinary.json.", "ordinary.json ", "parent./input.json",
+                                  "NUL", "COM1.json", "LPT¹", "CREDEN~1.JSON"])
+@pytest.mark.parametrize("destination", [False, True])
+def test_windows_aliases_are_rejected_before_backend(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, alias: str, destination: bool,
+) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    _replace(args, "--output-dir" if destination else "--eval-config", alias)
+    backend = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "_backend", backend)
+    assert _main(args, tmp_path) == 2
+    backend.assert_not_called()
+
+
+def test_absolute_escape_and_relative_root_are_refused_before_io(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    _replace(args, "--reference", str(tmp_path.parent / "outside.json"))
+    backend = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "_backend", backend)
+    assert _main(args, tmp_path) == 2
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), Path("relative")) == 2
+    backend.assert_not_called()
+
+
+@pytest.mark.parametrize("defect", ["missing", "directory", "size", "invalid_json", "utf8", "hash"])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_invalid_input_has_safe_diagnostics(inputs_dir: Path, tmp_path: Path,
+                                           capsys: pytest.CaptureFixture[str], defect: str) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    marker = b"do-not-echo-private-payload"
+    if defect == "missing":
+        _replace(args, "--eval-config", str(tmp_path / "missing.json"))
+    elif defect == "directory":
+        _replace(args, "--eval-config", str(inputs_dir))
+    elif defect == "size":
+        (inputs_dir / "config.json").write_bytes(b" " * (fio._MAX_BYTES + 1))
+    elif defect == "hash":
+        (inputs_dir / "observations.jsonl").write_bytes(b"")
+    else:
+        (inputs_dir / "config.json").write_bytes((b"\xff" if defect == "utf8" else b"") + marker)
+    assert _main(args, tmp_path) == 2
+    assert marker.decode() not in capsys.readouterr().err
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_hard_link_input_is_rejected_before_payload_read(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    alias = inputs_dir / "alias.json"
+    os.link(inputs_dir / "config.json", alias)
+    args = _arguments(inputs_dir, tmp_path / "output")
+    _replace(args, "--eval-config", str(alias))
+    original = os.fdopen
+    links = []
+
+    def guard(descriptor: int, mode: str, *a: Any, **kw: Any) -> Any:
+        links.append(os.fstat(descriptor).st_nlink)
+        return original(descriptor, mode, *a, **kw)
+
+    monkeypatch.setattr(os, "fdopen", guard)
+    assert _main(args, tmp_path) == 2
+    assert not (tmp_path / "output").exists()
+    assert links == [1]  # manifest only; hard-linked config is refused before stream construction
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows native handle metadata")
+@pytest.mark.parametrize("target", ["root", "ancestor", "file"])
+@pytest.mark.parametrize("attribute", [0x400, 0x1000, 0x400000])
+def test_reparse_attributes_fail_before_file_read(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, target: str, attribute: int,
+) -> None:
+    original = fio._WindowsIO._prototypes
+    suffix = str({"root": tmp_path, "ancestor": inputs_dir, "file": inputs_dir / "manifest.json"}[target])
+    seen = []
+    reads = []
+
+    def prototypes(self: Any) -> None:
+        original(self)
+        get_info = self.kernel.GetFileInformationByHandle
+
+        def reparse(handle: int, pointer: Any) -> int:
+            result = get_info(handle, pointer)
+            buffer = ctypes.create_unicode_buffer(4096)
+            self.kernel.GetFinalPathNameByHandleW(handle, buffer, len(buffer), 0)
+            if buffer.value.casefold().endswith(suffix.casefold()):
+                ctypes.cast(pointer, ctypes.POINTER(fio._FileInfo)).contents.attributes |= attribute
+                seen.append(True)
+            return int(result)
+
+        self.kernel.GetFileInformationByHandle = reparse
+
+    monkeypatch.setattr(fio._WindowsIO, "_prototypes", prototypes)
+    def reject_read(*args: Any, **kwargs: Any) -> Any:
+        reads.append(True)
+        return _reject(*args, **kwargs)
+
+    monkeypatch.setattr(os, "fdopen", reject_read)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 2
+    assert seen
+    assert not reads
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows native drive classification")
+def test_network_drive_fails_closed_before_open(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = fio._WindowsIO._prototypes
+    opened = Mock(side_effect=_reject)
+
+    def prototypes(self: Any) -> None:
+        original(self)
+        self.kernel.GetDriveTypeW = lambda anchor: 4
+        self.kernel.CreateFileW = opened
+
+    monkeypatch.setattr(fio._WindowsIO, "_prototypes", prototypes)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 2
+    opened.assert_not_called()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows shared-handle namespace lock")
+def test_pinned_input_directory_cannot_be_replaced_during_replay(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = fio._WindowsIO.read
+    attempted = []
+
+    def read(self: Any, parts: tuple[str, ...]) -> bytes:
+        result = original(self, parts)
+        if parts[-1] == "manifest.json":
+            # Both exact targets belong to this temporary fixture; no outside directory is moved.
+            with pytest.raises(PermissionError):
+                os.rename(inputs_dir, tmp_path / "renamed-inputs")
+            attempted.append(True)
+        return result
+
+    monkeypatch.setattr(fio._WindowsIO, "read", read)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 3
+    assert attempted == [True]
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows file identity check")
+def test_file_change_and_read_bound_are_enforced(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = fio._WindowsIO._info
+    calls = []
+
+    def changed(self: Any, handle: int) -> Any:
+        info = original(self, handle)
+        if self._final(handle).endswith("config.json"):
+            calls.append(True)
+            if len(calls) == 3:  # open guard, pre-read, post-read
+                info.written_low ^= 1
+        return info
+
+    monkeypatch.setattr(fio._WindowsIO, "_info", changed)
+    session = fio._backend(tmp_path)
+    try:
+        with pytest.raises(fio._FileError, match="FILE_CHANGED"):
+            session.read(("inputs", "config.json"))
+    finally:
+        session.close()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_bounded_read_never_requests_unlimited_bytes(inputs_dir: Path, tmp_path: Path,
+                                                    monkeypatch: pytest.MonkeyPatch) -> None:
+    original = os.fdopen
+    requested = []
+
+    class Stream:
+        def __init__(self, descriptor: int, mode: str, **kwargs: Any) -> None:
+            self.stream = original(descriptor, mode, **kwargs)
+
+        def __enter__(self) -> Stream:
+            self.stream.__enter__()
+            return self
+
+        def read(self, size: int) -> bytes:
+            requested.append(size)
+            assert size == fio._MAX_BYTES + 1
+            return b"x" * size
+
+        def __exit__(self, *args: Any) -> Any:
+            return self.stream.__exit__(*args)
+
+    session = fio._backend(tmp_path)
+    monkeypatch.setattr(os, "fdopen", Stream)
+    try:
+        with pytest.raises(fio._FileError, match="INPUT_SIZE_LIMIT"):
+            session.read(("inputs", "config.json"))
+    finally:
+        session.close()
+    assert requested == [fio._MAX_BYTES + 1]
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_missing_output_parent_is_not_created(inputs_dir: Path, tmp_path: Path) -> None:
+    output = tmp_path / "missing-parent" / "output"
+    assert _main(_arguments(inputs_dir, output), tmp_path) == 2
+    assert not output.parent.exists()
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows exclusive native create")
+def test_second_write_failure_preserves_partial_output_and_safe_core_diagnostic(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str],
+) -> None:
+    original = fio._WindowsIO._open
+
+    def fail(self: Any, parent: int, name: str, **kwargs: Any) -> int:
+        if name == "report.md" and kwargs.get("writing"):
+            raise PermissionError("do-not-echo-private-os-error")
+        return original(self, parent, name, **kwargs)
+
+    monkeypatch.setattr(fio._WindowsIO, "_open", fail)
+    output = tmp_path / "partial"
+    assert _main(_arguments(inputs_dir, output), tmp_path) == 2
+    assert (output / "report.json").is_file()
+    assert not (output / "report.md").exists()
+    diagnostic = json.loads(capsys.readouterr().err)
+    assert diagnostic == {"core_exit_code": 3, "exit_code": 2, "input_status": "INPUT_INVALID",
+                          "reason_code": "OUTPUT_IO_FAILED"}
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_close_failure_is_not_success(inputs_dir: Path, tmp_path: Path,
+                                      monkeypatch: pytest.MonkeyPatch) -> None:
+    backend = fio._WindowsIO
+    original = backend.close
+
+    def fail(self: Any) -> None:
+        original(self)
+        raise OSError("do-not-echo-close-error")
+
+    monkeypatch.setattr(backend, "close", fail)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 2
+
+
+def test_missing_guard_capability_fails_closed_without_replay(inputs_dir: Path, tmp_path: Path,
+                                                             monkeypatch: pytest.MonkeyPatch) -> None:
+    def unavailable(root: Path) -> Any:
+        raise fio._FileError("FS_CAPABILITY_UNAVAILABLE")
+
+    monkeypatch.setattr(runner, "_backend", unavailable)
+    monkeypatch.setattr(runner, "replay", _reject)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 2
+    assert not (tmp_path / "output").exists()
+
+
+_BOOTSTRAP = """
+import builtins, os, pathlib, runpy, socket
+original_import = builtins.__import__
+def import_guard(name, *args, **kwargs):
+    if name.startswith(('mj_agent.config', 'mj_agent.agent', 'mj_agent.tools', 'dotenv', 'psycopg', 'openai')):
+        raise AssertionError('application import forbidden')
+    return original_import(name, *args, **kwargs)
+def reject(*args, **kwargs):
+    raise AssertionError('network forbidden')
+original_open = builtins.open
+def safe_open(file, *args, **kwargs):
+    if isinstance(file, (str, os.PathLike)):
+        name = pathlib.Path(file).name.casefold()
+        if name.startswith('.env') or (name.startswith('secrets') and name.endswith('.enc')):
+            raise AssertionError('secret read forbidden')
+    return original_open(file, *args, **kwargs)
+builtins.__import__ = import_guard
+builtins.open = safe_open
+socket.socket.connect = reject
+socket.socket.connect_ex = reject
+socket.create_connection = reject
+runpy.run_module('mj_agent.evaluation.runner', run_name='__main__')
+"""
+
+
+def _process(args: list[str], root: Path, *, sentinels: bool = False) -> subprocess.CompletedProcess[bytes]:
+    # Only non-secret platform values enter the child. No ambient API keys or dotenv loading.
+    env = {name: os.environ[name] for name in ("PATH", "SYSTEMROOT", "WINDIR", "PATHEXT")
+           if name in os.environ}
+    env.update(PYTHONPATH=str(Path(__file__).parents[2] / "src"), PYTHONNOUSERSITE="1",
+               PYTHONDONTWRITEBYTECODE="1", PYTHONHASHSEED="0", TEMP=str(root), TMP=str(root))
+    entry = ["-c", _BOOTSTRAP] if sentinels else ["-m", "mj_agent.evaluation.runner"]
+    return subprocess.run([sys.executable, "-B", "-X", "utf8", *entry, *args], cwd=root,
+                          env=env, capture_output=True, check=False, timeout=30)
+
+
+@pytest.mark.parametrize("mode, expected", [("synthetic", 3), ("help", 0), ("empty", 2),
+                                          ("unknown", 2), ("actual", 2), ("baseline", 2)])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_real_module_process_exit_and_closed_environment(
+    inputs_dir: Path, tmp_path: Path, mode: str, expected: int,
+) -> None:
+    args = _arguments(inputs_dir, tmp_path / "output")
+    if mode == "help":
+        args = ["--help"]
+    elif mode == "empty":
+        args = []
+    elif mode == "unknown":
+        args = ["--unknown=do-not-echo"]
+    elif mode == "baseline":
+        args.extend(["--baseline", "do-not-echo"])
+    elif mode == "actual":
+        manifest = json.loads((inputs_dir / "manifest.json").read_bytes())
+        manifest["source_kind"] = "runtime_observation"
+        (inputs_dir / "manifest.json").write_bytes(json.dumps(manifest).encode())
+    completed = _process(args, tmp_path)
+    assert completed.returncode == expected
+    assert b"do-not-echo" not in completed.stderr
+    assert (tmp_path / "output/report.json").exists() is (mode == "synthetic")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_real_child_process_blocks_application_imports_secret_reads_and_network(
+    inputs_dir: Path, tmp_path: Path,
+) -> None:
+    completed = _process(_arguments(inputs_dir, tmp_path / "output"), tmp_path, sentinels=True)
+    assert completed.returncode == 3, completed.stderr
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_confirmed_synthetic_red_line_failure_returns_six_in_real_process(
+    inputs_dir: Path, tmp_path: Path,
+) -> None:
+    rows = [json.loads(line) for line in (inputs_dir / "observations.jsonl").read_bytes().splitlines()]
+    target = next(row for row in rows if row["case_id"] == "RL-05")
+    target["tool_calls"] = [{"sequence": 1, "call_id": "blocked", "tool_name": "execute_sql",
+                             "sql": "SELECT 1; DROP TABLE forbidden", "outcome": "error",
+                             "error_codes": ["blocked"]}]
+    raw = b"\n".join(json.dumps(row).encode() for row in rows) + b"\n"
+    manifest = json.loads((inputs_dir / "manifest.json").read_bytes())
+    manifest["hashes"]["observations"] = hashlib.sha256(raw).hexdigest()
+    (inputs_dir / "observations.jsonl").write_bytes(raw)
+    (inputs_dir / "manifest.json").write_bytes(json.dumps(manifest).encode())
+    completed = _process(_arguments(inputs_dir, tmp_path / "output"), tmp_path, sentinels=True)
+    assert completed.returncode == EXPECTED["red_line_exit"]
+    report = json.loads((tmp_path / "output/report.json").read_bytes())
+    assert report["safety"]["status"] == "SELFTEST_HARD_FAIL"
+    assert report["measurement"]["metrics"] is None
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_in_process_does_not_import_application_or_connect(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    original = builtins.__import__
+
+    def guard(name: str, *args: Any, **kwargs: Any) -> Any:
+        if name.startswith(("mj_agent.config", "mj_agent.agent", "mj_agent.tools", "dotenv", "psycopg", "openai")):
+            raise AssertionError("application import forbidden")
+        return original(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", guard)
+    monkeypatch.setattr(socket.socket, "connect", _reject)
+    monkeypatch.setattr(socket, "create_connection", _reject)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 3
+
+
+def test_non_windows_entry_is_explicitly_deferred_without_any_local_open(monkeypatch: pytest.MonkeyPatch) -> None:
+    root = Path.cwd()
+    monkeypatch.setattr(fio.os, "name", "posix")
+    monkeypatch.setattr(fio, "_WindowsIO", _reject)
+    with pytest.raises(fio._FileError, match="FS_CAPABILITY_UNAVAILABLE"):
+        fio._backend(root)
+
+
+@pytest.mark.skipif(os.name != "nt", reason="Windows native descriptor ownership")
+def test_stream_construction_failure_releases_input_descriptor(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    descriptors = []
+
+    def fail(descriptor: int, *args: Any, **kwargs: Any) -> Any:
+        descriptors.append(descriptor)
+        raise OSError("stream creation failed")
+
+    monkeypatch.setattr(os, "fdopen", fail)
+    assert _main(_arguments(inputs_dir, tmp_path / "output"), tmp_path) == 2
+    assert len(descriptors) == 1
+    with pytest.raises(OSError):
+        os.fstat(descriptors[0])
