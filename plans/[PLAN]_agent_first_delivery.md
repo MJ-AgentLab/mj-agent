@@ -71,11 +71,14 @@ track: engineering-workflow
 - 注册/签名/注入/撤销/信任及平台启动未运行前不得PASS；旧软件日志是原版本证据，不复用为新增后台行为证明。整体Plan仍active，Owner最终接受未完成。
 - 本轮后台第一轮完整离线运行为1487通过/6策略跳过/82未选/30subtests，日志在仓外`agent-operated/verification/`。独立审阅随后发现Git本地配置干扰、连续观察身份绑定、写入路径复验及Python启动环境继承问题；旧运行不作为修复后候选最终证据，闭合后重新验证并绑定实际版本。
 - 当前宿主`codex-cli 0.147.0`公开协议的`hooks/list`会返回原始命令及用户/系统来源，缺少服务端project-only/metadata-only筛选，本会话未调用；正常CLI尝试未取得项目实际加载/信任canary证据。未读取个人配置/命令，未用bypass或修改个人配置，宿主项保持NOT_TESTED；未观测技术拒绝时不冒称BLOCKED_EXECUTION_ROUTE。实际平台工作与该状态分别记录，依赖条件不自动豁免。
-- 新版本逐项软件验收使用更新后的`evidence/delivery/agent-first.suite.json`，仓外产物另存`D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/agent-first-delivery/2026-10-12/agent-operated/delivery/delivery.json`，原8bf8888验收包保留历史。新增后台和连续权限审计均以SELFTEST_SOFTWARE记录，真实平台注册/安装/权限/宿主/平台演练待实际核验。
-- Windows原生软件验证独立使用`evidence/delivery/executor-windows.suite.json`，产物另存同层`windows-delivery/`，必须核实际head/base、源码摘要与通用包相同；Linux合法SKIP不得冒充Windows通过。当前不新增付费Windows CI资源。
+- 新版本逐项软件验收使用更新后的`evidence/delivery/agent-first.suite.json`，仓外产物另存`D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/agent-first-delivery/2026-10-12/agent-operated/final/delivery/delivery.json`，原8bf8888验收包及本轮首次引用失败包保留历史。新增后台和连续权限审计均以SELFTEST_SOFTWARE记录，真实平台注册/安装/权限/宿主/平台演练待实际核验。
+- Windows原生软件验证独立使用`evidence/delivery/executor-windows.suite.json`，产物另存同层`final/windows-delivery/`，必须核实际head/base、源码摘要与通用包相同；Linux合法SKIP不得冒充Windows通过。当前不新增付费Windows CI资源。
 - GitHub规则API仅向具有规则写权限者显示bypass actors；执行App不增加Administration。具名管理只读核验通过明确`--management-inspect`补足隐藏名单，先核fresh App身份，再核真实`ranzuozhou`及同rule保护字段一致，App自身can-bypass仍独立核。缺失、冲突或实际API拒绝不切备用路线。
 - 最新develop已更新为`a96d759c080f4568e6810084f90fadce7b2c75cf`：#588依赖更新及#589 synthetic-only CLI已合入；#582/其Plan仍OPEN/active、actual/live未运行。转交时未提交材料/feature工作区记录保留历史，接手会话已按其授权清理登记/分支并保留备份；本会话不操作其遗留空目录。治理候选须纳入这一实际基线再作组合验证。
 - 平台备份已由正常具名Owner路线只读获取，目录为仓外`agent-operated/platform-backup-0810/`；当前观测protect-develop/main两规则、无integration、无其他规则及三种merge均启用，管理身份仍具仓库admin/maintain/push。仅证明当前读权限/备份和可用恢复身份，未改平台、未演练恢复；写前重核状态与备份一致。
+- 本轮组合软件检查点：`45f0557`纳入Q4/Q5/Q6及后台，正常合入实际develop后的`ef5eed0`全量离线1643通过/6策略跳过/30subtests，BDD23通过/7策略跳过，contract63通过/1Windows软链接权限不足跳过；ruff/mypy55源文件通过。日志在仓外`agent-operated/verification/integration-final/`。独立Agent复验了真实Windows来源/路径/hook/signing及异步回调负例，注册子流程代码GO；不等于安装、平台或宿主GO。
+- 初次通用collector命令通过，却因回调测试新增参数化后套件旧引用缺失而返回NOT_TESTED；失败包`agent-operated/delivery/`保留。仅把该引用绑定已实际运行的三个参数用例，不改断言或接受条件；更新后候选SHA及14软件AC、Windows6用例结果以final两包实际binding为准，未生成/错配不算PASS。
+- Q7正常Owner二次认证已完成，浏览器仅核公开页面title为Create GitHub App，不读密码/验证码。截图在仓外`agent-operated/browser-proof/github-sudo-required.png`保存认证要求。尚未创建/安装App、激活项目信任或写入平台；创建/安装在提交前遵循浏览器工具的安全访问确认，接受及发布授权仍分开记录。
 
 ## 原软件验证与当前未验证检查点
 
