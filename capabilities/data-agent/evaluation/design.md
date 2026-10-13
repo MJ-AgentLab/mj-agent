@@ -2,15 +2,15 @@
 type: capability-design
 capability: data-agent.evaluation
 state: draft
-version: "0.7"
+version: "0.8"
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Design: Offline EVAL Replay v1
 
-> #582 已补齐离线CLI文件适配层，公开核心保持兼容，CLI契约绑定实际main。当前状态以§5.8为准。actual采样、来源真实性及runtime验收仍延期；capability保持idea、last_verified=null，软件自测不等于实际EVAL通过。
+> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
 
 ## §1 Context
 
@@ -55,7 +55,7 @@ baseline/reviews原文件摘要不在现有manifest.hashes中；本轮另以验�
 | manifest time_basis | current_date、timezone、data_as_of、时间解释规范版本；CURRENT_DATE 等相对表达式按此日期解析，不 mock／改变真实数据库 |
 | manifest provenance | source_ref、采样时间、批准的脱敏流程版本、sanitization_review_ref、actual 来源的 sampling_approval_ref；仅消费既有批准资料，不构造授权 receipt、不自动判定其授权有效性 |
 | observation | schema_version、case_id、run_id、turn_complete、trajectory_complete、reply_complete、reply_excerpt；按连续 sequence 排序的 tool_calls；只涵盖初始用户输入至第一次完整 agent 回复，跟进对话另采样 |
-| tool_call | sequence、call_id、tool_name；execute_sql 的 sql 文本，其他工具仅名称／参数摘要；outcome=success/error/unknown；脱敏 error_codes；不含返回 rows 或完整 tool envelope |
+| tool_call | sequence、call_id、tool_name；execute_sql 的 sql 文本，其他工具仅名称；安全参数摘要仅可绑定于独立脱敏材料，现有_Call无此字段；outcome=success/error/unknown；脱敏 error_codes；不含返回 rows 或完整 tool envelope |
 | review | schema_version、run_id、case_id、check_id、case_observation_sha256、config_sha256、reference_sha256、judge_profile、judge_revision、reviewer_role、sanitized_review_ref、verdict=PASS/FAIL、reason_code；与当前观测／规则／静态参考绑定，非关键词推定 |
 | baseline | 有效实测基线须为此 runner 的原始 report.json；placeholder／手改值不能作有效基线。当前synthetic CLI只校验JSON object并接入原bytes，不执行资格、计数、状态或兼容性比较 |
 
@@ -187,6 +187,18 @@ report.json 的候选顶层为 schema_version、eval_id、run_id、input_binding
 
 不打开引用或目标文件，不导入应用装配/配置，不新增依赖。VALID/CONSISTENT可以用于整理后续材料缺口，不能用于批准采样、执行actual入口或target接受。真实数据包当前缺失，API只用固定synthetic与明确虚构内存条件验证。schema/judges/report/core/main/_file_io保持现状。
 
+### 2.7 T-007c独立synthetic来源检查CLI
+
+公开main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int位于inspection_runner.py。保持inspect_source原API的无文件IO契约，新文件适配层独立声明于[inspection-cli契约](contracts/inspection-cli.contract.yml)及Python契约新增module。只依赖inspection/schema/_file_io，不导入runner/core/judges/report、应用或客户端；小型安全参数解析器独立，避免runner导入core。
+
+必需--synthetic-fixture；五份必填文件与可选reviews/baseline七份原bytes构造ReplayInputs。root及路径词法保护可在manifest前拒绝；平台能力先验证，Windows后端只先读取manifest，runtime_observation立即2/ACTUAL_ENTRY_DEFERRED，未知来源2/SOURCE_KIND_INVALID，其余载荷/inspector/输出不可达。baseline省略为b''，显式空/非object或解析错误在inspector和输出前2；合法object不证明基线有效。
+
+任意参数/路径/结构非法，包括inspect_source返回INVALID/2，均只输出安全stderr诊断并退出2，不创建输出目录。VALID/CONSISTENT与VALID/INCOMPLETE均将原offline-source-inspection-v1字典写入唯一inspection.json，进程退出3；无case判定、Markdown、EVAL测量/回归或新增schema字段。UNVERIFIED/NOT_CHECKED/null/false保持；unknown检查、负面verdict不在这个入口变成judge结果。help0不读文件、不表示runtime通过。
+
+既有Windows固定NTFS后端原bytes不改，root/祖先句柄/卷/单链接/身份/限额/独占写入全部复用；每输入10MiB、JSONL记录256KiB、深度32、每case100调用保持。输出父存在且新目录exclusive。所有关闭成功后才退出3；write/close失败2，可附inspection_exit_code=3并保留部分输出。不自动覆盖/删除、不承诺原子或耐久性；Linux/macOS无等价原生能力继续2/FS_CAPABILITY_UNAVAILABLE。
+
+输入/路径异常的reason_code沿用原安全代码；结构API INVALID保留其reason_code。诊断input_status=INVALID、exit_code=2，不回显argv、输入、SQL/回复、来源引用或原始异常。JSON采用原canonical UTF-8/LF/稳定键，无回放当前时间或随机字段。同输入到不同新目录结果字节一致。
+
 ## §3 Architecture
 
 数据流为“显式本地输入 → 校验／摘要绑定 → case 对齐 → 首次尝试／安全全轨迹检查 → 人工记录绑定 → 完整性与指标 → 兼容比较 → report.json／report.md”。
@@ -227,7 +239,7 @@ Owner对核心公共API及当前synthetic-only CLI契约作集中批准，记录
 | 不导入 runtime precheck | 避免 settings 链与宽松 parse warning 被当通过 | judge 规则独立，但由 manifest/reference/version 显式绑定和校准 |
 | 合法且完整的实测零值 | 保留真实低质量基线 | 依赖来源、完整性与自洽校验识别 placeholder |
 
-## §5 审阅决策与验证记录（历史轮次保留，当前见 §5.8）
+## §5 审阅决策与验证记录（历史轮次保留，当前见 §5.9）
 
 本 SPEC 的 schema、全部 32 类检查、状态／计数、严格兼容键、退出码及两份契约在当前具体范围内继续执行。合成角色由 Agent 承担，不再要求 Owner 指定真人做合成验收；Owner 只保留必要信息、实质决定与授权。授权动作／对象不变时复用，实质变化才暂停受影响部分；本次仍不编码或执行 live。
 
@@ -314,3 +326,9 @@ Owner“执行待办推荐事项”单独批准推荐A：上述纯内存接口�
 初始41项来源检查测试因接口不存在RED，最小新模块后3项期望诊断与Pydantic包装不符，修正测试而非既有schema；首轮275项通过（原231+41新unit+3新BDD），28条第三方DeprecationWarning保留。资料来源真实性和target接受未验证；当前新证据见[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)。
 
 本子项VERIFIED_OFFLINE_SOFTWARE供Owner最终接受；不进行actual采样/回放、外部连接或Git发布。#582 OPEN、Plan active、capability idea/last_verified=null及其他target原scope保持；Linux/macOS native入口延期。
+
+### 5.9 T-007c授权与当前软件证据
+
+Owner于2026-10-13采纳A，授权新G1工作树实施包装器、契约/文档、固定离线测试、独立Agent合成验收及raw binding，交付本地候选供接受。基线fd045520c0123627e53d23c0ad58bf97a6b3552e，feature/582-source-inspection-cli；允许操作及AC-C1–8见Plan §8.10。本项新授权不从T-007a/b扩展，不授权actual/live、发布、删除、权限或既有保护面变化。
+
+当前结果及独立核验见[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。既有T-007a/b报告的UNCOMMITTED是当轮事实；#595已集成，旧46raw binding当前39匹配/5换行差异/2已知集成内容差异，历史不重写或归一化补绿。本轮新绑定按新G1工作树原bytes重新记录。来源真实性、独立审阅真实性、授权有效性及target接受不由字符串/hash证明；T-007c不会解除这些延期。

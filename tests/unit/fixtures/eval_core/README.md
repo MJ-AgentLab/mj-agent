@@ -53,3 +53,11 @@ T-007b inspection.expected.json is independently fixed before implementation (22
 review coverage NOT_CHECKED, no runtime metrics or eligible baseline. Fictional actual metadata
 exists only in memory tests; references and target hashes are never resolved or authenticated.
 No observation/review bytes or existing expected files were changed.
+
+T-007c inspection_runner is a separate Windows fixed-NTFS synthetic-only file adapter.
+The unchanged inspection.expected.json predates this wrapper and remains the fixed output
+expectation. CLI writes only inspection.json into a new directory: VALID/CONSISTENT or
+INCOMPLETE exits 3, any invalid input exits 2 before output. Actual labels are fictional
+refusal conditions only. Raw input bytes stay unchanged; independent Agent acceptance
+checks real process output, raw bindings and no forbidden imports/access. No runtime
+metrics, baseline eligibility, coverage or provenance certification is added.

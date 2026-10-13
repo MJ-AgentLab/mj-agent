@@ -1,0 +1,32 @@
+
+import hashlib,json,os,pathlib,runpy,sys
+sys.path.insert(0,sys.argv[1]); trace_path=pathlib.Path(sys.argv[2]); mode=sys.argv[3]; args=sys.argv[4:]
+blocked=('mj_agent.evaluation.core','mj_agent.evaluation.judges','mj_agent.evaluation.report','mj_agent.evaluation.runner','mj_agent.config','mj_agent.agent','mj_agent.tools','mj_agent.llm','mj_agent.integrations','mj_agent.memory','mj_agent.ui','dotenv','psycopg','openai'); hits=[]
+class Guard:
+ def find_spec(self,name,path=None,target=None):
+  if name.startswith(blocked): hits.append('import'); raise AssertionError('forbidden import')
+sys.meta_path.insert(0,Guard())
+def audit(event,data):
+ if event in ('socket.connect','subprocess.Popen'): hits.append('external'); raise AssertionError('forbidden external operation')
+ if event=='open' and isinstance(data[0],(str,os.PathLike)):
+  n=pathlib.Path(data[0]).name.casefold()
+  if n.startswith('.env') or (n.startswith('secrets') and n.endswith('.enc')): hits.append('secret'); raise AssertionError('forbidden protected reference')
+sys.addaudithook(audit)
+from mj_agent.evaluation import _file_io,inspection
+reads=[]; writes=[]; supplied=[]; old_read=_file_io._WindowsIO.read; old_write=_file_io._WindowsIO.write; old_inspect=inspection.inspect_source
+def read(self,parts):
+ reads.append(list(parts))
+ if mode in ('actual_label','unknown_source') and parts[-1]!='manifest.json': hits.append('post_gate_read'); raise AssertionError('post gate read')
+ return old_read(self,parts)
+def write(self,parts,files):
+ writes.append({'parts':list(parts),'files':[n for n,b in files]}); return old_write(self,parts,files)
+def inspect(inputs):
+ supplied.append({field:hashlib.sha256(getattr(inputs,field)).hexdigest() for field in ('config','dataset','observations','manifest','reference','reviews','baseline')})
+ if mode in ('actual_label','unknown_source'): hits.append('post_gate_inspect'); raise AssertionError('post gate inspect')
+ return old_inspect(inputs)
+_file_io._WindowsIO.read=read; _file_io._WindowsIO.write=write; inspection.inspect_source=inspect
+sys.argv=['mj-agent-source-inspection',*args]
+try: runpy.run_module('mj_agent.evaluation.inspection_runner',run_name='__main__')
+except SystemExit as exc: code=exc.code
+loaded=[n for n in sys.modules if n.startswith(blocked)]
+trace={'process_exit':code,'reads':reads,'writes':writes,'supplied_raw_sha256':supplied,'forbidden_events':hits,'forbidden_modules':loaded,'platform':sys.platform,'python':sys.version.split()[0]}; trace_path.write_bytes((json.dumps(trace,sort_keys=True)+'\n').encode()); assert not hits and not loaded; raise SystemExit(code)

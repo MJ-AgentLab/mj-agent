@@ -1,0 +1,86 @@
+"""Synthetic-only file adapter for source structure inspection, never EVAL."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from contextlib import closing
+from pathlib import Path
+from typing import Any, NoReturn
+
+from ._file_io import _backend, _FileError, _relative, _root
+from .inspection import inspect_source
+from .schema import _INPUT_ERRORS, ReplayInputs, _canonical, _Invalid, _json, _Manifest
+
+_INPUT_OPTIONS = {"config": "--eval-config", "dataset": "--dataset", "observations": "--observations",
+                  "manifest": "--manifest", "reference": "--reference", "reviews": "--reviews",
+                  "baseline": "--baseline"}
+
+
+class _Parser(argparse.ArgumentParser):
+    def error(self, message: str) -> NoReturn:
+        raise _FileError("CLI_ARGUMENT_INVALID")
+
+
+def _parser() -> argparse.ArgumentParser:
+    parser = _Parser(prog="mj-agent-source-inspection",
+                     description="Inspect explicitly named synthetic fixtures only; never authenticate evidence.",
+                     allow_abbrev=False)
+    parser.add_argument("--synthetic-fixture", required=True, action="store_true")
+    for field, option in _INPUT_OPTIONS.items():
+        parser.add_argument(option, dest=field, required=field not in {"reviews", "baseline"})
+    parser.add_argument("--output-dir", required=True)
+    return parser
+
+
+def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int:
+    """Write one synthetic inspection JSON; every invalid input is refused before output."""
+    inspection_exit = None
+    try:
+        args = _parser().parse_args(argv)
+        root = _root(repo_root)
+        paths = {field: _relative(root, value) for field in _INPUT_OPTIONS
+                 if (value := getattr(args, field)) is not None}
+        output = _relative(root, args.output_dir)
+        with closing(_backend(root)) as session:
+            manifest_bytes = session.read(paths["manifest"])
+            value = _json(manifest_bytes)
+            if not isinstance(value, dict):
+                raise _FileError("SOURCE_KIND_INVALID")
+            if value.get("source_kind") == "runtime_observation":
+                raise _FileError("ACTUAL_ENTRY_DEFERRED")
+            if value.get("source_kind") != "synthetic_fixture":
+                raise _FileError("SOURCE_KIND_INVALID")
+            _Manifest.model_validate(value)
+            values = {field: session.read(parts) for field, parts in paths.items() if field != "manifest"}
+            if "baseline" in values:
+                if not values["baseline"]:
+                    raise _FileError("BASELINE_INPUT_EMPTY")
+                if not isinstance(_json(values["baseline"]), dict):
+                    raise _FileError("BASELINE_NOT_OBJECT")
+            result = inspect_source(ReplayInputs(**values, manifest=manifest_bytes))
+            if result["input_status"] != "VALID":
+                raise _FileError(result["reason_code"])
+            inspection_exit = int(result["exit_code"])
+            session.write(output, (("inspection.json", _canonical(result)),))
+            return inspection_exit
+    except SystemExit as exc:
+        return exc.code if isinstance(exc.code, int) else 2
+    except _FileError as exc:
+        reason = str(exc)
+    except _INPUT_ERRORS as exc:
+        reason = str(exc) if isinstance(exc, _Invalid) else "INVALID_INPUT_SCHEMA"
+    except OSError:
+        reason = "OUTPUT_IO_FAILED" if inspection_exit is not None else "LOCAL_IO_REJECTED"
+    except Exception:
+        reason = "INTERNAL_ERROR"
+    diagnostic: dict[str, Any] = {"input_status": "INVALID", "reason_code": reason, "exit_code": 2}
+    if inspection_exit is not None:
+        diagnostic["inspection_exit_code"] = inspection_exit
+    print(json.dumps(diagnostic, sort_keys=True), file=sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

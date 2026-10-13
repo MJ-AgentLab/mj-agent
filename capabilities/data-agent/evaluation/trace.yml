@@ -1,6 +1,6 @@
-# 6 core + 5 CLI + 3 in-memory inspection scenarios; actual deferred.
+# 6 core + 5 replay CLI + 3 in-memory + 4 inspection CLI; actual deferred.
 capability: data-agent.evaluation
-generated: 2026-10-12
+generated: '2026-10-13'
 schema_version: '1.2'
 links:
 - req: REQ-001
@@ -12,10 +12,15 @@ links:
     - Actual source is refused before observation access
     - Coherent source references never authenticate runtime evidence
     - Source inspection lists missing observations without judging cases
+    - Synthetic source inspection CLI never authenticates evidence
+    - Source inspection CLI refuses actual before other input access
+    - Invalid source inspection input cannot create a report
+    - Source inspection CLI preserves missing observation gaps
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
   - contracts/cli.contract.yml
+  - contracts/inspection-cli.contract.yml
   tests:
   - tests/unit/test_eval_core.py
   - tests/unit/test_eval_runner.py
@@ -25,6 +30,7 @@ links:
   - tasks.md#T-006
   - tasks.md#T-007a
   - tasks.md#T-007b
+  - tasks.md#T-007c
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
   - https://github.com/MJ-AgentLab/mj-agent/pull/589
@@ -38,6 +44,8 @@ links:
   - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
   - evidence/reports/2026-10-12_source_inspection_acceptance.md
   - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
+  - evidence/reports/2026-10-13_source_inspection_cli_acceptance.md
+  - evidence/bdd/2026-10-13_source_inspection_cli_scenarios_pass.md
 - req: REQ-002
   bdd:
     feature: contracts/behavior.feature
@@ -120,10 +128,14 @@ links:
     - A baseline file cannot turn a synthetic run into runtime comparison
     - Coherent source references never authenticate runtime evidence
     - Source inspection lists missing observations without judging cases
+    - Synthetic source inspection CLI never authenticates evidence
+    - Invalid source inspection input cannot create a report
+    - Source inspection CLI preserves missing observation gaps
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
   - contracts/cli.contract.yml
+  - contracts/inspection-cli.contract.yml
   tests:
   - tests/unit/test_eval_core.py
   - tests/unit/test_eval_runner.py
@@ -135,6 +147,7 @@ links:
   - tasks.md#T-006
   - tasks.md#T-007a
   - tasks.md#T-007b
+  - tasks.md#T-007c
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
   - https://github.com/MJ-AgentLab/mj-agent/pull/589
@@ -148,6 +161,8 @@ links:
   - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
   - evidence/reports/2026-10-12_source_inspection_acceptance.md
   - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
+  - evidence/reports/2026-10-13_source_inspection_cli_acceptance.md
+  - evidence/bdd/2026-10-13_source_inspection_cli_scenarios_pass.md
 - req: REQ-006
   bdd:
     feature: contracts/behavior.feature
@@ -158,10 +173,14 @@ links:
     - Output collision or partial write is never a completed report delivery
     - A baseline file cannot turn a synthetic run into runtime comparison
     - Source inspection cannot access files services or application configuration
+    - Synthetic source inspection CLI never authenticates evidence
+    - Source inspection CLI refuses actual before other input access
+    - Invalid source inspection input cannot create a report
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
   - contracts/cli.contract.yml
+  - contracts/inspection-cli.contract.yml
   tests:
   - tests/unit/test_eval_core.py
   - tests/unit/test_eval_runner.py
@@ -172,6 +191,7 @@ links:
   - tasks.md#T-007a
   - tasks.md#T-007
   - tasks.md#T-007b
+  - tasks.md#T-007c
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
   - https://github.com/MJ-AgentLab/mj-agent/pull/589
@@ -185,3 +205,5 @@ links:
   - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
   - evidence/reports/2026-10-12_source_inspection_acceptance.md
   - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
+  - evidence/reports/2026-10-13_source_inspection_cli_acceptance.md
+  - evidence/bdd/2026-10-13_source_inspection_cli_scenarios_pass.md

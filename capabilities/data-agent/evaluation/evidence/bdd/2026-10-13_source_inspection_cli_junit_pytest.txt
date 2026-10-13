@@ -1,0 +1,8 @@
+..................                                                       [100%]
+============================== warnings summary ===============================
+..\..\develop\.venv\Lib\site-packages\gherkin\gherkin_line.py:79: 36 warnings
+  D:\workspace\10-software-project\projects\mj-agent\develop\.venv\Lib\site-packages\gherkin\gherkin_line.py:79: DeprecationWarning: 'maxsplit' is passed as positional argument
+    uncommented_line = re.split(r"\s#", self._trimmed_line_text.strip(), 2)[0]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+18 passed, 36 warnings in 2.76s

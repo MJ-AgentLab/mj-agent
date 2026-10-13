@@ -1,0 +1,31 @@
+# T-007c: separate synthetic-only source inspection file adapter.
+contract_id: inspection-cli
+adapter: python
+covers_requirements:
+  - REQ-001
+  - REQ-005
+  - REQ-006
+modules:
+  - path: src.mj_agent.evaluation.inspection_runner
+    freeze_anchor: src/mj_agent/evaluation/inspection_runner.py
+    exports:
+      - name: main
+        signature: "def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int"
+        public: true
+    public_invariants:
+      - "仅显式--synthetic-fixture及synthetic_fixture manifest进入来源检查；actual在其他载荷/inspector/输出前返回2/ACTUAL_ENTRY_DEFERRED"
+      - "直接依赖inspection/schema/_file_io，不导入runner/core/judges/report/应用配置或客户端，不连接服务、不解析引用"
+      - "五份必填及reviews/baseline原bytes通过原保护后端读取；可选缺省b''；显式baseline空/非object在inspector和输出前返回2，不认证或比较基线"
+      - "任何非法参数/路径/输入或API INVALID/2在输出创建前拒绝；stderr只含安全诊断，不回显argv/载荷/异常"
+      - "VALID的CONSISTENT或INCOMPLETE均返回3并只写新目录inspection.json；原offline-source-inspection-v1字段不变"
+      - "source/target始终UNVERIFIED、review coverage NOT_CHECKED、runtime_metrics=null、baseline_eligible=false，不判断check适用性或语义verdict"
+      - "完全复用Windows固定NTFS root/祖先句柄/卷/单链接/身份/限额/独占输出保护；Linux/macOS缺能力返回2/FS_CAPABILITY_UNAVAILABLE，不降级"
+      - "成功关闭所有文件及后端才返回3；write/close失败2，可附inspection_exit_code并保留部分输出，不覆盖/删除、不承诺原子或耐久性"
+      - "相同原bytes输出稳定UTF-8/LF单JSON，无时间/路径/随机字段；help0不读取输入、不表示runtime通过"
+non_actions:
+  - module: src.mj_agent.evaluation.inspection_runner
+    items:
+      - "不新增actual入口、采样、服务连接、引用读取、来源认证、审阅覆盖或target接受"
+      - "不改既有核心/schema/judges/report/_file_io/runtime/CI/守卫/权限，不生成EVAL报告或有效基线"
+hitl_required:
+  - declared-contract-change

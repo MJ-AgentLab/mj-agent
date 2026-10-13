@@ -2,15 +2,15 @@
 type: capability-tasks
 capability: data-agent.evaluation
 state: draft
-version: "0.7"
+version: "0.8"
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Tasks: Offline EVAL Replay
 
-> Owner已集中授权独立离线核心编码、必要测试、Agent合成验收和回归报告。
+> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
 > 核心及CLI已完成软件验证，actual采样／runtime验收延期；不修改既有runtime、不执行live或Git发布。T-006已随#589合并；当前执行见T-007b，原核心与CLI轮次结果保留历史。
 
 ## Done — #587历史核心范围
@@ -94,6 +94,16 @@ updated: 2026-10-12
 - Agent模拟Domain/Prompt后由同Agent独立SWE轮核验固定输入/原hash/缺口/无IO与禁用基线；Subagent dispatched=NONE、不要求真人参与。
 - 证据：[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)、[BDD](evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md)。实际来源材料/审阅/target及各平台保护仍DEFERRED/NOT_RUN；本项软件通过不关闭T-007。
 
+
+### T-007c Windows synthetic-only来源检查CLI
+
+- Priority：high；Linked REQ：REQ-001、REQ-005、REQ-006；状态：本地候选，待Owner接受。
+- Owner2026-10-13采纳A独立授权；新G1 feature/582-source-inspection-cli从fd045520建立，不重建旧树，不在develop编码。全部AC及禁止动作见Plan §8.10。
+- 新增inspection_runner.main；现有ReplayInputs/replay/inspect_source/runner与core/schema/judges/report/_file_io/runtime原bytes保持。独立CLI契约新增，不混入旧入口。
+- manifest优先/actual早2，七份原bytes和可选baseline格式闸；VALID写单JSON退出3，任何INVALID不创建输出。固定状态和no-judge语义保持。
+- 方法red-green；固定断言先观察模块缺失59 FAIL，再最小实现。中间2项平台注入误改os.name导致root类型诊断，修测试为sys.platform模型；未修改平台后端。新增unit覆盖输入、调用顺序、保护、限额、故障和新进程隔离。
+- 新增4项BDD；新运行证据及独立Agent合成验收见[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。本项不关闭T-007，actual/runtime与平台原生保护仍延期。
+
 ## Backlog — 延期范围
 
 ### T-007 actual文件入口、实际基线比较及runtime接受
@@ -103,7 +113,7 @@ updated: 2026-10-12
 - Linux原生文件入口未实际验证；无保护能力时fail closed，不以Windows或模型测试替代。
 - RED/GREEN：NOT_RUN，不计T-006软件通过。#582保持OPEN，Plan active、capability idea/last_verified=null。
 
-## In-Progress
+## In-Progress（历史T-007a/b轮次；当前见T-007c）
 
 T-007a与T-007b离线软件已验证，供Owner最终接受；本轮未授权Git发布。T-006历史交付已合并；actual与平台延期不归入Done。
 
