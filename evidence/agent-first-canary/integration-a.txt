@@ -1,1 +1,2 @@
 Integration canary A: public fixture observes actual CI failure, repair, and latest-push approval in the external acceptance bundle.
+Recovery: the input is restored to green; the fixed test assertion remains unchanged.
