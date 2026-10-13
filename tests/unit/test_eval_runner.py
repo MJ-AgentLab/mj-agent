@@ -955,14 +955,21 @@ def test_inspection_cli_paths_refuse_before_backend(
         args.extend([field, value])
     else:
         _replace(args, field, value)
-    backend = Mock(side_effect=_reject)
+    unsupported_reserved_name = value == "NUL" and os.name != "nt"
+    backend = Mock(wraps=fio._backend) if unsupported_reserved_name else Mock(side_effect=_reject)
     inspector = Mock(side_effect=_reject)
     monkeypatch.setattr(module, "_backend", backend)
     monkeypatch.setattr(module, "inspect_source", inspector)
     assert module.main(args, repo_root=tmp_path) == 2
-    backend.assert_not_called()
+    diagnostic = json.loads(capsys.readouterr().err)
+    if unsupported_reserved_name:
+        backend.assert_called_once_with(tmp_path)
+        assert diagnostic["reason_code"] == "FS_CAPABILITY_UNAVAILABLE"
+    else:
+        backend.assert_not_called()
     inspector.assert_not_called()
-    assert value not in capsys.readouterr().err
+    assert value not in json.dumps(diagnostic)
+    assert not (tmp_path / "output").exists()
 
 
 @pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native inspection deferred")

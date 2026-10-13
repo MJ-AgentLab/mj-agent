@@ -1,0 +1,29 @@
+{
+  "schema_version": "offline-test-execution-v1",
+  "source_kind": "software_test",
+  "started_at": "2026-10-13T09:11:36.615995+00:00",
+  "finished_at": "2026-10-13T09:11:51.320917+00:00",
+  "argv": [
+    "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "scripts/sdd/run_offline_pytest.py",
+    "tests/unit/test_eval_core.py",
+    "tests/unit/test_eval_runner.py",
+    "tests/bdd/data_agent/evaluation/test_evaluation_bdd.py",
+    "-q"
+  ],
+  "cwd": "D:/workspace/10-software-project/projects/mj-agent/feature/582-source-inspection-cli",
+  "host": {
+    "os_name": "nt",
+    "sys_platform": "win32"
+  },
+  "exit_code": 0,
+  "output_encoding": "base64-of-original-combined-stdout-stderr-bytes",
+  "output_size": 933,
+  "output_sha256": "499cd343b92decd0a76560fe3c90a2d5dd214dc170de2f2a0261c942e387acfc",
+  "output_base64": "Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgMjAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgNDAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgNjAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgODAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgIFsxMDAlXQ0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09IHdhcm5pbmdzIHN1bW1hcnkgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLi5cLi5cZGV2ZWxvcFwudmVudlxMaWJcc2l0ZS1wYWNrYWdlc1xnaGVya2luXGdoZXJraW5fbGluZS5weTo3OTogMzYgd2FybmluZ3MNCiAgRDpcd29ya3NwYWNlXDEwLXNvZnR3YXJlLXByb2plY3RccHJvamVjdHNcbWotYWdlbnRcZGV2ZWxvcFwudmVudlxMaWJcc2l0ZS1wYWNrYWdlc1xnaGVya2luXGdoZXJraW5fbGluZS5weTo3OTogRGVwcmVjYXRpb25XYXJuaW5nOiAnbWF4c3BsaXQnIGlzIHBhc3NlZCBhcyBwb3NpdGlvbmFsIGFyZ3VtZW50DQogICAgdW5jb21tZW50ZWRfbGluZSA9IHJlLnNwbGl0KHIiXHMjIiwgc2VsZi5fdHJpbW1lZF9saW5lX3RleHQuc3RyaXAoKSwgMilbMF0NCg0KLS0gRG9jczogaHR0cHM6Ly9kb2NzLnB5dGVzdC5vcmcvZW4vc3RhYmxlL2hvdy10by9jYXB0dXJlLXdhcm5pbmdzLmh0bWwNCjM1OCBwYXNzZWQsIDM2IHdhcm5pbmdzIGluIDExLjk2cw0K",
+  "actual_runtime_acceptance": false,
+  "native_linux_success_entry": "DEFERRED_NOT_TESTED"
+}
