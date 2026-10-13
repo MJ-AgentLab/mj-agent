@@ -61,6 +61,8 @@ Issue #582：T-006已随#589合并；T-007a baseline文件参数和T-007b纯内�
 
 [ADR-042 Agent-first交付治理](../decisions/ADR-042_Agent_First_Delivery_Governance.md)及[交付指南](guide/[GUIDE]_Agent_First_Delivery.md)定义任务授权、自主闭环、独立核验及Owner结果式接受；平台/宿主启用及actual/部署/恢复延期分别记录。
 
+[交付后续 Plan](../plans/[PLAN]_agent_first_delivery_followups.md)记录旧能力离线软件证据刷新及独立平台/运行待办；[跨宿主归档完整性 SPEC](design/sdd/[SPEC]_Portable_Delivery_Evidence_Verification.md)规定新增只读工程核验，保留原 archive、执行版本与来源限制，不替代行为验收或可信门禁。
+
 > 2026-05-11 cross-repo decoupling cleanup（PR-Γ）后：9 个"记录从早期内部上游系统继承设计决策"的 ADR（010/015/017/018/019/021/022/023/025）已批量 archive 到 [[archive/decisions/superseded/INDEX|archive/decisions/superseded/]]（M5-PR3b 由 docs/archive/adr/ 平移）；其内容已沉淀为对应 framework STANDARD 段。ADR-025 拆分为 mj-agent 原生 ADR-026/027/028。
 
 | 文档 | domain | decision | 摘要 |

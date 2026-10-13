@@ -1,0 +1,556 @@
+{
+  "schema_version": 1,
+  "scope": "Historical-capability software evidence refresh; evaluation/#582 is excluded.",
+  "historical_baseline_sha": "fd045520c0123627e53d23c0ad58bf97a6b3552e",
+  "g21_interface_migration": "NOT_MIGRATED",
+  "version_bound_artifact_status": "NOT_RUN",
+  "claims": {
+    "owner_accepted": false,
+    "runtime_baseline_eligible": false,
+    "independent_source_authenticated": false,
+    "actual_runtime_verified": false
+  },
+  "reproduction": {
+    "suite": "evidence/delivery/legacy-capabilities.suite.json",
+    "collector": "scripts/sdd/delivery_evidence.py run/check",
+    "preconditions": [
+      "Commit all suite, migration, baseline, harness and test inputs before running the version-bound collector.",
+      "Use a clean actual tested checkout and full repository/head/base identities.",
+      "Choose a new external output directory; never overwrite a historical artifact."
+    ],
+    "limits": [
+      "Targeted development runs do not bind the uncommitted suite to a tested commit.",
+      "All refreshed results are software SELFTEST; no actual runtime acceptance, provenance authentication or Owner acceptance.",
+      "Old G21 references are not migrated to external artifacts by this unit.",
+      "Live pytest legs remain SKIP_POLICY_EXTERNAL_DEPENDENCY; unbound scenarios remain NOT_RUN."
+    ]
+  },
+  "capabilities": [
+    {
+      "capability": "data-agent.safe-sql",
+      "path": "capabilities/data-agent/safe-sql",
+      "historical_files": [
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/bdd/b1-poc-3-scenarios-landing.md",
+          "sha256": "85e50bfb00e2f7caa67ff4c552b16ce3313d1ce6028a5490192ee91bc3f715ba"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/bdd/b2-live-db-scenarios-landing.md",
+          "sha256": "2335c355912dd382ce56a63836515a0d319f7180da480fc0fa80ed47a1f564ef"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/bdd/stage-b-closure.md",
+          "sha256": "eba4d78ae66109a51f24540bccb5805add13786fe01adc6ae91e53c7609e4bc9"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/reports/2026-06-02_adr-024-eval-baseline.md",
+          "sha256": "d0cdb090d95f3a693c3e937b5be6fc2442f3a42f560f0ec5a1ac3827b5f6e397"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/reports/g1g2g9-real-impl-landing.md",
+          "sha256": "a156df9931ef78180ee6a5d9f97d43348b78f279fbca17df4f8a1599839150cb"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/reports/v7-runtime-skill-validator-landing.md",
+          "sha256": "f8233585f9fef07812f4855a3aed7758eed20630851df29c9f00188a3f1de177"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+          "sha256": "6a2989ea4480105e32b51470f4b471587128f94d4298d4d8e6de42581317cab5"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/security/2026-05-23_sql_injection_audit.md",
+          "sha256": "959281b3e8c6cab62663ed2a5b1c3d4270d41c56d005c01886e3ff15f9bc0979"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/verification/2026-05-23_l1_pass_rate.md",
+          "sha256": "29fc7d2722115eb4a32f2d19ab0516176444c18640a5ad40ade720b68ee93ccb"
+        },
+        {
+          "path": "capabilities/data-agent/safe-sql/evidence/verification/2026-05-23_l1b_pass_rate.md",
+          "sha256": "d12acbf9dc6d8657613115c4aef4967cfe83522ee81ca774ecbaa7d28cd93131"
+        }
+      ],
+      "software_command_id": "safe-sql-bdd",
+      "offline_bdd_nodes": [
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_guardrail",
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_allowlist_quoting_agnostic",
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_002_l1b_precheck",
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_006_middleware_tool_message"
+      ],
+      "sut_inputs": [
+        "src/mj_agent/tools/biz_context.py",
+        "src/mj_agent/tools/__init__.py",
+        "src/mj_agent/tools/analysis/aggregate.py",
+        "src/mj_agent/tools/analysis/compare_periods.py",
+        "src/mj_agent/tools/analysis/detect_anomaly.py",
+        "src/mj_agent/tools/analysis/drill_down.py",
+        "src/mj_agent/tools/analysis/token_estimator.py",
+        "src/mj_agent/tools/analysis/__init__.py",
+        "src/mj_agent/tools/charts/bar.py",
+        "src/mj_agent/tools/charts/line.py",
+        "src/mj_agent/tools/charts/trend.py",
+        "src/mj_agent/tools/charts/_common.py",
+        "src/mj_agent/tools/charts/__init__.py",
+        "src/mj_agent/tools/excel/export.py",
+        "src/mj_agent/tools/excel/__init__.py",
+        "src/mj_agent/tools/sql/execute.py",
+        "src/mj_agent/tools/sql/guardrail.py",
+        "src/mj_agent/tools/sql/introspect.py",
+        "src/mj_agent/tools/sql/precheck.py",
+        "src/mj_agent/tools/sql/__init__.py",
+        "src/mj_agent/biz_catalog/finder.py",
+        "src/mj_agent/biz_catalog/loader.py",
+        "src/mj_agent/biz_catalog/__init__.py",
+        "src/mj_agent/config.py",
+        "src/mj_agent/integrations/mj_system_db.py",
+        "src/mj_agent/middleware/tool_errors.py",
+        "src/mj_agent/biz_catalog/qcm_catalog.yaml"
+      ],
+      "scenarios": [
+        {
+          "name": "L1 regex guardrail rejects blocked-keyword statement before DB contact",
+          "risk": [
+            "critical"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_guardrail",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact",
+          "risk": [
+            "critical"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_001_l1_allowlist_quoting_agnostic",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "L1b precheck rejects biz_dws fact-table query missing time-column predicate",
+          "risk": [
+            "critical"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_002_l1b_precheck",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "L3 connection enforces read-only transaction + bounded timeouts via DSN options",
+          "risk": [
+            "critical"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        },
+        {
+          "name": "L4 statement_timeout cancellation translates to Chinese self-correction hint",
+          "risk": [
+            "critical"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "NOT_RUN",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "No selected offline automation for this scenario; historical/live reports are not new execution evidence."
+        },
+        {
+          "name": "execute_sql return envelope contains 8 required keys with documented types",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        },
+        {
+          "name": "handle_sql_tool_errors middleware converts tool ValueError into ToolMessage",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py::test_req_006_middleware_tool_message",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        }
+      ]
+    },
+    {
+      "capability": "data-agent.biz-catalog",
+      "path": "capabilities/data-agent/biz-catalog",
+      "historical_files": [
+        {
+          "path": "capabilities/data-agent/biz-catalog/evidence/runtime/2026-05-23_freshness_check.md",
+          "sha256": "0a94b49074538f7d7d18f4e9ce661539f7cd327d8f267815d0d43a5de4760abc"
+        }
+      ],
+      "software_command_id": "biz-catalog-bdd",
+      "offline_bdd_nodes": [
+        "tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_001_load_catalog_rejects_list_root"
+      ],
+      "sut_inputs": [
+        "src/mj_agent/biz_catalog/finder.py",
+        "src/mj_agent/biz_catalog/loader.py",
+        "src/mj_agent/biz_catalog/__init__.py",
+        "src/mj_agent/biz_catalog/qcm_catalog.yaml"
+      ],
+      "scenarios": [
+        {
+          "name": "load_catalog rejects YAML whose root parses to a list (not a mapping)",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py::test_req_001_load_catalog_rejects_list_root",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "Catalog signal_tables must resolve in live biz_dws",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        },
+        {
+          "name": "Active SKILL bodies reference only resolvable catalog symbols and DB tables",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        }
+      ]
+    },
+    {
+      "capability": "data-agent.llm-provider",
+      "path": "capabilities/data-agent/llm-provider",
+      "historical_files": [
+        {
+          "path": "capabilities/data-agent/llm-provider/evidence/reports/v3-validator-contract-align-report.md",
+          "sha256": "8f2513b0e0ff9c587398c6f970fe9a3c0a7b32034ce0f8053615cf2bbe58d971"
+        },
+        {
+          "path": "capabilities/data-agent/llm-provider/evidence/runtime/2026-05-23_endpoint_probe.md",
+          "sha256": "b4c60742f82371ad1f99605a31e0ebfd63f0542dce23dcd36f66f72638c58d2e"
+        },
+        {
+          "path": "capabilities/data-agent/llm-provider/evidence/runtime/2026-07-03_dgx_e2e.md",
+          "sha256": "ca7850af2e30a9f05132e337d8650665f248d2273342d1f518eae858bb0854c4"
+        }
+      ],
+      "software_command_id": "llm-provider-bdd",
+      "offline_bdd_nodes": [
+        "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_001_ark_empty_creds",
+        "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_002_local_no_thinking",
+        "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_003_local_empty_sentinel"
+      ],
+      "sut_inputs": [
+        "src/mj_agent/config.py",
+        "src/mj_agent/llm.py"
+      ],
+      "scenarios": [
+        {
+          "name": "Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_001_ark_empty_creds",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "Local provider constructs ChatOpenAI without extra_body.thinking",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_002_local_no_thinking",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py::test_req_003_local_empty_sentinel",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        }
+      ]
+    },
+    {
+      "capability": "data-agent.memory-checkpointer",
+      "path": "capabilities/data-agent/memory-checkpointer",
+      "historical_files": [
+        {
+          "path": "capabilities/data-agent/memory-checkpointer/evidence/verification/2026-07-22_canary_smoke_pass.md",
+          "sha256": "a273a5d284029f377c99dce56ea0a662991561ef4f73074a4a79527d116e84b5"
+        },
+        {
+          "path": "capabilities/data-agent/memory-checkpointer/evidence/verification/2026-07-23_ttl_eviction.md",
+          "sha256": "d89b5368e1b8a56130db2fe4352825d9a79775c8a4dbcc27f7b7545e1b5f2a0a"
+        }
+      ],
+      "software_command_id": "memory-checkpointer-bdd",
+      "offline_bdd_nodes": [
+        "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_001_rows_replaced_by_digest",
+        "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_002_live_state_untouched",
+        "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_003_retains_executed_sql"
+      ],
+      "sut_inputs": [
+        "src/mj_agent/memory/__init__.py",
+        "src/mj_agent/memory/redaction.py",
+        "src/mj_agent/memory/digest.py",
+        "src/mj_agent/memory/retention.py"
+      ],
+      "scenarios": [
+        {
+          "name": "Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_001_rows_replaced_by_digest",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "Redaction clones the message so the live in-process state is untouched",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_002_live_state_untouched",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "The digested envelope retains executed_sql for recoverable-by-refetch",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py::test_req_003_retains_executed_sql",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "Both on-disk write paths carry no verbatim biz cell value",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "NOT_RUN",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "No selected offline automation for this scenario; historical/live reports are not new execution evidence."
+        },
+        {
+          "name": "Evicting stale threads removes only threads older than the TTL",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "NOT_RUN",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "No selected offline automation for this scenario; historical/live reports are not new execution evidence."
+        },
+        {
+          "name": "A dry run reports stale threads without deleting",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "NOT_RUN",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "No selected offline automation for this scenario; historical/live reports are not new execution evidence."
+        }
+      ]
+    },
+    {
+      "capability": "infrastructure.docker-compose",
+      "path": "capabilities/infrastructure/docker-compose",
+      "historical_files": [
+        {
+          "path": "capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing.md",
+          "sha256": "7df9ce5173653b23c8d180a1f9cb0f2457e175477f7bd789f93da11838ca1d18"
+        },
+        {
+          "path": "capabilities/infrastructure/docker-compose/evidence/runtime/2026-05-23_compose_smoke.md",
+          "sha256": "9af066d6f239c1db3975df8c7a9163b032325cd21d2d2ed4121d3b3e28e3aa76"
+        }
+      ],
+      "software_command_id": null,
+      "offline_bdd_nodes": [],
+      "sut_inputs": [],
+      "scenarios": [
+        {
+          "name": "DEV profile loads with explicit -f chain + --env-file",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        },
+        {
+          "name": "Postgres healthcheck rejects half-initialized DB",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        },
+        {
+          "name": "Postgres init handles password with shell metacharacters unmangled",
+          "risk": [
+            "high"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "DEFERRED",
+          "offline_bdd_node": null,
+          "planned_evidence_kind": "POLICY_SKIP",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "External fixture remains SKIP_POLICY_EXTERNAL_DEPENDENCY; no live run is authorized."
+        }
+      ]
+    },
+    {
+      "capability": "infrastructure.mcp-server-governance",
+      "path": "capabilities/infrastructure/mcp-server-governance",
+      "historical_files": [
+        {
+          "path": "capabilities/infrastructure/mcp-server-governance/evidence/reports/v4-validator-fix-report.md",
+          "sha256": "be7d79b602b23938f5f44bd9231bf9dcc0ccff15e7b658c299323575bac8f1ac"
+        },
+        {
+          "path": "capabilities/infrastructure/mcp-server-governance/evidence/runtime/2026-05-23_quarterly_audit_q2.md",
+          "sha256": "2e077f49ed2354b0cb05bf2222516aa6f41e2f4f8728bb69cf779e0f67ea6b54"
+        }
+      ],
+      "software_command_id": "mcp-server-governance-bdd",
+      "offline_bdd_nodes": [
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_001_a14_gate_template_exists",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_002_pg_wrapper_consistency"
+      ],
+      "sut_inputs": [
+        ".codex/config.toml",
+        ".codex/hooks.json",
+        ".codex/rules/mj-agent.rules",
+        "scripts/sdd/check_codex_native.py",
+        "scripts/sdd/codex_hook_guard.py",
+        "scripts/sdd/git_command_review.py",
+        "scripts/sdd/task_delivery.py",
+        ".github/PULL_REQUEST_TEMPLATE.md"
+      ],
+      "scenarios": [
+        {
+          "name": "Adding a new MCP server triggers A14 PR gate body declaration",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_001_a14_gate_template_exists",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        },
+        {
+          "name": "All 5 memory pg entries reference the same native wrapper script",
+          "risk": [
+            "medium"
+          ],
+          "historical_integrity": "UNVERIFIED",
+          "g21_status": "NOT_APPLICABLE",
+          "offline_bdd_node": "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_002_pg_wrapper_consistency",
+          "planned_evidence_kind": "SELFTEST",
+          "software_status": "NOT_RUN_VERSION_BOUND_COLLECTOR",
+          "actual_runtime_status": "NOT_RUN",
+          "limitation": "Offline software only; the descriptive Background is not a service/persistence/role observation."
+        }
+      ]
+    }
+  ]
+}
