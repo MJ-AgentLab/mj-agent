@@ -1,0 +1,664 @@
+{
+  "schema_version": 1,
+  "harness": [
+    ".gitattributes",
+    "scripts/sdd/delivery_evidence.py",
+    "scripts/sdd/run_offline_pytest.py",
+    "scripts/sdd/check_test_offline_boundary.py",
+    "scripts/sdd/_common/bdd_helpers.py",
+    "scripts/sdd/_common/frontmatter.py"
+  ],
+  "dependencies": [
+    "pyproject.toml",
+    "uv.lock",
+    ".python-version"
+  ],
+  "commands": [
+    {
+      "id": "safe-sql-bdd",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py",
+        "-k",
+        "test_req_001_l1_guardrail or test_req_001_l1_allowlist_quoting_agnostic or test_req_002_l1b_precheck or test_req_006_middleware_tool_message",
+        "-q",
+        "--junitxml",
+        "{output_dir}/safe-sql-bdd.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "safe-sql-bdd.xml",
+      "min_tests": 4,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "biz-catalog-bdd",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py",
+        "-k",
+        "test_req_001_load_catalog_rejects_list_root",
+        "-q",
+        "--junitxml",
+        "{output_dir}/biz-catalog-bdd.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "biz-catalog-bdd.xml",
+      "min_tests": 1,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "llm-provider-bdd",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py",
+        "-k",
+        "test_req_001_ark_empty_creds or test_req_002_local_no_thinking or test_req_003_local_empty_sentinel",
+        "-q",
+        "--junitxml",
+        "{output_dir}/llm-provider-bdd.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "llm-provider-bdd.xml",
+      "min_tests": 3,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "memory-checkpointer-bdd",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py",
+        "-k",
+        "test_req_001_rows_replaced_by_digest or test_req_002_live_state_untouched or test_req_003_retains_executed_sql",
+        "-q",
+        "--junitxml",
+        "{output_dir}/memory-checkpointer-bdd.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "memory-checkpointer-bdd.xml",
+      "min_tests": 3,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "mcp-server-governance-bdd",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "-k",
+        "test_req_001_a14_gate_template_exists or test_req_002_pg_wrapper_consistency",
+        "-q",
+        "--junitxml",
+        "{output_dir}/mcp-server-governance-bdd.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "mcp-server-governance-bdd.xml",
+      "min_tests": 2,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "pure-regression",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/unit/test_guardrail.py",
+        "tests/unit/test_precheck.py",
+        "tests/unit/test_memory_redaction.py",
+        "tests/unit/test_memory_digest.py",
+        "tests/unit/test_memory_retention.py",
+        "-k",
+        "test_unparseable_on_allowed_table_also_rejected or test_forbidden_ref_in_where_subquery_rejected or test_disallowed_dwd_fact_table_rejected or test_select_star_rejected or test_unparseable_sql_does_not_block or test_redact_checkpoint_live_state_untouched or test_redaction_is_idempotent or test_digest_is_deterministic or test_digest_contains_no_verbatim_cell_value or test_uuid6_at_builder_round_trips or test_epoch_rejects_non_uuid6",
+        "-q",
+        "--junitxml",
+        "{output_dir}/pure-regression.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "pure-regression.xml",
+      "min_tests": 11,
+      "timeout_seconds": 300
+    },
+    {
+      "id": "migration-integrity",
+      "argv": [
+        "uv",
+        "run",
+        "--frozen",
+        "--no-sync",
+        "python",
+        "scripts/sdd/run_offline_pytest.py",
+        "tests/unit/test_legacy_delivery_suite.py",
+        "-q",
+        "--junitxml",
+        "{output_dir}/migration-integrity.xml"
+      ],
+      "expected_exit": 0,
+      "junit": "migration-integrity.xml",
+      "min_tests": 10,
+      "timeout_seconds": 300
+    }
+  ],
+  "units": [
+    {
+      "id": "safe-sql",
+      "baseline": [
+        "capabilities/data-agent/safe-sql/spec.yml",
+        "capabilities/data-agent/safe-sql/requirements.md",
+        "capabilities/data-agent/safe-sql/contracts/behavior.feature",
+        "capabilities/data-agent/safe-sql/contracts/execute-sql.contract.yml",
+        "capabilities/data-agent/safe-sql/contracts/python.contract.yml",
+        "capabilities/data-agent/safe-sql/contracts/runtime-skill.contract.yml",
+        "capabilities/data-agent/safe-sql/contracts/sql-guardrail.contract.yml"
+      ],
+      "inputs": [
+        "tests/bdd/data_agent/safe_sql/test_safe_sql_bdd.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        "src/mj_agent/tools/biz_context.py",
+        "src/mj_agent/tools/__init__.py",
+        "src/mj_agent/tools/analysis/aggregate.py",
+        "src/mj_agent/tools/analysis/compare_periods.py",
+        "src/mj_agent/tools/analysis/detect_anomaly.py",
+        "src/mj_agent/tools/analysis/drill_down.py",
+        "src/mj_agent/tools/analysis/token_estimator.py",
+        "src/mj_agent/tools/analysis/__init__.py",
+        "src/mj_agent/tools/charts/bar.py",
+        "src/mj_agent/tools/charts/line.py",
+        "src/mj_agent/tools/charts/trend.py",
+        "src/mj_agent/tools/charts/_common.py",
+        "src/mj_agent/tools/charts/__init__.py",
+        "src/mj_agent/tools/excel/export.py",
+        "src/mj_agent/tools/excel/__init__.py",
+        "src/mj_agent/tools/sql/execute.py",
+        "src/mj_agent/tools/sql/guardrail.py",
+        "src/mj_agent/tools/sql/introspect.py",
+        "src/mj_agent/tools/sql/precheck.py",
+        "src/mj_agent/tools/sql/__init__.py",
+        "src/mj_agent/biz_catalog/finder.py",
+        "src/mj_agent/biz_catalog/loader.py",
+        "src/mj_agent/biz_catalog/__init__.py",
+        "src/mj_agent/config.py",
+        "src/mj_agent/integrations/mj_system_db.py",
+        "src/mj_agent/middleware/tool_errors.py",
+        "src/mj_agent/biz_catalog/qcm_catalog.yaml"
+      ],
+      "acceptance": [
+        {
+          "id": "safe-sql-1",
+          "expected": "The selected offline implementation satisfies: L1 regex guardrail rejects blocked-keyword statement before DB contact. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "safe-sql-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "safe-sql-bdd",
+              "ids": [
+                "tests.bdd.data_agent.safe_sql.test_safe_sql_bdd::test_req_001_l1_guardrail"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "safe-sql-2",
+          "expected": "The selected offline implementation satisfies: L1 guardrail rejects an out-of-allowlist schema reference regardless of identifier quoting before DB contact. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "safe-sql-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "safe-sql-bdd",
+              "ids": [
+                "tests.bdd.data_agent.safe_sql.test_safe_sql_bdd::test_req_001_l1_allowlist_quoting_agnostic"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "safe-sql-3",
+          "expected": "The selected offline implementation satisfies: L1b precheck rejects biz_dws fact-table query missing time-column predicate. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "safe-sql-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "safe-sql-bdd",
+              "ids": [
+                "tests.bdd.data_agent.safe_sql.test_safe_sql_bdd::test_req_002_l1b_precheck"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "safe-sql-4",
+          "expected": "The selected offline implementation satisfies: handle_sql_tool_errors middleware converts tool ValueError into ToolMessage. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "safe-sql-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "safe-sql-bdd",
+              "ids": [
+                "tests.bdd.data_agent.safe_sql.test_safe_sql_bdd::test_req_006_middleware_tool_message"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "biz-catalog",
+      "baseline": [
+        "capabilities/data-agent/biz-catalog/spec.yml",
+        "capabilities/data-agent/biz-catalog/requirements.md",
+        "capabilities/data-agent/biz-catalog/contracts/behavior.feature",
+        "capabilities/data-agent/biz-catalog/contracts/catalog-db-alignment.contract.yml",
+        "capabilities/data-agent/biz-catalog/contracts/catalog.contract.yml",
+        "capabilities/data-agent/biz-catalog/contracts/runtime-skill.contract.yml"
+      ],
+      "inputs": [
+        "tests/bdd/data_agent/biz_catalog/test_biz_catalog_bdd.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        "src/mj_agent/biz_catalog/finder.py",
+        "src/mj_agent/biz_catalog/loader.py",
+        "src/mj_agent/biz_catalog/__init__.py",
+        "src/mj_agent/biz_catalog/qcm_catalog.yaml"
+      ],
+      "acceptance": [
+        {
+          "id": "biz-catalog-1",
+          "expected": "The selected offline implementation satisfies: load_catalog rejects YAML whose root parses to a list (not a mapping). This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "biz-catalog-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "biz-catalog-bdd",
+              "ids": [
+                "tests.bdd.data_agent.biz_catalog.test_biz_catalog_bdd::test_req_001_load_catalog_rejects_list_root"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "llm-provider",
+      "baseline": [
+        "capabilities/data-agent/llm-provider/spec.yml",
+        "capabilities/data-agent/llm-provider/requirements.md",
+        "capabilities/data-agent/llm-provider/contracts/behavior.feature",
+        "capabilities/data-agent/llm-provider/contracts/prompt.contract.yml",
+        "capabilities/data-agent/llm-provider/contracts/provider.contract.yml",
+        "capabilities/data-agent/llm-provider/contracts/python.contract.yml"
+      ],
+      "inputs": [
+        "tests/bdd/data_agent/llm_provider/test_llm_provider_bdd.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        "src/mj_agent/config.py",
+        "src/mj_agent/llm.py"
+      ],
+      "acceptance": [
+        {
+          "id": "llm-provider-1",
+          "expected": "The selected offline implementation satisfies: Ark provider raises clear LLMConfigError when both ARK_API_KEY and LLM_API_KEY are empty. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "llm-provider-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "llm-provider-bdd",
+              "ids": [
+                "tests.bdd.data_agent.llm_provider.test_llm_provider_bdd::test_req_001_ark_empty_creds"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "llm-provider-2",
+          "expected": "The selected offline implementation satisfies: Local provider constructs ChatOpenAI without extra_body.thinking. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "llm-provider-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "llm-provider-bdd",
+              "ids": [
+                "tests.bdd.data_agent.llm_provider.test_llm_provider_bdd::test_req_002_local_no_thinking"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "llm-provider-3",
+          "expected": "The selected offline implementation satisfies: effective_llm_api_key returns \"EMPTY\" sentinel for local provider when LLM_API_KEY is empty. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "llm-provider-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "llm-provider-bdd",
+              "ids": [
+                "tests.bdd.data_agent.llm_provider.test_llm_provider_bdd::test_req_003_local_empty_sentinel"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "memory-checkpointer",
+      "baseline": [
+        "capabilities/data-agent/memory-checkpointer/spec.yml",
+        "capabilities/data-agent/memory-checkpointer/requirements.md",
+        "capabilities/data-agent/memory-checkpointer/contracts/behavior.feature",
+        "capabilities/data-agent/memory-checkpointer/contracts/checkpoint-redaction.contract.yml",
+        "capabilities/data-agent/memory-checkpointer/contracts/checkpoint-retention.contract.yml"
+      ],
+      "inputs": [
+        "tests/bdd/data_agent/memory_checkpointer/test_memory_checkpointer_bdd.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        "src/mj_agent/memory/__init__.py",
+        "src/mj_agent/memory/redaction.py",
+        "src/mj_agent/memory/digest.py",
+        "src/mj_agent/memory/retention.py"
+      ],
+      "acceptance": [
+        {
+          "id": "memory-checkpointer-1",
+          "expected": "The selected offline implementation satisfies: Persisting an execute_sql ToolMessage replaces biz rows with a per-column digest. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "memory-checkpointer-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "memory-checkpointer-bdd",
+              "ids": [
+                "tests.bdd.data_agent.memory_checkpointer.test_memory_checkpointer_bdd::test_req_001_rows_replaced_by_digest"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "memory-checkpointer-2",
+          "expected": "The selected offline implementation satisfies: Redaction clones the message so the live in-process state is untouched. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "memory-checkpointer-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "memory-checkpointer-bdd",
+              "ids": [
+                "tests.bdd.data_agent.memory_checkpointer.test_memory_checkpointer_bdd::test_req_002_live_state_untouched"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "memory-checkpointer-3",
+          "expected": "The selected offline implementation satisfies: The digested envelope retains executed_sql for recoverable-by-refetch. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "memory-checkpointer-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "memory-checkpointer-bdd",
+              "ids": [
+                "tests.bdd.data_agent.memory_checkpointer.test_memory_checkpointer_bdd::test_req_003_retains_executed_sql"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mcp-server-governance",
+      "baseline": [
+        "capabilities/infrastructure/mcp-server-governance/spec.yml",
+        "capabilities/infrastructure/mcp-server-governance/requirements.md",
+        "capabilities/infrastructure/mcp-server-governance/contracts/behavior.feature",
+        "capabilities/infrastructure/mcp-server-governance/contracts/development-skill.contract.yml",
+        "capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml",
+        "capabilities/infrastructure/mcp-server-governance/contracts/mcp-server.contract.yml"
+      ],
+      "inputs": [
+        "tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        ".codex/config.toml",
+        ".codex/hooks.json",
+        ".codex/rules/mj-agent.rules",
+        "scripts/sdd/check_codex_native.py",
+        "scripts/sdd/codex_hook_guard.py",
+        "scripts/sdd/git_command_review.py",
+        "scripts/sdd/task_delivery.py",
+        ".github/PULL_REQUEST_TEMPLATE.md"
+      ],
+      "acceptance": [
+        {
+          "id": "mcp-server-governance-1",
+          "expected": "The selected offline implementation satisfies: Adding a new MCP server triggers A14 PR gate body declaration. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "mcp-server-governance-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "mcp-server-governance-bdd",
+              "ids": [
+                "tests.bdd.infrastructure.mcp_governance.test_mcp_governance_bdd::test_req_001_a14_gate_template_exists"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "mcp-server-governance-2",
+          "expected": "The selected offline implementation satisfies: All 5 memory pg entries reference the same native wrapper script. This proves software behavior on controlled inputs only, not live runtime, GRANT, endpoint, persistence or source authentication.",
+          "command_ids": [
+            "mcp-server-governance-bdd"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "mcp-server-governance-bdd",
+              "ids": [
+                "tests.bdd.infrastructure.mcp_governance.test_mcp_governance_bdd::test_req_002_pg_wrapper_consistency"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pure-regression",
+      "baseline": [
+        "capabilities/data-agent/safe-sql/requirements.md",
+        "capabilities/data-agent/memory-checkpointer/requirements.md"
+      ],
+      "inputs": [
+        "tests/unit/test_guardrail.py",
+        "tests/unit/test_precheck.py",
+        "tests/unit/test_memory_redaction.py",
+        "tests/unit/test_memory_digest.py",
+        "tests/unit/test_memory_retention.py",
+        "src/mj_agent/__init__.py",
+        "tests/conftest.py",
+        "tests/bdd/conftest.py",
+        "src/mj_agent/tools/biz_context.py",
+        "src/mj_agent/tools/__init__.py",
+        "src/mj_agent/tools/analysis/aggregate.py",
+        "src/mj_agent/tools/analysis/compare_periods.py",
+        "src/mj_agent/tools/analysis/detect_anomaly.py",
+        "src/mj_agent/tools/analysis/drill_down.py",
+        "src/mj_agent/tools/analysis/token_estimator.py",
+        "src/mj_agent/tools/analysis/__init__.py",
+        "src/mj_agent/tools/charts/bar.py",
+        "src/mj_agent/tools/charts/line.py",
+        "src/mj_agent/tools/charts/trend.py",
+        "src/mj_agent/tools/charts/_common.py",
+        "src/mj_agent/tools/charts/__init__.py",
+        "src/mj_agent/tools/excel/export.py",
+        "src/mj_agent/tools/excel/__init__.py",
+        "src/mj_agent/tools/sql/execute.py",
+        "src/mj_agent/tools/sql/guardrail.py",
+        "src/mj_agent/tools/sql/introspect.py",
+        "src/mj_agent/tools/sql/precheck.py",
+        "src/mj_agent/tools/sql/__init__.py",
+        "src/mj_agent/biz_catalog/finder.py",
+        "src/mj_agent/biz_catalog/loader.py",
+        "src/mj_agent/biz_catalog/__init__.py",
+        "src/mj_agent/config.py",
+        "src/mj_agent/integrations/mj_system_db.py",
+        "src/mj_agent/middleware/tool_errors.py",
+        "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+        "src/mj_agent/memory/__init__.py",
+        "src/mj_agent/memory/redaction.py",
+        "src/mj_agent/memory/digest.py",
+        "src/mj_agent/memory/retention.py"
+      ],
+      "acceptance": [
+        {
+          "id": "pure-negative-controls",
+          "expected": "Security rejection survives allowed-table parse failure, forbidden nested schema and disallowed DWD fact access; SELECT-star rejects while L1b quality parse fallback remains documented. Redaction keeps live state untouched and idempotent; digests are deterministic without verbatim cells; retention UUID validation rejects invalid identities. These controlled software tests do not observe actual databases or persistence.",
+          "command_ids": [
+            "pure-regression"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "pure-regression",
+              "ids": [
+                "tests.unit.test_guardrail.TestParseFailureFailClosed::test_unparseable_on_allowed_table_also_rejected",
+                "tests.unit.test_guardrail.TestQuotedIdentifierAllowlist::test_forbidden_ref_in_where_subquery_rejected",
+                "tests.unit.test_guardrail.TestTableLevelAllowlist::test_disallowed_dwd_fact_table_rejected",
+                "tests.unit.test_precheck.TestNoSelectStar::test_select_star_rejected",
+                "tests.unit.test_precheck.TestParseFailureGracefulFallback::test_unparseable_sql_does_not_block",
+                "tests.unit.test_memory_redaction::test_redact_checkpoint_live_state_untouched",
+                "tests.unit.test_memory_redaction::test_redaction_is_idempotent",
+                "tests.unit.test_memory_digest::test_digest_is_deterministic",
+                "tests.unit.test_memory_digest::test_digest_contains_no_verbatim_cell_value",
+                "tests.unit.test_memory_retention::test_uuid6_at_builder_round_trips",
+                "tests.unit.test_memory_retention::test_epoch_rejects_non_uuid6"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "migration-integrity",
+      "baseline": [
+        "plans/[PLAN]_agent_first_delivery_followups.md"
+      ],
+      "inputs": [
+        "evidence/delivery/legacy-capabilities-migration.json",
+        "tests/unit/test_legacy_delivery_suite.py",
+        "capabilities/data-agent/safe-sql/evidence/bdd/b1-poc-3-scenarios-landing.md",
+        "capabilities/data-agent/safe-sql/evidence/bdd/b2-live-db-scenarios-landing.md",
+        "capabilities/data-agent/safe-sql/evidence/bdd/stage-b-closure.md",
+        "capabilities/data-agent/safe-sql/evidence/reports/2026-06-02_adr-024-eval-baseline.md",
+        "capabilities/data-agent/safe-sql/evidence/reports/g1g2g9-real-impl-landing.md",
+        "capabilities/data-agent/safe-sql/evidence/reports/v7-runtime-skill-validator-landing.md",
+        "capabilities/data-agent/safe-sql/evidence/runtime/walkthrough_evidence.md",
+        "capabilities/data-agent/safe-sql/evidence/security/2026-05-23_sql_injection_audit.md",
+        "capabilities/data-agent/safe-sql/evidence/verification/2026-05-23_l1_pass_rate.md",
+        "capabilities/data-agent/safe-sql/evidence/verification/2026-05-23_l1b_pass_rate.md",
+        "capabilities/data-agent/biz-catalog/evidence/runtime/2026-05-23_freshness_check.md",
+        "capabilities/data-agent/llm-provider/evidence/reports/v3-validator-contract-align-report.md",
+        "capabilities/data-agent/llm-provider/evidence/runtime/2026-05-23_endpoint_probe.md",
+        "capabilities/data-agent/llm-provider/evidence/runtime/2026-07-03_dgx_e2e.md",
+        "capabilities/data-agent/memory-checkpointer/evidence/verification/2026-07-22_canary_smoke_pass.md",
+        "capabilities/data-agent/memory-checkpointer/evidence/verification/2026-07-23_ttl_eviction.md",
+        "capabilities/infrastructure/docker-compose/evidence/reports/v5-subflags-landing.md",
+        "capabilities/infrastructure/docker-compose/evidence/runtime/2026-05-23_compose_smoke.md",
+        "capabilities/infrastructure/mcp-server-governance/evidence/reports/v4-validator-fix-report.md",
+        "capabilities/infrastructure/mcp-server-governance/evidence/runtime/2026-05-23_quarterly_audit_q2.md"
+      ],
+      "acceptance": [
+        {
+          "id": "old-byte-and-scope-preservation",
+          "expected": "The twenty explicitly scoped historical files retain their original committed bytes; all old feature scenarios have honest deferred/non-applicable states, exactly thirteen selected BDD tests have no external fixture, and missing, skipped, failed or unrelated green testcase identities cannot establish SELFTEST. G21 external-reference migration and actual runtime remain uncompleted.",
+          "command_ids": [
+            "migration-integrity"
+          ],
+          "mode": "SELFTEST_SOFTWARE",
+          "source_kind": "software_test",
+          "tests": [
+            {
+              "command_id": "migration-integrity",
+              "ids": [
+                "tests.unit.test_legacy_delivery_suite::test_exact_thirteen_bdd_selections_are_real_and_have_no_external_fixture",
+                "tests.unit.test_legacy_delivery_suite::test_every_feature_scenario_has_an_honest_migration_status",
+                "tests.unit.test_legacy_delivery_suite::test_original_twenty_files_equal_their_original_git_blobs",
+                "tests.unit.test_legacy_delivery_suite::test_suite_binds_baselines_sut_and_dependency_inputs_without_claiming_actual",
+                "tests.unit.test_legacy_delivery_suite::test_missing_skipped_failed_or_wrong_named_case_cannot_be_selftest[missing]",
+                "tests.unit.test_legacy_delivery_suite::test_missing_skipped_failed_or_wrong_named_case_cannot_be_selftest[skipped]",
+                "tests.unit.test_legacy_delivery_suite::test_missing_skipped_failed_or_wrong_named_case_cannot_be_selftest[failed]",
+                "tests.unit.test_legacy_delivery_suite::test_missing_skipped_failed_or_wrong_named_case_cannot_be_selftest[wrong_mapping]",
+                "tests.unit.test_legacy_delivery_suite::test_pure_controls_have_real_nodes_and_correct_junit_class_identities"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

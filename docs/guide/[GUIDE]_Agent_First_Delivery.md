@@ -4,7 +4,7 @@ domain: WORKFLOW
 summary: 使用接受基线、任务授权、独立核验和可恢复证据自主交付 mj-agent 软件
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 state: draft
 track: engineering-workflow
 ---
@@ -13,8 +13,8 @@ track: engineering-workflow
 
 > **适用范围**：mj-agent 工程交付与治理改造。
 > **目标受众**：Owner、工程师、执行与独立核验 Agent。
-> **版本**：v0.4 草案。
-> **最后更新**：2026-10-12。
+> **版本**：v0.5 草案。
+> **最后更新**：2026-10-13。
 > **规则依据**：本项目 ADR-042 及现行政策。
 > **关联文档**：[[policies/ai-agent|AI Agent Boundaries]]、[[policies/git-branching|Git Branching]]、[[sdd/workflows/execution-loop|Execution Loop]]。
 
@@ -97,6 +97,22 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 
 后续主线状态：#589已将synthetic-only CLI合入develop，#582/其Plan仍OPEN/active，actual/live未运行。原转交记录是当时检查点；当前治理组合验证以实际更新后的develop为准，不重建已实现CLI或把其合入等同整体EVAL接受。
 
+### 原始归档跨宿主核验
+
+`scripts/sdd/verify_delivery_archive.py` 只读原始交付 ZIP，并依据调用者明确指定的预期版本核对真实 Git 对象、suite、基线、输入、日志、JUnit 身份和逐 AC。验证机 HEAD 可以不同于原测试版本；必须已有原 head/base/tested 对象，缺失时先通过正常只读 Git 获取，或保留缺依赖。不能重建等价对象、替换原执行路径或把验证机时间写成原运行时间。
+
+调用时提供原 ZIP 与其 SHA-256，以及 `--repository`、`--head-sha`、`--base-sha`、`--tested-sha`、`--tested-tree`、`--suite`、`--execution-kind`、`--run-url`；`--report` 指向仓外的新文件，`--repo-root` 可指已有 Git 对象库。各项预期应来自已核版本和原运行记录，不能仅采用待验 ZIP 自报的值。准确参数、不变量及负例见 [portable verifier SPEC](../design/sdd/[SPEC]_Portable_Delivery_Evidence_Verification.md)。
+
+成功返回 exit0 / `INTEGRITY_VERIFIED`；完整性拒绝为 exit1，非法输入或缺工具/对象为 exit2。归档不提取，最多 64 MiB、512 个普通成员、单成员 32 MiB、展开总量 128 MiB；秘密路径、链接、重解析点、覆盖报告及混合原输出根均拒绝。新报告保留原执行版本、环境、时间和路径，并另记验证机信息。它不重跑原命令、不认证执行来源，也不改变原 `delivery_evidence.py run/check` 的结果或历史失败。
+
+### 历史 capability 软件证据刷新
+
+`evidence/delivery/legacy-capabilities.suite.json` 选择旧六项能力中的 13 个离线 BDD 身份及 11 个纯软件控制，并检查历史迁移清单。通过 `delivery_evidence.py run` 在实际已提交、干净且依赖锁定的候选上生成仓外证据，再用原 `check` 核验同一执行版本；移到另一宿主后可使用上述原 ZIP 完整性核验。
+
+清单 `evidence/delivery/legacy-capabilities-migration.json` 保存原 20 个文件的摘要、每个场景的软件覆盖、政策 SKIP、未运行和 G21 接口迁移状态。清单本身是准备记录，实际结果在绑定版本的新包中；软件 SELFTEST 不能成为 actual 运行、来源认证或 Owner 接受。未选中的外部/持久化场景及未迁移的 G21 接口继续按原状态跟踪。
+
+本次后续任务 Q27 已允许正常 Owner Git 不可见认证，将已接受的 develop 快进到具名 Gitee 镜像。具体动作和实际读回结果见[后续 Plan](../../plans/[PLAN]_agent_first_delivery_followups.md)及其仓外证据；原 Q10 的当时延期记录保留，不扩大到其他仓库、分支、凭据或 force push。
+
 ## §5 检查点、恢复与接受
 
 阶段完成、集成前和交接时，在现有记录保存目标/AC/授权、workspace/ref/SHA/集成状态、证据、在途动作、失败未知延期、下一步及停止条件。换窗、压缩及再委派后先读取记录并核实现状；超时或结果未知先对账运行状态和副作用，再决定是否重试，成功动作不重复。
@@ -119,3 +135,4 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 | 2026-10-12 | v0.2 | Owner Q4/Q5/Q6取消工程师向导；受控新App后台、独立Agent审阅/正常宿主项目启用和依据真实聊天决定执行平台审核，实际能力未验证 |
 | 2026-10-12 | v0.3 | Q9定向惰性配置兼容与完整规则摘要比较；实际App/宿主/平台状态由Plan和仓外运行证据分别记录 |
 | 2026-10-12 | v0.4 | Q10限定本任务origin发布、Gitee镜像延期；Q11宿主运行验收延期，默认双推/原生信任及实际GitHub门禁保留 |
+| 2026-10-13 | v0.5 | 新增原始 ZIP 跨宿主完整性核验、历史 capability 软件证据刷新入口；区别原执行与新验证，记录 Q27 具名镜像后续 |
