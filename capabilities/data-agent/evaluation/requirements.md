@@ -2,15 +2,15 @@
 type: capability-requirements
 capability: data-agent.evaluation
 state: draft
-version: "0.7"
+version: "0.8"
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 ---
 
 # Requirements: Offline EVAL Replay
 
-> #582 离线核心与本地CLI已通过软件自测，14项BDD覆盖核心、文件入口、baseline参数与纯内存来源检查。actual文件入口、采样／runtime验收继续延期；软件验证与完整capability接受分别记录，不改既有runtime或执行live EVAL。
+> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
 
 依据：[Issue #582](https://github.com/MJ-AgentLab/mj-agent/issues/582)、[批准 Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。本 package 不适用 track，与 canonical 文档类型轴正交。
 
@@ -110,7 +110,7 @@ updated: 2026-10-12
 - 任意声明/引用/方法/目标hash都不能将source/target的UNVERIFIED提升，review_coverage_status保持NOT_CHECKED；runtime_metrics=null、baseline_eligible=false。
 - no-IO、引用不解析、应用/秘密/网络隔离和重复结果均有离线哨兵；来源检查报告不能作为runtime基线。
 
-## 验收与审阅依赖
+## 验收与审阅依赖（历史T-007a/b轮次；当前见T-007c）
 
 REQ-001–006 保持 #582 编号与优先级；详细契约提案见 [design.md](design.md)，未来纵切和验收映射见 [tasks.md](tasks.md)，操作草案见 [runbook.md](runbook.md)。
 
@@ -119,3 +119,13 @@ T-006的169项unit与10项BDD为历史已合并证据；当前T-007a的220项uni
 正式python.contract.yml绑定ReplayInputs／replay，cli.contract.yml绑定main，behavior.feature和trace承接实际离线运行。严格窗口不放宽；main(argv, *, repo_root)仅接收显式--synthetic-fixture及synthetic_fixture来源。manifest先读，actual标签在其他载荷读取/replay/输出创建前返回2/ACTUAL_ENTRY_DEFERRED；可选--baseline经同一后端读取原bytes；省略为b''，显式空文件或非JSON object在replay和输出创建前返回2。synthetic仍为NOT_EVALUATED，不验证候选基线有效性。新输出目录的父目录须已存在；Windows固定NTFS入口已核验，Linux原生文件入口明确延期，缺保护能力返回2。actual采样／来源真实性／runtime验收仍延期。技术操作由Agent承担，范围未实质变化时复用对应授权；T-006已随#589合并；T-007a本轮软件供Owner最终接受，未提交或发布。
 
 T-007b当前来源检查与旧回归合计278项通过，见[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)；T-007a 231项为历史时点。新增接口不改变replay/main或CLI文件行为，也不授权实际来源/target运行。
+
+## T-007c文件包装器验收（REQ-001/005/006）
+
+- 独立inspection_runner.main，必需synthetic开关和manifest优先闸；actual早拒绝所有其他输入/inspector/输出。
+- 七份原bytes接入；baseline格式前置校验沿用当前runner，但不比较或认证资格。
+- 任意INVALID/2不创建输出；VALID的CONSISTENT/INCOMPLETE均独占单inspection.json并退出3，help0无文件访问。
+- 原API字段、完整分母与固定UNVERIFIED/NOT_CHECKED/null/false保持；不分析SQL、语义verdict、未知检查或审阅覆盖。
+- 原Windows保护全部复用，IO/关闭失败2且保留部分输出，Linux/macOS继续fail closed；无引用/网络/core/judge导入。
+- 固定期望不由程序生成，原278项相关回归保留；独立Agent从AC/原bytes/真实进程核验，软件接受不替代actual或target接受。
+- 本轮新证据见[来源检查CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)，原历史计数和报告保留。

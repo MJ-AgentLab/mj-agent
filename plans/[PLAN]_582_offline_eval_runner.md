@@ -19,7 +19,7 @@ track: code
 - 后续新 capability 推荐归属 `data-agent.evaluation`，adapter 为 `python`、`tdd-bdd`，按 [[sdd/workflows/new-capability|new-capability workflow]] 推进；新共享契约的具体差异另交 Owner 审阅。
 - Owner：ranzuozhou；拟执行者：Codex；合成业务／Prompt 与 SWE 核验角色按后续 §8.2 由 Agent 模拟，不要求真人参与。
 
-当前范围：T-006已随#589合并；Owner于2026-10-12采纳A并授权T-007a baseline CLI接入、G1工作树、契约/文档、离线测试与Agent合成验收，见§8.9。actual/live、外部连接、核心规则、文件后端、runtime/CI/守卫/个人配置及提交/推送/PR不在范围。
+当前范围：T-006及T-007a/b已集成。Owner于2026-10-13采纳A，授权新G1工作树实施T-007c Windows synthetic-only来源检查CLI、契约/文档、固定离线测试、独立Agent合成验收及原bytes绑定，见§8.10。actual/live、外部连接、核心/schema/judges/report/文件后端/runtime/CI/守卫/权限及提交/推送/PR/删除不在范围。
 
 ## 2. 背景与 Repo Scan 事实
 
@@ -341,3 +341,27 @@ TDD观察16 FAIL/135 deselected（旧CLI不接受baseline）；当前64 core+156
 后续依赖：目前无获批脱敏观测包。未来真实包须绑定采样环境/run与采样/脱敏审阅引用、22条完整调用及结果（保留首次SQL与所有失败，无业务行数据）、真实loader body/active roster顺序/最终装配hash、全部语义与5红线+3非红线独立审阅；不能把旧34条synthetic review改名为actual审阅。actual文件入口与target接受待具体材料和另批方案，Linux/macOS待等价原生保护证明，缺能力继续fail closed。same_target_replay严格窗口/0.03阈值保持，#161跨版本A/B及#504/#583–#586原scope/状态保留。
 
 T-007b最终软件结果：278项PASS（原64 core+44新inspection unit+156 CLI unit+14 BDD），28条第三方警告保留；首轮275为补充平台模型前的真实历史结果。5个独立进程核验normal/baseline/permuted输出hash一致、missing列缺口、fictional来源仍UNVERIFIED；禁止访问哨兵零触发。全仓ruff、全src Windows/Linux类型模型、G1/G2/G3/G19/G21/G22/G9和默认V1已完成新证据；V1 13P/14W/0F保留信息WARN，类型模型不代表原生入口成功。当前证据见[来源检查验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md)。状态VERIFIED_OFFLINE_SOFTWARE供Owner接受；candidate UNCOMMITTED，actual与平台仍延期，原状态保持。
+
+## 8.10 T-007c — Windows synthetic-only来源检查CLI
+
+2026-10-13 Owner明确采纳A，授权新G1工作树、独立来源检查CLI、契约与文档同步、固定离线测试、独立Agent合成验收及原bytes绑定；交付本地候选供Owner接受。禁止actual/live、采样、服务连接、提交/推送/PR/删除/权限变化；core/schema/judges/report/_file_io/runtime及既有runner/inspect_source保持。#582 OPEN、Plan active、capability idea/last_verified=null，其他target与probe-fixture原scope保持。
+
+G1已执行git worktree add ../feature/582-source-inspection-cli -b feature/582-source-inspection-cli，基线fd045520c0123627e53d23c0ad58bf97a6b3552e；新工作树inside-work-tree=true、初始status空。旧工作树不重建，develop与其他工作树不编码。受保护源码和固定输入18份原bytes在.mj-agent-local/t007c/protected-before.json固定。Git内容与历史raw hash分开；不改换行来补齐旧绑定。
+
+接受基线（独立Agent先从本轮方案建立）：
+- AC-C1：inspection_runner.main(argv=None, *, repo_root=None)，必须显式synthetic开关；help0不读输入。
+- AC-C2：manifest先读，actual/未知来源2、零后续输入/inspector/输出；词法保护可以更早拒绝。
+- AC-C3：七份原bytes；可选缺省b''，显式baseline空/非object前置2，不认证或比较baseline。
+- AC-C4：任何参数/路径/载荷非法或API INVALID/2在输出创建前拒绝，仅安全stderr诊断。
+- AC-C5：VALID的CONSISTENT/INCOMPLETE均3；新目录独占inspection.json，原API结构、UNVERIFIED/NOT_CHECKED/null/false保持，不判断case或审阅适用性。
+- AC-C6：相同输入的UTF-8/LF单JSON确定；无core/replay/judge/report/runner/app/client/网络/引用导入或访问。
+- AC-C7：只复用既有Windows fixed NTFS保护；父已存在/新目录exclusive；write/close失败2并保留部分输出，Linux/macOS缺能力继续拒绝。
+- AC-C8：受保护原bytes不变，固定期望先于实现；契约/BDD/trace/文档/新绑定闭合，历史证据保留。
+
+实施顺序：固定断言并实测RED → 最小独立包装器 → 本次离线GREEN/门禁 → 独立Agent从原始输入/成果复现 → 契约/文档/原bytes绑定 → 本地候选交Owner接受。本轮无发布授权，完成子项不完成T-007或capability。受控测试入口复用已跟踪test_eval_runner.py及既有BDD模块，不新增pytest插件或改守卫。
+
+Documentation Decision：Plan Update本节；SPEC Update现有suite/Python契约，Create独立inspection-cli契约；RUNBOOK Update命令/诊断/材料清单；CHANGELOG Update新入口；INDEX Update已有入口。ADR/GUIDE/STANDARD/Local ISSUE/ASSESSMENT为None。capability-package不新增track字段；新验收与BDD证据单独保存，不覆盖历史报告。
+
+方法：A纯代码、red-green；执行Codex，独立核验/root/t007_independent_review，保持继承模型/effort未改。所有运行结果本轮新鲜取证；真实来源/脱敏/批准链、target接受、actual比较和Linux/macOS原生保护延期，不计合成通过。
+
+T-007c本轮软件：340unit+18BDD=358PASS/36第三方警告；新76unit与18BDD原log/JUnit、独立14种新进程及17故障子集/18受保护raw匹配见[验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。G1/G2/G3/G9/G19/G22与默认V1/ruff/mypy均exit0；G21严格结果14DEFERRED/4SELFTEST不计actual PASS。状态VERIFIED_OFFLINE_SOFTWARE、candidate UNCOMMITTED、OWNER_ACCEPTANCE_PENDING；未stage/commit/push/PR/删除/actual/live，OPEN/active/idea/null保持。独立报告和新raw binding另存本轮，不回写历史。

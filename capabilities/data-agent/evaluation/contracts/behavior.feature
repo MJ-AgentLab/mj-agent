@@ -93,3 +93,29 @@ Feature: Offline runtime observation replay
     When the source inspector checks explicit bytes
     Then the inspection repeats deterministically without forbidden accesses
     And source and target evidence remain UNVERIFIED with no runtime baseline
+
+  @REQ-001 @REQ-005 @REQ-006 @CTR-python @CTR-inspection-cli @risk:critical
+  Scenario: Synthetic source inspection CLI never authenticates evidence
+    Given approved synthetic source inspection files
+    When the source inspection CLI writes into two new directories
+    Then both single inspection JSON files match the fixed expectation with process exit 3
+    And source and target evidence remain UNVERIFIED with no runtime baseline
+    And review coverage is NOT_CHECKED even when all provided reviews bind
+
+  @REQ-001 @REQ-006 @CTR-python @CTR-inspection-cli @risk:critical
+  Scenario: Source inspection CLI refuses actual before other input access
+    Given a fictional actual source label with all other inspection reads forbidden
+    When the synthetic source inspection CLI is invoked
+    Then actual is refused with exit 2 before inspection or output
+
+  @REQ-001 @REQ-005 @REQ-006 @CTR-python @CTR-inspection-cli @risk:critical
+  Scenario: Invalid source inspection input cannot create a report
+    Given a synthetic source inspection input with a mismatched dataset hash
+    When the synthetic source inspection CLI is invoked
+    Then the invalid inspection input exits 2 without creating output
+
+  @REQ-001 @REQ-005 @CTR-python @CTR-inspection-cli @risk:high
+  Scenario: Source inspection CLI preserves missing observation gaps
+    Given valid synthetic inspection files missing HP-01
+    When the synthetic source inspection CLI is invoked
+    Then inspection coherence is INCOMPLETE with exit 3 and the full plan denominator

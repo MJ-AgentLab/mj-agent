@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## Draft Capability Review
 
-- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — T-006已随#589合并；T-007a baseline文件参数和T-007b纯内存inspect_source已完成278项离线软件核验（264 unit+14 BDD），候选UNCOMMITTED。来源/目标UNVERIFIED、审阅覆盖NOT_CHECKED，synthetic仍无runtime比较；核心/窗口/阈值/文件后端不改。actual文件/真实来源/target接受及Linux/macOS原生保护延期；#582 OPEN、Plan active、capability idea/last_verified=null，无提交/推送/PR。 见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)与[来源检查验收](./data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md)。
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — T-007a/b已随#595集成；T-007c新增Windows synthetic-only来源检查CLI本地候选，单inspection.json/3、非法输入无输出，来源/目标UNVERIFIED及coverage NOT_CHECKED保持。actual/runtime/target接受和Linux/macOS原生保护延期，OPEN/active/idea/null。见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)及[本轮验收](./data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

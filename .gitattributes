@@ -34,3 +34,8 @@ uv.lock text eol=lf
 .python-version text eol=lf
 .gitattributes text eol=lf
 .github/CODEOWNERS text eol=lf
+
+# T-007c original execution artifacts: hashes bind these exact bytes.
+capabilities/data-agent/evaluation/evidence/bdd/2026-10-13_source_inspection_cli_junit_pytest.txt -text whitespace=cr-at-eol
+capabilities/data-agent/evaluation/evidence/bdd/2026-10-13_source_inspection_cli_pytest.txt -text whitespace=cr-at-eol
+capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_verifier.txt -text

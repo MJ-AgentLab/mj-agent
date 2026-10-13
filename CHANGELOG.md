@@ -22,6 +22,7 @@
 
 - T-007a新增可选--baseline本地JSON object原bytes接入；沿用同一文件保护后端，空/非法/非object在核心与输出前拒绝。synthetic仍为SELFTEST_ONLY/NOT_EVALUATED，不产生runtime基线或实际回归结论；actual、来源/target接受及Linux/macOS入口继续延期。本轮未提交或发布。
 
+- T-007c新增Windows fixed NTFS synthetic-only来源检查CLI，复用inspect_source与原文件保护，输出单inspection.json/退出3；结构非法不创建输出，actual早拒绝。来源/target和review coverage不升级，不生成runtime基线；本地候选、未提交或发布。
 - T-007b新增纯内存inspect_source(inputs)来源结构检查，复用既有schema/身份/hash；列观测和提供review绑定缺口，来源与目标始终UNVERIFIED、审阅覆盖NOT_CHECKED，不产生runtime metric/baseline。不新增CLI、不读取引用或认证来源，不启用actual入口；本轮未提交或发布。
 
 ### Changed — 按命令诊断 Git 授权与执行条件（#555）

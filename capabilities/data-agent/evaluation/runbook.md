@@ -2,16 +2,16 @@
 type: capability-runbook
 capability: data-agent.evaluation
 state: draft
-version: "0.7"
+version: "0.8"
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 last_verified: null
 ---
 
 # Runbook: Offline EVAL Replay
 
-> 离线核心与CLI已通过软件自测。Agent负责技术操作与核验；actual采样、来源真实性及runtime接受仍延期，完整capability未接受、last_verified=null。
+> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
 
 ## §1 TL;DR
 
@@ -73,6 +73,29 @@ actual语义审阅仍需全部必要项、5条红线和至少10%（当前3条非
 
 实际入口待材料就绪、单独方案与授权；Linux/macOS须有等价原生祖先rename等保护证明，否则继续fail closed。内存API的跨平台模型测试与Linux类型检查不替代原生文件运行。
 
+### 4.3 T-007c Windows synthetic-only来源检查文件入口
+
+    uv run --frozen --no-sync python -m mj_agent.evaluation.inspection_runner --synthetic-fixture --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <new-directory> [--reviews <reviews.jsonl>] [--baseline <baseline.json>]
+
+固定本地自测：五必填依次指向tests/unit/fixtures/eval_core/中的config.json、dataset.jsonl、observations.jsonl、manifest.json、reference.json，reviews指向同目录reviews.jsonl；baseline可省略或使用tests/unit/fixtures/eval_cli/baseline.synthetic.json。输出父目录必须已存在且目录名未使用。程序只写inspection.json，预期3、22/22完整观测、34/34提供绑定、UNVERIFIED/NOT_CHECKED/null/false。没有review也可CONSISTENT；不据此宣称必要审阅齐全。
+
+help0不读文件；缺模式/非法参数2。manifest先读，actual2/ACTUAL_ENTRY_DEFERRED早拒绝，其他输入和baseline不读；路径词法安全检查可更早拒绝。baseline空/非object分别BASELINE_INPUT_EMPTY/BASELINE_NOT_OBJECT；其他错误沿用安全解析码。任何结构INVALID（含API返回2）均不创建输出，只发stderr诊断。VALID的INCOMPLETE同样写inspection.json并退出3，按gaps整理结构缺口；不执行EVAL或判FAIL/PASS。
+
+write/close故障2，可能已经有新目录/inspection.json；按安全inspection_exit_code核对实际副作用，保留部分输出，新目录重试，不自动覆盖或删除。不承诺原子/耐久性。Linux/macOS无等价祖先rename保护继续FS_CAPABILITY_UNAVAILABLE；跨平台类型或内存模型不计原生入口通过。
+
+### 4.4 真实观测包最小材料清单（准备用途；当前无获批包）
+
+- 采样环境非秘密标识、run/commit、模型部署/有效参数、时间基准、采样批准、来源、脱敏版本与审阅引用绑定。
+- 22case完整初始turn、连续sequence与唯一call_id、全部工具调用及outcome、首次SQL和所有失败；零调用须完整轨迹。必要完整脱敏回复支持语义审阅。
+- 禁业务行数据、business_summary、PII、凭据、完整tool返回envelope；自由文本/SQL/错误需真实脱敏审阅，不以有限scanner证明。
+- 实际loader返回body、算法/编码、采样commit的_ACTIVE_SKILLS顺序、有效Runtime段、最终拼接正文与摘要；静态文件hash不证明实际缓存/装配。
+- 全部必要语义项、5红线及按case ID排序至少3条非红线审计，independent_review材料绑定run/obs规范摘要/config/reference原bytes/judge规则；方法标签不证明独立性。Agent负责技术整理与独立审阅，Owner负责实质决定及最终接受。
+- 现有_Call不含其他工具参数摘要，manifest也无独立环境/loader正文容器。上述附属材料在单独脱敏材料侧绑定，不塞未知字段、不扩schema；T-007c不读取其引用。
+- 软件可核字段、摘要、顺序、关联和装配重算；不能单凭字段/hash证明采样发生、没有隐去轨迹、无敏感文本、真实独立审阅或Owner授权有效。
+- 保留same_target_replay同commit/target/model/采样/时间/来源条件、完整分母、0.03与红线；#161跨版本A/B及其他target原scope另议。缺材料/能力仅延期对应actual/平台入口，不造PASS。
+
+当前候选、复现及新raw binding见[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)；独立审阅不替代Owner版本接受，#582 OPEN、Plan active、idea/last_verified=null保持。
+
 ## §5 Verification
 
 | 结果 | 解释／下一步 |
@@ -106,7 +129,7 @@ Agent／CI pytest 只通过 scripts/sdd/run_offline_pytest.py；不因凭据存�
 - 升级触发条件：target原批准采样与完整审阅条件具备后，取得实际观测，使用相同严格窗口与兼容规则回放。
 - 预计时间：不承诺未授权采样日期；actual延期不计作软件测试通过或runtime接受。
 
-## 本轮交付证据
+## 历史T-007a/b交付证据（当前见§4.3及T-007c验收）
 
 [核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)、[合成报告](evidence/reports/2026-10-12_synthetic_replay.md)和[合成JSON](evidence/reports/2026-10-12_synthetic_replay.json)。正式metric=null、baseline_eligible=false。部分单元／BDD使用虚构actual条件验证分支，未生成实际运行报告；Owner不代跑技术步骤。
 
