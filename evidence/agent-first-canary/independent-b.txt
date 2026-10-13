@@ -1,0 +1,4 @@
+Independent route canary B: feature/agent-first-canary-independent-b -> develop.
+This head adds only this different public note relative to the tested governance candidate 06bb029.
+Until governance integrates, the develop comparison also includes the governance candidate; no independent delivery or Owner acceptance is claimed.
+Fresh base, required CI, effective review, and actual PR state remain necessary before any delivery decision.
