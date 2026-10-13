@@ -64,3 +64,32 @@ Feature: Offline runtime observation replay
     When the CLI publishes a synthetic report pair
     Then the process exit code is 2 and existing inputs and reports remain unchanged
     And partial newly created output is preserved without automatic cleanup
+
+  @REQ-004 @REQ-005 @REQ-006 @CTR-python @CTR-cli @risk:critical
+  Scenario: A baseline file cannot turn a synthetic run into runtime comparison
+    Given approved synthetic files and a fixed synthetic baseline report
+    When the module CLI replays those bytes into two different new local output directories
+    Then both report pairs have identical bytes and the process exit code is 3
+    And runtime metrics are null and baseline_eligible is false
+    And the baseline bytes stay unchanged and regression is NOT_EVALUATED
+
+  @REQ-001 @REQ-005 @CTR-python @risk:critical
+  Scenario: Coherent source references never authenticate runtime evidence
+    Given fictional runtime metadata with coherent observation and review bindings
+    When the source inspector checks explicit bytes
+    Then source and target evidence remain UNVERIFIED with no runtime baseline
+    And review coverage is NOT_CHECKED even when all provided reviews bind
+
+  @REQ-001 @REQ-005 @CTR-python @risk:high
+  Scenario: Source inspection lists missing observations without judging cases
+    Given a valid 22-case dataset and observations missing HP-01
+    When the source inspector checks explicit bytes
+    Then HP-01 is listed missing and source coherence is INCOMPLETE
+    And source and target evidence remain UNVERIFIED with no runtime baseline
+
+  @REQ-006 @CTR-python @risk:critical
+  Scenario: Source inspection cannot access files services or application configuration
+    Given sentinels rejecting application config imports secret-file reads and network connections
+    When the source inspector checks explicit bytes
+    Then the inspection repeats deterministically without forbidden accesses
+    And source and target evidence remain UNVERIFIED with no runtime baseline

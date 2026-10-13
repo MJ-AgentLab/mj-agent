@@ -19,9 +19,11 @@ track: code
 - 后续新 capability 推荐归属 `data-agent.evaluation`，adapter 为 `python`、`tdd-bdd`，按 [[sdd/workflows/new-capability|new-capability workflow]] 推进；新共享契约的具体差异另交 Owner 审阅。
 - Owner：ranzuozhou；拟执行者：Codex；合成业务／Prompt 与 SWE 核验角色按后续 §8.2 由 Agent 模拟，不要求真人参与。
 
-当前范围：Owner明确要求实施Agent-first计划，授权#582 CLI软件、具体main契约及离线验证，见§8.6。上列为原Plan落盘轮次授权；actual采样及既有runtime修改未授权，发布操作由协调者另核具体动作。
+当前范围：T-006已随#589合并；Owner于2026-10-12采纳A并授权T-007a baseline CLI接入、G1工作树、契约/文档、离线测试与Agent合成验收，见§8.9。actual/live、外部连接、核心规则、文件后端、runtime/CI/守卫/个人配置及提交/推送/PR不在范围。
 
 ## 2. 背景与 Repo Scan 事实
+
+本节表格保存Plan初次起草时的仓库事实；当前实现和授权以§7及§8.9为准，不把历史“模块不存在”等描述当现状。
 
 本任务补齐评判框架缺口：消费经批准、脱敏的实际 runtime 观测，形成逐 case 判定、测量完整性、总体与红线指标及兼容基线的回归报告。采样与 target 的 EVAL 承接仍由各自 Issue 负责；runner 自测不能作为 runtime 行为通过证据。
 
@@ -196,14 +198,14 @@ python scripts/sdd/check_bdd_acceptance.py --all --strict
 
 | AC | 完成证据 | 任务 | 当前状态 |
 |---|---|---|---|
-| AC-1 | 22条结果、缺观测、未知检查、非法输入反例 | 8a | 核心PASS；CLI文件入口延期 |
+| AC-1 | 22条结果、缺观测、未知检查、非法输入反例 | 8a | 核心及Windows synthetic CLI PASS；actual入口延期 |
 | AC-2 | AST／轨迹／错误回环及绑定角色正反例 | 8b、8c | 合成核心PASS；实际观测校准未执行 |
 | AC-3 | fixture隔离、零值、placeholder、完整分母 | 8a、8c、8d | 核心PASS；无runtime基线 |
 | AC-4 | manifest绑定与兼容键差异反例 | 8a、8d | 核心PASS；实际来源真实性未核验 |
 | AC-5 | 精确阈值、红线、无基线、21/22下降 | 8d | 核心PASS；不扩展其他EVAL阈值 |
-| AC-6 | 规范化回放一致与报告分类 | 8d | 核心PASS；CLI进程退出／文件输出延期 |
-| AC-7 | 核心无IO／应用导入／网络哨兵、受控pytest、ruff/mypy | 8e | 核心PASS；CLI路径／重解析点／碰撞检查延期 |
-| AC-8 | 文档、索引、trace、报告与范围核查 | 8e | 核心公开契约已对齐真实API；CLI／actual继续延期，完整capability未验收 |
+| AC-6 | 规范化回放一致与报告分类 | 8d | 核心及Windows synthetic CLI退出／输出PASS；actual比较延期 |
+| AC-7 | 核心无IO／应用导入／网络哨兵、受控pytest、ruff/mypy | 8e | Windows synthetic CLI路径／重解析点／碰撞与baseline接入PASS；Linux/macOS延期 |
+| AC-8 | 文档、索引、trace、报告与范围核查 | 8e | 核心与CLI含baseline契约已对齐真实API；actual／平台继续延期，完整capability未验收 |
 
 #582 保持 OPEN；本次不勾选远端验收项。完成 runner 后仍需 Owner 验收及获批的交付流程；不自动关闭 #161、#504 或 #583–#586，不改变 #564 已按“覆盖与承接完成”关闭的结论。
 
@@ -305,3 +307,37 @@ Owner明确选择“授权提交、双推和 Draft PR（推荐）”：按已审
 C1代码/测试实际提交28925619c45ce7c35a376754c439885c0300f510，消息feat(eval): add synthetic-only offline CLI；author/committer使用已核实仓库配置ranzuozhou，无伪造协作者trailer。精确10文件；源码/契约/测试/fixture原bytes验证摘要仍f05fd48367e8a1a3b33d63d1f330835d8085541d8f8cbc1e06c9fe1fca4840eb。C2将记录契约/文档/证据及本批准事实；当前记录时C2、双推和PR尚未执行，不预填未来SHA/URL/CI或Approve。
 
 两端develop及本次base均5b8833c，提交前两端同名远端分支和PR均不存在。若后续tip/内容或宿主能力变化，仅暂停对应动作并按实际证据处理；不force、不改hook或工具路线规避拒绝。完整capability与#582接受尚未完成，Plan继续active/idea/null。
+
+### 8.9 2026-10-12 T-007a 的集中实施授权与交付
+
+Owner明确回复：“采纳 A，授权按上述范围实施 T-007a，创建 G1 工作树，完成 baseline CLI 参数、契约与文档同步、必要离线测试及 Agent 合成验收。”同时明确actual/live、外部连接、核心规则、文件保护后端、runtime、CI、守卫、个人配置保持不动；不提交、推送或创建PR，#582/Plan/capability状态保持。此为T-007a的新具体授权，不借用T-006授权扩展。
+
+已核实develop与两份本地远端跟踪引用均a96d759c080f4568e6810084f90fadce7b2c75cf，已跟踪diff为空，既存.playwright-mcp保留；未联网重新确认远端tip或Issue状态。G1实际git worktree add ../feature/582-baseline-cli -b feature/582-baseline-cli develop，exit0；新工作树HEAD与基线一致，inside-work-tree=true。#589 MERGED/五项CI成功来自既有具名收尾记录与本地merge提交；未重复收尾或修改历史验收文件。
+
+实施风味A，触发declared-contract-change已获上述批准。只改runner.py：可选--baseline读取原bytes、缺省b''、空/JSON object前置校验。两份main签名不变，核心/schema/judges/report/_file_io、窗口/阈值/兼容键、原dataset/catalog与runtime原bytes保持。合法JSON object不等于实测基线；synthetic仍NOT_EVALUATED，actual早拒绝覆盖baseline，原生Linux/macOS缺能力入口仍延期。
+
+TDD观察16 FAIL/135 deselected（旧CLI不接受baseline）；当前64 core+156 CLI unit+11 BDD=231 passed，22条第三方gherkin DeprecationWarning保留。新测试诊断码期望曾与原NON_FINITE_JSON不符；属性注入首次发生在校验后，后改为系统元数据返回点；均只修测试，不改规则或保护后端。Agent模拟Domain/Prompt并以SWE轮核验22-case/34-review原始输入和baseline自测，Subagent dispatched=NONE，不要求真人参与合成验收。
+
+[baseline CLI验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_baseline_cli_acceptance.md)记录离线门禁、可复现进程证据、角色事实和当前原bytes绑定。旧21文件绑定中behavior.feature因Git text=auto检出CRLF，LF对应历史hash；不冒称当轮raw fingerprint匹配旧值，当前证据重新绑定。历史合成报告固定复制成baseline.synthetic.json，不用待测代码生成期望或伪造actual基线。
+
+任务依赖：T-007a文件适配独立交付→T-007b真实来源/脱敏/批准与independent_review路线→另批actual文件入口→各target验收；Linux/macOS等价保护能力独立验证，缺能力继续fail closed。#161的跨版本A/B不通过same_target_replay，需另议具体比较契约；#504/#583–#586继续各自dataset/阈值/scope，probe-fixture不适用。T-007剩余actual/来源/target/平台部分仍NOT_RUN/DEFERRED。
+
+本轮软件VERIFIED_OFFLINE_SOFTWARE供Owner最终接受，candidate UNCOMMITTED；#582 OPEN、Plan active、capability idea/last_verified=null，无Git发布或Issue状态变化。恢复入口为实施前a96d759与固定输入；保留本轮输出，不自动覆盖/删除报告或处置其他工作树。完整验证与文档自检结论以验收报告为准。
+
+## 8.9 T-007b — 已批准的纯内存来源检查子项
+
+2026-10-12 Owner回复“执行待办推荐事项”，采纳集中确认A：在现有G1工作树新增纯内存inspect_source API、必要离线测试、契约/文档同步及Agent合成验收。此前T-007a批准不作为本项授权；本次授权单独覆盖新公开API与declared-contract-change。不得提交、推送或创建PR，不启用actual文件入口，不连接外部服务，不改runtime、CI、守卫、个人配置、核心/schema/judges/report或文件保护后端。#582 OPEN、Plan active、capability idea/last_verified=null保持。
+
+实施顺序：复核T-007a原bytes绑定并保存38文件本地快照及tracked.patch → 固定独立expected与失败测试 → 新增src/mj_agent/evaluation/inspection.py → 新增BDD与离线回归/哨兵 → 同步契约文档 → Agent模拟Domain/Prompt并由同Agent独立SWE轮复核原输入及结果。Subagent dispatched=NONE；Owner只作最终接受，不参与常规构建。快照在.mj-agent-local/t007b/t007a-snapshot，原23文件fingerprint为5ccaea17f46a43cc23eb01671f998ca86e9542453c1f2bd41d01b9c578310df5；历史T-007a报告/绑定不覆盖。
+
+公开签名inspect_source(inputs: ReplayInputs) -> dict[str, Any]，只消费既有七份bytes，复用既有schema._load校验，不调用replay/judge、不读取或解析引用目标、不连接服务。输出schema_version=offline-source-inspection-v1；input_status为VALID/INVALID，coherence_status为CONSISTENT/INCOMPLETE/NOT_CHECKED；固定source_evidence_status=UNVERIFIED、target_evidence_status=UNVERIFIED、review_coverage_status=NOT_CHECKED、runtime_metrics=null、baseline_eligible=false。exit_code是API返回分类：非法2，结构检查3；不新增CLI参数或进程入口。
+
+结构层校验schema、eval/run身份、四份原bytes hash及22条case/5条红线集合；输出计划/观测/完整观测/提供与绑定review计数、缺观测ID、完整性缺口和逐提供review绑定诊断。完整性检查三项complete标志、unknown结果及execute_sql缺SQL；不执行SQL或判断语义。逐review只核验run/obs/config/reference/profile/revision关联及既有source-kind方法/合成引用链字段，不判断check适用性、审阅覆盖、真实性或角色结论。无review也不宣称必要审阅完成；VALID/CONSISTENT不代表实测、授权或target接受。异常仅输出稳定诊断码，不回显载荷/引用/异常。
+
+必要测试：签名与固定expected、确定性/输入不变、schema/资源限额/重复key/ID/hash/来源字段拒绝、缺失或不完整观测、缺/过期/方法不合提供review、伪来源/目标引用始终UNVERIFIED、baseline报告不可互用、阻断文件/秘密/引用/网络/应用导入/replay/judge及跨平台内存路径；保留原231项离线回归。新增BDD承接REQ-001/005/006，全部使用具名synthetic或内存虚构条件，不生成actual观测包。
+
+文档矩阵：Plan/SPEC/requirements/design/tasks/trace/python.contract/behavior.feature/RUNBOOK更新本项与延期边界，fixture README/CHANGELOG与现有索引同步；CLI契约及main、ADR、GUIDE、STANDARD、Issue状态、其他target原scope不变。新增来源检查验收、BDD新运行证据与原bytes绑定。完成标准为API与契约一致、必要离线测试及相关门禁新证据通过、Agent独立合成核验、范围无漂移、历史快照可恢复；软件通过不关闭整个T-007。
+
+后续依赖：目前无获批脱敏观测包。未来真实包须绑定采样环境/run与采样/脱敏审阅引用、22条完整调用及结果（保留首次SQL与所有失败，无业务行数据）、真实loader body/active roster顺序/最终装配hash、全部语义与5红线+3非红线独立审阅；不能把旧34条synthetic review改名为actual审阅。actual文件入口与target接受待具体材料和另批方案，Linux/macOS待等价原生保护证明，缺能力继续fail closed。same_target_replay严格窗口/0.03阈值保持，#161跨版本A/B及#504/#583–#586原scope/状态保留。
+
+T-007b最终软件结果：278项PASS（原64 core+44新inspection unit+156 CLI unit+14 BDD），28条第三方警告保留；首轮275为补充平台模型前的真实历史结果。5个独立进程核验normal/baseline/permuted输出hash一致、missing列缺口、fictional来源仍UNVERIFIED；禁止访问哨兵零触发。全仓ruff、全src Windows/Linux类型模型、G1/G2/G3/G19/G21/G22/G9和默认V1已完成新证据；V1 13P/14W/0F保留信息WARN，类型模型不代表原生入口成功。当前证据见[来源检查验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md)。状态VERIFIED_OFFLINE_SOFTWARE供Owner接受；candidate UNCOMMITTED，actual与平台仍延期，原状态保持。

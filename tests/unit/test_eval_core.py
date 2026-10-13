@@ -22,6 +22,12 @@ from mj_agent.evaluation.schema import ReplayInputs as _Inputs
 FIXTURES = Path(__file__).parent / "fixtures" / "eval_core"
 
 
+def _inspect(inputs: _Inputs) -> dict[str, Any]:
+    from mj_agent.evaluation.inspection import inspect_source
+
+    return inspect_source(inputs)
+
+
 def test_public_contract_constructor_immutability_and_signature() -> None:
     assert _Inputs.__name__ == "ReplayInputs"
     names = ["config", "dataset", "observations", "manifest", "reference", "reviews", "baseline"]
@@ -478,3 +484,225 @@ def test_replay_is_deterministic_and_does_not_load_application_or_network(
         name in {"mj_agent.config", "dotenv"} or name.startswith(("psycopg", "openai"))
         for name in set(sys.modules) - before
     )
+
+
+def test_inspection_public_signature_fixed_expected_and_determinism() -> None:
+    from mj_agent.evaluation.inspection import inspect_source
+
+    assert list(signature(inspect_source).parameters) == ["inputs"]
+    assert get_type_hints(inspect_source) == {"inputs": _Inputs, "return": dict[str, Any]}
+    inputs = _bundle()
+    before = deepcopy(inputs)
+    expected = json.loads((FIXTURES / "inspection.expected.json").read_bytes())
+    assert _inspect(inputs) == _inspect(inputs) == expected
+    assert inputs == before
+
+
+@pytest.mark.parametrize("field,raw,reason", [
+    ("config", b"{", "INVALID_INPUT_SCHEMA"),
+    ("manifest", b"\xff", "INVALID_INPUT_SCHEMA"),
+    ("config", b'{"x":1,"x":2}', "DUPLICATE_JSON_KEY"),
+    ("reference", b'{"x":NaN}', "NON_FINITE_JSON"),
+    ("config", b"[" * 34 + b"0" + b"]" * 34, "JSON_DEPTH_LIMIT"),
+    ("config", b" " * (10 * 1024 * 1024 + 1), "INPUT_SIZE_LIMIT"),
+    ("dataset", b" " * (256 * 1024 + 1) + b"{}", "RECORD_SIZE_LIMIT"),
+    ("observations", b"[]", "RECORD_NOT_OBJECT"),
+    ("baseline", b"[]", "BASELINE_NOT_OBJECT"),
+    ("baseline", b"{", "INVALID_INPUT_SCHEMA"),
+    ("reviews", b"[]", "RECORD_NOT_OBJECT"),
+], ids=[f"invalid-{index}" for index in range(11)])
+def test_inspection_rejects_invalid_bytes_without_echo(field: str, raw: bytes, reason: str) -> None:
+    report = _inspect(replace(_bundle(), **{field: raw}))
+    assert report["input_status"] == "INVALID"
+    assert report["coherence_status"] == "NOT_CHECKED"
+    assert report["counts"] is report["gaps"] is None
+    assert report["reason_code"] == reason
+    assert report["exit_code"] == 2
+    assert report["source_evidence_status"] == report["target_evidence_status"] == "UNVERIFIED"
+    assert report["runtime_metrics"] is None and report["baseline_eligible"] is False
+
+
+@pytest.mark.parametrize("defect,reason", [
+    ("hash", "INPUT_HASH_MISMATCH"), ("eval", "EVAL_ID_MISMATCH"),
+    ("cardinality", "DATASET_CARDINALITY_INVALID"),
+    ("duplicate_observation", "DUPLICATE_OBSERVATION_ID"),
+    ("observation_run", "OBSERVATION_ID_MISMATCH"),
+    ("foreign_observation", "OBSERVATION_ID_MISMATCH"),
+    ("duplicate_review", "REVIEW_ID_INVALID"),
+    ("approval_missing", "INVALID_INPUT_SCHEMA"),
+    ("policy", "INVALID_INPUT_SCHEMA"),
+    ("call_sequence", "INVALID_INPUT_SCHEMA"),
+])
+def test_inspection_reuses_identity_and_policy_validation(defect: str, reason: str) -> None:
+    inputs = _bundle()
+    manifest = json.loads(inputs.manifest)
+    if defect == "hash":
+        inputs = replace(inputs, config=inputs.config + b" ")
+    elif defect == "eval":
+        manifest["eval_id"] = "different"
+        inputs = replace(inputs, manifest=json.dumps(manifest).encode())
+    elif defect == "cardinality":
+        inputs = _change(inputs, dataset=_jsonl(_rows(inputs.dataset)[:-1]))
+    elif defect in {"duplicate_observation", "observation_run", "foreign_observation", "call_sequence"}:
+        rows = _rows(inputs.observations)
+        if defect == "duplicate_observation":
+            rows.append(rows[0])
+        elif defect == "observation_run":
+            rows[0]["run_id"] = "other-run"
+        elif defect == "foreign_observation":
+            rows[0]["case_id"] = "FOREIGN"
+        else:
+            rows[0]["tool_calls"][0]["sequence"] = 2
+        inputs = _change(inputs, observations=_jsonl(rows))
+    elif defect == "duplicate_review":
+        rows = _rows(inputs.reviews)
+        inputs = replace(inputs, reviews=_jsonl(rows + [rows[0]]))
+    elif defect == "approval_missing":
+        manifest["source_kind"] = "runtime_observation"
+        manifest["provenance"]["sampling_approval_ref"] = None
+        inputs = replace(inputs, manifest=json.dumps(manifest).encode())
+    else:
+        config = json.loads(inputs.config)
+        config["threshold"] = 0.02
+        inputs = _change(inputs, config=json.dumps(config).encode())
+    assert _inspect(inputs)["reason_code"] == reason
+    assert _inspect(inputs)["exit_code"] == 2
+
+
+def test_inspection_missing_observations_and_reviews_do_not_claim_coverage() -> None:
+    inputs = _change(_bundle(), observations=b"", reviews=b"")
+    report = _inspect(inputs)
+    assert report["input_status"] == "VALID" and report["coherence_status"] == "INCOMPLETE"
+    assert report["counts"] == {"planned_cases": 22, "observed_cases": 0,
+                                "complete_observations": 0, "provided_reviews": 0, "bound_reviews": 0}
+    assert report["gaps"]["missing_observations"] == sorted(r["id"] for r in _rows(inputs.dataset))
+    complete_without_reviews = _inspect(replace(_bundle(), reviews=b""))
+    assert complete_without_reviews["coherence_status"] == "CONSISTENT"
+    assert complete_without_reviews["review_coverage_status"] == "NOT_CHECKED"
+    assert complete_without_reviews["source_evidence_status"] == "UNVERIFIED"
+
+
+@pytest.mark.parametrize("defect,reason", [
+    ("turn_complete", "TURN_INCOMPLETE"), ("reply_complete", "REPLY_INCOMPLETE"),
+    ("trajectory_complete", "TRAJECTORY_INCOMPLETE"),
+    ("outcome", "CALL_RESULT_UNKNOWN"), ("sql", "SQL_ARGUMENT_MISSING"),
+])
+def test_inspection_lists_structural_observation_gaps(defect: str, reason: str) -> None:
+    inputs = _bundle()
+    rows = _rows(inputs.observations)
+    if defect in {"outcome", "sql"}:
+        rows[0]["tool_calls"][0][defect] = "unknown" if defect == "outcome" else None
+    else:
+        rows[0][defect] = False
+    report = _inspect(_change(inputs, observations=_jsonl(rows), reviews=b""))
+    assert report["counts"]["complete_observations"] == 21
+    assert report["gaps"]["incomplete_observations"] == [{"case_id": rows[0]["case_id"],
+                                                         "reason_codes": [reason]}]
+
+
+@pytest.mark.parametrize("field,value,reason", [
+    ("run_id", "stale-run", "ROLE_REVIEW_STALE"),
+    ("case_observation_sha256", "0" * 64, "ROLE_REVIEW_STALE"),
+    ("config_sha256", "0" * 64, "ROLE_REVIEW_STALE"),
+    ("reference_sha256", "0" * 64, "ROLE_REVIEW_STALE"),
+    ("judge_profile", "stale", "ROLE_REVIEW_STALE"),
+    ("judge_revision", "stale", "ROLE_REVIEW_STALE"),
+    ("review_method", "independent_review", "SYNTHETIC_ROLE_CHAIN_MISSING"),
+    ("initial_label_ref", None, "SYNTHETIC_ROLE_CHAIN_MISSING"),
+    ("independent_check_ref", None, "SYNTHETIC_ROLE_CHAIN_MISSING"),
+])
+def test_inspection_provided_review_binding_is_not_a_verdict(field: str, value: Any, reason: str) -> None:
+    inputs = _bundle()
+    reviews = _rows(inputs.reviews)
+    reviews[0][field] = value
+    report = _inspect(replace(inputs, reviews=_jsonl(reviews)))
+    assert report["counts"]["bound_reviews"] == 33
+    assert report["gaps"]["unbound_reviews"] == [{"case_id": reviews[0]["case_id"],
+                                                "check_id": reviews[0]["check_id"], "reason_codes": [reason]}]
+    assert report["coherence_status"] == "INCOMPLETE" and report["exit_code"] == 3
+
+
+def test_inspection_review_without_observation_and_fictional_actual_method() -> None:
+    report = _inspect(_change(_bundle(), observations=b""))
+    assert report["counts"]["bound_reviews"] == 0
+    assert {r["reason_codes"][0] for r in report["gaps"]["unbound_reviews"]} == {"REVIEW_OBSERVATION_MISSING"}
+    inputs = _actual_branch_condition()  # In-memory fictional metadata; no actual source.
+    reviews = _rows(inputs.reviews)
+    reviews[0]["review_method"] = "agent_simulated"
+    report = _inspect(replace(inputs, reviews=_jsonl(reviews)))
+    assert report["gaps"]["unbound_reviews"][0]["reason_codes"] == ["ACTUAL_REVIEW_SOURCE_INELIGIBLE"]
+    assert report["source_evidence_status"] == "UNVERIFIED"
+
+
+def test_inspection_fictional_references_and_target_hashes_are_never_authenticated() -> None:
+    inputs = _actual_branch_condition()
+    manifest = json.loads(inputs.manifest)
+    manifest["provenance"].update(source_ref=".env.do-not-open", sampling_approval_ref="fake-approval",
+                                  sanitization_review_ref="https://invalid.example/review")
+    manifest["target_snapshot"]["assembled_prompt_sha256"] = "f" * 64
+    manifest["target_snapshot"]["prompt"]["path"] = ".env.do-not-open"
+    report = _inspect(replace(inputs, manifest=json.dumps(manifest).encode()))
+    assert report["input_status"] == "VALID" and report["coherence_status"] == "CONSISTENT"
+    assert report["source_kind"] == "runtime_observation" and report["exit_code"] == 3
+    assert report["source_evidence_status"] == report["target_evidence_status"] == "UNVERIFIED"
+    assert report["review_coverage_status"] == "NOT_CHECKED"
+    assert ".env" not in json.dumps(report) and "https://" not in json.dumps(report)
+    assert "measurement" not in report and "cases" not in report
+    current = _replay(inputs)  # Existing fictional branch regression test only.
+    assert _regression(current, report)["status"] == "NO_BASELINE"
+
+
+def test_inspection_baseline_bytes_do_not_enable_comparison_or_judging() -> None:
+    inputs = _bundle()
+    baseline = (_Inputs.__name__ + " is not an authenticated baseline").encode()
+    report = _inspect(replace(inputs, baseline=json.dumps({"note": baseline.decode()}).encode()))
+    assert report == json.loads((FIXTURES / "inspection.expected.json").read_bytes())
+    # Unknown semantics remain outside this API: no judge is run and coverage is NOT_CHECKED.
+    rows = _rows(inputs.dataset)
+    rows[0]["expected_output"]["future_check"] = True
+    assert _inspect(_change(inputs, dataset=_jsonl(rows), reviews=b""))["input_status"] == "VALID"
+
+
+def test_inspection_no_file_reference_network_application_or_judge_access(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import builtins
+
+    from mj_agent.evaluation import core, judges
+    from mj_agent.evaluation.inspection import inspect_source
+
+    inputs = _bundle()
+    expected = json.loads((FIXTURES / "inspection.expected.json").read_bytes())
+    original_import = builtins.__import__
+    hits: list[str] = []
+
+    def reject(*args: Any, **kwargs: Any) -> Any:
+        hits.append("forbidden")
+        raise AssertionError("in-memory inspection cannot access IO or EVAL")
+
+    def guard(name: str, *args: Any, **kwargs: Any) -> Any:
+        if name.startswith(("mj_agent.config", "mj_agent.agent", "mj_agent.tools", "dotenv", "psycopg", "openai")):
+            return reject()
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", guard)
+    monkeypatch.setattr(builtins, "open", reject)
+    monkeypatch.setattr(Path, "open", reject)
+    monkeypatch.setattr(socket.socket, "connect", reject)
+    monkeypatch.setattr(socket, "create_connection", reject)
+    monkeypatch.setattr(core, "replay", reject)
+    monkeypatch.setattr(judges, "_judge", reject)
+    assert inspect_source(inputs) == expected
+    assert hits == []
+
+
+@pytest.mark.parametrize("platform", ["win32", "linux", "darwin"])
+def test_inspection_memory_platform_model_requires_no_native_file_backend(
+    platform: str, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inputs = _bundle()
+    expected = json.loads((FIXTURES / "inspection.expected.json").read_bytes())
+    with monkeypatch.context() as context:
+        context.setattr(sys, "platform", platform)
+        assert _inspect(inputs) == expected
+    # This is an in-memory platform model, never a native Linux/macOS file run.

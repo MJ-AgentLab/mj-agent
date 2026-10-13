@@ -1,0 +1,25 @@
+{
+  "schema_version": "offline-source-inspection-v1",
+  "input_status": "VALID",
+  "coherence_status": "CONSISTENT",
+  "reason_code": "SOURCE_INSPECTION_ONLY",
+  "source_kind": "synthetic_fixture",
+  "counts": {
+    "planned_cases": 22,
+    "observed_cases": 22,
+    "complete_observations": 22,
+    "provided_reviews": 34,
+    "bound_reviews": 34
+  },
+  "gaps": {
+    "missing_observations": [],
+    "incomplete_observations": [],
+    "unbound_reviews": []
+  },
+  "source_evidence_status": "UNVERIFIED",
+  "target_evidence_status": "UNVERIFIED",
+  "review_coverage_status": "NOT_CHECKED",
+  "runtime_metrics": null,
+  "baseline_eligible": false,
+  "exit_code": 3
+}

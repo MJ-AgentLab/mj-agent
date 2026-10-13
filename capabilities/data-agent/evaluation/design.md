@@ -2,7 +2,7 @@
 type: capability-design
 capability: data-agent.evaluation
 state: draft
-version: "0.5"
+version: "0.7"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -10,7 +10,7 @@ updated: 2026-10-12
 
 # Design: Offline EVAL Replay v1
 
-> #582 已补齐离线CLI文件适配层，公开核心保持兼容，CLI契约绑定实际main。当前状态以§5.6为准。actual采样、来源真实性及runtime验收仍延期；capability保持idea、last_verified=null，软件自测不等于实际EVAL通过。
+> #582 已补齐离线CLI文件适配层，公开核心保持兼容，CLI契约绑定实际main。当前状态以§5.8为准。actual采样、来源真实性及runtime验收仍延期；capability保持idea、last_verified=null，软件自测不等于实际EVAL通过。
 
 ## §1 Context
 
@@ -26,15 +26,19 @@ updated: 2026-10-12
 
 实际命令：
 
-    uv run --frozen --no-sync python -m mj_agent.evaluation.runner --synthetic-fixture --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <output-dir> [--reviews <reviews.jsonl>]
+    uv run --frozen --no-sync python -m mj_agent.evaluation.runner --synthetic-fixture --eval-config <config.json> --dataset <dataset.jsonl> --observations <observations.jsonl> --manifest <manifest.json> --reference <reference.json> --output-dir <output-dir> [--reviews <reviews.jsonl>] [--baseline <baseline.json>]
 
-无自动profile、env fallback、采样或联网参数。main正式冻结于cli.contract.yml，参数错误返回2且不回显用户参数；--help返回0。除ReplayInputs／replay／main外，解析／judge等辅助符号保持私有。
+无自动profile、env fallback、采样或联网参数。main契约绑定于cli.contract.yml，参数错误返回2且不回显用户参数；--help返回0。除ReplayInputs／replay／main外，解析／judge等辅助符号保持私有。
 
 核心与入口分别冻结。公开ReplayInputs是七字段的冻结dataclass：config／dataset／observations／manifest／reference为必填bytes，reviews／baseline默认b''；私有_Inputs兼容别名保留。replay调用既有私有实现，规则、输入／报告语义及窗口／比较条件不变，返回JSON-compatible dict与Markdown，不执行文件IO。CLI只负责路径、有限文件IO、稳定报告及实际退出；将当前报告里两处CLI_ENTRY_DEFERRED换为CORE_API_NO_FILE_IO，并更正Markdown延期句；不改字段、计算或历史报告。报告字节与摘要随这三处文案变化。
 
+可选--baseline仅接入显式本地候选报告原bytes，未提供时保留b''；manifest来源闸通过后才读取。显式空文件为BASELINE_INPUT_EMPTY，JSON null／数组／标量为BASELINE_NOT_OBJECT，非法UTF-8／JSON为INVALID_INPUT_SCHEMA；重复key、非有限数、深度和大小限制沿用既有解析器。以上返回2，不调用replay或创建输出。合法JSON object不表示有效基线：synthetic的regression始终NOT_EVALUATED，baseline_rejection_reasons与delta不用于声明已比较。所有baseline路径与其他输入采用同一Windows后端，actual早拒绝包含baseline；非Windows平台仍先拒绝文件入口。
+
+baseline/reviews原文件摘要不在现有manifest.hashes中；本轮另以验收绑定记录保存，不新增schema或报告字段，不自动访问报告内引用。
+
 ### 2.2 输入契约 v1
 
-所有 JSON object 除明确声明的扩展映射外禁止额外字段；未知 schema 版本、重复 JSON key、NaN／Infinity、重复 case ID、额外未知 observation ID、无效 UTF-8／JSON 均 INPUT_INVALID。dataset 的未知检查字段单独为 UNSUPPORTED，不把它降级成普通空检查。
+配置／manifest／reference／观测／review 的 JSON object 除明确声明的扩展映射外禁止额外字段；这些结构的未知 schema 版本、重复 JSON key、NaN／Infinity、重复 case ID、额外未知 observation ID、无效 UTF-8／JSON 均 INPUT_INVALID。dataset 的未知检查字段单独为 UNSUPPORTED，不把它降级成普通空检查。
 
 输入只允许明确传入的普通本地文件。拒绝 URL、UNC／网络路径、秘密文件（.env、secrets*.enc、凭据文件）、符号链接／重解析点；不递归扫描目录、不自动解析路径引入的其他文件。输出目录必须普通本地目录，不能覆盖任一输入或已有报告；不自动删除。合法但尚未完成的观测仍可报告缺口。
 
@@ -53,7 +57,7 @@ updated: 2026-10-12
 | observation | schema_version、case_id、run_id、turn_complete、trajectory_complete、reply_complete、reply_excerpt；按连续 sequence 排序的 tool_calls；只涵盖初始用户输入至第一次完整 agent 回复，跟进对话另采样 |
 | tool_call | sequence、call_id、tool_name；execute_sql 的 sql 文本，其他工具仅名称／参数摘要；outcome=success/error/unknown；脱敏 error_codes；不含返回 rows 或完整 tool envelope |
 | review | schema_version、run_id、case_id、check_id、case_observation_sha256、config_sha256、reference_sha256、judge_profile、judge_revision、reviewer_role、sanitized_review_ref、verdict=PASS/FAIL、reason_code；与当前观测／规则／静态参考绑定，非关键词推定 |
-| baseline | 此 runner 的原始 report.json；不接受仅有 baseline_value 数字的 EVAL 文档，也不接受手改汇总值；重核计数、状态及输入绑定 |
+| baseline | 有效实测基线须为此 runner 的原始 report.json；placeholder／手改值不能作有效基线。当前synthetic CLI只校验JSON object并接入原bytes，不执行资格、计数、状态或兼容性比较 |
 
 观察摘要采用规范化 case JSON（键排序、UTF-8、LF、无额外空白）的 SHA-256，固定算法随 schema 版本。原文件 hash 和 case 规范化 hash 各有用途，不混用。未知 outcome 不能证明成功；错误文本仅用批准的代码／片段，不对未经脱敏的原始错误堆栈进行保管。
 
@@ -147,7 +151,7 @@ compatibility key 包含 schema／eval_id／judge_profile 与规则版本、conf
 
 current 未测或 selftest：regression=NOT_EVALUATED；current MEASURED 但无有效基线：NO_BASELINE；有有效且条件兼容基线才比较。overall_drop=baseline_pass_rate-current_pass_rate，>=0.03 为 HARD_REGRESSION；0<drop<0.03 为 SOFT_REGRESSION；红线任何下降或 current 确认失败均硬失败；其余 NO_REGRESSION。latency 未有完整批准的时间观测则保持未测，首版不新增采集；若两份兼容实测报告均有该指标，沿用 #161 outcome 不变且 latency 上升时的 soft warning。
 
-以下是保持不变的核心报告分类；当前CLI仅可返回2/3/6，help返回0。actual/baseline文件入口延期，CLI不能取得actual的0/4/5/7。
+以下是保持不变的核心报告分类；当前CLI仅可返回2/3/6，help返回0。baseline文件参数已接入；actual文件入口与实际比较延期，CLI不能取得actual的0/4/5/7。
 
 | 核心退出分类（优先级从上到下） | 含义 |
 |---|---|
@@ -162,6 +166,26 @@ current 未测或 selftest：regression=NOT_EVALUATED；current MEASURED 但无�
 输出 JSON 与 Markdown 只使用输入绑定的时间，不插入回放当前时间／随机 ID；规范化 UTF-8／LF、稳定键／case／check 顺序。相同输入写入不同新目录时，报告字节与退出码应一致。报告保留所有并存原因，退出码不能代替阅读 report。
 
 report.json 的候选顶层为 schema_version、eval_id、run_id、input_binding、compatibility_key、counts、cases、measurement、safety、regression、baseline_eligible、exit_code、limitations。cases[].checks 包含 check_id／status／reason_code／evidence_refs，cases[] 另含 status／judgment_complete／缺口列表；measurement 包含 source_kind／status／metrics，未测 metric 为 null；regression 包含 status／baseline_rejection_reasons／compatibility_differences／仅兼容时的精确 delta。limitations 固定声明本工具仅回放、未执行本次 live 采样，不代替 target Issue 验收；原观测可以来自此前独立批准的实际采样。
+
+### 2.6 T-007b纯内存来源检查（非EVAL报告）
+
+公开入口：src.mj_agent.evaluation.inspection.inspect_source(inputs: ReplayInputs) -> dict[str, Any]。只复用schema._load的bytes/schema/身份/hash/资源限额；不调用核心、judge或报告汇总。观察完整性核验turn/reply/trajectory三标志、unknown调用结果及execute_sql的SQL为null；不分析SQL或语义。提供review只检查run、obs/config/reference摘要、profile/revision及既有来源方法/合成引用链；BOUND计数不代表必要review覆盖或结论正确。
+
+| 返回字段 | 固定契约/解释 |
+|---|---|
+| schema_version | offline-source-inspection-v1；不兼容offline-report-v1基线 |
+| input_status | VALID/INVALID，仅结构、身份与字节一致性 |
+| coherence_status | CONSISTENT/INCOMPLETE/NOT_CHECKED；非法时NOT_CHECKED |
+| reason_code | SOURCE_INSPECTION_ONLY；非法复用稳定诊断，Pydantic包装为INVALID_INPUT_SCHEMA |
+| source_kind | 合法manifest声明，非法null；声明不构成来源认证 |
+| counts | planned_cases/observed_cases/complete_observations/provided_reviews/bound_reviews；非法null |
+| gaps | missing_observations/incomplete_observations/unbound_reviews；按case/check排序；非法null |
+| source_evidence_status / target_evidence_status | 始终UNVERIFIED；未认证引用、批准、脱敏或目标hash |
+| review_coverage_status | 始终NOT_CHECKED；即使0或34条review都绑定也不宣称覆盖完成 |
+| runtime_metrics / baseline_eligible | 始终null/false；不生成measurement、cases、compatibility_key或Markdown |
+| exit_code | 非法2、仅结构检查3，API数据分类；无CLI入口/进程退出 |
+
+不打开引用或目标文件，不导入应用装配/配置，不新增依赖。VALID/CONSISTENT可以用于整理后续材料缺口，不能用于批准采样、执行actual入口或target接受。真实数据包当前缺失，API只用固定synthetic与明确虚构内存条件验证。schema/judges/report/core/main/_file_io保持现状。
 
 ## §3 Architecture
 
@@ -187,9 +211,9 @@ Owner对核心公共API及当前synthetic-only CLI契约作集中批准，记录
 
 ### 3.2 正式行为契约（已落盘）
 
-正式文件为[behavior.feature](contracts/behavior.feature)，原6个scenario绑定REQ-001–006与CTR-python，另4个synthetic-only CLI场景覆盖确定性报告、actual早拒绝、危险路径与输出碰撞/部分失败，并映射CTR-python/CTR-cli。合成验收使用绑定观测的Agent模拟角色记录，不要求真人操作；首轮、红线、未测和离线边界语义不变。
+正式文件为[behavior.feature](contracts/behavior.feature)，原6个scenario绑定REQ-001–006与CTR-python，另5个synthetic-only CLI场景覆盖确定性报告、actual早拒绝、危险路径与输出碰撞/部分失败，并映射CTR-python/CTR-cli。合成验收使用绑定观测的Agent模拟角色记录，不要求真人操作；首轮、红线、未测和离线边界语义不变。
 
-每个scenario保留high／critical risk tag，当前6条critical。10个场景已通过离线公共API／CLI执行，trace的automation_status为automated；原核心PR及当前候选软件证据分别记录，不预填新PR。合成BDD证据不等于actual runtime EVAL。
+每个scenario保留high／critical risk tag，当前7条critical。11个场景已通过离线公共API／CLI执行，trace的automation_status为automated；原核心PR及当前候选软件证据分别记录，不预填新PR。合成BDD证据不等于actual runtime EVAL。
 
 原Stage6批准形成两份契约；后续核心编码与提交／PR批准见§5.3，当前公开API／契约修复范围见§5.4。技术操作由Agent承担，相同范围复用授权；既有runtime、live与审核规则不在范围内。
 
@@ -203,7 +227,7 @@ Owner对核心公共API及当前synthetic-only CLI契约作集中批准，记录
 | 不导入 runtime precheck | 避免 settings 链与宽松 parse warning 被当通过 | judge 规则独立，但由 manifest/reference/version 显式绑定和校准 |
 | 合法且完整的实测零值 | 保留真实低质量基线 | 依赖来源、完整性与自洽校验识别 placeholder |
 
-## §5 审阅决策与验证记录（历史轮次保留，当前见 §5.3）
+## §5 审阅决策与验证记录（历史轮次保留，当前见 §5.8）
 
 本 SPEC 的 schema、全部 32 类检查、状态／计数、严格兼容键、退出码及两份契约在当前具体范围内继续执行。合成角色由 Agent 承担，不再要求 Owner 指定真人做合成验收；Owner 只保留必要信息、实质决定与授权。授权动作／对象不变时复用，实质变化才暂停受影响部分；本次仍不编码或执行 live。
 
@@ -272,3 +296,21 @@ Owner分别明确选择“采纳并授权离线 CLI 实施（推荐）”与“�
 初始RED为旧main缺repo_root与缺开关仍读输入（2 FAIL）；新单元与BDD先后验证真实子进程、source早拒绝、路径/软硬链接/reparse/网络/设备/别名/替换、限额、报告碰撞、部分写入及关闭故障。169项unit与10项BDD通过；新文案改变报告字节/摘要，历史报告不重写。全部32类judge、严格窗口、兼容键、精确0.03阈值、ReplayInputs/replay保持不变。
 
 证据见[synthetic CLI验收](evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。技术操作与合成Domain/Prompt角色、独立SWE轮由Codex承担，当前线程未派子Agent；这不是其他真人签署或独立外部批准。#582/Plan OPEN/active、capability idea/last_verified=null；无commit/push/PR/Issue更新、runtime改动或actual/live EVAL。
+
+### 5.7 2026-10-12 T-007a baseline CLI接入
+
+Owner采纳A并明确授权G1工作树、baseline参数、两份契约/行为契约、必要离线测试与Agent合成验收及具名文档同步。不提交/推送/PR、不联网，不改核心、_file_io、runtime、CI、守卫或个人配置。工作树feature/582-baseline-cli从develop@a96d759建立。T-006已由#589合并；本轮T-007a为UNCOMMITTED软件交付。
+
+仅runner读取层增加可选baseline、空/JSON object校验与原bytes传递。内存API、32类规则、窗口、阈值、兼容键和报告字段不变；synthetic先返回NOT_EVALUATED，合法object也不代表可用基线。原report.json中的baseline/reviews原文件hash缺口由独立验收绑定记载，不修改schema。
+
+220 unit+11 BDD通过；同AgentDomain/Prompt与独立SWE轮核验固定22-case/34-review及真实进程输出，无子Agent。baseline固定文件为历史合成报告的原bytes，保留过时CLI_ENTRY_DEFERRED历史文案，未从本次待测代码生成期望或actual报告。详细证据与门禁结果见[baseline CLI验收](evidence/reports/2026-10-12_baseline_cli_acceptance.md)。
+
+actual来源目前只做结构校验；sampling_approval_ref不等于授权凭证，actual的independent_review不由agent_simulated替代。来源/脱敏/批准链及target实际审阅就绪后才另批入口。Linux/macOS缺等价祖先rename保护继续fail closed；类型模型不作为原生成功证据。#582/Plan/capability仍OPEN/active/idea，last_verified=null，#161/#504/#583–#586与probe-fixture结论保持。
+
+### 5.8 2026-10-12 T-007b独立授权与软件核验
+
+Owner“执行待办推荐事项”单独批准推荐A：上述纯内存接口、必要离线测试、契约文档和Agent合成验收；使用既有feature/582-baseline-cli，不扩大T-007a授权。T-007a原38文件快照和tracked.patch保存在本地，历史验收/23文件绑定不覆盖；当前绑定由新报告记录。
+
+初始41项来源检查测试因接口不存在RED，最小新模块后3项期望诊断与Pydantic包装不符，修正测试而非既有schema；首轮275项通过（原231+41新unit+3新BDD），28条第三方DeprecationWarning保留。资料来源真实性和target接受未验证；当前新证据见[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)。
+
+本子项VERIFIED_OFFLINE_SOFTWARE供Owner最终接受；不进行actual采样/回放、外部连接或Git发布。#582 OPEN、Plan active、capability idea/last_verified=null及其他target原scope保持；Linux/macOS native入口延期。

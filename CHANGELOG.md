@@ -18,7 +18,11 @@
 
 - 新增独立的内存输入校验、SQL AST／轨迹和绑定角色评判、完整性汇总及精确基线回归报告；保留22条计划分母、首次失败与严格窗口，合成结果不产生 runtime 指标或基线。
 - 公开七个bytes字段的ReplayInputs及replay(inputs)核心API，正式Python契约绑定真实实现；新增synthetic-only runner.main(argv, *, repo_root)与私有有界本地IO；显式合成开关、manifest优先和actual早拒绝、新目录报告独占创建及安全故障诊断。
-- 以固定合成资料完成离线单元及 BDD 验收。actual文件入口与baseline CLI参数继续延期，既有runtime、dataset、32类规则和严格窗口不变；当前核心报告延期文案改为CORE_API_NO_FILE_IO，历史报告保留；本条不表示已提交、发布或完成 live EVAL。
+- 以固定合成资料完成离线单元及 BDD 验收。actual文件入口继续延期；baseline CLI参数由T-007a接入，synthetic仍不比较基线，既有runtime、dataset、32类规则和严格窗口不变；当前核心报告延期文案改为CORE_API_NO_FILE_IO，历史报告保留；本条不表示已提交、发布或完成 live EVAL。
+
+- T-007a新增可选--baseline本地JSON object原bytes接入；沿用同一文件保护后端，空/非法/非object在核心与输出前拒绝。synthetic仍为SELFTEST_ONLY/NOT_EVALUATED，不产生runtime基线或实际回归结论；actual、来源/target接受及Linux/macOS入口继续延期。本轮未提交或发布。
+
+- T-007b新增纯内存inspect_source(inputs)来源结构检查，复用既有schema/身份/hash；列观测和提供review绑定缺口，来源与目标始终UNVERIFIED、审阅覆盖NOT_CHECKED，不产生runtime metric/baseline。不新增CLI、不读取引用或认证来源，不启用actual入口；本轮未提交或发布。
 
 ### Changed — 按命令诊断 Git 授权与执行条件（#555）
 

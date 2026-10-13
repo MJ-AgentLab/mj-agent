@@ -13,7 +13,7 @@ track: shared
 
 Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)（draft）、[实施计划](../plans/[PLAN]_555_approved_deletion.md) §11 和 [开发指南](guide/[GUIDE]_Developer_Onboarding.md) §6.6。
 
-Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_root)与核心ReplayInputs/replay正式契约绑定实际源码；169项unit与10项BDD通过，严格窗口/规则保持。actual文件入口、baseline CLI参数、采样/runtime接受延期，Linux原生入口明确延期；capability idea/last_verified=null。见[设计](../capabilities/data-agent/evaluation/design.md)、[RUNBOOK](../capabilities/data-agent/evaluation/runbook.md)与[本轮验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。原#587核心及并行CLI记录仅保存历史；未提交或发布本轮成果。
+Issue #582：T-006已随#589合并；T-007a baseline文件参数和T-007b纯内存inspect_source已完成278项离线软件核验（264 unit+14 BDD），候选UNCOMMITTED。来源/目标UNVERIFIED、审阅覆盖NOT_CHECKED，synthetic仍无runtime比较；核心/窗口/阈值/文件后端不改。actual文件/真实来源/target接受及Linux/macOS原生保护延期；#582 OPEN、Plan active、capability idea/last_verified=null，无提交/推送/PR。 见[设计](../capabilities/data-agent/evaluation/design.md)、[RUNBOOK](../capabilities/data-agent/evaluation/runbook.md)与[来源检查验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md)。
 
 > **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
 > 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.

@@ -1,4 +1,4 @@
-# Synthetic-only offline software; no actual runtime acceptance.
+# Synthetic-only software and source inspection; no actual acceptance.
 id: data-agent.evaluation
 name: Offline Runtime Observation Replay and EVAL Reporting
 domain: data-agent
@@ -11,8 +11,7 @@ last_verified: null
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
-summary: '#582独立离线核心与synthetic-only CLI；main(argv, *, repo_root)显式接收固定合成文件并生成确定性报告。169项unit与10项BDD验证软件行为；actual文件入口、baseline
-  CLI参数、采样和runtime接受延期。Agent模拟角色并独立核验，严格窗口保持。完整capability未接受，idea/last_verified=null。'
+summary: '#582独立离线核心、synthetic-only CLI及纯内存inspect_source；可选baseline原bytes接入不启用实际比较。264项unit和14项BDD验证软件；来源/目标始终UNVERIFIED、审阅覆盖NOT_CHECKED，不生成runtime基线。actual文件、来源/target接受和Linux/macOS原生保护继续延期。idea/last_verified=null。'
 requirements:
 - id: REQ-001
   statement: 读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源
@@ -22,6 +21,7 @@ requirements:
     examples:
     - Given 22 条 dataset 和缺少 HP-01 的观测 / When 离线回放 / Then 仍输出 22 条 case 结果且 HP-01 为 NOT_RUN
     - Given dataset 摘要不匹配 manifest / When 校验输入 / Then INPUT_INVALID 且正式指标未测
+    - Given 提供记录结构/身份/hash齐全但来源引用虚构 / When inspect_source / Then 来源及target仍UNVERIFIED、审阅覆盖NOT_CHECKED
 - id: REQ-002
   statement: '支持 #161 的 28 个输出检查字段和 4 类轨迹检查，规则与角色审阅明确分工'
   rationale: 覆盖全部 22 条用例且不以关键词代替语义评判
@@ -53,6 +53,7 @@ requirements:
     examples:
     - Given 全部观测缺失 / When 回放 / Then 22 条 NOT_RUN、metric 为 null、regression 为 NOT_EVALUATED
     - Given synthetic fixture 全部通过 / When 回放 / Then 测试结果可展示但 runtime metric 为 null 且不能作为基线
+    - Given 缺HP-01观测但其提供review存在 / When inspect_source / Then 列出缺观测及关联缺口，不生成runtime指标或基线
 - id: REQ-006
   statement: 只读显式批准的脱敏本地输入，不加载应用配置、dotenv、凭据或连接 LLM/数据库
   rationale: 保持数据边界和既有离线测试执行路线
@@ -60,6 +61,7 @@ requirements:
   bdd:
     examples:
     - Given 受控离线测试拒绝应用配置导入、秘密文件访问和网络连接 / When CLI 回放固定样例 / Then 无上述访问且输出正常离线报告
+    - Given 文件/应用/网络哨兵 / When inspect_source消费显式bytes / Then 不解析引用或触发IO、服务、replay或judge
 related_decisions:
 - decisions/ADR-024_Eval_Framework_Spec.md
 - decisions/ADR-000_Data_LLM_Boundary_Principles.md

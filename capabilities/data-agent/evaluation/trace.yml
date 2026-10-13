@@ -1,4 +1,4 @@
-# 6 core + 4 synthetic-only CLI scenarios; actual deferred.
+# 6 core + 5 CLI + 3 in-memory inspection scenarios; actual deferred.
 capability: data-agent.evaluation
 generated: 2026-10-12
 schema_version: '1.2'
@@ -10,6 +10,8 @@ links:
     - Dataset identity and every planned case are preserved
     - Synthetic CLI writes deterministic reports without a runtime baseline
     - Actual source is refused before observation access
+    - Coherent source references never authenticate runtime evidence
+    - Source inspection lists missing observations without judging cases
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
@@ -21,14 +23,21 @@ links:
   tasks:
   - tasks.md#T-001
   - tasks.md#T-006
+  - tasks.md#T-007a
+  - tasks.md#T-007b
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
+  - https://github.com/MJ-AgentLab/mj-agent/pull/589
   evidence:
   - evidence/reports/2026-10-12_offline_core_acceptance.md
   - evidence/bdd/2026-10-12_core_scenarios_pass.md
   - evidence/reports/2026-10-12_public_core_contract.md
   - evidence/reports/2026-10-12_synthetic_cli_acceptance.md
   - evidence/bdd/2026-10-12_synthetic_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_baseline_cli_acceptance.md
+  - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_source_inspection_acceptance.md
+  - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
 - req: REQ-002
   bdd:
     feature: contracts/behavior.feature
@@ -78,6 +87,7 @@ links:
     scenarios:
     - A confirmed red-line failure remains hard without a baseline
     - Output collision or partial write is never a completed report delivery
+    - A baseline file cannot turn a synthetic run into runtime comparison
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
@@ -89,20 +99,27 @@ links:
   tasks:
   - tasks.md#T-004
   - tasks.md#T-006
+  - tasks.md#T-007a
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
+  - https://github.com/MJ-AgentLab/mj-agent/pull/589
   evidence:
   - evidence/reports/2026-10-12_offline_core_acceptance.md
   - evidence/bdd/2026-10-12_core_scenarios_pass.md
   - evidence/reports/2026-10-12_public_core_contract.md
   - evidence/reports/2026-10-12_synthetic_cli_acceptance.md
   - evidence/bdd/2026-10-12_synthetic_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_baseline_cli_acceptance.md
+  - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
 - req: REQ-005
   bdd:
     feature: contracts/behavior.feature
     scenarios:
     - Synthetic success cannot become a runtime baseline
     - Synthetic CLI writes deterministic reports without a runtime baseline
+    - A baseline file cannot turn a synthetic run into runtime comparison
+    - Coherent source references never authenticate runtime evidence
+    - Source inspection lists missing observations without judging cases
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
@@ -116,14 +133,21 @@ links:
   - tasks.md#T-003
   - tasks.md#T-004
   - tasks.md#T-006
+  - tasks.md#T-007a
+  - tasks.md#T-007b
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
+  - https://github.com/MJ-AgentLab/mj-agent/pull/589
   evidence:
   - evidence/reports/2026-10-12_offline_core_acceptance.md
   - evidence/bdd/2026-10-12_core_scenarios_pass.md
   - evidence/reports/2026-10-12_public_core_contract.md
   - evidence/reports/2026-10-12_synthetic_cli_acceptance.md
   - evidence/bdd/2026-10-12_synthetic_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_baseline_cli_acceptance.md
+  - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_source_inspection_acceptance.md
+  - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
 - req: REQ-006
   bdd:
     feature: contracts/behavior.feature
@@ -132,6 +156,8 @@ links:
     - Actual source is refused before observation access
     - Unsafe input paths cannot expose protected content
     - Output collision or partial write is never a completed report delivery
+    - A baseline file cannot turn a synthetic run into runtime comparison
+    - Source inspection cannot access files services or application configuration
     automation_status: automated
   contracts:
   - contracts/python.contract.yml
@@ -143,12 +169,19 @@ links:
   tasks:
   - tasks.md#T-005
   - tasks.md#T-006
+  - tasks.md#T-007a
   - tasks.md#T-007
+  - tasks.md#T-007b
   prs:
   - https://github.com/MJ-AgentLab/mj-agent/pull/587
+  - https://github.com/MJ-AgentLab/mj-agent/pull/589
   evidence:
   - evidence/reports/2026-10-12_offline_core_acceptance.md
   - evidence/bdd/2026-10-12_core_scenarios_pass.md
   - evidence/reports/2026-10-12_public_core_contract.md
   - evidence/reports/2026-10-12_synthetic_cli_acceptance.md
   - evidence/bdd/2026-10-12_synthetic_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_baseline_cli_acceptance.md
+  - evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md
+  - evidence/reports/2026-10-12_source_inspection_acceptance.md
+  - evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md
