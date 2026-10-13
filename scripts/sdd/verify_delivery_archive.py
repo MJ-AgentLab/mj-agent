@@ -149,6 +149,8 @@ class GitObjects:
         entry = self.read("ls-tree", "-z", commit, "--", name)
         if not entry and optional:
             return None
+        if not entry:
+            raise ArchiveError("UNMET_DEPENDENCY_GIT_BLOB", 2)
         metadata, separator, listed = entry.rstrip(b"\0").partition(b"\t")
         fields = metadata.split()
         if optional and fields and fields[1] == b"tree":
@@ -380,7 +382,8 @@ def _junit(data: bytes) -> dict[str, Any]:
 
 def _verify(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     archive = _host_path(args.archive)
-    _require(archive.is_file(), "ARCHIVE_NOT_FILE")
+    if not archive.is_file():
+        raise ArchiveError("ARCHIVE_NOT_FILE", 2)
     _require(archive.stat().st_size <= MAX_ARCHIVE_BYTES, "ARCHIVE_SIZE_LIMIT")
     with archive.open("rb") as handle:
         data = handle.read(MAX_ARCHIVE_BYTES + 1)
@@ -478,7 +481,10 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
                          rf"https://github.com/{re.escape(args.repository)}/actions/runs/[1-9][0-9]*(?:/attempts/[1-9][0-9]*)?", args.run_url))
         if not valid_url:
             raise ArchiveError("INPUT_INVALID", 2)
-        args.suite = _relative(args.suite)
+        try:
+            args.suite = _relative(args.suite)
+        except ArchiveError as exc:
+            raise ArchiveError("INPUT_INVALID_SUITE_PATH", 2) from exc
         root = _host_path(repo_root or args.repo_root or _REPO_ROOT)
         report = _host_path(args.report)
         if report.exists() or report.is_relative_to(root) or not report.parent.is_dir():

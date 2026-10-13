@@ -168,6 +168,21 @@ def test_real_cli_verifies_without_running_candidate_commands(case: Case) -> Non
     assert case.report.is_file()
 
 
+@pytest.mark.parametrize("fault", ["suite_escape", "suite_secret", "missing_archive", "missing_suite"])
+def test_real_cli_input_or_missing_dependency_uses_exit_two(case: Case, fault: str) -> None:
+    args = case.args()
+    if fault in {"suite_escape", "suite_secret", "missing_suite"}:
+        values = {"suite_escape": "../invalid-suite.json", "suite_secret": ".env",
+                  "missing_suite": "absent-suite.json"}
+        args[args.index("--suite") + 1] = values[fault]
+    else:
+        args[args.index("--archive") + 1] = str(case.archive.with_name("absent.zip"))
+    result = subprocess.run([sys.executable, str(SCRIPT), *args], capture_output=True, text=True)
+    assert result.returncode == 2
+    assert "INPUT_OR_DEPENDENCY_ERROR" in result.stdout
+    assert not case.report.exists()
+
+
 @pytest.mark.parametrize("mutation", [
     "binding", "source", "claim", "claim_integer", "baseline", "blob", "argv",
     "resolved_argv", "exit", "expected_exit", "time", "environment", "log", "junit",
