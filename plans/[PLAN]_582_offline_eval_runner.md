@@ -19,7 +19,7 @@ track: code
 - 后续新 capability 推荐归属 `data-agent.evaluation`，adapter 为 `python`、`tdd-bdd`，按 [[sdd/workflows/new-capability|new-capability workflow]] 推进；新共享契约的具体差异另交 Owner 审阅。
 - Owner：ranzuozhou；拟执行者：Codex；合成业务／Prompt 与 SWE 核验角色按后续 §8.2 由 Agent 模拟，不要求真人参与。
 
-当前范围：T-006及T-007a/b已集成；T-007c已随#599合并，merge891fd5e、最终head424bed0。原实施授权见§8.10，当前集成/核验及剩余提案见§8.11。实际来源、target/runtime接受和Linux/macOS原生保护仍延期；#582 OPEN、Plan active、capability idea/last_verified=null。没有actual/live、新入口、删除、权限或既有保护面变更授权；本次文档收尾候选不冒称已发布。
+当前范围：T-006及T-007a/b已集成；T-007c已随#599合并，merge891fd5e、最终head424bed0。原授权与历史提案见§8.10/§8.11，随后Owner采纳文档发布与T-007d仅材料/门禁文档定稿，当前见§8.12。实际来源、target/runtime及Linux/macOS原生保护延期；#582 OPEN、Plan active、idea/last_verified=null。无actual/live、新入口、删除、权限或既有保护面变更授权。
 
 ## 2. 背景与 Repo Scan 事实
 
@@ -375,3 +375,13 @@ Owner先接受T-007c原本地软件，随后具名授权feature/582-source-inspe
 本轮普通收尾：develop正常ff至merge；新documentation/582-t007c-post-merge G1仅同步当前文档状态与证据，并准备[真实观测包材料契约与门禁提案](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007_actual_material_proposal.md)。候选未提交/推送/创建PR，原feature工作树及旧备份保留；本轮未删除、修改权限或执行actual/live，Gitee仍延期。
 
 建议T-007d先只定稿文档中的最小材料、原bytes与审阅绑定、技术核验/Owner决定/软件不可证明的边界及未来actual文件入口前置门禁；不新增API/CLI/schema或默认接受条件。当前提案不是新契约实施授权，另由Owner集中确认后续范围；无获批包，不重复索取不存在材料。严格窗口、完整分母、same_target_replay、0.03、红线、来源及数据边界保持，#161/#504/#583–#586/probe-fixture原scope不变。actual入口、真实包与target接受、原生平台保护仍按原任务延期。
+
+## 8.12 Owner采纳文档发布与T-007d范围
+
+Owner“执行推荐，继续推进”采纳上一轮A：接受13文件原bytes候选fp817cdfa6fbdb47ed7cf097f86b3d89d8f91f38ab87854f6b941b50b1eae45bb2，授权documentation/582-t007c-post-merge正常提交、现有App仅GitHub、普通PR/develop及CI；同时T-007d只定稿材料与门禁文档。Gitee延期，不merge/delete/改权限/actual/live，核心/schema/judges/report/_file_io/runtime/CI/守卫不改。
+
+C1真实提交d7a612b5b166cd06e9da2139894b4b08da6af03c，14paths：接受13保持原bytes，另只增加两个JSON载体的精确-text规则（binding原CRLF防Git转换；execution原LF额外固定raw）。App daily普通push成功、token撤销CONFIRMED；该提交只是候选发布，不将旧未提交/未授权的验收时点改写。
+
+C2文档范围为[材料契约指南](../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)、package状态/引用、Plan/三处INDEX和新验证/独立审阅/raw绑定。GUIDE v0.1/draft、track shared，材料索引不是工具/跨服务/MCP机器接口，不造新schema或CONTRACT字段；无架构难逆决策，不新开ADR，既有0.8 suite与六REQ/trace/机器contracts保持。方法为真实实现/字段→材料与责任→固定合成期望→引用/格式/raw→独立AC；没有产品编码或新增TDD。结果见[本轮验证](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007d_material_contract_verification.md)。
+
+AC-D1–8：最小七位置/附属材料及缺省清楚；完整轨迹/首SQL/失败和脱敏边界；loader roster/body/Runtime/装配关联；两类摘要与全部语义/5红线/前三非红线审阅；Agent/Owner/软件不可证明三界；严格窗口/22分母/same_target/0.03与原保护保持；现API/CLI/诊断与固定synthetic正反例准确；真实文档/原bytes/索引/独立核验完整。Owner批准范围不等于接受最终文档或actual包，版本接受另记；#582 OPEN、Plan active、idea/null不变。

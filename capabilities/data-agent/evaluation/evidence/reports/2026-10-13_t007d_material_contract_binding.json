@@ -1,0 +1,276 @@
+{
+  "schema_version": "t007d-document-material-binding-v1",
+  "source_kind": "document_only",
+  "recorded_at": "2026-10-13T11:22:44.379562+00:00",
+  "branch": "documentation/582-t007c-post-merge",
+  "base": "d7a612b5b166cd06e9da2139894b4b08da6af03c",
+  "base_tree": "32ccb1d62545d0f46f372d25790ba4923bf0a3bf",
+  "owner_scope": "APPROVED_MATERIAL_GATE_DOCUMENTATION_ONLY",
+  "owner_final_version_acceptance": "PENDING",
+  "files": [
+    {
+      "path": "capabilities/INDEX.md",
+      "size": 7617,
+      "sha256": "9305f42ab996c4e516b7f0beb59bb07755a1cf00fb3e6bad98ac8c20e7b52fb8"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/design.md",
+      "size": 44159,
+      "sha256": "e6a932d22a261ba76146712615d94febe2d41505f9efb54309f3b00e71b336fe"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007d_material_contract_execution.json",
+      "size": 7277,
+      "sha256": "c8b7b7a5c62dc433ffcfff2f31ff7e181788a778bce80e6918c10bf37a6f29f8"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007d_material_contract_independent_audit.md",
+      "size": 13854,
+      "sha256": "10b6064a4197dd56a73b05d6ba6cfabe8130b6b9b2fce77705e9256ffd05c610"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007d_material_contract_verification.md",
+      "size": 4242,
+      "sha256": "557b1868b713c4c92f6f91e33cb3175e28fc9f5fd1a405c148d2b20d839e66be"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/requirements.md",
+      "size": 10297,
+      "sha256": "5a11b250708f03a91e46534cbf0cfe5bef04c52c6e693a3f1266db346f97ce1a"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/runbook.md",
+      "size": 15841,
+      "sha256": "1626db1ebec244106d42e7993028d188c5b44abb2a95b1183148c4d8dcecf5c8"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/spec.yml",
+      "size": 4457,
+      "sha256": "ddc7a0b4775e5b4795e5928c6317ac37417212b9ff34b6f3d1a4793059066fa7"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/tasks.md",
+      "size": 13463,
+      "sha256": "e5c53c655452f97f1efbe787b77d6393285e1f73741a8f4ef251c0dbfa5f3927"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "size": 40667,
+      "sha256": "4a8a7363219545d10acd2be52ddfd2feb0bcb8bc7ce157e760dc84f035cde134"
+    },
+    {
+      "path": "docs/guide/INDEX.md",
+      "size": 1801,
+      "sha256": "78e1176d6d51071cc5b26ae6b8b61812fef133c80fa8ab7f96c15d047f18a76c"
+    },
+    {
+      "path": "docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md",
+      "size": 16439,
+      "sha256": "3c6c4e44a685591b657851e43519d6ecab06641f8526751cb04f8fd371b481f4"
+    },
+    {
+      "path": "plans/[PLAN]_582_offline_eval_runner.md",
+      "size": 51948,
+      "sha256": "4d0e588a748e57f844b05d0f7c0e16a93cbda8fbc241df61c6bfcd1e7da9954b"
+    }
+  ],
+  "fingerprint": "b932320e7fb854d0a01e546cdeae6139002d2a717be95c2f3ffb733aa02aab35",
+  "fingerprint_algorithm": "SHA256(UTF8(sorted(path + NUL + raw_sha256 + LF)))",
+  "self_excluded": "capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007d_material_contract_binding.json",
+  "original_accepted13": {
+    "fingerprint": "817cdfa6fbdb47ed7cf097f86b3d89d8f91f38ab87854f6b941b50b1eae45bb2",
+    "preserved_at_commit": "d7a612b5b166cd06e9da2139894b4b08da6af03c",
+    "policy": "C1 original14 Git bytes checked; subsequent ordinary doc updates bound separately"
+  },
+  "protected_files": [
+    {
+      "path": "src/mj_agent/evaluation/core.py",
+      "sha256": "885153b06e4174c4d772414fbaa7c62fb7a004d7eebebaa0d1570913e9985110",
+      "size": 1412
+    },
+    {
+      "path": "src/mj_agent/evaluation/schema.py",
+      "sha256": "ebe2dd6c21864d9737d6ae9ba695d37fe232fd7cc97e16e58871e0099d42e86c",
+      "size": 10669
+    },
+    {
+      "path": "src/mj_agent/evaluation/judges.py",
+      "sha256": "9b92a1e293b4cb62b181242f31c153f1ab48d4814f8108723bbe1417d85b2288",
+      "size": 25945
+    },
+    {
+      "path": "src/mj_agent/evaluation/report.py",
+      "sha256": "fa8f1b310f700d1e773399e8cf6d6d596393392cabd1260909c207a4b9380174",
+      "size": 12351
+    },
+    {
+      "path": "src/mj_agent/evaluation/_file_io.py",
+      "sha256": "23d144901d28c13b639f7ca63d03ae8f31a6946932269cd59eab9e63c3bafc06",
+      "size": 13194
+    },
+    {
+      "path": "src/mj_agent/evaluation/runner.py",
+      "sha256": "35d392e12fd64b6fe9b84002c76052ce53424e12d14c6560997ccf609adef002",
+      "size": 4250
+    },
+    {
+      "path": "src/mj_agent/evaluation/inspection.py",
+      "sha256": "f2cb8a6f169dc7e68df16c068581c75e34cc233e2d471d397d504f1cd0b3cfcb",
+      "size": 4222
+    },
+    {
+      "path": "src/mj_agent/evaluation/__init__.py",
+      "sha256": "13fffd2cd7950a5b7943018f349388d081595a0fe5104de1438a7c714ac67182",
+      "size": 75
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/config.json",
+      "sha256": "f0e5991fa9ab05615122727288af5a149c1e75275490cf6f483ec94f5f8cd052",
+      "size": 398
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/dataset.jsonl",
+      "sha256": "6f6d8fb3a288a575a5e5db336b8429ad8d795955ae5929ec8e1e89b642df9079",
+      "size": 7872
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/observations.jsonl",
+      "sha256": "fdd1f5f66144109d50f13dd5fd3eb6c119d86f43bf5ffeac2649b5a2bf82118a",
+      "size": 9173
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/manifest.json",
+      "sha256": "55af4d887a7bb722c46119301984e61faa23529cea74b2e3672443b85a0a861c",
+      "size": 1534
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reference.json",
+      "sha256": "57fbbddfd7f659e0ef198617a6317145ca7123e2286d56e438c1516ded5e041f",
+      "size": 1335
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reviews.jsonl",
+      "sha256": "18041c8230c197261562e2e014e2cac5fe05e652f9385d193d9a8a5f0e9a371d",
+      "size": 24324
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/expected.json",
+      "sha256": "3af44b16154c4cdaab60d6b7f8e59d8bd535669e5434c54f49cc0274662acb62",
+      "size": 432
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/inspection.expected.json",
+      "sha256": "e5e4181f78b4efc8595dbabaeead7e22cc8c65d4d864e87a59b368f91662ecda",
+      "size": 666
+    },
+    {
+      "path": "tests/unit/fixtures/eval_cli/expected.json",
+      "sha256": "77fc4ccf1658e4d19377ffda3eeeced2d84bf01bb6025e0c4bb5716bfb403698",
+      "size": 237
+    },
+    {
+      "path": "tests/unit/fixtures/eval_cli/baseline.synthetic.json",
+      "sha256": "7c5047a7520ba216aef1d31dd2dcc742718baee2d1c7d1fb93aa863db501e999",
+      "size": 31019
+    },
+    {
+      "path": ".github/workflows/check-commit-messages.yml",
+      "size": 7531,
+      "sha256": "be51b0e3beb0fc130e1e51b7503a52469624a52f7f0a788ef8c2b73138971390"
+    },
+    {
+      "path": ".github/workflows/check-stale-docs.yml",
+      "size": 2952,
+      "sha256": "00de343d2dcfd39ab11357cf9b66c8c56f3abac8c8c350e5b23b5c6878422e9f"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "size": 25996,
+      "sha256": "7504c2ddafbb1d2bec44258f2120cd1e03b28509684f737e7e293ea36fe6c484"
+    },
+    {
+      "path": ".github/workflows/docker-build.yml",
+      "size": 6602,
+      "sha256": "a5db2ae27a383447ed246c0f7b555b7fdaac5d4e8cfbb31d512c9b38e5a978fa"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/behavior.feature",
+      "size": 6829,
+      "sha256": "7cf174208752e7ac0ff9b8c2efc37377618430eab0738e08eaad9d38b7c0bbad"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/cli.contract.yml",
+      "size": 2064,
+      "sha256": "3d06e9e1a1c16ed298b361c5de9039368aaa1b7cf2631c480d075e85bf4ba622"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/inspection-cli.contract.yml",
+      "size": 2229,
+      "sha256": "066cdefeb2bcd4081e3a4b96e44c5d945947cd9070a0e9ca87421b965e1d2b05"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/python.contract.yml",
+      "size": 7585,
+      "sha256": "85c11da53f2def1fc476a9c4f91b39abf2608dfd8accc324923db34303c2dbde"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/trace.yml",
+      "size": 8337,
+      "sha256": "460c189148002590e301ac7383d04a38c8ab3626f36e1e48427fc1fa579d19e6"
+    },
+    {
+      "path": "scripts/sdd/codex_hook_guard.py",
+      "size": 9305,
+      "sha256": "20b7f41affcf29983da7aaf4aa9b1de8c17616b560bcc23d3520f34dffb0e72d"
+    },
+    {
+      "path": "scripts/sdd/delivery_evidence.py",
+      "size": 32200,
+      "sha256": "ee851a8a6f8ae5359b2022cb0b9cefb667347f9210b643a2a73aa976c4a31c37"
+    },
+    {
+      "path": "scripts/sdd/delivery_executor.py",
+      "size": 51203,
+      "sha256": "a22ba4d5d56bec8b18a172ca5e25f26043baab9518af485b36cc728fcfccd8ee"
+    },
+    {
+      "path": "scripts/sdd/git_command_review.py",
+      "size": 10176,
+      "sha256": "1c906b93a34eead1c9adea5632eef60ac75ff56707e53d9df4f9bd22c1ac101e"
+    },
+    {
+      "path": "scripts/sdd/run_offline_pytest.py",
+      "size": 53302,
+      "sha256": "01d318939b15d60bc7e15a4de6ee0d643c6230bc0357b647599d839124b1d1eb"
+    },
+    {
+      "path": "src/mj_agent/agent.py",
+      "size": 3894,
+      "sha256": "82ce89456723e0a0c66b430b4537adaa1a1ec5189569ab9a5407d17fea92598d"
+    },
+    {
+      "path": "src/mj_agent/evaluation/inspection_runner.py",
+      "size": 3888,
+      "sha256": "8d0fc1634d2b1abafd1c4f72d321106a8e586eb679c0c47bd673f56a824c107a"
+    },
+    {
+      "path": "src/mj_agent/prompts/__init__.py",
+      "size": 1469,
+      "sha256": "d7405b06f3b1f0c6a802da07cb5900f1ba4aa769f4b0af25d9c219929868dcac"
+    },
+    {
+      "path": "src/mj_agent/skills/__init__.py",
+      "size": 1470,
+      "sha256": "c85eddd81939ca8b12f5f2c2b07bfb4b22adcac1382444b2f86044f43bd86432"
+    }
+  ],
+  "protected_verdict": "ALL_MATCH_RAW",
+  "actual_runtime_acceptance": false,
+  "new_api_cli_schema_or_protection": false,
+  "states": {
+    "issue_582": "OPEN",
+    "plan": "active",
+    "capability": "idea",
+    "last_verified": null
+  }
+}

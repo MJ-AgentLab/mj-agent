@@ -107,11 +107,11 @@ updated: 2026-10-13
 
 ## Backlog — 延期范围
 
-### T-007d 拟议真实观测包材料契约与门禁设计（文档方案，待Owner决定范围）
+### T-007d 真实观测包材料契约与门禁文档（范围已批准，版本接受另记）
 
-- 建议先定稿既有七输入与附属材料的最小清单、原bytes绑定、审阅责任及未来actual入口的前置门禁；不新增API/CLI/schema或实际观测包。
-- 当前只完成[可审阅提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)，没有新入口实施授权，未编码/采样/运行actual。无获批包，不重复要求Owner提供不存在材料。
-- 当前actual/runtime任务继续保留以下延期状态；拟议子项不代替其接受标准。
+- Owner“执行推荐，继续推进”采纳A，仅定稿七输入位置/附属材料、两类摘要、审阅责任及未来入口门禁；不新增API/CLI/schema、执行门禁或实际包。
+- [原提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)保留待决定时点；本轮[材料契约](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)为定稿候选，[验证](evidence/reports/2026-10-13_t007d_material_contract_verification.md)及独立核验另记，Owner版本接受待明确决定。
+- actual/runtime仍保留以下延期状态；本项不代替其接受标准。无获批包，不重复索取不存在材料，未采样/运行actual。
 
 ### T-007 actual文件入口、实际基线比较及runtime接受
 

@@ -14,6 +14,8 @@ updated: 2026-10-13
 
 ## §1 Context
 
+T-007d只完成[材料与门禁文档](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)：附属材料不塞manifest/_Call未知字段；raw与review规范摘要分记，来源/脱敏/批准真实性和target接受不能由结构检查认证。现设计/机器合同与0.8 package保持，未实施actual入口或新保护后端。
+
 依据：[Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[#161 EVAL](../../../docs/evaluation/outcome_first-turn-time-predicate_v1.0.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。首版评判 22 条既有 case，消费批准的脱敏观测；不改变 #161、#504、#583–#586 的 scope 或状态。
 
 当前 dataset 原始字节 SHA-256 为 01703f365dec13b091f00070ffafdcd93a4a8c269089fce8ab2483f4570b58a3；仓内 catalog 原始字节 SHA-256 为 29f93fd5362884c84745f965b8863c8d964fa6fceae7fcae437b28304810342e。这是 2026-10-12 的静态来源绑定，不证明 live schema／数据或行为通过。未来 reference 是明确传入的脱敏静态快照，不自动导入 catalog loader。

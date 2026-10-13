@@ -94,7 +94,7 @@ write/close故障2，可能已经有新目录/inspection.json；按安全inspect
 - 软件可核字段、摘要、顺序、关联和装配重算；不能单凭字段/hash证明采样发生、没有隐去轨迹、无敏感文本、真实独立审阅或Owner授权有效。
 - 保留same_target_replay同commit/target/model/采样/时间/来源条件、完整分母、0.03与红线；#161跨版本A/B及其他target原scope另议。缺材料/能力仅延期对应actual/平台入口，不造PASS。
 
-当前合并版本891fd5e、复现及新raw binding见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)；[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)保留原交付/接受时点。材料契约与后续门禁的[提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)尚待Owner决定范围，当前命令仍synthetic-only。#582 OPEN、Plan active、idea/last_verified=null保持。
+当前合并版本891fd5e、复现及新raw binding见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)；[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)保留原交付/接受时点。[原提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)保留待决定历史；Owner随后采纳T-007d仅文档定稿，M-01–07、两类摘要、责任与延期门禁见[材料契约](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)。命令仍synthetic-only，actual入口/采样无新授权，文档版本接受另记。#582 OPEN、Plan active、idea/last_verified=null保持。
 
 ## §5 Verification
 

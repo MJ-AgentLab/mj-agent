@@ -14,6 +14,8 @@ updated: 2026-10-13
 
 依据：[Issue #582](https://github.com/MJ-AgentLab/mj-agent/issues/582)、[批准 Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。本 package 不适用 track，与 canonical 文档类型轴正交。
 
+T-007d：Owner随后采纳仅材料/门禁文档定稿范围，见[材料契约](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)。M-01–07定义七输入位置及附属材料、raw/规范观测两类摘要、真实来源与target决定责任；不新增REQ/schema/API/CLI或执行门禁，不回写原提案待决定时点。既有6项REQ、严格窗口、22完整分母、same_target_replay、0.03及红线保持。
+
 ## REQ-001 输入身份与来源
 
 **Statement**：读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源。

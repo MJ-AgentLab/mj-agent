@@ -1,0 +1,129 @@
+{
+  "kind": "T007D_DOCUMENT_STATIC_VERIFICATION",
+  "source_kind": "software_documentation",
+  "recorded_at": "2026-10-13T11:10:57.692116+00:00",
+  "worktree_base": "d7a612b5b166cd06e9da2139894b4b08da6af03c",
+  "current_head": "d7a612b5b166cd06e9da2139894b4b08da6af03c",
+  "results": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "raw_size": 0,
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "raw_base64": ""
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_frontmatter.py"
+      ],
+      "exit_code": 0,
+      "raw_size": 58,
+      "raw_sha256": "865bc245cfdcce1e44f165b8308fc60c6c92c8648d669eeb003a463f625884d9",
+      "raw_base64": "T0s6IDE1NyBjYW5vbmljYWwgZG9jcyBhbGwgcGFzcyBmcm9udG1hdHRlciBzY2hlbWEgY2hlY2sNCg=="
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/check_wikilinks.py"
+      ],
+      "exit_code": 0,
+      "raw_size": 131,
+      "raw_sha256": "2b678ba532c119f2768788a64f9a8559ca9621501bd8dd57cbe72140a274c48a",
+      "raw_base64": "T0s6IDAgYXJjaGl2ZS1yZWYgdmlvbGF0aW9ucyAoMTMgYXJjaGl2ZWQgZmlsZXMgYXV0by1kaXNjb3ZlcmVkKQ0KT0s6IEE0IGxpbmsgcmVzb2x1dGlvbiDigJQgMCB1bnJlc29sdmVkIHRhcmdldHMgaW4gNSByb290IGZpbGVzDQo="
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sdd/check_capability_schema.py",
+        "--capability",
+        "capabilities/data-agent/evaluation",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "raw_size": 224,
+      "raw_sha256": "313627934d4d2e42af725dac34065650705d653f9a70bb5ad5d371955d7a3142",
+      "raw_base64": "Y2hlY2tfY2FwYWJpbGl0eV9zY2hlbWEucHkg4oCUIHZhbGlkYXRpbmcgMSBzcGVjLnltbCAoRzEpDQogIFtQQVNTXSBjYXBhYmlsaXRpZXNcZGF0YS1hZ2VudFxldmFsdWF0aW9uXHNwZWMueW1sOiBzY2hlbWEgdmFsaWQgKDYgcmVxdWlyZW1lbnRzOyBsaWZlY3ljbGU9aWRlYSwgYXJjaGl2ZT1hY3RpdmUpDQoNCj09PSBTdW1tYXJ5ID09PQ0KUEFTUzogMSAvIFdBUk46IDAgLyBGQUlMOiAwDQo="
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sdd/check_traceability.py",
+        "--capability",
+        "capabilities/data-agent/evaluation",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "raw_size": 227,
+      "raw_sha256": "77373f101ff2594042590cdadb87bdb54ca865dc56168022a15aeb0b5ee6fc8f",
+      "raw_base64": "Y2hlY2tfdHJhY2VhYmlsaXR5LnB5IOKAlCB2YWxpZGF0aW5nIDEgdHJhY2UueW1sIChHMi9HNTsgc2NoZW1hIHYxLjIpDQogIFtQQVNTXSBjYXBhYmlsaXRpZXNcZGF0YS1hZ2VudFxldmFsdWF0aW9uXHRyYWNlLnltbDogc2NoZW1hIHZhbGlkICg2IFJFUSBsaW5rczsgMCBjcm9zc19jYXBhYmlsaXR5X3JlZnMpDQoNCj09PSBTdW1tYXJ5ID09PQ0KUEFTUzogMSAvIFdBUk46IDAgLyBGQUlMOiAwDQo="
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sdd/check_contracts.py",
+        "--capability",
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\documentation\\582-t007c-post-merge\\capabilities\\data-agent\\evaluation",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "raw_size": 271,
+      "raw_sha256": "98f6acb5cb962a2db77176f0e6f98d00bab4492b7438f110cb4040f8a6487139",
+      "raw_base64": "ICBbUEFTU10gY2FwYWJpbGl0aWVzXGRhdGEtYWdlbnRcZXZhbHVhdGlvbjogY29udHJhY3RzLyBub24tZW1wdHkgKDQgZmlsZXM7IDMgKi5jb250cmFjdC55bWwgcGFyc2UgT0spOyBiZWhhdmlvci5mZWF0dXJlIHByZXNlbnQgKGNyaXRpY2FsfGhpZ2ggUkVRcykNCmNoZWNrX2NvbnRyYWN0czogMVAgLyAwVyAvIDBGIChvdmVyIDEgY2FwYWJpbGl0aWVzOyBjb250cmFjdHMgbm9uLWVtcHR5ICsgcGFyc2UgKyBiZWhhdmlvci5mZWF0dXJlIGNyaXRpY2FsfGhpZ2ggcnVsZSkNCg=="
+    },
+    {
+      "argv": [
+        "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "scripts/sdd/generate_index.py",
+        "--check",
+        "--strict"
+      ],
+      "exit_code": 0,
+      "raw_size": 123,
+      "raw_sha256": "aab3ec3b620285b2ffe475c34d50d541c4289d3e6911022e18eb9824b0746e42",
+      "raw_base64": "ICBbUEFTU10gY2FwYWJpbGl0aWVzL0lOREVYLmF1dG8ubWQgbWF0Y2hlcyByZWdlbmVyYXRlZCBjb250ZW50ICg3IHNwZWNzKQ0KDQo9PT0gU3VtbWFyeSA9PT0NClBBU1M6IDEgLyBXQVJOOiAwIC8gRkFJTDogMA0K"
+    }
+  ],
+  "product_code_or_tests_changed": false,
+  "actual_runtime_acceptance": false,
+  "prior_failed_attempt": {
+    "argv": [
+      "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "scripts/sdd/check_contracts.py",
+      "--capability",
+      "capabilities/data-agent/evaluation",
+      "--strict"
+    ],
+    "exit_code": 1,
+    "raw_size": 1440,
+    "raw_sha256": "886ae906325fc0c58663a6b020111fe8444188426102bf4edda803f1a6cead47",
+    "raw_base64": "VHJhY2ViYWNrIChtb3N0IHJlY2VudCBjYWxsIGxhc3QpOg0KICBGaWxlICJEOlx3b3Jrc3BhY2VcMTAtc29mdHdhcmUtcHJvamVjdFxwcm9qZWN0c1xtai1hZ2VudFxkb2N1bWVudGF0aW9uXDU4Mi10MDA3Yy1wb3N0LW1lcmdlXHNjcmlwdHNcc2RkXGNoZWNrX2NvbnRyYWN0cy5weSIsIGxpbmUgMTU1LCBpbiA8bW9kdWxlPg0KICAgIHN5cy5leGl0KG1haW4oKSkNCiAgICAgICAgICAgICB+fn5+Xl4NCiAgRmlsZSAiRDpcd29ya3NwYWNlXDEwLXNvZnR3YXJlLXByb2plY3RccHJvamVjdHNcbWotYWdlbnRcZG9jdW1lbnRhdGlvblw1ODItdDAwN2MtcG9zdC1tZXJnZVxzY3JpcHRzXHNkZFxjaGVja19jb250cmFjdHMucHkiLCBsaW5lIDE0MSwgaW4gbWFpbg0KICAgIHBlcl9jYXAgPSBfdmFsaWRhdGVfY2FwYWJpbGl0eShjYXBfZGlyLCByZXBvX3Jvb3QpDQogIEZpbGUgIkQ6XHdvcmtzcGFjZVwxMC1zb2Z0d2FyZS1wcm9qZWN0XHByb2plY3RzXG1qLWFnZW50XGRvY3VtZW50YXRpb25cNTgyLXQwMDdjLXBvc3QtbWVyZ2Vcc2NyaXB0c1xzZGRcY2hlY2tfY29udHJhY3RzLnB5IiwgbGluZSA3OCwgaW4gX3ZhbGlkYXRlX2NhcGFiaWxpdHkNCiAgICBjb250cmFjdF9maWxlcyA9IHNvcnRlZChwIGZvciBwIGluIGNvbnRyYWN0c19kaXIuaXRlcmRpcigpIGlmIHAuaXNfZmlsZSgpDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgYW5kIG5vdCByZXRpcmVkX2NsaWVudF9hc3NldChwLnJlbGF0aXZlX3RvKHJlcG9fcm9vdCkpKQ0KICBGaWxlICJEOlx3b3Jrc3BhY2VcMTAtc29mdHdhcmUtcHJvamVjdFxwcm9qZWN0c1xtai1hZ2VudFxkb2N1bWVudGF0aW9uXDU4Mi10MDA3Yy1wb3N0LW1lcmdlXHNjcmlwdHNcc2RkXGNoZWNrX2NvbnRyYWN0cy5weSIsIGxpbmUgNzksIGluIDxnZW5leHByPg0KICAgIGFuZCBub3QgcmV0aXJlZF9jbGllbnRfYXNzZXQocC5yZWxhdGl2ZV90byhyZXBvX3Jvb3QpKSkNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIH5+fn5+fn5+fn5+fn5eXl5eXl5eXl5eXg0KICBGaWxlICJDOlxVc2Vyc1xBZG1pblxBcHBEYXRhXFJvYW1pbmdcdXZccHl0aG9uXGNweXRob24tMy4xMy41LXdpbmRvd3MteDg2XzY0LW5vbmVcTGliXHBhdGhsaWJcX2xvY2FsLnB5IiwgbGluZSAzODUsIGluIHJlbGF0aXZlX3RvDQogICAgcmFpc2UgVmFsdWVFcnJvcihmIntzdHIoc2VsZikhcn0gaXMgbm90IGluIHRoZSBzdWJwYXRoIG9mIHtzdHIob3RoZXIpIXJ9IikNClZhbHVlRXJyb3I6ICdjYXBhYmlsaXRpZXNcXGRhdGEtYWdlbnRcXGV2YWx1YXRpb25cXGNvbnRyYWN0c1xcYmVoYXZpb3IuZmVhdHVyZScgaXMgbm90IGluIHRoZSBzdWJwYXRoIG9mICdEOlxcd29ya3NwYWNlXFwxMC1zb2Z0d2FyZS1wcm9qZWN0XFxwcm9qZWN0c1xcbWotYWdlbnRcXGRvY3VtZW50YXRpb25cXDU4Mi10MDA3Yy1wb3N0LW1lcmdlJw0K"
+  },
+  "failure_resolution": "Use the existing absolute capability path accepted by the same G3 command; no checker, contract or guard changes",
+  "resolved_at": "2026-10-13T11:11:42.334768+00:00"
+}

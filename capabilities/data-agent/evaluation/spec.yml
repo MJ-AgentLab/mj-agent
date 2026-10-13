@@ -13,6 +13,7 @@ created: 2026-10-12
 updated: 2026-10-13
 summary: '#582 T-007c Windows synthetic-only来源检查CLI已随#599集成，复用原inspect_source及保护后端，单JSON退出3；非法输入无输出。原bytes与独立Agent合成验收不认证来源/target，UNVERIFIED/NOT_CHECKED/null/false保持；actual和Linux/macOS原生保护延期，idea/null。'
 requirements:
+# T-007d Owner-approved material/gate documentation only; no machine contract or lifecycle change.
 - id: REQ-001
   statement: 读取版本化配置、dataset、观测、manifest 和静态参考，校验输入身份与来源
   rationale: 使每个离线结论绑定可追踪输入，避免来源或版本错配
