@@ -427,4 +427,126 @@ def inspection_isolated(replay_inputs: dict[str, Any]) -> None:
                    for name in set(sys.modules) - replay_inputs["modules_before"])
 
 
+
+@given("approved synthetic source inspection files")
+def inspection_cli_files(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    cli_files(replay_inputs, tmp_path)
+    baseline = replay_inputs["cli_directory"] / "baseline.json"
+    baseline.write_bytes((_FIXTURES.parent / "eval_cli/baseline.synthetic.json").read_bytes())
+    replay_inputs["cli_args"].extend(["--baseline", str(baseline)])
+
+
+@when("the source inspection CLI writes into two new directories")
+def inspection_cli_repeat(replay_inputs: dict[str, Any]) -> None:
+    import os
+    import subprocess
+
+    root = replay_inputs["cli_root"]
+    env = {name: os.environ[name] for name in ("PATH", "SYSTEMROOT", "WINDIR", "PATHEXT")
+           if name in os.environ}
+    env.update(PYTHONPATH=str(Path(__file__).parents[4] / "src"), PYTHONNOUSERSITE="1",
+               PYTHONDONTWRITEBYTECODE="1", TEMP=str(root), TMP=str(root))
+    results = []
+    for name in ("inspect-first", "inspect-second"):
+        output = root / name
+        process = subprocess.run(
+            [sys.executable, "-B", "-X", "utf8", "-m", "mj_agent.evaluation.inspection_runner",
+             *replay_inputs["cli_args"], "--output-dir", str(output)],
+            cwd=root, env=env, capture_output=True, check=False, timeout=30)
+        assert process.stdout == process.stderr == b""
+        assert sorted(path.name for path in output.iterdir()) == ["inspection.json"]
+        results.append((process.returncode, (output / "inspection.json").read_bytes()))
+    replay_inputs["inspection_cli_results"] = results
+    replay_inputs["inspection"] = json.loads(results[0][1])
+
+
+@then("both single inspection JSON files match the fixed expectation with process exit 3")
+def inspection_cli_fixed(replay_inputs: dict[str, Any]) -> None:
+    first, second = replay_inputs["inspection_cli_results"]
+    assert first == second and first[0] == 3
+    assert b"\r" not in first[1] and first[1].endswith(b"\n")
+    assert replay_inputs["inspection"] == json.loads((_FIXTURES / "inspection.expected.json").read_bytes())
+
+
+@given("a fictional actual source label with all other inspection reads forbidden")
+def inspection_cli_actual_label(replay_inputs: dict[str, Any], tmp_path: Path,
+                                monkeypatch: pytest.MonkeyPatch) -> None:
+    from unittest.mock import Mock
+
+    from mj_agent.evaluation import _file_io, inspection_runner
+
+    cli_files(replay_inputs, tmp_path)
+    path = replay_inputs["cli_directory"] / "manifest.json"
+    manifest = json.loads(path.read_bytes())
+    manifest["source_kind"] = "runtime_observation"
+    manifest["provenance"]["source_ref"] = "bdd-unit-condition-only-not-runtime-evidence"
+    path.write_bytes(json.dumps(manifest).encode())
+    replay_inputs["cli_args"].extend(["--baseline", str(tmp_path / "must-not-read.json")])
+    original = _file_io._WindowsIO.read
+    replay_inputs["inspection_reads"] = []
+
+    def manifest_only(self: Any, parts: tuple[str, ...]) -> bytes:
+        replay_inputs["inspection_reads"].append(parts)
+        assert parts == ("cli-inputs", "manifest.json")
+        return original(self, parts)
+
+    inspector = Mock(side_effect=AssertionError("forbidden inspection"))
+    replay_inputs["inspector_mock"] = inspector
+    monkeypatch.setattr(_file_io._WindowsIO, "read", manifest_only)
+    monkeypatch.setattr(inspection_runner, "inspect_source", inspector)
+
+
+@given("a synthetic source inspection input with a mismatched dataset hash")
+def inspection_cli_invalid(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    cli_files(replay_inputs, tmp_path)
+    path = replay_inputs["cli_directory"] / "manifest.json"
+    manifest = json.loads(path.read_bytes())
+    manifest["hashes"]["dataset"] = "0" * 64
+    path.write_bytes(json.dumps(manifest).encode())
+
+
+@given("valid synthetic inspection files missing HP-01")
+def inspection_cli_missing_files(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    missing(replay_inputs)
+    cli_files(replay_inputs, tmp_path)
+
+
+@when("the synthetic source inspection CLI is invoked")
+def inspection_cli_run(replay_inputs: dict[str, Any], capsys: pytest.CaptureFixture[str]) -> None:
+    from mj_agent.evaluation.inspection_runner import main
+
+    output = replay_inputs["cli_root"] / "inspection-output"
+    replay_inputs["inspection_output"] = output
+    replay_inputs["inspection_cli_exit"] = main(
+        [*replay_inputs["cli_args"], "--output-dir", str(output)], repo_root=replay_inputs["cli_root"])
+    error = capsys.readouterr().err
+    if error:
+        replay_inputs["inspection_diagnostic"] = json.loads(error)
+    else:
+        replay_inputs["inspection"] = json.loads((output / "inspection.json").read_bytes())
+
+
+@then("actual is refused with exit 2 before inspection or output")
+def inspection_cli_actual_refused(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["inspection_cli_exit"] == 2
+    assert replay_inputs["inspection_diagnostic"]["reason_code"] == "ACTUAL_ENTRY_DEFERRED"
+    assert replay_inputs["inspection_reads"] == [("cli-inputs", "manifest.json")]
+    replay_inputs["inspector_mock"].assert_not_called()
+    assert not replay_inputs["inspection_output"].exists()
+
+
+@then("the invalid inspection input exits 2 without creating output")
+def inspection_cli_invalid_refused(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["inspection_cli_exit"] == 2
+    assert replay_inputs["inspection_diagnostic"]["reason_code"] == "INPUT_HASH_MISMATCH"
+    assert not replay_inputs["inspection_output"].exists()
+
+
+@then("inspection coherence is INCOMPLETE with exit 3 and the full plan denominator")
+def inspection_cli_gap_preserved(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["inspection_cli_exit"] == 3
+    inspection_missing(replay_inputs)
+    inspection_unverified(replay_inputs)
+
+
 scenarios("../../../../capabilities/data-agent/evaluation/contracts/behavior.feature")
