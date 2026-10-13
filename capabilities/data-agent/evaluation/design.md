@@ -10,9 +10,11 @@ updated: 2026-10-13
 
 # Design: Offline EVAL Replay v1
 
-> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
+> 当前T-007c Windows fixed NTFS synthetic-only来源检查CLI已随#599集成；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。当前集成证据见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
 
 ## §1 Context
+
+T-007d只完成[材料与门禁文档](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)：附属材料不塞manifest/_Call未知字段；raw与review规范摘要分记，来源/脱敏/批准真实性和target接受不能由结构检查认证。现设计/机器合同与0.8 package保持，未实施actual入口或新保护后端。
 
 依据：[Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[#161 EVAL](../../../docs/evaluation/outcome_first-turn-time-predicate_v1.0.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。首版评判 22 条既有 case，消费批准的脱敏观测；不改变 #161、#504、#583–#586 的 scope 或状态。
 

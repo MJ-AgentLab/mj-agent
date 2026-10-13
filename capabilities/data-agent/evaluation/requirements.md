@@ -10,9 +10,11 @@ updated: 2026-10-13
 
 # Requirements: Offline EVAL Replay
 
-> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
+> 当前T-007c Windows fixed NTFS synthetic-only来源检查CLI已随#599集成；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。当前集成证据见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
 
 依据：[Issue #582](https://github.com/MJ-AgentLab/mj-agent/issues/582)、[批准 Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。本 package 不适用 track，与 canonical 文档类型轴正交。
+
+T-007d：Owner随后采纳仅材料/门禁文档定稿范围，见[材料契约](../../../docs/guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md)。M-01–07定义七输入位置及附属材料、raw/规范观测两类摘要、真实来源与target决定责任；不新增REQ/schema/API/CLI或执行门禁，不回写原提案待决定时点。既有6项REQ、严格窗口、22完整分母、same_target_replay、0.03及红线保持。
 
 ## REQ-001 输入身份与来源
 
