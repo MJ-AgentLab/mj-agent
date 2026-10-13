@@ -23,6 +23,7 @@ from mj_agent.evaluation.core import replay
 from mj_agent.evaluation.schema import ReplayInputs
 
 FIXTURES = Path(__file__).parent / "fixtures" / "eval_core"
+BASELINE = Path(__file__).parent / "fixtures/eval_cli/baseline.synthetic.json"
 EXPECTED = json.loads((Path(__file__).parent / "fixtures/eval_cli/expected.json").read_bytes())
 FILES = {"config": "config.json", "dataset": "dataset.jsonl", "observations": "observations.jsonl",
          "manifest": "manifest.json", "reference": "reference.json", "reviews": "reviews.jsonl"}
@@ -67,13 +68,15 @@ def test_public_cli_signature() -> None:
     assert get_type_hints(main) == {"argv": list[str] | None, "repo_root": Path | None, "return": int}
 
 
-@pytest.mark.parametrize("option", ["missing_mode", "--baseline", "--actual", "--profile", "--runtime-observation"])
+@pytest.mark.parametrize("option", ["missing_mode", "baseline_missing_value", "--actual", "--profile", "--runtime-observation"])
 def test_unavailable_mode_and_options_are_refused_before_io(
     inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, option: str,
 ) -> None:
     args = _arguments(inputs_dir, tmp_path / "output")
     if option == "missing_mode":
         args.remove("--synthetic-fixture")
+    elif option == "baseline_missing_value":
+        args.append("--baseline")
     else:
         args.extend([option, "do-not-echo"])
     backend = Mock(side_effect=_reject)
@@ -106,7 +109,8 @@ def test_source_gate_reads_only_manifest_before_replay_or_other_inputs(
     monkeypatch.setattr(backend, "read", manifest_only)
     monkeypatch.setattr(runner, "replay", _reject)
     output = tmp_path / "output"
-    assert _main(_arguments(inputs_dir, output), tmp_path) == 2
+    args = [*_arguments(inputs_dir, output), "--baseline", str(tmp_path / "must-not-read.json")]
+    assert _main(args, tmp_path) == 2
     assert seen == [("inputs", "manifest.json")]
     diagnostic = json.loads(capsys.readouterr().err)
     assert diagnostic["reason_code"] == ("ACTUAL_ENTRY_DEFERRED" if source == "runtime_observation"
@@ -169,13 +173,16 @@ def test_existing_output_never_overwrites_or_removes_files(
     "private.pem", "client.key", "tokens.json", "config.json:stream", "../outside.json",
     r"C:relative.json",
 ])
-@pytest.mark.parametrize("destination", [False, True])
+@pytest.mark.parametrize("option", ["--eval-config", "--output-dir", "--baseline"])
 def test_unsafe_paths_are_rejected_before_metadata_or_reads_without_echo(
     inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
-    capsys: pytest.CaptureFixture[str], path: str, destination: bool,
+    capsys: pytest.CaptureFixture[str], path: str, option: str,
 ) -> None:
     args = _arguments(inputs_dir, tmp_path / "output")
-    _replace(args, "--output-dir" if destination else "--eval-config", path)
+    if option == "--baseline":
+        args.extend([option, path])
+    else:
+        _replace(args, option, path)
     backend = Mock(side_effect=_reject)
     monkeypatch.setattr(runner, "_backend", backend)
     assert _main(args, tmp_path) == 2
@@ -189,12 +196,15 @@ def test_unsafe_paths_are_rejected_before_metadata_or_reads_without_echo(
 @pytest.mark.parametrize("alias", ["credentials.json ", "config/secrets-test.enc.", ".ssh./id_rsa.",
                                   "client.key.", "ordinary.json.", "ordinary.json ", "parent./input.json",
                                   "NUL", "COM1.json", "LPT¹", "CREDEN~1.JSON"])
-@pytest.mark.parametrize("destination", [False, True])
+@pytest.mark.parametrize("option", ["--eval-config", "--output-dir", "--baseline"])
 def test_windows_aliases_are_rejected_before_backend(
-    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, alias: str, destination: bool,
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, alias: str, option: str,
 ) -> None:
     args = _arguments(inputs_dir, tmp_path / "output")
-    _replace(args, "--output-dir" if destination else "--eval-config", alias)
+    if option == "--baseline":
+        args.extend([option, alias])
+    else:
+        _replace(args, option, alias)
     backend = Mock(side_effect=_reject)
     monkeypatch.setattr(runner, "_backend", backend)
     assert _main(args, tmp_path) == 2
@@ -438,6 +448,164 @@ def test_missing_guard_capability_fails_closed_without_replay(inputs_dir: Path, 
     assert not (tmp_path / "output").exists()
 
 
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_baseline_raw_bytes_are_forwarded_once_without_enabling_comparison(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = BASELINE.read_bytes() + b" \r\n"
+    baseline = inputs_dir / "baseline.json"
+    baseline.write_bytes(raw)
+    core = Mock(wraps=replay)
+    monkeypatch.setattr(runner, "replay", core)
+    original = fio._WindowsIO.read
+    reads = []
+
+    def read(self: Any, parts: tuple[str, ...]) -> bytes:
+        reads.append(parts)
+        return original(self, parts)
+
+    monkeypatch.setattr(fio._WindowsIO, "read", read)
+    for name, extra in (("without", []), ("with", ["--baseline", str(baseline)])):
+        assert _main([*_arguments(inputs_dir, tmp_path / name), *extra], tmp_path) == 3
+    assert core.call_count == 2
+    assert core.call_args_list[0].args[0].baseline == b""
+    assert core.call_args_list[1].args[0].baseline == raw
+    assert reads.count(("inputs", "baseline.json")) == 1
+    assert reads[0] == reads[len(FILES)] == ("inputs", "manifest.json")
+    for filename in ("report.json", "report.md"):
+        assert (tmp_path / "with" / filename).read_bytes() == (tmp_path / "without" / filename).read_bytes()
+    report = json.loads((tmp_path / "with/report.json").read_bytes())
+    assert report["regression"]["status"] == "NOT_EVALUATED"
+    assert report["measurement"]["metrics"] is None
+    assert report["baseline_eligible"] is False
+
+
+@pytest.mark.parametrize("raw, reason", [
+    (b"", "BASELINE_INPUT_EMPTY"), (b" ", "INVALID_INPUT_SCHEMA"),
+    (b"null", "BASELINE_NOT_OBJECT"), (b"[]", "BASELINE_NOT_OBJECT"),
+    (b'"do-not-echo"', "BASELINE_NOT_OBJECT"), (b"0", "BASELINE_NOT_OBJECT"),
+    (b"false", "BASELINE_NOT_OBJECT"), (b"do-not-echo", "INVALID_INPUT_SCHEMA"),
+    (b"\xff", "INVALID_INPUT_SCHEMA"),
+    (b'{"a":1,"a":2}', "DUPLICATE_JSON_KEY"), (b'{"a":NaN}', "NON_FINITE_JSON"),
+    (b'{"a":' + b"[" * 33 + b"0" + b"]" * 33 + b"}", "JSON_DEPTH_LIMIT"),
+])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_invalid_baseline_is_refused_before_replay_or_output(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], raw: bytes, reason: str,
+) -> None:
+    baseline = inputs_dir / "baseline.json"
+    baseline.write_bytes(raw)
+    core = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "replay", core)
+    output = tmp_path / "output"
+    assert _main([*_arguments(inputs_dir, output), "--baseline", str(baseline)], tmp_path) == 2
+    core.assert_not_called()
+    assert not output.exists()
+    error = capsys.readouterr().err
+    assert json.loads(error) == {"input_status": "INPUT_INVALID", "exit_code": 2, "reason_code": reason}
+    assert "do-not-echo" not in error and str(baseline) not in error
+
+
+@pytest.mark.parametrize("defect", ["missing", "directory", "too_large", "hard_link"])
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_baseline_uses_existing_native_file_guards(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], defect: str,
+) -> None:
+    baseline = inputs_dir / "baseline.json"
+    if defect == "directory":
+        baseline.mkdir()
+    elif defect == "too_large":
+        baseline.write_bytes(b" " * (fio._MAX_BYTES + 1))
+    elif defect == "hard_link":
+        original = inputs_dir / "baseline-original.json"
+        original.write_bytes(BASELINE.read_bytes())
+        os.link(original, baseline)
+    core = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "replay", core)
+    original_open = os.fdopen
+    streams = []
+
+    def open_stream(descriptor: int, mode: str, *args: Any, **kwargs: Any) -> Any:
+        streams.append(os.fstat(descriptor).st_size)
+        return original_open(descriptor, mode, *args, **kwargs)
+
+    monkeypatch.setattr(os, "fdopen", open_stream)
+    output = tmp_path / "output"
+    assert _main([*_arguments(inputs_dir, output), "--baseline", str(baseline)], tmp_path) == 2
+    core.assert_not_called()
+    assert len(streams) == len(FILES)  # no stream was constructed for the refused baseline
+    assert not output.exists()
+    assert str(baseline) not in capsys.readouterr().err
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+@pytest.mark.parametrize("defect", ["reparse", "offline", "recall", "changed"])
+def test_baseline_handle_metadata_prevents_replay(
+    inputs_dir: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str], defect: str,
+) -> None:
+    baseline = inputs_dir / "baseline.json"
+    baseline.write_bytes(BASELINE.read_bytes())
+    original = fio._WindowsIO._prototypes
+    checked = []
+
+    def prototypes(self: Any) -> None:
+        original(self)
+        get_info = self.kernel.GetFileInformationByHandle
+
+        def info(handle: int, pointer: Any) -> int:
+            result = get_info(handle, pointer)
+            if self._final(handle).endswith("baseline.json"):
+                checked.append(True)
+                metadata = ctypes.cast(pointer, ctypes.POINTER(fio._FileInfo)).contents
+                if defect == "changed":
+                    if len(checked) == 3:
+                        metadata.written_low ^= 1
+                else:
+                    metadata.attributes |= {"reparse": 0x400, "offline": 0x1000, "recall": 0x400000}[defect]
+            return int(result)
+
+        self.kernel.GetFileInformationByHandle = info
+
+    monkeypatch.setattr(fio._WindowsIO, "_prototypes", prototypes)
+    core = Mock(side_effect=_reject)
+    monkeypatch.setattr(runner, "replay", core)
+    output = tmp_path / "output"
+    assert _main([*_arguments(inputs_dir, output), "--baseline", str(baseline)], tmp_path) == 2
+    assert checked
+    assert core.call_count == 0
+    assert not output.exists()
+    diagnostic = json.loads(capsys.readouterr().err)
+    assert diagnostic["reason_code"] == ("FILE_CHANGED" if defect == "changed" else "SPECIAL_FILE_PATH_FORBIDDEN")
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_baseline_at_file_size_limit_stays_selftest(inputs_dir: Path, tmp_path: Path) -> None:
+    baseline = inputs_dir / "baseline.json"
+    baseline.write_bytes(b"{}" + b" " * (fio._MAX_BYTES - 2))
+    assert _main([*_arguments(inputs_dir, tmp_path / "output"), "--baseline", str(baseline)], tmp_path) == 3
+    report = json.loads((tmp_path / "output/report.json").read_bytes())
+    assert report["regression"]["status"] == "NOT_EVALUATED"
+
+
+@pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
+def test_real_baseline_process_is_deterministic_and_offline(inputs_dir: Path, tmp_path: Path) -> None:
+    baseline = inputs_dir / "baseline.json"
+    baseline.write_bytes(BASELINE.read_bytes())
+    for name in ("without", "with", "repeat"):
+        args = _arguments(inputs_dir, tmp_path / name)
+        if name != "without":
+            args.extend(["--baseline", str(baseline)])
+        completed = _process(args, tmp_path, sentinels=True)
+        assert completed.returncode == 3, completed.stderr
+        assert completed.stderr == b""
+    for filename in ("report.json", "report.md"):
+        assert (tmp_path / "without" / filename).read_bytes() == (tmp_path / "with" / filename).read_bytes()
+        assert (tmp_path / "with" / filename).read_bytes() == (tmp_path / "repeat" / filename).read_bytes()
+
+
 _BOOTSTRAP = """
 import builtins, os, pathlib, runpy, socket
 original_import = builtins.__import__
@@ -507,9 +675,10 @@ def test_real_child_process_blocks_application_imports_secret_reads_and_network(
     assert completed.returncode == 3, completed.stderr
 
 
+@pytest.mark.parametrize("baseline", [False, True])
 @pytest.mark.skipif(os.name != "nt", reason="SKIP_FS_CAPABILITY_UNAVAILABLE: native CLI deferred")
 def test_confirmed_synthetic_red_line_failure_returns_six_in_real_process(
-    inputs_dir: Path, tmp_path: Path,
+    inputs_dir: Path, tmp_path: Path, baseline: bool,
 ) -> None:
     rows = [json.loads(line) for line in (inputs_dir / "observations.jsonl").read_bytes().splitlines()]
     target = next(row for row in rows if row["case_id"] == "RL-05")
@@ -521,7 +690,12 @@ def test_confirmed_synthetic_red_line_failure_returns_six_in_real_process(
     manifest["hashes"]["observations"] = hashlib.sha256(raw).hexdigest()
     (inputs_dir / "observations.jsonl").write_bytes(raw)
     (inputs_dir / "manifest.json").write_bytes(json.dumps(manifest).encode())
-    completed = _process(_arguments(inputs_dir, tmp_path / "output"), tmp_path, sentinels=True)
+    args = _arguments(inputs_dir, tmp_path / "output")
+    if baseline:
+        path = inputs_dir / "baseline.json"
+        path.write_bytes(BASELINE.read_bytes())
+        args.extend(["--baseline", str(path)])
+    completed = _process(args, tmp_path, sentinels=True)
     assert completed.returncode == EXPECTED["red_line_exit"]
     report = json.loads((tmp_path / "output/report.json").read_bytes())
     assert report["safety"]["status"] == "SELFTEST_HARD_FAIL"

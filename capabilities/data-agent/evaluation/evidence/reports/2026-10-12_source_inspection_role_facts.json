@@ -1,0 +1,132 @@
+{
+  "schema_version": "synthetic-source-inspection-facts-v1",
+  "base_commit": "a96d759c080f4568e6810084f90fadce7b2c75cf",
+  "candidate": "UNCOMMITTED",
+  "implementer": "Codex",
+  "delegation": "NONE",
+  "actual_or_live_executed": false,
+  "source_authenticity_verified": false,
+  "runtime_metrics": null,
+  "baseline_eligible": false,
+  "roles": {
+    "Domain": "22 synthetic cases and 5 red-line identities; strict threshold unchanged",
+    "Prompt": "34 synthetic review chains and target declarations; no authenticity claim",
+    "SWE": "Independent raw-byte hashes/bindings and isolated fresh processes, no IO/judging"
+  },
+  "inputs": {
+    "config": "f0e5991fa9ab05615122727288af5a149c1e75275490cf6f483ec94f5f8cd052",
+    "dataset": "6f6d8fb3a288a575a5e5db336b8429ad8d795955ae5929ec8e1e89b642df9079",
+    "observations": "fdd1f5f66144109d50f13dd5fd3eb6c119d86f43bf5ffeac2649b5a2bf82118a",
+    "manifest": "55af4d887a7bb722c46119301984e61faa23529cea74b2e3672443b85a0a861c",
+    "reference": "57fbbddfd7f659e0ef198617a6317145ca7123e2286d56e438c1516ded5e041f",
+    "reviews": "18041c8230c197261562e2e014e2cac5fe05e652f9385d193d9a8a5f0e9a371d"
+  },
+  "review_bindings_independently_checked": 34,
+  "runs": [
+    {
+      "process_exit": 0,
+      "mode": "normal",
+      "api_classification": 3,
+      "result_sha256": "6b7918d6d86f745dcad6c52d5c7fc846379b5095860582706b77f2af1d932994",
+      "counts": {
+        "planned_cases": 22,
+        "observed_cases": 22,
+        "complete_observations": 22,
+        "provided_reviews": 34,
+        "bound_reviews": 34
+      },
+      "coherence_status": "CONSISTENT",
+      "source_evidence_status": "UNVERIFIED",
+      "target_evidence_status": "UNVERIFIED",
+      "review_coverage_status": "NOT_CHECKED",
+      "runtime_metrics": null,
+      "baseline_eligible": false,
+      "forbidden_accesses": [],
+      "inputs_unchanged": true
+    },
+    {
+      "process_exit": 0,
+      "mode": "baseline",
+      "api_classification": 3,
+      "result_sha256": "6b7918d6d86f745dcad6c52d5c7fc846379b5095860582706b77f2af1d932994",
+      "counts": {
+        "planned_cases": 22,
+        "observed_cases": 22,
+        "complete_observations": 22,
+        "provided_reviews": 34,
+        "bound_reviews": 34
+      },
+      "coherence_status": "CONSISTENT",
+      "source_evidence_status": "UNVERIFIED",
+      "target_evidence_status": "UNVERIFIED",
+      "review_coverage_status": "NOT_CHECKED",
+      "runtime_metrics": null,
+      "baseline_eligible": false,
+      "forbidden_accesses": [],
+      "inputs_unchanged": true
+    },
+    {
+      "process_exit": 0,
+      "mode": "permuted",
+      "api_classification": 3,
+      "result_sha256": "6b7918d6d86f745dcad6c52d5c7fc846379b5095860582706b77f2af1d932994",
+      "counts": {
+        "planned_cases": 22,
+        "observed_cases": 22,
+        "complete_observations": 22,
+        "provided_reviews": 34,
+        "bound_reviews": 34
+      },
+      "coherence_status": "CONSISTENT",
+      "source_evidence_status": "UNVERIFIED",
+      "target_evidence_status": "UNVERIFIED",
+      "review_coverage_status": "NOT_CHECKED",
+      "runtime_metrics": null,
+      "baseline_eligible": false,
+      "forbidden_accesses": [],
+      "inputs_unchanged": true
+    },
+    {
+      "process_exit": 0,
+      "mode": "missing",
+      "api_classification": 3,
+      "result_sha256": "e1969ae821476a4065510038699632b607ff50fb4e932ba1a11f7f1b0ad770eb",
+      "counts": {
+        "planned_cases": 22,
+        "observed_cases": 21,
+        "complete_observations": 21,
+        "provided_reviews": 34,
+        "bound_reviews": 33
+      },
+      "coherence_status": "INCOMPLETE",
+      "source_evidence_status": "UNVERIFIED",
+      "target_evidence_status": "UNVERIFIED",
+      "review_coverage_status": "NOT_CHECKED",
+      "runtime_metrics": null,
+      "baseline_eligible": false,
+      "forbidden_accesses": [],
+      "inputs_unchanged": true
+    },
+    {
+      "process_exit": 0,
+      "mode": "fictional",
+      "api_classification": 3,
+      "result_sha256": "072739a903fd1e90d88fc6a23afeed110be7ee2ac660abcfd4d61f61aa7894bc",
+      "counts": {
+        "planned_cases": 22,
+        "observed_cases": 22,
+        "complete_observations": 22,
+        "provided_reviews": 34,
+        "bound_reviews": 34
+      },
+      "coherence_status": "CONSISTENT",
+      "source_evidence_status": "UNVERIFIED",
+      "target_evidence_status": "UNVERIFIED",
+      "review_coverage_status": "NOT_CHECKED",
+      "runtime_metrics": null,
+      "baseline_eligible": false,
+      "forbidden_accesses": [],
+      "inputs_unchanged": true
+    }
+  ]
+}

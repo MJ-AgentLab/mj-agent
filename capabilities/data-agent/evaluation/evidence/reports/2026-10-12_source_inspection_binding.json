@@ -1,0 +1,199 @@
+{
+  "base_commit": "a96d759c080f4568e6810084f90fadce7b2c75cf",
+  "candidate": "UNCOMMITTED",
+  "branch": "feature/582-baseline-cli",
+  "fingerprint_algorithm": "sha256(sorted path + NUL + raw-byte-sha256 + LF records, UTF-8)",
+  "source_fingerprint": "0e4d630cd1401b0411a668da609987de08147c00a1423ce6d46cf213deb80212",
+  "previous_t007a_fingerprint": "5ccaea17f46a43cc23eb01671f998ca86e9542453c1f2bd41d01b9c578310df5",
+  "previous_snapshot": ".mj-agent-local/t007b/t007a-snapshot",
+  "excluded_self_references": [
+    "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md",
+    "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_binding.json"
+  ],
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "7c2265617f1c53f64d9cd0383c6a282aff9cbbe2c575273c3bcae7dc84c0c8f1"
+    },
+    {
+      "path": "capabilities/INDEX.md",
+      "sha256": "80a98578b694a360497ab95478155a4237de8742408c93d52ce214296d5d8371"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/behavior.feature",
+      "sha256": "4028d824349ad1a971e23dfb424836764c3b2a1c8c8041358c876baea98b8946"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/cli.contract.yml",
+      "sha256": "3d06e9e1a1c16ed298b361c5de9039368aaa1b7cf2631c480d075e85bf4ba622"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/contracts/python.contract.yml",
+      "sha256": "e3e8e649cdc8c3b12adadd23e08720b3700815ce25b3d3869be32589a5768911"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/design.md",
+      "sha256": "859ddf5aadd62ae9305fb21f8bfaf40734846130110a9915a181d7282dccab75"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/bdd/2026-10-12_baseline_cli_pytest.txt",
+      "sha256": "f7840e983525cae3fea7fbf0a2b1ca0b628a67d98a4606455b4a5b615c16d975"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md",
+      "sha256": "544e3a1a971c9eb1177c901ea0823967ea1dc593823e493668042ad6d421b336"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/bdd/2026-10-12_source_inspection_pytest.txt",
+      "sha256": "cd38bc73a0850e2d8897a2f3577226257ab4fde36a8db575b7df0696323b9fd7"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md",
+      "sha256": "110d01d9bb265b98943c0ec5d099dcf324260934ade9303aa4b07cc550ff042c"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_baseline_cli_acceptance.md",
+      "sha256": "cf1167f796bfdec50b8bd3f9f35a2e05f05038e2968a63ce1548507973ed3e37"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_baseline_cli_binding.json",
+      "sha256": "633eeaa38c57e849ff0f8878e2b2ff7b5d7db0bb8747ef821f9e98cfa5c4f0da"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_baseline_cli_role_facts.json",
+      "sha256": "5f67c22c088efdbd8dbb0e982adb70eb0564864bc1e4df35ee6b8be8ad46a531"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_role_facts.json",
+      "sha256": "cd1421fc451e8df795f66d2067ab70b4d308a54b7e72ac49860aff6348fda93d"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_verifier.txt",
+      "sha256": "a79ea27469409bceeb0b4c96fe682147fb60af39e7ffc49465f0a6cd3f108383"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/requirements.md",
+      "sha256": "26b46a851e337f965fc25ac717cee61c33da7ea2eb4d4a76b258945695e83093"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/runbook.md",
+      "sha256": "c7a93f1b2946dc18ce5aa321b839b030ecff3bd35420f42d0d96c9c5925bbb30"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/spec.yml",
+      "sha256": "d14ca220ddd131ebe02078f67af3f735e4d19767b83743d7ef38baaf47e52897"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/tasks.md",
+      "sha256": "f6a7f108bc43b58db086848a8ed6173eb31264d6bd69ca5707f5557712c02a56"
+    },
+    {
+      "path": "capabilities/data-agent/evaluation/trace.yml",
+      "sha256": "23d011c64cb6d1902eea70e61f38fd4dba41a7cb75d3067eee880a06f517d021"
+    },
+    {
+      "path": "docs/INDEX.md",
+      "sha256": "5b30f0851f8070ea92077411a48b15e1acf001c141f414710d8dcb86255bb790"
+    },
+    {
+      "path": "docs/evaluation/datasets/first_turn_time_predicate_v1.jsonl",
+      "sha256": "01703f365dec13b091f00070ffafdcd93a4a8c269089fce8ab2483f4570b58a3"
+    },
+    {
+      "path": "plans/[PLAN]_582_offline_eval_runner.md",
+      "sha256": "3cc54f7b24f979ebbe3a3afe00c23c519a76533c82d246a6373a8eb8fe1cd2ac"
+    },
+    {
+      "path": "src/mj_agent/biz_catalog/qcm_catalog.yaml",
+      "sha256": "29f93fd5362884c84745f965b8863c8d964fa6fceae7fcae437b28304810342e"
+    },
+    {
+      "path": "src/mj_agent/evaluation/__init__.py",
+      "sha256": "13fffd2cd7950a5b7943018f349388d081595a0fe5104de1438a7c714ac67182"
+    },
+    {
+      "path": "src/mj_agent/evaluation/_file_io.py",
+      "sha256": "23d144901d28c13b639f7ca63d03ae8f31a6946932269cd59eab9e63c3bafc06"
+    },
+    {
+      "path": "src/mj_agent/evaluation/core.py",
+      "sha256": "885153b06e4174c4d772414fbaa7c62fb7a004d7eebebaa0d1570913e9985110"
+    },
+    {
+      "path": "src/mj_agent/evaluation/inspection.py",
+      "sha256": "f2cb8a6f169dc7e68df16c068581c75e34cc233e2d471d397d504f1cd0b3cfcb"
+    },
+    {
+      "path": "src/mj_agent/evaluation/judges.py",
+      "sha256": "9b92a1e293b4cb62b181242f31c153f1ab48d4814f8108723bbe1417d85b2288"
+    },
+    {
+      "path": "src/mj_agent/evaluation/report.py",
+      "sha256": "fa8f1b310f700d1e773399e8cf6d6d596393392cabd1260909c207a4b9380174"
+    },
+    {
+      "path": "src/mj_agent/evaluation/runner.py",
+      "sha256": "35d392e12fd64b6fe9b84002c76052ce53424e12d14c6560997ccf609adef002"
+    },
+    {
+      "path": "src/mj_agent/evaluation/schema.py",
+      "sha256": "ebe2dd6c21864d9737d6ae9ba695d37fe232fd7cc97e16e58871e0099d42e86c"
+    },
+    {
+      "path": "tests/bdd/data_agent/evaluation/test_evaluation_bdd.py",
+      "sha256": "9fbbece6899612d0d2fb86408f37e5ff9636e28bbdde46f106f9e334e9d0aff9"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_cli/baseline.synthetic.json",
+      "sha256": "7c5047a7520ba216aef1d31dd2dcc742718baee2d1c7d1fb93aa863db501e999"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_cli/expected.json",
+      "sha256": "77fc4ccf1658e4d19377ffda3eeeced2d84bf01bb6025e0c4bb5716bfb403698"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/README.md",
+      "sha256": "afdacf9f632bc0111c5ddd3889c7478b851589e8ab7f60ba4014e16c8e0fcf30"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/config.json",
+      "sha256": "f0e5991fa9ab05615122727288af5a149c1e75275490cf6f483ec94f5f8cd052"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/dataset.jsonl",
+      "sha256": "6f6d8fb3a288a575a5e5db336b8429ad8d795955ae5929ec8e1e89b642df9079"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/expected.json",
+      "sha256": "3af44b16154c4cdaab60d6b7f8e59d8bd535669e5434c54f49cc0274662acb62"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/inspection.expected.json",
+      "sha256": "e5e4181f78b4efc8595dbabaeead7e22cc8c65d4d864e87a59b368f91662ecda"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/manifest.json",
+      "sha256": "55af4d887a7bb722c46119301984e61faa23529cea74b2e3672443b85a0a861c"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/observations.jsonl",
+      "sha256": "fdd1f5f66144109d50f13dd5fd3eb6c119d86f43bf5ffeac2649b5a2bf82118a"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reference.json",
+      "sha256": "57fbbddfd7f659e0ef198617a6317145ca7123e2286d56e438c1516ded5e041f"
+    },
+    {
+      "path": "tests/unit/fixtures/eval_core/reviews.jsonl",
+      "sha256": "18041c8230c197261562e2e014e2cac5fe05e652f9385d193d9a8a5f0e9a371d"
+    },
+    {
+      "path": "tests/unit/test_eval_core.py",
+      "sha256": "be823cdda97006b14a0ea346733366303b1259d4ef4702793eba39ffcc8f9066"
+    },
+    {
+      "path": "tests/unit/test_eval_runner.py",
+      "sha256": "098764db1bde732715ba5f61445a68c4a9eaf21ef8ab7418a01445671e21ae91"
+    }
+  ]
+}

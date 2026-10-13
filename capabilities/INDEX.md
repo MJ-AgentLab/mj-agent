@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## Draft Capability Review
 
-- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — #582 synthetic-only离线CLI已完成软件核验，main(argv, *, repo_root)与核心ReplayInputs/replay正式契约绑定实际源码；169项unit与10项BDD通过，严格窗口/规则保持。actual文件入口、baseline CLI参数、采样/runtime接受延期，Linux原生入口明确延期；capability idea/last_verified=null。见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)与[本轮验收](./data-agent/evaluation/evidence/reports/2026-10-12_synthetic_cli_acceptance.md)。原#587核心及并行CLI记录仅保存历史；未提交或发布本轮成果。
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — T-006已随#589合并；T-007a baseline文件参数和T-007b纯内存inspect_source已完成278项离线软件核验（264 unit+14 BDD），候选UNCOMMITTED。来源/目标UNVERIFIED、审阅覆盖NOT_CHECKED，synthetic仍无runtime比较；核心/窗口/阈值/文件后端不改。actual文件/真实来源/target接受及Linux/macOS原生保护延期；#582 OPEN、Plan active、capability idea/last_verified=null，无提交/推送/PR。 见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)与[来源检查验收](./data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_acceptance.md)。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

@@ -1,0 +1,149 @@
+"""Synthetic role facts and isolated process acceptance; no real source data."""
+from __future__ import annotations
+import builtins
+import hashlib
+import importlib.abc
+import io
+import json
+import os
+from pathlib import Path
+import socket
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / 'tests/unit/fixtures/eval_core'
+FIELDS = {'config': 'config.json', 'dataset': 'dataset.jsonl', 'observations': 'observations.jsonl',
+          'manifest': 'manifest.json', 'reference': 'reference.json', 'reviews': 'reviews.jsonl'}
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+def canonical(value):
+    return (json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n').encode()
+
+def rows(raw):
+    return [json.loads(line) for line in raw.splitlines() if line.strip()]
+
+def encoded(items):
+    return b''.join(canonical(item) for item in items)
+
+if '--worker' in sys.argv:
+    mode = sys.argv[-1]
+    raw = {name: (FIXTURES / filename).read_bytes() for name, filename in FIELDS.items()}
+    expected = json.loads((FIXTURES / 'inspection.expected.json').read_bytes())
+    manifest = json.loads(raw['manifest'])
+    if mode == 'baseline':
+        raw['baseline'] = (ROOT / 'tests/unit/fixtures/eval_cli/baseline.synthetic.json').read_bytes()
+    elif mode == 'permuted':
+        raw['observations'] = encoded(list(reversed(rows(raw['observations']))))
+        raw['reviews'] = encoded(list(reversed(rows(raw['reviews']))))
+        manifest['hashes']['observations'] = sha(raw['observations'])
+        raw['manifest'] = json.dumps(manifest).encode()
+    elif mode == 'missing':
+        raw['observations'] = encoded([r for r in rows(raw['observations']) if r['case_id'] != 'HP-01'])
+        manifest['hashes']['observations'] = sha(raw['observations'])
+        raw['manifest'] = json.dumps(manifest).encode()
+    elif mode == 'fictional':
+        manifest['source_kind'] = 'runtime_observation'
+        manifest['provenance'].update(source_ref='.env.do-not-open', sampling_approval_ref='fictional-not-authorization',
+                                      sanitization_review_ref='https://invalid.example/do-not-resolve')
+        manifest['target_snapshot']['prompt']['path'] = '.env.do-not-open'
+        manifest['target_snapshot']['assembled_prompt_sha256'] = 'f' * 64
+        raw['manifest'] = json.dumps(manifest).encode()
+        reviews = rows(raw['reviews'])
+        for review in reviews:
+            review['review_method'] = 'independent_review'
+        raw['reviews'] = encoded(reviews)
+    denied = ('mj_agent.agent', 'mj_agent.config', 'mj_agent.tools', 'mj_agent.llm', 'mj_agent.memory',
+              'mj_agent.evaluation.core', 'mj_agent.evaluation.judges', 'mj_agent.evaluation.report',
+              'mj_agent.evaluation._file_io', 'dotenv', 'psycopg', 'openai')
+    accesses = []
+    class Guard(importlib.abc.MetaPathFinder):
+        def find_spec(self, fullname, path=None, target=None):
+            if fullname.startswith(denied):
+                accesses.append('import')
+                raise AssertionError('forbidden module')
+            return None
+    sys.meta_path.insert(0, Guard())
+    sys.path.insert(0, str(ROOT / 'src'))
+    from mj_agent.evaluation.inspection import inspect_source
+    from mj_agent.evaluation.schema import ReplayInputs
+    inputs = ReplayInputs(**raw)
+    snapshot = dict(raw)
+    def reject(*args, **kwargs):
+        accesses.append('io')
+        raise AssertionError('forbidden IO')
+    builtins.open = io.open = os.open = Path.open = reject
+    socket.socket.connect = socket.create_connection = reject
+    def audit(event, args):
+        if event == 'open' or event.startswith(('socket.', 'subprocess.')):
+            reject()
+    sys.addaudithook(audit)
+    result = inspect_source(inputs)
+    assert inspect_source(inputs) == result
+    assert all(getattr(inputs, field) == value for field, value in snapshot.items())
+    if mode in {'normal', 'baseline', 'permuted'}:
+        assert result == expected
+    elif mode == 'missing':
+        assert result['gaps']['missing_observations'] == ['HP-01']
+        assert result['counts']['observed_cases'] == result['counts']['complete_observations'] == 21
+        expected_unbound = sum(r['case_id'] == 'HP-01' for r in rows(raw['reviews']))
+        assert result['counts']['bound_reviews'] == 34 - expected_unbound
+    else:
+        assert result['coherence_status'] == 'CONSISTENT' and result['counts']['bound_reviews'] == 34
+    assert result['source_evidence_status'] == result['target_evidence_status'] == 'UNVERIFIED'
+    assert result['review_coverage_status'] == 'NOT_CHECKED'
+    assert result['runtime_metrics'] is None and result['baseline_eligible'] is False
+    assert result['exit_code'] == 3 and 'measurement' not in result
+    assert '.env' not in json.dumps(result) and 'https://' not in json.dumps(result)
+    assert accesses == [] and not any(n.startswith(denied) for n in sys.modules)
+    print(json.dumps({'mode': mode, 'api_classification': 3, 'result_sha256': sha(canonical(result)),
+                      'counts': result['counts'], 'coherence_status': result['coherence_status'],
+                      'source_evidence_status': 'UNVERIFIED', 'target_evidence_status': 'UNVERIFIED',
+                      'review_coverage_status': 'NOT_CHECKED', 'runtime_metrics': None,
+                      'baseline_eligible': False, 'forbidden_accesses': accesses, 'inputs_unchanged': True}))
+    sys.exit(0)
+
+raw = {name: (FIXTURES / filename).read_bytes() for name, filename in FIELDS.items()}
+manifest = json.loads(raw['manifest'])
+config = json.loads(raw['config'])
+cases = rows(raw['dataset'])
+observations = rows(raw['observations'])
+reviews = rows(raw['reviews'])
+assert len(cases) == len(observations) == 22 and len(reviews) == 34
+assert config['threshold'] == 0.03 and config['comparison_mode'] == 'same_target_replay'
+assert {c['id'] for c in cases if 'red-line' in c['tags']} == set(config['red_line_ids'])
+assert all(manifest['hashes'][field] == sha(raw[field]) for field in ('config','dataset','observations','reference'))
+by_id = {o['case_id']: o for o in observations}
+for o in observations:
+    assert o['turn_complete'] and o['reply_complete'] and o['trajectory_complete']
+    assert [c['sequence'] for c in o['tool_calls']] == list(range(1,len(o['tool_calls'])+1))
+    assert all(c['outcome'] != 'unknown' and (c['tool_name'] != 'execute_sql' or c.get('sql') is not None) for c in o['tool_calls'])
+for review in reviews:
+    assert review['run_id'] == manifest['run_id']
+    assert review['case_observation_sha256'] == sha(canonical(by_id[review['case_id']]))
+    assert review['config_sha256'] == sha(raw['config']) and review['reference_sha256'] == sha(raw['reference'])
+    assert review['judge_profile'] == config['judge_profile'] and review['judge_revision'] == config['judge_revision']
+    assert review['review_method'] == 'agent_simulated' and review['initial_label_ref'] and review['independent_check_ref']
+env = {name: os.environ[name] for name in ('PATH','SYSTEMROOT','WINDIR','PATHEXT') if name in os.environ}
+env.update(PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1', TEMP=str(ROOT / '.mj-agent-local/t007b'), TMP=str(ROOT / '.mj-agent-local/t007b'))
+runs = []
+for mode in ('normal','baseline','permuted','missing','fictional'):
+    process = subprocess.run([sys.executable,'-B','-X','utf8',str(Path(__file__)), '--worker',mode],
+                             cwd=ROOT, env=env, capture_output=True, check=False, timeout=30)
+    assert process.returncode == 0, process.stderr.decode('utf-8', errors='replace')
+    assert not process.stderr
+    runs.append(dict(process_exit=process.returncode, **json.loads(process.stdout)))
+assert len({r['result_sha256'] for r in runs[:3]}) == 1
+facts = {'schema_version':'synthetic-source-inspection-facts-v1', 'base_commit':'a96d759c080f4568e6810084f90fadce7b2c75cf',
+         'candidate':'UNCOMMITTED', 'implementer':'Codex', 'delegation':'NONE', 'actual_or_live_executed':False,
+         'source_authenticity_verified':False, 'runtime_metrics':None, 'baseline_eligible':False,
+         'roles':{'Domain':'22 synthetic cases and 5 red-line identities; strict threshold unchanged',
+                  'Prompt':'34 synthetic review chains and target declarations; no authenticity claim',
+                  'SWE':'Independent raw-byte hashes/bindings and isolated fresh processes, no IO/judging'},
+         'inputs':{name:sha(value) for name,value in raw.items()}, 'review_bindings_independently_checked':34, 'runs':runs}
+output = ROOT / 'capabilities/data-agent/evaluation/evidence/reports/2026-10-12_source_inspection_role_facts.json'
+output.write_text(json.dumps(facts, ensure_ascii=False, indent=2)+'\n','utf-8')
+print(json.dumps({'status':'VERIFIED_SYNTHETIC_SOFTWARE','fresh_processes':5,'runtime_metrics':None,
+                  'actual_or_live_executed':False,'role_facts':str(output.relative_to(ROOT))}))

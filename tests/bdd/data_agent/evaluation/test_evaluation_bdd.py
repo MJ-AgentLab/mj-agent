@@ -220,6 +220,7 @@ def cli_actual(replay_inputs: dict[str, Any], tmp_path: Path, monkeypatch: pytes
     from mj_agent.evaluation import _file_io, runner
 
     cli_files(replay_inputs, tmp_path)
+    replay_inputs["cli_args"].extend(["--baseline", str(tmp_path / "must-not-read.json")])
     manifest_path = replay_inputs["cli_directory"] / "manifest.json"
     manifest = json.loads(manifest_path.read_bytes())
     manifest["source_kind"] = "runtime_observation"
@@ -281,7 +282,7 @@ def cli_unsafe_run(replay_inputs: dict[str, Any], capsys: pytest.CaptureFixture[
     results = []
     for index, path in enumerate(replay_inputs["unsafe"]):
         args = list(replay_inputs["cli_args"])
-        args[args.index("--eval-config") + 1] = path
+        args.extend(["--baseline", path])
         output = replay_inputs["cli_root"] / f"refused-{index}"
         result = main([*args, "--output-dir", str(output)], repo_root=replay_inputs["cli_root"])
         results.append((result, capsys.readouterr().err, output))
@@ -348,6 +349,82 @@ def cli_partial_preserved(replay_inputs: dict[str, Any]) -> None:
     assert (replay_inputs["partial"] / "report.json").is_file()
     assert not (replay_inputs["partial"] / "report.md").exists()
     assert replay_inputs["partial_diagnostic"]["core_exit_code"] == 3
+
+
+@given("approved synthetic files and a fixed synthetic baseline report")
+def cli_baseline(replay_inputs: dict[str, Any], tmp_path: Path) -> None:
+    cli_files(replay_inputs, tmp_path)
+    path = replay_inputs["cli_directory"] / "baseline.json"
+    raw = (_FIXTURES.parent / "eval_cli/baseline.synthetic.json").read_bytes()
+    path.write_bytes(raw)
+    replay_inputs["cli_args"].extend(["--baseline", str(path)])
+    replay_inputs["baseline_bytes"] = raw
+
+
+@then("the baseline bytes stay unchanged and regression is NOT_EVALUATED")
+def cli_baseline_ineligible(replay_inputs: dict[str, Any]) -> None:
+    assert (replay_inputs["cli_directory"] / "baseline.json").read_bytes() == replay_inputs["baseline_bytes"]
+    assert replay_inputs["report"]["regression"]["status"] == "NOT_EVALUATED"
+    assert replay_inputs["report"]["measurement"]["status"] == "SELFTEST_ONLY"
+    assert replay_inputs["report"]["regression"]["delta"] is None
+
+
+
+@given("fictional runtime metadata with coherent observation and review bindings")
+def inspection_fictional_source(replay_inputs: dict[str, Any]) -> None:
+    # These strings are explicitly fictional; no actual observation package is produced.
+    inputs = replay_inputs["inputs"]
+    manifest = json.loads(inputs.manifest)
+    manifest["source_kind"] = "runtime_observation"
+    manifest["provenance"].update(source_ref=".env.never-resolve",
+                                  sampling_approval_ref="fictional-not-authorization",
+                                  sanitization_review_ref="https://invalid.example/review")
+    reviews = _rows(inputs.reviews)
+    for review in reviews:
+        review["review_method"] = "independent_review"
+    replay_inputs["inputs"] = replace(inputs, manifest=json.dumps(manifest).encode(),
+                                       reviews=_jsonl(reviews))
+
+
+@when("the source inspector checks explicit bytes")
+def inspect_bytes(replay_inputs: dict[str, Any]) -> None:
+    from mj_agent.evaluation.inspection import inspect_source
+
+    replay_inputs["inspection"] = inspect_source(replay_inputs["inputs"])
+    replay_inputs["inspection_repeat"] = inspect_source(replay_inputs["inputs"])
+
+
+@then("source and target evidence remain UNVERIFIED with no runtime baseline")
+def inspection_unverified(replay_inputs: dict[str, Any]) -> None:
+    result = replay_inputs["inspection"]
+    assert result["source_evidence_status"] == result["target_evidence_status"] == "UNVERIFIED"
+    assert result["runtime_metrics"] is None and result["baseline_eligible"] is False
+    assert result["exit_code"] == 3 and "measurement" not in result and "cases" not in result
+    assert ".env" not in json.dumps(result) and "https://" not in json.dumps(result)
+
+
+@then("review coverage is NOT_CHECKED even when all provided reviews bind")
+def inspection_no_coverage(replay_inputs: dict[str, Any]) -> None:
+    result = replay_inputs["inspection"]
+    assert result["input_status"] == "VALID" and result["coherence_status"] == "CONSISTENT"
+    assert result["counts"]["provided_reviews"] == result["counts"]["bound_reviews"] == 34
+    assert result["review_coverage_status"] == "NOT_CHECKED"
+
+
+@then("HP-01 is listed missing and source coherence is INCOMPLETE")
+def inspection_missing(replay_inputs: dict[str, Any]) -> None:
+    result = replay_inputs["inspection"]
+    assert result["gaps"]["missing_observations"] == ["HP-01"]
+    assert result["coherence_status"] == "INCOMPLETE"
+    assert result["counts"]["planned_cases"] == 22 and result["counts"]["observed_cases"] == 21
+
+
+@then("the inspection repeats deterministically without forbidden accesses")
+def inspection_isolated(replay_inputs: dict[str, Any]) -> None:
+    assert replay_inputs["inspection"] == replay_inputs["inspection_repeat"]
+    assert replay_inputs["inspection"]["counts"]["complete_observations"] == 22
+    assert not any(name.startswith(("mj_agent.config", "dotenv", "psycopg", "openai"))
+                   for name in set(sys.modules) - replay_inputs["modules_before"])
 
 
 scenarios("../../../../capabilities/data-agent/evaluation/contracts/behavior.feature")

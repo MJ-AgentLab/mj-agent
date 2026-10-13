@@ -2,7 +2,7 @@
 type: capability-tasks
 capability: data-agent.evaluation
 state: draft
-version: "0.5"
+version: "0.7"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -11,7 +11,7 @@ updated: 2026-10-12
 # Tasks: Offline EVAL Replay
 
 > Owner已集中授权独立离线核心编码、必要测试、Agent合成验收和回归报告。
-> 核心及CLI已完成软件验证，actual采样／runtime验收延期；不修改既有runtime、不执行live或Git发布。当前执行见T-006，原核心任务保留历史轮次结果。
+> 核心及CLI已完成软件验证，actual采样／runtime验收延期；不修改既有runtime、不执行live或Git发布。T-006已随#589合并；当前执行见T-007b，原核心与CLI轮次结果保留历史。
 
 ## Done — #587历史核心范围
 
@@ -63,7 +63,7 @@ updated: 2026-10-12
 ### T-006 CLI本地文件接口与实际退出
 
 - Priority：high；Linked REQ：REQ-001、REQ-004、REQ-005、REQ-006。
-- 状态：VERIFIED_OFFLINE_SOFTWARE；Owner最终接受和发布尚未记录，完整capability未接受。
+- 状态：VERIFIED_OFFLINE_SOFTWARE，已随#589合并；历史验收报告保留，完整capability未接受。
 - 授权：本线程集中批准synthetic-only CLI与契约/文档/必要测试，另批准协调接续；Plan §8.7。原Agent-first委派候选为历史，22文件备份保留。
 - T-006a 来源与文件拒绝：main(argv, *, repo_root)；必需synthetic开关；manifest优先；actual早拒绝；有界本地IO、root/软硬链接/reparse/设备/网络/别名/替换保护。
 - T-006b 报告与退出：新目录且父已存在，独占报告写入；3=SELFTEST_ONLY、6=合成红线失败、2=参数/来源/IO，help0；actual的0/4/5/7不可达。报告对非原子提交，故障保留部分目录。
@@ -75,18 +75,37 @@ updated: 2026-10-12
 - OFFLINE/RECALL及流构造泄漏反例实测RED后修复，拒绝哨兵验证调用次数而非只看退出2。
 - 仅指定测试与固定CLI期望为硬化runner精确暂存；未commit/push/PR/Issue发布、runtime/CI/守卫改动或actual/live执行。
 
+### T-007a baseline CLI文件接入
+
+- Priority：high；Linked REQ：REQ-004、REQ-005、REQ-006；状态：VERIFIED_OFFLINE_SOFTWARE，供Owner最终接受，UNCOMMITTED。
+- 2026-10-12 Owner明确采纳A，授权G1工作树、baseline参数、两份契约/BDD与具名文档、必要离线测试及Agent合成验收；不扩展T-006授权，未授权提交/推送/PR。
+- main签名与ReplayInputs/replay不变；可选--baseline读原bytes，缺省b''；同一后端保护，非法格式/空文件/非object在核心与输出前拒绝。synthetic继续NOT_EVALUATED，实际0/4/5/7不可达。
+- TDD：旧CLI拒绝新参数导致16 FAIL/135 deselected；最小runner修改后220 unit（64 core+156 CLI）与11 BDD全部通过。新测试曾误写既有NON_FINITE_JSON诊断码及在校验后注入属性，分别修正期望/注入点，后端和核心未改。
+- Agent模拟Domain/Prompt后独立SWE轮核验固定22-case/34-review与baseline来源、原bytes、进程报告和无比较结论；无子Agent或真人前置。
+- 证据：[baseline CLI验收](evidence/reports/2026-10-12_baseline_cli_acceptance.md)、[BDD](evidence/bdd/2026-10-12_baseline_cli_scenarios_pass.md)。
+- Linux/macOS入口、actual文件/来源/审阅/采样/target接受、跨版本比较继续延期；#582 OPEN、Plan active、capability idea/last_verified=null。
+
+### T-007b 纯内存来源结构检查
+
+- Priority：high；Linked REQ：REQ-001、REQ-005、REQ-006；状态：VERIFIED_OFFLINE_SOFTWARE，供Owner最终接受，UNCOMMITTED。
+- Owner 2026-10-12“执行待办推荐事项”采纳独立集中授权A；在原G1工作树新增inspect_source及Python/BDD契约、必要测试/文档/Agent验收，不新增CLI或修改core/schema/judges/report/_file_io/runtime/CI/守卫/个人配置。
+- 复核T-007a原23文件绑定并保存38文件本地快照与tracked.patch；历史报告不重写。TDD先41 FAIL（接口缺失），新增模块后3条测试诊断期望对齐原Pydantic包装；首轮261 unit+14 BDD=275 passed。
+- 只核验提供记录结构/关联与观测完整性；source/target始终UNVERIFIED、review coverage NOT_CHECKED、metrics=null、baseline_eligible=false。来源检查不是EVAL，也不证明22-case语义或真实装配。
+- Agent模拟Domain/Prompt后由同Agent独立SWE轮核验固定输入/原hash/缺口/无IO与禁用基线；Subagent dispatched=NONE、不要求真人参与。
+- 证据：[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)、[BDD](evidence/bdd/2026-10-12_source_inspection_scenarios_pass.md)。实际来源材料/审阅/target及各平台保护仍DEFERRED/NOT_RUN；本项软件通过不关闭T-007。
+
 ## Backlog — 延期范围
 
-### T-007 actual文件入口、baseline CLI参数及runtime接受
+### T-007 actual文件入口、实际基线比较及runtime接受
 
-- actual/runtime_observation文件入口、baseline参数、真实采样、来源/脱敏真实性、target审阅与runtime EVAL继续延期。
+- baseline文件参数已由T-007a交付；actual/runtime_observation文件入口、实际基线比较、真实采样、来源/脱敏真实性、target审阅与runtime EVAL继续延期。
 - 需具体入口方案、可用技术能力及对应授权；Agent承担技术操作，Owner只补必要信息、作实质决定与授权，严格窗口/阈值/接受条件不降低。
 - Linux原生文件入口未实际验证；无保护能力时fail closed，不以Windows或模型测试替代。
 - RED/GREEN：NOT_RUN，不计T-006软件通过。#582保持OPEN，Plan active、capability idea/last_verified=null。
 
 ## In-Progress
 
-当前synthetic-only软件交付供Owner接受；发布范围未授权。actual延期不归入Done，历史候选验收不计本轮通过。
+T-007a与T-007b离线软件已验证，供Owner最终接受；本轮未授权Git发布。T-006历史交付已合并；actual与平台延期不归入Done。
 
 ## Verification and provenance — #587历史核心轮次，当前CLI见T-006
 

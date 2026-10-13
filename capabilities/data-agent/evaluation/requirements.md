@@ -2,7 +2,7 @@
 type: capability-requirements
 capability: data-agent.evaluation
 state: draft
-version: "0.5"
+version: "0.7"
 owner: ranzuozhou
 created: 2026-10-12
 updated: 2026-10-12
@@ -10,7 +10,7 @@ updated: 2026-10-12
 
 # Requirements: Offline EVAL Replay
 
-> #582 离线核心与本地CLI已通过软件自测，10项BDD覆盖核心与文件入口。actual文件入口、baseline CLI参数、采样／runtime验收继续延期；软件验证与完整capability接受分别记录，不改既有runtime或执行live EVAL。
+> #582 离线核心与本地CLI已通过软件自测，14项BDD覆盖核心、文件入口、baseline参数与纯内存来源检查。actual文件入口、采样／runtime验收继续延期；软件验证与完整capability接受分别记录，不改既有runtime或执行live EVAL。
 
 依据：[Issue #582](https://github.com/MJ-AgentLab/mj-agent/issues/582)、[批准 Plan](../../../plans/[PLAN]_582_offline_eval_runner.md)、[ADR-024](../../../decisions/ADR-024_Eval_Framework_Spec.md)。本 package 不适用 track，与 canonical 文档类型轴正交。
 
@@ -103,10 +103,19 @@ updated: 2026-10-12
 - Given 输入路径为 URL、UNC／网络路径、秘密路径、符号链接／重解析点或输入嵌入 raw rows／business_summary 字段 When 校验 Then INPUT_INVALID；错误信息只列字段／文件别名，不回显载荷。
 - Given 可用凭据存在 When Agent 执行 pytest Then 仍经既有 run_offline_pytest.py 离线路线，不启用 live 腿。
 
+## T-007b来源检查验收（REQ-001/005/006）
+
+- 显式ReplayInputs七份bytes进入inspect_source；schema/身份/摘要非法返回INVALID/2，合法返回VALID/3及结构完整性缺口，不进行EVAL。
+- 计划分母22保持；缺观测、complete标志/调用记录缺口及提供review关联错误分开列明，不掩盖缺口，不核验适用性/审阅覆盖或semantic verdict。
+- 任意声明/引用/方法/目标hash都不能将source/target的UNVERIFIED提升，review_coverage_status保持NOT_CHECKED；runtime_metrics=null、baseline_eligible=false。
+- no-IO、引用不解析、应用/秘密/网络隔离和重复结果均有离线哨兵；来源检查报告不能作为runtime基线。
+
 ## 验收与审阅依赖
 
 REQ-001–006 保持 #582 编号与优先级；详细契约提案见 [design.md](design.md)，未来纵切和验收映射见 [tasks.md](tasks.md)，操作草案见 [runbook.md](runbook.md)。
 
-当前离线软件证据为169项unit与10项BDD通过，见[CLI软件验收记录](evidence/reports/2026-10-12_synthetic_cli_acceptance.md)；[原核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)保留历史。规则校准至少5条独立预期样例，覆盖SQL AST、轨迹、错误回环、披露与拒答正反例；合成标签由Agent模拟业务／Prompt角色准备并以SWE轮核验。每次actual run仍保留至少10%抽检、5条红线全量及所有必要语义审阅；来源真实性未验证，不用synthetic代替。
+T-006的169项unit与10项BDD为历史已合并证据；当前T-007a的220项unit与11项BDD通过，见[baseline CLI验收](evidence/reports/2026-10-12_baseline_cli_acceptance.md)；[原核心验收报告](evidence/reports/2026-10-12_offline_core_acceptance.md)保留历史。规则校准至少5条独立预期样例，覆盖SQL AST、轨迹、错误回环、披露与拒答正反例；合成标签由Agent模拟业务／Prompt角色准备并以SWE轮核验。每次actual run仍保留至少10%抽检、5条红线全量及所有必要语义审阅；来源真实性未验证，不用synthetic代替。
 
-正式python.contract.yml绑定ReplayInputs／replay，cli.contract.yml绑定main，behavior.feature和trace承接实际离线运行。严格窗口不放宽；main(argv, *, repo_root)仅接收显式--synthetic-fixture及synthetic_fixture来源。manifest先读，actual标签在其他载荷读取/replay/输出创建前返回2/ACTUAL_ENTRY_DEFERRED；baseline CLI参数延期。新输出目录的父目录须已存在；Windows固定NTFS入口已核验，Linux原生文件入口明确延期，缺保护能力返回2。actual采样／来源真实性／runtime验收仍延期。技术操作由Agent承担，范围未实质变化时复用对应授权；Owner最终接受尚未记录。
+正式python.contract.yml绑定ReplayInputs／replay，cli.contract.yml绑定main，behavior.feature和trace承接实际离线运行。严格窗口不放宽；main(argv, *, repo_root)仅接收显式--synthetic-fixture及synthetic_fixture来源。manifest先读，actual标签在其他载荷读取/replay/输出创建前返回2/ACTUAL_ENTRY_DEFERRED；可选--baseline经同一后端读取原bytes；省略为b''，显式空文件或非JSON object在replay和输出创建前返回2。synthetic仍为NOT_EVALUATED，不验证候选基线有效性。新输出目录的父目录须已存在；Windows固定NTFS入口已核验，Linux原生文件入口明确延期，缺保护能力返回2。actual采样／来源真实性／runtime验收仍延期。技术操作由Agent承担，范围未实质变化时复用对应授权；T-006已随#589合并；T-007a本轮软件供Owner最终接受，未提交或发布。
+
+T-007b当前来源检查与旧回归合计278项通过，见[来源检查验收](evidence/reports/2026-10-12_source_inspection_acceptance.md)；T-007a 231项为历史时点。新增接口不改变replay/main或CLI文件行为，也不授权实际来源/target运行。

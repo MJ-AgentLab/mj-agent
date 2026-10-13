@@ -14,7 +14,8 @@ from .core import replay
 from .schema import _INPUT_ERRORS, ReplayInputs, _canonical, _Invalid, _json, _Manifest
 
 _INPUT_OPTIONS = {"config": "--eval-config", "dataset": "--dataset", "observations": "--observations",
-                  "manifest": "--manifest", "reference": "--reference", "reviews": "--reviews"}
+                  "manifest": "--manifest", "reference": "--reference", "reviews": "--reviews",
+                  "baseline": "--baseline"}
 
 
 class _Parser(argparse.ArgumentParser):
@@ -27,7 +28,9 @@ def _parser() -> argparse.ArgumentParser:
                      allow_abbrev=False)
     parser.add_argument("--synthetic-fixture", required=True, action="store_true")
     for field, option in _INPUT_OPTIONS.items():
-        parser.add_argument(option, dest=field, required=field != "reviews")
+        parser.add_argument(option, dest=field, required=field not in {"reviews", "baseline"},
+                            help="Optional JSON object; synthetic runs do not compare baselines."
+                            if field == "baseline" else None)
     parser.add_argument("--output-dir", required=True)
     return parser
 
@@ -42,7 +45,7 @@ def _report_files(report: dict[str, Any]) -> tuple[tuple[str, bytes], ...]:
 
 
 def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int:
-    """Read explicit synthetic files within one root; actual and baseline are deferred."""
+    """Read explicit synthetic files and optional baseline bytes; actual is deferred."""
     core_exit = None
     try:
         args = _parser().parse_args(argv)
@@ -61,6 +64,11 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
                 raise _FileError("SOURCE_KIND_INVALID")
             _Manifest.model_validate(value)
             values = {field: session.read(parts) for field, parts in paths.items() if field != "manifest"}
+            if "baseline" in values:
+                if not values["baseline"]:
+                    raise _FileError("BASELINE_INPUT_EMPTY")
+                if not isinstance(_json(values["baseline"]), dict):
+                    raise _FileError("BASELINE_NOT_OBJECT")
             report = replay(ReplayInputs(**values, manifest=manifest_bytes))
             core_exit = int(report["exit_code"])
             session.write(output, _report_files(report))

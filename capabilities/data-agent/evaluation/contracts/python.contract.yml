@@ -1,5 +1,5 @@
 # #582 public core and synthetic-only offline CLI.
-# Core remains in-memory; runner owns local fixture IO; actual file entry is deferred.
+# Core and source inspector remain in-memory; actual file entry is deferred.
 contract_id: python
 adapter: python
 covers_requirements:
@@ -37,6 +37,19 @@ modules:
       - "报告遵循design的完整性、严格窗口、兼容性、精确阈值与退出分类"
       - "合成验收由Agent模拟角色并独立核验，来源和审阅链可追踪，不要求真人参与"
       - "相同输入的规范化JSON、Markdown和退出分类一致"
+  - path: src.mj_agent.evaluation.inspection
+    freeze_anchor: src/mj_agent/evaluation/inspection.py
+    exports:
+      - name: inspect_source
+        signature: "def inspect_source(inputs: ReplayInputs) -> dict[str, Any]"
+        public: true
+    public_invariants:
+      - "只消费ReplayInputs七份bytes，复用既有结构/身份/原bytes摘要校验；不调用replay或judge，不读写文件/引用、不导入应用或连接服务"
+      - "返回offline-source-inspection-v1，结构合法VALID/非法INVALID；coherence为CONSISTENT/INCOMPLETE/NOT_CHECKED，不是EVAL通过或拒绝"
+      - "只统计计划/观测/完整观测/提供与绑定review，按稳定顺序列缺观测、完整性与提供review关联缺口；不检查审阅覆盖、适用性或语义verdict"
+      - "source_evidence_status与target_evidence_status始终UNVERIFIED，review_coverage_status始终NOT_CHECKED；字段齐全、方法标签、路径和hash不能证明来源/授权/target接受"
+      - "runtime_metrics始终null、baseline_eligible始终false；2表示非法输入，3表示仅检查，均为API返回分类，不新增CLI或进程退出入口"
+      - "不回显引用/SQL/回复/原始异常；相同显式bytes输出相同，不加入时间或随机值，不修改输入"
   - path: src.mj_agent.evaluation.runner
     freeze_anchor: src/mj_agent/evaluation/runner.py
     exports:
@@ -47,6 +60,7 @@ modules:
       - "仅显式synthetic模式和synthetic_fixture manifest可进入文件回放；runtime_observation在其他输入读取与核心调用前返回2/ACTUAL_ENTRY_DEFERRED"
       - "所有输入输出受repo_root边界约束，拒绝秘密/网络/设备/软硬链接/重解析点/路径替换；无法可靠验证的平台能力返回2，不降级读取"
       - "只读取明确指定的本地文件原bytes，每输入不超过10MiB；不扫描目录、不读取输入引用或应用配置"
+      - "可选--baseline经同一保护后读取原bytes；缺省b''，显式空文件或非JSON object返回2且不进入核心或创建输出；synthetic回归仍NOT_EVALUATED，不判定基线有效性"
       - "只在新目录exclusive-create报告，不覆盖输入或历史报告；两份写完关闭才返回核心分类，IO失败返回2并保留部分目录"
       - "synthetic全通过仍为SELFTEST_ONLY且退出3，确认红线失败退出6；参数/来源/路径/IO无效退出2；help0不代表EVAL通过"
       - "同输入到不同新目录的UTF-8/LF JSON和Markdown字节与分类一致；不插当前时间/输出路径/随机ID，错误不回显原始argv/载荷/异常"
@@ -61,8 +75,12 @@ non_actions:
       - "ReplayInputs只存显式bytes，不解析路径或自动读取文件"
   - module: src.mj_agent.evaluation.runner
     items:
-      - "不接受actual/runtime_observation或baseline文件参数，不采样、不执行SQL、不连接LLM/DB/网络服务"
+      - "不接受actual/runtime_observation，不采样、不执行SQL、不连接LLM/DB/网络服务；baseline参数不启用actual或runtime比较"
       - "不接入既有server/agent/tool/Studio/Chainlit，不读取dotenv/凭据，不新增profile/env fallback或依赖"
       - "不放宽核心窗口/阈值/审阅/来源约束，不将synthetic当runtime基线，不覆盖或自动删除输出"
+  - module: src.mj_agent.evaluation.inspection
+    items:
+      - "不认证采样批准、脱敏审阅或目标装配，不解析/读取引用目标，不产生EVAL报告或可用基线"
+      - "不新增actual文件入口、CLI参数或文件保护后端，不修改核心规则/runtime/依赖/CI/守卫"
 hitl_required:
   - declared-contract-change

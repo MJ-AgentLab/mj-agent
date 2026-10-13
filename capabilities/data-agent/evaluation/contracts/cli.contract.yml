@@ -17,13 +17,14 @@ modules:
   - 仅显式synthetic模式和synthetic_fixture manifest可进入文件回放；runtime_observation在其他输入读取与核心调用前返回2/ACTUAL_ENTRY_DEFERRED
   - 所有输入输出受repo_root边界约束，拒绝秘密/网络/设备/软硬链接/重解析点/路径替换；无法可靠验证的平台能力返回2，不降级读取
   - 只读取明确指定的本地文件原bytes，每输入不超过10MiB；不扫描目录、不读取输入引用或应用配置
+  - 可选--baseline经同一保护后读取原bytes；缺省b''，显式空文件或非JSON object返回2且不进入核心或创建输出；synthetic回归仍NOT_EVALUATED，不判定基线有效性
   - 只在新目录exclusive-create报告，不覆盖输入或历史报告；两份写完关闭才返回核心分类，IO失败返回2并保留部分目录
   - synthetic全通过仍为SELFTEST_ONLY且退出3，确认红线失败退出6；参数/来源/路径/IO无效退出2；help0不代表EVAL通过
   - 同输入到不同新目录的UTF-8/LF JSON和Markdown字节与分类一致；不插当前时间/输出路径/随机ID，错误不回显原始argv/载荷/异常
 non_actions:
 - module: src.mj_agent.evaluation.runner
   items:
-  - 不接受actual/runtime_observation或baseline文件参数，不采样、不执行SQL、不连接LLM/DB/网络服务
+  - 不接受actual/runtime_observation，不采样、不执行SQL、不连接LLM/DB/网络服务；baseline参数不启用actual或runtime比较
   - 不接入既有server/agent/tool/Studio/Chainlit，不读取dotenv/凭据，不新增profile/env fallback或依赖
   - 不放宽核心窗口/阈值/审阅/来源约束，不将synthetic当runtime基线，不覆盖或自动删除输出
 hitl_required:
