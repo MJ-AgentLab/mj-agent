@@ -1,0 +1,1 @@
+Integration canary B: actual Docker failure, successful rebuild, and unresolved-thread behavior are recorded in the external acceptance bundle.

@@ -25,6 +25,9 @@
 FROM python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285 AS builder
 # tag: 3.13-slim
 
+# Platform canary recovery: the original builder command sequence is restored.
+# This comment keeps Dockerfile in the PR inputs for a real successful rebuild.
+
 # uv preference: use slim's bundled /usr/local/bin/python3 (3.13.14, satisfies
 # pyproject requires-python=>=3.13,<3.14). Avoids uv-managed Python in
 # /root/.local/share/uv/ which doesn't survive COPY --from=builder /app/.venv
