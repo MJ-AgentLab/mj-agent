@@ -1,14 +1,36 @@
 ---
 type: plan
-summary: Agent-first 治理按任务范围推进 GitHub 发布，Gitee 镜像与宿主验收延期，Owner 接受未完成
+summary: Agent-first 治理已交付并获 Owner 接受，GitHub 闭环完成，镜像与宿主等延期独立跟踪
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
-state: active
+updated: 2026-10-13
+state: completed
 track: engineering-workflow
 ---
 
 # [PLAN] Agent-first 软件交付改造
+
+## Q20 接受与记录收尾检查点（2026-10-13）
+
+Owner 在本会话真实 Q20 选项中选择「接受治理成果，按上述范围收尾（推荐）」。接受对象为治理 #590 的实际合并版本 `08522a265038d8d9d06f94aa57b83e5e15812630`、当前 develop `5d4b0cd5e4ce5b764a86ab259bec5cc2a8ff04a6` 上的治理兼容复验及已完成的 GitHub 闭环；不代接手会话接受整个 #582。对应接受基线满足、成果已可用，Plan 按生命周期改为 completed；业务接受、仓库审核、集成、实际运行和本次状态文档交付分别记录。
+
+仓外证据根为 `D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/agent-first-delivery/2026-10-12/agent-operated/`；以下相对路径均从此根解析。验收包为 `after-q12-q13/recovery/owner-governance-acceptance.md`，Q20 原始决定与状态文档实际 SHA/PR/集成结果分别留存于同层收尾记录，不在本文写入自身未来提交 SHA。
+
+| 状态 | 真实版本、结果及证据 |
+|---|---|
+| 治理已集成、已交付 | [PR #590](https://github.com/MJ-AgentLab/mj-agent/pull/590) 由无 bypass App 正常 merge 为 `08522a26`；实际 parents `[a96d759c,06bb0292]` 及 tree 与原 PR CI 的测试合并完全一致。`after-q12-q13/recovery/pr590-actual-governance-merged.json` 与 `actual-governance-delivery-independent-review.md` 分别保存平台及实际版本核验。085 未触发额外 push CI，0 runs/0 checks 为 NOT_RUN，不计 PASS |
+| 软件已验证、独立核验通过 | 当前 5d4b0cd5 的治理与 Windows 两包为 15 AC、351＋6 用例通过，零失败/错误/跳过；绑定实际 head/base/tree、输入/依赖、原命令/log/JUnit。`after-q12-q13/recovery/current-develop-governance-delivery/`、`current-develop-windows-delivery/` 及 `current-develop-governance-independent-review.md` 保存原证据与独立重算；32 个并发 #582 改动路径与治理 44/Windows 15 个绑定文件无交集，绑定 Git blobs 相对085不变 |
+| 三种 PR 模式与门禁已演练 | 单 PR #590；独立 #593/#594；子 #591/#592→临时 integration，最终 #596→develop。真实 CI/build 红灯、补推旧审核 DISMISSED、未解决讨论阻断、正常解决后 App 临时 merge 均已观察；Q12–Q17 的实际版本批准与门禁结果分记，证据在 `after-q12-q13/recovery/`。负例 App 返回 UNKNOWN 保留原值并对账目标未变，不声称获得 endpoint 拒绝；平台 UI/公开门禁另证实际阻断 |
+| App 日常权限及撤销已核验 | App `5284037` / installation `170545174` / repository `1172583390`，仅 Metadata read、Contents/PR write，单仓且无 Administration、Checks write、Workflows write 或 bypass。临时 Workflows 已撤回，每次短期 token 撤销 CONFIRMED，原注册通道已关闭且未重开；`after-q12-q13/recovery/app-audit-daily-closeout.json`、`registration-channel-closeout-pid.json` 与 `app-workflows-removed.png` 分别留证。既有凭据值不进入模型，新 App 材料只由已批准不可见后台处理 |
+| Q19 定向规则恢复已验证 | 合并后 protect-develop ID15606888 出现 RepositoryRole5/always bypass，操作者未知；真实 NOT_READY 后暂停。Owner Q19 决定后仅清空当前 bypass_actors，保留全部其他当时 provider 保护字段；`after-q12-q13/recovery/develop-rule-q19-recovery-journal.json` 与 `develop-rule-q19-recovery-independent-review.md` 支持精确恢复，`platform-readback-daily-after-q19.json` 完整回读三规则 CONFIG_VERIFIED、App can-bypass=never。单项设置恢复不等于完整备份恢复演练 |
+| Owner 已接受 | Q20 接受上述实际治理成果及已披露限制/延期。原软件包的 `owner_accepted`、`runtime_baseline_eligible`、`independent_source_authenticated` 三项 false 保留；真实聊天接受另记，不改写历史测试声明 |
+| 状态文档交付进行中 | 本次仅维护原 Plan 的完成状态、检查点和任务路由 active=false，保留历史决定/证据。正常 stage/commit、App daily push/PR 和不同 Owner 身份的实际版本审核仍分别核验；本文完成状态不冒充该文档 PR 已合并 |
+
+延期持续单列：Q10 Gitee 镜像 DEFERRED/NOT_EXECUTED，Q11 宿主项目信任/hooks 加载与运行 canary DEFERRED/NOT_TESTED；独立受控门禁定义防自降、actual 采样、部署自动化、完整恢复演练和历史 capability 证据渐进迁移均未完成、不计 PASS。首期候选可修改检查定义的风险继续由 Owner 有效审核过渡补偿。原云包搬到 Windows 的 check CLI 不支持完整校验，失败原记录保留；原 ZIP/provider 摘要、实际 Git blobs、log/JUnit/AC 已分别独立核对，不能宣称跨宿主 check PASS。biz/LLM live、部署与实际 runtime 未运行。
+
+本任务 canary 路由例外已按 Q20 关闭（active=false），精确路由作为历史保留。按 Q15/Q17 保留 #593/#594/#596 未合并以及相关分支、工作区和公开证据；develop 未跟踪 `.playwright-mcp/` 保留，#582 遗留目录不操作。没有删除/force/bypass、新身份或付费资源授权，恢复代码走新 PR、平台走已具权正常路线，完整恢复未演练。
+
+重入先核实际 workspace/ref/SHA、当前保护/App 权限、版本证据和文档 PR 状态；成功操作不重复，未知先对账后决定是否重试。当前下一步仅完成本次记录的正常验证/提交/PR/有效审核与集成回读；实质版本/对象/权限/风险或保护漂移只暂停受影响项。Owner 决定与认证按本会话真实 Q 记录追溯；起点、全程耗时、成本和总 token 未完整采集仍为 UNKNOWN，不推算。以下旧「当前」「下一步」及 active/待接受表述均保留为对应阶段历史，不替代本检查点。
 
 > 最新scope决定：Owner在本会话真实选项中明确确认#582转交聊天“整理 #564 EVAL 承接方案”。本会话继续治理软件部分和#582治理证据格式要求设计；CLI实现/commit不再纳入本会话。原接受基线保留为历史任务边界，接手会话维护新的CLI基线。
 
@@ -56,10 +78,10 @@ track: engineering-workflow
 文档决策：治理ADR/指南/本Plan新增；活动政策/工作流/技能/描述/模板/索引及原生保护说明更新；#582 CLI contract/指南/trace由该独立单元维护；历史ADR、归档记录、原验收证据不改写。并行写按文件归属与独立工作区；共享平台写由协调者排序。
 
 <!-- agent-first-routes
-{"schema_version":1,"routes":[{"task_id":"agent-first-canary","repo":"MJ-AgentLab/mj-agent","active":true,"integration":"feature/task-agent-first-canary-integration","mainline":"develop","children":["feature/agent-first-canary-child-a","maintain/agent-first-canary-child-b"]}]}
+{"schema_version":1,"routes":[{"task_id":"agent-first-canary","repo":"MJ-AgentLab/mj-agent","active":false,"integration":"feature/task-agent-first-canary-integration","mainline":"develop","children":["feature/agent-first-canary-child-a","maintain/agent-first-canary-child-b"]}]}
 -->
 
-路由供有限守卫观察事实，不认证授权。按已有 Q3 具名演练范围及 Q10/Q11 的前置调整激活原精确关系，不扩大 head/base；active=true 不表示分支/PR 已创建、演练通过或已交付。
+路由供有限守卫观察事实，不认证授权。原关系按 Q3 具名演练范围及 Q10/Q11 激活，现按 Q20 完成任务后关闭；active=false 保留关系历史但不再允许新任务集成例外，不删除既有 PR、分支或工作区。
 
 平台 canary 准备清单（当前尚未创建/执行）：单 PR 与最终成功 develop 交付复用真实治理 `maintain/agent-first-delivery → develop`。独立 PR 模式保留 `feature/agent-first-canary-independent-a → develop` 及 `feature/agent-first-canary-independent-b → develop` 的真实创建、各自 CI/有效审核及阻断观察。分层模式由 `feature/agent-first-canary-child-a`、`maintain/agent-first-canary-child-b` 分别指向登记的 `feature/task-agent-first-canary-integration`，验证子 PR 门禁及成功临时集成；再保留最终 `integration → develop` 的真实创建/门禁观察，不以治理单 PR 或子 PR 代替该路由证据，也不要求临时 canary 成功 merge develop。在 Agent 核已有 Q3 授权、实际规则/身份及副作用后登记真实 SHA/PR，验证补推使旧审核失效、Owner 有效批准、CI/构建红灯和讨论未解决阻断、无 bypass merge。Q11 只延期宿主运行验收。删除临时对象另列真实清单、备份及授权。
 
