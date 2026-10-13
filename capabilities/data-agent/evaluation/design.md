@@ -10,7 +10,7 @@ updated: 2026-10-13
 
 # Design: Offline EVAL Replay v1
 
-> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
+> 当前T-007c Windows fixed NTFS synthetic-only来源检查CLI已随#599集成；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。当前集成证据见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
 
 ## §1 Context
 

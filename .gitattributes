@@ -39,3 +39,7 @@ uv.lock text eol=lf
 capabilities/data-agent/evaluation/evidence/bdd/2026-10-13_source_inspection_cli_junit_pytest.txt -text whitespace=cr-at-eol
 capabilities/data-agent/evaluation/evidence/bdd/2026-10-13_source_inspection_cli_pytest.txt -text whitespace=cr-at-eol
 capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_verifier.txt -text
+
+# #599 post-merge carriers preserve the accepted original JSON bytes.
+capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_post_merge_execution.json -text whitespace=cr-at-eol
+capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_post_merge_binding.json -text whitespace=cr-at-eol

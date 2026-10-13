@@ -10,8 +10,8 @@ updated: 2026-10-13
 
 # Tasks: Offline EVAL Replay
 
-> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
-> 核心及CLI已完成软件验证，actual采样／runtime验收延期；不修改既有runtime、不执行live或Git发布。T-006已随#589合并；当前执行见T-007b，原核心与CLI轮次结果保留历史。
+> 当前T-007c Windows fixed NTFS synthetic-only来源检查CLI已随#599集成；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。当前集成证据见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
+> 原核心与CLI轮次约束及T-007b检查点保留历史：当时仅完成软件验证，不修改既有runtime、不执行live或Git发布；T-006已随#589合并。当前集成事实以上行及T-007c段为准，actual采样／runtime验收仍延期。
 
 ## Done — #587历史核心范围
 
@@ -97,14 +97,21 @@ updated: 2026-10-13
 
 ### T-007c Windows synthetic-only来源检查CLI
 
-- Priority：high；Linked REQ：REQ-001、REQ-005、REQ-006；状态：本地候选，待Owner接受。
+- Priority：high；Linked REQ：REQ-001、REQ-005、REQ-006；状态：已随#599集成，merge891fd5e、最终head424bed0。原本地软件接受及后续平台批准分别保留，不据merge宣称actual或完整capability接受。
 - Owner2026-10-13采纳A独立授权；新G1 feature/582-source-inspection-cli从fd045520建立，不重建旧树，不在develop编码。全部AC及禁止动作见Plan §8.10。
 - 新增inspection_runner.main；现有ReplayInputs/replay/inspect_source/runner与core/schema/judges/report/_file_io/runtime原bytes保持。独立CLI契约新增，不混入旧入口。
 - manifest优先/actual早2，七份原bytes和可选baseline格式闸；VALID写单JSON退出3，任何INVALID不创建输出。固定状态和no-judge语义保持。
 - 方法red-green；固定断言先观察模块缺失59 FAIL，再最小实现。中间2项平台注入误改os.name导致root类型诊断，修测试为sys.platform模型；未修改平台后端。新增unit覆盖输入、调用顺序、保护、限额、故障和新进程隔离。
 - 新增4项BDD；新运行证据及独立Agent合成验收见[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。本项不关闭T-007，actual/runtime与平台原生保护仍延期。
+- 当前合并版358项Windows离线测试通过，36条既有第三方告警；实际五项CI/Owner批准/merge与原bytes分别见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
 
 ## Backlog — 延期范围
+
+### T-007d 拟议真实观测包材料契约与门禁设计（文档方案，待Owner决定范围）
+
+- 建议先定稿既有七输入与附属材料的最小清单、原bytes绑定、审阅责任及未来actual入口的前置门禁；不新增API/CLI/schema或实际观测包。
+- 当前只完成[可审阅提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)，没有新入口实施授权，未编码/采样/运行actual。无获批包，不重复要求Owner提供不存在材料。
+- 当前actual/runtime任务继续保留以下延期状态；拟议子项不代替其接受标准。
 
 ### T-007 actual文件入口、实际基线比较及runtime接受
 

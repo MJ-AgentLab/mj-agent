@@ -4,7 +4,7 @@ domain: SYS
 summary: mj-agent canonical 文档层的人工入口，Phase 2 接入自动生成
 owner: 项目负责人
 created: 2026-04-24
-updated: 2026-10-12
+updated: 2026-10-13
 state: draft
 track: shared
 ---
@@ -13,7 +13,7 @@ track: shared
 
 Issue #555 的项目 Git 执行策略见 [ADR-041](../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)（draft）、[实施计划](../plans/[PLAN]_555_approved_deletion.md) §11 和 [开发指南](guide/[GUIDE]_Developer_Onboarding.md) §6.6。
 
-Issue #582：T-007a/b已随#595集成；T-007c新增Windows synthetic-only来源检查CLI本地候选，单inspection.json/3、非法输入无输出，来源/目标UNVERIFIED及coverage NOT_CHECKED保持。actual/runtime/target接受和Linux/macOS原生保护延期，OPEN/active/idea/null。见[设计](../capabilities/data-agent/evaluation/design.md)、[RUNBOOK](../capabilities/data-agent/evaluation/runbook.md)及[本轮验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。
+Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检查CLI已随#599集成，单inspection.json/3、非法输入无输出，来源/目标UNVERIFIED及coverage NOT_CHECKED保持。actual/runtime/target接受和Linux/macOS原生保护延期，OPEN/active/idea/null。见[设计](../capabilities/data-agent/evaluation/design.md)、[RUNBOOK](../capabilities/data-agent/evaluation/runbook.md)、[合并后核验](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)及[下一范围提案](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007_actual_material_proposal.md)。
 
 > **A4（per ADR-031 Phase M0）**：本 INDEX 承担 **codebase map** 角色 — 当 Codex 不
 > 确定路径时优先读此文件，再下钻具体子目录 `INDEX.md` / `AGENTS.md`.

@@ -4,7 +4,7 @@ state: drafting
 version: 0.2
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-13
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## Draft Capability Review
 
-- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — T-007a/b已随#595集成；T-007c新增Windows synthetic-only来源检查CLI本地候选，单inspection.json/3、非法输入无输出，来源/目标UNVERIFIED及coverage NOT_CHECKED保持。actual/runtime/target接受和Linux/macOS原生保护延期，OPEN/active/idea/null。见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)及[本轮验收](./data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。
+- [data-agent.evaluation](./data-agent/evaluation/spec.yml) — T-007a/b已随#595集成；T-007c Windows synthetic-only来源检查CLI已随#599集成，单inspection.json/3、非法输入无输出，来源/目标UNVERIFIED及coverage NOT_CHECKED保持。actual/runtime/target接受和Linux/macOS原生保护延期，OPEN/active/idea/null。见[设计](./data-agent/evaluation/design.md)、[RUNBOOK](./data-agent/evaluation/runbook.md)、[合并后核验](./data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)及[下一范围提案](./data-agent/evaluation/evidence/reports/2026-10-13_t007_actual_material_proposal.md)。
 
 ## Risk Inventory (R-G3 + R-G7 + R-G17 baselines)
 

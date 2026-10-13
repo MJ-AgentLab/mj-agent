@@ -11,7 +11,7 @@ last_verified: null
 
 # Runbook: Offline EVAL Replay
 
-> 当前T-007c为Windows fixed NTFS synthetic-only来源检查CLI本地候选；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。
+> 当前T-007c Windows fixed NTFS synthetic-only来源检查CLI已随#599集成；既有T-007a/b已随#595集成。原轮次记录保留历史；完整capability未接受，actual/runtime/来源与target接受及Linux/macOS原生保护继续延期，idea/last_verified=null。当前集成证据见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
 
 ## §1 TL;DR
 
@@ -94,7 +94,7 @@ write/close故障2，可能已经有新目录/inspection.json；按安全inspect
 - 软件可核字段、摘要、顺序、关联和装配重算；不能单凭字段/hash证明采样发生、没有隐去轨迹、无敏感文本、真实独立审阅或Owner授权有效。
 - 保留same_target_replay同commit/target/model/采样/时间/来源条件、完整分母、0.03与红线；#161跨版本A/B及其他target原scope另议。缺材料/能力仅延期对应actual/平台入口，不造PASS。
 
-当前候选、复现及新raw binding见[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)；独立审阅不替代Owner版本接受，#582 OPEN、Plan active、idea/last_verified=null保持。
+当前合并版本891fd5e、复现及新raw binding见[合并后核验](evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)；[CLI验收](evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)保留原交付/接受时点。材料契约与后续门禁的[提案](evidence/reports/2026-10-13_t007_actual_material_proposal.md)尚待Owner决定范围，当前命令仍synthetic-only。#582 OPEN、Plan active、idea/last_verified=null保持。
 
 ## §5 Verification
 

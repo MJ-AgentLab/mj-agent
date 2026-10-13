@@ -3,7 +3,7 @@ type: plan
 summary: Issue 582 最小离线 EVAL runner 的观测回放、规则评判与回归报告实施计划
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-12
+updated: 2026-10-13
 state: active
 track: code
 ---
@@ -19,7 +19,7 @@ track: code
 - 后续新 capability 推荐归属 `data-agent.evaluation`，adapter 为 `python`、`tdd-bdd`，按 [[sdd/workflows/new-capability|new-capability workflow]] 推进；新共享契约的具体差异另交 Owner 审阅。
 - Owner：ranzuozhou；拟执行者：Codex；合成业务／Prompt 与 SWE 核验角色按后续 §8.2 由 Agent 模拟，不要求真人参与。
 
-当前范围：T-006及T-007a/b已集成。Owner于2026-10-13采纳A，授权新G1工作树实施T-007c Windows synthetic-only来源检查CLI、契约/文档、固定离线测试、独立Agent合成验收及原bytes绑定，见§8.10。actual/live、外部连接、核心/schema/judges/report/文件后端/runtime/CI/守卫/权限及提交/推送/PR/删除不在范围。
+当前范围：T-006及T-007a/b已集成；T-007c已随#599合并，merge891fd5e、最终head424bed0。原实施授权见§8.10，当前集成/核验及剩余提案见§8.11。实际来源、target/runtime接受和Linux/macOS原生保护仍延期；#582 OPEN、Plan active、capability idea/last_verified=null。没有actual/live、新入口、删除、权限或既有保护面变更授权；本次文档收尾候选不冒称已发布。
 
 ## 2. 背景与 Repo Scan 事实
 
@@ -365,3 +365,13 @@ Documentation Decision：Plan Update本节；SPEC Update现有suite/Python契约
 方法：A纯代码、red-green；执行Codex，独立核验/root/t007_independent_review，保持继承模型/effort未改。所有运行结果本轮新鲜取证；真实来源/脱敏/批准链、target接受、actual比较和Linux/macOS原生保护延期，不计合成通过。
 
 T-007c本轮软件：340unit+18BDD=358PASS/36第三方警告；新76unit与18BDD原log/JUnit、独立14种新进程及17故障子集/18受保护raw匹配见[验收](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_acceptance.md)。G1/G2/G3/G9/G19/G22与默认V1/ruff/mypy均exit0；G21严格结果14DEFERRED/4SELFTEST不计actual PASS。状态VERIFIED_OFFLINE_SOFTWARE、candidate UNCOMMITTED、OWNER_ACCEPTANCE_PENDING；未stage/commit/push/PR/删除/actual/live，OPEN/active/idea/null保持。独立报告和新raw binding另存本轮，不回写历史。
+
+## 8.11 #599合并检查点与剩余范围提案
+
+Owner先接受T-007c原本地软件，随后具名授权feature/582-source-inspection-cli仅向GitHub发布、普通PR/develop及CI，Gitee延期。当前真实平台APPROVED绑定最终head424bed0b3694a77fc9ac08ab628335a4cd9fa096，审批在2026-10-13T09:47:01Z；#599于09:47:10Z合并为891fd5e5c9d7f6c485ca48f468ad18e830c5af4f。合并与Owner业务接受分记，不由merge自动完成本Plan。
+
+合并树与最终head相同；五项CI全绿，严格event/checkout父链绑定通过。合并版Windows相关358项离线测试通过，36条既有第三方告警。18保护和CLI原bytes保持，历史45/47/49绑定及C4的57内容绑定分别保留，不倒写旧UNCOMMITTED等时点记录。详见[合并后核验](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_source_inspection_cli_post_merge.md)。
+
+本轮普通收尾：develop正常ff至merge；新documentation/582-t007c-post-merge G1仅同步当前文档状态与证据，并准备[真实观测包材料契约与门禁提案](../capabilities/data-agent/evaluation/evidence/reports/2026-10-13_t007_actual_material_proposal.md)。候选未提交/推送/创建PR，原feature工作树及旧备份保留；本轮未删除、修改权限或执行actual/live，Gitee仍延期。
+
+建议T-007d先只定稿文档中的最小材料、原bytes与审阅绑定、技术核验/Owner决定/软件不可证明的边界及未来actual文件入口前置门禁；不新增API/CLI/schema或默认接受条件。当前提案不是新契约实施授权，另由Owner集中确认后续范围；无获批包，不重复索取不存在材料。严格窗口、完整分母、same_target_replay、0.03、红线、来源及数据边界保持，#161/#504/#583–#586/probe-fixture原scope不变。actual入口、真实包与target接受、原生平台保护仍按原任务延期。

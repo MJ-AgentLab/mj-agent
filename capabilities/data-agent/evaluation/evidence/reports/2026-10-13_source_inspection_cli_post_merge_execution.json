@@ -1,0 +1,21 @@
+{
+  "head": "891fd5e5c9d7f6c485ca48f468ad18e830c5af4f",
+  "kind": "MERGED_WINDOWS_OFFLINE_SOFTWARE",
+  "argv": [
+    "D:\\workspace\\10-software-project\\projects\\mj-agent\\develop\\.venv\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "scripts/sdd/run_offline_pytest.py",
+    "tests/unit/test_eval_core.py",
+    "tests/unit/test_eval_runner.py",
+    "tests/bdd/data_agent/evaluation/test_evaluation_bdd.py",
+    "-q"
+  ],
+  "recorded_at": "2026-10-13T09:54:31.775842+00:00",
+  "exit_code": 0,
+  "raw_size": 919,
+  "raw_sha256": "257083e23acddd2a8dffec6e5c1e99fbbc5dd6210eda17a641dde36451f4c35d",
+  "raw_base64": "Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgMjAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgNDAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgNjAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uIFsgODAlXQ0KLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgIFsxMDAlXQ0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09IHdhcm5pbmdzIHN1bW1hcnkgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KLnZlbnZcTGliXHNpdGUtcGFja2FnZXNcZ2hlcmtpblxnaGVya2luX2xpbmUucHk6Nzk6IDM2IHdhcm5pbmdzDQogIEQ6XHdvcmtzcGFjZVwxMC1zb2Z0d2FyZS1wcm9qZWN0XHByb2plY3RzXG1qLWFnZW50XGRldmVsb3BcLnZlbnZcTGliXHNpdGUtcGFja2FnZXNcZ2hlcmtpblxnaGVya2luX2xpbmUucHk6Nzk6IERlcHJlY2F0aW9uV2FybmluZzogJ21heHNwbGl0JyBpcyBwYXNzZWQgYXMgcG9zaXRpb25hbCBhcmd1bWVudA0KICAgIHVuY29tbWVudGVkX2xpbmUgPSByZS5zcGxpdChyIlxzIyIsIHNlbGYuX3RyaW1tZWRfbGluZV90ZXh0LnN0cmlwKCksIDIpWzBdDQoNCi0tIERvY3M6IGh0dHBzOi8vZG9jcy5weXRlc3Qub3JnL2VuL3N0YWJsZS9ob3ctdG8vY2FwdHVyZS13YXJuaW5ncy5odG1sDQozNTggcGFzc2VkLCAzNiB3YXJuaW5ncyBpbiAxMi40NHMNCg==",
+  "actual_runtime_acceptance": false
+}
