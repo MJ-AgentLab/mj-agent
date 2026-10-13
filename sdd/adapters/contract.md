@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: contract
 state: draft
-version: 0.2
+version: "0.3"
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-10-10
+updated: 2026-10-12
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -119,7 +119,7 @@ hitl_required:
   - tool-contract-schema-change         # agent-facing tool 接口 schema / schema_ref 变更触发
 ```
 
-注：mj-agent 4 项专属必停（sql-guardrail-relax / prompt-version-bump / biz-catalog-sync /
+注：mj-agent 4 类 runtime 风险面（sql-guardrail-relax / prompt-version-or-body-change / biz-catalog-sync /
 runtime-skill-content-change）中，`sql-guardrail-relax` 与本 adapter 强相关 —— `execute_sql`
 result envelope 或 guardrail 边界变更若改变 agent-facing 接口契约，触达 `sql-guardrail-relax`
 必停 + 本 adapter `tool-contract-schema-change`（gate ID 命名 M6+ 在 `sdd/gates.md` §4 落地）.
@@ -223,14 +223,7 @@ envelope 字段集合）必先 failing；CONTRACT prose 走人工 review.
 - **Implementation**: `_common.frontmatter` 加载 CONTRACT frontmatter + A10 双条件校验 +
   （envelope freeze 时）比对 `contract.contract.yml` schema
 
-**Manual HITL gate**（permanent blocking；M6 不可 script 完全 auto-detect）：
-
-- Gate ID: `tool-contract-schema-change`（M6+ 在 `sdd/gates.md` §4 命名落地）；SQL surface 变更
-  时叠加 `sql-guardrail-relax`
-- Triggers: agent-facing tool 接口 schema / result envelope 字段 / error mode 契约变更
-- Detection: PR reviewer mandatory check + script `check_tool_contracts.py` 提前预警
-- Rationale: tool 接口契约改动可能改变 LLM 下游业务摘要行为但 schema 仍合规；script 看不出语义
-  drift；必须 human review + M4+ EVAL regression 配套
+**语义影响与独立核验**：风险标签 `declared-contract-change` 用于定位。基线内保持安全/业务/外发的正文、版本或兼容合同维护自主；breaking、权限、业务口径、数据/外发边界、接受标准或必要门禁变化先Owner决定。核验者依据AC独立建立期望、读取真实成果并复现，按风险覆盖领域/Prompt/工程视角，不要求真人或人数。冻结/schema检查仍机器执行，不能代行为证据；技术拒绝不得绕过。
 
 **M6 → 后续切换条件**：
 

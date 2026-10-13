@@ -1,14 +1,15 @@
 ---
 name: mj-agent-git-delete
-description: "适用于 mj-agent 的删worktree/branch/已合并清理。输入：分支tip、绝对路径、dirty、合并证据、双remote范围。流程：目标→当前引用→范围→H1/H2/H3→顺序删除→摘要。输出：逐目标已删/保留/未知状态，恢复tip及未提交备份说明。Use when：准备清理已合并feature worktree和分支。Do not use for：删除develop以节省空间；拒绝保护分支删除。授权：main/develop拒绝；删除/force需具体批准与可用路线；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的删worktree/branch/已合并清理。输入：分支tip、绝对路径、dirty、合并证据、双remote范围。流程：目标→当前引用→范围→H1/H2/H3→顺序删除→摘要。输出：逐目标已删/保留/未知状态，恢复tip及未提交备份说明。Use when：准备清理已合并feature worktree和分支。Do not use for：删除develop以节省空间；拒绝保护分支删除。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Git Delete
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -105,7 +106,7 @@ git push origin --delete <type>/<desc>
 > - Step 1 worktree remove 元数据移除但目录残留（Windows 文件锁常见）：记路径与元数据现状；确认独立分支/远端删除仍获授权才继续，绝不自动递归清目录
 > - Step 2 触 H2 → 按 H2 流程后继续 Step 3
 > - Step 3 触 H4 → 按 H4 流程
-> - 已知且未解除的实际阻断适用于两端时，不换 remote 试探：Gitee 记 REJECTED、origin 记 NOT_EXECUTED。重复“同意/继续”或仅网络/文件权限恢复不解除实际阻断；工程师恢复或经审阅规则变更后先核实加载与拒绝来源，再核对有效模式、授权、合并证据与两端 tip，只处理剩余项。响应丢失先查询对账，成功项不重复。
+> - 已知且未解除的实际阻断适用于两端时，不换 remote 试探：Gitee 记 REJECTED、origin 记 NOT_EXECUTED。重复“同意/继续”或仅网络/文件权限恢复不解除实际阻断；独立Agent审阅后经正常宿主机制恢复或经已批准规则变更后先核实加载与拒绝来源，再核对有效模式、授权、合并证据与两端 tip，只处理剩余项。响应丢失先查询对账，成功项不重复。
 > - 最终输出清理摘要：
 
 ```

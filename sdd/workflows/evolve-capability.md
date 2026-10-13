@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: evolve-capability
 state: draft
-version: 0.1
+version: "0.2"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -32,17 +32,14 @@ ai_visibility: source-of-truth
 2. **Spec evolve** — `requirements.md` REQ-NNN 追加变更条款（不 in-place rewrite，保历史）.
 3. **Contracts diff** — `contracts/` 新增 / 修改字段；保 backward compat 或显式声明 breaking.
 4. **Tasks** — `tasks.md` 追加演进 task；含 `tdd.test_list[]` red-green-refactor 计划.
-5. **HITL Gate-1** — evolve plan review（特别看是否 breaking → 触发 cross-capability workflow）.
+5. **基线检查点** — evolve plan review（特别看是否 breaking → 触发 cross-capability workflow）.
 6. **Implementation + Verification** — contract test + bdd-step + tdd evidence.
-7. **HITL Gate-2** — PR review.
+7. **独立核验/平台审核** — PR review.
 8. **trace.yml update** — REQ-NNN links 追加新 evidence / contracts / tests.
 
-## HITL Triggers
+## 决定与授权
 
-- contract breaking change → 触发 `cross-capability-change.md` workflow
-- adapter coverage 新增 → 同 cross-capability（其他 capability 可能引用同 adapter contract）
-- prompt 行为边界变更 → prompt-version-bump 专属必停
-- runtime skill body 变更 → runtime-skill-content-change 专属必停
+兼容contract扩展、必要重构和基线内runtime自主；breaking承诺、安全/业务/外发/权限或接受标准变化由Owner决定，跨capability按依赖协调。
 
 ## TBD: Phase M2 内容填充
 

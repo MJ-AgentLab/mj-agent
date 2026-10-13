@@ -11,7 +11,7 @@ aliases:
   - mj-agent Git Push Workflow
   - mj-agent Git 推送工作流
 created: 2026-04-30
-updated: 2026-09-22
+updated: 2026-10-12
 state: draft
 version: v1.0
 track: code
@@ -23,7 +23,7 @@ owner: 项目负责人
 > **适用范围**：mj-agent 开发人员完成编码和提交后、推送分支到远程仓库前的标准操作流程
 > **目标受众**：开发
 > **版本**：v1.0
-> **最后更新**：2026-09-22
+> **最后更新**：2026-10-12
 > **历史背景**：推送流程源自团队成熟实践；§2 CHANGELOG / §10 Q6 已按 mj-agent Phase 0 实际状态调整。
 > **关联文档**：[[GUIDE]_Git_Branch_Strategy|Git 分支策略指南]]、[[GUIDE]_PR_Description_Convention|PR 描述规范指南]]
 
@@ -114,8 +114,8 @@ exit 0 表示所选示例未见静态冲突，exit 1 表示所选命令不兼容
 
 1. 保留脱敏原错、具体命令和对象。AskForApproval Never、文件权限/占用、网络、exec-policy、危险命令检查及项目 hook 按证据分别定位；通用 blocked by policy 保持未知来源。
 2. 已知未解除的实际阻断暂停对应动作，不重复聊天批准、换 remote/工具或改写命令试探。部分成功或响应丢失先查提交、两端 SHA 或 PR，成功项不重复。
-3. 经审阅的项目规则变更或工程师恢复后，核实目标会话有效模式、覆盖来源和实际加载的新规则/hook，再按变化后的条件重新评估。仅改文件、Full Access、网络恢复或 CLI 版本不能证明 Desktop 已恢复；Agent 不修改个人配置或自动激活 hooks。
-4. hook 对识别成功的命令输出 TASK_AUTHORIZATION_CONTEXT，不强制宿主审批；G1/G2、人工 merge、UNKNOWN/FORBIDDEN 和受保护编辑仍保留。宿主其他来源规则仍可审批或拒绝，如实记录 BLOCKED_EXECUTION_ROUTE。
+3. 独立Agent审阅后经已批准规则变更或正常宿主机制恢复后，核实目标会话有效模式、覆盖来源和实际加载的新规则/hook，再按变化后的条件重新评估。仅改文件、Full Access、网络恢复或 CLI 版本不能证明 Desktop 已恢复；Agent不修改个人config或权限；独立Agent核真实配置/负例后仅经正常宿主机制启用本项目信任，实际不支持/拒绝仍未验证。
+4. hook 对识别成功的命令输出 TASK_AUTHORIZATION_CONTEXT，不强制宿主审批；G1/G2、精确任务集成路由、任务授权风险上下文与确定禁令/UNKNOWN保护保持。宿主其他来源规则仍可审批或拒绝，如实记录 BLOCKED_EXECUTION_ROUTE。
 5. 沿用同一动作与对象的明确任务授权，分别记录 commit、双推、PR 创建和双端删除的实际审批/无需审批/拒绝及结果。新条件下的 never 验收单列，不能以静态通过或旧规则下成功代替。
 
 普通 push 不包含远端删除。删除支持有限识别的单/多分支，但逐 ref 绑定授权、tip 和合并证据；任一保护或变化目标暂停该批次。每端每 ref 查询确认不存在才算完成；本地清理、计划 completed 和文档提交状态不替代远端证据。完整参数与只读核验 API 见 [Developer Onboarding §6.6](../../guide/[GUIDE]_Developer_Onboarding.md#66-git-发布远程删除与恢复555)，决策见 [ADR-041](../../../decisions/ADR-041_Command_Specific_Git_Execution_Policy.md)。
@@ -448,6 +448,8 @@ git pushall
 
 ### 6.5 双推操作（Gitee + GitHub）
 
+**任务限定适用说明**：默认 Gitee-first 双推保留。Owner Q10 对 `agent-first-delivery` / `maintain/agent-first-delivery` 及原已授权具名 canary，限定向 `MJ-AgentLab/mj-agent` 的 origin 发布、Gitee 被动镜像延期；授权、精确对象和实际版本见[任务 Plan](../../../plans/[PLAN]_agent_first_delivery.md)。仍完成适用推送前检查并核 origin 实际 ref/SHA，Gitee 报 DEFERRED/NOT_EXECUTED，不执行 Gitee 鉴权、alias 或设置修改，不报告双推完成；新 App 例外不扩其他平台。其他任务继续默认流程。Q11 宿主运行验收另列延期，保留原生信任规则，不免除实际 GitHub 门禁、有效审核或 Owner 接受。
+
 > [!IMPORTANT]
 > 为什么需要双推
 > 镜像仓库设置：mj-agent 同步推送到 Gitee（`gitee.com/ranzuozhou/mj-agent`）与 GitHub（`MJ-AgentLab/mj-agent`）。Phase 0 阶段 CI 仅 `python -m compileall`，但保持双推可让后续 Phase 1+ 引入 CI/CD 流水线（无法直接访问 GitHub 时改从 Gitee 拉）时无需追溯历史。
@@ -465,7 +467,7 @@ git remote -v
 
 #### 推送流程
 
-每次推送时，**先推 Gitee 再推 GitHub**：
+默认每次推送时，**先推 Gitee 再推 GitHub**；上述 Q10 任务仅执行其 origin 范围：
 
 ```bash
 # 手动双推
@@ -555,7 +557,7 @@ gh pr create \
 - [ ] `git status --short` — 输出为空
 - [ ] `git branch --show-current` — 分支名符合规范
 - [ ] `git fetch origin && git merge origin/develop` — 已同步基准分支
-- [ ] `git push gitee HEAD && git push origin HEAD` — 已双推到 Gitee + GitHub
+- [ ] 默认双推已逐端核实际 SHA；Q10 任务只填 origin 结果并注明 Gitee DEFERRED/NOT_EXECUTED，不能勾双推完成
 - [ ] `git log origin/<分支名> --oneline -3` — 远程提交已确认
 
 ---
@@ -689,3 +691,4 @@ fi
 | 2026-05-06 | v1.0 (patch) | §0:84 / §6 冲突解决段 / §文末延伸阅读 — 三处 `Phase 0.5 待 docs/guide/[GUIDE]_Developer_Onboarding.md 启用` forward-reference 升级为 active wikilink（PLAN G PR2 落地）；非结构性补丁，version 不升 |
 | 2026-05-06 | v1.0 (patch) | §2 删除 Phase 0.5+ 目标态 IMPORTANT 段头与 5 处「Phase 0.5+ 启用后」限定语；§2 流程从前瞻 stub 翻转为 active（PLAN G PR4 落地）；非结构性补丁，version 不升 |
 | 2026-09-22 | v1.0 (patch) | #552：§0.1–§0.2 增加原生 Codex 提交前审批兼容性诊断、恢复操作和未验证边界；既有推送步骤不变 |
+| 2026-10-12 | v1.0 (patch) | Q10/Q11：增加 agent-first-delivery 的 origin 发布、Gitee 镜像及宿主验收延期适用说明，默认双推/信任规则保留 |

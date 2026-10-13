@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: bugfix-drift
 state: draft
-version: 0.1
+version: "0.2"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -32,14 +32,12 @@ Bug 修复时检测 contract / spec / 实现间漂移；修代码（实现），
    - 实现遗漏 → 修代码使其匹配 contract
    - contract 过时 → 触发 `evolve-capability.md`（spec 优先）
 3. **Fix** — `tasks.md` 加 task；tdd.test_list red → green → refactor evidence.
-4. **HITL Gate-2** — PR review，特别看 regression test 与 root-cause 对齐.
+4. **独立核验/平台审核** — PR review，特别看 regression test 与 root-cause 对齐.
 5. **trace.yml** — 关联 PR + 新 test + evidence.
 
-## HITL Triggers
+## 决定与授权
 
-- bugfix 触及 4 项专属必停 → 永久 HITL（per `sdd/gates.md` §4）
-- bugfix 跨 capability → 触发 `cross-capability-change.md`
-- 紧急修复 → 走 `hotfix.md`（base = main）
+已有接受基线内根因修复/回归自主，包括runtime安全保持；跨capability按影响协调，改变安全/业务/breaking或AC才先Owner决定。
 
 ## TBD: Phase M2 内容填充
 

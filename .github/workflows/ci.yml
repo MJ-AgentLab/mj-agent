@@ -2,7 +2,7 @@ name: CI
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, 'feature/task-*-integration']
   push:
     branches:
       - 'feature/*'
@@ -24,6 +24,32 @@ jobs:
       # and bumps SHA + comment together when upstream publishes new versions.
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Evidence verifies real base/head objects and exact PR merge parents.
+          fetch-depth: 0
+
+      - name: Bind governance evidence to the event and checkout
+        id: delivery_context
+        shell: bash
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            head_sha="$PR_HEAD_SHA"
+            base_sha="$PR_BASE_SHA"
+          else
+            head_sha="$(git rev-parse HEAD)"
+            test "$head_sha" = "$GITHUB_SHA"
+            base_sha="$(git rev-parse 'HEAD^1')"
+          fi
+          [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$base_sha" =~ ^[0-9a-f]{40}$ ]]
+          output_dir="$RUNNER_TEMP/agent-first-evidence-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$GITHUB_JOB"
+          test ! -e "$output_dir"
+          test ! -L "$output_dir"
+          printf 'head_sha=%s\nbase_sha=%s\noutput_dir=%s\n' "$head_sha" "$base_sha" "$output_dir" >> "$GITHUB_OUTPUT"
 
       - name: Read Python version
         id: pyver
@@ -40,6 +66,16 @@ jobs:
 
       - name: Sync dependencies
         run: uv sync --frozen
+
+      - name: G2 actual PR task route (BLOCKING)
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          uv run --frozen --no-sync python scripts/sdd/task_delivery.py \
+            --root . --repo "$GITHUB_REPOSITORY" \
+            --head "$PR_HEAD_REF" --base "$PR_BASE_REF"
 
       - name: Syntax check (compileall)
         # Scope to project code dirs. `compileall -q .` would recurse into
@@ -127,10 +163,10 @@ jobs:
       # (all 3 gates empirically clean: 5P/0W/0F + 5P/0W/0F + 1P/0W/0F).
 
       - name: 'G1 capability schema (BLOCKING)'
-        run: uv run python scripts/sdd/check_capability_schema.py --all
+        run: uv run python scripts/sdd/check_capability_schema.py --all --strict
 
       - name: 'G2 traceability (BLOCKING)'
-        run: uv run python scripts/sdd/check_traceability.py --all
+        run: uv run python scripts/sdd/check_traceability.py --all --strict
 
       - name: 'G9 INDEX idempotency (BLOCKING per Stage C C-a; --check matches committed)'
         run: uv run python scripts/sdd/generate_index.py --check
@@ -364,6 +400,48 @@ jobs:
         # NOTE: name/comment only were touched by PR-0c; posture is unchanged (no
         # continue-on-error flip, no new gate), so no ci-blocking-gate-toggle applies.
         run: uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract
+
+      - name: Governance delivery evidence (BLOCKING; software selftests)
+        id: delivery_run
+        if: ${{ !cancelled() && steps.delivery_context.outcome == 'success' }}
+        env:
+          DELIVERY_OUTPUT_DIR: ${{ steps.delivery_context.outputs.output_dir }}
+          DELIVERY_HEAD_SHA: ${{ steps.delivery_context.outputs.head_sha }}
+          DELIVERY_BASE_SHA: ${{ steps.delivery_context.outputs.base_sha }}
+        run: |
+          uv run --frozen --no-sync python scripts/sdd/delivery_evidence.py run \
+            --execution-kind github-actions \
+            --suite evidence/delivery/agent-first.suite.json \
+            --output-dir "$DELIVERY_OUTPUT_DIR" \
+            --repository "$GITHUB_REPOSITORY" \
+            --head-sha "$DELIVERY_HEAD_SHA" \
+            --base-sha "$DELIVERY_BASE_SHA" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+      - name: Check governance delivery evidence (BLOCKING)
+        if: ${{ !cancelled() && steps.delivery_context.outcome == 'success' }}
+        env:
+          DELIVERY_OUTPUT_DIR: ${{ steps.delivery_context.outputs.output_dir }}
+          DELIVERY_HEAD_SHA: ${{ steps.delivery_context.outputs.head_sha }}
+          DELIVERY_BASE_SHA: ${{ steps.delivery_context.outputs.base_sha }}
+        run: |
+          uv run --frozen --no-sync python scripts/sdd/delivery_evidence.py check \
+            --execution-kind github-actions \
+            --suite evidence/delivery/agent-first.suite.json \
+            --output-dir "$DELIVERY_OUTPUT_DIR" \
+            --repository "$GITHUB_REPOSITORY" \
+            --head-sha "$DELIVERY_HEAD_SHA" \
+            --base-sha "$DELIVERY_BASE_SHA" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+      - name: Preserve governance delivery evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: agent-first-governance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.delivery_context.outputs.output_dir }}
+          if-no-files-found: error
+          retention-days: 30
 
   # The #296 docker-build gate (BLOCKING; sdd/gates.md `docker-image-build` row) lives in
   # .github/workflows/docker-build.yml since #438 — moved out of ci.yml so it triggers on

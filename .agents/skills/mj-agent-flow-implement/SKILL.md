@@ -1,19 +1,20 @@
 ---
 name: mj-agent-flow-implement
-description: "适用于 mj-agent 的已确认Plan/SPEC的Stage8编码。输入：Plan/SPEC/Issue、repo-scan、diff。流程：context→A/B/C→red-green或root-cause或infra→fresh证据→返回。输出：实现与plan一致，方法轨迹和本次证据明确。Use when：按已批准Plan实现纯函数并验证新行为。Do not use for：给我创建PR并合并；建议Git技能准备，不在Stage8执行发布或merge。授权：B永远Owner；infra live/secret/镜像按保护面；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的已确认Plan/SPEC的Stage8编码。输入：Plan/SPEC/Issue、repo-scan、diff。流程：context→A/B/C→red-green或root-cause或infra→fresh证据→返回。输出：实现与plan一致，方法轨迹和本次证据明确。Use when：按已批准Plan实现纯函数并验证新行为。Do not use for：给我创建PR并合并；建议Git技能准备，不在Stage8执行发布或merge。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Implementation (HITL Stage 8 编码段)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill orchestrates mj-agent coding methodology (HITL Stage 8 Implementation) — applies red-green-refactor for behavior changes, root-cause-first for bug fixes, fresh-evidence verification before claiming completion, and **mj-agent-specific 3-flavor classification** (A pure code / B in-source canonical 永远 HITL / C infra) per HITL_Prompt §4.7. Make sure to use this skill whenever the user says "开始编码", "开始实现", "implement", "实现 SPEC", "implement plan", "Stage 8 编码", "TDD", "test first", "red-green", "先写测试", "复现 bug", "root cause", "排查 bug", "debug", "声称完成前", "实现完成验证", "fresh evidence", "before claiming done", or after Plan/SPEC has been confirmed and the user is ready to write code in mj-agent. Direction-distinct from mj-agent-flow-verify (Stage 10 command matrix), mj-agent-flow-self-review (Stage 11 11-item checklist), and mj-agent-flow-scope-drift (Stage 9 diff vs Plan) — this skill handles **coding-process methodology**. Outputs step-by-step coding plan + Rules 1-15 enforcement; uses the explicit local methodology steps below. Runs only the focused feedback commands needed for implementation; the full Stage 10 matrix belongs to mj-agent-flow-verify. **B 风味 in-source canonical 改动**（src/mj_agent/{skills,prompts}/）**永远触发 §3.1 必停 HITL**，建议先用 mj-agent-runtime-{skill-doc-improve, prompt-version-bump}（PR-C2）propose diff。Do not use for: GitHub Issue creation, branch creation, commit, push, PR creation (use respective git family skills), or B-flavor in-source canonical edit (use mj-agent-runtime-* skills in PR-C2 to propose diff first).
+This skill orchestrates mj-agent coding methodology (HITL Stage 8 Implementation) — applies red-green-refactor for behavior changes, root-cause-first for bug fixes, fresh-evidence verification before claiming completion, and **mj-agent-specific 3-flavor classification** (A pure code / B in-source canonical 按语义影响分类 / C infra) per HITL_Prompt §4.7. Make sure to use this skill whenever the user says "开始编码", "开始实现", "implement", "实现 SPEC", "implement plan", "Stage 8 编码", "TDD", "test first", "red-green", "先写测试", "复现 bug", "root cause", "排查 bug", "debug", "声称完成前", "实现完成验证", "fresh evidence", "before claiming done", or after Plan/SPEC has been confirmed and the user is ready to write code in mj-agent. Direction-distinct from mj-agent-flow-verify (Stage 10 command matrix), mj-agent-flow-self-review (Stage 11 11-item checklist), and mj-agent-flow-scope-drift (Stage 9 diff vs Plan) — this skill handles **coding-process methodology**. Outputs step-by-step coding plan + Rules 1-15 enforcement; uses the explicit local methodology steps below. Runs only the focused feedback commands needed for implementation; the full Stage 10 matrix belongs to mj-agent-flow-verify. **B 风味 in-source canonical 改动**（src/mj_agent/{skills,prompts}/）**按§3.1实际语义影响分类**，建议先用 mj-agent-runtime-{skill-doc-improve, prompt-version-bump}（PR-C2）propose diff。Do not use for: GitHub Issue creation, branch creation, commit, push, PR creation (use respective git family skills), or B-flavor in-source canonical edit (use mj-agent-runtime-* skills in PR-C2 to propose diff first).
 
 
 ## Overview
@@ -23,7 +24,7 @@ The 4th orchestrator in `mj-agent-flow-*` family — owns the Stage 8 Implementa
 1. **Red-green-refactor** for behavior changes (Rules 6, 风味 A/B applicable)
 2. **Root-cause-first** for bug fixes (Rule 7, no bypass / no try-except 吞错)
 3. **Fresh evidence** before claiming completion (Rule 8)
-4. **mj-agent-specific 3-flavor discipline**（Rules 9-15）：A 纯代码 / B in-source canonical **永远 HITL** / C infra
+4. **mj-agent-specific 3-flavor discipline**（Rules 9-15）：A 纯代码 / B in-source canonical **按语义影响分类** / C infra
 
 The skill is **the in-tree first preference** for the Stage 8 Implementation Skill Hint (historical source HITL_Prompt §4.7; the generic Skill Hint rules live in kernel §2.2). 直接执行以下方法，不依赖外部插件。
 
@@ -41,7 +42,7 @@ digraph implement {
 
   s2 [label="Step 2: Classify task type + 风味\nA pure code / B in-source canonical / C infra" shape=diamond];
 
-  hitl_b [label="风味 B (in-source canonical)\n→ §3.1 必停 HITL\n→ 建议先 mj-agent-runtime-* propose diff (PR-C2)\n→ 项目负责人审 → 用户确认 → Step 3" shape=box];
+  hitl_b [label="风味 B (in-source canonical)\n→ §3.1语义影响核对\n→ 建议先 mj-agent-runtime-* propose diff (PR-C2)\n→ 核实际影响/任务授权 → Step 3" shape=box];
 
   s3a [label="Step 3a (red-green path):\n• 写或调整失败测试\n• 观察 RED\n• 最小代码到 GREEN\n• refactor\n[Rule 6 hard constraint]" shape=box];
 
@@ -71,7 +72,7 @@ digraph implement {
 ## When to Run This Skill
 
 **MUST run when**：
-- Stage 5/6/7 (HITL Gates) 通过，用户准备写代码
+- Stage 5/6/7 (检查点) 对齐，用户准备写代码
 - 用户："开始编码" / "implement" / "实现 SPEC" / "Stage 8" / "TDD" / "先写测试"
 - Bug fix 触发（test failure / crash / 异常输出）— 强制 root-cause-first
 - 声称完成前（"done" / "完成了"）— 强制 fresh-evidence 检查（进 Stage 10 本地验证前；execution-loop §5）
@@ -114,9 +115,9 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 | 修改路径 | 风味 | 强约束 |
 |---|---|---|
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | **A 纯代码** | TDD red-green；ruff/mypy strict；Rules 1-8 |
-| `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical** | **永远 HITL**；A11 EVAL 门禁；frontmatter strip 契约不破坏；五段式 body 保持；Rules 9-12 |
+| `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical** | **按语义影响分类**；A11 EVAL 门禁；frontmatter strip 契约不破坏；五段式 body 保持；Rules 9-12 |
 | `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | **C infra** | mj-agent check healthcheck；compose 排练；uv lock；Rules 13-15 |
-| `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **C infra + 必停子面** | **改前 Owner 拍板**（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4）。不能依赖自动审批类 CI gate → 靠本行提醒；Dockerfile 其余行按上一行常规 C 处理 |
+| `docker/Dockerfile` 外部 registry 镜像引用（`FROM <image>` + `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **C infra + 必停子面** | **信任来源/生产策略实质变化先Owner决定，既定来源维护自主**（canonical `secrets-grants-or-prod-config`；规则体 `policies/docker-runtime.md` §4）。不能依赖自动审批类 CI gate → 靠本行提醒；Dockerfile 其余行按上一行常规 C 处理 |
 
 | Task 信号 | 路径 | 硬约束 |
 |---|---|---|
@@ -125,13 +126,13 @@ git diff --stat $(git merge-base develop HEAD)..HEAD
 | Plan 已拆 bite-sized confirmed steps | **Step 3a/3b per step**；Step 4 仍适用 | Rules 6/7/8 per step |
 | 纯 config / metadata 改无行为影响 | 跳 Step 3（red-green N/A）；Step 4 仍适用 | Rule 8 |
 
-**B 风味专属流程**（Rules 9-12 强约束）：
+**B 风味专属流程**（Rules 9-12）：
 
-1. 检测到 `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` body 改动
-2. **HITL 必停**：输出"检测到 B 风味 in-source canonical 改动；§3.1 必停项 10/11 触发"
-3. 建议先用 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2 落地后）propose diff
-4. 项目负责人 review diff → 用户确认接受 → 才进 Step 3
-5. PR description 必须含 EVAL backlog 草案；获明确发布授权后才开单声明（execution-loop §7.3 Rule 11）
+1. 读取真实runtime正文、loader、版本/EVAL和冻结合同，准备具体diff与impact反扫。
+2. 按实际安全不变量、数据范围、业务口径、外发、breaking、AC/门禁影响分类，路径命中本身不暂停。
+3. 基线内保持上述边界的修改在任务授权内实施；实质变化先Owner决定。使用对应runtime技能保留领域审计。
+4. 独立核验者从AC建立期望并读真实成果，覆盖领域/Prompt视角，不规定真人或人数；运行适用行为和负例。
+5. 保持冻结/版本/EVAL一致性，PR附EVAL backlog草案，实际发布核明确授权。
 
 不分类错误 → 走错方法学路径，浪费工作。如不清晰，问用户。
 
@@ -213,8 +214,8 @@ handoff 输出：
 - Methodology path: <red-green | root-cause-first | infra | mixed>
 
 ### B 风味 HITL trace（如适用）
-- §3.1 必停项: <runtime-skill-content-change | prompt-version-bump>
-- 已 propose diff via: <mj-agent-runtime-skill-doc-improve | -prompt-version-bump>
+- §3.1实质风险项: <runtime-skill-content-change | prompt-version-or-body-change>
+- 已 propose diff via: <mj-agent-runtime-skill-doc-improve | -prompt-version-or-body-change>
 - 项目负责人 review: <date / 接受>
 - EVAL backlog ticket: <issue # / 待开>
 
@@ -250,8 +251,8 @@ handoff 输出：
 | `本地方法：复现→假设→单变量验证→根因` | 项目内方法（直接执行） | Step 3b 结构化 frame | Rule 7 manual: hypothesis → test → narrow → root cause |
 | `本地方法：运行当前检查并记录新证据` | 项目内方法（直接执行） | Step 4 pre-completion check | Rule 8 manual: list commands, run them now, capture fresh output |
 | `本地方法：按依赖逐步执行已批准计划` / `本地方法：拆分任务、逐项验收并返回调用者` | 项目内方法（直接执行） | Step 2 → confirmed plan with bite-sized steps | Manual: walk through plan step by step, applying Step 3a/3b/3c/4 to each |
-| `mj-agent-runtime-skill-doc-improve`（PR-C2） | in-tree | B 风味 SKILL.md body 改动前 propose diff | 直接 编辑 但 §3.1 必停 HITL |
-| `mj-agent-runtime-prompt-version-bump`（PR-C2） | in-tree | B 风味 system.md `version` bump propose | 直接 编辑 但 §3.1 必停 HITL |
+| `mj-agent-runtime-skill-doc-improve`（PR-C2） | in-tree | B 风味 SKILL.md body 改动前 propose diff | 直接 编辑 但 §3.1语义影响核对 |
+| `mj-agent-runtime-prompt-version-bump`（PR-C2） | in-tree | B 风味 system.md `version` bump propose | 直接 编辑 但 §3.1语义影响核对 |
 
 > 上述方法已在正文具体化，直接执行，不需要插件发现或安装。
 
@@ -274,7 +275,7 @@ handoff 输出：
 - ❌ 不自动 commit/push → `mj-agent-git-commit` / `mj-agent-git-push`
 - ❌ 不替代 Rules 1-15——operationalizes 它们。本 skill 不可用时仍须手动遵 Rules 1-15
 - ❌ 不硬要 本文内化的工程方法——sub-call 是 optional enhancer，非依赖
-- ❌ B 风味时 **不**自动 编辑/写入 src/mj_agent/{skills,prompts}/—— §3.1 必停 HITL；建议先 propose diff via mj-agent-runtime-*
+- ❌ B风味未经impact/冻结一致性核对盲改；基线内任务授权允许实施，实质越界先决定
 
 ## Direction Matrix vs Companion mj-agent-flow-* Skills
 
@@ -299,7 +300,7 @@ handoff 输出：
 
 ## Anti-patterns
 
-- **不要** 在 §3.1 必停项触发后还自动 编辑 src/mj_agent/{skills,prompts}/（违反 Rule 9-12）
+- **不要** 在 §3.1实质风险项触发后还自动 编辑 src/mj_agent/{skills,prompts}/（违反 Rule 9-12）
 - **不要** 跳过 Step 4 fresh evidence 直接声称 done（违反 Rule 8；PR review 阶段会被挑战）
 - **不要** 用 `try: except: pass` 吞错替代 root cause 修复（违反 Rule 7）
 - **不要** 立即过的"测试"作 red-green 证据（违反 Rule 6 观察 RED 强约束）

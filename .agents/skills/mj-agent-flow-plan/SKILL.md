@@ -1,19 +1,20 @@
 ---
 name: mj-agent-flow-plan
-description: "适用于 mj-agent 的Stage4完整working-plan正文。输入：Issue、repo-scan事实、SPEC、AC。流程：context→任务拆分→doc-plan→风险→验证→完成标准关联。输出：任务/顺序/风险/验证/AC/文档矩阵完整。Use when：为已核验Issue起草完整实施Plan。Do not use for：只评估文档需求；建议doc-plan，不生成开发Plan正文。授权：Plan正文落盘需Owner；B及保护面单列；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage4完整working-plan正文。输入：Issue、repo-scan事实、SPEC、AC。流程：context→任务拆分→doc-plan→风险→验证→完成标准关联。输出：任务/顺序/风险/验证/AC/文档矩阵完整。Use when：为已核验Issue起草完整实施Plan。Do not use for：只评估文档需求；建议doc-plan，不生成开发Plan正文。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Plan Body Authoring (HITL Stage 4)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill orchestrates mj-agent working Plan body authoring (HITL Stage 4) — produces complete `plans/[PLAN]_*.md` content with 8 sections (linked artifacts / context / scope / 任务拆解 / 执行顺序 / 风险 / 验证 / AC / 关联), sub-calling mj-agent-doc-plan (PR-B4) for §7.1 Documentation Decision matrix and optionally mj-agent-flow-repo-scan when fact-check missing. Make sure to use this skill whenever the user says "写 plan", "写 plan body", "执行计划", "draft plan", "task breakdown", "任务拆解", "怎么推进", "Plan §X 步骤", "实施计划", "Stage 4 plan", "plan body 主体", or has Repo Scan output in hand and is ready to lay out the working plan in mj-agent. Direction-distinct from mj-agent-doc-plan which only evaluates **what documentation is needed**; this skill handles the **full Plan body**. Outputs the Plan body, then after Owner 拍板 (Stage 5 Gate 1) writes it to plans/[PLAN]_*.md directly via 写入 (ADR-034 propose→拍板→apply; approval does not unlock hooks). Do not use for: Stage 0 Intake (use mj-agent-flow-intake), Stage 3 Repo Scan (use mj-agent-flow-repo-scan), Stage 6 SPEC/ADR/RUNBOOK authoring (use mj-agent-doc-author in PR-B4), or Stage 8 Implementation (use mj-agent-flow-implement).
+This skill orchestrates mj-agent working Plan body authoring (HITL Stage 4) — produces complete `plans/[PLAN]_*.md` content with 8 sections (linked artifacts / context / scope / 任务拆解 / 执行顺序 / 风险 / 验证 / AC / 关联), sub-calling mj-agent-doc-plan (PR-B4) for §7.1 Documentation Decision matrix and optionally mj-agent-flow-repo-scan when fact-check missing. Make sure to use this skill whenever the user says "写 plan", "写 plan body", "执行计划", "draft plan", "task breakdown", "任务拆解", "怎么推进", "Plan §X 步骤", "实施计划", "Stage 4 plan", "plan body 主体", or has Repo Scan output in hand and is ready to lay out the working plan in mj-agent. Direction-distinct from mj-agent-doc-plan which only evaluates **what documentation is needed**; this skill handles the **full Plan body**. Outputs and writes the Plan body within task scope; material goal/acceptance/risk choices require Owner decision. Do not use for: Stage 0 Intake (use mj-agent-flow-intake), Stage 3 Repo Scan (use mj-agent-flow-repo-scan), Stage 6 SPEC/ADR/RUNBOOK authoring (use mj-agent-doc-author in PR-B4), or Stage 8 Implementation (use mj-agent-flow-implement).
 
 
 ## Overview
@@ -29,7 +30,7 @@ Authors full mj-agent working Plan body — `plans/[PLAN]_*.md` content covering
 
 **Reference**: `repo:sdd/workflows/execution-loop.md` §4.1（Stage 4 → 本 skill 映射；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.5 Plan Rules）+ Phase A PR-A3 落地的 mj-agent 现存 `plans/[PLAN]_*.md` 范例（如 `plans/[PLAN]_mj-agent-data-agent-mvp-framework.md`）。
 
-> mj-agent 当前**没有 TEMPLATE_PLAN.md**（Phase D 起首份；当前用现存 plans/ 范例作为 reference style）。
+> 使用 `repo:docs/_templates/TEMPLATE_PLAN.md`；分别记录接受基线与操作授权，复用现有任务记录。
 
 ## Workflow
 
@@ -41,11 +42,11 @@ digraph plan {
   s1 [label="Step 1: Capture context\n• Issue body\n• Repo Scan Result (Stage 3 输出)\n• Existing Plan (amend mode)" shape=box];
   s2 [label="Step 2: Task breakdown\nscope → independently verifiable subtasks\nordered by dependency" shape=box];
   s3 [label="Step 3: Documentation Decision\n→ delegate to mj-agent-doc-plan (PR-B4)\nproduce §7.1 matrix (10 rows)" shape=box];
-  s4 [label="Step 4: Risk control\n3-tier (Low/Medium/High) + mj-agent §3.1 4 项升档\nmitigation + rollback per row" shape=box];
-  s5 [label="Step 5: Verification plan\nLevel A 只读 + Level B HITL-confirm\n+ Stage 11 self-review checklist tie-in" shape=box];
+  s4 [label="Step 4: Risk control\n3-tier (Low/Medium/High) + 按实际安全/业务/权限/AC影响分类\nmitigation + rollback per row" shape=box];
+  s5 [label="Step 5: Verification plan\nLevel A 只读 + Level B 具名授权\n+ Stage 11 self-review checklist tie-in" shape=box];
   s6 [label="Step 6: Completion criteria + 关联\nAC checklist + Issue/SPEC/ADR refs\n+ frontmatter (state=active)" shape=box];
 
-  out [label="Output: Plan body (8 sections)\n→ Owner 拍板 (Stage 5) → AI Writes to plans/[PLAN]_*.md" shape=doublecircle];
+  out [label="Output: Plan body (8 sections)\n→ 基线/授权检查点 → AI Writes to plans/[PLAN]_*.md" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> out;
 }
@@ -94,7 +95,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 | 可独立验证 | 每子任务有 grep / pytest / `mj-agent check` / Studio 探针命令验证 |
 | 依赖排序 | 拓扑顺序，前置先做 |
 | 命名一致 | Stage 8a / 8b / 8c... 编号便于跟踪 |
-| **风味识别**（mj-agent 专属） | 标注每子任务属于哪个实现风味（execution-loop §5 实现 3 风味）：A 纯代码 / B in-source canonical 永远 HITL / C infra |
+| **风味识别**（mj-agent 专属） | 标注每子任务属于哪个实现风味（execution-loop §5 实现 3 风味）：A 纯代码 / B in-source canonical 按语义影响分类 / C infra |
 | **纵切优先**（leading word「纵切」/ tracer-bullet） | 拆多 PR/issue 时优先**端到端纵切**而非按层水平切——见下「纵切纪律」 |
 
 **纵切纪律（leading word「纵切」，per `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6）**：
@@ -109,7 +110,7 @@ ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
 ### 3.1 <子主题（风味 A/B/C）>
 - 含: <具体动作>
 - 不含: <边界外的事项>
-- 风味: A 纯代码 / B in-source canonical 永远 HITL / C infra
+- 风味: A 纯代码 / B in-source canonical 按语义影响分类 / C infra
 - 验证: <grep / pytest / Studio 探针 / mj-agent check>
 
 ### 3.2 <下一子主题>
@@ -128,9 +129,9 @@ PR-B4 之前：手工填 §7.1 矩阵，参 `repo:sdd/workflows/execution-loop.m
 
 | Risk | 触发条件（任一升档） | Plan §5 内容 |
 |---|---|---|
-| Low | 局部、可逆；不动 schema/secret/prod；不触 §3.1 必停 | 1-3 行风险表 + 简要缓解 |
+| Low | 局部、可逆；不动 schema/secret/prod；不触 §3.1实质风险 | 1-3 行风险表 + 简要缓解 |
 | Medium | 改服务内部行为 / 多模块影响 / 非生产配置 | 风险表 + 详细缓解 + 监控点 |
-| **High** | DB schema（mj-agent 是只读消费者）/ secret / prod / public API / new dep；**或 §3.1 必停 4 项任一**：runtime-skill-content-change / prompt-version-bump / biz-catalog-sync / sql-guardrail-relax | 风险表 + 缓解 + rollback 计划 + Stage 6 ADR/RUNBOOK 链接 + **B 风味永远 HITL** 显式标注 |
+| **High** | DB schema（mj-agent 是只读消费者）/ secret / prod / public API / new dep；**或实际安全/业务/权限/AC越界**：runtime-skill-content-change / prompt-version-or-body-change / biz-catalog-sync / sql-guardrail-relax | 风险表 + 缓解 + rollback 计划 + Stage 6 ADR/RUNBOOK 链接 + **B 风味按语义影响分类** 显式标注 |
 
 **输出格式**（写入 Plan §5）：
 
@@ -142,7 +143,7 @@ PR-B4 之前：手工填 §7.1 矩阵，参 `repo:sdd/workflows/execution-loop.m
 
 ## Step 5: Verification Plan
 
-按 scope 列出 Stage 10 Level A（read-only）+ Level B（HITL-confirm）命令：
+按 scope 列出 Stage 10 Level A（read-only）+ Level B（具名授权）命令：
 
 ```markdown
 ### 6.1 Stage 10 本地验证（Level A 只读 / 必跑）
@@ -155,7 +156,7 @@ python -m compileall src
 python scripts/check_wikilinks.py     # 文档变更
 python scripts/check_frontmatter.py   # 文档变更
 
-### 6.2 Offline external bands + Stage 10 Level B（HITL-confirm 后跑）
+### 6.2 Offline external bands + Stage 10 Level B（具名授权 后跑）
 
 # pytest external bands only prove structured policy skips; credentials never enable them
 uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
@@ -249,14 +250,14 @@ state: "active"
 - `plans/[PLAN]_<issue-id>_<short-desc>.md`
 
 ### Next Action
-- [ ] Owner 拍板 Plan body (Stage 5 Gate 1)
-- [ ] 拍板后 AI Writes to suggested path
+- [ ] Plan/基线/任务授权核对，普通技术安排自主
+- [ ] 任务授权内AI Writes to suggested path
 - [ ] Continue to Stage 6 (SPEC) or Stage 8 (Implementation)
 ```
 
 ## What This Skill DOES NOT DO
 
-- ❌ 未经 Owner 拍板（Stage 5 Gate 1）就写 `plans/[PLAN]_*.md`（拍板后 AI 直接 写入）
+- ❌ 在接受基线或任务授权未明确时写成已批准方案；普通Plan在授权内自主维护，无Stage5固定人工等待
 - ❌ 不替代 `mj-agent-doc-plan`（doc-plan 仅 §7.1 子集；本 skill 上位）
 - ❌ 不替代 `mj-agent-flow-repo-scan`（repo-scan 是 Stage 3 事实核查；本 skill 是 Stage 4 plan 编写，需 repo-scan 输出）
 - ❌ 不替代 `mj-agent-doc-author`（author 是 Stage 6 SPEC/ADR/RUNBOOK；本 skill 仅产 working Plan body）
@@ -275,7 +276,7 @@ state: "active"
 | `mj-agent-flow-repo-scan` | Step 1 prerequisite（建议先 Stage 3） |
 | `mj-agent-doc-author`（PR-B4） | 后续 Stage 6 接力（Documentation Decision Action=Create 时） |
 | `mj-agent-flow-implement` | 后续 Stage 8 接力 |
-| 写入 | Owner 拍板（Stage 5 Gate 1）后 AI 把 Plan body 落盘到 plans/ |
+| 写入 | 任务授权内AI把Plan body 落盘到 plans/ |
 
 ## Reference Files
 
@@ -292,15 +293,19 @@ state: "active"
 - **不要** 跳过 Stage 3 Repo Scan 直接写 Plan（缺事实输入会导致 Plan 不成立）
 - **不要** 把 SPEC 内容塞进 Plan（Plan 写"怎么推进"，SPEC 写"具体接口契约"）
 - **不要** 在 Plan 里写实现代码（实施在 Stage 8）
-- **不要** 在 §3.1 必停 4 项触发后还判 Risk = Medium（自动 High）
+- **不要** 在 §3.1实质风险 4 项触发后还判 Risk = Medium（按实际影响）
 - **不要** 把 documentation/* PR 的 Plan 做得跟 feature/* 一样大（doc PR 通常 2-3 段足够）
 
 ## Handoff
 
 ```
 Plan body 已输出（对话）。
-Owner 拍板（HITL Gate 1 / Stage 5）后由 AI 写入 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
-HITL Gate 1（Stage 5）通过后下一步：
+任务授权内由AI 写入 落到 plans/[PLAN]_<issue-id>_<short-desc>.md。
+基线检查点（Stage 5）通过后下一步：
   → Stage 6 mj-agent-doc-author 写 SPEC/ADR/RUNBOOK（PR-B4 落地）
   → Stage 8 mj-agent-flow-implement 直接实施（如不需新 SPEC）
 ```
+
+## 接受与授权记录
+
+分别记录目标/使用者、范围/延期、可观察AC/运行条件与风险；操作/对象/环境/权限/副作用/资源/停止及失效条件独立列明。支持单PR、独立多PR、精确登记分层关系；检查点记录真实workspace/ref/SHA、证据、在途失败未知延期与下一步。completed须AC满足、成果可用且Owner明确接受版本。

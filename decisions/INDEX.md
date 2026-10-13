@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-23
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -17,6 +17,8 @@ ai_visibility: source-of-truth
 > 本 INDEX 当前为手工维护；Phase M5+ 末转由 `scripts/sdd/generate_index.py` 自动维护.
 
 ## Active ADRs
+
+Agent-first治理决定见 [ADR-042](ADR-042_Agent_First_Delivery_Governance.md)（draft/accepted；实际平台及宿主前置另留证）。ADR-034/040/041的历史决议保留，固定阶段、逐内容批准及人工执行merge的活动解释由ADR-042定向替代。
 
 待审阅决策：[ADR-041 — 按具体命令判断 Git 执行条件](ADR-041_Command_Specific_Git_Execution_Policy.md)（draft；Issue #555，候选规则尚不证明宿主加载）。
 
@@ -50,6 +52,8 @@ ai_visibility: source-of-truth
 | [ADR-037_Memory_PG_MCP_Projection_To_Codex.md](./ADR-037_Memory_PG_MCP_Projection_To_Codex.md) | WORKFLOW | accepted (active) | 授权把 mj-agent 自有 memory PostgreSQL MCP servers（pg-mj-agent-memory-*×5）投影进 Codex（`project-with-adr`→`project`，dual-agent-compat 议题 1）；memory 独立库 + 独立凭据、checkpoint 确含 biz 派生行但读它无法触达 biz 表 / 绕 L1/L1b；凭据经 env_vars 按名、零字面入仓（G7/PJ044）；biz×5 + ssh-manager 永 never；可逆（翻回 + re-sync） |
 | [ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md](./ADR-038_Memory_Checkpoint_At_Rest_Desensitization.md) | DATA | accepted (active) | memory checkpoint 中 execute_sql 逐字 biz 派生行的 at-rest 脱敏方向（ADR-037 后继）；Owner 两裁定 = Ruling 1 store-at-rest 最小化（ADR-037 投影维持）+ Ruling 2 机制 B（persist-time 确定性 per-column 摘要 + 留 executed_sql、可选叠 C TTL）；不放宽 ADR-006/009/000 数据边界；实现递延 #365 |
 | [ADR-040_Codex_Only_Development.md](./ADR-040_Codex_Only_Development.md) | WORKFLOW | accepted (active) | Codex 原生资产所有权及门禁成组切换；Owner 批准并人工应用，Codex 验证；业务边界保持 |
+
+| [ADR-042_Agent_First_Delivery_Governance.md](./ADR-042_Agent_First_Delivery_Governance.md) | WORKFLOW | accepted (draft) | 任务授权自主交付、独立核验与Owner结果式接受；首期防自降人工补偿及延期明确 |
 
 ## Deprecated / Superseded ADRs
 

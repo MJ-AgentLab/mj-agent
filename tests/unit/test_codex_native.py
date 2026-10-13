@@ -21,7 +21,7 @@ def candidate(tmp_path: Path) -> Path:
     for rel in (".codex", "scripts/mcp"):
         shutil.copytree(ROOT / rel, root / rel)
     (root / "scripts/sdd").mkdir(parents=True)
-    for name in ("codex_hook_guard.py", "git_command_review.py", "check_codex_native.py", "run_codex_hook.ps1"):
+    for name in ("codex_hook_guard.py", "git_command_review.py", "task_delivery.py", "check_codex_native.py", "run_codex_hook.ps1"):
         shutil.copyfile(ROOT / "scripts/sdd" / name, root / "scripts/sdd" / name)
     return root
 
@@ -209,7 +209,7 @@ def test_literal_deletion_uses_host_review_and_unknown_still_blocks() -> None:
 @pytest.mark.parametrize(("command", "expected"), [
     ("git status", "ALLOW"), ("git checkout -b trial", "FORBIDDEN"),
     ("git switch -c trial", "FORBIDDEN"), ("psql", "FORBIDDEN"),
-    ("pg_dump", "FORBIDDEN"), ("gh pr merge 1", "FORBIDDEN"),
+    ("pg_dump", "FORBIDDEN"), ("gh pr merge 1", "UNKNOWN"),
     ("gh pr create", "FORBIDDEN"), ("gh pr create --base develop", "UNKNOWN"),
     ("git push origin example", "TASK_AUTHORIZATION_CONTEXT"),
     ("Get-Content .env", "FORBIDDEN"), ("Get-Content .env.example", "ALLOW"),
@@ -221,10 +221,10 @@ def test_native_command_boundaries(command: str, expected: str) -> None:
 
 @pytest.mark.parametrize(("path", "expected"), [
     (".agents/skills/mj-agent-flow-verify/SKILL.md", "ALLOW"),
-    (".codex/config.toml", "OWNER_APPROVAL_REQUIRED"),
-    ("src/mj_agent/skills/example/SKILL.md", "OWNER_APPROVAL_REQUIRED"),
-    ("D:/project/src/mj_agent/prompts/system.md", "OWNER_APPROVAL_REQUIRED"),
-    (".agents/skills/mj-agent-infra-app-start/SKILL.md", "OWNER_APPROVAL_REQUIRED"),
+    (".codex/config.toml", "TASK_AUTHORIZATION_CONTEXT"),
+    ("src/mj_agent/skills/example/SKILL.md", "TASK_AUTHORIZATION_CONTEXT"),
+    ("D:/project/src/mj_agent/prompts/system.md", "TASK_AUTHORIZATION_CONTEXT"),
+    (".agents/skills/mj-agent-infra-app-start/SKILL.md", "TASK_AUTHORIZATION_CONTEXT"),
     ("config/secrets-mcp.enc", "FORBIDDEN"),
 ])
 def test_native_edit_ownership(path: str, expected: str) -> None:

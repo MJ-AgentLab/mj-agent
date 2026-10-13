@@ -21,7 +21,7 @@ class NativeGovernanceTests(unittest.TestCase):
         for rel in guard.ENTRIES:
             self.put(rel, 'policies/ai-agent.md OWNER_APPROVAL_REQUIRED BLOCKED_EXECUTION_ROUTE')
         self.put('policies/ai-agent.md', '## §4 Owner\n' + '\n'.join(f'| `{x}` | required |' for x in guard.CANONICAL))
-        self.put('.github/PULL_REQUEST_TEMPLATE.md', '## HITL Trigger Inventory\n' + '\n'.join(f'- [ ] {x}' for x in guard.CANONICAL))
+        self.put('.github/PULL_REQUEST_TEMPLATE.md', '## Risk / Decision Inventory\n' + '\n'.join(f'- [ ] {x}' for x in guard.CANONICAL))
 
     def put(self, rel, text):
         path = self.root / rel

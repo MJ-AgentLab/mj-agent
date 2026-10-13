@@ -59,6 +59,8 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 
 ## 架构决策（decisions/）
 
+[ADR-042 Agent-first交付治理](../decisions/ADR-042_Agent_First_Delivery_Governance.md)及[交付指南](guide/[GUIDE]_Agent_First_Delivery.md)定义任务授权、自主闭环、独立核验及Owner结果式接受；平台/宿主启用及actual/部署/恢复延期分别记录。
+
 > 2026-05-11 cross-repo decoupling cleanup（PR-Γ）后：9 个"记录从早期内部上游系统继承设计决策"的 ADR（010/015/017/018/019/021/022/023/025）已批量 archive 到 [[archive/decisions/superseded/INDEX|archive/decisions/superseded/]]（M5-PR3b 由 docs/archive/adr/ 平移）；其内容已沉淀为对应 framework STANDARD 段。ADR-025 拆分为 mj-agent 原生 ADR-026/027/028。
 
 | 文档 | domain | decision | 摘要 |
@@ -85,7 +87,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | [[decisions/ADR-031_Spec_Anchored_Refactor\|ADR-031 Spec-Anchored Refactor]] | SYS | accepted | Maximum Spec-Anchored Refactor（Phase M0-M6）：把 tri-track STANDARD + 20 active ADR + ~100 篇文档治理语料重构为 SDD Kernel + Capability Package + Business Policy 三支柱架构，落地机器可读 contract + capability lifecycle + CI gates（M0-M6 已落地、#245 闭幕；promoted accepted 2026-07-23 #372） |
 | [[decisions/ADR-032_Claude_Skill_Schema_Monitoring\|ADR-032 Claude Skill Schema Monitoring]] | WORKFLOW | accepted | 为 `.agents/skills/` ADR-013 native 2-field schema 合规建立 3 层监控：validator gate（V4；M3 warning / M4 blocking）+ PR 模板 A12 提示 + 季度 A6 audit；把原 M3-FU 范围从「修既存偏差」（premise 经 reverify 证伪）重构为「防未来偏差」（promoted accepted 2026-07-23 #372；V4 已 blocking） |
 | [[decisions/ADR-033_DGX_Ops_Sister_Repo_Boundary\|ADR-033 DGX Ops Sister-Repo Boundary]] | OPS | accepted | DGX-Spark serving/ops 归独立姊妹仓 `MJ-AgentLab/dgx-mlops`；mj-agent 唯一 consumer、不在 DGX 部署、仅经 ADR-027 provider 抽象消费；跨仓 cross-ref ≤5（自设预算）；T-1/T-2/T-5 跟踪锚点 |
-| [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034 HITL Propose → 拍板 → Apply Model]] | WORKFLOW | accepted | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；4 项 in-source 专属必停 deny→ask 逐写拍板门 + A13/A14 合并审查兜底；protected paths（`.claude/**` / `.mcp.json`）AI 改 + harness 强制 prompt 即拍板；runtime-* read-only → propose→拍板→apply；新增 External-Info Handoff 纪律 + Owner 执行步骤字段；仅交互模式成立；supersede ADR-015 §决策点 4 残留 |
+| [[decisions/ADR-034_HITL_Propose_Decide_Apply_Model\|ADR-034 HITL Propose → 拍板 → Apply Model]] | WORKFLOW | accepted | HITL 改「AI 提议 → Owner 拍板 → AI 落盘」；历史4项逐写拍板门（现按ADR-042语义分类） + A13/A14 合并审查兜底；protected paths（`.claude/**` / `.mcp.json`）AI 改 + harness 强制 prompt 即拍板；runtime-*历史转向propose→拍板→apply，现活动解释由ADR-042定向替代；新增 External-Info Handoff 纪律 + Owner 执行步骤字段；仅交互模式成立；supersede ADR-015 §决策点 4 残留 |
 | [[decisions/ADR-035_Codex_Full_Development_Participant\|ADR-035 Codex Full Development Participant]] | WORKFLOW | accepted | Codex 由「只读外部评审 / 非参与」升为完整开发参与者（可运行命令 + 编辑 / 提交 / 迁移，受同一 HITL 必停 + 数据边界约束）；本 ADR 仅反转书面政策，技术使能延后为独立 opt-in；(A) standalone Codex 靠 AGENTS.md 自守 prose enforce、(B) Claude-Code-调用-Codex 插件仍延后；数据边界 ADR-006/009/000 不变 |
 | [[decisions/ADR-036_Dual_Agent_Thin_Adapter_And_Projection\|ADR-036 Dual-Agent Thin Adapter and Projection]] | WORKFLOW | accepted | 收录 dual-agent-compat v5 的 D-001~D-017 决策集为正式 ADR：项目内 Kernel + 薄 compatibility adapter + 机器可读 manifest（`sdd/development-agent.yml`）+ V8/V9 checker + scoped 投影生成器 agents_sync（D-011 唯一豁免：`.agents/skills/` + `.codex/config.toml` 两面）；投影产物 commit 入仓不可手改（D-012）；MCP per-server 三档、biz×5 + ssh-manager 永不投影（D-013）；A14 surface 扩至派生 `.codex/config.toml` / `.agents/**` / `agents_sync.py` / manifest（D-017） |
 | [[decisions/ADR-037_Memory_PG_MCP_Projection_To_Codex\|ADR-037 Memory PG MCP Projection to Codex]] | WORKFLOW | accepted | 授权把 mj-agent 自有 memory PostgreSQL MCP servers（pg-mj-agent-memory-*×5）投影进 Codex（dual-agent-compat 议题 1）：manifest mcp 档 project-with-adr→project；memory pg 是 agent 自有 checkpointer 状态库（独立库 + 独立凭据；checkpoint 确含 biz 派生行但读它无法触达 biz 表 / 绕 L1/L1b、只得历史已批准结果——5-lens 2026-07-17 更正原「不含 biz 数据」误述），凭据经 env_vars 按名透传、零字面入仓（G7/PJ044，机制同 github #330）；议题 3(#353) pass-by-name 改造为技术前置；biz×5+ssh 永 `never` 不变 |
@@ -132,7 +134,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/decisions/superseded/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |
-| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 自动 active → completed |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 AC满足/成果可用/Owner明确接受后active→completed |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements\|ADR-022]] | Code_Side v1.1 §3.4-§3.8 + Meta v2.2 §3.7/§3.8/§4.5/§4.6 | 5 项 framework 增强已并入对应 STANDARD 章节 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | `scripts/find_stale_docs.py` + `scripts/find_old_completed_plans.py` 注释 | 实际 scripts 已落地 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction\|ADR-025]] | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026]] + [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027]] + [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028]] | 多 domain bundle ADR 拆分为 3 个焦点 ADR |
@@ -149,11 +151,11 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | `TEMPLATE_RUNBOOK.md` | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；frontmatter 含 ADR-022 C.3.1 `last-verified`（state: active 时强制）；规格见 [[policies/documentation\|documentation policy]] §8.2 |
 | `TEMPLATE_SPEC.md` | SPEC 骨架；body §0 + 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；§0 任务类型识别按 [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|SPEC Authoring GUIDE]] §3 决策树 + §4 8 类裁剪规则 |
 | `TEMPLATE_REPO_SCAN_RESULT.md` | HITL Stage 3 Repo Scan Result 输出结构（对话输出，**不**写文件）；与 `mj-agent-flow-repo-scan` SKILL Output Format 一致；含 8-dim Evidence Map + 10 行 Documentation Decision + Stale Doc Reverse Scan + Plan Verdict + HITL Questions |
-| `TEMPLATE_PLAN.md` | HITL Stage 4 Plan body 模板（写到 `plans/[PLAN]_*.md`）；轻量 5-6 段（Scope / Task Breakdown / Risk Control / Verification / AC + 可选 Phase 子包 / 严格守约）；从 plans/ 既有 18 份范例综合 |
+| `TEMPLATE_PLAN.md` | Agent-first任务Plan：接受基线/操作授权分记、任务依赖/PR模式、验证验收包、检查点及Owner接受状态 |
 | `TEMPLATE_HITL_STAGE.md` | 执行闭环单 stage prompt 模板；匹配通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[sdd/workflows/execution-loop\|执行闭环 workflow]] §2 配套 —— per-stage prompt **本体**归 `.agents/skills/mj-agent-*` SKILL（kernel 明写不 re-port），execution-loop 只持 stage 骨架（§1）+ stage→skill 映射（§4） |
 | `TEMPLATE_WORKFLOW_SKILL.md` | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
 | `TEMPLATE_POSTMORTEM.md` | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[policies/documentation\|documentation policy]] §8.0 + §6.2 |
-| `TEMPLATE_ISSUE.md` | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1 必停 4 项 mj-agent 专属 trigger 字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
+| `TEMPLATE_ISSUE.md` | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1真实语义风险/实质决定字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
 | `TEMPLATE_ASSESSMENT.md` | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
 | `TEMPLATE_EVAL.md` | EVAL 骨架（Track B 自有；上游业务系统 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]]（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
@@ -183,7 +185,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | catalog data | 静态镜像 上游业务系统 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4：metric / period / dimension / 同环比列 / 信号表 / 维表 join key；由 `find_biz_context` 召回 |
 
 > `qcm_catalog.yaml` 不落在 §2.2 规则 1 的 `{skills,prompts}` 路径内；它进入本表的依据是
-> `biz-catalog-sync` 必停面 + [[decisions/ADR-006_Fail_Safe_Reads\|ADR-006]] 数据边界 L2。
+> `biz-catalog-sync`风险面 + [[decisions/ADR-006_Fail_Safe_Reads\|ADR-006]] 数据边界 L2。
 > 另注：`scripts/check_frontmatter.py` 的 `SCAN_ROOTS` 只覆盖 `src/mj_agent/{skills,prompts}`，
 > 该 catalog 不受 frontmatter 门禁校验。
 
@@ -262,7 +264,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | `/mj-agent-doc-review` | 15 sub PR-scope 评审 | **active**（PR-C1） |
 | `/mj-agent-doc-migrate` | archive workflow | **active**（PR-C1） |
 
-### runtime family（PR-C2 落地 3 P1 + PR-D2-skill 1 P2；**全部 propose→拍板→apply（ADR-034）**）
+### runtime family（保留领域方法；按ADR-042语义影响分类，基线内自主/实质变化决定）
 
 | Skill | Stage | Status |
 |---|---|---|
@@ -284,7 +286,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 | `/mj-agent-infra-app-start` | 10 sub app runtime 有序启动（prereq→launch→verify） | **active**（本 PR #304） |
 | `/mj-agent-infra-app-stop` | 17 sub app runtime 非破坏停止（host tree-kill + Level-1 down） | **active**（本 PR #304） |
 
-合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_native_skills.py --surface skills` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime 4 个全部 propose→拍板→apply（ADR-034）；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
+合计：on-disk **37** = flow 10（原 9 + P1 新增 flow-diagnose）+ git 9 + doc 6 + runtime 4 + infra 8（原 6 capacity + 本 PR app-start/app-stop 2；ADR-016 设计态目标 32 与 on-disk 既有 drift；**实装计数以 `scripts/sdd/check_native_skills.py --surface skills` 为准**——其余文档计数已去硬写指向该 SoT，跨文档全量刷新闭环）；flow + git + doc + runtime + infra 五 family 完成；runtime家族按ADR-042语义影响分类，基线内自主/实质变化决定；其中 eval-baseline 是 framework-independent 设计阶段，Phase 2 EVAL framework 落地后由 PR-D2-enforcement 跑 baseline 实测）；详细命名 + lifecycle 见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]]。
 
 ---
 
@@ -315,7 +317,7 @@ Issue #582 的synthetic-only离线CLI已完成软件核验，main(argv, *, repo_
 
 ## 快速链接
 
-- Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，项目与 hook 信任由工程师独立审阅；见 [[decisions/ADR-040_Codex_Only_Development|ADR-040]]）。
+- Codex 工作区入口：`AGENTS.md`；原生开发技能与共享资源：`.agents/skills/`、`.agents/references/`；项目配置、规则与 hook：`.codex/config.toml`、`.codex/rules/`、`.codex/hooks.json`（直接维护，独立Agent审阅真实配置/守卫负例后执行Agent经正常宿主机制启用本项目范围信任；新App受控后台值不可见，不支持未验证；见[[decisions/ADR-042_Agent_First_Delivery_Governance|ADR-042]]）。
 - Roadmap：`../mj-agent-design/mj-agent-roadmap-v1.6.md`（本仓库外）
 
 - 原生开发维护、受控离线测试、平台边界与恢复交接：[[guide/[GUIDE]_Developer_Onboarding|Developer Onboarding]] §4 / §6.4。

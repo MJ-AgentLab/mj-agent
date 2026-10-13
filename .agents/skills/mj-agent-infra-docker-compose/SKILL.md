@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-docker-compose
-description: "适用于 mj-agent 的低层compose up/ps/logs/down。输入：cwd、profile、-f链、project、脱敏key状态。流程：cwd→precheck/network/env→profile→action→verify→报告。输出：实际ps/health/URL按覆盖记录，memory无工具未测。Use when：查看dev栈状态与最近50行脱敏日志。Do not use for：改prod镜像地址并上线；停保护面/部署动作，提出差异交Owner。授权：prod/外部镜像/删卷保留停点；配置quiet不泄密；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的低层compose up/ps/logs/down。输入：cwd、profile、-f链、project、脱敏key状态。流程：cwd→precheck/network/env→profile→action→verify→报告。输出：实际ps/health/URL按覆盖记录，memory无工具未测。Use when：查看dev栈状态与最近50行脱敏日志。Do not use for：改prod镜像地址并上线；停保护面/部署动作，提出差异交Owner。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — Docker Compose
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -207,7 +208,7 @@ docker compose --env-file .env -f docker/compose.yaml `
 > **不**带 `-v`（保留 mj-agent-postgres-data volume；下次 up 不丢 memory checkpointer 数据）
 > **同 -f 链规则**：down 必须用与 up 相同的 -f 链（compose 通过 name + -f 计算服务集合）
 
-### Down -v（**Level C 破坏性 — HITL-confirm only**）
+### Down -v（**Level C 破坏性 — 具名删除授权及备份/损失/恢复条件**）
 
 ```powershell
 # 删 volume；mj-agent-postgres / mj-agent-redis 数据全清
@@ -215,7 +216,7 @@ docker compose --env-file .env -f docker/compose.yaml `
                -f docker/compose.override.yml down -v
 ```
 
-⚠️ **STOP 节点**：不允许自动跑 `down -v`（per mj-agent-flow-verify Level C）；必须 user 显式确认。建议 prompt：
+⚠️ **专门删除边界**：普通生命周期授权不包含 `down -v`。缺具名对象、数据损失、备份及恢复授权时先准备清单供 Owner 决定；上述授权已经明确且对象/内容/风险未变化时复用，核技术权限后执行并逐项验证，不固定重复确认。实际技术拒绝不得绕过。缺授权时可给出具体说明：
 
 ```
 Level C 破坏性操作 — `down -v` 会删 mj-agent-postgres + mj-agent-redis volume，langgraph memory checkpointer 数据全部丢失。
@@ -293,7 +294,7 @@ curl --noproxy '*' -fsS -o $null -w "HTTP %{http_code}`n" http://localhost:8001/
 - ❌ 不替代 mj-agent-infra-storage-stack（postgres init script / redis schema 内部）
 - ❌ 不修改 `docker/compose.yaml` 结构（C 风味；用 mj-agent-flow-implement Step 3c）
 - ❌ 不操作 mj-system biz pg（lifecycle 归 mj-system；ADR-008 + ADR-009 边界）
-- ❌ 不自动跑 Level C `down -v`（HITL-confirm only）
+- ❌ 不自动跑 Level C `down -v`（具名删除授权及备份/损失/恢复条件）
 - ❌ 不替代 mj-agent check（health probe；用 mj-agent-infra-env-setup Step 5）
 
 ## Sub-skill / Tool Calls
@@ -305,7 +306,7 @@ curl --noproxy '*' -fsS -o $null -w "HTTP %{http_code}`n" http://localhost:8001/
 | shell `netstat -ano \| findstr` | Step 1 + Step 3 port check |
 # 直接数据库客户端路径不提供给 agent；需已发现且获授权的项目 memory 接口，否则 `UNMET_DEPENDENCY`。biz 仅走业务工具链。
 | shell `docker compose logs` | Troubleshooting |
-| 向 Owner 询问 | `down -v` Level C HITL-confirm |
+| 向 Owner 询问 | `down -v` Level C 具名授权 |
 
 ## Reference Files
 
@@ -323,7 +324,7 @@ curl --noproxy '*' -fsS -o $null -w "HTTP %{http_code}`n" http://localhost:8001/
 - ❌ 不在 mj-agent root 之外路径调用（compose -f path 是相对路径，cwd 错则路径解析错）
 - ❌ 不与 mj-system compose chain（即不 `docker compose -f mj-system/.../docker-compose.yml -f docker/compose.yaml up`；这是 storage-stack PR / hotfix #43 之前的旧模式，已被 standalone pattern 取代）
 - ❌ 不带 `--no-deps` 跳依赖（depends_on 是设计意图：mj-agent 等 mj-agent-postgres healthy 才起）
-- ❌ 不自动跑 `down -v`（必 HITL-confirm；删 volume = 丢 langgraph memory checkpointer 数据）
+- ❌ 不自动跑 `down -v`（必 具名授权；删 volume = 丢 langgraph memory checkpointer 数据）
 - ❌ 不修改 mj-system 的 mj-system-backend-network（external: true 设计；mj-agent 仅 attach；lifecycle 归 mj-system）
 - ❌ 不 expose mj-agent-postgres 给 mj-system biz pg（双向隔离：mj-agent 仅 consumer biz pg；biz pg 不访问 mj-agent-postgres）
 

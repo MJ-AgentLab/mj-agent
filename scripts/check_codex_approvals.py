@@ -79,7 +79,7 @@ def diagnose(root: Path, mode: str | None = None, *, actions: set[str] | None = 
                    if tuple(argv[:len(prefix)]) == prefix]
         decision = 'UNKNOWN' if errors or not argv else (matches[0] if matches else 'NO_MATCH')
         hook, reason = classify({'hook_event_name': 'PreToolUse', 'tool_name': 'exec_command',
-                                 'tool_input': {'cmd': command}}) if not errors else ('UNKNOWN', 'invalid enforcement files')
+                                 'tool_input': {'cmd': command}}, repo_root=root) if not errors else ('UNKNOWN', 'invalid enforcement files')
         rows.append({'action': kind, 'command': command,
                      'rule_source': '.codex/rules/mj-agent.rules', 'rule_decision': decision,
                      'status': approval_status(effective_mode, decision),

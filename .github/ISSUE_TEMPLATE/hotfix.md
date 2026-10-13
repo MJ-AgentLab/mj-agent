@@ -44,8 +44,8 @@ assignees: []
 
 ## HITL Trigger Check
 
-- [ ] 触及 prod compose？（必 ≥ 2 reviewer）
-- [ ] 触及 4 项专属必停？（必 ≥ 2 reviewer + 1 domain expert）
+- [ ] 是否改变生产策略或权限？实质变化由 Owner 决定，实际生产操作另核具名授权。
+- [ ] Runtime 修改是否保持接受基线？独立核验按风险覆盖工程、领域及 Prompt 视角，不固定真人或人数；安全/业务/数据/外发承诺变化由 Owner 决定。
 - [ ] 数据-LLM 边界相关？（不应走 hotfix 单线 — 走 cross-capability workflow）
 
 ## Spec Debt Plan

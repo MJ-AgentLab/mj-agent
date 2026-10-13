@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import fnmatch
 import json
 import re
 from pathlib import Path
@@ -16,10 +17,12 @@ if __package__:
     from .check_deletion_targets import ReviewStop, _absolute, _chain, _git
     from .git_command_review import CONTEXT, publication, tokenize
     from .git_command_review import ref as branch_ref
+    from .task_delivery import valid_pr_base
 else:
     from check_deletion_targets import ReviewStop, _absolute, _chain, _git  # type: ignore[no-redef]
     from git_command_review import CONTEXT, publication, tokenize  # type: ignore[no-redef]
     from git_command_review import ref as branch_ref  # type: ignore[no-redef]
+    from task_delivery import valid_pr_base  # type: ignore[no-redef]
 
 REQUIRED = {
     'local_delete': {'root', 'target', 'snapshot_sha256'},
@@ -27,6 +30,7 @@ REQUIRED = {
     'commit': {'repo', 'branch', 'head', 'files', 'staged_diff_sha256'},
     'push': {'repo', 'branch', 'remote', 'from_tip', 'tip'},
     'pr_create': {'repo', 'head', 'head_sha', 'base', 'title', 'body_sha256'},
+    'merge': {'repo', 'pr', 'head', 'head_sha', 'base'},
 }
 RESULTS = {'SUCCESS', 'DELETED', 'ALREADY_ABSENT', 'REJECTED', 'FAILED', 'NOT_EXECUTED', 'UNKNOWN'}
 
@@ -144,11 +148,59 @@ def _valid_scope(item: dict[str, Any]) -> bool:
             or not all(scope[key] for key in REQUIRED[kind])):
         return False
     if kind == 'pr_create':
-        return bool(scope['base'] == ('main' if str(scope['head']).startswith('hotfix/') else 'develop'))
+        try:
+            return valid_pr_base(scope['repo'], scope['head'], scope['base'], item.get('task_routes', []))
+        except (TypeError, ValueError):
+            return False
     if kind == 'remote_delete':
         return (isinstance(scope['ref'], str) and _ref(scope['ref'])
                 and scope['ref'] not in {'refs/heads/main', 'refs/heads/develop'}
                 and scope['remote'] in {'gitee', 'origin'})
+    return True
+
+
+def _task_scope_reusable(before: dict[str, Any], after: dict[str, Any]) -> bool:
+    """Compare declared scope observations; does not authenticate their source."""
+    auth = before.get('authorization_scope')
+    if not isinstance(auth, dict) or auth != after.get('authorization_scope'):
+        return False
+    if (not all(isinstance(auth.get(key), str) and auth[key] for key in ('task_id', 'source', 'repo', 'environment'))
+            or before.get('kind') != after.get('kind')
+            or after.get('kind') not in {'commit', 'push', 'pr_create', 'merge'}):
+        return False
+    for key in ('actions', 'branches', 'files', 'remotes'):
+        if not isinstance(auth.get(key), list) or not all(isinstance(value, str) for value in auth[key]):
+            return False
+    if after['kind'] not in auth['actions']:
+        return False
+    mutable = {'commit': {'head', 'files', 'staged_diff_sha256'},
+               'push': {'from_tip', 'tip'},
+               'pr_create': {'head_sha', 'title', 'body_sha256'},
+               'merge': {'head_sha'}}[after['kind']]
+    # Exempt only ordinary content/version fields. Unknown risk, permission,
+    # environment, side-effect or route observations must remain identical.
+    if ({key: value for key, value in before.items() if key not in {'scope', 'command'}}
+            != {key: value for key, value in after.items() if key not in {'scope', 'command'}}
+            or {key: value for key, value in before.get('scope', {}).items() if key not in mutable}
+            != {key: value for key, value in after.get('scope', {}).items() if key not in mutable}):
+        return False
+    for item in (before, after):
+        scope = item.get('scope', {})
+        if scope.get('repo') != auth['repo'] or scope.get('branch', scope.get('head')) not in auth['branches']:
+            return False
+        if item['kind'] == 'push' and scope.get('remote') not in auth['remotes']:
+            return False
+        if item['kind'] in {'pr_create', 'merge'} and scope.get('base') != before['scope'].get('base'):
+            return False
+        if item['kind'] == 'commit':
+            files = scope.get('files')
+            if not isinstance(files, list) or not files:
+                return False
+            for path in files:
+                if (not isinstance(path, str) or path.startswith('/') or '\\' in path or ':' in path
+                        or '..' in path.split('/') or any(part.endswith((' ', '.')) for part in path.split('/'))
+                        or not any(fnmatch.fnmatchcase(path, pattern) for pattern in auth['files'])):
+                    return False
     return True
 
 
@@ -228,7 +280,7 @@ def _command_matches(item: dict[str, Any]) -> bool:
                  and command[2] == scope['target'])
                 or (command[:3] in (['git', 'branch', '-d'], ['git', 'worktree', 'remove'])
                     and len(command) == 4 and command[3] == scope['target']))
-    parsed = publication(command)
+    parsed = publication(command, task_routes=item.get('task_routes', []))
     if parsed['status'] != CONTEXT or parsed['kind'] != item['kind']:
         return False
     objects = parsed['scope']
@@ -240,6 +292,9 @@ def _command_matches(item: dict[str, Any]) -> bool:
                 and objects['ref'] == scope.get('ref', branch_ref(scope['branch'])))
     if item['kind'] == 'pr_create':
         return all(objects[key] == scope[key] for key in ('repo', 'head', 'base', 'title'))
+    if item['kind'] == 'merge':
+        return (all(str(objects[key]) == str(scope[key]) for key in ('repo', 'pr', 'head_sha'))
+                and objects['method'] == scope.get('method', 'merge'))
     return True
 
 
@@ -307,7 +362,7 @@ def review_actions(
             row['status'] = 'REVOKED'
         elif key not in old:
             row['status'] = 'NOT_IN_SCOPE'
-        elif old[key] != item:
+        elif old[key] != item and not _task_scope_reusable(old[key], item):
             row['status'] = 'CHANGED'
             before, after = old[key].get('scope', {}), item['scope']
             row['changed_fields'] = sorted(k for k in before.keys() | after.keys()

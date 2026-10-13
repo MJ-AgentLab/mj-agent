@@ -1,14 +1,15 @@
 ---
 name: mj-agent-doc-review
-description: "适用于 mj-agent 的PR文档质量与双段自检。输入：PR/diff、branch type、plan、受影响docs。流程：分类→code-doc映射→ADR/SPEC→逐文档校验→反扫→PR双段→A12-A14。输出：A1-A14/OB和双段有依据、风险与缺口。Use when：检查这个PR的文档自检和反向引用。Do not use for：评审别人PR整体架构；建议git-review-pr，不把文档审查当架构结论。授权：审阅不等于发布；缺证据标未知；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的PR文档质量与双段自检。输入：PR/diff、branch type、plan、受影响docs。流程：分类→code-doc映射→ADR/SPEC→逐文档校验→反扫→PR双段→A12-A14。输出：A1-A14/OB和双段有依据、风险与缺口。Use when：检查这个PR的文档自检和反向引用。Do not use for：评审别人PR整体架构；建议git-review-pr，不把文档审查当架构结论。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Doc Review
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -124,7 +125,7 @@ PR description 必须按 §4.7 拆双段，**严格不可混用**：
 判定规则：
 - 跨段（"diff 看着合理"放本地验证）→ WARN 让作者拆
 - 缺失或空 → FAIL（PR description 不完整）
-- 模板以 `.github/PULL_REQUEST_TEMPLATE/` 实际目录为准，含 release；逐项对照所选类型模板的全部标题、折叠检查块、AI Self-Check 四项必答及根模板 `HITL Trigger Inventory` / `Docker Impact` 取用要求。本地验证与 AI 自检双段另行核对，不替代模板完整性检查。
+- 模板以 `.github/PULL_REQUEST_TEMPLATE/` 实际目录为准，含 release；逐项对照所选类型模板的全部标题、折叠检查块、AI Self-Check 四项必答及根模板 `Risk / Decision Inventory` / `Docker Impact` 取用要求。本地验证与 AI 自检双段另行核对，不替代模板完整性检查。
 
 ## Phase 7: Engineering-Workflow A12-A14（v2.1，2026-05-08 PR-B3c-promote 后启用）
 

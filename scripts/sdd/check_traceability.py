@@ -196,7 +196,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if not trace_files:
         print("no capabilities/*/trace.yml found")
-        return 0
+        return 1 if args.strict else 0
 
     print(f"check_traceability.py — validating {len(trace_files)} trace.yml (G2/G5; schema v{_SCHEMA_VERSION})")
     total = Summary()

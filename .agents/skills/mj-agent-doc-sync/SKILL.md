@@ -1,14 +1,15 @@
 ---
 name: mj-agent-doc-sync
-description: "适用于 mj-agent 的代码变更引起的文档更新/引用修复。输入：diff、旧新符号/路径、plan文档范围。流程：映射→内容更新→全引用修复→索引/入口同步→校验。输出：每处映射/旧引用有处理且校验结果真实。Use when：函数重命名后同步GUIDE和引用。Do not use for：从零写一个新RUNBOOK；建议doc-author，sync不替代新文档创作。授权：超plan范围/入口大改D-03与B正文先批准；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的代码变更引起的文档更新/引用修复。输入：diff、旧新符号/路径、plan文档范围。流程：映射→内容更新→全引用修复→索引/入口同步→校验。输出：每处映射/旧引用有处理且校验结果真实。Use when：函数重命名后同步GUIDE和引用。Do not use for：从零写一个新RUNBOOK；建议doc-author，sync不替代新文档创作。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Doc Sync
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -79,8 +80,8 @@ digraph sync {
 |---|---|
 | `src/mj_agent/agent.py` | `docs/design/agent/[SPEC]_*.md` / `repo:README.md` 架构概览与 `repo:src/mj_agent/AGENTS.md` / `README.md` "架构概览" 段（PR #171 起新加；ASCII 拓扑图，需保持简化版与 AGENTS.md 同步）/ `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
 | `src/mj_agent/llm.py` | `repo:README.md` LLM provider 与 `repo:config/README.md` / `README.md` "LLM provider" 段（PR #171 保留；provider 表 + .env 配置）/ Studio walkthrough / **§6.4 类 4 命中**（runtime 语义）|
-| `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1 必停；经 mj-agent-runtime-prompt-version-bump propose→拍板→apply |
-| `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1 必停；经 mj-agent-runtime-skill-doc-improve propose→拍板→apply |
+| `src/mj_agent/prompts/*.md` | **B 风味**：触发 §3.1实质风险；经 mj-agent-runtime-prompt-version-bump 分析→影响分类→实施/决定 |
+| `src/mj_agent/skills/*/SKILL.md` | **B 风味**：触发 §3.1实质风险；经 mj-agent-runtime-skill-doc-improve 分析→影响分类→实施/决定 |
 | `src/mj_agent/tools/sql/*.py` | `docs/design/agent/[SPEC]_*.md` / `repo:policies/data-boundary.md` / `README.md` "Data boundary" 段（PR #171 保留）/ ADR-006 / **§6.4 类 4 命中** |
 | `src/mj_agent/integrations/mj_system_db.py` | `repo:policies/data-boundary.md` / `README.md` "Data boundary" 段 / ADR-006 / ADR-009 / **§6.4 类 4 命中** |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | `docs/design/agent/[SPEC]_biz_catalog_*.md` / `scripts/diff_biz_schema.py` 输出 |
@@ -149,16 +150,16 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 | Phase 2 中（接口描述变） | 参数类型/名称描述变但函数签名未变 | 用户说"只改格式/注释" | Q-08 |
 | Phase 2 中（大幅删除） | 单文档删除 > MAX(30 行, 25%) | 用户说"大幅修改/重写" | D-02 |
 | Phase 4 前（AGENTS.md > 10 行） | AGENTS.md 需修改超 10 行 | 用户说"不用更新 AGENTS.md" | D-03 |
-| Phase 1 后（B 风味命中） | mapping 命中 src/mj_agent/{skills,prompts}/* | 经 mj-agent-runtime-* propose + 拍板 + apply | **Q-B1**（mj-agent 专属 §3.1 必停） |
+| Phase 1 后（B 风味命中） | mapping 命中 src/mj_agent/{skills,prompts}/* | 经 mj-agent-runtime-* 分析 + 影响分类 + 实施/决定 | **Q-B1**（mj-agent 专属 §3.1实质风险） |
 
 ### Q-B1（mj-agent 专属）
 
 ```
 检测到 code 改动触及 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
-§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
-(1) 用 mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
-(2) Domain Expert + Prompt Engineer review
-(3) Owner 拍板后 runtime skill 落盘 + 再同步 docs
+§3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
+(1) 用 mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 mj-agent-runtime-prompt-version-bump（如 system.md）分析→影响分类→实施/决定
+(2) 独立领域/Prompt视角核验（不要求真人或固定人数）
+(3) runtime skill在范围授权内落盘 + 再同步 docs
 
 或：(A) 仅 sync 非 in-source 部分（推荐；in-source 留给 runtime skill 单独处理）/ (B) 跳过 B 风味流程直接 sync（user 全责）
 ```
@@ -180,7 +181,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 | 编辑 | Phase 2 / Phase 4 update |
 | rg | Phase 3 cross-ref + 反向扫描 |
 | 向 Owner 询问 | Q-07/Q-08/D-02/D-03/Q-B1 |
-| `mj-agent-runtime-*` | Q-B1 触发；B 风味 propose→拍板→apply |
+| `mj-agent-runtime-*` | Q-B1 触发；B 风味 分析→影响分类→实施/决定 |
 | `mj-agent-doc-validate` | Phase 5 sub-call |
 
 ## Reference Files
@@ -192,8 +193,8 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ## Anti-patterns
 
-- **不要** 绕过 runtime skill 直改 src/mj_agent/{skills,prompts}/（B 风味必经 mj-agent-runtime-* propose→拍板→apply）
-- **不要** 未经 Owner 拍板 auto-edit AGENTS.md（§6.4.1 三段分流需 Owner 拍板；拍板后 AI 落盘）
+- **不要** 绕过 runtime skill 直改 src/mj_agent/{skills,prompts}/（B 风味必经 mj-agent-runtime-* 分析→影响分类→实施/决定）
+- **不要** 未经实质治理决定改变AGENTS边界（§6.4.1三段分流的普通同步自主；治理边界实质变化先Owner决定）
 - **不要** 跳过 §7.2.1 反扫的 mj-agent 扩展（in-source canonical body 是反扫目标）
 - **不要** 在 D-02/D-03 触发时跳过用户确认
 - **不要** 主动维护项目根 markdown 5 件的 frontmatter（README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md）—— per Meta v2.2 §2.6 例外，项目根 markdown 不写 frontmatter；A1-A3 不适用；本 skill 仅在「项目根 markdown 段内容反映了 §6.4 4 类某项」时同步内容，不补 frontmatter
@@ -202,5 +203,5 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 ```
 Sync 完成 → mj-agent-doc-validate 全跑 → PASS 后 mj-agent-git-commit
-B 风味场景 → 先 mj-agent-runtime-* propose → 拍板 → apply → 再 sync
+B 风味场景 → 先 mj-agent-runtime-* 分析 → 影响分类 → 实施/决定 → 再 sync
 ```

@@ -48,7 +48,7 @@ name: docker-build
 
 on:
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, 'feature/task-*-integration']
 
 permissions:
   contents: read

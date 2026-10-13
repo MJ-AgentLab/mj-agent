@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-app-start
-description: "适用于 mj-agent 的有序启动本地dev runtime。输入：worktree、provider状态、runtime选择、已有端口/compose。流程：cwd/provider→prereq→already-running→runtime→storage→live→launch→verify。输出：根URL/容器状态/覆盖检查真实，未验证不填绿。Use when：启动当前dev容器栈并报告就绪状态。Do not use for：只要compose ps输出；建议docker-compose，不启动app。授权：缺凭据Owner终端；live单列授权；后台未验证不假造；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的有序启动本地dev runtime。输入：worktree、provider状态、runtime选择、已有端口/compose。流程：cwd/provider→prereq→already-running→runtime→storage→live→launch→verify。输出：根URL/容器状态/覆盖检查真实，未验证不填绿。Use when：启动当前dev容器栈并报告就绪状态。Do not use for：只要compose ps输出；建议docker-compose，不启动app。常规启动由Agent核正常宿主能力，缺能力未验证，不默认工程师向导；新App材料仅受控后台。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — App Start
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -101,7 +102,7 @@ digraph app_start {
 }
 ```
 
-> **Shell 说明**：用已发现的 PowerShell 执行 PS cmdlet；外部程序逐条核对参数。无法验证的后台能力不使用，选择 Owner 终端模式。
+> **Shell 说明**：用已发现的 PowerShell 执行 PS cmdlet；外部程序逐条核对参数。后台能力无法验证则记录UNMET_DEPENDENCY，不强制Owner终端替代；已有授权正常机制可用时由Agent执行。
 
 ### Step 0 — cwd + provider pre-check *(Level A)*
 
@@ -191,9 +192,9 @@ endpoint）还是 **照样 launch**（如只跑 Studio in-memory，memory FAIL �
 
 **容器栈**：**已在 Step 4 `up -d` 起了**——本步跳过（无 [H4]；`up -d` 即容器栈的 launch）。
 
-**前台服务器（Studio / Chainlit serve）**：**[H4] 向 Owner 询问** 选启动模式：
+**前台服务器（Studio / Chainlit serve）**：Agent先核实际可用正常启动/生命周期机制；仅用户明确要求自己运行时保留历史Mode A：
 
-- **Mode A（你的终端跑）**：skill 打印命令交 user 在自己终端执行 → skill 轮询端口 verify。
+- **Mode A（历史用户自选终端方法，非默认前置）**：skill 打印命令交 user 在自己终端执行 → skill 轮询端口 verify。
   持久（不随会话结束）、user 拥有日志 + Ctrl-C。命令：
   ```powershell
   uv run langgraph dev            # Studio → :2024
@@ -201,7 +202,7 @@ endpoint）还是 **照样 launch**（如只跑 Studio in-memory，memory FAIL �
   ```
 - **Mode B（宿主后台进程）**：只有当前宿主提供且已验证进程生命周期、日志和停止接口时采用。
   记录实际 session id、PID、启动时间、命令、端口和工作树；不能假定会话结束必然终止子进程。
-  当前候选没有该宿主验证，记 `UNMET_DEPENDENCY: background lifecycle`，回到 Mode A。
+  未有宿主真实验证时记UNMET_DEPENDENCY: background lifecycle，不宣称成功或强制工程师向导。
 
 > `mj-agent serve` 是 typer→`subprocess.call([python, -m, chainlit, run, …])`，即父 typer 进程
 > spawn 一个 chainlit **子进程**——所以 Mode B 停止需 **tree-kill**（`app-stop` 负责），单 PID kill
@@ -243,7 +244,7 @@ Chainlit serve** → 同套 H1-R2 问题可直接在 Chainlit UI（`:8001` / `:8
 | **H1** | Redirect（info） | Step 1 `mj-agent check` 报 **creds/.env 缺口**（≠ memory-unreachable） | 报缺口 + 引导 `mj-agent-infra-env-setup`；password 脚本交 user 自跑；不 launch（memory-unreachable 则进 Step 4 起 storage，不触 H1） |
 | **H2** | Choice | Step 3 运行时未由措辞确定 | `向 Owner 询问` 选运行时（默认 = 容器栈） |
 | **H3** | Confirm（conditional） | Step 5 `check --live` 出现 FAIL | 报 FAIL + 问先修还是照样 launch |
-| **H4** | Choice | Step 6 且选了前台服务器 | `向 Owner 询问` 选启动模式 A（你终端跑）/ B（Codex 后台） |
+| **H4** | 正常机制核验 | Step 6 且选了前台服务器 | Agent自主核正常启动/生命周期机制并执行可用路线；仅用户明确自选时采用历史Mode A。宿主后台能力不足记UNMET_DEPENDENCY，不默认要求Owner选A/B |
 
 > **执行授权**：普通非破坏动作按明确任务范围执行；多目标不明先询问。涉及 Owner 停点或宿主 block 时停止，不把权限弹窗当作批准，也不因聊天批准重试绕过。
 
@@ -267,9 +268,9 @@ Chainlit serve** → 同套 H1-R2 问题可直接在 Chainlit UI（`:8001` / `:8
 | shell `Get-NetTCPConnection -LocalPort … -State Listen` | Step 2 host 端口探测 |
 | shell `docker compose … ps` | Step 2 容器探测 / Step 7 verify |
 | shell `docker compose … up -d [mj-agent-postgres]` | Step 4 storage + 容器栈 launch |
-| shell `uv run langgraph dev` / `uv run mj-agent serve`（Mode B 需实际生命周期验证，否则 Owner 终端） | Step 6 前台 launch |
+| shell `uv run langgraph dev` / `uv run mj-agent serve`（Mode B 需实际生命周期验证，否则未验证） | Step 6 前台 launch |
 | shell `curl --noproxy '*' -fsS http://localhost:<port>/` | Step 7 根路径 verify |
-| 向 Owner 询问 | H2 运行时选择 / H3 `check --live` FAIL 决策 / H4 启动模式 |
+| 向 Owner 询问 | H2 运行时选择 / H3 `check --live` FAIL 决策；H4由Agent核正常机制，历史Mode A仅用户明确自选 |
 
 ## Output Format
 

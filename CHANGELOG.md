@@ -5,6 +5,15 @@
 
 ## [Unreleased]
 
+### Changed — Agent-first 软件交付治理（ADR-042）
+
+- 以任务授权和实际影响分类替代固定阶段等待与逐内容审批，保留永久业务数据、秘密、信任和技术拒绝边界；Owner 根据成果及风险证据接受版本。
+- 同步活动入口、工作流、37 个开发技能和模板；支持精确登记的任务集成路由，补齐严格 schema/trace、原生负例和版本绑定的仓外软件验收证据。
+- 按 Owner 新决定改为 Agent 执行启动：仅具名新 App 材料由受控后台加密保存、签名、注入及撤销，公共审计核实际权限与单仓范围；独立 Agent 审阅后仅经正常宿主机制启用项目范围信任，Owner 聊天决定绑定实际版本并由 Agent 执行平台动作。后台软件验证与平台注册、宿主加载及平台演练分别记录。
+- 经 Owner Q9 决定，定向兼容固定命令不会调用的具名 alias 与 IDE 分支缓存；完整规则摘要绑定未公开参数，管理核验仍拒绝保护错配，既有配置与凭据值不读取。
+- 专用执行 App 已完成单仓安装与实际 bootstrap 审计，Owner Code Review 和 `ci`/`docker-build` 规则已实际应用，独立回读 CONFIG_VERIFIED；该配置结论不证明平台 canary、发布或 Owner 接受。#582 CLI 已转交另会话，独立可信核验、actual 采样、部署自动化与恢复演练继续延期。
+- Owner Q10/Q11 限定本任务通过 origin / `MJ-AgentLab/mj-agent` 完成 GitHub 发布闭环，Gitee 被动镜像与宿主运行验收单列 DEFERRED、不计 PASS；默认双推及原生信任规则保留。旧软件候选 edd2e1e 的专用 App 审计与三规则独立回读已为 EXECUTOR_VERIFIED / CONFIG_VERIFIED，新版本执行前重核实际状态；新 App 例外不扩 Gitee。
+
 ### Added — 离线 EVAL 回放核心（#582）
 
 - 新增独立的内存输入校验、SQL AST／轨迹和绑定角色评判、完整性汇总及精确基线回归报告；保留22条计划分母、首次失败与严格窗口，合成结果不产生 runtime 指标或基线。

@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: 1.5
+version: "1.6"
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-08-07
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -34,43 +34,30 @@ ai_visibility: source-of-truth
 
 ---
 
-## §1 总体流程（17-stage loop）
+## §1 交付闭环与阶段检查点
 
-> Port from HITL_Prompt STANDARD §1。stage 0-17 逐字保留。
+阶段保留身份和记录位置，不产生固定人工等待；stages 5/7/9/11/13 是对齐、核验和授权检查点。Agent 在已有任务授权内自主完成常规设计、实现、验证、文档及修复；实质决定与技术边界按 `policies/ai-agent.md` §4 判断。
 
-```text
-0.  Intake：任务准入评估
-1.  Issue Draft / Issue 创建
-2.  Branch / Worktree 创建
-3.  Repo Scan：仓库事实核查
-4.  Plan 编写或更新
-5.  HITL Gate 1：确认 Plan / 风险 / 文档决策
-6.  SPEC / ADR / RUNBOOK 编写或更新
-7.  HITL Gate 2：确认设计与关键决策
-8.  Implementation：按已确认文档实现（3 风味：纯代码 / in-source canonical / infra）
-9.  Scope Drift Gate：实现中发现偏离时暂停
-10. Local Verification：本地验证（Level A 只读 + Level B HITL-confirm）
-11. AI Self-review：提交前自检（含 §6 5a/5b/5c/5d 反向扫描）
-12. Commit
-13. Push
-14. PR 创建
-15. CI / Review 处理
-16. Merge Gate
-17. Post-merge 收尾（含 EVAL backlog ticket 自动开单 / SPEC-* 漏项沉淀）
-```
+0. Intake：目标、接受基线、授权、风险与实际前置。
+1. Issue：复用任务系统，必要发布核对授权。
+2. Branch：核对真实工作区，新增分支通过 worktree。
+3. Repo Scan：核实规格、实现、依赖与文档。
+4. Plan：按依赖与风险自主拆解，明确 AC 和证据。
+5. 基线检查点：核对 Plan/风险/文档；未决实质选择交 Owner。
+6. SPEC/ADR/必要文档：按真实行为同步。
+7. 设计检查点：普通技术选择自主，实质取舍取得决定。
+8. Implementation：实现、适用 TDD/根因诊断、文档和局部修复。
+9. Scope Drift：对真实 diff 反扫，边界越界只停受影响项。
+10. Verification：离线验证及已授权适用运行行为。
+11. Self-review + 独立核验：真实成果、独立期望和可复现证据。
+12. Commit：任务授权内核对 staged 内容与来源。
+13. Push：核对版本、目标与风险，失败先对账。
+14. PR：选择单 PR、独立多 PR 或精确登记的分层结构。
+15. Review/CI：自主修复，接受条件变化交 Owner。
+16. Delivery/Merge：门禁及平台有效审核满足后在授权内执行。
+17. 收尾与接受：核实集成/运行成果、验收包、延期与恢复；Owner 明确接受后才标任务 completed。
 
-> **HITL gates 集中于 stages 5 / 7 / 9 / 11 / 13**：每次 AI 自主推进抵达这些
-> 阶段时，**强制暂停**等待人工确认。其他阶段按 §3 规则按需 HITL。
-
-| Gate | Stage | 确认内容 |
-|---|---|---|
-| Gate 1 | 5 | Plan / 风险 / 文档决策 |
-| Gate 2 | 7 | 设计与关键决策（SPEC / ADR） |
-| Gate 3 | 9 | Scope Drift（实现中发现偏离） |
-| Gate 4 | 11 | Self-review 结论（commit 前） |
-| Gate 5 | 13 | Push（CI / Review 进入前） |
-
----
+成果可见性决定接受与发布顺序，仓库批准、部署授权、运行验收与业务接受分记。子 PR 已合并仅表示候选集成。独立可信核验、actual 采样、部署自动化及实际恢复演练首期延期，未测与延期不计 PASS。
 
 ## §2 Per-stage Prompt 通用结构
 
@@ -112,7 +99,7 @@ Fallback:
 - Plan / SPEC / ADR 用于约束任务边界
 - 代码与真实数据流用于校验文档是否仍然成立
 - **不要写"参考所有 docs/\*\*"**
-- 如果参考文档、Issue、Plan、代码现状冲突，**必须触发 HITL**
+- 如果参考文档、Issue、Plan、代码现状冲突，先核实事实并自主修复基线内差异；实质目标、接受标准或风险冲突再请求 Owner 决定
 
 ### §2.2 Skill Hint 规则
 
@@ -127,120 +114,27 @@ command，但**不**把它作为唯一执行路径——同时给出 `Use When` 
 
 ---
 
-## §3 HITL 通用规则
+## §3 决定、授权与检查点
 
-> Port from HITL_Prompt STANDARD §3.1 / §3.2 / §3.3。
-> **核心原则**：AI 自主推进低风险、可逆、符合既有模式的事项；凡影响数据、API、
-> 权限、安全、生产、发布、兼容性、in-source SKILL/PROMPT body、qcm_catalog 镜像或
-> 任务边界的事项，必须暂停并请求人工确认。
+### §3.0 决定与实际执行路线
 
-### §3.0 HITL 决策与实际执行路线
+先完成具体可审阅差异、影响、证据与恢复方案。对实质变化由 Owner 决定；已有明确任务授权覆盖的普通实现与已批准方案由 Agent 正常工具执行。成组治理改造不部分切换；独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。授权不解锁实际拒绝，受阻步骤保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。
 
-AI 先完成具体差异、影响、门禁映射与成组恢复方案，Owner 对目标、动作和范围批准。
-Owner 批准不自动解锁 hook。需 Owner 批准的动作仍硬阻断；技术拒绝返回
-`BLOCKED_EXECUTION_ROUTE`，不得改权限、换工具、编码或创建凭证绕过。
+### §3.1 按语义影响停止
 
-本迁移采用“完整成组差异 → Owner 批准并人工应用 → Codex 验证”的路线。
-人工应用前核对全部文件身份；正式入口、所有权、契约及门禁不得部分切换。
-这条路线不是 AI 代替 Owner 批准，也不改变其他业务必停面。日常动作按当次已审阅路线执行。
+`policies/ai-agent.md` §4 canonical 10-enum 是风险定位标签，四类 runtime 路径及兼容契约命中本身不审批。SQL 安全不变量、数据范围、业务口径、外发边界、breaking 承诺、目标/AC、必要门禁、信任/权限、生产策略或供应链信任来源变化需要 Owner 决定。未授权删除/迁移、不可逆操作、资源越界或未知风险只停受影响项。
 
-### §3.1 必须暂停确认
+基线内实现、重构、局部修复、普通 Plan 和文档自主完成，提供行为及负例证据。失败先定位与修复，不能删除断言、忽略红灯或降低 AC 获得通过；决定改变 AC 交 Owner。技术权限、CI 全绿及模型 effort 均不产生授权。
 
-通用项（出现以下任一即暂停）：
+### §3.2 按规模裁剪与状态恢复
 
-- 任务目标、范围、验收标准不清楚
-- Issue / Plan / SPEC 与代码现状冲突
-- 涉及数据库 schema、migration、回滚脚本（mj-agent 是只读消费者，仍可触发上游业务系统调整诉求）
-- 涉及真实字段、列名、数据流但尚未验证
-- 涉及权限、认证、安全、secret
-- 涉及生产配置、CI/CD 发布链路、部署流程
-- 涉及公共 API 或用户可见行为变化
-- 需要删除数据、删除文件或执行不可逆操作
-- 需要引入新依赖（影响 `pyproject.toml` / `uv.lock`）
-- 实现中 scope 明显扩大
-- 测试失败且原因不明确
-- Review comment 会改变需求、API、schema、权限或用户行为
+单文件低风险改动可用已有 Issue/PR 记录替代单独 Plan，明确复用载体及验证即可。复杂、多单元或治理任务使用 Plan/任务清单，不机械新增材料。阶段结束、集成前/交接形成检查点：目标/AC/授权、版本/工作区/集成、证据、在途/失败/未知/延期、下一步及停止条件。重入核事实与副作用，成功项不重复。
 
-mj-agent 专属新增（4 项硬必停）：
+普通授权在目标、对象、环境、权限和风险未实质变化且未撤销时复用，实际 diff/SHA 仍核验。任务可列 stage/commit、普通 push、PR/merge，删除与权限变更独立列明。Plan completed 须基线满足、成果可用且 Owner 明确接受版本；merge 不自动完成。
 
-- **in-source SKILL.md body 修改**（`src/mj_agent/skills/**/SKILL.md`）—— 字面
-  修改即 LLM runtime 行为修改，必须 Domain Expert + Prompt Engineer 评审；A11
-  EVAL 门禁（transitional waiver 期内可暂时 `eval_references` 注释 TODO）。
-- **system prompt 修改**（`src/mj_agent/prompts/system.md`）—— `version` bump
-  必触发 HITL；`eval_references` 同步审查。
-- **qcm_catalog.yaml 镜像变更**（`src/mj_agent/biz_catalog/qcm_catalog.yaml`）——
-  与上游业务系统数据字典 STANDARD 同步；漂移可能导致 `find_biz_context` 返回
-  错误业务语义。
-- **SQL guardrail / precheck 规则修改**（`src/mj_agent/tools/sql/{guardrail,precheck}.py`）——
-  改动放宽即扩 mj-agent 数据边界（ADR-006 / ADR-009 红线）。
+### §3.3 实质决定提问格式
 
-> canonical 的 HITL required-scenarios 10-enum 收敛口径见
-> [[../../policies/ai-agent|policies/ai-agent]] §4；本节是其在执行闭环里的展开。
->
-> **执行边界**：四项 in-source 必停保持 Owner 审批；原生 hook 的硬阻断与范围批准分别判断。无执行路线时停止该动作，继续不依赖它的准备。
-
-### §3.2 可以默认处理
-
-以下情况 AI 可以自主处理，但需**记录假设**：
-
-- 低风险格式修正
-- 拼写、链接、frontmatter 小修
-- 明显符合现有模式的重复性代码
-- 补充局部测试
-- 修复 lint
-- 更新与代码变更直接对应的文档
-- 根据既有规则选择模板或文档落点
-
-#### Stage 4 豁免（PLAN 落盘）
-
-满足以下**全部 4 项 AND 条件**时，AI 可在 Intake 阶段直接判定 `Plan: 不需要`，
-跳过 Stage 4 PLAN 落盘 + Stage 5 HITL Gate 1：
-
-1. **任务性质**：单文件 bugfix / 拼写 / 链接修正 / dependency 版本 patch / 文案微调。
-2. **风险等级**：Intake risk-level = `Low`（task-type ∈ `{bugfix, documentation}`）。
-3. **Affected areas 不触发 §3.1 mj-agent 专属 4 项必停**：
-   - `src/mj_agent/skills/**/SKILL.md` body（runtime-skill-content-change）
-   - `src/mj_agent/prompts/system.md` body（prompt-version-or-body-change）
-   - `src/mj_agent/biz_catalog/qcm_catalog.yaml`（biz-catalog-sync）
-   - `src/mj_agent/tools/sql/{guardrail,precheck}.py`（sql-guardrail-relax）
-4. **不涉及** `.env` / `.env.example` / `docker/`（M5-PR2 起路径为 `docker/`，
-   非平移前的 `infra/docker/`；其中 `docker/Dockerfile` 外部 registry 镜像引用
-   另需 Owner 拍板——canonical `secrets-grants-or-prod-config`，规则体
-   `policies/docker-runtime.md` §4） / CI workflow /
-   `pyproject.toml` `[project.dependencies]` 主条目（version patch 除外）。
-
-豁免必须在 **Intake Result 显式声明** `Plan: 不需要 / 豁免依据=§3.2`；否则
-Stage 4 仍为必经阶段。**审计依据**：`grep "Plan: skipped\|Plan: 不需要"
-intake-result.md` 用作留痕。
-
-> **豁免边界（明确不覆盖）**：本豁免范围**不包含** §3.1 通用必停 12 项，
-> 亦**不包含** in-source canonical / biz catalog / SQL guardrail / Docker
-> compose / CI/CD 类变更。
-
-### §3.3 HITL 提问格式
-
-```text
-问题 N：
-- 当前观察：
-- 不确定点：
-- 为什么重要：
-- 可选方案：
-  A.
-  B.
-  C.
-- Owner 执行步骤（仅当需 AI 无法自取的外部信息：ip / port / key / token / endpoint
-  等 → 给精确命令 + env 变量名 + 失败现象；详 policies/ai-agent §8）：
-- 我的建议：
-- 默认假设：
-- 是否必须等待人工确认：是 / 否
-```
-
-每次最多提出 **3-5 个**关键问题。格式定位 = **选项 + （必要时）可执行步骤**，让 Owner
-能"拍板选择"或"照步骤执行"，而非自行编写内容。当 AI 需要无法自取的外部信息时，
-`Owner 执行步骤` 字段必填具体命令（见 [[../../policies/ai-agent|policies/ai-agent]] §8
-External-Info Handoff Discipline）。
-
----
+一次聚焦一项真实取舍，先探索可自取事实；提供当前观察、为何影响结果、互斥可行选项、推荐项与理由/影响、必须等待的原因。没有新增实质决定就继续授权内工作。先自取可用公开事实；既有秘密不读取、不索取值。新单仓App材料仅受控后台处理；独立Agent技术审阅后，执行Agent按授权与正常宿主机制实施项目范围启用。不支持或拒绝如实未验证。
 
 ## §4 Stage → Skill 映射表
 
@@ -272,22 +166,17 @@ External-Info Handoff Discipline）。
 |---|---|---|---|
 | **git** | 9 | 1 Issue / 2 Branch / 12 Commit / 13 Push / 14 PR / 15 Review-others-PR / 16 Merge-check / 17 Delete / 17 Sync | `/mj-agent-git-issue` `/mj-agent-git-branch` `/mj-agent-git-commit` `/mj-agent-git-push` `/mj-agent-git-pr` `/mj-agent-git-review-pr` `/mj-agent-git-check-merge` `/mj-agent-git-delete` `/mj-agent-git-sync` |
 | **doc** | 6 | 4 sub Plan / 6 Author / 11 sub Validate / 8 sub Sync / 15 sub Review / archive Migrate | `/mj-agent-doc-plan` `/mj-agent-doc-author` `/mj-agent-doc-validate` `/mj-agent-doc-sync` `/mj-agent-doc-review` `/mj-agent-doc-migrate` |
-| **runtime** | 4 | 8 (B-flavor) sub；**propose → 拍板 → apply** | `/mj-agent-runtime-skill-doc-improve` `/mj-agent-runtime-prompt-version-bump` `/mj-agent-runtime-biz-catalog-sync` `/mj-agent-runtime-eval-baseline` |
+| **runtime** | 4 | 8 (B-flavor) sub；**分析 → 影响分类 → 实施/决定** | `/mj-agent-runtime-skill-doc-improve` `/mj-agent-runtime-prompt-version-bump` `/mj-agent-runtime-biz-catalog-sync` `/mj-agent-runtime-eval-baseline` |
 | **infra** | 8 | 8 (C-flavor) / 10 sub / env teardown / LLM endpoint probe / 10 sub app-start · 17 sub app-stop | `/mj-agent-infra-env-setup` `/mj-agent-infra-env-teardown` `/mj-agent-infra-studio-probe` `/mj-agent-infra-docker-compose` `/mj-agent-infra-storage-stack` `/mj-agent-infra-llm-endpoint-probe` `/mj-agent-infra-app-start` `/mj-agent-infra-app-stop` |
 
-> **Runtime family 约束（v1.3 / ADR-034）**：所有 `mj-agent-runtime-*` 先做
-> **分析 + propose diff + impact 反扫**（列出影响清单），**但落盘前必须 Owner 拍板**——
-> 拍板后由 skill 经 `ask` 权限门直接 Edit/Write `src/mj_agent/{skills,prompts,
-> biz_catalog,tools}/`（不再"read-only 永不写"、不再甩回 Owner 手动粘贴）。SKILL.md
-> `## Anti-patterns` 段明文写 "❌ 未经 Owner 拍板就落盘 / ❌ 跳过 impact 分析直接改"；
-> A12 描述质量门禁校验此约束。
+> **Runtime family**：先分析、差异及 impact 反扫；基线内保持安全/业务/外发边界的改善自主 apply，语义越界按 §3.1 作实质决定。保持 frontmatter/版本/EVAL/冻结契约与独立角色核验，实际拒绝不绕过。
 
 ---
 
 ## §5 Local Verification 矩阵 [GAP #10]
 
 > Port from HITL_Prompt STANDARD §4.8。**Level A 只读 / 无副作用 / 无 HITL**（必跑）
-> 与 **Level B DB/LLM 依赖 / 副作用 / HITL-confirm** 分别执行。
+> 与 **Level B DB/LLM 依赖 / 副作用 / 具名授权** 分别执行。
 > 完整编排步骤见 [[../../.agents/skills/mj-agent-flow-verify/SKILL\|mj-agent-flow-verify]]。
 
 ### Level A：只读 / 无副作用 / 无 HITL（必跑）
@@ -314,7 +203,7 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke` | smoke collection + external policy skip |
 | `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract` | contract collection + biz-live policy skip |
 
-### Level B：DB / LLM 依赖 / 副作用 / **HITL-confirm**
+### Level B：DB / LLM 依赖 / 副作用 / **具名授权**
 
 | 命令 | 用途 | HITL 触发条件 |
 |---|---|---|
@@ -329,16 +218,15 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
   （碰 SQL/biz 时，live 证据走 sanctioned probe / Studio，不以 pytest 代替）。
 - **风味 B in-source canonical**：Level A + 对是否运行 Studio / sanctioned live probe 的
   显式 Owner 决策；pytest smoke 仅证明结构化 policy skip，不作为业务样本 live 证据。
-- **风味 C infra**：Level A + 必跑 `mj-agent check` + compose up/down 排练 +
-  Studio 探针。
+- **风味 C infra**：Level A；健康探针、compose 排练及 Studio 按任务需要与具名运行授权执行，缺运行条件明确未验证。
 
-关键测试失败且原因不明时**必须 HITL**。
+关键测试失败由 Agent 自主定位修复；未知风险影响资源、安全或 AC 时暂停受影响项并请 Owner 决定。
 
 ---
 
 ## §6 AI Self-review 检查清单 [GAP #10]
 
-> Port from HITL_Prompt STANDARD §4.9。commit 前（HITL Stage 11）逐项自检。
+> Port from HITL_Prompt STANDARD §4.9。commit 前逐项自检，并由独立核验者从 AC 建立期望读取真实成果。
 > 完整编排见 [[../../.agents/skills/mj-agent-flow-self-review/SKILL\|mj-agent-flow-self-review]]。
 
 11-item checklist：
@@ -374,14 +262,13 @@ Agent/CI 发起的 pytest 始终走 hardened runner。凭据存在不会启用 l
    数据库一致。
 9. **runtime canonical 改动审查**：若 `src/mj_agent/skills/**/SKILL.md` 或
    `src/mj_agent/prompts/*.md` 改动，A11 / A8 EVAL 同步审查 + frontmatter
-   `version` bump + Domain Expert 评审签字。
+   `version` bump + 独立领域视角核验记录（不要求真人或固定人数）。
 10. **system.md `version` bump 检查**：若 system.md `version` 字段改变，必须
     同步 `eval_references` 字段（transitional waiver 期内可注释 TODO）。
 11. commit type 是否匹配 branch type（`documentation/*` 仅 `docs`；`feature/*`
     ∈ {feat, perf, refactor, test, docs}）+ commit scope 是否在闭合 allowlist 内。
 
-> 发现 secret、无关改动、关键测试失败、in-source canonical 未 HITL、中高风险
-> 残留时**必须 HITL**。
+> 发现 secret 或安全边界风险暂停受影响项；范围内失败自主修复。实质变化、未授权操作或接受风险越界才请求 Owner 决定。
 
 ---
 

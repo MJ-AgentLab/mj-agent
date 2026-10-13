@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: archive-capability
 state: draft
-version: 0.1
+version: "0.2"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -28,7 +28,7 @@ ai_visibility: source-of-truth
 
 ## High-Level Steps
 
-1. **HITL Gate-Archive** — 项目负责人 + capability owner 联合决策.
+1. **归档授权核对** — Owner对实质退出决定，具名迁移授权复用.
 2. **Reference scan** — `scripts/sdd/check_archived_references.py` 反向扫描；列出所有 active
    引用此 capability 的位置；先迁引用，再归档.
 3. **TOMBSTONE.md** — `capabilities/<cap>/TOMBSTONE.md` 起草（顶部红 NOTE + supersedes 表 +
@@ -37,14 +37,12 @@ ai_visibility: source-of-truth
 5. **Move** — `git mv capabilities/<cap>/ archive/capabilities/<dom>/<cap>/<YYYY-MM-DD>/`.
 6. **INDEX update** — `capabilities/INDEX.md` 移除条目（由 `generate_index.py` 自动）;
    `archive/INDEX.md` 追加条目（由 `generate_archive_index.py` 自动）.
-7. **PR + HITL Gate-2** — review 重点：`ai_visibility` 字段合法、`retention_class` 合理、
+7. **PR + 独立核验/平台审核** — review 重点：`ai_visibility` 字段合法、`retention_class` 合理、
    `superseded_by` 完整.
 
-## HITL Triggers
+## 决定与授权
 
-- 任意 archive ceremony → 永久 HITL（per `policies/ai-agent.md` §HITL Required Scenarios #6）
-- 涉及 ≥ 10 文件迁移 → 大规模目录迁移 HITL（per §#10）
-- 跨多 capability 归档 → 走 cross-capability workflow
+具名迁移/删除、对象、必要备份及损失控制独立列授权；已有同清单复用。归档数量不自动重审批，实质变化只停受影响项。保留冻结历史，living引用和索引闭合。
 
 ## TBD: Phase M5 内容填充
 

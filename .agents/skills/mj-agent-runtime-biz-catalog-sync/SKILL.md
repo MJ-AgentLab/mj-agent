@@ -1,34 +1,35 @@
 ---
 name: mj-agent-runtime-biz-catalog-sync
-description: "适用于 mj-agent 的catalog镜像与脱敏快照漂移。输入：Owner背书快照、catalog、上游命名规范、依赖引用。流程：offline diff→分类→六处反扫→catalog/cross-update草案→impact→HITL。输出：漂移/影响/依赖/提案/未验证明确。Use when：比较Owner脱敏快照并建议catalog改动。Do not use for：直接连biz库拉schema并更新catalog；拒绝直连，缺快照登记未验证。授权：biz-catalog-sync停点；批准不解hook；无快照不连库；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的catalog镜像与脱敏快照漂移。输入：Owner背书快照、catalog、上游命名规范、依赖引用。流程：offline diff→分类→六处反扫→catalog/cross-update草案→impact→HITL。输出：漂移/影响/依赖/提案/未验证明确。Use when：比较Owner脱敏快照并建议catalog改动。Do not use for：直接连biz库拉schema并更新catalog；拒绝直连，缺快照登记未验证。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Runtime — Biz Catalog Sync
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` (offline; reads only an Owner-attested sanitized snapshot under `.mj-agent-local/biz-schema-snapshots/`, never a live DB), proposes a diff to qcm_catalog.yaml + reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names, and **after Owner approval retains the hard stop until an independently reviewed execution route is available** (ADR-034 propose→拍板→apply; approval does not unlock hooks). Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers execution-loop §3.0 拍板模型 + §3.1 必停 (biz-catalog-sync) + §4.2 Runtime constraint. Do not use for: modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
+This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_agent/biz_catalog/qcm_catalog.yaml) and mj-system upstream STANDARD §2-§4 (Biz_DWS_Naming_Stability) by wrapping `scripts/diff_biz_schema.py` (offline; reads only an Owner-attested sanitized snapshot under `.mj-agent-local/biz-schema-snapshots/`, never a live DB), proposes a diff to qcm_catalog.yaml + reverse-scan against SKILL.md curated examples that depend on catalog metric/period/dimension names, and **implements baseline-preserving changes within task authorization; material boundary changes require Owner decision and the actual execution route is checked** (ADR-042 分析→影响分类→实施/决定; approval does not unlock hooks). Make sure to use this skill whenever the user says "catalog drift", "biz_catalog 同步", "qcm_catalog 漂移", "mirror mj-system §2-§4", "diff biz schema", "biz_dws naming stability", "qcm_catalog.yaml 升级", "新增 metric / period / dimension", "B 风味 biz_catalog" in the mj-agent context. Triggers execution-loop §3.0 拍板模型 + §3.1实质风险 (biz-catalog-sync) + §4.2 Runtime constraint. Do not use for: modifying SKILL.md (use mj-agent-runtime-skill-doc-improve); modifying system.md (use mj-agent-runtime-prompt-version-bump); SQL guardrail / precheck changes (those are pure code A flavor; use mj-agent-flow-implement); validate frontmatter (use mj-agent-doc-validate).
 
 
 ## Overview
 
-**Propose → 拍板 → apply**（ADR-034）：检测 + 报告 mj-agent `qcm_catalog.yaml` 与 mj-system 上游 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4 的漂移，包装 `scripts/diff_biz_schema.py`（**offline**：只读 `.mj-agent-local/biz-schema-snapshots/` 下 Owner 背书的 sanitized 快照，不连数据库；`scripts/fetch_biz_schema.py` 已作废为 fail-closed tombstone），propose diff + 反扫 SKILL.md curated examples 中受影响的 metric / period / dimension 名；**Owner 拍板后由本 skill 在 Owner 批准且执行路线可用时直接 编辑 `qcm_catalog.yaml` 落盘**（保留 propose→决策→apply 目标；执行路线不可用则停）。
+**分析 → 影响分类 → 实施/决定**（ADR-042）：检测 + 报告 mj-agent `qcm_catalog.yaml` 与 mj-system 上游 `[STANDARD]_Biz_DWS_Naming_Stability.md` §2-§4 的漂移，包装 `scripts/diff_biz_schema.py`（**offline**：只读 `.mj-agent-local/biz-schema-snapshots/` 下 Owner 背书的 sanitized 快照，不连数据库；`scripts/fetch_biz_schema.py` 已作废为 fail-closed tombstone），propose diff + 反扫 SKILL.md curated examples 中受影响的 metric / period / dimension 名；**本skill在任务授权有效且执行路线可用时直接 编辑 `qcm_catalog.yaml` 落盘**（保留 propose→决策→apply 目标；执行路线不可用则停）。
 
 **Why this skill exists**：
 
 - 上游指标/列名/时间维变化会使镜像与业务语义漂移；以 Owner 背书的脱敏快照为输入，缺快照不连库补取。
 
 - `src/mj_agent/biz_catalog/qcm_catalog.yaml` 是 mj-system 上游 STANDARD §2-§4 的**镜像**，被 `find_biz_context` tool 在 runtime 召回
-- B 风味（in-source canonical 边缘）改动；触 §3.1 必停面 biz-catalog-sync（B 风味永远 HITL）
+- B 风味（in-source canonical 边缘）改动；触 §3.1实质风险面 biz-catalog-sync（B 风味按语义影响分类）
 - Stage 8 sub by `mj-agent-flow-implement`（C 风味或 B 风味边缘）
 
-**hard constraint**: 本 skill **先 propose diff + impact analysis + 依赖反扫，落盘前必须过 `OWNER_APPROVAL_REQUIRED` 停点**（Owner 决策与宿主执行能力分开；硬阻断不得绕过）；拍板后且执行路线可用时由本 skill 编辑 `src/mj_agent/biz_catalog/qcm_catalog.yaml` 落盘——catalog 是 mj-system 上游镜像，不加上游不存在的 entry。
+**hard constraint**: 本 skill **先 propose diff + impact analysis + 依赖反扫，落盘前按实际影响分类，只有安全/业务/权限/breaking/AC/gate变化或缺动作授权才停在 `OWNER_APPROVAL_REQUIRED`**（Owner 决策与宿主执行能力分开；硬阻断不得绕过）；任务授权有效且执行路线可用时由本 skill 编辑 `src/mj_agent/biz_catalog/qcm_catalog.yaml` 落盘——catalog 是 mj-system 上游镜像，不加上游不存在的 entry。
 
 ## When to Use
 
@@ -46,13 +47,13 @@ This skill detects + reports drift between mj-agent biz catalog mirror (src/mj_a
 
 **MUST NOT use for**：
 
-- ❌ 跳过本 skill 的 propose + 反扫、未经 Owner 拍板盲改 qcm_catalog.yaml
+- ❌ 跳过本 skill 的 propose + 反扫、未经影响核对或超出任务授权盲改 qcm_catalog.yaml
 - ❌ 改 SKILL.md → `mj-agent-runtime-skill-doc-improve`（B 风味）
 - ❌ 改 system.md → `mj-agent-runtime-prompt-version-bump`
-- ❌ SQL guardrail / precheck 调整（tools/sql/{guardrail,precheck}.py；这是 A 风味纯代码，§3.1 必停面 sql-guardrail-relax 由 mj-agent-flow-implement 处理）
+- ❌ SQL guardrail / precheck 调整（tools/sql/{guardrail,precheck}.py；这是 A 风味纯代码，§3.1实质风险面 sql-guardrail-relax 由 mj-agent-flow-implement 处理）
 - ❌ mj-system 上游 STANDARD 编辑（出 mj-agent 仓 governance）
 
-## Workflow（propose → 拍板 → apply）
+## Workflow（分析 → 影响分类 → 实施/决定）
 
 ```dot
 digraph sync {
@@ -65,13 +66,13 @@ digraph sync {
 
   s3 [label="Step 3: 反向扫描 SKILL.md curated examples\n• src/mj_agent/skills/biz-domain-context/SKILL.md\n• src/mj_agent/skills/qcm-analysis/SKILL.md (curated NL→SQL examples)\n• src/mj_agent/skills/safe-sql-analysis/SKILL.md\n• tests/eval/golden_seed.jsonl (reference_sql)" shape=box];
 
-  s4 [label="Step 4: Propose diff (待拍板)\n• qcm_catalog.yaml 改动建议\n• 依赖 SKILL.md examples 同步建议\n• tests/eval/golden_seed.jsonl 同步建议（如适用）" shape=box];
+  s4 [label="Step 4: Propose diff (待影响核对)\n• qcm_catalog.yaml 改动建议\n• 依赖 SKILL.md examples 同步建议\n• tests/eval/golden_seed.jsonl 同步建议（如适用）" shape=box];
 
-  s5 [label="Step 5: Impact analysis\n• §3.1 biz-catalog-sync 自动 HITL\n• find_biz_context 召回行为变化\n• Studio probe H1/H2/H3 影响\n• smoke test (real biz DB) 影响" shape=box];
+  s5 [label="Step 5: Impact analysis\n• §3.1 biz-catalog-sync 实质变化才HITL\n• find_biz_context 召回行为变化\n• Studio probe H1/H2/H3 影响\n• smoke test (real biz DB) 影响" shape=box];
 
   s6 [label="Step 6: Output proposed diff\n+ HITL Questions" shape=diamond];
 
-  hitl [label="拍板 — Owner decides:\n• Accept → 本 skill 批准后核验执行路线（硬阻断时不落盘）\n  + mj-agent-runtime-skill-doc-improve（如 SKILL.md 受影响）\n• Refine → 回 Step 4\n• Reject → 取消" shape=doublecircle];
+  hitl [label="影响分类：基线内自主；实质变化Owner decides:\n• Accept → 本技能核任务授权与技术路线（硬阻断时不落盘）\n  + mj-agent-runtime-skill-doc-improve（如 SKILL.md 受影响）\n• Refine → 回 Step 4\n• Reject → 取消" shape=doublecircle];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> hitl;
 }
@@ -144,7 +145,7 @@ grep -E 'BIZ_ALLOWED_DWD_TABLES|<old biz_dwd table>' src/mj_agent/tools/sql/guar
 
 输出每条命中：file:line + 引用内容；判定是否 living（直接更新到新名）/ frozen（保旧名 + 注释为何保留）。
 
-## Step 4: Propose Diff（待拍板）
+## Step 4: Propose Diff（待影响核对）
 
 ### qcm_catalog.yaml 改动建议
 
@@ -177,7 +178,7 @@ metrics:
 - src/mj_agent/skills/qcm-analysis/SKILL.md（行 NN）：curated example 含 `<old col>` → 改 `<new col>`
 - src/mj_agent/skills/biz-domain-context/SKILL.md（行 NN）：metric 列表含 `<old metric>` → 加 `<new metric>` 或 deprecate
 
-建议：Owner 拍板后本 skill 落盘 qcm_catalog.yaml，立即 mj-agent-runtime-skill-doc-improve <skill> 同步 SKILL.md（避免 catalog 与 examples 漂移）
+建议：本skill在范围授权内落盘 qcm_catalog.yaml，立即 mj-agent-runtime-skill-doc-improve <skill> 同步 SKILL.md（避免 catalog 与 examples 漂移）
 ```
 
 ### tests/eval/golden_seed.jsonl 同步（如适用）
@@ -191,7 +192,7 @@ metrics:
 ```markdown
 ## Impact Analysis
 
-- **Stage 8 B 风味边缘触发**：本改动是 biz_catalog 镜像漂移修复 → §3.1 必停面 biz-catalog-sync 强制 HITL
+- **Stage 8 B 风味边缘触发**：本改动是 biz_catalog 镜像漂移修复 → §3.1实质风险面 biz-catalog-sync 实质变化才HITL
 - **EVAL backlog draft with explicit publication authorization**：per execution-loop §7.3 Rule 11（如 SKILL.md 同步改动也触；qcm_catalog 单独不触，但建议绑定 SKILL diff）
 - **find_biz_context 召回行为变化**：<具体；如"`qrynum` 业务问题召回时新增 dws_qcm_xxx_daily_total 候选">
 - **Studio probe 影响**：
@@ -212,14 +213,14 @@ per execution-loop §3.3 7-段格式：
 - 可选方案：A. 本 PR 同步 / B. follow-up PR / C. 拒绝（mj-system upstream 还在 draft）
 - 我的建议：A
 - 默认假设：B
-- 是否必须等待人工确认：是
+- 是否必须等待人工确认：<实质决定是；已有授权范围内否>
 ```
 
-## Step 6: Output（HITL pause）
+## Step 6: Output（修复/补证据；实质越界才决定）
 
-输出 proposed diff + 反扫 + impact + HITL Questions，**停在 `OWNER_APPROVAL_REQUIRED` 等 Owner 拍板**（Codex 载体：向 Owner 询问）：
+输出 proposed diff + 反扫 + impact + HITL Questions，**基线内自主实施；实质变化或缺动作授权才停在 `OWNER_APPROVAL_REQUIRED`**（Codex 载体：向 Owner 询问）：
 
-- **Accept** → 本 skill 在 Owner 批准且执行路线可用时**直接 编辑 `qcm_catalog.yaml` 落盘**（聊天批准不自动解锁 hook）+ mj-agent-runtime-skill-doc-improve 同步 SKILL.md（如适用）→ mj-agent-flow-self-review Stage 11
+- **Accept** → 本 skill 在 任务授权有效且执行路线可用时**直接 编辑 `qcm_catalog.yaml` 落盘**（聊天批准不自动解锁 hook）+ mj-agent-runtime-skill-doc-improve 同步 SKILL.md（如适用）→ mj-agent-flow-self-review Stage 11
 - **Refine** → 回 Step 4
 - **Reject** → 取消，记录 review notes（可能开 follow-up issue 给 mj-system 上游）
 
@@ -261,9 +262,9 @@ per execution-loop §3.3 7-段格式：
 ### HITL Questions
 <per Step 5；Domain Expert + 项目负责人 review pending>
 
-### Next Action（HITL pause）
-- ☐ Domain Expert review
-- ☐ Owner 拍板 Accept → 本 skill 核验批准与执行路线后编辑 qcm_catalog.yaml（硬阻断时不写）
+### Next Action（修复/补证据；实质越界才决定）
+- ☐ 独立领域视角核验
+- ☐ 实质变化Owner决定或基线内自主实施 → 本 skill 核验批准与执行路线后编辑 qcm_catalog.yaml（硬阻断时不写）
 - ☐ 同步 SKILL.md → mj-agent-runtime-skill-doc-improve（如适用）
 - ☐ 同步 golden_seed.jsonl → 拍板后 AI 编辑
 - ☐ Refine → 调 Step 4
@@ -272,7 +273,7 @@ per execution-loop §3.3 7-段格式：
 
 ## What This Skill DOES NOT DO
 
-- ❌ **未经 Owner 拍板就 编辑 / 写入 到 src/mj_agent/biz_catalog/qcm_catalog.yaml**（拍板后才落盘；ADR-034 propose→拍板→apply）
+- ❌ **超出任务授权或未经实质决定就 编辑 / 写入 到 src/mj_agent/biz_catalog/qcm_catalog.yaml**（范围授权内可落盘，实质变化先决定；ADR-042 分析→影响分类→实施/决定）
 - ❌ 不修改 SKILL.md → mj-agent-runtime-skill-doc-improve
 - ❌ 不修改 system.md → mj-agent-runtime-prompt-version-bump
 - ❌ 不修改 SQL guardrail / precheck（A 风味；mj-agent-flow-implement 处理）
@@ -290,12 +291,12 @@ per execution-loop §3.3 7-段格式：
 | rg | Step 3 反向扫描 |
 | 向 Owner 询问 | Step 6 HITL Questions |
 
-> 编辑 / 写入 仅在 Owner 拍板后调用（ADR-034 propose→拍板→apply）。
+> 编辑/写入在任务授权内调用，实质变化先决定（ADR-042 分析→影响分类→实施/决定）。
 
 ## Reference Files
 
-- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（runtime propose→拍板→apply 约束；supersede ADR-015 §决策点 4 read-only 残留）
-- `repo:sdd/workflows/execution-loop.md` §3.1 必停面 biz-catalog-sync + §4.1 的 Stage 3 映射（biz_catalog drift detection in Repo Scan；历史源 HITL_Prompt §4.4 §6.6）+ §4.1 的 Stage 8 映射（B 风味永远 HITL；历史源 HITL_Prompt §4.7 Rule 9）
+- `repo:decisions/ADR-034_HITL_Propose_Decide_Apply_Model.md`（runtime 分析→影响分类→实施/决定 约束；supersede ADR-015 §决策点 4 read-only 残留）
+- `repo:sdd/workflows/execution-loop.md` §3.1实质风险面 biz-catalog-sync + §4.1 的 Stage 3 映射（biz_catalog drift detection in Repo Scan；历史源 HITL_Prompt §4.4 §6.6）+ §4.1 的 Stage 8 映射（B 风味按语义影响分类；历史源 HITL_Prompt §4.7 Rule 9）
 - `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（biz 域 only；catalog 是其实现）
 - src/mj_agent/biz_catalog/qcm_catalog.yaml（target file）
 - src/mj_agent/biz_catalog/{loader,finder}.py（catalog 加载入口；本 skill 不动这些）
@@ -309,8 +310,8 @@ per execution-loop §3.3 7-段格式：
 
 ## Anti-patterns
 
-- ❌ **未经 Owner 拍板就直接 编辑 src/mj_agent/biz_catalog/qcm_catalog.yaml**（拍板后才落盘；ADR-034）
-- ❌ 不绕过 §3.1 必停面 biz-catalog-sync（每次 catalog drift 都 HITL；不能"小改直接走"）
+- ❌ **超出任务授权或未经实质决定就直接 编辑 src/mj_agent/biz_catalog/qcm_catalog.yaml**（范围授权内可落盘，实质变化先决定；ADR-034）
+- ❌ 不绕过 §3.1实质风险面 biz-catalog-sync（每次 catalog drift 都 HITL；不能"小改直接走"）
 - ❌ 不在 catalog yaml 加 mj-system 上游不存在的 entry（catalog 是镜像；不允许 mj-agent 私自加）
 - ❌ 不跳过 Step 3 反向扫描（catalog 改动如不同步 SKILL.md → LLM 召回与 examples 矛盾）
 - ❌ 不放宽 ADR-009 biz 域 only（catalog 不应加 biz_ods / biz_ads / ops_* 内容）
@@ -319,7 +320,7 @@ per execution-loop §3.3 7-段格式：
 ## Handoff
 
 ```
-Proposed Diff 已输出（HITL pause）。
+Proposed Diff 已输出（修复/补证据；实质越界才决定）。
 HITL 通过后：
 - 本 skill 拍板后核验批准与执行路线后写 qcm_catalog.yaml（硬阻断时不写）（大改时 mj-agent-doc-author 带 Q-B1 协助）
 - mj-agent-runtime-skill-doc-improve <skill> 同步 SKILL.md（如反扫命中）
