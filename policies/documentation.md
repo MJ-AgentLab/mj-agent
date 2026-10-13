@@ -2,10 +2,10 @@
 type: policy
 artifact: documentation
 state: active
-version: 1.6
+version: "1.7"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -38,8 +38,8 @@ ai_visibility: source-of-truth
 | Track | 失败模式 | 含义 | Reviewer 强度 |
 |---|---|---|---|
 | **Track A（code）** | **响亮失败** | compile / test / deploy break；问题立即可见 | SWE Reviewer 一名充分 |
-| **Track B（agent）** | **沉默失败** | 错答案 / 幻觉 / 业务决策漂移；每次消费 SKILL/PROMPT body 的 LLM 调用都是生产输出 | Domain Expert / Prompt Engineer **+** SWE（≥ 2 reviewer） |
-| **Track C（engineering-workflow）** | **流程漂移** | HITL 跳过 / 错 skill / settings 退化；与 A 响亮、B 沉默均不同 | Tooling Reviewer + SWE |
+| **Track B（agent）** | **沉默失败** | 错答案 / 幻觉 / 业务决策漂移；每次消费 SKILL/PROMPT body 的 LLM 调用都是生产输出 | 按风险独立覆盖领域/Prompt/工程视角，不要求真人或固定人数 |
+| **Track C（engineering-workflow）** | **流程漂移** | HITL 跳过 / 错 skill / settings 退化；与 A 响亮、B 沉默均不同 | 工具/工程独立核验视角 |
 
 派生原则（自 Meta §1 + Code_Side §1）：
 
@@ -322,10 +322,10 @@ AGENTS.md（root + 4 subdir，per §2.6 例外条款）+ `.dockerignore` +
 
 | 文档类别 | 必要 reviewer |
 |---|---|
-| 纯 code-side | SWE Reviewer 一名（Code_Side §8） |
-| agent-side（SKILL/PROMPT/EVAL/CONTRACT） | Domain Expert / Prompt Engineer **+** SWE（≥ 2，Agent_Side §8） |
-| engineering-workflow（`.agents/** + .codex/**` / `.codex/config.toml`） | Tooling Reviewer + SWE |
-| `track: shared` | 各触及 track 的 reviewer 都需介入 |
+| 纯 code-side | 适用独立工程核验 |
+| agent-side（SKILL/PROMPT/EVAL/CONTRACT） | 按风险独立覆盖领域/Prompt/工程视角 |
+| engineering-workflow（`.agents/** + .codex/**` / `.codex/config.toml`） | 工具/工程独立核验视角 |
+| `track: shared` | 核验覆盖实际影响的各track，不规定人数 |
 
 ## §6 Frontmatter schema（通用字段 + 类型专属）
 
@@ -438,7 +438,7 @@ GUARDRAIL / OPS / INTEGRATION / WORKFLOW / ...`。`engineering-workflow` track �
 | **类 1 — 全局高频标准** | trio（Meta / Code_Side / Agent_Side）+ HITL_Prompt + Commit_Message + GitHub_Markdown + 跨轨元规则 ADR（如 011 / 012 / 013 / 014 / 017 / 018） |
 | **类 2 — 高频运行信息** | 入口命令矩阵（`uv run mj-agent serve` / `check` / `langgraph dev`）+ 端口规则（8000 Chainlit / 2024 LangGraph Studio）+ 关键环境变量（`ARK_API_KEY` / `MJ_CONFIG_PROFILE` / `LLM_PROVIDER`） |
 | **类 3 — 项目目录入口** | `docs/INDEX.md` + 核心运行时模块位置（`src/mj_agent/{agent,llm,config}.py` + `tools/` / `skills/` / `prompts/`） |
-| **类 4 — runtime 语义（mj-agent 特化）** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（L1 hybrid guardrail / L1b sqlglot precheck / L2 SKILL semantics / L3 read-only conn / L4 GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ HITL gates（stage 5 plan / 7 SPEC / 9 self-review / 11 push / 13 review-CI） |
+| **类 4 — runtime 语义（mj-agent 特化）** | LLM provider matrix（Ark vs `local-openai-compat` 二分；`make_llm()` 实现，[[decisions/ADR-027_LLM_Provider_Abstraction|ADR-027]]）+ Data boundary L1-L4（L1 hybrid guardrail / L1b sqlglot precheck / L2 SKILL semantics / L3 read-only conn / L4 GRANT；[[decisions/ADR-006_Fail_Safe_Reads|ADR-006]]）+ 任务接受/授权和阶段检查点（5/7/9/11/13不固定等待） |
 
 > **类 4 理由**：AGENTS.md 中 LLM provider + Data boundary + HITL gates 三块占比 ~40%，是 mj-agent
 > native 内容；显式列入避免 reviewer 在「这条规则改是否要 sync AGENTS.md」上反复判断。

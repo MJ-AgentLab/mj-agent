@@ -40,9 +40,9 @@ assignees: []
 - [ ] `.codex/hooks.json` 原生 hook/rules 保护边界修改？
 - [ ] `.codex/config.toml` 新增 server？（A14 PR gate 触发）
 - [ ] `pyproject.toml` 升级主版本（LangChain / LangGraph / pydantic）？
-- [ ] `docker/Dockerfile` **外部 registry 镜像引用**修改？（供应链红线；`FROM <image>` + `COPY --from=<registry image>`，内部 `COPY --from=<stage>` **不**在内 → 改前 Owner 拍板）
+- [ ] Dockerfile 外部镜像引用是否改变供应链信任来源？来源变化由 Owner 决定；既定来源内 tag/digest 维护在授权内自主执行并提供构建与供应链证据。内部 stage 引用不在外部镜像面。
 - [ ] `compose.prod.yml` 修改？（生产红线）
-- [ ] Dockerfile 其余行 / compose.yaml / override.yml 修改？（≥ 2 reviewer，非必停）
+- [ ] Dockerfile 其余行 / dev compose 修改？在授权内自主维护，独立核验按风险覆盖工程/供应链视角，不固定真人或人数。
 - [ ] secrets pipeline 修改（`config/secrets*.enc` / `setup-*.ps1`）？
 
 ## Verification Plan

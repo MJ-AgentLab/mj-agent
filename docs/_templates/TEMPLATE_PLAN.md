@@ -1,133 +1,90 @@
 ---
 type: template
 domain: WORKFLOW
-summary: HITL Stage 4 Plan body 模板（写到 plans/[PLAN]_*.md；不写到 docs/plans/）；轻量级 5-6 段结构，从 plans/ 既有范例综合
-tags:
-  - template
-  - workflow
-  - plan
-  - hitl-stage-4
-aliases:
-  - mj-agent Plan Template
+summary: 复用任务记录分记接受基线、执行授权、验证和可恢复检查点的 Plan 模板
+owner: ranzuozhou
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-10-12
 state: draft
-version: v0.1
-track: shared
-owner: 项目负责人
+version: v0.2
+track: engineering-workflow
 ---
 
-# TEMPLATE: Plan body（HITL Stage 4）
+# TEMPLATE: Agent-first Plan
 
-> **使用方法**：复制本模板**主体段**到 `plans/[PLAN]_<topic>.md`（**不**写到 `docs/plans/`，per [[sdd/workflows/execution-loop|执行闭环 workflow]] Stage 4 Plan Rules）。
->
-> **何时复制本模板**：
-> - Stage 4 Plan body 编写或更新（基于 Stage 3 Repo Scan Result）
-> - 用户请求 "写 plan / 执行计划 / 任务拆解"
->
-> **不**用本模板：
-> - 详细接口契约（归 SPEC，用 [[TEMPLATE_SPEC|TEMPLATE_SPEC]]）
-> - 长期架构决策（归 ADR，用 [[TEMPLATE_ADR|TEMPLATE_ADR]]）
-> - Stage 0 Intake 准入评估（用 mj-agent-flow-intake 输出 Intake Result）
->
-> **plans/ 既有 18 份范例**可参考为不同任务规模的具体形态（PR / Phase 子包 / 多 PR bundle 等）。本模板提供**最小可用骨架**；实际可按需增段。
-
----
+> 在 `plans/[PLAN]_<topic>.md` 复用此骨架；小任务可用既有Issue/PR等价记录。普通Plan在任务授权内自主编写，不固定等待stages 5/7/9/11/13。接口契约归SPEC、长期取舍归ADR。
 
 ## Plan body 模板
 
 ```markdown
 ---
 type: plan
-summary: 20-60 字摘要，一句话说本 Plan 解决什么任务、所属 Phase / PR 子包
-owner: 项目负责人
+summary: <目标、范围与交付结果摘要>
+owner: <负责人>
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-state: draft
-track: shared / code / agent / engineering-workflow
+state: active
+track: engineering-workflow
 ---
 
-# [PLAN] <Topic>
+# [PLAN] <任务>
 
-> Issue: [#NNN](https://github.com/MJ-AgentLab/mj-agent/issues/NNN)（如有）
-> 关联 Repo Scan Result: <对话输出日期 / 摘要>
+## 接受基线
 
-## Scope
+- 目标/使用者/预期价值：
+- 交付范围/延期/排除：
+- AC：逐项可观察预期、质量与必要运行条件；严格窗口：
+- 基线来源与版本：
+- 风险/必须保护资源/停止条件：
 
-- **In-scope**：
-  - <具体动作 1>
-  - <具体动作 2>
-  - <具体动作 N>
-- **Out-of-scope**：
-  - <相邻但不做的项>
-  - <留 follow-up 的项>
+## 执行授权
 
-## Task Breakdown
+- 授权来源、任务及允许动作：
+- 对象/workspace/branch/ref、环境、权限、remote：
+- 附带副作用、资源预算/并发/尝试限制：
+- 删除/权限变更/高风险不可逆操作的独立具名条件：
+- 失效：撤销或目标/对象/环境/权限/风险实质变化；普通内容迭代核版本但不重复内容批准。
+- 启动前置状态：READY / NOT_READY，列实际缺项；技术权限、工具或CI成功不产生授权。
+- 新单仓App材料只经受控后台创建/DPAPI保存/签名/注入/撤销，模型/聊天/日志不可见；既有应用/MCP/DB/个人秘密不读。
+- 独立Agent核真实配置/守卫负例后，执行Agent仅通过正常宿主机制启用项目范围信任，不改个人config/权限、不绕拒绝；未支持标未验证。
+- Owner聊天决定绑定实际成果/SHA，Agent用不同于作者/末推送者的Owner身份执行平台审核；App作者无admin/checks-write/bypass。
 
-按推进顺序：
+## 任务与依赖
 
-1. <Step 1：动作 + 涉及文件 / 模块>
-2. <Step 2：...>
-3. <Step N：...>
+- <任务：输入→有界产物→对应AC→验收/返回点>
+- 文档矩阵：每影响对象create/update/none与理由。
+- PR模式：单PR / 多个独立PR / 分层，真实base与平台规则/触发/副作用。
+- 委派：实际工作区、比较基线/SHA、文件归属、证据、授权/资源/停止条件及effort配置依据。
 
-## Risk Control
+## 验证与验收包
 
-- **Risk level**：Low / Medium / High（如触 §3.1 必停 4 项 mj-agent 专属 → High）
-- **缓解措施**：
-  - <Risk 1 → 缓解>
-  - <Risk 2 → 缓解>
-- **HITL gates**：<本 Plan 触发的 Stage 5/7/9/11/13 HITL 点>
+- 适用离线unit/BDD/CLI、lint/type、文档及原生资产检查；external为SKIP_POLICY_EXTERNAL_DEPENDENCY。
+- 独立核验：从AC建立期望、读取真实成果并复现，覆盖适用角色视角；不固定真人或人数。
+- 逐AC预期/实际/状态/证据；head/base/测试版本、产物/输入/依赖摘要、环境/时点/命令exit。
+- 首期新证据走实际CI仓外artifact，历史能力逐步迁移；延期结构合规不计行为PASS。
+- 成果如何观察/使用、限制延期、风险/监控/恢复、Owner待决定；未测恢复明确未验证。
 
-## Verification
+## 检查点与完成
 
-- **Level A 必跑**：`uv run ruff check && uv run mypy src/mj_agent && uv run pytest tests/unit`
-- **Level B HITL-confirm 按需**：`uv run pytest tests/{integration,smoke}` / `uv run mj-agent check` / Studio 探针
-- **文档校验**：`scripts/check_frontmatter.py` + `scripts/check_wikilinks.py`（如本 Plan 涉及 docs/）
-- **Acceptance Criteria**：
-  - [ ] AC 1（可验证；对应 Verification 命令）
-  - [ ] AC 2
-  - [ ] AC N
+- 当前目标/AC/授权、workspace/ref/SHA、候选集成状态：
+- 已验证/证据位置、在途副作用、失败/未知/延期：
+- 下一步与停止条件；重入先核现实，成功动作不重复。
+- 集成、验证、交付、待Owner接受、已接受分别记录。AC满足、成果可用且Owner明确接受版本后才completed。
 ```
 
----
+## 分层 PR 的机器可读路由
 
-## 段说明
+仅分层模式在真实Plan正文放一份下列块；无相应前置保持 `active: false`。登记准确关系供 `scripts/sdd/task_delivery.py` 与守卫观察，不认证Owner授权。`task_id`与integration必须一致；repo和children使用实际精确标识，不用glob。
 
-| 段 | 必填 | 说明 |
-|---|---|---|
-| frontmatter | ✅ | type=plan / state=draft 起步 / track 按改动域选 |
-| Issue 引用 | 推荐 | 与 GitHub Issue 关联；无 Issue 时省略 |
-| Scope | ✅ | In-scope + Out-of-scope 双向声明（防 scope drift） |
-| Task Breakdown | ✅ | 推进顺序的 Step 列表；过大任务可拆 Phase 子包 |
-| Risk Control | ✅ | Risk level + 缓解 + HITL gates |
-| Verification | ✅ | Level A 必跑 + Level B 按需 + AC checklist |
-
-**可选增段**（按 plans/ 既有范例）：
-- **Phase 子包**：多 PR bundle 时列出 ✅ 完成 / 🔄 进行中 / ⏭ 待办
-- **严格守约**：明确不做的项（与 Out-of-scope 互补；强约束）
-- **累计成果**：里程碑摘要（适合 Phase 收尾 plan）
-- **Open Questions**：起草时未定项
-
----
-
-## 命名约定
-
-- 文件名：`plans/[PLAN]_<topic_in_snake_or_kebab_case>.md`
-- 不带版本号（per ADR-018 active path stability；plan 是 working doc）
-- state 演进：`draft` → `active` → `completed` → `archived`（per ADR-021 4 态机）
-- post-merge 后由 `/mj-agent-flow-post-merge` Step 9 自动 active → completed
-
----
+```markdown
+<!-- agent-first-routes
+{"schema_version":1,"routes":[{"task_id":"example","repo":"MJ-AgentLab/mj-agent","active":false,"integration":"feature/task-example-integration","mainline":"develop","children":["feature/example-core","maintain/example-harness"]}]}
+-->
+```
 
 ## 关联文档
 
-- [[sdd/workflows/execution-loop|执行闭环 workflow]] §1（Stage 4 Plan）
-- `.agents/skills/mj-agent-flow-plan/SKILL.md`（Plan body 编排器）
-- [[../adr/[ADR]_021_Working_Doc_Lifecycle|ADR-021]]（plans/ 4 态机）
-- [[TEMPLATE_REPO_SCAN_RESULT|TEMPLATE_REPO_SCAN_RESULT]]（Plan 上游 Stage 3 输出）
-
-## 更新记录
-
-| 日期 | 版本 | 变更 |
-| --- | --- | --- |
-| 2026-05-11 | v0.1 | 初稿（PR-118 commit-3 落地；G2 gap 修复；从 plans/ 既有 18 份范例综合） |
+- [接受与授权政策](../../policies/ai-agent.md) §4
+- [执行闭环](../../sdd/workflows/execution-loop.md)
+- [任务生命周期](../../sdd/lifecycle.md) §2
+- [交付指南](../guide/[GUIDE]_Agent_First_Delivery.md)

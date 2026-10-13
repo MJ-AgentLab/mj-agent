@@ -39,8 +39,10 @@ Test coverage (per brief §4 + §6 AC-5):
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
+import pytest
 import yaml
 
 
@@ -105,6 +107,15 @@ class TestLoadBddEvidence:
         result = load_bdd_evidence(cap_dir)
         assert result is None
 
+    def test_unrelated_file_cannot_supply_scenario_evidence(self, tmp_path: Path) -> None:
+        from scripts.sdd._common.bdd_helpers import load_bdd_evidence
+
+        cap_dir = _make_capability_dir(tmp_path)
+        path = _write_evidence(cap_dir, "unrelated", pass_rate=1.0)
+        text = path.read_text(encoding="utf-8")
+        path.write_text(text.replace("subtype: bdd", "subtype: bdd\ncovered_scenarios: [Different]"), encoding="utf-8")
+        assert load_bdd_evidence(cap_dir, "Wanted") is None
+
     def test_no_pass_rate_field_returns_none(self, tmp_path: Path) -> None:
         from scripts.sdd._common.bdd_helpers import load_bdd_evidence
 
@@ -162,7 +173,7 @@ class TestG21PredicateExtension:
     auto-exempt OR fabricated content (R-18-6 schema-only boundary).
     """
 
-    def test_evidence_present_pass_rate_1_0_passes(self, tmp_path: Path) -> None:
+    def test_bare_pass_rate_is_not_behavior_evidence(self, tmp_path: Path) -> None:
         from scripts.sdd.check_bdd_acceptance import _validate_capability_with_evidence
 
         cap_dir = _make_capability_dir(tmp_path)
@@ -196,11 +207,10 @@ class TestG21PredicateExtension:
         _write_evidence(cap_dir, "healthy_critical", pass_rate=1.0)
 
         summary = _validate_capability_with_evidence(cap_dir, tmp_path)
-        # Evidence pass_rate=1.0 → PASS via evidence path
+        # A number or filename does not establish executed scenario evidence.
         assert summary.fail_count == 0
-        # WARN may or may not be emitted depending on D-3 base layer; key
-        # assertion: no FAIL + at least 1 scenario evaluated
-        assert summary.pass_count >= 1 or summary.warn_count >= 1
+        assert summary.pass_count == 0
+        assert summary.warn_count == 1
 
     def test_evidence_absent_runbook_justification_fallback_passes(
         self, tmp_path: Path
@@ -246,9 +256,10 @@ class TestG21PredicateExtension:
         )
 
         summary = _validate_capability_with_evidence(cap_dir, tmp_path)
-        # Fallback to runbook justification (4-field full) → PASS path
-        # (NO FAIL; either explicit fallback-PASS OR inherited D-3 base PASS)
+        # A complete justification is a legal deferral, not behavior PASS.
         assert summary.fail_count == 0
+        assert summary.pass_count == 0
+        assert any("DEFERRED" in message for message in summary.messages)
 
     def test_evidence_absent_runbook_absent_warns(self, tmp_path: Path) -> None:
         from scripts.sdd.check_bdd_acceptance import _validate_capability_with_evidence
@@ -333,9 +344,10 @@ class TestG21PredicateExtension:
         )
 
         summary = _validate_capability_with_evidence(cap_dir, tmp_path)
-        # pass_rate<1.0 但 runbook justification full → fallback path PASS
-        # (per R-15-1: justification fallback acceptable when pass_rate insufficient)
+        # Partial historical evidence can be explicitly deferred, not passed.
         assert summary.fail_count == 0
+        assert summary.pass_count == 0
+        assert any("DEFERRED" in message for message in summary.messages)
 
 
 class TestTraceYmlMfu1Fix:
@@ -441,6 +453,8 @@ class TestStrictModeBlockingFlip:
         )
         summary = _validate_capability_with_evidence(cap_dir, tmp_path)
         assert summary.warn_count == 0
+        assert summary.pass_count == 0
+        assert any("DEFERRED" in message for message in summary.messages)
         assert summary.exit_code(strict=True) == 0
 
     def test_no_evidence_no_runbook_strict_exit_1(self, tmp_path: Path) -> None:
@@ -453,3 +467,76 @@ class TestStrictModeBlockingFlip:
         assert summary.exit_code(strict=True) == 1
         # Pre-flip (WARNING mode, no --strict) did NOT block:
         assert summary.exit_code(strict=False) == 0
+
+
+def _executed_metadata() -> dict:
+    return {
+        "covered_scenarios": ["Observed"], "pass_rate": 1.0,
+        "status": "PASS", "source_kind": "actual_observation",
+        "execution": {"command": "offline-check", "output_ref": "original.log", "exit_code": 0,
+                      "test_counts": {"tests": 1, "passed": 1, "failed": 0, "skipped": 0}},
+    }
+
+
+def test_declared_result_without_original_outputs_cannot_pass(tmp_path: Path) -> None:
+    from scripts.sdd._common.bdd_helpers import bdd_evidence_status
+
+    assert bdd_evidence_status(_executed_metadata(), "Observed") == "UNVERIFIED"
+
+
+@pytest.mark.parametrize("status", ["NOT_RUN", "NOT_TESTED", "UNSUPPORTED", "REVIEW_REQUIRED"])
+def test_unexecuted_status_is_never_behavior_pass(tmp_path: Path, status: str) -> None:
+    from scripts.sdd._common.bdd_helpers import bdd_evidence_status
+
+    payload = _original_outputs(tmp_path)
+    payload["status"] = status
+    assert bdd_evidence_status(payload, "Observed", tmp_path) == "UNVERIFIED"
+
+
+def _original_outputs(tmp_path: Path) -> dict:
+    payload = _executed_metadata()
+    log = b"Fixed fixture original execution output\n"
+    xml = b'<testsuite tests="1" failures="0" errors="0" skipped="0"><testcase classname="probe" name="test_observed"/></testsuite>'
+    (tmp_path / "original.log").write_bytes(log)
+    (tmp_path / "original.xml").write_bytes(xml)
+    payload["execution"].update({
+        "output_sha256": hashlib.sha256(log).hexdigest(),
+        "junit_ref": "original.xml", "junit_sha256": hashlib.sha256(xml).hexdigest(),
+        "scenario_test_ids": {"Observed": ["probe::test_observed"]},
+    })
+    return payload
+
+
+@pytest.mark.parametrize(("source", "expected"), [
+    ("actual_observation", "PASS"), ("synthetic_fixture", "SELFTEST"),
+    ("software_test", "SELFTEST"), ("unknown", "UNVERIFIED"),
+])
+def test_original_bound_test_outcomes_keep_source_claims_separate(
+    tmp_path: Path, source: str, expected: str,
+) -> None:
+    from scripts.sdd._common.bdd_helpers import bdd_evidence_status
+
+    # Fictional actual-source conditions exercise classification, not runtime sampling.
+    payload = _original_outputs(tmp_path)
+    payload["source_kind"] = source
+    assert bdd_evidence_status(payload, "Observed", tmp_path) == expected
+
+
+@pytest.mark.parametrize("mutation", ["missing_log", "changed_log", "wrong_scenario", "secret_ref", "skipped", "nonfinite_rate"])
+def test_incomplete_or_modified_original_evidence_is_not_pass(tmp_path: Path, mutation: str) -> None:
+    from scripts.sdd._common.bdd_helpers import bdd_evidence_status
+
+    payload = _original_outputs(tmp_path)
+    if mutation == "missing_log":
+        (tmp_path / "original.log").unlink()
+    elif mutation == "changed_log":
+        (tmp_path / "original.log").write_text("changed", encoding="utf-8")
+    elif mutation == "wrong_scenario":
+        payload["execution"]["scenario_test_ids"] = {"Different": ["probe::test_observed"]}
+    elif mutation == "secret_ref":
+        payload["execution"]["output_ref"] = ".env"
+    elif mutation == "skipped":
+        payload["execution"]["test_counts"] = {"tests": 1, "passed": 0, "failed": 0, "skipped": 1}
+    else:
+        payload["pass_rate"] = float("nan")
+    assert bdd_evidence_status(payload, "Observed", tmp_path) == "UNVERIFIED"

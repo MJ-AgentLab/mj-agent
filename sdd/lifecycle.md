@@ -2,10 +2,10 @@
 type: sdd-kernel
 artifact: lifecycle
 state: active
-version: 1.3
+version: "1.4"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -35,7 +35,7 @@ idea ─► specified ─► contracted ─► planned ─► implementing ─�
 | idea | 新需求未规格化 | 用户/SDR 提出 | spec.yml 起草 |
 | specified | spec.yml + requirements.md 起草 | spec.yml schema 通过 | contracts/ 起草 |
 | contracted | contracts/ 至少 1 件 + behavior.feature（高风险） | check_contracts.py PASS | tasks.md 拆分 |
-| planned | tasks.md 任务清单完整（含 tdd.test_list 高风险） | HITL Gate-1 plan-vs-spec 对齐 | 实施开工 |
+| planned | tasks.md 任务清单完整（含 tdd.test_list 高风险） | 接受基线/授权与 plan-vs-spec 对齐 | 实施开工 |
 | implementing | 代码实施中 | 单 PR open | 单 PR ready-to-merge |
 | verifying | contract test + bdd + tdd 跑 | 测试 PASS | evidence/ 写入 |
 | active | 全套 artifact 就绪 | trace.yml 完整链路 | HITL 触发 evolve / deprecate |
@@ -57,14 +57,14 @@ idea ─► specified ─► contracted ─► planned ─► implementing ─�
 |---|---|---|
 | `draft` | 仍在拟订；未对齐 | 新建文档默认 |
 | `active` | 已采纳；任务执行期 | 关联 issue/PR open |
-| `completed` | 任务自然完成 | 关联 PR merged / Issue closed / Release deployed |
+| `completed` | 对应任务已接受 | AC 满足、成果可用且 Owner 明确接受该版本；PR/Issue/Release 状态单列 |
 | `archived` | 物理归档（GC；见 §2.4） | `completed` ≥ 6 月 + 引用 0 时 |
 
-### §2.2 Stage 17 Post-merge 自动化
+### §2.2 Stage 17 结果核实与接受
 
-`mj-agent-flow-post-merge` SKILL Step 9 自动识别 PR/Issue 关联的 `[PLAN]_*.md` / `[INTAKE]_*.md`，
-state 由 `active` 改 `completed` 并刷 `updated` 字段；**不移动文件位置**；保留所有跨文档 reference
-（Step 9 是 diff 草案 + user Edit 确认，非自动落盘）。
+核实关联 PR、Issue、Plan/Intake 的实际版本与成果，分别记录候选集成、验证、交付、待接受、接受、部分完成、延期、失败和未知。只有对应基线满足、成果可用及 Owner 明确接受版本时，才由 Agent 在任务授权内把 active 改 completed 并刷 updated；不移动文件。merged、closed 或 deployed 不能替代业务接受。非核心延期独立跟踪，影响整体基线时须 Owner 决定调整。
+
+在 Plan/任务记录保存验收包、授权与版本证据、在途副作用、失败/延期及下一步；压缩/换窗/交接后先读取检查点并核实际状态。
 
 ### §2.3 边界
 
@@ -101,7 +101,7 @@ state 由 `active` 改 `completed` 并刷 `updated` 字段；**不移动文件�
 
 **补落规则**：
 
-- **state 直接置 `completed`**（不走 `draft → active` 中间态）+ 填 `completed: <最后 PR merged ISO 日期>`；
+- **state 按真实接受状态置 active 或 completed**；completed 仅在 AC 满足、成果可用且 Owner 明确接受时填写对应接受日期，禁止用最后 merge 日期推定接受；
 - frontmatter 加 `retroactive: true`（机器可识别；`scripts/check_frontmatter.py` 对未知字段宽容，不破坏 schema）；
 - 头部加 `> [!warning]` 声明框：醒目标注"事后回填，非真实 Stage 0/4 输出"，引导读者关注内容 trace；
 - **凭证 trace 段必加**：逐段标内容来源（PR description / commit / memory / AGENTS.md update /
@@ -126,13 +126,13 @@ state 由 `active` 改 `completed` 并刷 `updated` 字段；**不移动文件�
 | idea → specified | spec.yml 起草 + schema 校验 | G1 check_capability_schema |
 | specified → contracted | contracts/ 文件 ≥ 1 + 高风险加 behavior.feature | G3 check_contracts |
 | contracted → planned | tasks.md `tdd.test_list[]` 完整（高风险）| G23 check_tdd_test_list（Phase M3 起 warning；M6 blocking） |
-| planned → implementing | PR open + HITL Gate-1 | — |
+| planned → implementing | PR open + 基线/授权对齐 | — |
 | implementing → verifying | contract test + bdd-step + tdd green | G2/G5/G19-G28 |
 | verifying → active | evidence 写入 + trace.yml 链路完整 | G8 evidence required（Phase M4 起 blocking） |
 | active → deprecated | ADR + HITL | A12-A14 PR gate（[[policies/documentation|policies/documentation]] §5.3；历史源 Meta §7.7） |
 | deprecated → archived | archive ceremony + archive.yml | G11/G12 check_archive_manifest（[[policies/archive|policies/archive]] §3/§4） |
 
-> 表中 "HITL Gate-1" / "HITL + ADR" trigger 完整 enum 见
+> 表中治理决定与授权分类完整定义见
 > `policies/ai-agent.md §4 HITL Required Scenarios — Canonical 10-Enum`；本表仅列 state-
 > machine transition 触发条件，不重复 enum 完整定义.
 

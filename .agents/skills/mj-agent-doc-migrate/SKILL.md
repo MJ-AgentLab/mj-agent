@@ -1,14 +1,15 @@
 ---
 name: mj-agent-doc-migrate
-description: "适用于 mj-agent 的canonical大/小版本归档与skeleton延迟promote。输入：旧/新版本、state、引用集合、归档意图。流程：分析→迁移计划→标准或skeleton模式→living/frozen引用分类→INDEX→校验。输出：旧deprecated/新目标状态正确，living/frozen引用和INDEX闭合。Use when：把已批准v1.0规范归档并promote v1.1。Do not use for：只修当前文档拼写；就地编辑建议，不触归档或版本仪式。授权：移动/版本状态/多引用变更按D-04批准；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的canonical大/小版本归档与skeleton延迟promote。输入：旧/新版本、state、引用集合、归档意图。流程：分析→迁移计划→标准或skeleton模式→living/frozen引用分类→INDEX→校验。输出：旧deprecated/新目标状态正确，living/frozen引用和INDEX闭合。Use when：把已批准v1.0规范归档并promote v1.1。Do not use for：只修当前文档拼写；就地编辑建议，不触归档或版本仪式。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Doc Migrate（archive workflow）
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述

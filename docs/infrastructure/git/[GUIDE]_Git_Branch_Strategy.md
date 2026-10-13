@@ -11,7 +11,7 @@ aliases:
   - mj-agent Git Branch Strategy
   - mj-agent Git 分支策略指南
 created: 2026-04-30
-updated: 2026-08-10
+updated: 2026-10-12
 state: draft
 version: v1.2
 track: code

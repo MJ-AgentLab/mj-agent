@@ -1,14 +1,15 @@
 ---
 name: mj-agent-flow-self-review
-description: "适用于 mj-agent 的Stage11提交前自检。输入：staged/实际指定diff、Plan、验证结果。流程：context→scope-drift→双段→12项→5a-d反扫→message→风险。输出：12项和scope/反扫/证据齐，GO仅自检结论。Use when：对未暂存实现做提交前自检并拟message。Do not use for：立即提交全部文件；仅自检，实际stage/commit转git-commit授权范围。授权：自检不含git add/commit；B批记录缺失NO-GO；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage11提交前自检。输入：staged/实际指定diff、Plan、验证结果。流程：context→scope-drift→双段→12项→5a-d反扫→message→风险。输出：12项和scope/反扫/证据齐，GO仅自检结论。Use when：对未暂存实现做提交前自检并拟message。Do not use for：立即提交全部文件；仅自检，实际stage/commit转git-commit授权范围。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — AI Self-review (HITL Stage 11)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -38,7 +39,7 @@ digraph self_review {
   s7 [label="Step 7: Risk classification" shape=diamond];
 
   go [label="Output: GO\n+ commit message\n+ checklist (all ✅)" shape=box];
-  hitl [label="Output: HITL pause\n+ blocking items\n+ 3-5 questions" shape=box];
+  hitl [label="Output: 修复/补证据；实质越界才决定\n+ blocking items\n+ 3-5 questions" shape=box];
 
   start -> s1 -> s2 -> s3 -> s4 -> s5 -> s6 -> s7;
   s7 -> go [label="all pass\nor low risk"];
@@ -79,7 +80,7 @@ git log -1 --format=%s 2>/dev/null    # 上次 commit 标题（避免重复）
 输出：drift report（per-file classification + Severity）。
 
 self-review 把 drift Severity 纳入最终 risk 判断：
-- drift Severity = High → self-review Risk = High（必 HITL）
+- drift Severity = High → self-review Risk = High（不GO，自主修复；实质越界才决定）
 - drift Severity = Medium → self-review Risk ≥ Medium
 
 ## Step 3: execution-loop §6 Dual-Section Verify
@@ -128,7 +129,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | 4 | 文档同步：canonical / working / INDEX / AGENTS.md allowlist | documentation §7.1（4 类 allowlist）+ §7.2（tri-track 三段分组） |
 | 5 | Commit message 符合 `<type>(<scope>): <summary>` v1.1 规范 + 35 scope 闭合 allowlist（且未用 type / 项目阶段当 scope，per §4.3） | Commit Convention v1.1 |
 | 6 | Branch × commit type 矩阵正确（5 branch × 7 type；mj-agent 不含 optimization） | Commit Convention §5.2 |
-| 7 | scope-drift Severity = None / Low（如 ≥ Medium，必先 HITL） | mj-agent-flow-scope-drift 输出 |
+| 7 | scope-drift Severity = None / Low（按真实影响处理，普通修复自主） | mj-agent-flow-scope-drift 输出 |
 | 8 | 本地验证段 ≠ AI 自检段（execution-loop §6 严格不混用） | self-review §3 |
 | 9 | 用户可感知变更 → CHANGELOG `[Unreleased]` 区块更新（feat/fix/perf 必更；docs/test/infra 视情） | Commit Convention 规则 |
 | 10 | 无 PR description 字段缺失：逐项对照所选模板标题、折叠检查、AI Self-Check 及根模板 Inventory / Docker Impact | mj-agent-git-pr / `.github/PULL_REQUEST_TEMPLATE/` 实际模板（含 release）及根模板 |
@@ -197,7 +198,7 @@ uv run python scripts/diff_biz_schema.py
 |---|---|---|
 | **Low** | 12 项 checklist 全 ✅；scope-drift = None；diff < 100 行 | GO + commit message |
 | **Medium** | 1-2 项 checklist ⚠️；或 scope-drift = Low/Medium；或多模块影响 | GO + 提示重点核对 ⚠️ 项 |
-| **High** | 任一 checklist ❌；或 scope-drift = High；或 §3.1 必停 4 项触发；或 in-source canonical 改动未走 §3.1 HITL；或 `docker/Dockerfile` 外部 registry 镜像引用改动未走 Owner 拍板（canonical `secrets-grants-or-prod-config`；内部 `COPY --from=<stage>` 不在内） | **HITL pause** + 3-5 questions |
+| **High** | 真实安全/业务/权限/breaking/AC/gate越界或未授权动作；普通checklist失败由Agent修复补证据 | 只停受影响项，准备具体决定选项 |
 
 **HITL questions 格式**：参 `repo:sdd/workflows/execution-loop.md` §3.3 7-段格式。
 
@@ -296,8 +297,8 @@ Co-Authored-By: <verified contributor name> <verified contributor email>
 
 - **不要** 把测试结果写到 AI 自检段（违反 execution-loop §6 双段）
 - **不要** 跳过 5a 反扫（mj-agent 扩展含 in-source canonical + biz_catalog）
-- **不要** 在 in-source canonical 改动未走 §3.1 HITL 时直接 GO（强制 High Risk）
-- **不要** 在 12 项 checklist 任一 ❌ 时给 GO（必 HITL）
+- **不要** 在 in-source canonical实质越界未获决定 时直接 GO（按真实影响及证据）
+- **不要** 在 12 项 checklist 任一 ❌ 时给 GO（不GO，自主修复；实质越界才决定）
 - **不要** 在 system.md `version` bump 时跳过 item 12（execution-loop §6 item 10）
 
 ## Handoff to mj-agent-git-commit + Stage 12

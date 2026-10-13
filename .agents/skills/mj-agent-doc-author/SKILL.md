@@ -1,14 +1,15 @@
 ---
 name: mj-agent-doc-author
-description: "适用于 mj-agent 的已确定类型与scope的一份文档。输入：类型、主题、路径、真实代码、模板。流程：前置ADR/SPEC判定→track→目录→模板→同名冲突→正文→B停点→校验→索引。输出：类型/track/命名/引用/校验逐项有结论。Use when：为已定scope写GUIDE，含现有函数用法。Do not use for：只问哪些文档缺失，不写正文；建议doc-plan，仅评估缺口。授权：目录歧义/覆盖/Q-B1；B正文先propose；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的已确定类型与scope的一份文档。输入：类型、主题、路径、真实代码、模板。流程：前置ADR/SPEC判定→track→目录→模板→同名冲突→正文→B停点→校验→索引。输出：类型/track/命名/引用/校验逐项有结论。Use when：为已定scope写GUIDE，含现有函数用法。Do not use for：只问哪些文档缺失，不写正文；建议doc-plan，仅评估缺口。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Doc Author
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -58,7 +59,7 @@ digraph author {
 
   content [label="Content generation\n• 读取 actual code/scripts/biz_catalog\n• Fill template per type-specific rules\n• Cross-verify references" shape=box];
 
-  hitl_b [label="B 风味? (in-source SKILL/PROMPT)\n→ §3.1 必停 HITL\n→ 经 mj-agent-runtime-* propose→拍板→apply" shape=diamond];
+  hitl_b [label="B 风味? (in-source SKILL/PROMPT)\n→ §3.1语义影响核对\n→ 经 mj-agent-runtime-* 分析→影响分类→实施/决定" shape=diamond];
 
   validate [label="Call mj-agent-doc-validate" shape=box style=bold];
 
@@ -82,7 +83,7 @@ digraph author {
   d01q02 -> content [label="确认/改名"];
   content -> hitl_b;
   hitl_b -> validate [label="A/C 风味或非 in-source"];
-  hitl_b -> post [label="B 风味；HITL pause 后 user 确认"];
+  hitl_b -> post [label="B 风味；基线内自主；实质变化决定"];
   validate -> post;
   post -> done;
 }
@@ -113,7 +114,7 @@ digraph author {
 2. **RUNBOOK uses imperative mood** — Readers execute under pressure.
 3. **Start as `state: draft`** — All new docs enter review before authoritative.
 4. **Template adaptation allowed** — Sections rename/reorder OK，but **MUST** preserve: frontmatter / blockquote header / 关联文档段。
-5. **B 风味 永远 HITL** — `src/mj_agent/skills/**/SKILL.md` 或 `prompts/*.md` body 起草 / 修改必须经 `mj-agent-runtime-*` propose → Owner 拍板 → apply（拍板后由 runtime skill 核验执行路线；硬阻断时不落盘）。这是 §3.1 必停 + ADR-034 propose→拍板→apply 约束。
+5. **B 风味 按语义影响分类** — `src/mj_agent/skills/**/SKILL.md` 或 `prompts/*.md` body 起草 / 修改必须经 `mj-agent-runtime-*` 分析 → 影响分类 → 实施/决定（任务授权内由runtime skill 核验执行路线；硬阻断时不落盘）。这是 §3.1实质风险 + ADR-042 分析→影响分类→实施/决定 约束。
 6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.2 §4.3.1 路径决策树）。项目根 markdown 5 件不写 frontmatter 不适用 track（per §2.6 例外 + §4.3.1 第 0 条）；`capabilities/**` 亦不适用 track（capability-package ontology 豁免，per kernel §3.1 规则 9 / #451）。
 
 ## Track Decision（Meta v2.2 §4.3.1 path-to-track 决策树）
@@ -173,7 +174,7 @@ digraph author {
 2. **反直觉** —— 选择非显而易见，未来读者会问"为什么不是另一种"。
 3. **真权衡** —— 存在被放弃的合理替代方案，需记录取舍理由。
 
-主动领域建模产物归属（**不引入 `CONTEXT.md`**，挂既有分布式工件）：术语 → `docs/glossary/` / `GLOSSARY.md`；业务指标 / 维度 → `biz_catalog/qcm_catalog.yaml`（**4 必停面之一** → `mj-agent-runtime-biz-catalog-sync` propose→拍板→apply）；难逆决策 → `decisions/` ADR。
+主动领域建模产物归属（**不引入 `CONTEXT.md`**，挂既有分布式工件）：术语 → `docs/glossary/` / `GLOSSARY.md`；业务指标 / 维度 → `biz_catalog/qcm_catalog.yaml`（**4 类runtime风险面之一** → `mj-agent-runtime-biz-catalog-sync` 分析→影响分类→实施/决定）；难逆决策 → `decisions/` ADR。
 
 ## ADR Numbering
 
@@ -204,16 +205,16 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 | 写文件前（文件已存在） | glob 检测到目标路径同名 | 用户说"覆盖/替换" | D-01/Q-02 |
 | §12 前置检查后（问题文档） | 问题分析文档但发现方式不明确（主动 vs 被动） | 用户已指定"写 ISSUE"或"写 POSTMORTEM" | Q-10 |
 | 目录确定前（层级歧义） | 内容同时含长期参考 + 短期执行 | 用户明确说"写 plan"或明确指定 canonical 类型 | Q-12 |
-| **B 风味 in-source** | 检测到目标路径在 src/mj_agent/{skills,prompts}/** | 经 mj-agent-runtime-* propose + 拍板 + apply | **Q-B1**（mj-agent 专属 §3.1 必停） |
+| **B 风味 in-source** | 检测到目标路径在 src/mj_agent/{skills,prompts}/** | 经 mj-agent-runtime-* 分析 + 影响分类 + 实施/决定 | **Q-B1**（mj-agent 专属 §3.1实质风险） |
 
 ### Q-B1（mj-agent 专属）
 
 ```
 检测到目标路径 <path> 在 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
-§3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
-(1) 用 mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 mj-agent-runtime-prompt-version-bump（如 system.md）propose→拍板→apply
-(2) Domain Expert + Prompt Engineer review
-(3) Owner 拍板后由 runtime skill 核验执行路线；硬阻断时不落盘
+§3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
+(1) 用 mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 mj-agent-runtime-prompt-version-bump（如 system.md）分析→影响分类→实施/决定
+(2) 独立领域/Prompt视角核验（不要求真人或固定人数）
+(3) runtime skill先核影响分类与任务授权/执行路线；硬阻断时不落盘
 (4) 同步 PR description 含 EVAL backlog ticket（execution-loop §7.3 Rule 11）
 
 不能跳过 B 风味硬阻断。可以取消本次调用，或返回批准材料继续审阅。
@@ -238,7 +239,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 | 写入 | 写新文档（A/C 风味或非 in-source） |
 | 编辑 | 更新已有文档 |
 | 向 Owner 询问 | 7 个 Q-* 节点交互 |
-| `mj-agent-runtime-*` | B 风味 in-source 改动经 propose→拍板→apply |
+| `mj-agent-runtime-*` | B 风味 in-source 改动经 分析→影响分类→实施/决定 |
 | `mj-agent-doc-validate` | 写完后 sub-call 验证 |
 
 ## Reference Files
@@ -256,7 +257,7 @@ Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。
 
 ## Anti-patterns
 
-- **不要** B 风味改动跳过 Q-B1（违反 §3.1 必停面 runtime-skill-content-change / prompt-version-or-body-change；ADR-015 §决策点 4 runtime 硬约束）
+- **不要** B 风味改动跳过 Q-B1（违反 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change；ADR-015 §决策点 4 runtime 硬约束）
 - **不要** 缺 frontmatter `track` 字段（v2.2 §4.3.1 必填；validate 阶段 A2 阻断；项目根 markdown 例外不在此约束）
 - **不要** 在 docs/rule/ 下塞领域专属 STANDARD（违反 §3.5 就近原则；应进 docs/infrastructure/{domain}/）
 - **不要** 跳过 ADR/SPEC §12 前置检查（边界案例可能漏建必要 ADR）

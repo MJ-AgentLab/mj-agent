@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-env-teardown
-description: "适用于 mj-agent 的明确重置/销毁dev资源。输入：context/host/project/profile/-f、精确volume/image、level、备份。流程：profile→资源清单→level→损失+批准→执行→逐项verify。输出：level目标逐项完成；残留和不可恢复数据诚实报告。Use when：准备清理dev两个已确认volume的Level2方案。Do not use for：只停Studio，保留数据；建议app-stop，不进入volume清理。授权：Level2/3硬批准；prod单独停；外部网络/他人资源禁止；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的明确重置/销毁dev资源。输入：context/host/project/profile/-f、精确volume/image、level、备份。流程：profile→资源清单→level→损失+批准→执行→逐项verify。输出：level目标逐项完成；残留和不可恢复数据诚实报告。Use when：准备清理dev两个已确认volume的Level2方案。Do not use for：只停Studio，保留数据；建议app-stop，不进入volume清理。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — Env Teardown
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -91,7 +92,7 @@ docker volume ls --filter name=mj-agent
 | 2 | 清除数据 | `down -v` | 容器、网络、**mj-agent-postgres-data + mj-agent-redis-data volumes** | 镜像 | `up -d` 触发 postgres-init script 重建 mj_agent_memory DB + role；checkpointer history **全丢** |
 | 3 | 彻底重置 | `down -v --rmi local --remove-orphans` | 容器、网络、volumes、**本地构建的 mj-agent 镜像**（dev profile：`mj-agent:0.1`）| Harbor-pulled 镜像（test/prod profile） | `up -d --build` 重建本地镜像（~3-5 分钟）+ Step 2 后续 |
 
-**[H3] Hard Confirm（Level 2/3 only）** 向 Owner 询问 二次确认明确丢失项：
+**[H3] 具名损失与授权核对（Level 2/3）** 已有明确对象/损失/备份/恢复条件授权复用，缺该动作授权才询问：
 
 - **Level 2 文案**："将删除 `mj-agent-postgres-data` + `mj-agent-redis-data` volumes，**所有 langgraph checkpointer 历史 + redis appendonly 数据将永久丢失**。继续？"
 - **Level 3 文案**："将删除所有 volumes + **本地构建的 `mj-agent:0.1` 镜像**。下次 `up` 需 `--build` 重建（~3-5 分钟）。Harbor-pulled 镜像（test/prod profile）不受影响。继续？"
@@ -122,7 +123,7 @@ docker images | grep "^mj-agent\s"
 |----|------|---------|------|
 | **H1** | Info | 环境已干净 | 提示无需清理，结束 |
 | **H2** | Choice | Step 2 开始 | 向 Owner 询问 选 Level 1/2/3 |
-| **H3** | Hard Confirm | Level 2 / 3 | 二次确认明示丢失项 |
+| **H3** | 损失/授权核对 | Level 2 / 3 | 对象、必要备份与损失/恢复条件单列；已有授权复用 |
 
 > H3 是保护性阻断 — Level 2 删 langgraph checkpointer 数据是不可逆操作。
 
@@ -149,7 +150,7 @@ docker images | grep "^mj-agent\s"
 |---|---|
 | shell `docker compose ps / down [-v] [--rmi local]` | Step 1/3 lifecycle |
 | shell `docker volume ls / images` | Step 1/3 verify |
-| 向 Owner 询问 | H2 level 选择 + H3 hard confirm |
+| 向 Owner 询问 | H2 level 选择 + H3具名授权/损失条件核对 |
 
 ## Reference Files
 

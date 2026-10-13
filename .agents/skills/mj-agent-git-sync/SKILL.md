@@ -1,14 +1,15 @@
 ---
 name: mj-agent-git-sync
-description: "适用于 mj-agent 的开发期/热修回同步/同分支自更新。输入：branch/base、remote状态、dirty、模式。流程：precheck→模式→fetch→差异→merge按意图解冲突→验证。输出：目标ref纳入，冲突清零且工作树一致。Use when：同步origin/develop到当前feature分支。Do not use for：把已合并分支及worktree删掉；建议git-delete，不把sync当cleanup。授权：保持merge不用rebase；冲突/dirty/写目标核授权；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的开发期/热修回同步/同分支自更新。输入：branch/base、remote状态、dirty、模式。流程：precheck→模式→fetch→差异→merge按意图解冲突→验证。输出：目标ref纳入，冲突清零且工作树一致。Use when：同步origin/develop到当前feature分支。Do not use for：把已合并分支及worktree删掉；建议git-delete，不把sync当cleanup。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Git Sync
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -120,7 +121,7 @@ git fetch origin
 
 > Smart H7 已 fetch 时跳过。
 
-### Step 3 — 展示分歧 + 确认
+### Step 3 — 核对分歧与动作授权
 
 ```bash
 git rev-list --count HEAD..origin/<base>      # 基线领先多少
@@ -129,8 +130,8 @@ git log --oneline HEAD..origin/<base>         # 即将合并的提交
 ```
 
 - count = 0 → "已最新"，结束
-- 确认 → Step 4
-- 取消 → 终止
+- sync 授权、对象和风险未变化 → Step 4
+- 缺授权/实质取舍 → 给 Owner 具体选项；显式取消 → 终止
 
 ### Step 4 — 执行合并
 
@@ -147,7 +148,7 @@ git merge origin/<current>
 ```
 
 - 无冲突 → Step 5
-- 有冲突 → **H2**（Codex 提案 → user 选择 → 执行）
+- 有冲突 → **H2**（基线内保持双方意图自主解决；实质取舍由 Owner 决定）
 
 ### Step 5 — 同步后验证
 
@@ -176,8 +177,8 @@ git pushall   # 推 develop 到 gitee + origin
 | # | 触发 | 行为 | 级别 |
 |---|---|---|---|
 | **H1** | git status 有未提交修改 | ⚠️ 三选：commit / stash / 取消 | Soft |
-| **H2** | merge 冲突 | ⚠️ Codex 提案→用户选→执行（详见 H2 流程） | Soft |
-| **H3** | stash pop 冲突 | ⚠️ 告知 stash vs 合并冲突，需手动解后 `git stash drop` | Soft |
+| **H2** | merge 冲突 | 基线内按双方意图自主解决；实质目标/风险取舍给 Owner 具体选项（详见 H2） | Conditional |
+| **H3** | stash pop 冲突 | 核 stash 来源/未提交内容，按 H2a 保持双方意图自主解决；删除 stash 独立核具名授权 | Conditional |
 | **H4** | 当前 main + 跨分支合并意图 | 🚫 硬阻断：main 不允跨分支 merge | Hard |
 | **H4a** | main + 意图模糊 | ⚠️ "你在 main。要从 origin/main 拉最新（如 release PR 合并后）还是误操作？" 选 (1) 自更新 (2) 取消 | Soft |
 | **H4b** | develop + 意图模糊 | ⚠️ 三选：(1) origin/develop 自更新 (2) Hotfix 回同步 main (3) 取消 | Soft |
@@ -186,16 +187,16 @@ git pushall   # 推 develop 到 gitee + origin
 | **H7** | 工作分支 + 模糊 + SELF_GAP > 0 | ⚠️ 见 Smart H7（4 选项） | Soft |
 | **H8** | Step 0a 返回 false（bare worktree config 漂移） | ⚠️ 三选：(1) 自动写 config.worktree 修复（推荐）(2) 手动按 mj-agent-git-branch §Bare Worktree Health Check 修复 (3) 取消 | Soft |
 
-> Step 3"是否继续合并？"是常规交互确认，不属 H-code。
+> sync 动作已具名授权且目标/风险未变化时不固定追加确认；缺动作授权或意图不明先核实。
 
 ### H2 冲突解决流程
 
-> Codex 是"提案者"非"决策者"，每个冲突区域最终方案需 user 确认。
+> 基线内实现冲突由 Codex 自主解决并验证；涉及业务/安全/接受标准或目标取舍，由 Owner 决定受影响项。
 
 1. 展示冲突概况：`git diff --name-only --diff-filter=U`
-2. 🔴 人工选：(1) Codex 分析提方案（推荐）/ (2) 用户自解 / (3) 放弃 `git merge --abort`
-4. Codex 提案（仅路径 1）：逐文件读冲突区，分析双方语义（按 H2a「按意图」纪律），提方案 + 理由
-5. 🔴 用户确认：每区选 接受 / 修改 / 跳过
+2. 核 sync 授权、真实双方版本与停止条件；存在未知或实质取舍时只暂停相关区域，其余已授权独立工作继续。
+4. 逐文件读冲突区，分析双方语义（按 H2a「按意图」纪律），保持接受基线和双方意图，记录方案及理由。
+5. 普通冲突自主修复并验证；只有实质目标/风险取舍或缺动作授权时，给 Owner 具体可行选项及推荐理由。Owner 显式选择 abort 时执行已授权退出操作。
 6. 执行：`git add <files>` → `git commit -m "merge: 合并 <base> 最新内容，解决冲突"` → 交付前跑 Level A（H2a 第 4 点）
 
 #### H2a 按意图解冲突纪律
@@ -245,14 +246,14 @@ $cfgPath = "$bareDir/worktrees/$wtName/config.worktree"
 1. **禁止 main 上跨分支 merge**：H4 硬拒；自更新（origin/main → main）例外
 2. **develop 上允许自更新和 hotfix 回同步**：非两者触 H4b
 3. **merge 策略强制**：rebase 引导 merge (H5)
-4. **冲突保护**：Codex 修改前展示方案等 user 确认
+4. **冲突保护**：保持双方意图，基线内自主修复/验证；实质目标/风险变化先 Owner 决定
 
 ## Anti-patterns
 
 - **不要** 在 main 上跨分支 merge（H4 硬阻断）
 - **不要** 用 rebase（H5 引导 merge）
 - **不要** 跳过 Step 0a 自检（H8 漂移会让后续命令全失败）
-- **不要** 在 H2 冲突时不展示方案就 git add（必先 user 确认）
+- **不要** 在 H2 冲突中丢失双方意图、越过任务授权或用语法通过替代行为验证
 - **不要** 自更新模式下 push（仅本地同步）
 
 ## Reference Files

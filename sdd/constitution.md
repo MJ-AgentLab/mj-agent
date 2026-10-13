@@ -2,10 +2,10 @@
 type: sdd-kernel
 artifact: constitution
 state: draft
-version: 0.2
+version: "0.3"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-09-01
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -14,8 +14,8 @@ ai_visibility: source-of-truth
 
 > Phase M0 skeleton — body 在 Phase M2 内容填充阶段（spec-anchored-refactor PR-M2-1）完成.
 > 本文件位于 `sdd/**`，**与 `state` 取值无关**即属 `policies/ai-agent.md` §5
-> 「`policies/**` + `sdd/**`（kernel 元规则本身）」行的 **HITL required** 面——**不在** canonical
-> 10-enum 内，兜底是 merge review。
+> kernel 元规则的实质治理变化面——**不在** canonical
+> 10-enum 的路径判定；按实际决定及授权核验，平台有效审核另留证。
 
 ## §1 Purpose
 
@@ -45,16 +45,9 @@ SDD（Spec-Driven Development）治理 mj-agent 的开发与变更：**所有变
 详见 `policies/data-boundary.md` + `decisions/ADR-000_Data_LLM_Boundary_Principles.md`（Phase M5
 平移自 `docs/adr/`）.
 
-### §3.2 4 项 mj-agent 专属必停（hard stops）
+### §3.2 四类 runtime 语义风险
 
-任一修改触发以下文件必须 HITL（不可绕过；写入 `sdd/gates.md` §"mj-agent specific hard stops"）：
-
-| ID | 路径 | 触发原因 |
-|---|---|---|
-| sql-guardrail-relax | `src/mj_agent/tools/sql/{guardrail,precheck}.py` | L1/L1b 防御层；放宽 = 安全主线动摇 |
-| runtime-skill-content-change | `src/mj_agent/skills/*/SKILL.md` body | LLM 行为契约 |
-| prompt-version-bump | `src/mj_agent/prompts/system.md` version 字段 + body | 系统提示词行为边界 |
-| biz-catalog-sync | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | mirror 上游业务系统数据字典 |
+路径用于定位影响，不自动审批。SQL、runtime SKILL、Prompt及catalog的基线内安全保持、兼容维护与修复自主，保持行为/负例、EVAL/版本及冻结合同证据。数据/SQL安全、业务口径、外发、breaking、AC/gate或权限实质变化由Owner决定；技术拒绝及秘密/biz永久边界不因授权放宽。完整定义见 `policies/ai-agent.md` §4。
 
 ### §3.3 3 SKILL 来源严格区分
 

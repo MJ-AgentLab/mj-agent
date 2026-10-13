@@ -2,10 +2,10 @@
 type: policy
 artifact: release
 state: draft
-version: 0.1
+version: "0.2"
 owner: ranzuozhou
 created: 2026-06-08
-updated: 2026-06-08
+updated: 2026-10-12
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -59,6 +59,12 @@ ai_visibility: source-of-truth
   `policies/git-branching` §4); operational steps in
   `docs/infrastructure/cicd/[RUNBOOK]_Release_Process.md`; version-management flow in
   `docs/infrastructure/git/[GUIDE]_GitHub_Setup_And_Versioning.md` §4.
+
+## §5.1 发布、运行验证与接受
+
+历史release develop→main须Owner接受及独立具名发布授权，当前Agent-first日常taskPR解析器只支持主线/热修及登记任务集成关系，release需未来具名规则映射；不以现有示例或技术权限宣称已支持。
+
+发布在具名授权、平台有效审核及必要门禁满足后由Agent执行，普通版本维护不自动要求逐内容批准。仓库批准、部署授权、实际运行验证和业务接受分记；合并/HTTP/命令成功不证明业务正确。共享环境核目标/并发，恢复按风险安排回滚PR、备份恢复、补偿或降级；尚未演练明确未验证。首期部署自动化与实际恢复演练延期，不能宣称已完成。
 
 ## §6 Cross-references
 

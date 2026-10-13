@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: hotfix
 state: draft
-version: 0.1
+version: "0.2"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-05-20
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -30,8 +30,7 @@ ai_visibility: source-of-truth
 1. **Branch** — `git worktree add ../hotfix/<slug> -b hotfix/<slug> main`
    （per `.agents/skills/mj-agent-git-branch/SKILL.md` hotfix 6 步）.
 2. **Minimal fix** — 最小变更面（仅一个 commit type，仅 fix；不夹带 refactor / feature）.
-3. **HITL Gate-Emergency** — 1 reviewer 快速审；触及 4 项专属必停或 prod compose → 必须 +1
-   reviewer.
+3. **紧急核验** — 按风险独立核验真实成果，生产权限/策略或接受标准变化先Owner决定.
 4. **PR to main** — target = main；commit type 必须含 `fix(`.
 5. **Tag** — merge 后 main 打 patch 版本 tag.
 6. **Sync develop ← main** — `mj-agent-git-sync` skill；防 hotfix 在下次 main → develop 合并
@@ -40,12 +39,9 @@ ai_visibility: source-of-truth
    `requirements.md` / `contracts/` 演进 + evidence/postmortems/ 写入；走标准
    `evolve-capability.md` 流程.
 
-## HITL Triggers
+## 决定与授权
 
-- 任意 hotfix → 紧急 HITL（reviewer 优先级最高）
-- 触及 prod compose → 必须 ≥ 2 reviewer
-- 触及 4 项专属必停 → 必须 ≥ 2 reviewer + 1 domain expert
-- 数据-LLM 边界相关 → 走 cross-capability workflow（不应走 hotfix 单线）
+紧急任务仍核具体生产/发布授权与恢复风险；独立角色核验按风险，不固定人数。基线内修复自主，安全、权限、业务或接受标准变化先决定；有效平台审核另取得。
 
 ## TBD: Phase M2 内容填充
 

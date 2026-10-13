@@ -2,10 +2,10 @@
 type: policy
 artifact: docker-runtime
 state: draft
-version: 0.4
+version: "0.5"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-10-12
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -23,13 +23,13 @@ ai_visibility: source-of-truth
 改动该找谁签字，一律见 §4。
 
 四条红线如下。**载体强度差别很大，不要因为都写在本节就当成同一档**：只有 I2 有 blocking 机器
-校验，I1 / I4 是 warning，I3 完全没有机器校验、只靠 §4 的人工拍板。
+校验，I1 / I4 是 warning，I3 完全没有机器校验、由§4风险分类与有效平台审核补偿。
 
 | # | 红线 | 当前实现 | 执行载体 |
 |---|---|---|---|
 | I1 | 解密产物不得进入 image | `docker/Dockerfile` 的 `COPY` 面仅 6 项（下方列全）；唯一可能夹带解密产物的 `COPY config/` 由**仓根** `.dockerignore` 剔除；`docker/entrypoint.sh` 不做解密 | G7 check (3)（warning@ci）+ V5 `forbidden_in_image` 项（FAIL，但只扫字面量——见下 I1 注） |
 | I2 | runtime stage 必须以非 root 运行 | `USER appuser`（uid/gid 1000）`docker/Dockerfile:114`；用户创建于 `:79-80`，`/app` 与 `/var/lib/mj-agent` chown 给 appuser `:101` | **V5 FAIL（blocking@ci）—— 本节唯一被机器强制的一条** |
-| I3 | 外部 registry 镜像引用必须 tag + digest 双钉，且不得经 `ARG` 参数化 | builder / runtime 两个 stage 同为 `python:3.13-slim` + 同 digest（`:25` / `:62`）；uv 工具镜像 `ghcr.io/astral-sh/uv:0.12.1` + digest（`:46`，经 `COPY --from=` 引入） | **无机器校验** → 只靠 §4 的 Owner 拍板 + reviewer + PR 模板勾选 |
+| I3 | 外部 registry 镜像引用必须 tag + digest 双钉，且不得经 `ARG` 参数化 | builder / runtime 两个 stage 同为 `python:3.13-slim` + 同 digest（`:25` / `:62`）；uv 工具镜像 `ghcr.io/astral-sh/uv:0.12.1` + digest（`:46`，经 `COPY --from=` 引入） | **无机器校验** → 由§4的语义风险核对、独立供应链证据和有效平台审核补偿 |
 | I4 | build context 根必须有 `.dockerignore`，且覆盖 `config/secrets*.conf` | 仓根 `.dockerignore`（2026-06-11 owner-approved 落地） | G7 check (3)（warning@ci） |
 
 **I1 — 禁止面的准确边界**。禁的是**解密产物**（`.env` / `config/secrets*.conf` / `*.pem` /
@@ -47,7 +47,7 @@ ai_visibility: source-of-truth
 
 - `python:3.13-slim` 线由 `.github/dependabot.yml` 的 docker 生态自动 bump digest，且已 ignore
   `version-update:semver-major` 与 `semver-minor`（#294）——只允许同 tag 线内 digest 流动；跨
-  minor / major 必须人工 PR，同批同步 `requires-python` 与 `uv.lock`。
+  minor / major 必须可审阅 PR，同批同步 `requires-python` 与 `uv.lock`。
 - uv 工具镜像那行**是手工维护的**：Dependabot 无法刷新 `COPY --from=` 形式的镜像引用（upstream
   `dependabot-core#5103`），所以它不会自动更新；也**刻意不**参数化成 build ARG——ARG 会把 #405
   移除的可变性重新装回去。
@@ -148,39 +148,21 @@ failed`。裁定与推理写在 `compose.yaml:146-159` 的注释里。⚠ `sdd/a
 > `max_to_healthy_sec: 60` 是按 Dockerfile 的 start_period 20s 推算的，没跟上 compose 的 30s 覆盖。
 > 改契约本身是 canonical `declared-contract-change`（Owner 拍板），不属本节的文档填充动作。
 
-> **审批级别——本次刻意不补 §4 行。** healthcheck 面的必停当前由两个 entry adapter 承载：
-> `docker/AGENTS.md` §Hard stops 与 `docker/AGENTS.md` §4 项专属必停，二者均标
-> `OWNER_APPROVAL_REQUIRED`。§4 仍无对应行，这是本次填充**有意**保留的状态：给 §4 加行会牵出
-> 「哪个 canonical enum 锚定该面」这一姿态问题——`secrets-grants-or-prod-config` 现锚的是 prod
-> compose 与 Dockerfile 外部镜像引用，而 healthcheck 字段住在 base `compose.yaml`；按 #413 先例
-> 应扩既有 enum 的 surface anchor 而非新增第 11 项，属 Owner 决策，不由内容填充顺带完成。
-> **触发条件**：Owner 就锚点作出决定后，把结论落成 §4 的一行，并同步撤掉两个 entry adapter 里
-> 「§4 尚无对应行，暂沿用本节级别」的过渡措辞。在此之前，以两个 adapter 标注的级别为准。
+> **风险级别**：healthcheck、合同、生产及供应链按§4实际影响分类，基线内兼容修复自主；改变观测接受标准、权限或信任来源先Owner决定。
 
-## §4 变更 HITL 触发条件（生产红线 + 供应链面）
+## §4 Docker 实质风险与独立核验
 
-本节是 `docker/` 下**审批级别的 kernel SoT**。`docker/AGENTS.md` §Hard stops 与
-`docker/AGENTS.md` §专属必停 是它的两个 entry adapter——它们**点名对象**、回指本节取级别。
-下表列出 `docker/` 各触发面及其 HITL 级别（`docker/compose.prod.yml` 为 Phase M5 自
-`infra/docker/docker-compose.prod.yml` 平移）：
+本节为Docker风险分类正本，执行授权与接受基线按ai-agent §4分记。
 
-| 触发 | HITL 级别 |
+| 变化 | 决定与执行 |
 |---|---|
-| compose.prod.yml 字段修改 | ≥ 2 reviewer + 项目负责人 |
-| `docker/Dockerfile` **外部 registry 镜像引用**变更：`FROM <image>` + `COPY --from=<registry image>`（内部 `COPY --from=<stage>` 如 `--from=builder` **不**在内） | `OWNER_APPROVAL_REQUIRED`（改前 Owner 拍板）+ ≥ 2 reviewer |
-| `docker/Dockerfile` 其余修改 | ≥ 2 reviewer |
-| network 配置（external network / internal network）变更 | ≥ 2 reviewer + 上游业务系统 DRI 联络 |
+| 生产策略、权限、部署或共享资源风险变化 | Owner作具体决定，核具名环境/权限/副作用、观测与恢复 |
+| FROM/COPY外部镜像的供应链信任来源改变 | Owner决定来源；独立供应链/工程核验。保持已定来源的tag/digest维护可在授权内自主 |
+| 内部stage COPY、普通Dockerfile或具名dev兼容修复 | 基线内自主，运行适用构建及行为负例 |
+| network跨仓边界、所有权或权限改变 | Owner决定并核上游资源授权；仅consumer，不改他人栈 |
+| healthcheck接受标准或生产观测策略变化 | Owner决定；保持标准的兼容修复自主并验证实际行为 |
 
-> **两条 Dockerfile 行按「被点名的对象」划分，不按「影响范围」判断**（per #408 / #413）：Owner
-> 拍板只挂在外部 registry 镜像引用上；其余 Dockerfile 行——含 `COPY --from=builder` 一类内部
-> stage 拷贝——留在 ≥ 2 reviewer 档，**级别未上调，不是新增必停**。
-> 原措辞「Dockerfile 在 prod 部署影响范围内修改」已废除：该谓词需逐次判断且没有可检查的边界，
-> 实际会把整份 Dockerfile 悄悄纳入必停面，与 #408 明确排除内部 stage 拷贝的裁定冲突。
-> **口径变化如实记录**：级别不变，但覆盖面由条件谓词「prod 影响范围内」**收敛为无条件全文件**
-> ——原先需逐次判断的行，现在一律 ≥ 2 reviewer。
-> **本表尚未覆盖 healthcheck 面**：该面的必停暂由两个 entry adapter 自带级别承载，不受上面
-> 「其余修改」行辖制；补不补本表行取决于一个尚未拍板的 enum 锚点问题，判据与触发条件见 §3 末段。
-> canonical enum 锚点 = `secrets-grants-or-prod-config`（`policies/ai-agent.md` §4）。
+按风险模拟相关核验角色，不要求真人或固定人数。命令/构建成功不证明来源可信、业务正确或prod验收。门禁定义防自降首期由Owner审核补偿，可信独立强制核验延期。
 
 ## §5 与其他 policy 联动
 

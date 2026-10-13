@@ -18,6 +18,7 @@ REQUIRED = (
     "scripts/mcp/setup-mcp-secrets.ps1", "scripts/sdd/codex_hook_guard.py",
     "scripts/sdd/run_codex_hook.ps1", "scripts/sdd/check_codex_native.py",
     "scripts/sdd/git_command_review.py",
+    "scripts/sdd/task_delivery.py",
 )
 RULES = {
     ("Remove-Item",): "prompt",
@@ -96,6 +97,7 @@ def check_mcp(root: Path) -> list[str]:
 
 ENFORCEMENT = (".codex/hooks.json", ".codex/rules/mj-agent.rules",
                "scripts/sdd/codex_hook_guard.py", "scripts/sdd/git_command_review.py",
+               "scripts/sdd/task_delivery.py",
                "scripts/sdd/run_codex_hook.ps1")
 
 

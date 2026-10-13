@@ -57,7 +57,7 @@ fixture-only; they used to session-skip unconditionally and verify nothing):
 
 - Verify YAML structure: `python -c "import yaml; d=yaml.safe_load(open('src/mj_agent/biz_catalog/qcm_catalog.yaml')); print(list(d.keys()))"`
 - Expected keys: 10 required (version / catalog_kind / metrics / periods / metric_column_shapes / dimensions / signal_tables / dimension_tables / fact_table_pattern / forbidden_access) + 3 informational (source / period_over_period_columns / runtime_constraints)
-- If missing key — biz-catalog-sync HITL required; do NOT edit YAML directly. Use `/mj-agent-runtime-biz-catalog-sync` skill (read-only diff).
+- If a key is missing, use `mj-agent-runtime-biz-catalog-sync` to compare the accepted contract and Owner-attested sanitized snapshot. Compatible schema repair within task authorization is autonomous with negative/alignment tests; data visibility, metric meaning or upstream-standard choices require an Owner decision. Never obtain missing facts through a direct database connection.
 
 ### Symptom: `tests/contract/test_qcm_catalog_alignment.py` fails
 
@@ -66,9 +66,9 @@ fixture-only; they used to session-skip unconditionally and verify nothing):
 **Resolution**：
 
 - Identify drift: look at failing assertion (signal_tables / dimension_tables / time_columns / forbidden_schemas)
-- Run `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB); surfaces drift list
+- Run `mj-agent-runtime-biz-catalog-sync` against an Owner-attested sanitized snapshot (offline; never a live DB); classify the drift before applying authorized changes.
 - Decide policy:
-  - **Upstream renamed column** (e.g. `stat_date` → `data_date`): file `[AGENT]` issue; update `qcm_catalog.yaml` via biz-catalog-sync HITL (4 项必停)
+  - **Upstream renamed column** (e.g. `stat_date` → `data_date`): compatible rename inside the accepted snapshot/contract is autonomous within task scope; evaluate downstream references and behavior tests. Changed metric meaning or data scope requires Owner decision.
   - **Catalog has stale extra entry** (DB dropped it): update catalog accordingly
 - Run alignment tests again after sync
 
@@ -79,8 +79,8 @@ fixture-only; they used to session-skip unconditionally and verify nothing):
 **Resolution**：
 
 - Check if failure is due to known stale `mj-ddd-semantics` skill reference in test (per T-005 cleanup task): file `[BUG]` issue if so
-- Otherwise: identify which SKILL body has a stale reference (test output names the SKILL + table); SKILL body change requires runtime-skill-content-change HITL (4 项必停)
-- Use `/mj-agent-runtime-skill-doc-improve` skill (read-only diff) to propose SKILL body update
+- Otherwise identify the SKILL body and table. Stale-reference repair preserving accepted data/business/safety boundaries is autonomous within task scope; changed boundaries require Owner decision.
+- Use `mj-agent-runtime-skill-doc-improve` with independent domain/Prompt verification and applicable regression/negative evidence.
 
 ### Symptom: `find_biz_context` returns unexpected `candidate_table_names`
 
@@ -98,8 +98,8 @@ fixture-only; they used to session-skip unconditionally and verify nothing):
 **Resolution**：no action required at agent side. When upstream lands:
 
 1. Track upstream PR1/PR2 in `[AGENT]` issue
-2. After upstream PR merged, run `/mj-agent-runtime-biz-catalog-sync` skill against new DB
-3. Update `qcm_catalog.yaml` via biz-catalog-sync HITL
+2. After the upstream PR merges, obtain an Owner-attested sanitized snapshot through the permitted process; no fresh snapshot means not verified, never a direct DB query.
+3. Use `mj-agent-runtime-biz-catalog-sync` to classify actual drift: compatible accepted-snapshot maintenance is autonomous in task scope; changed metrics/data visibility/upstream standards require Owner decision.
 4. Update header `source.status: synced`
 5. Re-run alignment tests; should pass
 
@@ -110,8 +110,8 @@ fixture-only; they used to session-skip unconditionally and verify nothing):
 - `contracts/catalog.contract.yml` — REQ-001 schema completeness
 - `contracts/catalog-db-alignment.contract.yml` — REQ-002 + REQ-003 alignment
 - `contracts/behavior.feature` — 3 Gherkin scenarios
-- `/mj-agent-runtime-biz-catalog-sync` skill — read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB)
-- `policies/data-boundary.md` §3 — biz-catalog-sync 4 项必停 governance
+- `mj-agent-runtime-biz-catalog-sync` — snapshot comparison, impact classification and authorized compatible maintenance (offline; never a live DB)
+- `policies/data-boundary.md` §3 — permanent data boundary and semantic risk classification
 - `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
 - `§6.1 Catalog Freshness Check Cadence SOP` — cross-ref `qcm_catalog.yaml source.status` + `scripts/diff_biz_schema.py` reference
 - `§6.2 Catalog-Sync Skill Walkthrough SOP` — wraps `/mj-agent-runtime-biz-catalog-sync` skill (black-box workflow reference; `biz-catalog-sync` canonical 10-enum HITL per `policies/ai-agent.md §4`)
@@ -162,13 +162,13 @@ run does not by itself prove the live warehouse agrees — that is what step 1's
 
 **Trigger**: §6.1 surface unexpected drift OR scheduled re-sync after upstream mj-system PR1/PR2 lands per §6.3.
 
-**Pre-conditions**: Catalog modification triggers canonical 10-enum **`biz-catalog-sync`** HITL Gate-2 (per `policies/ai-agent.md §4`); Steps below MUST NOT modify `qcm_catalog.yaml` before HITL Gate-2 ack obtained.
+**Pre-conditions**: A fresh Owner-attested sanitized snapshot and task authorization covering the named catalog changes. The `biz-catalog-sync` enum locates risk; metric meaning, data visibility and upstream-standard changes require Owner decision under `policies/ai-agent.md` §4. Compatible accepted-snapshot maintenance is autonomous with applicable verification.
 
 **Steps** (skill wraps; see `/mj-agent-runtime-biz-catalog-sync` for black-box workflow):
 
-1. Invoke `/mj-agent-runtime-biz-catalog-sync` skill — skill performs read-only diff between catalog and an Owner-attested sanitized snapshot (offline; never a live DB), surfaces drift items as proposed changes
-2. **HITL Gate-2 question** — Open `biz-catalog-sync` canonical enum question; obtain user ack on proposed `qcm_catalog.yaml` modifications
-3. User applies proposed diff to `qcm_catalog.yaml` via Edit (skill outputs diff; does not auto-write)
+1. Invoke `mj-agent-runtime-biz-catalog-sync` to compare the catalog against the sanitized snapshot, classify drift and inspect downstream references; never query a live DB directly.
+2. Prepare concrete options only for material semantic/risk changes or missing authorization; reuse valid task decisions for compatible maintenance.
+3. Agent applies the authorized diff through normal tools and preserves actual refusal evidence; a technical refusal stops the affected operation, never creates a bypass.
 4. Update `qcm_catalog.yaml source.status: synced` field
 5. Regression: `uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contract -m contract`
 

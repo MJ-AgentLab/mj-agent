@@ -2,10 +2,10 @@
 type: policy
 artifact: git-branching
 state: draft
-version: 0.2
+version: "0.3"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-08-11
+updated: 2026-10-12
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -77,15 +77,13 @@ git worktree add ../<branch-name> -b <branch-name>
 
 执行机制：AGENTS 自律 + 原生 `scripts/sdd/codex_hook_guard.py`；实际宿主加载需独立验证，静态代码测试不能证明 hook 生效。
 
-### G2 — base = develop（除 hotfix）
+### G2 — 显式 base 与任务集成例外
 
-PRs from `feature/` / `bugfix/` / `documentation/` / `maintain/` **必须** `--base develop`；
-只有 `hotfix/` 才 `--base main`.
+feature/bugfix/documentation/maintain 通常显式 `--base develop`，hotfix显式`--base main`；历史release develop→main为独立发布流程，须Owner接受、具名发布授权及未来明确规则映射，当前有限解析器不声称支持。支持单 PR、多个独立 PR 或子 PR → 短期任务集成分支 → 主线；集成分支命名 `feature/task-<任务标识>-integration`，仍经 G1 worktree 创建。
 
-执行机制：同 G1 hook（拦截缺 `--base` 的 `gh pr create`）+ `mj-agent-git-pr` skill 的
-`gh pr create` 示例一律带 `--base`（见 §3.1）. ⚠ **PR body 模板不是本规则的载体** —— 模板管的是
-PR 正文，物理上管不到 `gh pr create` 的 `--base` 旗标；`.github/PULL_REQUEST_TEMPLATE/` 里与
-target 相关的只有 `hotfix.md` 顶部一句"目标分支为 `main`"的提醒.
+分层模式在任务记录登记精确子 head → integration base、对象/范围/依赖与最终 base，创建命令显式携带 base；未登记的匹配不放行。子 PR 先范围核对、独立核验和适用门禁，任务 PR 验证累计差异、组合行为和完整 AC。子 PR 合并仅表示候选集成。
+
+实施前核平台规则、CI 触发及 merge 外部副作用。集成分支保留有效批准、严格版本检查、讨论解决及禁止force push；App日常无admin/checks-write/bypass。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定以不同于作者/最后推送者的Owner身份执行平台审核，补推须重新取得有效决定/审核，批准与业务接受分记。
 
 ### 历史事故
 
@@ -98,10 +96,10 @@ target 相关的只有 `hotfix.md` 顶部一句"目标分支为 `main`"的提醒
 
 原生 git-branch/git-pr 技能与 AGENTS 承载规则，`scripts/sdd/codex_hook_guard.py`
 承载有限语法判定。建分支禁令、PR base 要求仍适用。带 Git 全局选项、复杂 shell
-或无法理解的输入 fail closed；不把解析失败当授权。提交/推送/PR/merge 仍须 Owner。
+或无法理解的输入 fail closed；不把解析失败当授权。提交/普通推送/PR/merge 在具名任务授权内执行；实质变化按 ai-agent §4 重新决定。
 
 协议返回 JSON block（进程退出 0 不表示允许）；异常 payload 也 block。
-Owner 批准动作保持硬阻断，人工应用路线按 execution-loop §3.0。
+任务授权与技术拒绝分开核验；拒绝不得绕过，正常执行路线按 execution-loop §3.0。
 `tests/unit/test_codex_native.py`、`test_native_migration_guards.py` 验证代码；宿主
 权限与真实 hook canary 另取证。这里 G1/G2 是 Git 规则，与 sdd/gates 的同名编号不同。
 
@@ -124,8 +122,8 @@ code-review alignment).
 | `hotfix.md` | `hotfix/*` | **main** | production emergency |
 | `release.md` | develop → main | **main** | version release (Phase 1+; see `policies/release`) |
 
-`gh pr create --base <develop|main> --template <name>.md` — base is `develop` for all
-except `hotfix` / `release` → `main` (G2).
+`gh pr create --base <develop|main|具名任务集成分支> --template <name>.md` — base is `develop` for all
+hotfix→main；release为独立发布流程，须接受/发布授权及未来具名规则映射，不能据此声称当前解析器支持。
 
 ### §4.2 Branch type × allowed commit type (PR self-check verifies)
 

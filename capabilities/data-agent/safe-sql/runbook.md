@@ -85,7 +85,7 @@ non-SELECT / empty SQL / out-of-allowlist biz_dwd table.
 
 **Resolution**：
 
-- If LLM generates write SQL → check `prompts/system.md` body (do NOT modify — `prompt-version-bump` 必停; instead file an `[AGENT]` issue with the prompt-vs-output drift evidence)
+- If the LLM generates write SQL, inspect prompt-vs-output drift evidence. Baseline-preserving Prompt repair is autonomous within task authorization with independent Prompt/behavior/negative verification; changed safety/business/data/outbound commitments require Owner decision. The readonly SQL boundary remains mandatory.
 - If SQL targets `biz_ods` / `biz_ads` → these are not visible to mj-agent; ADR-009 constraint
 - If targeting unlisted biz_dwd table → check `settings.biz_allowed_dwd_tables` (currently 2 dim tables); expansion requires sql-guardrail-relax HITL + cross-capability change
 
@@ -162,10 +162,9 @@ but `qcm_catalog.yaml periods.*.time_column` still references the old name.
 **Resolution**：
 
 - This is the **intended drift detector** — the L1b precheck rule fails loudly
-- Run `/mj-agent-runtime-biz-catalog-sync` skill (read-only diff) to compare
-  `qcm_catalog.yaml` vs upstream DB
-- File `[AGENT]` issue with biz-catalog-sync 必停 trigger
-- Resolution touches `qcm_catalog.yaml` → HITL required
+- Run `mj-agent-runtime-biz-catalog-sync` against a fresh Owner-attested sanitized snapshot, never directly against the business DB.
+- Compatible accepted-snapshot repair is autonomous within task scope, with downstream safety regression and negative evidence; metric/data visibility/upstream-standard changes require Owner decision.
+- Issue publication requires its own action authorization; no fresh snapshot means not verified.
 
 ## §4 Related artifacts
 
@@ -174,7 +173,7 @@ but `qcm_catalog.yaml periods.*.time_column` still references the old name.
 - `contracts/python.contract.yml` — module signatures + REQ-006 middleware
 - `contracts/behavior.feature` — 6 Gherkin scenarios
 - `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 — broader Studio walkthrough (M6 X4 absorbed dev_studio_walkthrough)
-- `policies/data-boundary.md` — 数据-LLM 三原则 + 4 项必停 governance
+- `policies/data-boundary.md` — permanent readonly toolchain and semantic risk classification
 - `§6.1 L1 Schema/Table Whitelist Extension SOP` — cross-ref `src/mj_agent/tools/sql/guardrail.py` `allowed_tables_per_schema` + `sql-guardrail-relax` canonical 10-enum HITL (per `policies/ai-agent.md §4`)
 - `§6.2 L3 Lock Timeout & L4 Statement Timeout Tuning SOP` — cross-ref behavior.feature REQ-003/REQ-004 + `mj_system_db.py` DSN options + upstream `R__analyst_permissions.sql`
 - `§6.3 L4 Upstream DB Connection & Index Tuning SOP` — cross-ref spec.yml REQ-004 `reference_contract` + mj-system biz_dws index strategy (cross-repo)
@@ -234,7 +233,7 @@ Postmortem path: `evidence/postmortems/<YYYY-MM-DD>_<incident-slug>.md` per
 4. Coordinate deployment: upstream migration must precede mj-agent runtime restart for `statement_timeout`; for `lock_timeout`, mj-agent compose restart suffices
 5. Regression: behavior.feature REQ-003/REQ-004 scenarios still pass with new values
 
-**Verify**: `psql -c "SHOW statement_timeout" -U analyst` against biz pg → expect new value; mj-agent fixture test with adjusted lock_timeout
+**Verify**: Obtain scoped, sanitized post-change evidence through the permitted application toolchain or the upstream Owner's change record; the Agent never runs a direct DB client. If the permitted route cannot observe the setting, record runtime verification as unavailable. Separately run mj-agent fixture tests with the adjusted lock timeout; fixture success is software evidence, not proof of the deployed value.
 
 **Rollback**: Revert upstream R__ migration + mj-agent DSN edit; deploy in same coordinated order
 

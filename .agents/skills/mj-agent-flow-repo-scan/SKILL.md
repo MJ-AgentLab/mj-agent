@@ -1,14 +1,15 @@
 ---
 name: mj-agent-flow-repo-scan
-description: "适用于 mj-agent 的Stage3对Issue/Plan事实核查。输入：Issue、Plan、git身份、真实文件。流程：追踪锚→worktree→8维scan→反扫→doc矩阵→plan verdict→验证/HITL。输出：8维事实与逐项来源、文档决策/风险/下一输入齐。Use when：复核这份Plan是否仍符合仓库现状。Do not use for：修复扫描中发现的代码问题；仅报告修复建议，另行implement。授权：不编码/不改plan；受限数据只经工具链；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage3对Issue/Plan事实核查。输入：Issue、Plan、git身份、真实文件。流程：追踪锚→worktree→8维scan→反扫→doc矩阵→plan verdict→验证/HITL。输出：8维事实与逐项来源、文档决策/风险/下一输入齐。Use when：复核这份Plan是否仍符合仓库现状。Do not use for：修复扫描中发现的代码问题；仅报告修复建议，另行implement。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Repo Scan (HITL Stage 3)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -43,7 +44,7 @@ digraph repo_scan {
   s3 [label="Step 3: 8-dim 扫描（mj-agent tune）\n7 modules + biz_catalog + cross-边界" shape=box];
   s4 [label="Step 4: §7.2.1 反向扫描\n(扩展到 src/.../{skills,prompts}/ + biz_catalog drift)" shape=box];
   s5 [label="Step 5: §7.1 Documentation Decision\n(10 行 × 8 列)" shape=box];
-  s6 [label="Step 6: Plan Verdict + 风险再分级\n(含 §3.1 4 项 mj-agent 必停升档)" shape=box];
+  s6 [label="Step 6: Plan Verdict + 风险再分级\n(按实际安全/业务/权限/AC影响分类)" shape=box];
   s7 [label="Step 7: Verification Plan + HITL Questions" shape=box];
 
   gate [label="风险升 High?\n或多方案取舍?" shape=diamond];
@@ -147,7 +148,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only
 >
 > **§6.5 硬规则**：mj-agent 是 biz pg 只读消费者；任何 schema 修改需求必须返到 mj-system 上游开 Issue（mj-agent 侧不能 V__/R__ migration）。
 >
-> **§6.6 硬规则**：生产 secret / .env / secrets.enc / CI/CD 发布链路 → 自动升 High + 强制 HITL。
+> **§6.6 硬规则**：生产 secret / .env / secrets.enc / CI/CD 发布链路 → 按实际影响升档 + 实质变化才HITL。
 
 ## Step 4: 反向扫描（§7.2.1，hard rule，mj-agent 扩展）
 
@@ -161,7 +162,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 | DDD 层重组 / 模块迁移（接口不变） | review SPEC §实现 + GUIDE 代码路径示例 + `repo:README.md` 架构概览与 `repo:src/mj_agent/AGENTS.md` | 读取 SPEC + rg |
 | 性能 / 内部行为优化（接口不变） | review SPEC 性能段 + RUNBOOK 诊断步骤 + ASSESSMENT 后置评估计划 | 读取 SPEC + RUNBOOK |
 | **biz_catalog mirror 漂移**（mj-agent 专属） | `uv run python scripts/diff_biz_schema.py`（offline；只读 sanitized 快照。SKIP_NO_SNAPSHOT / SKIP_STALE_SNAPSHOT = 未验证，不是通过） | scripts/diff_biz_schema.py |
-| **runtime SKILL/system.md body 改动**（mj-agent 专属） | 触发 §3.1 必停 HITL；列出受影响 in-source canonical | Direct file diff |
+| **runtime SKILL/system.md body 改动**（mj-agent 专属） | 触发 §3.1语义影响核对；列出受影响 in-source canonical | Direct file diff |
 
 每条命中文档必须列入 Step 5 §7.1 表（Action=`Update`，Existing Target=命中文档，Evidence=grep 命令 + 命中行号）。
 
@@ -200,9 +201,9 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 
 ### 风险再分级（mj-agent 专属升档）
 
-如本扫描后发现 **§3.1 必停 4 项 mj-agent 专属** 任一被触发 → 自动 High：
+如本扫描发现四类runtime有实际安全/业务/外发/接受变化，按真实影响分类；路径本身不升档：
 - runtime-skill-content-change（src/mj_agent/skills/**/SKILL.md body）
-- prompt-version-bump（system.md `version`）
+- prompt-version-or-body-change（system.md `version`）
 - biz-catalog-sync（qcm_catalog.yaml）
 - sql-guardrail-relax（tools/sql/{guardrail,precheck}.py）
 
@@ -226,7 +227,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - Offline external bands（只证明 structured policy skip；凭据不启用）:
     uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
     uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
-- Level B HITL-confirm（explicit live probe）:
+- Level B 具名授权（explicit live probe）:
     uv run mj-agent check
     uv run langgraph dev                  # Studio 探针 H1/H2/H3/R1/R2
     docker compose -f docker/compose.yaml up -d
@@ -246,7 +247,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - 可选方案：A. / B. / C.
 - 我的建议：
 - 默认假设：
-- 是否必须等待人工确认：是 / 否
+- 是否必须等待人工确认：<实质决定是；已有授权范围内否> / 否
 ```
 
 ## Output Format
@@ -347,7 +348,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - **不要** 在 Repo Scan 阶段修改任何 repo-tracked 文件
 - **不要** 创建独立 Repo Scan Result.md（违反 §5 规则）
 - **不要** 跳过 §7.2.1 反向扫描（mj-agent 扩展含 in-source canonical + biz_catalog）
-- **不要** 在 §3.1 必停 4 项触发后还判 Risk = Low/Medium（自动升 High）
+- **不要** 忽略真实安全/业务/权限/AC影响，仅按runtime路径升档
 - **不要** 用 `develop..HEAD` 算 diff（用 merge-base..HEAD 避免 develop advance 假 diff）
 
 ## Handoff to Stage 4 / 6
@@ -356,8 +357,8 @@ Repo Scan 完成后输出指引：
 
 ```
 Repo Scan Result 已输出（对话）。
-HITL Gate（Stage 5 Plan 确认）触发条件：Plan Verdict = Need HITL 或 Risk = High
-下一步选项（用户决定）：
+实质决定停点：存在未决定的目标/业务/安全/权限/AC取舍或缺动作授权；Risk = High 标签本身不触发固定等待
+下一步：协调者在任务授权内按依赖推进；实质决定先给 Owner 具体选项和推荐理由
   → Stage 4 mj-agent-flow-plan（写 Plan body）
   → Stage 6 mj-agent-doc-author（直接写 SPEC/ADR/RUNBOOK）
   → 拆 Issue → mj-agent-git-issue

@@ -10,7 +10,7 @@ tags:
 aliases:
   - mj-agent Repo Scan Result Template
 created: 2026-05-11
-updated: 2026-05-11
+updated: 2026-10-12
 state: draft
 version: v0.1
 track: shared
@@ -40,7 +40,7 @@ owner: 项目负责人
 ## Repo Scan Result
 
 - **Decision**: <Plan still valid / Plan needs update / Split issue / Need spike / Need HITL>
-- **Risk Level**: <Low / Medium / High>（如升档：`Risk escalated: <旧> → <新>`，原因：<触及 §3.1 必停第 N 项>）
+- **Risk Level**: <Low / Medium / High>（如升档：`Risk escalated: <旧> → <新>`，原因：<真实影响的canonical风险标签>）
 - **Next Step**: <Update Plan / Draft SPEC / Implement / Ask HITL / Create follow-up Issue>
 
 ## Current State
@@ -158,7 +158,7 @@ docker compose -f docker/compose.yaml up -d
 | 字段 | 说明 |
 |---|---|
 | `Decision` | 5 选 1：Plan still valid / needs update / Split / Need spike / Need HITL |
-| `Risk Level` | Low / Medium / High；如触发 §3.1 必停 4 项 mj-agent 专属 → 自动 High |
+| `Risk Level` | Low / Medium / High；按实际影响判断，runtime路径不自动High |
 | `Next Step` | 明确下一阶段动作（不要只写"继续"） |
 | `Evidence Map` | 8 行 8-dim 全填；不涉及的写 "不涉及（理由：...）" |
 | `Documentation Decision` | 10 行全填，None 占位即可 |

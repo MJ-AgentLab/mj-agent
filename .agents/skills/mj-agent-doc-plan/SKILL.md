@@ -1,14 +1,15 @@
 ---
 name: mj-agent-doc-plan
-description: "适用于 mj-agent 的文档需求与Documentation Decision缺口评估。输入：diff、Issue、SPEC、已有docs、变更scope。流程：scope→类型判定→track/风味→缺口矩阵→任务列表。输出：每个受影响对象有create/update/none及理由。Use when：评估新增工具接口需要哪些文档。Do not use for：要求直接写完整开发Plan；建议flow-plan，保留文档需求子任务边界。授权：歧义先澄清；B需求记停点不写runtime；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的文档需求与Documentation Decision缺口评估。输入：diff、Issue、SPEC、已有docs、变更scope。流程：scope→类型判定→track/风味→缺口矩阵→任务列表。输出：每个受影响对象有create/update/none及理由。Use when：评估新增工具接口需要哪些文档。Do not use for：要求直接写完整开发Plan；建议flow-plan，保留文档需求子任务边界。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Doc Planner
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -89,7 +90,7 @@ git diff --name-only HEAD | grep -oE 'src/mj_agent/[a-z_]+/' | sort -u | \
 ls docs/rule/*.md docs/adr/*.md docs/guide/*.md docs/runbook/*.md docs/infrastructure/**/*.md 2>/dev/null
 
 # 4. 风味识别（per ADR-015 §决策点 3）
-# A 纯代码 / B in-source canonical 永远 HITL / C infra
+# A 纯代码 / B in-source canonical 按语义影响分类 / C infra
 ```
 
 输出：
@@ -175,7 +176,7 @@ per `repo:decisions/ADR-014_Tri_Track_Documentation_Governance.md` §决策点 4
 3. Update INDEX.md — depends on: all above
 
 ## mj-agent 专属备注
-- B 风味（src/mj_agent/{skills,prompts}/）改动 → 建议先用 mj-agent-runtime-* propose diff（PR-C2）；§3.1 必停 HITL 项 10/11 触发
+- B 风味（src/mj_agent/{skills,prompts}/）改动 → 建议先用 mj-agent-runtime-* propose diff（PR-C2）；§3.1语义影响核对 项 10/11 触发
 - biz_catalog drift（src/mj_agent/biz_catalog/qcm_catalog.yaml）→ scripts/diff_biz_schema.py 比对 mj-system 上游 STANDARD §2-§4
 - engineering-workflow track 文档（.codex/** 或 HITL_Prompt 类 STANDARD）→ A12-A14 PR 门禁
 ```

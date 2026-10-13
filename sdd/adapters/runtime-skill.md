@@ -2,10 +2,10 @@
 type: sdd-adapter
 artifact: runtime-skill
 state: draft
-version: 0.5
+version: "0.6"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-10
+updated: 2026-10-12
 track: agent
 ai_visibility: source-of-truth
 ---
@@ -157,7 +157,7 @@ in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否�
   调用（沉默失败，无报错，只是答案质量下降）；优化方向通常是**放宽 + 补正向 trigger 关键词**，
   而非收紧
 
-> **正文工艺质量（指针）**：`activation` 与 body **写得好不好**（可预测性为根、双负载权衡、信息阶梯、leading words、no-op 剪枝、五大失效模式）由 [[../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]]（正文质量层，单一真相源；本 adapter **不复制其正文**）治理。in-source SKILL body 起草 / 改写应过其 §9 作者自检清单；B 风味必停（`runtime-skill-content-change`）不变。
+> **正文工艺质量（指针）**：`activation` 与 body **写得好不好**（可预测性为根、双负载权衡、信息阶梯、leading words、no-op 剪枝、五大失效模式）由 [[../../docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft|技能写作工艺规范]]（正文质量层，单一真相源；本 adapter **不复制其正文**）治理。in-source SKILL body 起草 / 改写应过其 §9 作者自检清单；B 风味按语义影响分类（`runtime-skill-content-change`）。
 
 **与 `development-skill` adapter 的明确区分**（DISTINCT；不可混淆）：
 
@@ -167,7 +167,7 @@ in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否�
 | schema | 13-field（Agent_Side §2）；触发字段名 `activation` | 2-field ADR-013 native（`name` + `description`） |
 | 触发优化 | `activation` 字段 + 5-iteration 循环（本节） | `description` ≥ 200 chars + `Do not use for:` 反向 trigger block（A12 gate） |
 | Loader | `load_skill()` strip frontmatter | Claude Code 主 process（不剥 frontmatter） |
-| 触发 fidelity 验证 | component-level EVAL（M4+）+ `runtime-skill-content-change` 必停 | script gate（≥200 chars / 反向 block）+ manual HITL |
+| 触发 fidelity 验证 | component-level EVAL及独立行为/负例证据；runtime-skill-content-change按实际语义分类 | script gate（≥200 chars/反向block）+独立工具/工程核验；治理/权限实质变化Owner决定 |
 
 两者都治理"触发质量"但**对象、schema、字段名、验证机制完全不同** —— `development-skill` adapter
 治理的是 ADR-013 2-field `.agents/` development skill 的 `description` 正/反向 trigger；本 adapter
@@ -188,11 +188,11 @@ in-source SKILL 的 `activation`（触发描述）字段决定该 skill 是否�
 
 - SKILL frontmatter schema validation（如 `version` 字段必填）→ 用 `@adapter:prompt`
 - 纯 SKILL prose 改动（typo / 排版）→ 不加 `@adapter:runtime-skill` tag；走
-  `runtime-skill-content-change` 必停手工 review
+  `runtime-skill-content-change` 语义风险与独立核验
 - `load_skill` 函数本身的签名 / 异常 / 实现 → 用 `@adapter:python`
 
-**`@adapter:runtime-skill` + `@hitl` 必然双标签** — 任何 SKILL body / frontmatter 改动必然触
-达 `runtime-skill-content-change` 必停 gate；scenario 自带 hitl 信号.
+**`@adapter:runtime-skill` + `@hitl` 按实际风险标记** — 任何 SKILL body / frontmatter 改动必然触
+达 `runtime-skill-content-change` 必停 gate；仅实质变化scenario携带hitl信号.
 
 **`@risk:high` 配套 BDD 必填** — M2 MVP 的 3 SKILL 都属 high risk（直接进 LLM input；语义
 drift 即业务 risk）；M3-M4 自动化阈值 100% 目标（per RD9=B + `bdd-tdd.md` §Automation Strategy）.
@@ -216,7 +216,7 @@ Scenario: load_skill strips frontmatter before LLM consumption
 
 - `runtime-skill.contract.yml` 的 `skills[].version` / `content_hash` / `body_section_heads`
   字段变更 → 必先有 failing test
-- 不要求 SKILL prose 改动跑 test-first（走 `runtime-skill-content-change` 必停 + M4+ EVAL
+- 不要求 SKILL prose 改动跑 test-first（走 `runtime-skill-content-change` 语义风险核对 + M4+ EVAL
   regression）
 
 **Body content_hash 双锁**：
@@ -267,15 +267,7 @@ strip_frontmatter(content: str) -> str
 **Baseline noise** — M2 期 V2 smoke-only（Stage C 新增 2 contract 后 V2 升级 PASS 实测）；M2
 warning mode 下预期 0 noise.
 
-**Manual HITL gate**（permanent blocking；M2 不可 script 完全 auto-detect）：
-
-- Gate ID: `runtime-skill-content-change`（per `sdd/gates.md` §4）
-- Triggers: 任意 `src/mj_agent/skills/*/SKILL.md` body 或 frontmatter 变更
-- Detection: PR reviewer mandatory check + script `check_runtime_expected.py` 提前预警
-  `content_hash` drift
-- Rationale: SKILL body 改动可能改变 LLM 决策路径但 schema 仍合规；script 看不出语义 drift；
-  必须 human review + M4+ EVAL regression 配套
-- Future: M5+ 视 EVAL framework 成熟度可考虑加 EVAL-based auto-detect；M2 不在范围
+**语义影响与独立核验**：风险标签 `runtime-skill-content-change` 用于定位。基线内保持安全/业务/外发的正文、版本或兼容合同维护自主；breaking、权限、业务口径、数据/外发边界、接受标准或必要门禁变化先Owner决定。核验者依据AC独立建立期望、读取真实成果并复现，按风险覆盖领域/Prompt/工程视角，不要求真人或人数。冻结/schema检查仍机器执行，不能代行为证据；技术拒绝不得绕过。
 
 **M2 → M3 切换条件**：
 

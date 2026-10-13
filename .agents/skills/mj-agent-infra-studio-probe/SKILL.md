@@ -1,14 +1,15 @@
 ---
 name: mj-agent-infra-studio-probe
-description: "适用于 mj-agent 的dev Studio H1/H2/H3/R1/R2走查。输入：dev工具链/Studio、endpoint、授权、trace收集范围。流程：endpoint前置→Studio→H1表→H2趋势→H3top→R1拒绝→R2限量→报告。输出：每例轨迹/拒绝/限量有证据，未做项明确。Use when：在dev做五项数据边界walkthrough并留脱敏证据。Do not use for：只启动Studio不做走查；建议app-start，不发起五项请求。授权：biz仅应用工具链；R1异常停；不得放宽runtime；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的dev Studio H1/H2/H3/R1/R2走查。输入：dev工具链/Studio、endpoint、授权、trace收集范围。流程：endpoint前置→Studio→H1表→H2趋势→H3top→R1拒绝→R2限量→报告。输出：每例轨迹/拒绝/限量有证据，未做项明确。Use when：在dev做五项数据边界walkthrough并留脱敏证据。Do not use for：只启动Studio不做走查；建议app-start，不发起五项请求。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Infra — LangGraph Studio Probe
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -23,7 +24,7 @@ This skill should be used when the user asks to start LangGraph Studio, run Stud
 **Reference**:
 - `repo:docs/guide/[GUIDE]_Developer_Onboarding.md` §7.1 验证 walkthrough（H1/H2/H3/R1/R2 矩阵）
 - `repo:decisions/ADR-006_Fail_Safe_Reads.md` / `repo:decisions/ADR-009_Biz_Domain_As_Primary_Data_Source.md`（R1/R2 数据边界依据）
-- `repo:sdd/workflows/execution-loop.md` §6（本地验证段；Studio probe 是 HITL-confirm 后跑的）；原 HITL_Prompt §4.8 Level B，M6 PR4 archived → kernel
+- `repo:sdd/workflows/execution-loop.md` §6（本地验证段；Studio probe 是 具名授权 后跑的）；原 HITL_Prompt §4.8 Level B，M6 PR4 archived → kernel
 
 ## 前置条件
 
@@ -180,11 +181,11 @@ INFO: API:    http://127.0.0.1:2024
 
 ### 总判断
 - ✅ 5 / 5 通过 → Studio probe 完成；可进 self-review
-- ❌ 任一 fail → 触发 §3.1 必停 HITL；建议 root-cause 分析（system.md / SKILL / SQL guardrail / precheck 哪一层失败）
+- ❌ 任一 fail → 触发 §3.1语义影响核对；建议 root-cause 分析（system.md / SKILL / SQL guardrail / precheck 哪一层失败）
 
 ### Next Steps
 - 通过 → mj-agent-flow-self-review 接续 Stage 11
-- 失败 → mj-agent-runtime-{prompt-version-bump,skill-doc-improve}（PR-C2）propose diff 修 in-source canonical
+- 失败 → mj-agent-runtime-{prompt-version-or-body-change,skill-doc-improve}（PR-C2）propose diff 修 in-source canonical
 ```
 
 ## What This Skill DOES NOT DO
@@ -220,7 +221,7 @@ INFO: API:    http://127.0.0.1:2024
 ## Anti-patterns
 
 - **不要** 跳过 R1/R2 数据边界 probe（这是 mj-agent 安全红线唯一的 manual 验证）
-- **不要** 在 R1 / R2 fail 时给 GO（强制 §3.1 必停 HITL；可能是 system.md / SQL guardrail / GRANT 任一层失守）
+- **不要** 在 R1 / R2 fail 时给 GO（强制 §3.1语义影响核对；可能是 system.md / SQL guardrail / GRANT 任一层失守）
 - **不要** 用本 skill 改 system.md（B 风味；用 `mj-agent-runtime-prompt-version-bump` PR-C2）
 - **不要** 在 prod / test profile 上跑 R1（red line probe 会显式发起 ODS query 试图穿透；只在 dev profile 跑）
 - **不要** 关 LangSmith trace 后跑边界 probe（缺 trace 难追溯穿透 root cause）
@@ -231,7 +232,7 @@ INFO: API:    http://127.0.0.1:2024
 Studio Probe 完成（5/5 通过 / N fail）
 下一步：
 - 5/5 通过 → mj-agent-flow-self-review 接续 Stage 11
-- R1/R2 fail → 立即 §3.1 必停 HITL；root-cause（system.md vs SQL guardrail vs GRANT）+ mj-agent-runtime-prompt-version-bump（如 system.md 问题，PR-C2）
+- R1/R2 fail → 立即 §3.1语义影响核对；root-cause（system.md vs SQL guardrail vs GRANT）+ mj-agent-runtime-prompt-version-bump（如 system.md 问题，PR-C2）
 - H1/H2/H3 fail → 检查 SKILL.md / system.md / qcm_catalog.yaml（B 风味；用 mj-agent-runtime-* PR-C2 propose diff）
 - 生产事故级穿透（R1 真访问 ODS）→ 立即停服 + 触发 POSTMORTEM-code 流程
 ```

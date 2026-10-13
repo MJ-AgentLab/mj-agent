@@ -1,14 +1,15 @@
 ---
 name: mj-agent-git-review-pr
-description: "适用于 mj-agent 的审别人PR架构/数据边界。输入：他人PR URL/head、diff、branch、规范。流程：定位→变更概览→F1-F3/D1-D9→草案→授权发布建议→人工决策。输出：每发现有文件/影响/依据，未测项清楚。Use when：评审另一作者PR的guardrail与模块边界。Do not use for：我的PR收到反馈请代拟回复；建议flow-review-respond，区分方向。授权：D3-D7保护审查；评论明确授权；merge人工；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的审别人PR架构/数据边界。输入：他人PR URL/head、diff、branch、规范。流程：定位→变更概览→F1-F3/D1-D9→草案→授权发布建议→人工决策。输出：每发现有文件/影响/依据，未测项清楚。Use when：评审另一作者PR的guardrail与模块边界。Do not use for：我的PR收到反馈请代拟回复；建议flow-review-respond，区分方向。独立Agent审真实成果；Owner在聊天决定，Agent以不同Owner身份执行平台审核。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Git Review PR
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
@@ -70,9 +71,9 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 按 mj-agent 文件分类统计：
 
 - **Code**: `src/mj_agent/**/*.py`, `tests/**/*.py`
-- **In-source canonical**: `src/mj_agent/skills/**/SKILL.md`, `src/mj_agent/prompts/*.md`（**B 风味**，§3.1 必停）
-- **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`（§3.1 必停）
-- **SQL guardrail**: `src/mj_agent/tools/sql/{guardrail,precheck}.py`（§3.1 必停）
+- **In-source canonical**: `src/mj_agent/skills/**/SKILL.md`, `src/mj_agent/prompts/*.md`（**B 风味**，§3.1实质风险）
+- **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`（§3.1实质风险）
+- **SQL guardrail**: `src/mj_agent/tools/sql/{guardrail,precheck}.py`（§3.1实质风险）
 - **Config**: `*.yaml`, `*.yml`, `*.toml`, `.env*`, `langgraph.json`, `docker/*`
 - **Docs**: `docs/**/*.md`, `*.md`
 - **Engineering-workflow**: `.agents/skills/**`, `.codex/hooks.json`, `.codex/config.toml`
@@ -96,12 +97,12 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 |---|---|
 | `src/mj_agent/` 下新模块目录 | D1（mj-agent 模块边界） |
 | `src/mj_agent/agent.py` / `langgraph.json` 改动 | D2（graph 装配 + Studio 入口） |
-| `src/mj_agent/skills/**/SKILL.md` 改动 | **D3 in-source SKILL canonical**（§3.1 必停面 runtime-skill-content-change）+ A11 EVAL 引用审查 |
-| `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1 必停面 prompt-version-or-body-change）+ version bump 检查 |
-| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1 必停面 biz-catalog-sync）+ scripts/diff_biz_schema.py 比对（offline 快照；缺快照时如实记未验证） |
-| `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1 必停面 sql-guardrail-relax）+ ADR-006/009 红线检查 |
+| `src/mj_agent/skills/**/SKILL.md` 改动 | **D3 in-source SKILL canonical**（§3.1实质风险面 runtime-skill-content-change）+ A11 EVAL 引用审查 |
+| `src/mj_agent/prompts/*.md` 改动 | **D4 system.md canonical**（§3.1实质风险面 prompt-version-or-body-change）+ version bump 检查 |
+| `src/mj_agent/biz_catalog/qcm_catalog.yaml` 改动 | **D5 biz catalog drift**（§3.1实质风险面 biz-catalog-sync）+ scripts/diff_biz_schema.py 比对（offline 快照；缺快照时如实记未验证） |
+| `src/mj_agent/tools/sql/{guardrail,precheck}.py` 改动 | **D6 SQL guardrail 放宽**（§3.1实质风险面 sql-guardrail-relax）+ ADR-006/009 红线检查 |
 | `docker/` / `pyproject.toml` 改动 | D7（infra；C 风味）+ uv lock 同步 |
-| `docker/Dockerfile` 外部 registry 镜像引用改动（`FROM <image>` / `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **D7b 供应链必停**（canonical `secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）：核 Owner 拍板留痕 + PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项已勾 + digest 变化经核对。**无审批类 CI gate 兜底 → 此项只能人审**（`docker-build` 只验可构建、V5 只 lint 契约）。**bot 作者 PR**（Dependabot digest bump）不渲染 PR 模板 → 拍板即 merge 决定本身，须以 PR comment 留痕 |
+| `docker/Dockerfile` 外部 registry 镜像引用改动（`FROM <image>` / `COPY --from=<registry image>`；内部 `COPY --from=<stage>` **不**在内） | **D7b 供应链风险核对**（canonical `secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）：核信任来源是否改变及对应决定 + PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项已勾 + digest 变化经核对。**无审批类 CI gate 兜底 → 独立供应链/工程核验，Owner对信任来源/风险实质变化决定**（`docker-build` 只验可构建、V5 只 lint 契约）。**bot 作者 PR**（Dependabot digest bump）不渲染 PR 模板 → 需核来源风险、有效平台批准与任务授权，未必新增评论；评论实际发布须明确授权 |
 | `.env.example` / `secrets.enc` 改动 | D8（secret 管理）+ config/README.md 同步 |
 | `docs/` 改动 | 不动态检查；输出 "建议 mj-agent-doc-review (PR-C1)" |
 | `.agents/skills/` 改动 | D9（A12 description 质量）+ A12-A14 自检 |
@@ -132,15 +133,15 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 | F1 | 分支同步 | ℹ️ | 同步 |
 | F2 | 变更概览 | ℹ️ | Code 5 / SKILL 1 / Docs 2 |
 | F3 | Commit 规范 | ✅ | 3 docs — feature/* 允许 |
-| D3 | in-source SKILL canonical | **⚠️ HITL** | **B 风味 §3.1 必停面 runtime-skill-content-change**；建议先 mj-agent-runtime-skill-doc-improve propose diff |
+| D3 | in-source SKILL canonical | **⚠️ HITL** | **B 风味 §3.1实质风险面 runtime-skill-content-change**；建议先 mj-agent-runtime-skill-doc-improve propose diff |
 | D9 | .agents/skills/ A12 | ✅ | description 280 chars + 正反向触发 |
 ```
 
 按严重度分组：Critical > Important > Suggestion。
 
-### Stage 4: 人工确认 → 发布 comment
+### Stage 4: Owner决定 → Agent执行平台审核
 
-向 Owner 询问 展示评审摘要 + 提供选项：
+展示实际成果/SHA、独立核验与风险摘要，等待Owner作实质批准/接受决定；随后Agent依真实决定以不同于作者/最后推送者的Owner身份执行平台审核。普通评论发布仍核明确消息授权；模型不读取现有秘密。选项针对真实取舍：
 
 ```
 options:
@@ -155,9 +156,9 @@ options:
 gh pr comment <number> --body-file <tmp-review.md>
 ```
 
-### Stage 5 — 返回人工合并决策
+### Stage 5 — 返回授权内合并决策
 
-评审结束只交 readiness 证据与风险；即使用户要求合并，也由 Owner 人工执行。不得自动 merge/auto-merge 或顺带删除分支。后续清理另行调用并核验授权。
+评审结束只交 readiness 证据与风险；即使用户要求合并，也由协调者核任务授权与有效平台审核后执行。本评审技能不执行merge或顺带删除分支；协调者按授权与平台条件执行。后续清理另行调用并核验授权。
 
 ## 输出格式
 
@@ -194,7 +195,7 @@ GitHub Comment 格式（建议）：
   建议下一步：
   - 文档改动 → mj-agent-doc-review（PR-C1 落地）
   - 技术合并检查 → mj-agent-git-check-merge
-  - 人工合并 → Owner 按 Stage 5 审阅处理
+  - 授权内审核/合并→Agent依Owner聊天实际成果/SHA决定执行不同Owner身份的审核；协调者核merge授权、最后推送审核和门禁后执行。Owner业务接受另记
 ```
 
 ## What This Skill DOES NOT DO
@@ -202,7 +203,7 @@ GitHub Comment 格式（建议）：
 - ❌ 不替代 `mj-agent-flow-review-respond`（方向相反——本 skill 审别人 PR；review-respond 处理自己 PR comments）
 - ❌ 不替代 `mj-agent-git-check-merge`（互补——本 skill 评架构；check-merge 评技术 readiness）
 - ❌ 不替代 `mj-agent-doc-review`（PR-C1 落地后 docs/ 改动专评）
-- ❌ 不执行 merge，Stage 5 交 Owner 人工处理
+- ❌ 不执行 merge，协调者核任务授权与有效平台审核后执行
 - ❌ 不调 `mj-agent-git-sync`（仅展示 base 落后状态）
 
 ## Sub-skill / Tool Calls
@@ -228,7 +229,7 @@ GitHub Comment 格式（建议）：
 
 ## Anti-patterns
 
-- **不要** 跳过 D3-D6（§3.1 必停 4 项 mj-agent 专属硬约束）
-- **不要** 在 in-source canonical 改动时仅给 Approve 不要求 EVAL 引用 / Domain Expert review
+- **不要** 跳过 D3-D6（§3.1实质风险 4 项 mj-agent 专属硬约束）
+- **不要** 在 in-source canonical 改动时仅给 Approve 不要求 EVAL 引用 / 独立领域视角核验
 - **不要** 用本 skill 处理自己 PR 的 review comments（用 `mj-agent-flow-review-respond`，方向相反）
 - **不要** 把 review 结论当作合并或删分支授权

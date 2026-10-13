@@ -1,24 +1,25 @@
 ---
 name: mj-agent-flow-verify
-description: "适用于 mj-agent 的Stage10本地命令矩阵。输入：变更scope、依赖版本、授权的验证层次。流程：范围→A/B/C矩阵→A→询B→获准B→不跑C→报告。输出：命令/环境/exit/skip/未测逐项可核。Use when：仅跑本次代码相关offline unit/eval。Do not use for：凭据已经有了，顺便连prod补绿；拒绝默认live/prod，保持未验证并继续离线。授权：LevelB逐服务授权；C删除/生产不默认执行；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage10本地命令矩阵。输入：变更scope、依赖版本、授权的验证层次。流程：范围→A/B/C矩阵→A→询B→获准B→不跑C→报告。输出：命令/环境/exit/skip/未测逐项可核。Use when：仅跑本次代码相关offline unit/eval。Do not use for：凭据已经有了，顺便连prod补绿；拒绝默认live/prod，保持未验证并继续离线。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Local Verification (HITL Stage 10)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / hardened offline pytest unit+eval / compileall / wikilinks / frontmatter / git status), verifies structured skips for pytest external bands, and HITL-confirms explicit Level B probes (mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .agents/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "offline pytest runner", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
+This skill orchestrates mj-agent local verification (HITL Stage 10) — auto-runs Level A read-only checks (ruff / mypy / hardened offline pytest unit+eval / compileall / wikilinks / frontmatter / git status), verifies structured skips for pytest external bands, and 具名授权s explicit Level B probes (mj-agent check / langgraph dev Studio probe / docker compose up) based on detected change scope (mj-agent 7 modules / docs / .agents/skills/ / infra). Make sure to use this skill whenever the user asks "本地验证", "测试编排", "local verification", "跑测试", "回归", "verify changes", "本地跑一遍", "检查改动", "before commit run tests", "Level A", "Level B", "offline pytest runner", "Studio 探针" in the mj-agent context. Outputs a Verify Report aligned with execution-loop §5 双 Level matrix; does NOT auto-run Level C destructive operations (compose down -v / 拆 storage volume / production-touching commands). Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review, Stage 11), Stage 9 scope drift (use mj-agent-flow-scope-drift), Stage 8 coding methodology (use mj-agent-flow-implement), or PR-level review responses (use mj-agent-flow-review-respond, Stage 13).
 
 
 ## Overview
 
-Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，HITL-confirms **Level B side-effecting checks**。Designed to give `mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（execution-loop §6 双段约束；实操矩阵见 §5）without manual command typing。
+Pre-self-review gate — auto-runs **Level A read-only checks** for detected change scope，具名授权s **Level B side-effecting checks**。Designed to give `mj-agent-flow-self-review`（Stage 11）a complete「本地验证」段（execution-loop §6 双段约束；实操矩阵见 §5）without manual command typing。
 
 **Reference**: `repo:sdd/workflows/execution-loop.md` §5（Level A / Level B 命令矩阵）+ `repo:sdd/workflows/execution-loop.md` §5（uv-based 命令）。
 
@@ -78,7 +79,7 @@ git diff --stat HEAD
 | `docs/` | docs | wikilinks + frontmatter |
 | `.agents/skills/` | native-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
 | `docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
-| `docker/Dockerfile` 外部 registry 镜像引用 | infra，**必停子面** | 上述 C 项 + 确认 Owner 拍板已留痕（PR 模板 Docker Impact 的「外部 registry 镜像引用修改」项 + HITL Trigger Inventory 的 `secrets-grants-or-prod-config` 均已勾）；内部 `COPY --from=<stage>` 不在此面 |
+| `docker/Dockerfile` 外部 registry 镜像引用 | infra，供应链影响面 | 按 docker-runtime §4 核信任来源：来源变化须 Owner 决定；既定来源内 tag/digest 维护在任务授权内自主，提供适用构建/供应链证据。内部 stage 引用不在外部面；实际构建/容器操作另核允许环境与附带副作用 |
 | `pyproject.toml` / `uv.lock` | deps | uv lock + uv sync |
 | `.github/workflows/` | ci | yamllint（如配置） |
 | `langgraph.json` | langgraph | Studio probe 必跑 |
@@ -122,7 +123,7 @@ docker compose --version
 docker compose -f docker/compose.yaml config   # 校验 yaml
 ```
 
-### Level B — 局部写入 / 外部依赖（HITL-confirm 后调）
+### Level B — 局部写入 / 外部依赖（具名授权 后调）
 
 ```bash
 # Pytest external bands（只验证 structured skip；凭据永不启用 live route）
@@ -283,7 +284,7 @@ verify skill 直接执行 Bash，不 delegate（避免它们的交互流程）�
 ## Anti-patterns
 
 - **不要** 自动跑 Level C（删 volume / 改 secret）
-- **不要** 跨 Level 把 Level B 写到「本地验证」自动跑（HITL-confirm 必须）
+- **不要** 跨 Level 把 Level B 写到「本地验证」自动跑（具名操作授权必须）
 - **不要** 把 verify 输出塞到「AI 自检」段（违反 execution-loop §6 双段约束）
 - **不要** 在 mj-system biz pg 上跑 write 操作（ADR-006 / ADR-009 红线）
 - **不要** 把 B 风味的 live 证据静默降级为 pytest smoke；Studio / sanctioned probe 必须单独 Owner-approved，未批准时记录跳过

@@ -11,16 +11,11 @@
   `bdd.examples[]` + `contracts/behavior.feature` (gate G19).
 - Never reference `archive/**` paths from active capability files (gates G14/G15).
 
-## Owner stop points (OWNER_APPROVAL_REQUIRED)
+## 风险分类与冻结
 
-- **Declared contract change** — semantic changes to `contracts/*.contract.yml` consumed
-  across capabilities hit the canonical enum `declared-contract-change`
-  (`policies/ai-agent.md` §4); stop and obtain Owner sign-off before editing.
-- **Frozen skill contracts** — `infrastructure/mcp-server-governance/contracts/development-skill.contract.yml`
-  freezes 8 infra skills by content hash. Editing a frozen SKILL.md body requires Owner
-  approval + re-freeze per the canonical algorithm documented in that contract's header
-  (reproduce the old hash first to prove the algorithm, then record the new hash and bump
-  `frozen_at`).
+兼容合同补齐与基线内实现自主；breaking承诺、跨域接受标准或权限变化按 `policies/ai-agent.md` §4先Owner决定。路径命中不自动审批。
+
+infra合同 `infrastructure/mcp-server-governance/contracts/development-skill.contract.yml` 锁8技能。按header算法先复算旧description/body hash，保持schema后成组更新新hash/section heads/frozen_at；改变信任、权限或治理标准须具名决定。冻结一致性不认证授权或实际宿主加载。
 
 ## Verification (either tool, from repo root)
 

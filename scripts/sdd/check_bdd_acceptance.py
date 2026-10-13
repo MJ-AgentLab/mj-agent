@@ -54,6 +54,7 @@ if str(_REPO_ROOT) not in sys.path:
 from scripts.sdd._common.bdd_helpers import (  # noqa: E402
     FeatureParseError,
     Scenario,
+    bdd_evidence_status,
     check_justification_fields,
     extract_tags,
     load_bdd_evidence,
@@ -171,27 +172,14 @@ def _validate_capability(capability_dir: Path, repo_root: Path) -> Summary:
 def _validate_capability_with_evidence(
     capability_dir: Path, repo_root: Path
 ) -> Summary:
-    """G21 evidence predicate extension (Stage E α' E-0a M-FU#4 reduced per R-15-2).
+    """Validate critical/high scenarios with honest executed/deferred states.
 
-    Per R-15-1: G21 + G22 share runbook.md as justification source (bdd-tdd.md
-    L160→L121+L161 parsimony). G21 predicate per scenario:
-
-    1. Filter @risk:critical|high (D-3 R-9-1 inherit)
-    2. TAG layer: @REQ + @CTR present (R-9-2 layer b inherit; FAIL if missing)
-    3. TRACE layer: trace.yml bdd 层 binding (R-9-2 layer c inherit; WARN gap)
-    4. ★ EVIDENCE layer (M-FU#4 NEW):
-       a. evidence/bdd/*.md pass_rate >= 1.0 → PASS (primary)
-       b. else fallback: runbook.md 4-field justification full → PASS
-       c. else: WARN (R-18-4 intended gap exposure; NOT regression;
-          保 WARNING mode per R-15-* E-0a does NOT flip)
-
-    R-18-6 evidence harness boundary: this validator READS evidence;does NOT
-    populate fake pass_rate data. Empty evidence harness (E-0a schema-only)
-    + runbook fallback gap → intended WARN-raise per R-18-4 (E-0b owner
-    curation closes WARN → 0 → unblocks E-1 G21 BLOCKING flip).
-
-    R-16-6 anti-gate-defeat cross-ref: evidence + runbook fallback paths are
-    explicit + reviewable;NOT silent auto-exempt OR fabricated content.
+    Scenario-bound original log/JUnit records establish executed results.
+    Software fixtures are SELFTEST, never actual runtime acceptance. The
+    existing four-field runbook fallback remains a legal DEFERRED state and
+    never increments behavior PASS. Bare author-declared pass_rate is not
+    execution evidence. Strict mode blocks gaps; genuine failed runs block
+    even when a runbook justification is present.
     """
     summary = Summary()
     feature_path = capability_dir / "contracts" / "behavior.feature"
@@ -248,34 +236,39 @@ def _validate_capability_with_evidence(
 
         # EVIDENCE layer (M-FU#4 R-15-2 reduced; evidence primary + runbook fallback)
         evidence = load_bdd_evidence(capability_dir, scenario.name)
-        pass_rate_ok = (
-            evidence is not None and float(evidence.get("pass_rate", 0)) >= 1.0
-        )
+        evidence_status = bdd_evidence_status(evidence, scenario.name, capability_dir)
 
-        if pass_rate_ok:
+        if evidence_status == "PASS":
             summary.add(
                 Severity.PASS,
                 f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
-                "evidence pass_rate=1.0 (M-FU#4 primary path)",
+                "scenario-bound executed behavior evidence (source not independently authenticated)",
+            )
+        elif evidence_status == "FAIL":
+            summary.add(Severity.FAIL, f"{display}: scenario '{scenario.name}' executed evidence failed")
+        elif evidence_status == "SELFTEST":
+            summary.messages.append(
+                f"  [SELFTEST] {display}: scenario '{scenario.name}' software test executed; "
+                "not actual runtime acceptance or baseline"
             )
         elif runbook_4_field_full:
-            summary.add(
-                Severity.PASS,
-                f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
-                "runbook justification 4-field fallback (R-15-1 coupling)",
+            summary.messages.append(
+                f"  [DEFERRED] {display}: scenario '{scenario.name}' (@risk:{risk_label}) "
+                "runbook justification 4-field fallback; LEGACY_UNVERIFIED/DEFERRED, "
+                "historical records do not satisfy the current integrity format"
             )
         else:
             summary.add(
                 Severity.WARN,
                 f"{display}: scenario '{scenario.name}' (@risk:{risk_label}) "
-                "neither evidence pass_rate=1.0 NOR runbook justification "
+                "neither scenario-bound executed evidence NOR runbook justification "
                 "(R-18-4 intended gap exposure;E-0b curation closes WARN→0)",
             )
 
     return summary
 
 
-def main(argv: list[str] | None = None) -> int:
+def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int:
     """G21 validator entry point."""
     parser = build_argparser(
         _SCRIPT_NAME,
@@ -285,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    repo_root = Path(__file__).resolve().parent.parent.parent
+    repo_root = repo_root or Path(__file__).resolve().parent.parent.parent
     capabilities = discover_capabilities(repo_root, args.capability)
 
     if not capabilities:
@@ -300,6 +293,8 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     aggregate = Summary()
+    deferred_count = 0
+    selftest_count = 0
     for cap_dir in capabilities:
         # Stage E α' E-0a M-FU#4 wire: use evidence predicate extension
         # (D-3 base _validate_capability preserved for D-3 R-9-2 unit test
@@ -307,15 +302,16 @@ def main(argv: list[str] | None = None) -> int:
         # R-15-1 G21+G22 runbook coupling + R-18-4 intended WARN-raise).
         per_cap = _validate_capability_with_evidence(cap_dir, repo_root)
         aggregate.merge(per_cap)
+        deferred_count += sum("[DEFERRED]" in message for message in per_cap.messages)
+        selftest_count += sum("[SELFTEST]" in message for message in per_cap.messages)
         per_cap.print_messages()
 
     print(
         f"{_SCRIPT_NAME}: "
         f"{aggregate.pass_count}P / {aggregate.warn_count}W / {aggregate.fail_count}F "
         f"(over {len(capabilities)} capabilities; "
-        "@risk:critical|high × evidence pass_rate OR runbook fallback per "
-        "R-15-1 + R-18-* lock; 保 WARNING mode per Stage E α' E-0a; "
-        "WARN-raise = R-18-4 intended gap exposure;E-0b curation closes WARN→0)"
+        f"{deferred_count} DEFERRED / {selftest_count} SELFTEST; "
+        "runbook fallback is structurally legal deferral, not behavior PASS)"
     )
     return aggregate.exit_code(strict=args.strict)
 

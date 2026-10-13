@@ -2,16 +2,9 @@
 
 > Codex 局部约束，与根 AGENTS.md 共同生效；规则正文仍在项目 kernel。
 
-## The 4 mj-agent-specific hard-stop surfaces (OWNER_APPROVAL_REQUIRED)
+## 四类 runtime 影响核对
 
-| Canonical enum | Path | Discipline |
-|---|---|---|
-| `sql-guardrail-relax` | `tools/sql/{guardrail,precheck}.py` | never relax unilaterally |
-| `runtime-skill-content-change` | `skills/*/SKILL.md` body | propose → Owner approves → apply |
-| `prompt-version-or-body-change` | `prompts/system.md` body or `version` | propose → Owner approves → apply |
-| `biz-catalog-sync` | `biz_catalog/qcm_catalog.yaml` | mirror of the upstream dictionary; sync flow only |
-
-Codex 自守必停边界；hook 保持硬阻断，批准不自动解锁执行路线。
+guardrail/precheck、runtime SKILL、system Prompt和catalog按 `policies/ai-agent.md` §4语义分类。基线内安全保持、必要重构/修复与兼容维护自主，提供行为/负例及EVAL/版本/冻结证据。SQL安全、数据范围、业务口径、外发、breaking或接受标准变化由Owner决定。技术拒绝保留原错并返回 BLOCKED_EXECUTION_ROUTE，不绕过。
 
 ## Data boundary (ADR-006 / ADR-009 — never bypass)
 

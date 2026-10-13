@@ -48,7 +48,7 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 <summary><b>Engineering-Workflow checklist</b> (A12-A14；hotfix 紧急通道但 A12 schema 不可跳) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
 
 - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace（紧急修复也不跳 schema 校验）
-- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/需批准/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/风险上下文/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
 - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture + credential mode
 - [ ] **hotfix 风险面**：原生 config/hooks/rules 或 MCP 变更仍须改前 Owner 批准；事后文档补充与 develop 同步不替代批准
 
@@ -56,12 +56,12 @@ about: 生产环境紧急修复 (hotfix/*) 的 Pull Request，目标分支为 ma
 
 ## AI Self-Check Checklist（per [[../../policies/ai-agent|ai-agent policy]] §6.1）
 
-- [ ] **Codex 参与情况**：`NONE` 或描述其具体贡献（§1；standalone Codex 已开 ⇒ 可为 non-NONE，non-NONE 须 Owner 拍板）
-- [ ] **HITL scenario hit**：`NONE` 或逐项列出（§4 canonical 10-enum）
+- [ ] **Codex 参与情况**：`NONE` 或描述其具体贡献（§1；standalone Codex 已开 ⇒ 可为 non-NONE，记录任务已授权的实际贡献）
+- [ ] **Risk / decision inventory**：`NONE` 或逐项列出（§4 canonical 10-enum）
 - [ ] **BDD/TDD impact**：`NONE` 或逐项列出（[[../../sdd/adapters/bdd-tdd|bdd-tdd adapter]]）
-- [ ] **Subagent dispatched**：`NONE` 或逐项列出（§2 A3 subagent split 准则）
+- [ ] **Subagent dispatched**：`NONE` 或逐项列出（§2按需委派 subagent split 准则）
 
-> **PR 面另附 `HITL Trigger Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。本模板
+> **PR 面另附 `Risk / Decision Inventory`**（canonical 10-enum 逐条勾选，与 §4 一一对应）。本模板
 > **不复制那张表** —— 10-enum 的唯一 home 是 [[../../policies/ai-agent|ai-agent policy]] §4
 > （同一枚举出现两次必然漂移，per §5.2）；直接取用 root 模板
 > `.github/PULL_REQUEST_TEMPLATE.md` 的同名小节整段即可。它与上列第 2 条是**不同粒度**：

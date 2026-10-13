@@ -24,3 +24,13 @@ Dockerfile text eol=lf
 .agents/** text eol=lf
 .codex/** text eol=lf
 scripts/mcp/** text eol=lf
+
+# Delivery inputs must have identical checkout and committed blob bytes.
+# Keep platform EOL settings from changing acceptance/dependency digests.
+*.md text eol=lf
+*.feature text eol=lf
+*.template text eol=lf
+uv.lock text eol=lf
+.python-version text eol=lf
+.gitattributes text eol=lf
+.github/CODEOWNERS text eol=lf

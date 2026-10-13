@@ -5,7 +5,7 @@ state: draft
 version: 0.1
 owner: <github-username>
 created: <YYYY-MM-DD>
-updated: <YYYY-MM-DD>
+updated: 2026-10-12
 ---
 
 # Tasks: <Capability Name>
@@ -20,7 +20,7 @@ updated: <YYYY-MM-DD>
 - **Phase**：M1 / M2 / ...
 - **Priority**：critical / high / medium / low
 - **Linked REQ**：REQ-001
-- **HITL trigger**：4-stops / cross-cap / prod-compose / N
+- **风险/实质决定**：真实安全/业务/权限/breaking/AC/gate影响 / N；任务授权及停止条件另记
 - **BDD**:
   - `feature`: `contracts/behavior.feature`
   - `scenarios`:
@@ -43,7 +43,7 @@ updated: <YYYY-MM-DD>
 
 ## Done
 
-（已完成的 task；PR merge 后从 In-Progress 迁入）
+（对应AC满足、成果可用且Owner接受后迁入；PR已集成单列）
 
 ## Anti-Backlog（决定不做的）
 

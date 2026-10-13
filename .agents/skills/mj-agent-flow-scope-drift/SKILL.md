@@ -1,26 +1,27 @@
 ---
 name: mj-agent-flow-scope-drift
-description: "适用于 mj-agent 的Stage9 diff对批准scope漂移检查。输入：Plan/SPEC/Issue、当前diff。流程：定位锚→diff→逐文件映射/风味→严重度→建议。输出：每文件对齐/漂移/理由及风险有证据。Use when：检查当前5文件diff是否偏离已批Plan。Do not use for：执行本地测试矩阵；建议flow-verify，不把测试结果当scope分析。授权：超scope只建议，不自行改Plan/B面；聊天批准不自动解锁 hook。独立调用完成后结束，委派返回调用者；不自动跨阶段、提交或发布外部消息。"
+description: 适用于 mj-agent 的Stage9 diff对批准scope漂移检查。输入：Plan/SPEC/Issue、当前diff。流程：定位锚→diff→逐文件映射/风味→严重度→建议。输出：每文件对齐/漂移/理由及风险有证据。Use when：检查当前5文件diff是否偏离已批Plan。Do not use for：执行本地测试矩阵；建议flow-verify，不把测试结果当scope分析。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
+
 
 
 # mj-agent Flow — Scope Drift Gate (HITL Stage 9)
 
 ## 本技能的执行约定
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。独立调用只完成本技能；委派时记录调用者与返回阶段，同阶段必要校验完成后返回。下游 Handoff 均为建议，不能自动跨阶段或发布。受保护动作先完成可审阅草案；Owner 批准与宿主执行能力分开，hook 硬阻断时返回 `BLOCKED_EXECUTION_ROUTE`。
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
 
 
 ## 触发与职责详述
 
-This skill detects "scope drift" during mj-agent task implementation (HITL Stage 9) — compares the current working tree diff against the linked Plan / SPEC / Issue scope and reports per-file alignment ("in Plan §X" vs "not in Plan"). Make sure to use this skill whenever the user says "范围漂移", "scope drift", "实施超出 Plan", "diff vs SPEC", "drift check", "实施跑偏了吗", "改动还在范围内吗", "Stage 9", "scope check", "scope verification" in the mj-agent context, or before commit/push when significant code has been written. Outputs a drift report with recommendations (continue / amend Plan / split PR / pause for HITL); after Owner 拍板 applies the chosen path (e.g., amends the Plan via 编辑 per ADR-034); git-level actions (split PR) remain their own gates. mj-agent-specific: classifies B-flavor (in-source canonical) drift as auto-High since they always trigger §3.1 必停 HITL. Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review which sub-calls this skill), Stage 10 command matrix (use mj-agent-flow-verify), or Stage 8 coding methodology (use mj-agent-flow-implement).
+This skill detects "scope drift" during mj-agent task implementation (HITL Stage 9) — compares the current working tree diff against the linked Plan / SPEC / Issue scope and reports per-file alignment ("in Plan §X" vs "not in Plan"). Make sure to use this skill whenever the user says "范围漂移", "scope drift", "实施超出 Plan", "diff vs SPEC", "drift check", "实施跑偏了吗", "改动还在范围内吗", "Stage 9", "scope check", "scope verification" in the mj-agent context, or before commit/push when significant code has been written. Outputs a drift report with recommendations (continue / amend Plan / split PR / pause for HITL); baseline-preserving record updates are autonomous; material scope/acceptance changes require Owner decision (e.g., amends the Plan via 编辑 per ADR-034); git-level actions (split PR) remain their own gates. mj-agent-specific: classifies B-flavor (in-source canonical) drift by actual semantic impact since they require impact classification under §3.1. Do not use for: pre-commit dual-section + 11-item checklist (use mj-agent-flow-self-review which sub-calls this skill), Stage 10 command matrix (use mj-agent-flow-verify), or Stage 8 coding methodology (use mj-agent-flow-implement).
 
 
 ## Overview
 
 17-stage 闭环中**最易遗漏**的 stage（实施跑偏检测）。比对 working tree diff vs linked Plan / SPEC / Issue scope，识别 commit 前的 implementation drift。
 
-**Reference**: `repo:sdd/workflows/execution-loop.md` §3.1 必停规则（`实现中 scope 明显扩大`）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描原理，drift detection 的对偶；历史源 HITL_Prompt §4.4）.
+**Reference**: `repo:sdd/workflows/execution-loop.md` §3.1实质风险规则（`实现中 scope 明显扩大`）+ §4.1 的 Stage 3 映射（Repo Scan 反向扫描原理，drift detection 的对偶；历史源 HITL_Prompt §4.4）.
 
 ## Workflow
 
@@ -35,9 +36,9 @@ digraph drift {
 
   s3 [label="Step 3: Per-file mapping\nfor each changed file:\n  → search Plan / SPEC / Issue\n  → classify: in-scope / out-of-scope / unclassified\n  + 风味识别 (A/B/C)" shape=box];
 
-  s4 [label="Step 4: Severity classification\n(see Severity Matrix; B 风味 auto-High)" shape=box];
+  s4 [label="Step 4: Severity classification\n(see Severity Matrix; B 风味 按实际影响)" shape=box];
 
-  s5 [label="Step 5: Recommendation\n• continue (no drift)\n• amend Plan (small drift, justified)\n• split PR (large drift)\n• HITL pause (B 风味 / High-risk)" shape=diamond];
+  s5 [label="Step 5: Recommendation\n• continue (no drift)\n• amend Plan (small drift, justified)\n• split PR (large drift)\n• 修复/补证据；实质越界才决定 (B 风味 / High-risk)" shape=diamond];
 
   out [label="Output: Drift Report\n• Per-file classification table\n• Drift severity (含风味)\n• Recommended action\n• HITL questions (if needed)" shape=doublecircle];
 
@@ -105,7 +106,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 | 路径 | 风味 |
 |---|---|
 | `src/mj_agent/{config,server,memory,integrations,tools,...}/` + `tests/` | A 纯代码 |
-| `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical**（永远 §3.1 必停 HITL） |
+| `src/mj_agent/skills/**/SKILL.md` 或 `src/mj_agent/prompts/*.md` | **B in-source canonical**（按§3.1实际语义影响分类） |
 | `docker/` + `pyproject.toml` + `langgraph.json` + `qcm_catalog.yaml` + `.env.example` + `scripts/` | C infra |
 | `docker/Dockerfile` 外部 registry 镜像引用（内部 `COPY --from=<stage>` **不**在内） | C infra，但**该子面必停**（`secrets-grants-or-prod-config`；`policies/docker-runtime.md` §4）——漂移进此面须回 Gate 而非归入常规 C |
 
@@ -114,7 +115,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 | 改动文件 | 改动类型 | 在 Plan §X | 在 SPEC §Y | 在 Issue scope | 风味 | 归类 |
 |---|---|---|---|---|---|---|
 | src/mj_agent/agent.py | M | §3.1 ✅ | §FR1 ✅ | ✅ | A | in-scope |
-| src/mj_agent/skills/biz-domain-context/SKILL.md | M | — | — | — | **B** | **unclassified + auto-High** |
+| src/mj_agent/skills/biz-domain-context/SKILL.md | M | — | — | — | **B** | **unclassified + 按实际影响** |
 | docs/design/agent/[SPEC]_xxx.md | A | §4 ✅ | (self) | — | — | in-scope |
 
 ## Step 4: Severity Matrix（mj-agent 扩展）
@@ -125,8 +126,8 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 | 1-2 unclassified，单一模块，小改 (<50 行) | **Low** | continue + commit message 注明 |
 | 3+ unclassified 但同一类别（如全 docs/） | **Low-Medium** | continue + PR description "扩展 scope" 说明 |
 | 1+ 跨模块 unclassified | **Medium** | amend Plan + 重新对齐 |
-| **B 风味 unclassified**（in-source canonical 改动未在 Plan） | **High（自动）** | **HITL 暂停**；建议先 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2）propose diff |
-| API / SQL guardrail / biz_catalog / public interface 出现在 unclassified | **High** | **HITL 暂停** + 询问拆 PR vs 合并 |
+| **B 风味影响待核**（in-source canonical 改动未在 Plan） | **按实际影响** | **核实影响；基线内自主，实质越界才决定**；建议先 `mj-agent-runtime-skill-doc-improve` 或 `mj-agent-runtime-prompt-version-bump`（PR-C2）propose diff |
+| API/SQL/catalog/public interface的真实安全/业务/breaking/AC越界 | **High** | **核实影响；基线内自主，实质越界才决定** + 询问拆 PR vs 合并 |
 | > 50% 文件 unclassified | **High** | 重新做 `mj-agent-flow-intake`（scope 显然漂了） |
 
 ## Step 5: Recommendation
@@ -156,14 +157,14 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 - 建议在 Plan §3.2 加 "新增 SQL guardrail 规则" 行，然后继续
 
 ### HITL Questions
-（仅 Severity ≥ Medium 时输出；B 风味 auto-High 必输出）
+（仅 Severity ≥ Medium 时输出；仅存在真实实质取舍时输出）
 1. **改动 src/mj_agent/skills/biz-domain-context/SKILL.md 是否在原 scope 内？**
    - 当前观察：Plan 未提 SKILL body 改动
-   - 风味识别：B in-source canonical（永远 §3.1 必停 HITL）
+   - 风味识别：B in-source canonical（按§3.1实际语义影响分类）
    - 选项：A. 接受 → 改 Plan + 走 mj-agent-runtime-skill-doc-improve propose diff（PR-C2）/ B. 不接受 → revert + 拆独立 PR / C. 改 Plan 重对齐
-   - 推荐：B（B 风味改动应单独 PR + Domain Expert review）
+   - 推荐：B（B 风味改动应单独 PR + 独立领域视角核验）
    - 默认假设：A
-   - 必须 HITL：是
+   - 实际边界变化需决定：是
 
 ### Next Action
 - ☐ amend Plan（手动 / 用 mj-agent-doc-author，PR-B4 落地）
@@ -197,9 +198,9 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 
 ## Anti-patterns
 
-- **不要** 跳过 B 风味识别（in-source canonical 改动 auto-High 是 mj-agent 专属硬约束）
+- **不要** 跳过 B 风味识别（核真实安全/业务/权限/AC影响，路径不自动High）
 - **不要** 用 `develop..HEAD` 算 diff（用 merge-base..HEAD 避免 develop advance 假 diff）
-- **不要** 在 unclassified > 50% 时给 Low（自动升 High，重新 intake）
+- **不要** 在 unclassified > 50% 时给 Low（按实际影响升档，重新 intake）
 - **不要** 把 SPEC 缺漏当成 drift 推（SPEC 缺漏归 SPEC Delta，由 self-review（execution-loop §6 检查项 5d）处理）
 
 ## Handoff
@@ -208,5 +209,5 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 Drift Report 已输出。
 Severity = None/Low → mj-agent-flow-self-review 继续（Step 4）
 Severity = Medium → 用户决定 amend Plan 或 revert，然后回 self-review
-Severity = High → HITL 暂停；B 风味建议先 mj-agent-runtime-* propose diff（PR-C2）
+Severity = High → 核实影响；基线内自主，实质越界才决定；B 风味建议先 mj-agent-runtime-* propose diff（PR-C2）
 ```
