@@ -22,7 +22,7 @@
 # jumps are ignore-listed there (incident #294: a cross-minor 3.13→3.14
 # bump broke the build because requires-python locks <3.14 and
 # UV_PYTHON_PREFERENCE=only-system forbids a managed fallback).
-FROM python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285 AS builder
+FROM python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f AS builder
 # tag: 3.13-slim
 
 # uv preference: use slim's bundled /usr/local/bin/python3 (3.13.14, satisfies
@@ -59,7 +59,7 @@ COPY src/ ./src/
 RUN uv sync --frozen --no-dev
 
 # ========== Runtime ==========
-FROM python:3.13-slim@sha256:9d2e5553305c7c7b0097999bb17187c69b921ccd6bc9d40e4bb5ebe652c00285
+FROM python:3.13-slim@sha256:70729b46c69b4f1e97c4822c1af3df53a1476cf5ddc6c087c0c10bc3a5678c2f
 # tag: 3.13-slim
 
 # ARG redeclare — Docker ARG scope is per FROM; builder default not inherited.
