@@ -4,7 +4,7 @@ summary: "落实任务工作目录、INTENT 原意机制与安全兼容校验（
 owner: ranzuozhou
 created: 2026-10-29
 updated: 2026-10-29
-state: active
+state: completed
 track: engineering-workflow
 ---
 
@@ -16,32 +16,32 @@ track: engineering-workflow
 原意唯一正本为 [Issue #608](https://github.com/MJ-AgentLab/mj-agent/issues/608) 的 Scope、
 Acceptance Criteria 与 Owner 最终方案；本任务是简单单任务机制交付，不另造正式 INTENT。
 Owner 在创建本执行会话的交接中明确采纳最终 A–F 方案及四项 grilling 决定，并授权实施。
-方案采纳、执行授权与未来成品接受分别记录；当前没有 Owner 对未来成品的接受。
+方案采纳、执行授权与成品接受分别记录；立项时未预设未来接受，实际成品接受见§8。
 
 ### 1.1 完整接受基线快照
 
-下列为 2026-10-29 从 Issue 正本读取的完整 16 项 AC；本 Plan 在提交后以固定提交位置保存可恢复快照。
+下列为 2026-10-29 从 Issue 正本读取的完整 16 项 AC；原始未完成快照固定保存在7c891f28bb815d8053d2b4e6f8bab268b6dcaba8的旧路径，当前勾选记录本轮交付/接受后的完成状态，不改AC正文。
 本 Plan 承担全部 AC。初建时主要 PR 未创建，topic 省略 P；真实整体主 PR 首次明确后已受控补齐 P609。
 主要 Issue: [#608](https://github.com/MJ-AgentLab/mj-agent/issues/608)。
 主要 PR: [#609](https://github.com/MJ-AgentLab/mj-agent/pull/609)，精确 head=maintain/608-working-docs-and-intent、base=develop；作者为 mj-agent-delivery-executor[bot]。
 task_id 与固定提交证据不随路径自动变化。没有新增跨任务 INTENT/REQ 系统。
 
-- [ ] AC-1：任务目录名与主 `[PLAN]_<topic>.md` 的 topic 完全一致；支持 `I<issue>-P<pr>-<slug>`、仅 I、仅 P、无编号四种格式。slug 为小写英文/数字/短横线；编号只来自本仓本任务的真实主要关联，各最多一个。（命名 checker 正负例）
-- [ ] AC-2：主题稳定；主要关联首次明确、编号纠错或明确更换时可受控同步改目录/主文件并修复活动引用；不自动追随后续子/补丁/收尾 PR；不改变 task_id、历史基线或 INTENT ID。（改名/引用/路由回归）
-- [ ] AC-3：working 统一进入所属任务目录；共享材料唯一主归属；Intake 可先保存；独立 working 任务可以始终没有主 Plan。仅已形成 Plan 的目录要求一个主 Plan。报告可按用途命名。（目录和工作流场景）
-- [ ] AC-4：多 PR 时主要 PR 优先代表整体交付的集成 PR，没有明确主要 PR 就省略 P 段，不猜第一条或最新 PR。（技能/模板和场景核验）
-- [ ] AC-5：working 必填 type/summary/owner/created/updated/state/track 七字段；新 Plan 默认 draft，有明确采纳依据后 active；不增固定人工停点。（schema/模板回归）
-- [ ] AC-6：仅主 Plan completed 必须 AC 满足、成果可用及 Owner 明确接受准确版本；其他 working 按自身交付条件由 Agent 标 completed。报告 completed 仅为交付完成，独立任务整体接受仍由 Owner 在已有记录表达。（状态正负例和独立验收）
-- [ ] AC-7：取消 working 物理归档、180 天 GC、候选检测与相关 CI 调用；废弃 draft 保持 draft；archived 仅历史兼容，不改变其他 canonical 归档机制。（规则反扫/CI/回归）
-- [ ] AC-8：正式 INTENT 位于 `docs/intent/[INTENT]_INT-YYYY-NNN_<English_Topic>.md`，采用上游八项 type/domain/summary/owner/created/updated/state/intent-id 加 track，version 可选。（专属校验及模板）
-- [ ] AC-9：INTENT 五正文、真实来源和责任、原意核对/内容接受/授权/交付接受分记；简单任务可用 Issue 原意区作唯一正本；来源或维护责任不明只存 working 草稿。（author/intake 场景）
-- [ ] AC-10：正式 INTENT 只允许 draft/active/deprecated；ID 跨年/修订不换、删除撤销不释放；创建和合并前含 deprecated 查重；共享冲突及 999 耗尽由 Owner 决定；Plan/Issue 完成不传播 INTENT 状态。（ID/状态/集合读取失败负例）
-- [ ] AC-11：固定提交或完整可恢复快照绑定接受基线；旧接受不自动覆盖新内容；活动链接修复与历史证据保持分开。（基线/迁移场景）
-- [ ] AC-12：真实业务原意使用中性选项，工程/机制/授权问题提供推荐；不以 AI 建议、预选、沉默或超时代替决定。（技能内容及模拟使用场景）
-- [ ] AC-13：Plan 含目标范围、接受基线/授权、依赖、风险、逐 AC 验证、产物/检查点和独立使用七题；doc-plan 保持缺口评估职责。（模板/技能一致性审查）
-- [ ] AC-14：嵌套路由、目录归属、深层相对链接、新旧布局均有可复现正负例；保留重复路由、路径重解析点及非法输入拒绝，沿用 task_id/head/base 实际约束。（离线单测/CLI）
-- [ ] AC-15：政策、模板、技能、导航和实际 checker 同步；相关 lint/type、离线 unit、文档和 native 检查通过或准确列未测。（适用命令矩阵）
-- [ ] AC-16：未参与实现的独立上下文模拟使用者/运维/审查者，核真实成品行为，证据绑定 commit SHA、环境、时点；同一对象最多两轮，Owner 最终接受另记。（独立合成验收包）
+- [x] AC-1：任务目录名与主 `[PLAN]_<topic>.md` 的 topic 完全一致；支持 `I<issue>-P<pr>-<slug>`、仅 I、仅 P、无编号四种格式。slug 为小写英文/数字/短横线；编号只来自本仓本任务的真实主要关联，各最多一个。（命名 checker 正负例）
+- [x] AC-2：主题稳定；主要关联首次明确、编号纠错或明确更换时可受控同步改目录/主文件并修复活动引用；不自动追随后续子/补丁/收尾 PR；不改变 task_id、历史基线或 INTENT ID。（改名/引用/路由回归）
+- [x] AC-3：working 统一进入所属任务目录；共享材料唯一主归属；Intake 可先保存；独立 working 任务可以始终没有主 Plan。仅已形成 Plan 的目录要求一个主 Plan。报告可按用途命名。（目录和工作流场景）
+- [x] AC-4：多 PR 时主要 PR 优先代表整体交付的集成 PR，没有明确主要 PR 就省略 P 段，不猜第一条或最新 PR。（技能/模板和场景核验）
+- [x] AC-5：working 必填 type/summary/owner/created/updated/state/track 七字段；新 Plan 默认 draft，有明确采纳依据后 active；不增固定人工停点。（schema/模板回归）
+- [x] AC-6：仅主 Plan completed 必须 AC 满足、成果可用及 Owner 明确接受准确版本；其他 working 按自身交付条件由 Agent 标 completed。报告 completed 仅为交付完成，独立任务整体接受仍由 Owner 在已有记录表达。（状态正负例和独立验收）
+- [x] AC-7：取消 working 物理归档、180 天 GC、候选检测与相关 CI 调用；废弃 draft 保持 draft；archived 仅历史兼容，不改变其他 canonical 归档机制。（规则反扫/CI/回归）
+- [x] AC-8：正式 INTENT 位于 `docs/intent/[INTENT]_INT-YYYY-NNN_<English_Topic>.md`，采用上游八项 type/domain/summary/owner/created/updated/state/intent-id 加 track，version 可选。（专属校验及模板）
+- [x] AC-9：INTENT 五正文、真实来源和责任、原意核对/内容接受/授权/交付接受分记；简单任务可用 Issue 原意区作唯一正本；来源或维护责任不明只存 working 草稿。（author/intake 场景）
+- [x] AC-10：正式 INTENT 只允许 draft/active/deprecated；ID 跨年/修订不换、删除撤销不释放；创建和合并前含 deprecated 查重；共享冲突及 999 耗尽由 Owner 决定；Plan/Issue 完成不传播 INTENT 状态。（ID/状态/集合读取失败负例）
+- [x] AC-11：固定提交或完整可恢复快照绑定接受基线；旧接受不自动覆盖新内容；活动链接修复与历史证据保持分开。（基线/迁移场景）
+- [x] AC-12：真实业务原意使用中性选项，工程/机制/授权问题提供推荐；不以 AI 建议、预选、沉默或超时代替决定。（技能内容及模拟使用场景）
+- [x] AC-13：Plan 含目标范围、接受基线/授权、依赖、风险、逐 AC 验证、产物/检查点和独立使用七题；doc-plan 保持缺口评估职责。（模板/技能一致性审查）
+- [x] AC-14：嵌套路由、目录归属、深层相对链接、新旧布局均有可复现正负例；保留重复路由、路径重解析点及非法输入拒绝，沿用 task_id/head/base 实际约束。（离线单测/CLI）
+- [x] AC-15：政策、模板、技能、导航和实际 checker 同步；相关 lint/type、离线 unit、文档和 native 检查通过或准确列未测。（适用命令矩阵）
+- [x] AC-16：未参与实现的独立上下文模拟使用者/运维/审查者，核真实成品行为，证据绑定 commit SHA、环境、时点；同一对象最多两轮，Owner 最终接受另记。（独立合成验收包）
 
 ### 1.2 已定解释与约束
 
@@ -143,7 +143,7 @@ Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub�
 受控改名：旧 `plans/I608-working-docs-and-intent/[PLAN]_I608-working-docs-and-intent.md` → 新 `plans/I608-P609-working-docs-and-intent/[PLAN]_I608-P609-working-docs-and-intent.md`；同目录报告一起移动，报告用途名保持。原因仅为真实整体主PR609首次明确。源/目标绝对路径、Git跟踪/未提交/未跟踪/忽略内容、无目标冲突、无后代/源目标重解析点均已核；2文件移动前后完整性一致（controlled-rename.json）。第一次预检仅因Windows路径分隔符比较失败，发生在任何移动前；核实无副作用、统一绝对路径表示后正常完成。没有留下第二主Plan，活动PR正文将同步，固定提交7c891f2的完整基线与首轮报告旧路径证据保持；本任务无分层路由，通用loader仍按实际head/base验证。新HEAD须重新核平台审核。
 补号检查点待核事项为最终候选、独立第2轮受影响差异、实际CI与Owner对准确版本的接受；实时CI/head以 [PR609](https://github.com/MJ-AgentLab/mj-agent/pull/609) 为准，独立第2轮证据固定保存到上述仓外目录的 `independent-round-2.md`。主Plan继续active；不把独立报告completed或权限授权推导为成品接受。
 第二轮真实失败与局部修复：287c2e的GitHub CI在 `check_native_governance.py --surface consumers` 报 `unregistered workflow script in: .github/workflows/ci.yml`，本地同命令exit1复现。根因是已批准的新checker调用漏登现有非权限库存 `sdd/native-consumers.json`；最小修复将退休GC项替换为check_working_docs，未改门禁实现、权限或冻结infra。新增回归先RED（2 failed/15 passed），修复后consumers/entries/codex_native/native_skills STATIC_PASS、相关offline48 passed/1真实symlink SKIP、ruff/diff-check PASS。报告副本仅额外去掉EOF空行，仓外原始报告未改。以上发现→修复→最终SHA复核透明纳入尚未封板的第2轮，不另启第3轮；Owner真实接受仍未发生。
-后续填写验证证据与改名记录，主 Plan 在未获 Owner 明确准确版本接受前保持 active。
+以上为实施时历史检查点；当前独立封板、集成及准确版本接受以§8为准，状态以frontmatter为准。
 
 ## 8. 接受记录
 
@@ -151,10 +151,11 @@ Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub�
 执行授权：本执行会话明确指令与 Issue608 Verification Plan。
 独立技术验收：首轮对24dc29e通过；最终第2轮对70330318a8a0bf8db2ebc531e272b96555e6e926封板，相关47项回归、9组合成和同SHA五项CI通过，完整报告已收入PR609正文。原失败/修复、SKIP与宿主/Gitee边界保留，不启动本对象第3轮产品验收。
 交付与集成：PR609于2026-10-29 13:48:29 Asia/Taipei合入develop，merge为1d2cad2df6b1b68a354742e6dd51a6fdc2e68239、来源head70330318a8a0bf8db2ebc531e272b96555e6e926。两提交完整tree相同（7d095603200253b62420c0fe3029dbd9dc535f18），原候选证据适用于该相同成品。实际merged_by为ranzuozhou；只读平台reviews及conversation均为空，没有有效Approve记录，不补造历史审核或推定操作路线。
-Owner成品接受尚待本会话明确决定；“PR已合并，继续后续工作”只确认合并与后续执行授权，不替代准确版本接受。当前保持active；Issue608仍OPEN，接受与关闭状态分别核。
+Owner成品接受：2026-10-29，本会话合并后grilling Q3明确选择“接受70330318／1d2cad2成品，完成Plan并关闭Issue #608（推荐）”。覆盖本Plan承担的全部16AC，准确版本为上述head70330318及相同tree的merge1d2cad2；既有宿主实际加载/拦截、真实symlink及Gitee的未测/延期边界保留，不计PASS。完整原始接受基线为固定提交 `7c891f28bb815d8053d2b4e6f8bab268b6dcaba8:plans/I608-working-docs-and-intent/[PLAN]_I608-working-docs-and-intent.md`，原意/AC正文不变。
+全部16AC技术证据满足、成果已合入可用，且Owner已明确接受准确版本，主Plan据此completed。Issue608已于2026-10-29T06:05:27Z实际关闭，state_reason=completed，16AC进度及本次接受已写回Issue正文。此接受不追溯创造原PR609的平台Approve，也不接受未来变更。
 
 ## 9. 合并后检查点
 
 2026-10-29：正常fetch后确认7033为origin/develop祖先；本地develop已快进到1d2cad2，原有未跟踪.playwright-mcp保持原样，未复制或清理。状态文档在独立documentation/608-post-merge-closeout worktree维护，base=1d2cad2；只更新本Plan与合并后报告，主题/目录仍以整体主PR609为准，不因收尾PR再次改名。
 
-本次无用户运行时变更，CHANGELOG与runtime EVAL均不触发；不新建重复延期Issue或自动化。Gitee镜像、宿主加载和真实symlink证据保留原延期/未测及恢复条件。本轮删除候选仅原任务worktree及本地分支，待具名授权；origin因当前受控后台没有remote-delete动作而保留，Gitee不在范围。未授权前保留，成功项不重复。当前实际收尾与待决定事项见 [合并后报告](./[REPORT]_post_merge_closeout.md)。
+本次无用户运行时变更，CHANGELOG与runtime EVAL均不触发；不新建重复延期Issue或自动化。Gitee镜像、宿主加载和真实symlink证据保留原延期/未测及恢复条件。Owner合并后Q4具名授权仅原任务worktree及本地分支；删除前再次核绝对路径、1203 tracked/0 untracked/59 ignored、27文件本地保留、合并覆盖、占用与重解析点，经普通git worktree remove及git branch -d于2026-10-29T06:07:09Z核目录、注册及本地分支均已删除。origin仍为7033并保留，当前受控后台没有remote-delete动作；Gitee不在范围。新收尾worktree、develop及备份保留，成功项不重复。实际结果与状态文档交付边界见 [合并后报告](./[REPORT]_post_merge_closeout.md)。
