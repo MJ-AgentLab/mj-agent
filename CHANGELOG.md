@@ -5,6 +5,10 @@
 
 ## [Unreleased]
 
+### Changed — Codex项目MCP-only配置（ADR-044）
+
+- 对齐mj-system的项目配置结构，审批/沙箱取实际会话，退出项目hooks/rules自动注册及普通开发的旧守卫加载取证要求；保留业务/秘密/Owner与平台约束。Owner另选B准入ssh-manager九入口及既有账户，使用按名凭据和严格主机密钥比对；本地配置与模拟协议检查不证明实际主机连接。
+
 ### Added — 交付证据刷新与原始归档核验
 
 - 新增只读 `verify_delivery_archive.py`，用明确预期版本及真实 Git 对象核原 ZIP、命令、日志、JUnit 和逐 AC；保存原执行路径/环境，另记验证机信息，不改旧 run/check，不认证执行来源或产生 runtime 基线。

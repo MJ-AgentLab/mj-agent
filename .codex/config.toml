@@ -1,8 +1,5 @@
-# Native project candidate. Direct maintenance remains Owner-gated.
-# Only existing project MCP servers; no user, plugin or connector import.
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
-project_doc_max_bytes = 65536
+# MCP-only project configuration; effective permissions belong to the host/session.
+# Nine approved project MCP servers; SSH choice B is scoped in policies/codex-development.md.
 
 [mcp_servers.github]
 command = "cmd"
@@ -16,6 +13,11 @@ args = ["/c", "npx", "-y", "@playwright/mcp@latest"]
 [mcp_servers.serena]
 command = "cmd"
 args = ["/c", "uv", "tool", "run", "--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server", "--context", "codex", "--enable-web-dashboard", "false", "--project-from-cwd"]
+
+[mcp_servers.ssh-manager]
+command = "pwsh"
+args = ["-NoProfile", "-Command", "$r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & node (Join-Path $r '.codex/mcp/ssh-start.mjs'); exit $LASTEXITCODE"]
+env_vars = ["MJ_SYS_SSH_SERVER_CLOUD_PASSWORD", "MJ_SYS_SSH_SERVER_RUNNER_PASSWORD", "MJ_SYS_SSH_SERVER_TEST_PASSWORD", "MJ_SYS_SSH_SERVER_PROD_PASSWORD", "MJ_SYS_SSH_SERVER_DGX_PASSWORD"]
 
 [mcp_servers.pg-mj-agent-memory-dev]
 command = "pwsh"

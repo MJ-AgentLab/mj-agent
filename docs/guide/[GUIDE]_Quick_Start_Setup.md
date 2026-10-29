@@ -144,7 +144,7 @@ uv run python -c "import mj_agent; print('ok')"   # 期望：ok
 ```bash
 cp .env.example .env
 # 编辑 .env 手工填 ARK_API_KEY + POSTGRES_ANALYST_USER / PASSWORD（向项目负责人申请）
-# 此路径未配置 MCP 凭据；memory MCP 是否可用另行验证。biz/ssh-manager 永不进入原生 MCP。
+# 此路径未配置 MCP 凭据；memory MCP 是否可用另行验证。biz永不进入原生MCP；具名SSH另按Codex开发配置政策维护。
 ```
 
 ## §7 Step 7 — mj-agent check 验 DB + LLM 凭据

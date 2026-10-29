@@ -187,7 +187,7 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 ## Step 7: Branch Cleanup
 
-进入清理前执行 `mj-agent-git-delete` 的逐命令入口核验：项目 rules 不含 Git/gh，never 单独不阻断 Git 清理；Remove-Item 的 prompt×never 仅暂停该命令，记 INCOMPATIBLE / BLOCKED_EXECUTION_ROUTE / NOT_EXECUTED。已知实际拒绝未解除前不重试；已有授权保留，只读对账可继续。单/多分支远端删除均需逐引用核验授权、tip、合并与保护分支，任一不符暂停批次。Gitee → origin，每端逐引用报告结果，部分成功或未知先对账；经审阅规则变更后还须核实目标会话加载及实际条件。
+进入清理前执行 `mj-agent-git-delete` 的具名范围/状态核验；项目MCP-only配置没有rules/hooks或Remove-Item项目prompt，仍须遵循实际宿主限制。已知实际拒绝未解除前不重试；已有授权保留，只读对账可继续。单/多分支远端删除均需逐引用核验授权、tip、合并与保护分支，任一不符暂停批次。Gitee → origin，每端逐引用报告结果，部分成功或未知先对账；已知实际拒绝仅凭正常机制确认的恢复证据解除，不以当前配置退出作为凭证。
 
 **Delegate to `mj-agent-git-delete`**（PR-B3 落地后），按顺序：
 

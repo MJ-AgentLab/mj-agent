@@ -42,8 +42,7 @@ git worktree add ../<branch-name> -b <branch-name>
 bugfix 同样适用 —— PR #154 (2026-05-12) 是 G1 规则诞生前的 precipitating
 incident（详见 `plans/[PLAN]_g1_g2_workflow_enforcement.md` 根因 + 时间线）。
 
-钩子 `scripts/sdd/codex_hook_guard.py` 在 PreToolUse 拦截 `git
-checkout -b`（详见 `.codex/hooks.json`）。
+G1由当前AGENTS与本技能执行，项目不注册自动hook；配置范围见 `repo:policies/codex-development.md`。
 
 ## Prerequisite Check
 

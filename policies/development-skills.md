@@ -51,11 +51,11 @@ infra 冻结合同位于 `capabilities/infrastructure/mcp-server-governance/cont
 - A14：MCP 服务集合、trust posture、凭据模式与启动器；治理 home 仍为 mcp-server-governance capability。既有服务用途不扩大，新的用途/服务需单独批准。
 
 规范约束、机器检查、宿主能力和人工审查分别留证。聊天批准不等于 hook 解锁；没有已审阅路线返回 BLOCKED_EXECUTION_ROUTE。
-禁止创建审批凭证、停用保护、改会话模式或换工具规避拒绝。独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。
+禁止创建审批凭证、停用保护、改会话模式或换工具规避拒绝。项目Codex采用MCP-only结构，现行要求见 `repo:policies/codex-development.md`；实际宿主限制和按需MCP连接分别验证，旧项目守卫加载不作为日常开发前置。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。
 
 ## §6 MCP 治理
 
-项目 inventory 的维护正本为 `.codex/config.toml`；只承接既有 GitHub、Playwright、Serena 与 memory×5。
-biz×5 和 ssh-manager 永久排除；biz 数据只能走 agent 的只读工具链，memory 不能充当 biz 旁路。
+项目 inventory 的维护正本为 `.codex/config.toml`；承接 GitHub、Playwright、Serena、memory×5及Owner B决定的ssh-manager（九入口/五组变量）。
+biz×5及个人/其他来源服务永久排除；biz数据只能走agent只读工具链，memory和SSH不能充当旁路。SSH按任务授权，配置与使用细则见 policies/codex-development.md。
 原有 trust posture 分级、降级条件、PR 声明和季度审计继续保留在 capability；本政策不另造治理平台。
 缺凭据、服务、后台生命周期或平台能力时明确 UNMET_DEPENDENCY / NOT_TESTED，不用名称近似的工具充当等价实现。

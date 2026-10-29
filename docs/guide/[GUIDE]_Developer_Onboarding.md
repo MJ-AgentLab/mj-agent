@@ -156,7 +156,7 @@ uv run langgraph dev                   # 启 LangGraph Studio
 > **secrets.conf 填写速览**（全表 + 逐字段说明见 [[../../config/README|config/README.md]] §「secrets.conf 填写指南」）：
 > - app secret 8：**必填 5**（analyst×2 / ARK / memory×2；纯 DGX 免 ARK = 4）· **可空 3**（LLM_API_KEY / LANGSMITH / SUPERUSER）
 > - §2c profile 9：**照抄预填 7** · **强制留空 1**（`LLM_PROFILE_ARK__LLM_BASE_URL`，填了→#297 的 404 事故）· **可选 1**（`LLM_PROFILE_DEFAULT`）
-> - MCP 与 app 凭据分离：原生维护脚本仅接受 GitHub token 与 memory×5 URL 的具名变量；历史 bundle 的 SSH/biz 键不迁入。Owner 在自己的终端维护，代理不读值。
+> - MCP 与 app 凭据分离：原生维护脚本仅接受 GitHub token 与 memory×5 URL 的具名变量；历史bundle不批量导入；SSH单独按B决定消费五个具名既有过程变量，不经此六变量解密脚本；biz不迁入。Owner 在自己的终端维护，代理不读值。
 > - ⚠ 填的是 `secrets.conf` 非 `.env`：普通 secret 键留空会**刷空 `.env`**，§2c profile 键留空则跳过（安全）
 
 `.env` 字段说明在 `.env.example`；secrets 治理与**逐字段填写分类**（两 bundle / 填写指南 / 轮换 / cold-reset / `-Reload` 诊断）在 `config/README.md`。
@@ -273,7 +273,7 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 
 普通开发技能按任务范围修改并运行 §4 原生检查；`.codex/**`、原生守卫/启动器、冻结 infra 技能、契约、政策/SDD 元规则、CI gate 及根入口的实质边界变化先由Owner在聊天决定实际成果/SHA，技术实现由独立Agent核真实差异/负例。SQL/runtime/Prompt/catalog按实际语义分类，基线内安全保持自主；安全/业务/外发/权限/接受标准实质变化先Owner决定。暂存、提交、普通双推、PR及merge可集中列入具名任务授权，普通内容更新核实际版本但不自动重新批准；新分支使用 worktree，迁移 PR base 为 develop。
 
-独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。原应用/MCP秘密方法及边界保留，本次不将其作为新App启动前置；配置检查不等于连接或宿主加载。
+项目Codex采用MCP-only结构，现行要求见 `repo:policies/codex-development.md`；实际宿主限制和按需MCP连接分别验证，旧项目守卫加载不作为日常开发前置。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。原应用/MCP秘密方法及边界保留，本次不将其作为新App启动前置；配置检查不等于连接或宿主加载。
 
 迁移证据覆盖 Windows Codex CLI 0.147.0 的已批准发现、五技能族及近邻 canary、hook 允许/拒绝和具名原生规则拒绝，以及 Linux 隔离离线检查与清理前 GitHub Ubuntu CI。Desktop、Linux Codex 宿主及 L6 外部服务未验证；每次复用都须比对受测文件身份。最终版本是否提交、CI/review/合并通过，以实际 SHA 的新记录为准。
 

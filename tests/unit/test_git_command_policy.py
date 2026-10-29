@@ -77,11 +77,10 @@ def test_diagnostics_are_per_command_and_filterable(mode):
     assert all(row['rule_decision'] == 'NO_MATCH' for row in report['commands'])
     assert all(row['status'] == 'NO_PROJECT_RULE_REQUIREMENT' for row in report['commands'])
     assert report['host_enforcement'] == 'NOT_TESTED'
-    assert report['rule_loading'] == 'UNKNOWN'
+    assert report['rule_loading'] == 'NOT_APPLICABLE'
     local = diagnose(ROOT, mode, actions={'local_delete'})['commands']
     assert len(local) == 3
-    assert local[0]['status'] == {'never': 'INCOMPATIBLE', 'on-request': 'APPROVAL_REQUIRED',
-                                 None: 'UNKNOWN'}[mode]
+    assert local[0]['status'] == 'NO_PROJECT_RULE_REQUIREMENT'
     assert all(row['status'] == 'NO_PROJECT_RULE_REQUIREMENT' for row in local[1:])
 
 
@@ -92,7 +91,7 @@ def item(command, kind='local_delete'):
 
 
 @pytest.mark.parametrize('command,expected', [
-    (['Remove-Item', '-LiteralPath', 'maintain/example'], 'BLOCKED_EXECUTION_ROUTE'),
+    (['Remove-Item', '-LiteralPath', 'maintain/example'], 'READY_FOR_REVIEW'),
     (['git', 'branch', '-d', 'maintain/example'], 'READY_FOR_REVIEW'),
     (['git', 'worktree', 'remove', 'maintain/example'], 'READY_FOR_REVIEW'),
 ])
@@ -128,15 +127,14 @@ def test_wire_context_does_not_claim_host_approval(monkeypatch, capsys):
 
 @pytest.mark.parametrize('source', ['PROJECT_PROMPT', 'HOST_POLICY', 'UNKNOWN'])
 @pytest.mark.parametrize('loaded', [False, True])
-def test_only_observed_loaded_rule_change_reassesses_project_refusal(source, loaded):
+def test_profile_retirement_does_not_clear_historical_refusal(source, loaded):
     entry = item(['git', 'branch', '-d', 'maintain/example'])
     digest = diagnose(ROOT, 'never')['rules_sha256']
     previous = {'one': {'source': source, 'mode': 'never', 'rules_sha256': '0' * 64,
                         'raw_error': 'synthetic prior policy refusal', 'command': entry['command']}}
     result = review_actions([entry], [entry], mode='never', known_approval_block=True,
                             prior_blocks=previous, loaded_rules_sha256=digest if loaded else None)
-    assert result['items'][0]['status'] == (
-        'READY_FOR_REVIEW' if source == 'PROJECT_PROMPT' and loaded else 'BLOCKED_EXECUTION_ROUTE')
+    assert result['items'][0]['status'] == 'BLOCKED_EXECUTION_ROUTE'
     assert result['host_enforcement'] == 'NOT_TESTED'
 
 

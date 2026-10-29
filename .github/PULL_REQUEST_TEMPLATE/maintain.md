@@ -41,7 +41,7 @@ about: CI/CD、依赖、脚本等基础设施维护 (maintain/*) 的 Pull Reques
 <summary><b>Engineering-Workflow checklist</b> (A12-A14) — cite A12 → [[../../policies/development-skills|development skills policy]] §Standards / §CI Gate; A13 → [[../../policies/ci-gates|ci-gates policy]] §5.1; A14 → [[../../policies/ai-agent|ai-agent policy]] §4</summary>
 
 - [ ] **A12** `.agents/skills/<name>/SKILL.md` 用 ADR-013 native schema（`name` + `description`）；`description` ≥ 200 chars 含正向触发 + `Do not use for:` 反向块；`name` 符合 `mj-agent-<group>-<verb>` namespace
-- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/风险上下文/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A13** 当前MCP-only配置、宿主权限和实际验证范围口径一致；项目不注册hooks/rules，旧守卫软件测试不作宿主拦截证明；拟新增扩展先由Owner决定
 - [ ] **A14** `.codex/config.toml` server 增删声明 trust posture（first-party / third-party / community）+ credential mode（none / OAuth / API key / wrapped script）
 - [ ] **maintain 风险面**：`scripts/` / CI / `setup-env.ps1` / `setup-mcp-secrets.ps1` (ADR-030) / `secrets.enc` + `secrets-mcp.enc` 改动常触 A13/A14 双查；CI workflow 涉及 secret 注入路径要复核原生秘密保护与 Owner 批准边界
 

@@ -81,7 +81,7 @@ skills:
   frozen_at: '2026-10-12T04:49:22Z'
 - file: .agents/skills/mj-agent-infra-env-setup/SKILL.md
   name: mj-agent-infra-env-setup
-  description_hash: sha256:a6bce477a1698345780f26d119dbbe4ed214c03a15b12f2ee93b271e7703d949
+  description_hash: sha256:dc484981a1e3a44e7d69a8d4e838b265104f0d1305662d496c64287acf51c16b
   body_content_hash: sha256:8848fa216b7d0c5358e6e59885255ec5a14ba5ee9260cc4feae26e83823cec12
   body_section_heads:
   - '## 本技能的执行约定'
@@ -99,7 +99,7 @@ skills:
   - '## Env Setup Result'
   - '## Reference Files'
   - '## Handoff'
-  frozen_at: '2026-10-12T06:30:56Z'
+  frozen_at: '2026-10-29T08:11:39Z'
 - file: .agents/skills/mj-agent-infra-env-teardown/SKILL.md
   name: mj-agent-infra-env-teardown
   description_hash: sha256:24cb3e88583040cc71a547088838fe97b94317c651561f982935e11bf97d83ca
@@ -139,7 +139,7 @@ skills:
 - file: .agents/skills/mj-agent-infra-storage-stack/SKILL.md
   name: mj-agent-infra-storage-stack
   description_hash: sha256:8f484a805bd57eb678e59dd3249f58d6a192df7266db96f8cc044c15bedeba48
-  body_content_hash: sha256:0301b8c4dfe1a57ae3aa7c58c4a7a72d3607b099161fc5dfc8dc958ece645aba
+  body_content_hash: sha256:47978539dfed1bb65b01230c60570cd48f685dcdbdc2637f1df78ce53c173937
   body_section_heads:
   - '## 本技能的执行约定'
   - '## 触发与职责详述'
@@ -157,7 +157,7 @@ skills:
   - '## Reference Files'
   - '## Anti-patterns'
   - '## Handoff'
-  frozen_at: '2026-10-12T06:30:56Z'
+  frozen_at: '2026-10-29T08:11:39Z'
 - file: .agents/skills/mj-agent-infra-studio-probe/SKILL.md
   name: mj-agent-infra-studio-probe
   description_hash: sha256:47d2ea1ff4b6c6dc5249b9eee1fd40d923ad07f6774b80827a1f15cc8bbf6e56

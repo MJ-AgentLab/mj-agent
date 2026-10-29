@@ -62,7 +62,7 @@ git ls-remote --refs --heads origin refs/heads/<type>/<desc>
 
 ### 执行入口：核对实际命令与当前条件
 
-先核对任务授权、当前对象、有效模式及来源、适用规则/hook 和宿主实际结果。项目 rules 不含 Git/gh，never 单独不阻断 git branch -d、git worktree remove 或远端删除；Remove-Item 仍匹配 prompt，prompt×never 只暂停该命令，记 INCOMPATIBLE / BLOCKED_EXECUTION_ROUTE / NOT_EXECUTED。缺失/损坏规则、未知加载与未知模式分别记录，不推定为无规则。只读诊断支持 --action local_delete/remote_delete 或 --command-json 精确 argv。
+核具名任务授权、当前对象及实际宿主限制。项目MCP-only结构不配置rules/hooks，Remove-Item也没有项目prompt；这不产生执行许可。旧命令诊断仅按需使用，不作为日常加载取证前置。实际拒绝按来源处理，不能因项目配置退出而自动重试。见 `repo:policies/codex-development.md`。
 
 已知未解除的实际拒绝保留原错并暂停，不换工具/remote、拆批或改写命令试探。重复“继续”、网络或文件权限恢复不是审批恢复证据；经审阅规则变更后还须核实目标会话实际加载，按新条件重新评估。有效模式未知先核实，不以项目配置或重新开任务替代证据。历史 REJECTED 不倒写，本轮未调用记 NOT_EXECUTED。
 

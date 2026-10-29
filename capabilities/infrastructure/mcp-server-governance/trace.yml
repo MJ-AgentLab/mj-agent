@@ -20,6 +20,9 @@ links:
   - contracts/development-skill.contract.yml
   tests:
   - tests/bdd/infrastructure/mcp_governance/test_mcp_governance_bdd.py::test_req_001_a14_gate_template_exists
+  - tests/unit/test_codex_mcp_only_profile.py
+  - .codex/mcp/ssh-runtime.test.mjs
+  - .codex/mcp/ssh-protocol.test.mjs
   tasks:
   - tasks.md#T-002
   prs:

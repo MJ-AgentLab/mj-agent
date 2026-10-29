@@ -18,7 +18,7 @@ updated: 2026-09-23
 - **Phase**：M1 / **Priority**：critical (meta) / **Linked REQ**：N/A
 - **Status**：in-progress
 
-### T-002 — REQ-001 8-server inventory + A14 PR gate declaration
+### T-002 — REQ-001 9-server inventory + A14 PR gate declaration
 - **Phase**：current native ownership (manual A14 declaration; V11 static config check)
 - **Priority**：medium / **Linked REQ**：REQ-001
 - **Contract changed?**：yes (#495 corrects the automation claim; Owner approval required)

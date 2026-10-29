@@ -2,7 +2,7 @@
 Feature: Native project MCP governance
   # File-only assertions; actual Owner review and live services are not simulated.
   Background:
-    Given native config declares only the eight retained project servers
+    Given native config declares only the nine approved project servers
     And the native A14 template defines trust and credential review
 
   @REQ-001 @CTR-mcp-server @risk:medium

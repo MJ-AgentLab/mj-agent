@@ -75,7 +75,7 @@ git worktree add ../<branch-name> -b <branch-name>
 **禁止** 在已有 worktree 中 `git checkout -b` / `git checkout -B` / `git switch -c` /
 `git switch -C`. bugfix 同样适用.
 
-执行机制：AGENTS 自律 + 原生 `scripts/sdd/codex_hook_guard.py`；实际宿主加载需独立验证，静态代码测试不能证明 hook 生效。
+执行机制：AGENTS与Git技能、受控App后台及平台规则各承担实际约束；项目不注册自动hook/rules。当前配置见 [Codex开发配置](./codex-development.md)，旧守卫软件测试不代表宿主执行。
 
 ### G2 — 显式 base 与任务集成例外
 
@@ -94,14 +94,7 @@ feature/bugfix/documentation/maintain 通常显式 `--base develop`，hotfix显�
 
 ### §3.1 原生 G1/G2 保护承担者
 
-原生 git-branch/git-pr 技能与 AGENTS 承载规则，`scripts/sdd/codex_hook_guard.py`
-承载有限语法判定。建分支禁令、PR base 要求仍适用。带 Git 全局选项、复杂 shell
-或无法理解的输入 fail closed；不把解析失败当授权。提交/普通推送/PR/merge 在具名任务授权内执行；实质变化按 ai-agent §4 重新决定。
-
-协议返回 JSON block（进程退出 0 不表示允许）；异常 payload 也 block。
-任务授权与技术拒绝分开核验；拒绝不得绕过，正常执行路线按 execution-loop §3.0。
-`tests/unit/test_codex_native.py`、`test_native_migration_guards.py` 验证代码；宿主
-权限与真实 hook canary 另取证。这里 G1/G2 是 Git 规则，与 sdd/gates 的同名编号不同。
+git-branch/git-pr技能和AGENTS承载G1/G2，App后台对PR路由作实际校验。旧guard及其合成回归仅为历史软件资源，不是当前自动拦截或宿主加载前置。这里 G1/G2 是 Git 规则，与 sdd/gates 的同名编号不同。
 
 ## §4 PR Template + Commit Message Validation
 

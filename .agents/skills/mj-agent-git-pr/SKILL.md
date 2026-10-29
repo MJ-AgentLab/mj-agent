@@ -38,8 +38,7 @@ This skill should be used when the user asks to create a Pull Request, select a 
 缺 `--base` 时 `gh` 会 fallback 到 GitHub repo default (`main`)，导致
 非-hotfix 分支误合到 main。PR #158 (2026-05-12) 是该漂移的历史教训。
 
-钩子 `scripts/sdd/codex_hook_guard.py` 在 PreToolUse 拦截缺
-`--base` 的 `gh pr create`（详见 `.codex/hooks.json`）。
+G2由本技能和受控App后台核精确head/base，项目不注册自动hook；见 `repo:policies/codex-development.md`。
 
 ## Template Selection Matrix
 

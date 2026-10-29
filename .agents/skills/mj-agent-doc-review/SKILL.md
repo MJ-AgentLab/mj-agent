@@ -70,7 +70,7 @@ git diff --name-only develop...HEAD
 - **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`
 - **Config**: `.env.example`、`langgraph.json`、`docker/`、`config/`、`.github/workflows/`
 - **Docs**: `docs/`、`plans/`、`policies/`、`sdd/`、`decisions/` 及实际根入口；区分 canonical/working/独立 INTENT 与冻结证据
-- **Engineering-workflow**: `.agents/skills/`、`.codex/hooks.json`、`.codex/config.toml`
+- **Engineering-workflow**: `.agents/skills/`、当前`.codex/config.toml`及拟议原生扩展
 
 ## Phase 2: §9.4 Cross-Check（mj-agent code-doc mapping）
 

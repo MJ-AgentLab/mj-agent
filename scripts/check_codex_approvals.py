@@ -12,6 +12,7 @@ if __package__:
         ENFORCEMENT,
         RULES,
         approval_status,
+        check,
         check_enforcement,
     )
     from scripts.sdd.codex_hook_guard import classify
@@ -21,6 +22,7 @@ else:
         ENFORCEMENT,
         RULES,
         approval_status,
+        check,
         check_enforcement,
     )
     from sdd.codex_hook_guard import classify  # type: ignore[no-redef]
@@ -48,6 +50,30 @@ def diagnose(root: Path, mode: str | None = None, *, actions: set[str] | None = 
     Hook results use this checker's recognizer, not proof that the target host
     loaded or ran that implementation. No arbitrary root code is executed.
     """
+    # An intentionally MCP-only project differs from a damaged legacy fixture.
+    # This reports configuration, not host permission or task authorization.
+    native = root / '.codex'
+    if not any(p.is_symlink() or p.is_junction() for p in (*root.parents, root, native)) and (native / 'config.toml').is_file() and not (native / 'hooks.json').exists() and not (native / 'rules/mj-agent.rules').exists():
+        errors = check(root)
+        effective = mode if mode in ('never', 'on-request') else 'unknown'
+        selected = [(kind, list(command)) for kind, command in COMMANDS if actions is None or kind in actions]
+        if commands is not None:
+            selected = [('explicit', command) for command in commands]
+        return {
+            'profile': 'MCP_ONLY', 'rule_scope': 'PROJECT_FILES_ONLY',
+            'rules_sha256': None, 'rule_loading': 'NOT_APPLICABLE',
+            'effective_approval_policy': effective,
+            'mode_source': 'CALLER_OBSERVATION' if effective != 'unknown' else 'UNKNOWN',
+            'session_approval': 'PER_COMMAND', 'errors': errors,
+            'commands': [{'action': kind, 'command': command, 'rule_source': None,
+                          'rule_decision': 'UNKNOWN' if errors else 'NO_MATCH',
+                          'status': 'UNKNOWN' if errors else 'NO_PROJECT_RULE_REQUIREMENT',
+                          'hook_result': 'NOT_CONFIGURED', 'hook_reason': 'MCP-only project',
+                          'hook_source': None} for kind, command in selected],
+            'owner_approval': 'NOT_ASSESSED', 'host_enforcement': 'NOT_TESTED',
+            'remote_authentication': 'NOT_TESTED',
+            'execution_boundary': 'Check task authorization and actual host restrictions; no project guard is configured.',
+        }
     paths = [*root.parents, root]
     for relative in ENFORCEMENT:
         path = root
@@ -125,7 +151,7 @@ def main(argv: list[str] | None = None, *, repo_root: Path | None = None) -> int
     if report['errors'] or any(row['status'] == 'UNKNOWN' for row in report['commands']):
         return 2
     if any(row['status'] in {'INCOMPATIBLE', 'FORBIDDEN'}
-           or row['hook_result'] not in {'ALLOW', 'TASK_AUTHORIZATION_CONTEXT'}
+           or row['hook_result'] not in {'ALLOW', 'TASK_AUTHORIZATION_CONTEXT', 'NOT_CONFIGURED'}
            for row in report['commands']):
         return 1
     return 0

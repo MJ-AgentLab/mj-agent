@@ -370,7 +370,17 @@ jobs:
       - name: 'V11 native project MCP'
         run: uv run python scripts/sdd/check_codex_native.py --surface mcp
 
-      - name: 'V13 native enforcement structure'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 'SSH MCP offline protocol and safety cases'
+        working-directory: .codex/mcp
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm test
+
+      - name: 'V13 MCP-only project profile'
         continue-on-error: true
         run: uv run python scripts/sdd/check_codex_native.py --surface enforcement
 
