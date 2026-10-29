@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: execution-loop
 state: active
-version: "1.6"
+version: "1.7"
 owner: ranzuozhou
 created: 2026-06-04
-updated: 2026-10-12
+updated: 2026-10-29
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -55,7 +55,7 @@ ai_visibility: source-of-truth
 14. PR：选择单 PR、独立多 PR 或精确登记的分层结构。
 15. Review/CI：自主修复，接受条件变化交 Owner。
 16. Delivery/Merge：门禁及平台有效审核满足后在授权内执行。
-17. 收尾与接受：核实集成/运行成果、验收包、延期与恢复；Owner 明确接受后才标任务 completed。
+17. 收尾与接受：核实集成/运行成果、验收包、延期与恢复；主 Plan 仅在 AC 满足、成果可用和 Owner 明确接受准确版本后 completed，其他 working 按自身交付条件；整体接受另核。
 
 成果可见性决定接受与发布顺序，仓库批准、部署授权、运行验收与业务接受分记。子 PR 已合并仅表示候选集成。独立可信核验、actual 采样、部署自动化及实际恢复演练首期延期，未测与延期不计 PASS。
 
@@ -136,6 +136,18 @@ command，但**不**把它作为唯一执行路径——同时给出 `Use When` 
 
 一次聚焦一项真实取舍，先探索可自取事实；提供当前观察、为何影响结果、互斥可行选项、推荐项与理由/影响、必须等待的原因。没有新增实质决定就继续授权内工作。先自取可用公开事实；既有秘密不读取、不索取值。新单仓App材料仅受控后台处理；独立Agent技术审阅后，执行Agent按授权与正常宿主机制实施项目范围启用。不支持或拒绝如实未验证。
 
+### §3.4 原意、working 与独立可执行 Plan
+
+先用 doc-author 保存已明确来源与维护责任的原意：正式 INTENT 或简单任务唯一 Issue 原意区；来源/责任不明则仅真实类型 working 草稿。再由 flow-intake 适配需求/约束/可测 AC，flow-plan 组织实施，不新增 flow-intent。doc-plan 只评估每实际受影响对象 Create/Update/None及理由，不代替完整 Plan，也不固定十类遗漏 INTENT/Intake/Report。
+
+新 working 按 `plans/<topic>/` 聚合，七字段和四种 topic 见 [[../../policies/documentation|documentation]] §2.7。独立目录可以一直只有 Intake/报告，不补造 Plan；有主 Plan 时目录/文件 topic 一致且唯一，子 Plan 各有独立目录，共享报告唯一主归属，不强制 INDEX。多 PR 选整体集成 PR 为主要关联，不明确省 P。普通技术安排自主，新 Plan draft，有明确采纳依据才 active。
+
+Plan 必须让独立执行者找到七题的实际答案：①问题/范围/排除/延期；②权威预期、完整接受基线与冲突处理；③文件入口/顺序/依赖；④工具/身份/精确输入；⑤授权/保护/停止；⑥逐 AC 方法与版本/环境/时点/批次/证据；⑦候选完成、正式生效及 Owner 接受条件。关键缺项保留具体未决、影响和恢复点，不靠实施者猜。原意来源/本次承担范围、执行授权、风险恢复监控、产物检查点与下一步均进入 Plan；模板见 `docs/_templates/TEMPLATE_PLAN.md`。
+
+原意核对、内容接受、执行授权、交付接受分记，接受绑定固定提交完整文件或完整可恢复快照准确位置。旧接受不自动覆盖实质新内容，活动引用修复与固定历史基线分开，task_id/INTENT ID 不因目录补号变化。独立合成验收按 [[../../policies/ai-agent|ai-agent]] §4.3 从真实成品复现并绑定 SHA/环境/时点，同一对象最多两轮；模拟不代替 Owner 接受。
+
+只有主 Plan completed 必须 AC 满足、成果可用且 Owner 明确接受准确版本；其他 working 按自身交付条件，条件含 Owner 接受时仍满足。报告完成不推导 Plan/整体任务完成，独立报告任务整体接受在已有 Issue/会话/任务记录表达；主 Plan 一次接受可覆盖明确整体范围。完成原位保留，取消 working 物理归档、180 天 GC/候选检测及相关 CI；canonical 归档不变，INTENT 原位退役。Repo Scan 默认对话输出；明确需要保存再选真实 working 类型。状态详见 [[../lifecycle|lifecycle]] §2/§4.2。
+
 ## §4 Stage → Skill 映射表
 
 > Port from HITL_Prompt STANDARD §5。目标态覆盖 `.agents/skills/` 内 **37 个** mj-agent-*
@@ -190,6 +202,7 @@ command，但**不**把它作为唯一执行路径——同时给出 `Use When` 
 | `python -m compileall src` | 编译可解析 |
 | `python scripts/check_wikilinks.py` | 文档 wikilinks（docs/ 改动时） |
 | `python scripts/check_frontmatter.py` | 文档 frontmatter（docs/ 改动时） |
+| `python scripts/check_working_docs.py` | 任务目录/主 Plan 与深相对链接（working 改动时） |
 
 ### Offline pytest external bands（只验证 structured skip）
 
@@ -335,11 +348,11 @@ ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未
 - **文档治理门禁 A1-A6**（frontmatter / wikilink / INDEX / allowlist）：
   [[../../policies/documentation|policies/documentation]]。
 - **capability 状态迁移工作流**（本闭环的 capability-scoped 投影）：
-  [[new-capability|new-capability]]（idea → active）/
-  [[evolve-capability|evolve-capability]]（spec 演进）/
-  [[bugfix-drift|bugfix-drift]]（缺陷与漂移修复）/
-  [[cross-capability-change|cross-capability-change]] /
-  [[hotfix|hotfix]] / [[archive-capability|archive-capability]]。
+  [[./new-capability|new-capability]]（idea → active）/
+  [[./evolve-capability|evolve-capability]]（spec 演进）/
+  [[./bugfix-drift|bugfix-drift]]（缺陷与漂移修复）/
+  [[./cross-capability-change|cross-capability-change]] /
+  [[./hotfix|hotfix]] / [[./archive-capability|archive-capability]]。
 - **capability lifecycle**（本闭环与状态机的关系）：
   [[../lifecycle|sdd/lifecycle]]。
 - **关联 ADR**：[[../../decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem|ADR-016]]
@@ -359,3 +372,5 @@ ASSESSMENT 必须在 post-merge checklist **显式记录原因**（如"优化未
 
 > *M6-PR4a kernel-authoring 收尾件；本文件为 17-stage 执行闭环 kernel home。
 > 源 STANDARD 归档已由 M6 PR4 执行完毕（归档件路径见文首 kernel home note）。*
+
+> *v1.7（2026-10-29）：#608 / ADR-043 — 原意→Intake→Plan 创作链、独立使用七题、按类型完成、真实基线和目录兼容；退出 working GC。*

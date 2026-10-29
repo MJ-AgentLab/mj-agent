@@ -2,10 +2,10 @@
 type: policy
 artifact: archive
 state: active
-version: "1.2"
+version: "1.3"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-29
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -23,10 +23,10 @@ ai_visibility: source-of-truth
 > `docs/rule/` 作为**历史源**；PR4 把 tri-track STANDARD 整体迁入 `archive/rule/`（§4 playbook）。
 >
 > **联动（cross-ref，不重复 port）**：
-> - 文档治理门禁 A1-A6 / 12 类分类 / `track` 字段 → [[policies/documentation|policies/documentation]]
+> - 文档治理门禁 A1-A6 / canonical与working分类 / `track` 字段 → [[policies/documentation|policies/documentation]]
 >   （其 §2.5 拆分阈值 + 头注 archive-trigger/path-stability 反向指入本 policy §1）
-> - working 文档（`plans/**`）4 态机（`active/completed/archived`）→ [[sdd/lifecycle|sdd/lifecycle]]
->   §2；本 policy §8 仅落 `archived` 物理归档实施指引
+> - working 文档（`plans/**`）三态及 `archived` 历史兼容 → [[sdd/lifecycle|sdd/lifecycle]]
+>   §2；本 policy §8 记录 working GC 退出与原位保留
 > - capability package 归档流程 → [[sdd/workflows/archive-capability|sdd/workflows/archive-capability]]；本 policy 是其元规则
 > - 门禁清单（G11/G12/G14/G15 等）总表 → [[sdd/gates|sdd/gates]]
 > - 历史决策（DEPRECATED，按编号 prose 引用，不 wikilink）：ADR-017（归档触发量化）/ ADR-018
@@ -78,9 +78,9 @@ canonical 文档的退役沿 `active → deprecated → frozen → archived` 推
 |---|---|---|
 | `deprecated` | 显式宣告弃用 | 正式版本演进（§1.1）；ADR 决议 + HITL Gate；引用按 Living/Frozen 处理（§4） |
 | `frozen` | 不再修改但保历史 | `deprecated` 后内容冻结；作 cite-by-vintage 快照 |
-| `archived` | 物理迁入 `archive/<type>/` | ceremony（§4，canonical 文档）或 GC（§8，working 文档） |
+| `archived` | 物理迁入 `archive/<type>/` | ceremony（§4，canonical 文档；INTENT 例外原位退役） |
 
-> working 文档（`plans/**`）用**另一套** 4 态机（`draft/active/completed/archived`），语义是
+> working 文档（`plans/**`）用**另一套**三态机（`draft/active/completed`，`archived` 仅历史兼容），语义是
 > "任务完成"而非"被新版本替代"——见 [[sdd/lifecycle|sdd/lifecycle]] §2 + 本 policy §8。
 
 ## §3 archive.yml manifest schema（G11/G12）
@@ -200,10 +200,10 @@ BLOCKING）：
 |---|---|---|
 | `permanent` | 不可删 | 重大 ADR / 历史 framework / 合规相关 |
 | `5-year` | 5 年后 purge-eligible | 一般 capability / runbook |
-| `1-year` | 1 年后 purge-eligible | working plan / 临时 evidence |
+| `1-year` | 1 年后 purge-eligible | 符合自身保留规则的临时 evidence；不适用于 working Plan |
 
 > retention 到期 → purge-eligible 检测 + 物理删除流程属 GC 范畴（Phase D+）；本 policy 只定义
-> 类别语义。working 文档的 GC 触发见 §8。
+> 类别语义。working 文档不使用本 GC，见 §8。
 
 ## §7 archive/ 目录布局
 
@@ -221,32 +221,18 @@ BLOCKING）：
 > 每个携内容的 leaf 目录必须带 `archive.yml`（§3）。`archive/` 引用合法性由 G14/G15（§5）裁决；
 > archive NEEDLES 由 `check_wikilinks.py` 零维护 auto-discover（ADR-020 决议）。
 
-## §8 working 文档物理归档（plans/ GC）
+## §8 Working 原位保留；历史 GC 退出
 
-> working 文档（`plans/**`）的 `archived` 物理归档实施指引（落实 Meta §5.11.5 / ADR-021
-> follow-up）。state 机本身见 [[sdd/lifecycle|sdd/lifecycle]] §2。
+Issue #608 / ADR-043 取消 working 的物理归档、180 天 GC、候选检测及相关 CI 调用。完成文件保留任务目录原位，长期废弃 draft 保持 draft 并记录原因/恢复条件；`archived` 只为历史兼容，不再指示创建 `plans/archive/`、移动或删文件。`scripts/find_old_completed_plans.py` 退出活动流程；脚本及旧材料的保留不代表应继续运行 GC。
 
-**触发条件**（三者皆满足）：`state: completed` 持续 ≥ 6 个月（180 天）+ 全仓 grep ref count = 0 +
-核具名GC对象、必要备份和授权；已有范围由Agent正常执行。
-
-**操作流程**：
-
-1. 跑 `scripts/find_old_completed_plans.py` 获候选清单；
-2. Agent反扫核验每个候选的引用计数（避免误删 active 引用）；
-3. 首次 GC 时创建 `plans/archive/`（不预建空目录）；
-4. `git mv plans/<name>.md plans/archive/<name>.md`；
-5. frontmatter `state: completed → archived` + 加 `archived: <YYYY-MM-DD>`；
-6. archived 文件**不更新**内部 wikilinks（frozen snapshot 原则；与 ADR-019 一致）；
-7. `plans/` 不入 INDEX（不更新 `docs/INDEX.md`）；CHANGELOG 可记 GC 操作条目。
-
-> 当前（2026-06）mj-agent `plans/` 最早 completed 文件距 6 月阈值未到；本节为指引，首次 GC 约 2026-11+。
+此决定不授权删除无名历史资料，也不批量迁移旧根文件；受控改名及活动引用/路由修复按 [[policies/documentation|documentation]] §2.7。固定提交/可恢复快照和旧接受决定保留，不因路径补号改写。其他 canonical 的 ceremony、manifest、retention 规则保持；正式 INTENT 按 [[sdd/lifecycle|lifecycle]] §4.2 在原路径 deprecated 并永久保留 ID，不进入物理归档。
 
 ## §9 与 SDD Workflows / 其他 policy 联动
 
 | 对象 | 关系 |
 |---|---|
 | [[sdd/workflows/archive-capability|sdd/workflows/archive-capability]] | capability package 归档**流程**；本 policy 是其元规则（触发判定 §1 / manifest §3 / 可见性 §5 通用） |
-| [[sdd/lifecycle|sdd/lifecycle]] | canonical 的 `deprecated` 与 working 的 `completed/archived` 状态来源；本 policy §2/§8 落归档侧实施 |
+| [[sdd/lifecycle|sdd/lifecycle]] | canonical 归档与 working/INTENT 专属状态来源；本 policy §8 记录 working GC 退出 |
 | [[policies/documentation|policies/documentation]] | §2.5 拆分阈值 → 本 policy §1.1 trigger #4；A1-A6 文档卫生门禁与 G11/G12/G14/G15 归档门禁互补 |
 | [[sdd/gates|sdd/gates]] | G11/G12/G14/G15 门禁定义总表；本 policy 给其语义与 ceremony 上下文 |
 
@@ -266,3 +252,5 @@ BLOCKING）：
 > archive-capability 步骤 7 / generator 三处 / archive issue 模板共 6 处载荷。判例：**判断某字段
 > 有无 schema 背书时，散文 policy 表不是 ground truth** —— 本节 `:88-89` 自己就写着「脚本是
 > ground truth」且 mirror `sdd/archive.schema.json`。*
+
+> *v1.3（2026-10-29）：#608 / ADR-043 — 退出 working GC 与候选检测，完成文件原位保留；INTENT 原位退役；其他 canonical archive 保持。*

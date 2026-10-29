@@ -2,10 +2,10 @@
 type: sdd-kernel
 artifact: lifecycle
 state: active
-version: "1.4"
+version: "1.5"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-29
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -13,7 +13,7 @@ ai_visibility: source-of-truth
 # SDD Lifecycle
 
 > **Kernel home note (M6 PR4a-3)**: 本 doc 是状态机真相源。它定义三套**正交**生命周期：
-> §1 capability package 9 态（SDD 主轴）、§2 working 文档 4 态（`plans/**` 任务语义；M6 PR4a-3
+> §1 capability package 9 态（SDD 主轴）、§2 working 文档 3 态及 archived 历史兼容（`plans/**` 任务语义；M6 PR4a-3
 > 收纳 Meta §5.11 / ADR-021 决议）、§4 canonical 文档 archive 5 态（**§4.1 补该链条之前的 `draft`
 > 入口态 + 翻 `active` 的判据**）。§3 给 capability 态转移触发 +
 > gate 联动。归档侧实施细节（ceremony / manifest / 物理归档）在 [[policies/archive|policies/archive]]；
@@ -45,50 +45,40 @@ idea ─► specified ─► contracted ─► planned ─► implementing ─�
 > 每态的 evidence 要求 + CI gate 联动见 §3 转移表 + [[sdd/gates|sdd/gates]]（G8 evidence-required
 > 是 `verifying → active` 的 active-conditional 门；其余按转移触发）。
 
-## §2 Working-doc Lifecycle（4 态；`plans/**`）
+## §2 Working-doc Lifecycle（3 态；`plans/**`）
 
-> 源：Meta §5.11（ADR-021 决议；归档侧物理实施在 [[policies/archive|policies/archive]] §8）。
-> 与 §1 capability 生命周期**正交**——working 文档语义是"任务完成"（`completed`），**不是**
-> canonical 文档的"被新版本替代"（`deprecated`）。[[policies/archive|policies/archive]] §2 反向指入本节。
+working 与 capability / canonical 生命周期正交。新文件按 [[policies/documentation|documentation]] §2.7 进入任务目录；旧根文件兼容，历史不批量迁移。独立任务可仅有 Intake/Report/Assessment，不为了状态或整体接受补造 Plan。
 
-### §2.1 4 态机
+### §2.1 状态与完成条件
 
 | state | 含义 | 触发 |
 |---|---|---|
-| `draft` | 仍在拟订；未对齐 | 新建文档默认 |
-| `active` | 已采纳；任务执行期 | 关联 issue/PR open |
-| `completed` | 对应任务已接受 | AC 满足、成果可用且 Owner 明确接受该版本；PR/Issue/Release 状态单列 |
-| `archived` | 物理归档（GC；见 §2.4） | `completed` ≥ 6 月 + 引用 0 时 |
+| `draft` | 拟订或尚未采纳 | 新文档默认；废弃 draft 保持 draft，正文记原因/恢复条件 |
+| `active` | 已明确采纳且正在交付 | 记录真实采纳依据；关联 Issue/PR open 本身不代替采纳 |
+| `completed` | 本文档交付条件已满足 | 主 Plan：AC 满足、成果可用、Owner 明确接受准确版本；其他 working：Agent 核实自身已确定交付条件后记录证据 |
 
-### §2.2 Stage 17 结果核实与接受
+`archived` 仅兼容历史，不再是活动状态转移目标。非主 Plan working 如果自身交付条件明确包括 Owner 接受，仍须满足该条件。报告 completed 仅表示报告交付完成，不表示 Plan 或整个任务完成。
 
-核实关联 PR、Issue、Plan/Intake 的实际版本与成果，分别记录候选集成、验证、交付、待接受、接受、部分完成、延期、失败和未知。只有对应基线满足、成果可用及 Owner 明确接受版本时，才由 Agent 在任务授权内把 active 改 completed 并刷 updated；不移动文件。merged、closed 或 deployed 不能替代业务接受。非核心延期独立跟踪，影响整体基线时须 Owner 决定调整。
+### §2.2 结果核实与整体接受
 
-在 Plan/任务记录保存验收包、授权与版本证据、在途副作用、失败/延期及下一步；压缩/换窗/交接后先读取检查点并核实际状态。
+Agent 分别记录候选集成、验证、交付、待接受、已接受、部分完成、延期、失败和未知；merged、closed、deployed、机器 PASS 不能替代 Owner 接受。主 Plan 仅在其完整基线满足、成果可用及 Owner 明确接受准确版本后改 completed 并刷 updated。一份报告完成不推导整个 Plan 完成。
 
-### §2.3 边界
+独立报告任务的整体接受仍由 Owner 在既有 Issue/会话/任务记录中表达，不另造接受系统，也不补主 Plan。主 Plan 的一次明确接受可以同时覆盖所列范围的整体任务接受，无须重复确认。非核心延期独立登记原因、影响与恢复条件；影响完整接受基线时须 Owner 决定调整。
 
-| 项 | 处理 |
-|---|---|
-| `completed` 文件位置 | 保留 `plans/` 原路径；不移 `plans/archive/`（避免断跨文档引用） |
-| `completed` 文件 INDEX | `plans/` 不维护 INDEX |
-| 跨文档引用稳定性 | 仅 state 改变 → 引用路径不变 → 全仓 reference 稳定 |
-| 长期 `draft` abandon | 保持 `draft`（留重启余地）；确认废弃可手工标 `archived`（不移文件） |
-| `completed` 文件 grep | 仍可命中；state 字段标识其已落地 |
+接受记录绑定固定提交完整文件或完整可恢复快照的准确位置，保留旧决定；内容实质变化后旧接受仅覆盖旧基线，路径变化不自动重置接受。检查点保存实际 workspace/ref/SHA、验证环境/时点、证据、在途副作用和下一步，重入先核现实。
 
-### §2.4 archived 物理归档
+### §2.3 原位保留与稳定引用
 
-`completed` → `archived` 的物理 GC（创建 `plans/archive/` + `git mv` + frozen snapshot）实施指引在
-[[policies/archive|policies/archive]] §8（触发：`completed` ≥ 6 月 + grep ref = 0 + HITL；首次 GC 约
-2026-11+）。本节只定义 state 语义。
+完成文件原地保留，不运行 working 物理归档、180 天 GC、候选检测或相关 CI；不强制局部 INDEX。命名修正仍按受控改名规则同步目录/主文件、活动引用和交付路由；task_id、INTENT ID、固定提交/旧快照和旧决定不变。新 HEAD 仍核平台审核。
 
-> Cross-ref：ADR-021（working-doc lifecycle 决策；已 archive 至 `archive/decisions/superseded/`，
-> 按编号 prose 引用）；ADR-023（plan GC infra）；Stage 17 自动化 [[../.agents/skills/mj-agent-flow-post-merge/SKILL|mj-agent-flow-post-merge]] Step 9。
+### §2.4 历史兼容与 GC 退出
+
+Issue #608 / ADR-043 取消 working 的 `completed → archived` 物理 GC。旧 archived 文件仍可读取，原脚本退出活动流程，不以此授权删除历史资料。canonical 归档仍按 [[policies/archive|archive]] 的独立规则执行；INTENT 退役例外见 §4.2。
 
 ### §2.5 Retroactive 补落（漏落盘事后补救）
 
 > 源：Meta §5.11.6（ADR-021 follow-up）。区别于 §2.2 Stage 17 自动化（`active → completed`）
-> 与 §2.4 archived 物理归档（`completed → archived`）——本节治"实施期漏落盘 `[PLAN]` / `[INTAKE]`，
+> 与已退出活动链的历史 §2.4 GC——本节治"实施期漏落盘 `[PLAN]` / `[INTAKE]`，
 > 事后审计补救"的路径。
 
 **触发场景**（事后发现漏落盘 + 满足任一）：
@@ -101,12 +91,12 @@ idea ─► specified ─► contracted ─► planned ─► implementing ─�
 
 **补落规则**：
 
-- **state 按真实接受状态置 active 或 completed**；completed 仅在 AC 满足、成果可用且 Owner 明确接受时填写对应接受日期，禁止用最后 merge 日期推定接受；
+- **state 按本文档真实交付条件置 draft / active / completed**；主 Plan 的 completed 必须 AC 满足、成果可用且 Owner 明确接受，其他 working 按 §2.1；禁止用最后 merge 日期推定接受；
 - frontmatter 加 `retroactive: true`（机器可识别；`scripts/check_frontmatter.py` 对未知字段宽容，不破坏 schema）；
 - 头部加 `> [!warning]` 声明框：醒目标注"事后回填，非真实 Stage 0/4 输出"，引导读者关注内容 trace；
 - **凭证 trace 段必加**：逐段标内容来源（PR description / commit / memory / AGENTS.md update /
   vault 草稿），避免 time-shift bias；
-- 在归档源 Meta §5.11.6.1（历史落地记录）追加 1 行时间序记录。
+- 在当前任务记录追加来源与补落时间；冻结归档源不回写。
 
 **不补落判定**（凭证已充分，可跳过补落；满足任一即可不补）：
 
@@ -156,7 +146,7 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 
 ### §4.1 `draft` —— §4 链条之前的入口态（#480）
 
-§4 的 5 态从 `active` 起算，**不含 `draft`**；§2 的 4 态含 `draft` 但只治 `plans/**`。于是 canonical
+§4 的 5 态从 `active` 起算，**不含 `draft`**；§2 的 3 态含 `draft` 但只治 `plans/**`。于是 canonical
 与 kernel 文档（`policies/**` / `sdd/**`）用的 `draft` 长期没有 kernel 级定义，只散落在各文件脚注里。
 本节补上，**语义与既有落盘实况一致，不改任何一份文件的现值**。
 
@@ -186,12 +176,16 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 | 面 | `state` 有无机器后果 | 载体 |
 |---|---|---|
 | `src/mj_agent/skills/**/SKILL.md` | **有，且 blocking** | `scripts/sdd/check_runtime_skill_contracts.py` 把 frontmatter `state` 与契约 `skills[].state`（frozen）逐字比对，不等即 FAIL。**改这类文件的 `state` 必须同批改契约**，否则 CI 红 |
-| `SCAN_ROOTS` 内的 canonical 文档 | 有，但只限 5 个类型 | `scripts/check_frontmatter.py` 在 `state ∈ {active, completed}` 时强制 RUNBOOK / POSTMORTEM / ASSESSMENT / ISSUE / EVAL 的类型专属字段；其余类型无差别 |
+| `SCAN_ROOTS` 内的文档 | 有，按类型/路径 | `scripts/check_frontmatter.py` 对 RUNBOOK / POSTMORTEM / canonical ASSESSMENT / ISSUE / EVAL 按 active/completed 校专属字段；INTENT 始终校九字段和三态；新 working 校七字段与独立状态，历史根布局兼容 |
 | `policies/**` · `sdd/**` · `capabilities/**` | **无** | 三者都不在 `SCAN_ROOTS` 内（门禁事实的 canonical 记载见 [[policies/documentation|policies/documentation]] §3.1），且无任何脚本读它们的 frontmatter `state`。故此处的 `state` 是**给人读的**，靠 merge review 兜底 |
 
-> 本节只定义 canonical / kernel 侧的 `draft`。`plans/**` 的 `draft` 按 §2.1（4 态，语义是"任务未对齐"）；
+> 本节只定义 canonical / kernel 侧的 `draft`。`plans/**` 的 `draft` 按 §2.1（3 态，语义是"任务未对齐"）；
 > `capabilities/**` 用的是 §1 的 9 态词表（`drafting` 等），与本节正交——per
 > [[policies/documentation|policies/documentation]] §3.1 规则 9 的 `capabilities/**` 豁免条款。
+
+### §4.2 INTENT 专属生命周期
+
+INTENT 为独立 canonical 原意正本，状态仅 `draft → active → deprecated`。draft 是尚在整理/核对；active 须记录原意核对和内容接受的真实情况、完整适用基线与责任，不把该状态当作执行授权或交付接受。deprecated 在原路径保留 ID、旧决定、退役原因和后继；不进入 §4 的物理归档或释放编号。Plan/Issue 完成、修订、跨年、标题或路径变化不传播状态或换 ID。实质变化保留旧内容接受，仅对新基线重新取得所需决定。专属字段、ID 查重和集合读取失败处理见 [[policies/documentation|documentation]] §2.8。
 
 ## §5 与 sdd/workflows/ 联动
 
@@ -229,3 +223,5 @@ active ─► deprecated ─► frozen ─► archived ─► purge-eligible
 > SoT（§4 被两个 entry adapter 回指）却始终 `state: draft`」——同一论点，但不依赖任何会变的
 > 措辞。**本次零 state 变更、零定义变更**，只修这一处诱发性陈旧。判例：引用他文时引**结构事实**
 > 不引**当期措辞**——后者没有任何 gate 兜底（`check-stale-docs` 只匹配完整 backtick 路径字面量）。*
+
+> *v1.5（2026-10-29）：#608 / ADR-043 — working 三态、按文档交付条件完成与整体接受分离；GC 退出；加入 INTENT 原位退役独立生命周期，冻结历史不回写。*

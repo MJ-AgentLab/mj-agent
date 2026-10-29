@@ -6,7 +6,7 @@ tags:
   - assessment
 aliases: []
 created: YYYY-MM-DD
-updated: 2026-10-12
+updated: 2026-10-29
 state: draft
 version: v1.0
 track: shared
@@ -17,7 +17,25 @@ dimensions:
 period: YYYY-MM-DD ~ YYYY-MM-DD
 ---
 
-<!-- 使用说明：选择的维度章节保留，未选择的维度章节删除。至少保留 2 个维度章节。 -->
+<!-- 使用说明：先选下方 working/canonical 分支；canonical 选择维度章节，未选删除，至少保留 2 个维度章节。 -->
+
+## 先选归属：working 轻量评估或 canonical 评估
+
+短期任务评估进入 `plans/<topic>/[ASSESSMENT]_<purpose>.md`，按用途命名，不机械补号；独立评估目录可以没有 Plan。working 分支仅强制以下七字段，不要求本模板外层 canonical 的 domain/version/dimensions/period，也不强制八维度。按真实问题保存范围、方法/版本环境时点、结论证据、限制/风险/恢复和交付条件，参考 [Report 模板](TEMPLATE_REPORT.md)。
+
+```yaml
+type: assessment
+summary: <本次评估范围与结论>
+owner: <维护者>
+created: YYYY-MM-DD
+updated: YYYY-MM-DD
+state: draft
+track: <按实际主题>
+```
+
+working Assessment 可由 Agent 在自身已确定交付条件满足后 completed；自身条件含 Owner 接受则仍须满足。完成评估不表示 Plan 或整体任务接受，独立任务的整体接受由 Owner 在已有记录表达。
+
+长期、可复用的 capability 或仓级评估保留 canonical 深度与其专属字段，进入所属 `capabilities/**/evidence/assessments/` 或仓级 `evidence/assessments/`，遵守该归属已有 schema；不机械放进 working 目录。以下为 canonical 评估正文。
 
 # <Service/Module> <优化主题> 评估报告
 

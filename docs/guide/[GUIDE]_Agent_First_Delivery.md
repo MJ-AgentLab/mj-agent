@@ -4,7 +4,7 @@ domain: WORKFLOW
 summary: 使用接受基线、任务授权、独立核验和可恢复证据自主交付 mj-agent 软件
 owner: ranzuozhou
 created: 2026-10-12
-updated: 2026-10-13
+updated: 2026-10-29
 state: draft
 track: engineering-workflow
 ---
@@ -13,8 +13,8 @@ track: engineering-workflow
 
 > **适用范围**：mj-agent 工程交付与治理改造。
 > **目标受众**：Owner、工程师、执行与独立核验 Agent。
-> **版本**：v0.5 草案。
-> **最后更新**：2026-10-13。
+> **版本**：v0.6 草案。
+> **最后更新**：2026-10-29。
 > **规则依据**：本项目 ADR-042 及现行政策。
 > **关联文档**：[[policies/ai-agent|AI Agent Boundaries]]、[[policies/git-branching|Git Branching]]、[[sdd/workflows/execution-loop|Execution Loop]]。
 
@@ -45,9 +45,19 @@ track: engineering-workflow
 
 技术权限、工具存在或 CI 通过不产生授权。授权未撤销且目标、对象、环境、权限和风险边界未实质变化时复用。普通代码内容更新仍需核验实际 diff/SHA，但不自动要求重复批准。具名删除、权限变化及高风险不可逆操作单列控制条件；秘密和 biz 旁路始终禁止。
 
+### Working 与原意入口
+
+新材料按 `plans/<topic>/` 聚合，主 `[PLAN]_<topic>.md` 与目录一致；四种 topic 仅用真实主要 Issue/PR，整体集成 PR 优先，未明省 P。主要关联首次明确/纠错/明确更换才受控补号，同步活动引用和路由，task_id/INTENT ID/固定历史基线不变，不追随子 PR 改名。Intake 可先建目录，独立报告任务可始终无 Plan，共享材料一个主归属，子 Plan 各有目录，不强制 INDEX。
+
+先由 doc-author 保存原意：独立 [INTENT 正本](../intent/README.md)或简单任务唯一 Issue 原意区；来源/维护责任不明只存 working 草稿。flow-intake 澄清实施范围，flow-plan 编排实施，不新增 flow-intent。Plan 写清完整可恢复接受基线、本次承担/依赖/背景，回答 [Plan 模板](../_templates/TEMPLATE_PLAN.md) 的七题；doc-plan 仍只做实际对象缺口评估。
+
+working 七字段必填含 track，不强制 domain/version；新 Plan draft，有明确采纳依据后 active。仅主 Plan completed 必须 AC 满足、成果可用、Owner 明确接受准确版本；Report/Intake/Assessment 可由 Agent 按自身交付条件完成，自身含 Owner 接受仍满足。报告完成不表示整体接受，独立任务整体接受在已有 Issue/会话/任务记录表达，不补 Plan；主 Plan 的一次明确接受可覆盖整体范围。完成原位保留，working GC/候选检测已退出；旧根文件兼容、历史不默认迁移。
+
+运行 `python scripts/check_frontmatter.py`、`python scripts/check_working_docs.py`、`python scripts/check_wikilinks.py` 核元数据、目录/唯一主Plan和按位置解析的深相对链接。机器 PASS 不证明真实编号、来源忠实、接受决定或运行。
+
 ## §2 PR 与执行身份
 
-小任务用单 PR；可独立交付的单元用多个直接入主线 PR；强依赖任务用 `feature/task-<任务标识>-integration`。任务记录登记每条精确子 head → integration base、预期贡献和最终 base，创建命令显式传 base。集成分支验证累计差异与组合 AC，子 PR 已合并只表示候选集成。实施前核实平台规则、CI触发及merge是否导致部署。历史release develop→main是独立发布流程，须Owner接受、具名发布授权及未来规则映射；当前有限解析器不声称支持。
+单 Issue 同时一个主 PR（通常 target develop），分段则主 PR 依次；强依赖任务需子 PR 时用 `feature/task-<任务标识>-integration`。任务记录登记每条精确子 head → integration base、预期贡献和最终 base，创建命令显式传 base。集成分支验证累计差异与组合 AC，子 PR 已合并只表示候选集成。实施前核实平台规则、CI触发及merge是否导致部署。历史release develop→main是独立发布流程，须Owner接受、具名发布授权及未来规则映射；当前有限解析器不声称支持。
 
 专用执行 App 仅安装本仓库，日常无 Administration、Checks write 或 bypass。Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定用不同于PR作者/最后推送者的Owner身份执行平台有效审核，补推重新取得有效决定/审核。治理交付所需 Workflows write 属临时、仓库全域权限，Agent结束后按授权移除临时权限、撤销token并关闭通道，逐项留证。仅新建单仓App私钥/短期token经受控后台创建、DPAPI保存、签名、注入和撤销，模型/聊天/日志不可见；现有应用/MCP/DB/个人秘密永不读取。
 
@@ -91,6 +101,8 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 
 核验者读取真实 diff、产物及基线，独立建立期望并复现关键检查。按风险覆盖工程、领域、Prompt 和供应链视角；不规定真人或人数。委派包含目标/AC/决定位置、输入范围依赖、真实工作区及比较版本、产物及证据要求、授权资源停止条件和返回点。并行写使用独立工作区或明确文件归属，共享资源写由协调者排序。
 
+未参与实现的独立上下文模拟使用者、运维与审查者，同对象最多两轮，仍有分歧汇总给 Owner；证据绑定实际 commit SHA、环境和时点，模拟不替代 Owner 最终接受。
+
 每个交付单元提供成果使用入口、逐 AC 预期/实际、版本环境时点、复现方式与证据位置、未实测/延期、风险与恢复、待决定事项。CI 仓外 artifact 绑定 head/base、测试版本、产物/输入/依赖摘要、环境、命令退出及逐 AC 状态。基线、产物或环境变化后重判证据有效性；HTTP 成功、命令成功、零行和 workflow 结束不独自证明业务正确。
 
 本次治理软件交付执行新的证据要求，并设计#582治理证据格式。Owner已将#582 CLI实现/commit转交“整理 #564 EVAL 承接方案”，新CLI接受基线与实际交付由接手会话维护；原边界和未提交材料保留，转交不计交付PASS。历史 capability 逐步迁移；synthetic 和虚构 actual 条件只证明离线软件行为，不产生真实 runtime 来源或基线。缺少非核心能力可以延期对应入口，核心自身 AC 通过后分段交付；延期影响整体基线时由 Owner 决定。
@@ -117,12 +129,13 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 
 阶段完成、集成前和交接时，在现有记录保存目标/AC/授权、workspace/ref/SHA/集成状态、证据、在途动作、失败未知延期、下一步及停止条件。换窗、压缩及再委派后先读取记录并核实现状；超时或结果未知先对账运行状态和副作用，再决定是否重试，成功动作不重复。
 
-分别表达候选已集成、已验证、已交付、待 Owner 接受、已接受、部分完成、延期、失败和未知。Plan 只有对应接受基线满足、成果可用且 Owner 明确接受该版本后才标 completed。仓库批准、部署授权、实际运行验证和业务接受各自留证。
+分别表达候选已集成、已验证、已交付、待 Owner 接受、已接受、部分完成、延期、失败和未知。主 Plan 只有对应接受基线满足、成果可用且 Owner 明确接受准确版本后才标 completed；其他 working 按自身已确定交付条件，报告完成不推导整体接受。仓库批准、部署授权、实际运行验证和业务接受各自留证。
 
 局部可逆动作在授权内完成；共享环境核对目标与并发。恢复随风险使用回滚 PR、备份恢复、补偿或降级；存在文档不等于恢复已验证。actual 采样、部署自动化、独立可信核验和实际恢复演练为延期。评价时记录 Owner 常规介入、周期、缺陷返工、门禁负例、证据完整性、恢复结果及资源消耗。
 
 ## 关联文档
 
+- [ADR-043](../../decisions/ADR-043_Working_Doc_And_Intent_Governance.md)
 - [ADR-042](../../decisions/ADR-042_Agent_First_Delivery_Governance.md)
 - [Plan 模板](../_templates/TEMPLATE_PLAN.md)
 - [开发入口](../../AGENTS.md)
@@ -136,3 +149,5 @@ GitHub对没有规则写权限的请求隐藏`bypass_actors`；缺失字段保�
 | 2026-10-12 | v0.3 | Q9定向惰性配置兼容与完整规则摘要比较；实际App/宿主/平台状态由Plan和仓外运行证据分别记录 |
 | 2026-10-12 | v0.4 | Q10限定本任务origin发布、Gitee镜像延期；Q11宿主运行验收延期，默认双推/原生信任及实际GitHub门禁保留 |
 | 2026-10-13 | v0.5 | 新增原始 ZIP 跨宿主完整性核验、历史 capability 软件证据刷新入口；区别原执行与新验证，记录 Q27 具名镜像后续 |
+
+| 2026-10-29 | v0.6 | #608：working目录/原意入口/七题、按文档完成及整体接受、独立验收两轮与新校验入口 |

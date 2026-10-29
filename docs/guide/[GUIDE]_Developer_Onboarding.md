@@ -10,9 +10,9 @@ aliases:
   - mj-agent Developer Onboarding
   - mj-agent 开发者上手指南
 created: 2026-05-06
-updated: 2026-10-12
+updated: 2026-10-29
 state: draft
-version: v0.8
+version: v0.9
 track: code
 owner: 项目负责人
 ---
@@ -21,8 +21,8 @@ owner: 项目负责人
 
 > **适用范围**：mj-agent 新成员（Day-1）与长假回归者刷新场景下的端到端上手路径
 > **目标受众**：开发 + 维护者
-> **版本**：v0.8
-> **最后更新**：2026-09-22
+> **版本**：v0.9
+> **最后更新**：2026-10-29
 > **派生自**：mj-agent 原生（PR-B 增 4 处段借鉴 mj-system Developer_Onboarding 写法：权限清单 / ASCII 仓库导航 / hook 防护 / Quick Checklist；内容按 mj-agent 自身资产派生）
 > **关联文档**：[[../infrastructure/git/INDEX|infrastructure/git/]]（4 份 git
 > GUIDE）、[[policies/documentation|documentation policy]]、
@@ -243,10 +243,16 @@ mj-agent 文档治理走**三轨**（Phase B PR-B3c-promote 后由双轨升级�
 > 三类完整速查表（含第三类 marketplace plugin SKILL）见
 > [[policies/development-skills|development skills policy]] 与本节。
 
+新 working 文档按 `plans/<topic>/` 聚合；主 `[PLAN]_<topic>.md` 与目录一致，新建 draft，七字段含 track。Intake 可先于 Plan，独立报告目录可以一直没有 Plan；完成原位保留，不运行 working GC。真实主要 I/P 命名与受控补号、子 Plan/共享材料归属见 [文档政策](../../policies/documentation.md) §2.7。
+
+原意正本使用独立 [INTENT](../intent/README.md) 或简单任务唯一 Issue 原意区；先核来源与维护责任，再由 doc-author→flow-intake→flow-plan 进入实施。原意核对/内容接受/执行授权/交付接受分记，基线须可完整恢复。只有主 Plan completed 要求 AC/可用成果/Owner准确版本接受，其他 working 按自身交付条件；报告完成不代表整体接受。详见 [交付指南]([GUIDE]_Agent_First_Delivery.md) 和生命周期 §2。
+
 撰写新文档时复制 `docs/_templates/TEMPLATE_*.md` 起步：
 
 | 类型 | 模板 | Authoring 规格章节 |
 | --- | --- | --- |
+| INTENT | [TEMPLATE_INTENT](../_templates/TEMPLATE_INTENT.md) | documentation policy §2.8 |
+| Plan / Intake / Report | [TEMPLATE_PLAN](../_templates/TEMPLATE_PLAN.md) / [TEMPLATE_INTAKE](../_templates/TEMPLATE_INTAKE.md) / [TEMPLATE_REPORT](../_templates/TEMPLATE_REPORT.md) | documentation policy §2.7；Plan独立使用七题 |
 | GUIDE | [[../_templates/TEMPLATE_GUIDE|TEMPLATE_GUIDE]] | documentation policy §8.1 |
 | ADR | [[../_templates/TEMPLATE_ADR|TEMPLATE_ADR]] | documentation policy §8 |
 | CONTRACT | [[../_templates/TEMPLATE_CONTRACT|TEMPLATE_CONTRACT]] | contract adapter |
@@ -539,3 +545,5 @@ v1.3 收紧（rule 2 + rule 3）后**操作层面与 UX 层面都达标**——R
 | 2026-09-22 | v0.8 (patch) | #555：§6.5–§6.6 补删除核验、有限 hook 路由、五类动作的独立授权和部分完成恢复；真实宿主验收另记 |
 | 2026-09-22 | v0.8 (patch) | #555 合并后回归：§6.6 明确首次请求前 never 停止、多分支 UNKNOWN 反例及受控会话证据边界 |
 | 2026-09-22 | v0.8 (patch) | #555 最新方案：§4.1/§6.6 改为逐命令规则判断，扩展 Git 参数和批量逐引用核验；上行保留旧方案历史，新条件真实验收单列 |
+
+| 2026-10-29 | v0.9 | #608：working任务目录、INTENT/Issue原意入口和三类working模板，按文档完成与整体接受分离 |

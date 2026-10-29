@@ -4,7 +4,7 @@ domain: SYS
 summary: docs/guide/ 子目录索引 — mj-agent 开发者与运维上手指南；首份为 Developer Onboarding（PLAN G PR2）
 owner: 项目负责人
 created: 2026-05-06
-updated: 2026-10-13
+updated: 2026-10-29
 state: draft
 track: code
 ---
@@ -23,6 +23,7 @@ track: code
 | 文档 | 类型 | 摘要 |
 |------|------|------|
 | [Quick Start Setup](./[GUIDE]_Quick_Start_Setup.md) | GUIDE | mj-agent 赶时间版 5 分钟启动 — 9 步从 clone 到 Studio 跑通首问；适用于 demo / 培训 / hotfix 现场 |
+| [Agent-first Delivery](./[GUIDE]_Agent_First_Delivery.md) | GUIDE | 自主交付、working/INTENT入口、完整接受基线、独立核验和结果接受 |
 | [Developer Onboarding](./[GUIDE]_Developer_Onboarding.md) | GUIDE | mj-agent 新成员（或长假回归者）端到端上手路径——仓库与远端 / 分支 / 本地环境 / 测试 / 双轨道文档 / 提交推送 / Studio 试跑 |
 | [Analyst Day-One](./[GUIDE]_Analyst_Day_One.md) | GUIDE | mj-agent 试用分析师 day-1 上手指南—— 30 分钟内拿到内网 Chainlit URL、跑通月报场景闭环、知道何时该写 ISSUE 反馈 |
 | [离线 EVAL 真实观测包材料契约](./[GUIDE]_Offline_EVAL_Actual_Material_Contract.md) | GUIDE | 最小材料、原bytes/审阅绑定、Agent与Owner责任及actual延期门禁；当前仅文档定稿 |

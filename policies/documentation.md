@@ -2,10 +2,10 @@
 type: policy
 artifact: documentation
 state: active
-version: "1.7"
+version: "1.8"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-29
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -14,7 +14,7 @@ ai_visibility: source-of-truth
 
 > **Kernel home note (M6 PR4a)**: 本 policy 是文档治理的 **kernel 真相源**。它收纳了
 > 三轨 STANDARD（Meta_Framework / Code_Side / Agent_Side / HITL_Prompt）中的**文档治理**内容：
-> 12 类文档分类、`track` frontmatter 字段、PR 门禁 A1-A6 + OB1-OB5、frontmatter schema
+> canonical 文档分类、`track` frontmatter 字段、PR 门禁 A1-A6 + OB1-OB5、frontmatter schema
 > （含类型专属字段）、AGENTS.md sync allowlist。这些规则的 canonical home **自本 policy 起**就是这里。
 >
 > 在 M6 PR4 archive ceremony 落地前，源 STANDARD 仍 `state: active` 留在 `docs/rule/` 作为
@@ -45,23 +45,24 @@ ai_visibility: source-of-truth
 
 | 原则 | 说明 |
 |---|---|
-| 真实资产优先 | 文档描述真实存在的代码 / 配置 / 流程；不为未来占位空写 |
+| 来源分权威 | 实现事实核真实代码/配置/运行；期望与接受核真实提出者和 Owner 记录；接口承诺核 SPEC；治理核现行政策/ADR。代码与文档冲突须记录并按责任澄清，不用当前实现改写原意 |
 | 目录即职责 | 物理路径决定治理归属（见 §3 path-to-track 决策树） |
 | 真相源最小化 | 每条规则单一 canonical home；其他位置 cross-ref 不复制 |
 | 代码-文档双向追溯 | 代码侧 ADR / SPEC 的决策应在同 PR 内同步实施 |
 | in-source 治理 | `src/mj_agent/{skills,prompts}/**` 的 SKILL.md / system.md body 字面被 LLM 消费——字面修改即行为修改 |
 | 三轨分轨 | A 代码侧 / B 智能体侧 / C 工程流程；plugin loader 边界尊重（Track C 资产不经 mj-agent Python loader） |
 
-## §2 文档类型分类（12 类 canonical）
+## §2 文档类型分类（canonical 与 working）
 
 > 源：Meta §3（类型与目录）+ Code_Side §0（8 类代码侧）+ Agent_Side §0（4 类智能体侧）。
-> **类型枚举不变**（12 类 canonical）；这是与 SDD capability-package ontology（spec / contract /
+> 本次在既有 12 类 canonical 之外加入 INTENT；working 类型另列 §2.7。这与 SDD capability-package ontology（spec / contract /
 > tasks / runbook / evidence）**正交的另一轴**——本分类治理 `docs/**` + in-source canonical 文档卫生。
 
-### §2.1 12 类 canonical 类型 + 默认 track
+### §2.1 Canonical 类型 + 默认 track
 
 | 类型 | 默认 track | 由哪个深度规则治理 |
 |---|---|---|
+| INTENT | shared（按主题决定） | 本 policy §2.8；需求原意与内容接受 |
 | GUIDE | code | Code_Side §3.1 |
 | ADR | shared（按主题决定） | Code_Side（code-ADR）/ Agent_Side（agent-ADR）/ engineering-workflow-ADR（如 ADR-014/016） |
 | SPEC | shared | 同 ADR |
@@ -152,6 +153,41 @@ authorized agent 的 tool-neutral operating contract；per ADR-035）——与�
 > ——如 active 技能数/名单（真值在 `agent.py:_ACTIVE_SKILLS`）、工具数、middleware 数等。这类事实**一律指向
 > 单一真值源**（代码 / 对应 kernel policy），不在根文件硬写数字或枚举，避免无 sync 门时的 code→doc 漂移复发。
 
+### §2.7 Working 任务目录与关联命名（Issue #608 / ADR-043）
+
+新建 working 文档按主归属进入 `plans/<topic>/`；主 Plan 为 `[PLAN]_<topic>.md`，目录与文件的 topic 必须完全一致，每个已形成 Plan 的目录只允许一个主 Plan。Intake 可先建目录；独立报告、Assessment 或 Intake 任务可以始终无 Plan，无 Plan 本身不是错误。本来需要 Plan 的任务仍须补足该工件。子 Plan 各有独立目录；共享报告仅存一个主归属，其他任务引用；不强制目录 INDEX，也不把所有对话输出保存为文件。
+
+`topic` 只用以下四种形式，`I`、`P` 大写；`slug` 为小写英文、数字和短横线组成的非空词段，词段间用单个短横线连接：
+
+- `I<issue>-P<pr>-<slug>`
+- `I<issue>-<slug>`
+- `P<pr>-<slug>`
+- `<slug>`
+
+Issue/PR 编号为正整数，不用 `I0`、`P0`、占位号；只使用本仓、本任务真实明确的主要关联，各最多一个，不从分支任意数字推断、不为名称创建对象。其他关联记录正文，编号不表示 open/closed/merged 状态。多 PR 优先以代表整体交付的集成 PR 为主要 PR；不明确则省略 P，不猜第一条或最新一条。Report/Assessment 可按用途命名，不机械补号；Intake 可复用完整 topic。会话 MMDD、中文标题长度不适用于此处。
+
+主题保持稳定。仅在主要关联首次明确、纠错或明确更换时受控同步目录和主文件，不追随后续子/补丁/收尾 PR。改名前核源/目标绝对路径、冲突、Git 跟踪/工作区状态、活动引用与路由；改后核材料完整性、相对链接、唯一主 Plan 和路由，并记录旧新路径及原因。部分成功先对账，不能留下仍可被发现的第二主 Plan 副本。`task_id` 不从目录推导，也不因补号自动变化；INTENT ID、历史基线及固定提交/快照中的旧路径不改写。活动链接须修复，新 HEAD 仍须核有效平台审核。
+
+新建 working 的 `type` 为 `plan / intake / report / assessment`；七项必填：`type / summary / owner / created / updated / state / track`，日期须为有效日历日期。不强制 `domain`、`version` 或 canonical Assessment 的维度字段，按文档自身范围自选补充。新 Plan 默认 `draft`；有明确采纳依据后 `active`，不增加固定人工停点。状态与完成条件以 [[sdd/lifecycle|lifecycle]] §2 为准，只有主 Plan 的 completed 必须包含 Owner 对准确成果版本的明确接受。
+
+新任务使用新布局；旧 `plans/` 根文件兼容读取，不自动批量迁移或复制。历史迁移仅按具名清单核归属、源目标、Git 状态、活动引用、路由及证据，固定提交/旧快照保持可恢复。完成文件原地保留；working 不再物理归档、不运行 180 天 GC 或候选检测。结构检查使用 `scripts/check_frontmatter.py`、`scripts/check_working_docs.py`、`scripts/check_wikilinks.py`；它们不能证明真实编号、原意忠实或 Owner 决定。
+
+### §2.8 INTENT 原意正本、身份与接受
+
+正式原意正本位于 `docs/intent/[INTENT]_INT-YYYY-NNN_<English_Topic>.md`，`type: intent`。`English_Topic` 以英文字母开头，后续仅英文字母、数字和下划线。INTENT 是独立 canonical 文档，不属于单个 Plan，不随 Plan 改名、完成或迁移。一个 INTENT 可支撑多个 Plan，一个 Plan 可承担多个 INTENT 的明确范围；每条关联区分本次实际交付、依赖和背景，不以一条链接推定全部承诺被承担。
+
+简单单任务可将真实 Issue 的原意区作为唯一正本，无须独立 ID/文件。来源或维护责任不明时，只保存为真实类型的 working 草稿并列恢复条件，不冒充正式 INTENT。owner 是维护责任人，不自动等于提出者、代表或接受人。
+
+正式 INTENT 九字段必填：`type / domain / summary / owner / created / updated / state / intent-id / track`，`version` 可选；字段在 draft/active/deprecated 均适用，日期必须是有效日历日期。正文采用五部分：问题现状、期望结果、成功判断、范围约束、未决项。前置可读区必须写提出者/代表、原始来源、维护责任、原意核对、内容接受、当前位置与完整适用基线、真实主 Issue（没有则明确未建立）及 AI 整理说明；模板见 `docs/_templates/TEMPLATE_INTENT.md`。
+
+`intent-id: INT-YYYY-NNN` 中 YYYY 为首次登记年度，NNN 为该年度 `001–999`。创建及合并前读取完整 ID 集合（含 draft/active/deprecated）查重；集合读不全或失败保留 UNKNOWN，不能当作空集合。删除或撤销不释放编号，分配还须核 Git 历史中的既用 ID；标题、跨年、修订、重新接受或拆分任务不换 ID。共享冲突或年度 999 耗尽由 Owner 决定，不自动改号或扩位。
+
+正式状态仅 `draft / active / deprecated`，原意内容达到已确定条件才 active；active、机器 PASS 或 AI 自检均不代替真实决定。Plan/Issue 完成不传播 INTENT 状态。退役在原路径保留 ID、旧决定、原因与后继，不移动或释放 ID；详见 [[sdd/lifecycle|lifecycle]] §4.2。
+
+原意核对、内容接受、执行授权、交付接受分别留证。接受必须绑定固定提交中的完整文件位置，或完整可恢复快照及准确位置；摘要、日期、版本号或 hash 单独不足以恢复接受基线。当前位置须指出完整适用基线。实质变化保留旧决定，记录来源、原因和影响，旧接受只覆盖旧基线；纯路径调整不自动重置业务接受，仍保留旧位置与新位置的映射及可恢复证据。
+
+真实业务原意的澄清提供中性选项，不由 AI 预选或推荐替代提出者；工程、机制、授权取舍给具体可行选项与推荐及影响。建议、预选、沉默、超时均不是决定。Issue 汇总覆盖/进度/依赖，INTENT 和 INDEX 不复制实时进度；Plan 管实施与产物，SPEC 管行为/接口/口径，Report 管真实结论、证据及限制。现有 capability 追溯不因路径变化新增 INTENT→REQ 系统。
+
 ## §3 track frontmatter 字段（4 值枚举 + 决策树）
 
 > 源：Meta §4.3.1。`track` 字段是三轨治理的脊柱；`scripts/check_frontmatter.py` 的
@@ -221,7 +257,7 @@ track: code | agent | engineering-workflow | shared
 > ⚠ 计数是该日快照，引用前须重测。
 >
 > **`capabilities/**` 豁免条款（#451，2026-08-07）**：capability-package 工件**不适用 `track`**。
-> 它们属与 12 类 canonical **正交的另一轴**（§2 开头已定：SDD capability-package ontology——
+> 它们属与 canonical 文档分类**正交的另一轴**（§2 开头已定：SDD capability-package ontology——
 > spec / contract / tasks / runbook / evidence；本分类只治 `docs/**` + in-source canonical），
 > frontmatter 走 `type: capability-*` 自有 schema + [[sdd/lifecycle|lifecycle]] §1 9 态，
 > 不写 `track` 不是缺漏：四件套（requirements / design / tasks / runbook）带 `type: capability-*`
@@ -272,8 +308,8 @@ AGENTS.md（root + 4 subdir，per §2.6 例外条款）+ `.dockerignore` +
 | 编号 | 检查项 | 定义 | 适用 track | 自动化 |
 |---|---|---|---|---|
 | **A1** | 路径与文件名合法 | `[TYPE][_Subject]_Description[_vX.Y].md` 或 type-specific 格式（如 `[ISSUE]_NNN_DomainAbbr_Description.md`、`.agents/skills/mj-agent-<group>-<verb>/`） | code / agent / engineering-workflow / shared | Phase 2 CI |
-| **A2** | Frontmatter schema 完整 | 必填基础字段 `type / domain / summary / owner / created / updated / state`；带 `version` 的类型（STANDARD/SPEC/EVAL/CONTRACT/ASSESSMENT）也填 `version`。**kernel 面（`policies/**` + `sdd/**`）走自有键集**，见下方 kernel 例外 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
-| **A3** | state 与专属字段枚举合法 | `state ∈ {draft, active, deprecated}`（working 文档另加 `completed`；**两轴末态另加 `archived`** —— working 文档 GC 与 canonical 归档都落这个值，per [[sdd/lifecycle|lifecycle]] §2.1 / §4，#477）；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
+| **A2** | Frontmatter schema 完整 | canonical 基础字段及 version 按 §6.1；working 七字段与 INTENT 九字段专属例外按 §2.7/§2.8。**kernel 面（`policies/**` + `sdd/**`）走自有键集**，见下方 kernel 例外 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_frontmatter.py`） |
+| **A3** | state 与专属字段枚举合法 | `state` 按类型与路径：INTENT 为 `draft/active/deprecated`；working 为 `draft/active/completed`（`archived` 仅历史兼容）；其他 canonical 按 [[sdd/lifecycle|lifecycle]] §4；type-specific enum 合法（`decision` / `resolution` / `eval_kind` / `contract_kind`） | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A4** | 内部 Wikilink 目标存在 | `[[...]]` 目标存在于仓库中 | code / agent / engineering-workflow / shared | Phase 2 CI（`scripts/check_wikilinks.py`） |
 | **A5** | INDEX.md 已同步或可重建 | 必要的 `docs/INDEX.md` / `docs/**/INDEX.md` 已同步或可由生成器重建 | code / agent / engineering-workflow / shared | Phase 2 CI |
 | **A6** | allowlist 文档变更同步检查 AGENTS.md | §7 4 类 allowlist（框架 / 架构 / 核心运行入口 / runtime 语义）变更需同步检查 `AGENTS.md` | code / agent / engineering-workflow / shared | Phase 0 PR review |
@@ -343,20 +379,14 @@ summary: <一句话摘要>
 owner: <DRI>
 created: <YYYY-MM-DD>
 updated: <YYYY-MM-DD>
-state: draft | active | deprecated   # working 文档另加 completed；两轴末态另加 archived
+state: draft | active | deprecated   # working 见 §2.7；archived 仅保留既有兼容
 track: code | agent | engineering-workflow | shared
 ---
 ```
 
 带 `version` 的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）额外填 `version`。
 
-**`archived` 的适用面**（#477）：[[sdd/lifecycle|lifecycle]] 是状态机真相源，它在**两条轴**上都定义了
-`archived`——§2.1 working 文档 4 态的末态（`completed` → `archived` 物理 GC，`plans/**`）与 §4 canonical
-5 态的第 4 态（`active → deprecated → frozen → archived → purge-eligible`）。因此该值对本 schema 合法，
-`scripts/check_frontmatter.py` 的 `STATE_VALUES` 与之对齐。**注意实际写入面很窄**：顶层 `archive/` 不在
-`SCAN_ROOTS` 内（canonical 归档件迁走后就出了本 gate 的判定面），故本 gate 会真正校验到 `archived` 的地方
-只有 `plans/**`——即 [[policies/archive|policies/archive]] §8 的 plan GC 与 [[sdd/lifecycle|lifecycle]]
-§2.3 的「确认废弃可手工标 `archived`（不移文件）」。
+**类型例外**：working 七字段与 INTENT 九字段按 §2.7/§2.8，不用 canonical 通用表强加 domain/version。`archived` 对 working 只兼容历史记录，不再生成归档迁移；canonical 的既有 archive 生命周期不变，INTENT 退役原位保留。状态机器真相源为 [[sdd/lifecycle|lifecycle]]。
 
 **lineage 字段 `supersedes` / `superseded_by` 均为可选**——`scripts/check_frontmatter.py` 的
 `REQUIRED_FIELDS` 不含二者，无 gate 校验它们在 frontmatter 中的存在或取值（`archive.yml` 的
@@ -377,7 +407,7 @@ ADR-022 C.3.4 明写「本 ADR 仅文档化」。**拆分 / 归档 lineage 的�
 
 ### §6.2 类型专属 frontmatter（Code_Side §3.x；ADR-022）
 
-`scripts/check_frontmatter.py` 在 `state: active` 时强制以下类型专属字段（draft / deprecated 不强制）：
+`scripts/check_frontmatter.py` 对下列 canonical 类型在 `state: active/completed` 时强制专属字段（draft/deprecated 不强制）；INTENT 九字段与三态始终按 §2.8 独立校验，working Assessment 不继承 canonical 专属字段：
 
 **RUNBOOK**（Code_Side §3.4.1）：
 
@@ -407,7 +437,7 @@ resolution: open | fixed | wontfix | obsolete   # 处理结果
 
 理由：`priority` + `risk-level` 支持优先级排序与风险审计（`state: active` 时强制 `priority` + `risk-level`）。
 
-**ASSESSMENT**（Code_Side §3.8.1）：
+**Canonical ASSESSMENT**（Code_Side §3.8.1；`plans/**` 的 working Assessment 走 §2.7 轻量 schema）：
 
 ```yaml
 dimensions:                       # 评估维度列表
@@ -579,3 +609,5 @@ POSTMORTEM（`docs/postmortem/[POSTMORTEM]_*.md`），恢复时长超预期 ×2 
 > 发现。判为**刻意的自有 schema**（一致性 29/29 是最强证据），非缺漏，遂改写 A2 并在 §5.1 表下补
 > kernel 例外块，同时按 #475 判例**不硬写计数**、指回文件本体。同批在 [[sdd/lifecycle|lifecycle]]
 > 新增 §4.1 定义 canonical / kernel 侧的 `draft` 入口态，本块的 `state` 语义指向该节。零 state 变更。*
+
+> *v1.8（2026-10-29）：#608 / ADR-043 — 新 working 任务目录、七字段和按文档完成条件；加入 INTENT 正本/九字段/ID/决定基线；取消 working GC，旧布局兼容，canonical 归档保持。*

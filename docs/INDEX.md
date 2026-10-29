@@ -48,16 +48,22 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 
 | Kernel 文档 | 治理范围 |
 |------|------|
-| [[policies/documentation\|policies/documentation]] | 12 类文档分类 / `track` 字段 + 决策树 / PR 门禁 A1-A6 + OB1-OB5 / frontmatter schema + 类型专属 / per-type body 深度（§8）/ AGENTS.md sync-allowlist |
+| [[policies/documentation\|policies/documentation]] | canonical/working 分类、任务目录与 INTENT / `track` 字段 + 决策树 / PR 门禁 A1-A6 + OB1-OB5 / frontmatter schema + 类型专属 / per-type body 深度（§8）/ AGENTS.md sync-allowlist |
 | [[policies/archive\|policies/archive]] | 归档触发判定 / active-path-stability / 状态机 / `archive.yml` manifest schema / ceremony playbook / ai_visibility + G14/G15 / retention |
-| [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 4 态（含 §2.5 retroactive 补落）/ archive 5 态 / 转移触发 + gate 联动 |
+| [[sdd/lifecycle\|sdd/lifecycle]] | capability 9 态 / working-doc 3 态及 archived 历史兼容（含 §2.5 retroactive 补落）/ INTENT 3 态/ archive 5 态 / 转移触发 + gate 联动 |
 | [[sdd/workflows/execution-loop\|sdd/workflows/execution-loop]] | 17-stage 执行闭环 / per-stage prompt 契约 / HITL 规则（必停 + Stage 4 豁免）/ stage→skill 映射 / verification matrix / self-review / §7 post-merge sedimentation |
 | [[sdd/workflows/session-maintenance\|sdd/workflows/session-maintenance]] | Codex 开发协作会话归档摘要 / 推荐标题 / 明确重命名 / 客户端动作边界 |
 | `sdd/adapters/`（[[sdd/adapters/runtime-skill\|runtime-skill]] / [[sdd/adapters/prompt\|prompt]] / [[sdd/adapters/contract\|contract]] / [[sdd/adapters/development-skill\|development-skill]] 等） | in-source SKILL / PROMPT / agent-facing CONTRACT（A10）/ `.agents/` 原生开发技能治理（A7-A14 surface） |
 | [[policies/ai-agent\|policies/ai-agent]] / [[policies/ci-gates\|policies/ci-gates]] | HITL 10-enum + Codex 边界 + pre-flight discipline / CI 门禁映射 + A13 原生保护检查 |
 | [[policies/git-branching\|policies/git-branching]] / [[policies/release\|policies/release]] | 分支类型 / commit 类型 / G1·G2 worktree / PR 模板矩阵（§4）/ SemVer bump 规则 + dev·release tags（M6 X6 把 git **规则**从 `docs/infrastructure/git/` GUIDEs absorb 进 kernel；GUIDEs 保留 operational how-to，不归档）|
 
+## 需求原意（docs/intent/）
+
+[INTENT 入口](intent/README.md)连接正式原意正本、[INTENT 模板](_templates/TEMPLATE_INTENT.md)与 [文档政策](../policies/documentation.md) §2.8。简单单任务可用真实 Issue 原意区为唯一正本；INTENT/INDEX 不复制实时进度。working 新目录与受控命名见同政策 §2.7，旧根布局兼容。
+
 ## 架构决策（decisions/）
+
+[ADR-043 Working/INTENT 决策](../decisions/ADR-043_Working_Doc_And_Intent_Governance.md)记录 #608 已定机制、历史兼容及文档完成/整体接受边界。
 
 [ADR-042 Agent-first交付治理](../decisions/ADR-042_Agent_First_Delivery_Governance.md)及[交付指南](guide/[GUIDE]_Agent_First_Delivery.md)定义任务授权、自主闭环、独立核验及Owner结果式接受；平台/宿主启用及actual/部署/恢复延期分别记录。
 
@@ -136,9 +142,9 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_017_Archive_Trigger_Quantification\|ADR-017]] | Meta v2.2 §5.9 | 4 必触发判定条款已并入 Meta v2.2 §5.9 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_018_Active_Path_Stability\|ADR-018]] | Meta v2.2 §4.4 | active 文件名稳定原则已并入 Meta v2.2 §4.4 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_019_Archive_Naming_Convention\|ADR-019]] | Meta v2.2 §5.11 + [[archive/decisions/superseded/INDEX\|archive INDEX]] | 归档命名 [DEPRECATED]_ 前缀 + frontmatter 规则已落地为日常实践 |
-| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | plans/ 4 态机已并入 Meta v2.2 §5.11；mj-agent-flow-post-merge SKILL Step 9 AC满足/成果可用/Owner明确接受后active→completed |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_021_Working_Doc_Lifecycle\|ADR-021]] | Meta v2.2 §5.11 | 历史 working 生命周期决策；活动语义见 lifecycle §2 与 ADR-043，按文档类型完成并原位保留 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_022_P2_Framework_Enhancements\|ADR-022]] | Code_Side v1.1 §3.4-§3.8 + Meta v2.2 §3.7/§3.8/§4.5/§4.6 | 5 项 framework 增强已并入对应 STANDARD 章节 |
-| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | `scripts/find_stale_docs.py` + `scripts/find_old_completed_plans.py` 注释 | 实际 scripts 已落地 |
+| [[archive/decisions/superseded/[DEPRECATED]_[ADR]_023_Stale_Doc_And_Plan_GC_Infra\|ADR-023]] | 历史脚本来源 | 陈旧 canonical 检测保持；working GC 候选检测已由 #608 / ADR-043 退出活动链 |
 | [[archive/decisions/superseded/[DEPRECATED]_[ADR]_025_Multi_Environment_And_LLM_Provider_Abstraction\|ADR-025]] | [[decisions/ADR-026_Multi_Environment_Compose_Profile\|ADR-026]] + [[decisions/ADR-027_LLM_Provider_Abstraction\|ADR-027]] + [[decisions/ADR-028_MCP_Server_Inventory_And_Governance\|ADR-028]] | 多 domain bundle ADR 拆分为 3 个焦点 ADR |
 
 ## 模板（docs/\_templates/）
@@ -152,13 +158,16 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 | `TEMPLATE_CONTRACT.md` | 工具/服务契约骨架 |
 | `TEMPLATE_RUNBOOK.md` | RUNBOOK 骨架；body 七段（TL;DR / Trigger / Pre-checks / Steps / Verification / Rollback / Post-mortem trigger）；frontmatter 含 ADR-022 C.3.1 `last-verified`（state: active 时强制）；规格见 [[policies/documentation\|documentation policy]] §8.2 |
 | `TEMPLATE_SPEC.md` | SPEC 骨架；body §0 + 九段（Context / Scope / Contract / Configuration / Error handling / Rollback / Verification / Observability / Open questions）；§0 任务类型识别按 [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|SPEC Authoring GUIDE]] §3 决策树 + §4 8 类裁剪规则 |
-| `TEMPLATE_REPO_SCAN_RESULT.md` | HITL Stage 3 Repo Scan Result 输出结构（对话输出，**不**写文件）；与 `mj-agent-flow-repo-scan` SKILL Output Format 一致；含 8-dim Evidence Map + 10 行 Documentation Decision + Stale Doc Reverse Scan + Plan Verdict + HITL Questions |
-| `TEMPLATE_PLAN.md` | Agent-first任务Plan：接受基线/操作授权分记、任务依赖/PR模式、验证验收包、检查点及Owner接受状态 |
+| `TEMPLATE_REPO_SCAN_RESULT.md` | Stage 3 默认对话输出；明确保存则真实 working 类型；含 8-dim 事实/原意布局检查、按实际对象文档决策与反扫/Plan结论 |
+| `TEMPLATE_PLAN.md` | 任务目录主Plan：draft默认、完整基线/承担范围、授权、依赖风险、逐AC版本环境证据、独立使用七题与Owner接受 |
+| `TEMPLATE_INTENT.md` | 独立canonical原意正本：九字段、五正文、来源责任和四类决定、稳定ID与可恢复接受基线 |
+| `TEMPLATE_INTAKE.md` | working需求受理：可先于或无Plan，原意适配、范围/AC/授权/未决与自身交付条件 |
+| `TEMPLATE_REPORT.md` | working证据结论报告：用途命名、真实版本环境/逐AC/限制；文档完成与整体接受分开 |
 | `TEMPLATE_HITL_STAGE.md` | 执行闭环单 stage prompt 模板；匹配通用结构（Task / Reference Docs / Skill Hint / Rules / Output）；与 [[sdd/workflows/execution-loop\|执行闭环 workflow]] §2 配套 —— per-stage prompt **本体**归 `.agents/skills/mj-agent-*` SKILL（kernel 明写不 re-port），execution-loop 只持 stage 骨架（§1）+ stage→skill 映射（§4） |
 | `TEMPLATE_WORKFLOW_SKILL.md` | engineering-workflow track 专用 SKILL.md 模板；ADR-013 native 2 字段 schema + body 风格（Overview / Workflow / 等灵活段名）；用于 `.agents/skills/mj-agent-<group>-<verb>/SKILL.md` 起草；规格见 [[decisions/ADR-016_In_Tree_Claude_Skills_Ecosystem\|ADR-016]] |
 | `TEMPLATE_POSTMORTEM.md` | POSTMORTEM 骨架；事件 / 异常 / 失败复盘；body 八段（TL;DR / 事件摘要 / 影响范围 / 时间线 / 根因 5-Whys / 行动项 / 检测响应评估 / 经验教训 / 数据边界专属审计）；mj-agent 扩展含 §8 ADR-006/009 4 层 + biz_dwd allowlist 审计；frontmatter 含 ADR-022 C.3.1 字段（severity/incident-date/resolved-at）；规格见 [[policies/documentation\|documentation policy]] §8.0 + §6.2 |
 | `TEMPLATE_ISSUE.md` | local [ISSUE] 骨架；延后处理问题 / bug 待修 / 优化候选；body 八段（TL;DR / 问题摘要 / 发现上下文证据 / 问题分析 / 影响评估 / 修复方向 / 验收标准 / 验证计划 双段 / 待确认问题）；含风味识别（A/B/C） + §3.1真实语义风险/实质决定字段；frontmatter 含 ADR-022 C.3.1 字段（priority/risk-level/resolution）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
-| `TEMPLATE_ASSESSMENT.md` | ASSESSMENT 骨架；优化 / 改造后评估对比；body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
+| `TEMPLATE_ASSESSMENT.md` | ASSESSMENT 分支：working七字段轻量评估与canonical既有深度；优化 / 改造后评估对比；canonical body 八维度（D1 架构 / D2 性能 / D3 质量与流程 / D4 数据一致性 / D5 资源 / D6 in-source canonical 行为变化 mj-agent 专属 / D7 数据边界合规 mj-agent 专属 / D8 工程编排技能体系覆盖 mj-agent 专属）；frontmatter 含 ADR-022 C.3.1 字段（dimensions/period）；规格见 [[policies/documentation\|documentation policy]] §6.2 |
 | `TEMPLATE_EVAL.md` | EVAL 骨架（Track B 自有；上游业务系统 无对位）；body 八段（Purpose / Eval Design / Dataset / Judges / Baseline / Regression Criteria / Run History / Open Questions）+ 4 子类（outcome/trajectory/component/integration）+ frontmatter 含 eval_kind / target_skill / dataset_path / baseline_metric+value / regression_threshold / judges；规格见 [[decisions/ADR-024_Eval_Framework_Spec\|ADR-024 EVAL Framework Spec]]（Phase 2 EVAL framework 落地后 A8/A11 强制） |
 
 ---
@@ -199,8 +208,8 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 
 | 子目录 | 摘要 |
 |---|---|
-| [[infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范 |
-| [[infrastructure/cicd/INDEX\|infrastructure/cicd/]] | CI/CD 与发布运维 RUNBOOK 入口；首份为 Release Process（Phase 0.5 Minimal 起步版） |
+| [[./infrastructure/git/INDEX\|infrastructure/git/]] | 4 份 GUIDE 操作化 commit / 分支 / 推送 / PR 规范 |
+| [[./infrastructure/cicd/INDEX\|infrastructure/cicd/]] | CI/CD 与发布运维 RUNBOOK 入口；首份为 Release Process（Phase 0.5 Minimal 起步版） |
 
 ---
 
@@ -208,7 +217,7 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 
 | 子目录 | 摘要 |
 |---|---|
-| [[guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；含 `[GUIDE]_Quick_Start_Setup.md`（5 分钟赶时间版）+ `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径）+ `[GUIDE]_Analyst_Day_One.md`（分析师 Day-1 试用闭环） |
+| [[./guide/INDEX\|guide/]] | 面向开发者与运维的上手 / 操作 GUIDE；含 `[GUIDE]_Quick_Start_Setup.md`（5 分钟赶时间版）+ `[GUIDE]_Developer_Onboarding.md`（mj-agent 新成员端到端上手路径）+ `[GUIDE]_Analyst_Day_One.md`（分析师 Day-1 试用闭环） |
 | [[guide/[GUIDE]_MJ_Agent_SPEC_Authoring\|MJ-Agent SPEC Authoring Guide v0.1]] | mj-agent SPEC 撰写指南；§3 任务类型识别决策树 + §4 8 类任务详解（Python 应用 / SQL guardrail / In-source canonical / Docker compose / CI/CD scripts / Config secrets / Engineering-workflow infra / 文档治理）+ §5 与 HITL_Prompt 短码映射 + §6 与 §3.1 必停规则关系；HITL Stage 6 SPEC 起草必读 |
 | [离线EVAL真实观测包材料契约](guide/[GUIDE]_Offline_EVAL_Actual_Material_Contract.md) | #582 T-007d仅文档；七输入/附属材料、两类摘要、独立审阅、Owner决定及actual延期门禁 |
 
@@ -219,7 +228,7 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 | 术语来源 | 摘要 |
 |---|---|
 | [项目根 GLOSSARY](../GLOSSARY.md) | mj-agent 全项目术语索引；A-W 字母分段；约 40 术语 + 「定义 + 相关术语」二字段；专题深度词典在 `docs/glossary/` |
-| [[glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] | docs/glossary/ 专题词典之一；mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
+| [[./glossary/upstream_business_warehouse\|上游业务系统 / Upstream Business Warehouse]] | docs/glossary/ 专题词典之一；mj-agent prose 中描述外部业务库的中性术语；PR-118 D2 决策；与代码层 literal `mj-system-backend-network` / `MJ_AGENT_PG_BIZ_*` env var 等的边界 |
 
 ---
 
