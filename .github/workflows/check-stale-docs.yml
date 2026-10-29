@@ -2,9 +2,9 @@ name: check-stale-docs (warning mode)
 
 # Warning-mode stale doc reference detection. Provenance: archived ADR-023
 # (Phase D-2), archived 2026-05-11; per the docs/INDEX.md archive table its
-# content lives on in the comments of scripts/find_stale_docs.py and
-# scripts/find_old_completed_plans.py -- this workflow is not one of those
-# designated carriers, so it cites the ADR as archived rather than live.
+# stale-reference rationale lives on in scripts/find_stale_docs.py. The
+# separate working GC candidate detector was retired by Issue #608;
+# this workflow keeps checking stale references and does not perform GC.
 #
 # Posture: warning is this gate's long-term registered stance
 # (sdd/gates.md §2, `warning@ci`); a blocking flip is NOT pursued (#440).

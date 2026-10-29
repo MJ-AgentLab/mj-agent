@@ -97,6 +97,11 @@ jobs:
         # for schema; non-zero exit on any violation.
         run: uv run python scripts/check_frontmatter.py
 
+      - name: Working task folders and document-relative links
+        # Issue #608: new task layout, one main Plan per folder, and actual
+        # deep relative link resolution. Historical root files stay in place.
+        run: uv run python scripts/check_working_docs.py
+
       - name: Wikilinks (canonical docs)
         # Belt-and-suspenders alongside the frontmatter validator: catches
         # broken `[[...]]` references that mypy / ruff / pytest can't see.
@@ -150,13 +155,6 @@ jobs:
         # + glossary exemption. See scripts/check_no_cross_repo_refs.py
         # for the allow-list and rationale.
         run: uv run python scripts/check_no_cross_repo_refs.py
-
-      - name: Old completed plans (warning-mode GC候选)
-        # Plan §3.2 修订 5 / archived ADR-023. Surfaces plans/[PLAN]_*.md
-        # with state: completed AND updated >= 180 days ago — candidates for
-        # Phase D 物理归档 (plans/archive/ subdir; per Meta v2.2 §5.11.5).
-        # Always exits 0 (warning-mode); manual maintainer review.
-        run: uv run python scripts/find_old_completed_plans.py
 
       # ===== Spec-Anchored Refactor G1/G2/G9 — Phase M3 real impl + Stage C flip =====
       # M3 real impl landed via M3-FU-G1G2G9-IMPL; Stage C C-a flipped to BLOCKING

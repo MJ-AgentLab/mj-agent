@@ -17,10 +17,12 @@ to catch frontmatter regressions at PR time instead of relying on the
 honor system.
 
 Scope:
-- Cross-cutting requirements only (type, summary, owner, created,
-  updated, state, track). Per-type rules (e.g. SPEC needs version,
-  ADR needs decision, EVAL needs dataset_path) are left for Phase 2
-  expansion when the team wants stricter enforcement.
+- Shared seven-field metadata, existing canonical type-specific requirements,
+  the lightweight working schema, and the formal INTENT nine-field schema.
+- New working task folders have dedicated type/state/date checks; historical
+  root files keep their existing schema. INTENT IDs are checked collection-wide
+  across draft, active and deprecated records. Structure does not prove a
+  source, acceptance decision or the truth of a GitHub association.
 - Every `.md` under a scan root is in scope. Exemptions are explicit and
   live in `SKIP_PATH_PARTS` — currently only `docs/_templates/`, whose
   files are placeholder scaffolds rather than real canonical docs.
@@ -36,7 +38,11 @@ explicit, reviewable edit to `SKIP_PATH_PARTS`.
 
 from __future__ import annotations
 
+import os
+import re
+import stat
 import sys
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
@@ -74,19 +80,88 @@ FORBIDDEN_FIELDS: frozenset[str] = frozenset({"derives_from"})
 TRACK_VALUES: frozenset[str] = frozenset(
     {"code", "agent", "engineering-workflow", "shared"}
 )
-# Anchored on `sdd/lifecycle.md`, which declares itself the state-machine truth source and
-# defines `archived` on BOTH of its axes: §2.1 working-doc 4-state (draft / active /
-# completed / archived, scoped to `plans/**`) and §4 canonical 5-state (active → deprecated
-# → frozen → archived → purge-eligible).
-#
-# Omitting `archived` here made the documented archive ceremony self-defeating (#477):
-# `policies/archive.md` §8 step 5 tells the operator to write `state: archived` into a
-# `plans/**` doc, and `plans/` is inside SCAN_ROOTS, so this gate — which is blocking —
-# would reject the very edit the kernel prescribes. No file used the value yet, so the
-# breakage was latent rather than live.
+# Broad historical/canonical compatibility. New working documents and INTENT
+# narrow this vocabulary below; `archived` remains readable on historical roots.
 STATE_VALUES: frozenset[str] = frozenset(
     {"draft", "active", "deprecated", "completed", "archived"}
 )
+WORKING_TYPES = frozenset({"plan", "intake", "report", "assessment"})
+WORKING_STATES = frozenset({"draft", "active", "completed"})
+INTENT_STATES = frozenset({"draft", "active", "deprecated"})
+INTENT_ID_RE = re.compile(r"INT-([0-9]{4})-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})\Z")
+INTENT_FILE_RE = re.compile(
+    r"\[INTENT\]_(INT-[0-9]{4}-[0-9]{3})_[A-Za-z][A-Za-z0-9_]*\.md\Z"
+)
+
+
+def _valid_date(value: Any) -> date | None:
+    """Accept an ISO calendar date, including PyYAML's native date scalar."""
+    if isinstance(value, datetime):
+        return None
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def _special_schema(meta: dict[str, Any], rel_path: Path) -> list[str]:
+    """Validate new working and formal INTENT schemas, without claiming acceptance."""
+    problems: list[str] = []
+    nested_working = len(rel_path.parts) >= 3 and rel_path.parts[0] == "plans"
+    intent = meta.get("type") == "intent" or rel_path.name.startswith("[INTENT]")
+    if not nested_working and not intent:
+        return problems  # root-level working artifacts retain their historical schema
+    for field in sorted(REQUIRED_FIELDS | ({"domain", "intent-id"} if intent else set())):
+        if field in meta and (meta[field] is None or not str(meta[field]).strip()):
+            problems.append(f"required field `{field}` must be nonempty")
+        elif field in meta and field not in {"created", "updated"} and not isinstance(meta[field], str):
+            problems.append(f"required field `{field}` must be a string")
+    dates: dict[str, date] = {}
+    for field in ("created", "updated"):
+        parsed = _valid_date(meta.get(field))
+        if parsed is None:
+            problems.append(f"`{field}` must be a valid YYYY-MM-DD calendar date")
+        else:
+            dates[field] = parsed
+    if dates.keys() >= {"created", "updated"} and dates["updated"] < dates["created"]:
+        problems.append("`updated` must not precede `created`")
+    if intent:
+        for field in ("domain", "intent-id"):
+            if field not in meta:
+                problems.append(f"missing intent-specific field `{field}`")
+        if meta.get("type") != "intent":
+            problems.append("formal INTENT must declare type='intent'")
+        if not isinstance(meta.get("state"), str) or meta["state"] not in INTENT_STATES:
+            problems.append(f"INTENT state must be one of {sorted(INTENT_STATES)}")
+        match = INTENT_FILE_RE.fullmatch(rel_path.name)
+        if rel_path.parent != Path("docs/intent") or not match:
+            problems.append("formal INTENT must use docs/intent/[INTENT]_INT-YYYY-NNN_<English_Topic>.md")
+        identifier = meta.get("intent-id")
+        id_match = INTENT_ID_RE.fullmatch(identifier) if isinstance(identifier, str) else None
+        if not id_match:
+            problems.append("`intent-id` must be INT-YYYY-NNN with sequence 001–999")
+        elif "created" in dates and int(id_match[1]) != dates["created"].year:
+            problems.append("intent ID year must equal its first creation year (`created`)")
+        if match and match[1] != identifier:
+            problems.append("INTENT filename ID must equal `intent-id`")
+    if nested_working:
+        if not isinstance(meta.get("type"), str) or meta["type"] not in WORKING_TYPES:
+            problems.append(f"working type must be one of {sorted(WORKING_TYPES)}")
+        if not isinstance(meta.get("state"), str) or meta["state"] not in WORKING_STATES:
+            problems.append(f"new working state must be one of {sorted(WORKING_STATES)}; archived is historical only")
+        for prefix in ("PLAN", "INTAKE", "REPORT", "ASSESSMENT"):
+            if rel_path.name.startswith(f"[{prefix}]"):
+                if not rel_path.name.startswith(f"[{prefix}]_"):
+                    problems.append(f"filename [{prefix}] prefix must be followed by an underscore")
+                if meta.get("type") != prefix.lower():
+                    problems.append(f"filename [{prefix}] prefix must match type={prefix.lower()!r}")
+        if meta.get("type") == "plan" and not rel_path.name.startswith("[PLAN]_"):
+            problems.append("a main Plan must use the [PLAN]_<topic>.md filename")
+    return problems
 
 
 def is_skipped(rel_path: Path) -> bool:
@@ -129,12 +204,12 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
 
     # 2. Enum value checks (only when the field is present; missing reported above).
     track = meta.get("track")
-    if track is not None and track not in TRACK_VALUES:
+    if track is not None and (not isinstance(track, str) or track not in TRACK_VALUES):
         violations.append(
             f"track={track!r} not in {sorted(TRACK_VALUES)}"
         )
     state = meta.get("state")
-    if state is not None and state not in STATE_VALUES:
+    if state is not None and (not isinstance(state, str) or state not in STATE_VALUES):
         violations.append(
             f"state={state!r} not in {sorted(STATE_VALUES)}"
         )
@@ -160,7 +235,8 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
         ),
     }
     type_value = meta.get("type")
-    if state in ("active", "completed") and isinstance(type_value, str):
+    working = rel_path.parts[0:1] == ("plans",)
+    if state in ("active", "completed") and isinstance(type_value, str) and not working:
         for field in type_specific_required.get(type_value, ()):
             if field not in meta:
                 violations.append(
@@ -168,6 +244,7 @@ def validate(meta: dict[str, Any], rel_path: Path) -> list[str]:
                     f"(required for type={type_value!r} when state={state!r}; ADR-022)"
                 )
 
+    violations.extend(_special_schema(meta, rel_path))
     return violations
 
 
@@ -208,22 +285,48 @@ def find_scanned_docs(repo_root: Path) -> list[Path]:
     out: list[Path] = []
     for root in SCAN_ROOTS:
         abs_root = repo_root / root
-        if not abs_root.exists():
+        if not abs_root.exists() and not abs_root.is_symlink():
             continue
-        for md in abs_root.rglob("*.md"):
-            if not md.is_file():  # a directory literally named `*.md` is not a doc
-                continue
-            rel = md.relative_to(repo_root)
-            if is_skipped(rel) or retired_client_asset(rel):
-                continue
-            out.append(rel)
+        for level in range(1, len(root.parts) + 1):
+            _reject_reparse(repo_root.joinpath(*root.parts[:level]))
+        for base, directories, files in os.walk(abs_root, onerror=_raise_scan_error, followlinks=False):
+            for name in directories[:]:
+                path = Path(base) / name
+                rel = path.relative_to(repo_root)
+                if is_skipped(rel) or retired_client_asset(rel):
+                    directories.remove(name)
+                else:
+                    _reject_reparse(path)
+            for name in files:
+                md = Path(base) / name
+                rel = md.relative_to(repo_root)
+                if md.suffix != ".md" or is_skipped(rel) or retired_client_asset(rel):
+                    continue
+                _reject_reparse(md)
+                if md.is_file():
+                    out.append(rel)
     return sorted(out)
+
+
+def _raise_scan_error(error: OSError) -> None:
+    raise error
+
+
+def _reject_reparse(path: Path) -> None:
+    info = path.lstat()
+    if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400):
+        raise ValueError(f"symlink/reparse document path rejected: {path}")
 
 
 def check(repo_root: Path) -> dict[Path, list[str]]:
     """Return ``{rel: violations}`` for every scanned doc that fails the schema."""
     bad: dict[Path, list[str]] = {}
-    for rel in find_scanned_docs(repo_root):
+    try:
+        scanned = find_scanned_docs(repo_root)
+    except (OSError, ValueError) as exc:
+        return {Path("."): [f"document collection failed: {exc}"]}
+    identifiers: dict[str, list[Path]] = {}
+    for rel in scanned:
         path = repo_root / rel
         try:
             post = frontmatter.load(path)
@@ -236,14 +339,25 @@ def check(repo_root: Path) -> dict[Path, list[str]]:
             bad[rel] = [_missing_frontmatter_message(path)]
             continue
         violations = validate(post.metadata, rel)
+        if post.metadata.get("type") == "intent" or rel.name.startswith("[INTENT]"):
+            identifier = post.metadata.get("intent-id")
+            if isinstance(identifier, str) and identifier:
+                identifiers.setdefault(identifier, []).append(rel)
         if violations:
             bad[rel] = violations
+    for identifier, paths in identifiers.items():
+        if len(paths) > 1:
+            for path in paths:
+                bad.setdefault(path, []).append(f"duplicate intent-id {identifier!r}: {', '.join(p.as_posix() for p in paths)}")
     return bad
 
 
 def run(repo_root: Path) -> int:
     """Validate every scanned doc; print a report; return the exit code (0 ok / 1 bad)."""
-    total = len(find_scanned_docs(repo_root))
+    try:
+        total: int | str = len(find_scanned_docs(repo_root))
+    except (OSError, ValueError):
+        total = "UNKNOWN"
     bad = check(repo_root)
 
     if not bad:

@@ -162,3 +162,35 @@ class TestScanRootFileLinks:
 
     def test_absent_root_file_is_skipped(self, tmp_path: Path) -> None:
         assert scan_root_file_links(tmp_path, ROOT_FILES) == []
+
+
+class TestDocumentRelativeLinks:
+    def test_nested_plan_uses_its_own_directory(self, tmp_path: Path) -> None:
+        _write(tmp_path, "docs/intent/[INTENT]_INT-2026-001_Topic.md", "intent")
+        rel = Path("plans/I608-topic/[PLAN]_I608-topic.md")
+        text = "[intent](../../docs/intent/[INTENT]_INT-2026-001_Topic.md)"
+        assert scan_links(tmp_path, rel, text) == []
+
+    def test_root_relative_markdown_does_not_mask_broken_deep_link(self, tmp_path: Path) -> None:
+        _write(tmp_path, "docs/spec.md", "spec")
+        assert scan_links(tmp_path, Path("plans/topic/[PLAN]_topic.md"), "[bad](docs/spec.md)")
+
+    def test_nested_shared_report_and_child_plan(self, tmp_path: Path) -> None:
+        _write(tmp_path, "plans/other/[PLAN]_other.md", "plan")
+        _write(tmp_path, "plans/topic/[REPORT]_review.md", "report")
+        text = "[child](../other/[PLAN]_other.md) [report](./[REPORT]_review.md)"
+        assert scan_links(tmp_path, Path("plans/topic/[PLAN]_topic.md"), text) == []
+
+    def test_wiki_root_path_and_explicit_relative_path(self, tmp_path: Path) -> None:
+        _write(tmp_path, "policies/documentation.md", "policy")
+        text = "[[policies/documentation|policy]] [[../../policies/documentation|policy]]"
+        assert scan_links(tmp_path, Path("plans/topic/[PLAN]_topic.md"), text) == []
+
+    def test_percent_encoded_filename(self, tmp_path: Path) -> None:
+        _write(tmp_path, "plans/topic/Report notes.md", "report")
+        assert scan_links(tmp_path, Path("plans/topic/[PLAN]_topic.md"), "[report](Report%20notes.md)") == []
+
+    def test_link_outside_repository_does_not_resolve(self, tmp_path: Path) -> None:
+        outside = tmp_path.parent / (tmp_path.name + "-outside.md")
+        outside.write_text("outside", encoding="utf-8")
+        assert scan_links(tmp_path, Path("README.md"), f"[outside](../{outside.name})")

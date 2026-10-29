@@ -249,3 +249,89 @@ class TestRealTree:
         }
         assert set(find_scanned_docs(REPO_ROOT)) == census
         assert census, "sanity: the live tree must contain canonical docs"
+
+
+class TestWorkingAndIntentSchema:
+    def test_working_assessment_uses_seven_fields(self) -> None:
+        assert validate(_meta(type="assessment"), Path("plans/topic/[ASSESSMENT]_risks.md")) == []
+
+    @pytest.mark.parametrize("state", ["draft", "active", "completed"])
+    def test_working_report_states(self, state: str) -> None:
+        assert validate(_meta(type="report", state=state), Path("plans/topic/[REPORT]_review.md")) == []
+
+    @pytest.mark.parametrize("state", ["deprecated", "archived"])
+    def test_new_working_cannot_use_canonical_or_historical_state(self, state: str) -> None:
+        assert validate(_meta(type="report", state=state), Path("plans/topic/[REPORT]_review.md"))
+
+    def test_new_working_type_matches_filename(self) -> None:
+        assert validate(_meta(type="report"), Path("plans/topic/[PLAN]_topic.md"))
+
+    def test_malformed_bracket_prefix_cannot_hide_a_plan(self) -> None:
+        assert validate(_meta(type="report"), Path("plans/topic/[PLAN]topic.md"))
+
+    @pytest.mark.parametrize("field", ["created", "updated"])
+    @pytest.mark.parametrize("value", ["2026-02-30", "2026-1-2", "today", None, 20261029])
+    def test_new_working_requires_valid_dates(self, field: str, value: object) -> None:
+        assert validate(_meta(type="plan", **{field: value}), Path("plans/topic/[PLAN]_topic.md"))
+
+    def test_intent_requires_all_nine_fields_even_in_draft(self) -> None:
+        violations = validate(_meta(type="intent", state="draft"), Path("docs/intent/[INTENT]_INT-2026-001_Topic.md"))
+        assert any("domain" in v for v in violations)
+        assert any("intent-id" in v for v in violations)
+
+    @pytest.mark.parametrize("state", ["draft", "active", "deprecated"])
+    def test_intent_has_independent_state_machine(self, state: str) -> None:
+        meta = _meta(type="intent", state=state, domain="engineering", **{"intent-id": "INT-2026-001"})
+        assert validate(meta, Path("docs/intent/[INTENT]_INT-2026-001_Topic.md")) == []
+
+    @pytest.mark.parametrize("state", ["completed", "archived"])
+    def test_intent_rejects_working_states(self, state: str) -> None:
+        meta = _meta(type="intent", state=state, domain="engineering", **{"intent-id": "INT-2026-001"})
+        assert validate(meta, Path("docs/intent/[INTENT]_INT-2026-001_Topic.md"))
+
+    @pytest.mark.parametrize("rel", ["plans/topic/[INTENT]_INT-2026-001_Topic.md", "docs/intent/deep/[INTENT]_INT-2026-001_Topic.md", "docs/intent/intent.md", "docs/intent/[INTENT]_INT-2026-002_Topic.md"])
+    def test_intent_path_and_filename_id(self, rel: str) -> None:
+        meta = _meta(type="intent", domain="engineering", **{"intent-id": "INT-2026-001"})
+        assert validate(meta, Path(rel))
+
+    @pytest.mark.parametrize("intent_id", ["INT-2026-000", "INT-2026-1000", "INT-2026-01", "INT-2025-001", "int-2026-001"])
+    def test_intent_id_first_year_and_sequence(self, intent_id: str) -> None:
+        meta = _meta(type="intent", domain="engineering", **{"intent-id": intent_id})
+        assert validate(meta, Path(f"docs/intent/[INTENT]_{intent_id}_Topic.md"))
+
+    def test_intent_updated_in_later_year_keeps_id(self) -> None:
+        meta = _meta(type="intent", domain="engineering", updated="2027-01-01", **{"intent-id": "INT-2026-001"})
+        assert validate(meta, Path("docs/intent/[INTENT]_INT-2026-001_Topic.md")) == []
+
+    def test_malformed_intent_prefix_cannot_evade_special_schema(self) -> None:
+        assert validate(_meta(type="guide"), Path("docs/intent/[INTENT]INT-2026-001_Topic.md"))
+
+    def test_deprecated_intent_still_reserves_id(self, tmp_path: Path) -> None:
+        fm = VALID_FM.replace("type: standard", "type: intent\ndomain: engineering\nintent-id: INT-2026-001")
+        first = Path("docs/intent/[INTENT]_INT-2026-001_First.md")
+        second = Path("docs/intent/[INTENT]_INT-2026-001_Second.md")
+        _write(tmp_path, str(first), fm.replace("state: active", "state: deprecated"))
+        _write(tmp_path, str(second), fm)
+        violations = check(tmp_path)
+        assert first in violations and second in violations
+        assert any("duplicate" in v for v in violations[second])
+
+    def test_intent_collection_read_failure_is_not_pass(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        _write(tmp_path, "docs/intent/[INTENT]_INT-2026-001_Topic.md", VALID_FM)
+        monkeypatch.setattr("scripts.check_frontmatter.frontmatter.load", lambda _: (_ for _ in ()).throw(OSError("cannot read")))
+        assert check(tmp_path)
+
+    @pytest.mark.parametrize("field", ["type", "state", "track", "owner", "summary"])
+    def test_malformed_field_types_are_violations(self, field: str) -> None:
+        meta = _meta(type="plan", **({field: []} if field != "type" else {}))
+        if field == "type":
+            meta["type"] = []
+        assert validate(meta, Path("plans/topic/[PLAN]_topic.md"))
+
+    def test_collection_iteration_failure_is_not_pass(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        _write(tmp_path, "docs/intent/[INTENT]_INT-2026-001_Topic.md", VALID_FM)
+        def unavailable(*args: object, **kwargs: object):
+            raise PermissionError("collection unavailable")
+        monkeypatch.setattr("scripts.check_frontmatter.os.walk", unavailable)
+        assert check(tmp_path)
+        assert run(tmp_path) == 1
