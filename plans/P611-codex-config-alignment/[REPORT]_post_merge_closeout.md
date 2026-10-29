@@ -44,9 +44,9 @@ GitHub连接器读取真实PR、reviews和conversation；正常git fetch后核Gi
 
 来源版本的4项GitHub工作流已通过，Python离线1943 passed/2 skipped/30 subtests、原Node10 passed的记录仍有效；merge与来源完整tree相同，不冒充对新环境重跑了全量Python。当前develop安装后另跑Node10项。两项历史SKIP及原13处跨仓引用warning均保持，不计为运行成功。
 
-## 清理清单与保留来源
+## 清理清单（批准前）与保留来源
 
-仅准备以下原任务对象，尚未执行删除：
+以下保存批准前清单；其后Q5已明确授权并完成两个本地对象删除，执行结果见后文：
 
 - 工作树D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment。
 - 本地分支maintain/codex-config-alignment，tip ce871c4，已合入db4a85d。
@@ -54,7 +54,7 @@ GitHub连接器读取真实PR、reviews和conversation；正常git fetch后核Gi
 
 只读盘点为1218跟踪文件、无跟踪改动、0未跟踪、4066忽略文件，921目录内未见重解析点，index.lock不存在。忽略内容不是可丢弃依据：.chainlit的24文件与.serena的3文件已不透明本地复制保留到仓外postmerge-preserved-local-state，27项相对路径与长度相同、合计375225 bytes；未读取正文给模型、未取秘密摘要，也不以长度相同证明内容校验。其他4039项为npm依赖、公开词表缓存、Python字节码和工具缓存，可由锁文件及正常工具重建。
 
-当前Serena会话已切到新收尾工作树；路径引用检查未见其他进程命令行引用原工作树，但这不是穷尽打开句柄的证明。具名删除批准到达后仍需复核本清单、占用和备份；只通过普通git worktree remove及git branch -d执行，发生拒绝保留原错，不默认force或改用递归删除。
+当前Serena会话已切到新收尾工作树；路径引用检查未见其他进程命令行引用原工作树，但这不是穷尽打开句柄的证明。Q5批准后已复核本清单、占用和备份，通过普通git worktree remove及git branch -d完成，未force或改用递归删除；当时未遇宿主技术拒绝。
 
 ## 不触发与后续边界
 
@@ -66,10 +66,16 @@ CHANGELOG已在原PR记录MCP-only/SSH变化，本轮只做事实记录，无需
 
 ## 交付状态与下一步
 
-本轮frontmatter 168文档、working目录/深链接、A4 strict（0 unresolved/0 archive-ref）、loop 21节及git diff --check均通过；develop当前native profile/skills/consumers为STATIC_PASS。本报告事实/动作/限制记录与文档交付条件已满足，据此completed；文档更新仍按实际提交/PR状态报告，不预记未来接受或删除成功。主Plan现依本轮Q4的真实准确版本接受及完成条件调整标completed，未测项继续DEFERRED/NOT_TESTED；清理另按具体对象授权，Q5仍待答。
+本轮frontmatter 168文档、working目录/深链接、A4 strict（0 unresolved/0 archive-ref）、loop 21节及git diff --check均通过；develop当前native profile/skills/consumers为STATIC_PASS。本报告事实/动作/限制记录与文档交付条件已满足，据此completed；文档更新仍按实际提交/PR状态报告，不预记未来接受或删除成功。主Plan现依本轮Q4的真实准确版本接受及完成条件调整标completed，未测项继续DEFERRED/NOT_TESTED；清理已按Q5具名本地范围完成，远端与保留来源保持。
 
 仓外证据目录：D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/codex-config-alignment/2026-10-29/。包括publication-checkpoint、latest-ci-observation、postmerge-app-daily-audit、postmerge-cleanup-inventory及postmerge-preserved-local-state/manifest.metadata.json。
 
 ## Q4真实接受与未完成事项延期
 
-本会话Q4已向Owner明确来源ce871c4／merge db4a85d完整tree相同，并披露当前会话缺SSH工具、真实宿主发现/主机认证/独立复核未完成与平台未见Approve。Owner明确选择“接受当前配置/离线版本，明确延期上述事项并完成 Plan”，因此本轮完成条件调整与准确版本接受均真实发生。主Plan在配置/离线AC与可用成果满足的范围completed；没有将延期项计作PASS，也不追溯补造平台审核。Q5本地清理尚未答复，原目录/分支未删除；两端远程和备份保持。
+本会话Q4已向Owner明确来源ce871c4／merge db4a85d完整tree相同，并披露当前会话缺SSH工具、真实宿主发现/主机认证/独立复核未完成与平台未见Approve。Owner明确选择“接受当前配置/离线版本，明确延期上述事项并完成 Plan”，因此本轮完成条件调整与准确版本接受均真实发生。主Plan在配置/离线AC与可用成果满足的范围completed；没有将延期项计作PASS，也不追溯补造平台审核。Q5随后另行明确批准仅本地清理，实际结果如下；两端远程和备份保持。
+
+## Q5本地清理已执行
+
+Owner本会话Q5明确“授权上述仅本地清理，保留备份及两端远程（推荐）”。执行前重新核绝对目标、tip、1218/0/4066清单、27项本地保留、重解析点/index锁及路径引用；首次NUL尾空项计数断言失败发生在任何删除前，修正格式处理后同一清单通过，未改变授权或绕实际拒绝。
+
+2026-10-29 17:33:37 Asia/Taipei，普通git worktree remove及git branch -d均exit0；原工作树目录/注册及本地分支均DELETED。未执行远程删除，两端原同名branch实时读回均ce871c4，保留。27文件保留、新收尾worktree、develop及其他任务保持，实际恢复tip/返回码/后置核对在postmerge-local-delete-result.json。成功项不重复；本报告与主Plan状态文档交付仍以实际新PR版本为准，不预记其审核或合并。

@@ -63,7 +63,7 @@ Owner明确“#611 PR 已合并，继续后续工作”。平台核PR611已于20
 
 正常fetch/ff-only后本地develop与origin均db4a85d，原.playwright-mcp/未跟踪目录保持；Gitee镜像从已核祖先e195bfe正常快进15提交并ls-remote读回db4a85d，未force或改remote。develop中MCP依赖按锁安装102包，Node本地协议/模拟10 passed，--check列9入口和五组变量存在，仅静态就绪；当前会话工具清单没有SSH工具，实际宿主发现/主机认证未测。新daily后台audit再次确认App/installation无Workflows write，token撤销CONFIRMED。
 
-本轮事实文档在documentation/611-post-merge-closeout新worktree维护，base=db4a85d，不向原已合并分支追加实现。详见 [合并后报告](./[REPORT]_post_merge_closeout.md)。1218 tracked/0 dirty/0 untracked/4066 ignored的原worktree仅准备本地清理；27文件配置/状态已不透明保留，其他4039缓存/依赖可重建。具体删除尚未授权，远端、备份、develop及新收尾worktree保留。
+本轮事实文档在documentation/611-post-merge-closeout新worktree维护，base=db4a85d，不向原已合并分支追加实现。详见 [合并后报告](./[REPORT]_post_merge_closeout.md)。1218 tracked/0 dirty/0 untracked/4066 ignored的原worktree仅准备本地清理；27文件配置/状态已不透明保留，其他4039缓存/依赖可重建。当时仅准备清单；其后本会话Q5已具名授权并完成原本地工作树/分支清理，远端、备份、develop及新收尾worktree保留。
 
 该合并后检查点起初保持active，未将“已合并，继续”推导为接受；其后Owner本轮Q4的实际接受与完成条件调整见下。本旁聊不派子Agent，独立核验不冒充完成，未测事实继续保留。
 
@@ -73,4 +73,10 @@ Owner明确“#611 PR 已合并，继续后续工作”。平台核PR611已于20
 
 接受范围为本Plan配置结构、九入口/既有账户的按名配置与锁定实现、静态/离线行为、同步治理文档及已完成的Git交付；原AC1–8的配置/离线证据齐备，成果已合入develop且依赖就绪。未完成的独立复核/宿主发现/主机认证按该真实决定DEFERRED/NOT_TESTED，不计PASS，不追溯制造原PR平台Approve。准确完整基线可恢复于ce871c4的本Plan及关联报告；Q4这一完成条件调整与原AC正文分别保留，旧接受不覆盖未来改动。
 
-AC/可用配置离线成果及Owner准确版本接受均已满足本轮调整后的完成条件，主Plan据此completed。主Plan完成不表示后续验证已执行，也不授权远程命令、权限变化、清理或未来PR合并。Q5原本地工作树/分支删除仍待答，未将Q4接受当作删除批准。
+AC/可用配置离线成果及Owner准确版本接受均已满足本轮调整后的完成条件，主Plan据此completed。主Plan完成不表示后续验证已执行，也不授权远程命令、权限变化、清理或未来PR合并。Q5原本地工作树/分支已另获具名授权并清理，结果见下；未将Q4接受当作删除批准。
+
+## Q5仅本地清理结果
+
+本会话Q5明确选择“授权上述仅本地清理，保留备份及两端远程（推荐）”，具名原worktree及本地branch maintain/codex-config-alignment，tip ce871c4、已合入db4a85d。执行前重核1218 tracked/0 dirty/0 untracked/4066 ignored、27项备份相对路径/长度一致、无重解析点/index锁/命令行路径引用；第一次预检仅因Git NUL输出末尾空项多计而在任何删除前停止，按真实格式排除空项后清单未变，不是技术拒绝。
+
+2026-10-29 17:33:37 Asia/Taipei，经普通git worktree remove、git branch -d实际完成，均exit0；目录、worktree注册和本地分支均已不存在。未force、未改用递归删除；GitHub与Gitee原同名分支再次实时读回均ce871c4并保留。恢复tip及27文件保留在原仓外证据目录；develop、新收尾worktree、备份和其他任务保留。具体结果见postmerge-local-delete-result.json，成功项不重复。
