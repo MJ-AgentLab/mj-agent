@@ -2,10 +2,10 @@
 type: sdd-workflow
 artifact: hotfix
 state: draft
-version: "0.2"
+version: "0.3"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-29
 track: shared
 ai_visibility: source-of-truth
 ---
@@ -45,9 +45,11 @@ ai_visibility: source-of-truth
 
 ## TBD: Phase M2 内容填充
 
-- "spec debt 超期未还" 的 stale issue 自动建单（per `scripts/find_old_completed_plans.py` 演进）
+- "spec debt 超期未还" 的 stale issue 自动建单仍为独立延期事项；working GC 已由 #608 退出，不再依赖退休的候选检测脚本演进。
 - hotfix 与 postmortem 的强制配对规则
 
 ---
 
 > *Phase M0 skeleton — `state: draft`.*
+
+> *v0.3（2026-10-29）：#608 — 清除 spec debt 延期事项对已退休 working GC 的演进依赖；不新增自动建单机制。*

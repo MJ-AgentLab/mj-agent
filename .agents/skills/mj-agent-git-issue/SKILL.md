@@ -136,6 +136,14 @@ comes from the table above:
 > `bugfix` / `hotfix` 的 Reproduction / Expected vs Actual / Environment 段**已在
 > `bug_report.md` / `hotfix.md` 模板内**，不必另行拼接。
 
+## 原意、working 与总体覆盖关联
+
+保存需求原意时读 [创作与引用说明](../../references/working-docs-and-intent.md)。简单任务可用本 Issue 原意区作唯一正本；跨任务正式 INTENT 由 doc-author 维护，本 Issue 引准确位置与适用基线，不复制第二份事实真相。来源/维护责任未知先留真实 working 草稿，不冒充正式INTENT。
+
+在现模板内保留来源、完整成功判断/范围、四种决定及本任务实际承担范围；Issue 汇总多Plan/PR的覆盖、进度和依赖，Plan 管实施、SPEC管行为口径、Report管真实证据。INTENT/INDEX不复制实时进度，Issue关闭不改变INTENT状态或证明Owner交付接受。
+
+创建后核真实编号再考虑补 I 段；只在主要关联首次明确/纠错/更换时按受控规则同步目录和主文件、活动引用及路由，保task_id/历史基线/INTENT ID，不为名称创建Issue、不从分支数字猜。无明确主要PR时省P；报告/Intake目录可始终无Plan。
+
 ## Step 3: Title Format
 
 ```

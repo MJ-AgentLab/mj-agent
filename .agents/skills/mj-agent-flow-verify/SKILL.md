@@ -76,8 +76,8 @@ git diff --stat HEAD
 | `src/mj_agent/config.py` | config | ruff + mypy + mj-agent check |
 | `src/mj_agent/biz_catalog/qcm_catalog.yaml` | biz_catalog（**B 风味边缘**） | scripts/diff_biz_schema.py（offline 快照；无快照/过期 → SKIP，记未验证）+ pytest eval + `run_offline_pytest.py tests/contract -m contract` |
 | `tests/{unit,eval,integration,smoke,contract}/` | tests | 对应 pytest band |
-| `docs/` | docs | wikilinks + frontmatter |
-| `.agents/skills/` | native-skills | （仅检查 frontmatter A12 描述质量；A12-A14 自检）
+| `docs/` / `plans/` / 治理文档入口 | docs | wikilinks + frontmatter + working目录/深相对链接；按实际schema |
+| `.agents/skills/` | native-skills | check_native_skills（含resources）+适用check_codex_native；人工原意/接受判断 |
 | `docker/` | infra（**C 风味**） | docker compose config + mj-agent check + compose up/down 排练 |
 | `docker/Dockerfile` 外部 registry 镜像引用 | infra，供应链影响面 | 按 docker-runtime §4 核信任来源：来源变化须 Owner 决定；既定来源内 tag/digest 维护在任务授权内自主，提供适用构建/供应链证据。内部 stage 引用不在外部面；实际构建/容器操作另核允许环境与附带副作用 |
 | `pyproject.toml` / `uv.lock` | deps | uv lock + uv sync |
@@ -104,12 +104,16 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/unit
 uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/eval
 python -m compileall src                   # 解析检查
 
-# Docs（如 docs/ 改动）
+# Docs/working（按实际修改；结构PASS不证明原意/授权/接受）
 python scripts/check_wikilinks.py
 python scripts/check_frontmatter.py
+python scripts/check_working_docs.py
 
 # .agents/skills/（如该路径改动）
-# A12 description quality 人工自检（≥ 200 chars / 正向触发 / "Do not use for" 反向触发段）
+# 原生结构与本仓资源引用；宿主加载/服务仍单独记未测
+python scripts/sdd/check_native_skills.py
+python scripts/sdd/check_native_skills.py --surface resources
+python scripts/sdd/check_codex_native.py
 
 # biz_catalog（如改动）— offline，只读 .mj-agent-local/biz-schema-snapshots/ 下的 sanitized 快照
 # 结果码：PASS_NO_DRIFT(0) / DRIFT_DETECTED(1) / SKIP_NO_SNAPSHOT(0) / SKIP_STALE_SNAPSHOT(0) /

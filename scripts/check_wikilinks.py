@@ -32,6 +32,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.sdd._common.native_assets import retired_client_asset  # noqa: E402
@@ -216,16 +217,28 @@ def clean_target(raw: str, kind: str) -> str | None:
     return t
 
 
-def target_resolves(root: Path, target: str) -> bool:
-    """True if ``target`` (repo-root-relative) resolves to an existing path.
+def target_resolves(root: Path, target: str, source: Path | None = None, kind: str = "md") -> bool:
+    """Resolve Markdown from its document; vault-style wiki paths from the root.
 
-    Root files live at the repo root, so relative targets resolve from there.
-    Extensionless targets (typical of wikilinks) also try a ``.md`` suffix.
-    Bracketed mj-agent filenames resolve literally (pathlib, not glob).
+    Explicit ``./`` or ``../`` wiki paths also resolve from the document.
+    Resolved targets must stay within the repository, including symlink targets.
     """
-    if (root / target).exists():
-        return True
-    return not target.endswith(".md") and (root / f"{target}.md").exists()
+    target = unquote(target)
+    base = root
+    if source is not None and (kind == "md" or target.startswith(("./", "../"))):
+        base = root / source.parent
+    candidates = [base / target]
+    if not target.endswith(".md"):
+        candidates.append(base / f"{target}.md")
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+            resolved.relative_to(root.resolve())
+        except (OSError, ValueError, RuntimeError):
+            continue
+        if resolved.exists():
+            return True
+    return False
 
 
 def scan_links(root: Path, rel: Path, text: str) -> list[tuple[Path, int, str, str]]:
@@ -236,7 +249,7 @@ def scan_links(root: Path, rel: Path, text: str) -> list[tuple[Path, int, str, s
         for pattern, kind in ((_MD_LINK_RE, "md"), (_WIKILINK_RE, "wiki")):
             for match in pattern.finditer(clean_line):
                 target = clean_target(match.group(1), kind)
-                if target and not target_resolves(root, target):
+                if target and not target_resolves(root, target, rel, kind):
                     unresolved.append((rel, lineno, kind, target))
     return unresolved
 

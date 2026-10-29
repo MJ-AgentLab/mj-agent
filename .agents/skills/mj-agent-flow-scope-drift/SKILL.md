@@ -30,7 +30,7 @@ digraph drift {
   rankdir=TB;
   start [label="User triggers: 'check scope drift'\nor pre-commit gate" shape=doublecircle];
 
-  s1 [label="Step 1: Locate linked artifacts\n• Plan: plans/[PLAN]_*.md / [INTAKE]_*.md\n• SPEC: docs/design/{module}/[SPEC]_*.md\n• Issue: gh issue view <id>" shape=box];
+  s1 [label="Step 1: Locate linked artifacts\n• Plan: plans/<topic>/[PLAN]_<topic>.md（兼容历史根文件） / [INTAKE]_*.md\n• SPEC: docs/design/{module}/[SPEC]_*.md\n• Issue: gh issue view <id>" shape=box];
 
   s2 [label="Step 2: Capture diff\n• git status --short\n• git diff --name-only HEAD\n• git diff $(git merge-base develop HEAD)..HEAD" shape=box];
 
@@ -56,13 +56,13 @@ digraph drift {
 **MAY skip**：
 - Single-file trivial change（rename / typo / 小 docstring）
 - 用户明确"I know it's out of scope, ship it anyway"（仍输出报告，但不阻塞）
-- 无 linked Plan / SPEC（首次 Repo Scan 阶段；建议先 `mj-agent-flow-intake` + `mj-agent-flow-plan`）
+- 无任何已确定范围锚点时先做最小 intake/repo-scan；存在独立报告的有效交付条件即可核scope，不强制补Plan
 
 ## Step 1: Locate Linked Artifacts
 
 ```bash
 # 1. Plan / Intake（plans/ 下）
-ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
+rg --files plans    # 新布局与历史根文件，按任务明确路径/正文关联定位
 
 # 2. SPEC（docs/design/{module}/）
 git diff --name-only HEAD | grep -oE 'src/mj_agent/[a-z_]+/' | sort -u | \
@@ -71,13 +71,14 @@ git diff --name-only HEAD | grep -oE 'src/mj_agent/[a-z_]+/' | sort -u | \
     ls "$spec_dir/[SPEC]_*.md" 2>/dev/null
   done
 
-# 3. Issue（branch name → issue id）
-branch=$(git branch --show-current)
-issue=$(echo "$branch" | grep -oE '[0-9]+' | head -1)
-[ -n "$issue" ] && gh issue view "$issue" --json title,body
+# 3. Issue（从任务明确来源核真实关联）
+# Issue 取明确的本仓任务关联，不按分支数字猜
+gh issue view <confirmed-issue-number> --repo MJ-AgentLab/mj-agent --json title,body
 ```
 
-**Plan / SPEC / Issue 任一缺失** → Step 5 推荐里标"无明确 scope 锚点，建议先建 Plan / 跑 mj-agent-flow-intake"。
+读取 [创作与引用说明](../../references/working-docs-and-intent.md)，逐项核实际原意正本、应有行为和本任务承担范围。按 Documentation Decision 判断需要哪些工件；独立 Intake/Report 可无 Plan，不以任一类型缺失自动判漂移。本来需要的工件缺失才列具体缺口/影响/恢复点。
+
+把目标原意变化、SPEC行为变化、普通实施安排和目录/链接调整分开判断。目录补号不改 task_id、历史基线或 INTENT ID；活动引用更新，固定提交/快照/旧决定保持。实质内容变化不能以旧接受覆盖；纯路径调整不自动重置业务接受。
 
 ## Step 2: Capture Diff
 
@@ -138,7 +139,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
 ## Drift Report
 
 ### Linked Artifacts
-- Plan: `plans/[PLAN]_xxx.md`
+- Plan: `plans/<topic>/[PLAN]_<topic>.md`
 - SPEC: `docs/design/{module}/[SPEC]_xxx.md`
 - Issue: #<id>
 
@@ -163,7 +164,7 @@ git diff $(git merge-base develop HEAD)..HEAD --name-only       # 与 base 比�
    - 风味识别：B in-source canonical（按§3.1实际语义影响分类）
    - 选项：A. 接受 → 改 Plan + 走 mj-agent-runtime-skill-doc-improve propose diff（PR-C2）/ B. 不接受 → revert + 拆独立 PR / C. 改 Plan 重对齐
    - 推荐：B（B 风味改动应单独 PR + 独立领域视角核验）
-   - 默认假设：A
+   - 待决定：保留未答，不以推荐、沉默或超时作为决定
    - 实际边界变化需决定：是
 
 ### Next Action

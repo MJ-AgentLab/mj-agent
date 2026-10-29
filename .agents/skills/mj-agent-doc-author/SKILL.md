@@ -3,274 +3,58 @@ name: mj-agent-doc-author
 description: 适用于 mj-agent 的已确定类型与scope的一份文档。输入：类型、主题、路径、真实代码、模板。流程：前置ADR/SPEC判定→track→目录→模板→同名冲突→正文→B停点→校验→索引。输出：类型/track/命名/引用/校验逐项有结论。Use when：为已定scope写GUIDE，含现有函数用法。Do not use for：只问哪些文档缺失，不写正文；建议doc-plan，仅评估缺口。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
-
-
 # mj-agent Doc Author
 
-## 本技能的执行约定
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。本技能起草已明确类型与 scope 的一份文档；缺口评估交 doc-plan，完整实施 Plan 交 flow-plan。保存原意时先用本技能，再由 flow-intake 适配任务、flow-plan 编排实施，不新增 flow-intent。
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
+## 1. 判定来源权威与文档责任
 
+读取真实来源、现有文档、代码/配置与对应决定。原始提出者/INTENT/Issue 原意区说明目标与成功判断；SPEC/契约说明应有行为、接口和业务口径；代码/运行证据说明现状；Plan 说明实施；Report/Assessment 说明真实结论和限制。代码是实现事实依据，不能覆盖原意或把错误实现变成接受标准。逐项列冲突和未知，再按实际影响自主修复或提交 Owner 实质决定。
 
-## 触发与职责详述
+核目标/范围/基线/授权及文件归属。只问影响产物的真歧义；真实业务原意给中性选项，工程/机制/授权取舍给推荐。预选、沉默、超时都不是决定，真实未决项保持待答。
 
-This skill creates a single Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1-compliant mj-agent document (GUIDE, RUNBOOK, ADR, SPEC, POSTMORTEM, STANDARD, ISSUE, ASSESSMENT, or in-source SKILL/PROMPT/CONTRACT) from scope analysis through validation. Make sure to use this skill whenever the user says "写文档", "编写指南", "创建RUNBOOK", "生成ADR", "写规范文档", "写ISSUE", "写评估文档", "write a GUIDE for", "create a RUNBOOK for", "draft an ADR for", "create an ISSUE doc", "write an ASSESSMENT", "Stage 6 SPEC/ADR/RUNBOOK", "doc author" in the mj-agent context, after document type and scope are decided. **Track-aware dispatch** based on Meta v2.2 §4.3.1 path-to-track decision tree (含 v2.2 加 0 条覆盖项目根 markdown → 不适用 track；其他 8 条分 code/agent/engineering-workflow/shared); contains the project authoring workflow without a personal plugin dependency. Do not use for: documentation gap analysis (use mj-agent-doc-plan first), validating already-written document (use mj-agent-doc-validate), full Plan body authoring (use mj-agent-flow-plan), or **authoring project-root markdown 5 件** (README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md per Meta v2.2 §2.6 例外；不入本 skill scope).
+## 2. 选择类型、目录、模板与 schema
 
+先读 `policies/documentation.md` 的当前类型/track/正文深度，再核已有正本，优先更新。跨边界决策先检查是否需要 ADR；新增或改变行为/接口/业务口径先检查现有 SPEC/契约覆盖。
 
-## Overview
-
-按已知文档类型 + scope 起草单份 Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 兼容文档。Code 是 source of truth — 始终 verify against 真实文件，不轻信旧文档。**Track-aware dispatch**：按 Meta v2.2 §4.3.1 路径决策树自动选 track（含 v2.2 加 0 条：项目根 markdown → 不适用 track），按 ADR-014 §决策点 4 边界表确定归属。**Active path stability**（Meta v2.2 §4.4）：active canonical 文件名默认无 `_vX.Y` 后缀，version 仅在 frontmatter；例外仅"多 active 主版本并存"。
-
-**Stage 6 sub** of HITL_Prompt 17-stage 闭环；典型 by `mj-agent-flow-plan` Step 3 task list 触发，或 user 直接调用。
-
-> **项目根 markdown 例外**（Meta v2.2 §2.6 + GitHub_Markdown §14.5）：README / CONTRIBUTING / CHANGELOG / GLOSSARY / AGENTS.md 5 件**不入本 skill scope**——不写 frontmatter；A1-A3 不适用；起草直接走 user-编辑或 git 操作，不调本 skill。
-
-本技能自含项目文档流程，不要求安装个人文档插件。通用文档方法按真实代码核对、模板填写、反扫和验证执行。
-
-## Prerequisite
-
-- 文档类型 + scope 明确。如不明 → 先用 `mj-agent-doc-plan`（PR-B4 落地）评估
-- mj-agent 仓已 promote 到 v2.2（PR #173 sustained §2.6 / §4.3.1 0 条 / §6.4 4 类 / §修订记录）
-- 已知 track 归属（or 由 path-to-track 决策树自动判定；项目根 markdown 走 §2.6 例外，不入本 skill）
-
-## Workflow
-
-```dot
-digraph author {
-  rankdir=TB;
-  start [label="Known: type + topic + scope" shape=doublecircle];
-
-  precheck [label="§12 前置检查\n(ADR/SPEC trigger?)" shape=diamond];
-
-  q03 [label="Q-03: 需要 ADR?\n(边界案例)" shape=diamond];
-  q04 [label="Q-04: 新建 SPEC 还是\n更新现有 SPEC?" shape=diamond];
-
-  track [label="Track decision\n(Meta v2.2 §4.3.1 path-to-track 决策树\n0 条: 项目根 markdown → 不适用)" shape=box];
-
-  dir [label="Directory placement\n(Meta v2.2 §3.5)" shape=box];
-
-  q01 [label="Q-01: 目录歧义?\n(≥2 valid dirs)" shape=diamond];
-
-  template [label="Template selection\n(9 templates + in-source flavor)" shape=box];
-
-  filename [label="Filename construction\n(Meta v2.2 §4 naming + §4.4 active path 默认无 _vX.Y\n+ glob 检查)" shape=box];
-
-  d01q02 [label="D-01/Q-02: 文件已存在?\n(glob 确认后询问)" shape=diamond];
-
-  content [label="Content generation\n• 读取 actual code/scripts/biz_catalog\n• Fill template per type-specific rules\n• Cross-verify references" shape=box];
-
-  hitl_b [label="B 风味? (in-source SKILL/PROMPT)\n→ §3.1语义影响核对\n→ 经 mj-agent-runtime-* 分析→影响分类→实施/决定" shape=diamond];
-
-  validate [label="Call mj-agent-doc-validate" shape=box style=bold];
-
-  post [label="Post-creation\n• INDEX.md 同步\n• AGENTS.md sync (按 track allowlist)\n• EVAL backlog ticket（B 风味；execution-loop §7.3 Rule 11）" shape=box];
-
-  done [label="Done" shape=doublecircle];
-
-  start -> precheck;
-  precheck -> q03 [label="边界案例"];
-  precheck -> q04 [label="新功能边界"];
-  precheck -> track [label="明确"];
-  q03 -> track [label="否/已确认"];
-  q04 -> track [label="已确认"];
-  track -> dir;
-  dir -> q01 [label="≥2 valid"];
-  dir -> template [label="唯一"];
-  q01 -> template [label="user 选/默认"];
-  template -> filename;
-  filename -> d01q02 [label="glob 同名"];
-  filename -> content [label="无冲突"];
-  d01q02 -> content [label="确认/改名"];
-  content -> hitl_b;
-  hitl_b -> validate [label="A/C 风味或非 in-source"];
-  hitl_b -> post [label="B 风味；基线内自主；实质变化决定"];
-  validate -> post;
-  post -> done;
-}
-```
-
-## Quick Reference（mj-agent 12 类 + 9 templates）
-
-| Type | Track 默认 | Directory | Template | Naming |
-|---|---|---|---|---|
-| `[GUIDE]` | code | `docs/guide/` 或 `docs/infrastructure/{domain}/` | `TEMPLATE_GUIDE.md` | `[GUIDE]_Description.md` |
-| `[RUNBOOK]` | code | `docs/runbook/` 或 `docs/infrastructure/{domain}/` | `TEMPLATE_RUNBOOK.md`（PR-A3） | `[RUNBOOK]_Subject.md` |
-| `[ADR]` | shared/eng-workflow（按主题） | `decisions/` | `TEMPLATE_ADR.md` | `ADR-NNN_Decision_Title.md` |
-| `[SPEC]` | shared/agent/code（按主题） | `docs/design/{module}/` | `TEMPLATE_SPEC.md`（PR-A3） | `[SPEC]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4 active path stability） |
-| `[POSTMORTEM]` | shared | `docs/postmortem/` | `TEMPLATE_POSTMORTEM.md`（PR-D1） | `[POSTMORTEM]_Subject.md` |
-| `[STANDARD]` | code/eng-workflow/shared（按主题） | `docs/rule/[STANDARD]_*.md` 或 `docs/infrastructure/{domain}/` | （type-specific；mj-agent 模板未独立） | `[STANDARD]_Description.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
-| `[ISSUE]` | shared | `docs/issues/` | `TEMPLATE_ISSUE.md`（PR-D1） | `[ISSUE]_NNN_DomainAbbr_Description.md`（per Meta v2.2 §4.5）|
-| `[ASSESSMENT]` | shared | `docs/assessments/` | `TEMPLATE_ASSESSMENT.md`（PR-D1） | `[ASSESSMENT]_Subject.md`（默认无 `_vX.Y`，per Meta v2.2 §4.4） |
-| `[SKILL]`（in-source；Track B） | agent | `src/mj_agent/skills/<name>/` | `TEMPLATE_SKILL.md`（13 字段 + 五段式） | `<name>/SKILL.md` |
-| `[PROMPT]`（in-source；Track B） | agent | `src/mj_agent/prompts/` | `TEMPLATE_PROMPT.md` | `<name>.md` |
-| `[SKILL]`（in-tree；Track C） | engineering-workflow | `.agents/skills/mj-agent-<group>-<verb>/` | `TEMPLATE_WORKFLOW_SKILL.md`（PR-B1） | `<name>/SKILL.md` |
-| `[CONTRACT]` | shared/agent | `docs/contracts/` | `TEMPLATE_CONTRACT.md` | `[CONTRACT]_Tool_Description.md` |
-
-> **注**：含 `version` 字段的类型（STANDARD / SPEC / EVAL / CONTRACT / ASSESSMENT）filename **默认无 `_vX.Y` 后缀**（per Meta v2.2 §4.4 active path stability；ADR-018 partial supersede ADR-011 §4.2）。版本仅在 frontmatter `version` 字段。例外：多 active 主版本并存时才加（如 v1/v2 API 长期共存的 STANDARD）。Legacy 归档反向必带后缀（per §4.4.3）。
-
-## Key Principles
-
-1. **Code is source of truth** — Legacy docs may be outdated. Verify paths / params / secrets against actual files in mj-agent.
-2. **RUNBOOK uses imperative mood** — Readers execute under pressure.
-3. **Start as `state: draft`** — All new docs enter review before authoritative.
-4. **Template adaptation allowed** — Sections rename/reorder OK，but **MUST** preserve: frontmatter / blockquote header / 关联文档段。
-5. **B 风味 按语义影响分类** — `src/mj_agent/skills/**/SKILL.md` 或 `prompts/*.md` body 起草 / 修改必须经 `mj-agent-runtime-*` 分析 → 影响分类 → 实施/决定（任务授权内由runtime skill 核验执行路线；硬阻断时不落盘）。这是 §3.1实质风险 + ADR-042 分析→影响分类→实施/决定 约束。
-6. **Track-aware**：每文档 frontmatter 必填 `track`（v2.1 4 值；by Meta v2.2 §4.3.1 路径决策树）。项目根 markdown 5 件不写 frontmatter 不适用 track（per §2.6 例外 + §4.3.1 第 0 条）；`capabilities/**` 亦不适用 track（capability-package ontology 豁免，per kernel §3.1 规则 9 / #451）。
-
-## Track Decision（Meta v2.2 §4.3.1 path-to-track 决策树）
-
-```
-0. 路径是项目根 markdown（README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md）？
-   → 不适用 track（per Meta v2.2 §2.6 例外；不写 frontmatter；A1-A3 不适用；本 skill 不处理）
-1. 路径在 src/mj_agent/{skills,prompts}/** → agent
-2. 路径在 src/mj_agent/{其他}/** → code
-3. 路径在 .codex/** 或 .codex/config.toml → engineering-workflow
-4. 路径在 docs/evaluation/ → agent
-5. 路径在 docs/{infrastructure,runbook,api}/ → code
-6. 路径在 docs/rule/ 但治"engineering 流程" → engineering-workflow
-7. 路径在 docs/rule/ 治文档/代码/数据 → code 或 shared
-8. 路径在 policies/ sdd/ decisions/ → 按主题选 track（显式许可：工程编排/agent 工具面 →
-   engineering-workflow；runtime 语义面 → agent；代码栈面 → code；跨轨或不确定 → shared；
-   无需 per-file PR body 论证）
-9. 路径在 capabilities/** → 不适用 track（capability-package ontology 豁免）
-10. 其他 → 默认 shared 并 PR body 论证
-```
-
-> **SoT = `policies/documentation.md` §3.1**（Meta v2.2 §4.3.1 是已归档的历史源）；本段是投影，
-> 改判定必先改 kernel。规则 3 原列的 4 个 `docs/rule/` STANDARD 族 glob 已随 #449 删除 —— M6
-> PR4 / X5 后全部落空，删除对现存文件零行为 delta。kernel 四目录的覆盖缺口已随 #451 落规则：
-> 规则 8 = `policies/ sdd/ decisions/` 按主题选值（显式许可），规则 9 = `capabilities/**`
-> 不适用 track（capability-package ontology 豁免；豁免条款全文见 kernel §3.1）。
-
-## Directory Placement Rules（Meta v2.2 §3.5，加 0 号 + 项目根例外）
-
-```
-项目根例外（v2.2 §2.6；本 skill 不处理）→ README.md / CONTRIBUTING.md / CHANGELOG.md / GLOSSARY.md / AGENTS.md
-
-0. Engineering-workflow 专属（v2.1 引入） → .agents/skills/<name>/, scripts/mcp/, .codex/config.toml
-1. Agent 专属 → src/mj_agent/skills/**/SKILL.md, prompts/*, docs/evaluation/, docs/contracts/（agent-facing）
-2. 子系统专属 → docs/design/{agent|gateway|memory|prompts|skills|ui}/
-3. 基础设施专属 → docs/infrastructure/{domain}/
-4. 跨子系统 API 约定 → docs/api/
-5. 跨领域通用规则 → docs/rule/
-6. 跨领域操作指南 → docs/guide/
-```
-
-## STANDARD 归属判定（v2.2 §3.5 + Meta v2.2 §3.7）
-
-| 范畴 | 目录 | 判定 |
-|---|---|---|
-| **全局规则** | `docs/rule/` | 跨领域、跨服务、跨工具的项目级规范 |
-| **engineering-workflow STANDARD** | `docs/rule/` 下治工程流程者（判定走 Track Decision 规则 6） | 治 .codex/ + 工程流程；**现仓内无此类件**——原 HITL_Prompt 族已归档，活体后继是 SDD kernel（`sdd/workflows/` + `policies/`），非 STANDARD |
-| **API 专属** | `docs/api/` | 跨服务的 API 约定 |
-| **领域专属** | `docs/infrastructure/<domain>/` | 与具体技术领域绑定（git / cicd / database） |
-
-## ADR 开列判据（何时才开 ADR）
-
-> 配合 §12 前置检查 / Q-03。借「domain-modeling」**仅难逆决策才开 ADR** 的思路、按 mj-agent native 承载——防 ADR 泛滥。
-
-仅当**三者皆真**才开 ADR（否则 inline 记录于 SPEC / glossary / catalog，不开 ADR）：
-1. **难逆** —— 决策落地后回退成本高（schema / 数据边界 / 部署形态类）。
-2. **反直觉** —— 选择非显而易见，未来读者会问"为什么不是另一种"。
-3. **真权衡** —— 存在被放弃的合理替代方案，需记录取舍理由。
-
-主动领域建模产物归属（**不引入 `CONTEXT.md`**，挂既有分布式工件）：术语 → `docs/glossary/` / `GLOSSARY.md`；业务指标 / 维度 → `biz_catalog/qcm_catalog.yaml`（**4 类runtime风险面之一** → `mj-agent-runtime-biz-catalog-sync` 分析→影响分类→实施/决定）；难逆决策 → `decisions/` ADR。
-
-## ADR Numbering
-
-扫描 `repo:decisions/` 与现有历史 ADR 编号，按当前命名约定选择未占用编号；不得沿用旧技能硬编码的下一号。已有文件冲突先询问，不覆盖。历史 `docs/adr/` 来源仅作编号核对，不作为新 ADR 的活动目录。
-
-## ISSUE Numbering
-
-Same convention：scan `docs/issues/` for max `[ISSUE]_NNN_*`，new = max + 1。Independent sequence。
-
-> 当前 mj-agent issues/ 目录可能空（Phase D 起首 [ISSUE]）。
-
-## Filename Construction — 文件冲突检查（必须）
-
-构建目标 filename 后、生成内容前：
-
-1. 拼出完整目标路径（目录 + 文件名）
-2. 用 文件枚举 检查该路径是否已存在
-3. 已存在 → 触发 **D-01/Q-02**
-4. 不存在 → 直接进入内容生成
-
-## 人工交互节点
-
-| 时机 | 触发条件 | 抑制条件 | 问题 ID |
-|---|---|---|---|
-| §12 前置检查后（边界案例） | §12.2 有匹配项但非核心架构变更 | 用户说"不需要 ADR"或纯 bug fix | Q-03 |
-| §12 前置检查后（新功能边界） | 变更含"新功能"但范围限于单模块内部 | 用户已确认"更新/创建 SPEC" | Q-04 |
-| 目录确定前 | §3.5 规则映射出 ≥2 个有效目录 | 用户已在请求中指定路径 | Q-01 |
-| 写文件前（文件已存在） | glob 检测到目标路径同名 | 用户说"覆盖/替换" | D-01/Q-02 |
-| §12 前置检查后（问题文档） | 问题分析文档但发现方式不明确（主动 vs 被动） | 用户已指定"写 ISSUE"或"写 POSTMORTEM" | Q-10 |
-| 目录确定前（层级歧义） | 内容同时含长期参考 + 短期执行 | 用户明确说"写 plan"或明确指定 canonical 类型 | Q-12 |
-| **B 风味 in-source** | 检测到目标路径在 src/mj_agent/{skills,prompts}/** | 经 mj-agent-runtime-* 分析 + 影响分类 + 实施/决定 | **Q-B1**（mj-agent 专属 §3.1实质风险） |
-
-### Q-B1（mj-agent 专属）
-
-```
-检测到目标路径 <path> 在 src/mj_agent/{skills,prompts}/**（B 风味 in-source canonical）。
-§3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change 触发；建议先：
-(1) 用 mj-agent-runtime-skill-doc-improve（如 SKILL.md）或 mj-agent-runtime-prompt-version-bump（如 system.md）分析→影响分类→实施/决定
-(2) 独立领域/Prompt视角核验（不要求真人或固定人数）
-(3) runtime skill先核影响分类与任务授权/执行路线；硬阻断时不落盘
-(4) 同步 PR description 含 EVAL backlog ticket（execution-loop §7.3 Rule 11）
-
-不能跳过 B 风味硬阻断。可以取消本次调用，或返回批准材料继续审阅。
-```
-
-## REQUIRED SUB-SKILL
-
-`mj-agent-doc-validate` — 写完文档前 / commit 前必跑。
-
-## What This Skill DOES NOT DO
-
-- ❌ 不替代 `mj-agent-doc-plan`（doc-plan 评估"哪些 doc 缺"；本 skill 是"写一份具体的"）
-- ❌ 不替代 `mj-agent-flow-plan`（flow-plan 写完整 Plan body；本 skill 写其中某个 doc）
-- ❌ 不直接写 in-source canonical（B 风味必走 propose-via-runtime 流程）
-- ❌ 不 auto-commit（仅写文件；commit 由 mj-agent-git-commit）
-
-## Sub-skill / Tool Calls
-
-| Tool | 用途 |
+| 分支 | 目录/模板与操作 |
 |---|---|
-| 读取 / 文件枚举 | type 决策 + filename 冲突检查 + 已有 docs 引用 |
-| 写入 | 写新文档（A/C 风味或非 in-source） |
-| 编辑 | 更新已有文档 |
-| 向 Owner 询问 | 7 个 Q-* 节点交互 |
-| `mj-agent-runtime-*` | B 风味 in-source 改动经 分析→影响分类→实施/决定 |
-| `mj-agent-doc-validate` | 写完后 sub-call 验证 |
+| INTENT | 读下节及 [创作与引用说明](../../references/working-docs-and-intent.md)，用 TEMPLATE_INTENT.md |
+| working Intake/Report/Assessment | `plans/<topic>/`，用 TEMPLATE_INTAKE/REPORT/ASSESSMENT.md 的 working 分支；目录可永无 Plan，报告按用途命名 |
+| 完整 Plan | 交 flow-plan，用 TEMPLATE_PLAN.md |
+| SPEC/ADR/GUIDE/RUNBOOK 等 canonical | 按政策归属，在 `docs/_templates/` 选真实类型模板；ADR 在 `decisions/`，分配前同时查活动/归档编号 |
+| 长期 Assessment | 走 canonical 完整 schema；与任务 working 轻量分支区分 |
+| 原生开发技能 | `.agents/skills/` 与 TEMPLATE_WORKFLOW_SKILL.md，保持 name/description 原生 schema |
+| runtime SKILL/PROMPT/CONTRACT | 读对应 `sdd/adapters/` 与冻结契约，按实际语义走 runtime 领域技能及 EVAL/版本规则 |
 
-## Reference Files
+按路径与主题选 code/agent/engineering-workflow/shared。working 七字段必须含 track，domain/version 可选。项目根入口、kernel、capability package 和 adapter 各自 schema 依政策执行，不强套通用字段。新文档从 draft 起步；是否生效/采纳及接受按对应类型真实决定判断。
 
-- `repo:policies/documentation.md` §2.6（项目根 markdown 例外）+ §2.1（12 类 types）/ §6（frontmatter / state）/ §3（track + §3.1 path-to-track 决策树含 0 条）（archive workflow → `repo:policies/archive.md` §1.2 active path stability）
-- `repo:policies/documentation.md` §8.1 / §8.2（8 类继承类 body authoring depth）+ §6.2（type-frontmatter）
-- `repo:sdd/adapters/runtime-skill.md` + `repo:sdd/adapters/prompt.md` + `repo:sdd/adapters/contract.md`（4 类自有类 authoring + frontmatter strip 契约）
-- `repo:docs/rule/[STANDARD]_GitHub_Markdown.md` §14（项目根 README 与 Markdown 特例；PR #173 新加）
-- `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §9（写 SKILL/STANDARD body 时过作者自检清单——可预测性 / 双负载权衡 / leading words / no-op 剪枝）
-- `repo:sdd/workflows/execution-loop.md` §1（Stage 6 SPEC/ADR/RUNBOOK 在 17-stage loop 的位置）
-- `repo:decisions/ADR-011_Doc_Versioning_And_Archive_Convention.md`（version 必填类型 + archive workflow；§4.2 + §5.6.2 已被 ADR-018 partial supersede）
-- `repo:decisions/ADR-014_Tri_Track_Documentation_Governance.md` §决策点 4（边界 artifact 表）
-- `repo:sdd/workflows/execution-loop.md`（有效三风味/停点规则；旧 ADR-015 路径基线缺失，仅作历史来源） §决策点 3（3 风味）+ §决策点 4（runtime 硬约束）
-- 9 个 templates 全部在 `docs/_templates/`
+检查准确目标路径与同名冲突。active canonical 默认不加版本后缀，版本号在 frontmatter；只有明确多 active 主版本并存等政策例外才加。模板可合并/改标题，但必需元数据、内容和关联信息保持。
 
-## Anti-patterns
+## 3. 保存 INTENT 或 Issue 原意正本
 
-- **不要** B 风味改动跳过 Q-B1（违反 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change；ADR-015 §决策点 4 runtime 硬约束）
-- **不要** 缺 frontmatter `track` 字段（v2.2 §4.3.1 必填；validate 阶段 A2 阻断；项目根 markdown 例外不在此约束）
-- **不要** 在 docs/rule/ 下塞领域专属 STANDARD（违反 §3.5 就近原则；应进 docs/infrastructure/{domain}/）
-- **不要** 跳过 ADR/SPEC §12 前置检查（边界案例可能漏建必要 ADR）
-- **不要** 在 active canonical filename 加 `_vX.Y` 后缀（违反 Meta v2.2 §4.4 active path stability；ADR-018 partial supersede ADR-011 §4.2；除非"多 active 主版本并存"例外）
-- **不要** 用本 skill 起草项目根 markdown 5 件（README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md；per Meta v2.2 §2.6 例外，不入本 skill scope）
+简单单任务可用真实 Issue 原意区为唯一正本，避免重复建文件/ID。跨任务需要稳定原意时正式正本为 `docs/intent/[INTENT]_INT-YYYY-NNN_<English_Topic>.md`，独立于任何 Plan；来源或维护责任不明，先保存在真实类型 working 草稿并写恢复条件。
 
-## Handoff
+分配前读取全量现存/保留 ID 与共享变更，包含 draft/active/deprecated 及撤销决定；创建和合并前均查重。首次年度配 001–999；跨年、修改标题、修订、重新接受或拆任务保留 ID；删除/撤销不释放。读取失败标 UNKNOWN，冲突/耗尽交 Owner，不自动改号或扩位。
 
-```
-文档创建完成。下一步：
-- mj-agent-doc-validate 校验 frontmatter + wikilinks
-- INDEX.md 同步（如新建 canonical doc）
-- AGENTS.md sync（如 allowlist 项；按 track 落入对应段）
-- B 风味改动 → 准备 EVAL backlog 草案（发布另需明确授权）（execution-loop §7.3 Rule 11）
-- mj-agent-git-commit 提交
-```
+填写九项 `type/domain/summary/owner/created/updated/state/intent-id/track`（type=intent，version 可选）。五正文逐项明确：问题现状、期望结果、成功判断、范围约束、未决项。前置可读区保存提出者/代表、原始来源准确位置、维护责任、原意核对、内容接受、当前位置与完整适用基线、真实主 Issue、AI 整理说明；owner 不自动等于提出者或接受人。
+
+分别记录原意核对、内容接受、执行授权与交付接受的实际人/动作/范围/位置。接受必须能恢复固定提交文件或完整快照的准确内容；摘要/日期/版本/hash 单独不足。实质变动保留旧决定、来源/原因/影响，旧接受仅覆盖旧基线；纯改路径不自动重置业务接受。
+
+INTENT 只用 draft/active/deprecated，机器 PASS/active/AI 自检不替代真实决定。退役保留原路径 ID、旧决定、原因与后继；Plan/Issue 完成不改变它。一个 INTENT 支持多个 Plan，一个 Plan 承担多个 INTENT 时区分实际交付/依赖/背景。Issue 汇总进度依赖，Intent/INDEX 只维护稳定入口。
+
+## 4. 起草正文与修复引用
+
+按真实类型填写足够可用的内容：操作文档给输入、顺序、可观察结果与恢复点；SPEC 给行为/接口/负例；ADR 给决策与备选；Report 给版本/环境/方法/结果/限制，不能用未来计划冒充实测。未知明确标记，不虚填链接、字段或 Owner 接受。
+
+working 保存与补号改名先按共享说明核目录、源目标、Git 状态、引用/路由，后验证完整性；task_id、历史基线和 INTENT ID 保持。共享报告唯一主归属，子 Plan 独立目录，完成原地保留，working 不走物理归档/GC。
+
+runtime prompt/skill/catalog/SQL 面先读真实装配/loader/契约，分类实际安全/业务/权限/breaking/AC/门禁影响；既有基线内维护自主，实质边界变化才等待 Owner 决定，技术拒绝保持原错与 `BLOCKED_EXECUTION_ROUTE`。
+
+## 5. 校验并返回
+
+调用 doc-validate：frontmatter、wikilinks、working 的实际深相对链接及人工语义检查分开报告。原生技能另跑 native 检查；它们只证明覆盖到的静态结构，不证明宿主加载、服务可用、原意忠实或 Owner 接受。
+
+新 canonical 更新 docs/INDEX 与实际高频入口；working 不强制局部 INDEX，也不把所有对话输出落盘。更新活动引用，冻结提交/快照/旧决定保持可恢复；文档版本、日期按类型政策更新。返回类型/track、准确路径、真实来源、决定与基线、校验命令/结果、未知/延期/恢复条件及下一步。提交/推送/PR 在各 Git 技能和已有任务授权范围处理。
+
+政策依据：`repo:policies/documentation.md`、`repo:policies/archive.md`、`repo:sdd/lifecycle.md`、`repo:sdd/adapters/runtime-skill.md`、`repo:sdd/adapters/prompt.md`、`repo:sdd/adapters/contract.md`。

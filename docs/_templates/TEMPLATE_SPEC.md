@@ -6,7 +6,7 @@ tags:
   - spec
 aliases: []
 created: YYYY-MM-DD
-updated: 2026-10-12
+updated: 2026-10-29
 state: draft
 version: v0.1
 track: code
@@ -52,6 +52,9 @@ owner: 项目负责人
 
 应包含：
 
+- 原意正本：真实 INTENT 或 Issue 原意区的准确位置、固定提交完整文件/完整可恢复快照及本 SPEC 承担范围；每关联区分实际交付/依赖/背景。
+- 原意核对、内容接受、执行授权和交付接受分别指向真实记录；SPEC 定义行为/接口/口径，不替代原意或 Plan。
+- 期望冲突按来源责任澄清，不用当前代码改写提出者意图；实质变化保留旧决定/来源/原因/影响，旧接受仅覆盖旧基线。
 - 触发本 SPEC 的需求来源（用户故事 / Issue / 上游决策 ADR）
 - 当前 mj-agent 在该领域的现状（如：当前 `execute_sql` 已实现但缺 envelope 字段定义）
 - 为什么需要正式 SPEC 而非仅 ADR / GUIDE（SPEC 用于"细节级契约"，ADR 用于"决策级取舍"，GUIDE 用于"步骤级操作"）
@@ -186,8 +189,8 @@ owner: 项目负责人
 
 ## 关联文档
 
-- [[wikilink-related-1|描述]]
-- [[wikilink-related-2|描述]]
+- `<真实相关文档的准确链接>`
+- `<另一真实相关文档；无则省略>`
 
 ## 更新记录
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -84,6 +85,20 @@ class NativeGovernanceTests(unittest.TestCase):
         self.put('.github/workflows/new.yml', 'steps:\n  - run: python scripts/new.py\n')
         self.assertTrue(guard.inventory_errors(self.root, ['.github/workflows/new.yml']))
         self.assertEqual(guard.inventory_errors(self.root, ['.github/workflows/new.yml', 'scripts/new.py']), [])
+
+    def test_ci_working_document_check_is_in_active_consumer_inventory(self):
+        # Explicit live inputs: the committed CI workflow and consumer registry.
+        # Validate their relationship through the same inventory boundary as CI.
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        inventory = json.loads((ROOT / 'sdd/native-consumers.json').read_text(encoding='utf-8'))
+        self.put('.github/workflows/ci.yml', workflow)
+        self.assertEqual(guard.inventory_errors(self.root, inventory['executable_consumers']), [])
+
+    def test_retired_working_gc_is_not_an_active_ci_consumer(self):
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        inventory = json.loads((ROOT / 'sdd/native-consumers.json').read_text(encoding='utf-8'))
+        self.assertNotIn('scripts/find_old_completed_plans.py', workflow)
+        self.assertNotIn('scripts/find_old_completed_plans.py', inventory['executable_consumers'])
 
     def test_unknown_neighbor_is_not_protection_vocabulary(self):
         self.put('scripts/neighbor.py', "protected = '.mcp.json'\n")

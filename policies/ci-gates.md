@@ -2,10 +2,10 @@
 type: policy
 artifact: ci-gates
 state: draft
-version: "0.9"
+version: "0.10"
 owner: ranzuozhou
 created: 2026-05-20
-updated: 2026-10-12
+updated: 2026-10-29
 track: engineering-workflow
 ai_visibility: source-of-truth
 ---
@@ -45,15 +45,15 @@ true`」。**该定义只对下表前两种载体成立**；对后两种会误�
 |---|---|---|
 | **step 级** `continue-on-error` | `jobs.<j>.steps[i].continue-on-error` | `kernel-section-refs` / `check-stale-docs` / G14/G15 / G3 / G7 / G23 / G25 / V2 / V6 |
 | **job 级** `continue-on-error` | `jobs.<j>.continue-on-error` | `docker-image-build`（`docker-build.yml`）/ `check-commit-messages` |
-| **退出码语义** | 执行体 `main()` 每条路径 `return 0` —— 翻 `continue-on-error` 是**空操作** | `find_old_completed_plans.py`；`find_stale_docs.py`（#440 正因此判定不追求翻转） |
+| **退出码语义** | 执行体 `main()` 每条路径 `return 0` —— 翻 `continue-on-error` 是**空操作** | `find_stale_docs.py`（#440 正因此判定不追求翻转）；working 候选检测已由 #608 退出活动链 |
 | **环境变量阈值** | CI 是否设该脚本的 strict 开关 | `check_wikilinks.py`（ci.yml 设 `MJ_AGENT_A4_STRICT=1` → **blocking**）／ `check_no_cross_repo_refs.py`（`MJ_AGENT_CHECK_REFS_STRICT` **未设** → 实为 **warning**） |
 
 另有**阈值轴**（与 blocking 轴正交，单独翻不产生 blocking）：`--fail-on error→warning`（V8/V9）
 ／ `--strict`（G21/G22）。V10/V11/`docker-image-build`/`check-commit-messages` **无**此轴。
 
 > **差距陈述（不在本 PR 收紧）**：按 `sdd/gates.md` 头注的定义读，`check_no_cross_repo_refs.py`
-> 与 `find_old_completed_plans.py` 都会被读成 `blocking@ci`，而两者**都不能让 CI 变红**。
-> 现有 gate 行**无一被误判**（这两个执行体本就没有 gate 行，见 §6），故这是**定义的普适性不足**、
+> 会被读成 `blocking@ci`，但它不能让 CI 变红；旧 working GC 执行体曾属同类，#608 已退出活动链。
+> 现有 gate 行**无一被误判**（跨仓引用执行体本就没有 gate 行，见 §6），故这是**定义的普适性不足**、
 > 不是既有真值错误。改写该定义属 `sdd/gates.md` 的独立变更。
 
 ### §1.2 翻转与平台required检查
@@ -327,10 +327,9 @@ grep -rhoE 'scripts/[A-Za-z0-9_/]+\.py' .github/workflows/
 # 差集即 §6.2 的残余
 ```
 
-### §6.2 残余：6 个 CI 执行体没有 gate 行（实测 `f29f501`）
+### §6.2 文档执行体与 gate 登记
 
-推导的左右两侧并不重合。以下 6 个执行体**在 CI 里真跑**，但在 `sdd/gates.md` 的任何一行的
-**脚本列**里都不存在（它们只在别的 gate 行的**叙述**里被顺带提及，那是交叉引用、不是登记）：
+以下为既有文档执行体登记差异；实际 step 与姿态以当前 workflow 为准。#608 退出 Old completed plans 候选检测，并加入 `Working task folders and document-relative links`，该新增结构检查已单独登记于 `sdd/gates.md` §2。其他残余执行体仍在下表，不因本次补登记改变姿态：
 
 | ci.yml step 名 | 执行体 | 实测姿态 | 姿态载体 | 有无 ID |
 |---|---|---|---|---|
@@ -338,12 +337,11 @@ grep -rhoE 'scripts/[A-Za-z0-9_/]+\.py' .github/workflows/
 | `Wikilinks (canonical docs)` | `scripts/check_wikilinks.py` | **blocking** | env `MJ_AGENT_A4_STRICT=1` | **A4** 的自动化（同上） |
 | `A6 audit schema (evidence/ai-context-audit)` | `scripts/check_ai_context_audit.py` | **blocking** | 裸 step | 无（step 名里的「A6」见 §6.3） |
 | `No cross-repo refs (forward guard)` | `scripts/check_no_cross_repo_refs.py` | warning | env `MJ_AGENT_CHECK_REFS_STRICT` **未设** | 无 |
-| `Old completed plans (warning-mode GC候选)` | `scripts/find_old_completed_plans.py` | warning | `main()` 每条路径 `return 0` | 无 |
 | `archive/INDEX.md idempotency` | `scripts/sdd/generate_archive_index.py` | warning | step `continue-on-error: true` | 无 |
 
 **读法**：前两行**不是治理缺口** —— 它们有编号，只是编号在 **A 命名空间**（`policies/documentation.md`
-§5.1）而 `sdd/gates.md` 未回指。**后四行没有任何编号**，其中 `check_ai_context_audit.py` 是
-**blocking**。是否给这四个补 gate 行 / 补编号，是 `sdd/gates.md` 的独立变更（新增登记行不改
+§5.1）而 `sdd/gates.md` 未回指。**后三行没有任何编号**，其中 `check_ai_context_audit.py` 是
+**blocking**。是否给这三个补 gate 行 / 补编号，是 `sdd/gates.md` 的独立变更（新增登记行不改
 `continue-on-error` 值 → 按 §1 F2 **不是** `ci-blocking-gate-toggle`）。
 
 ### §6.3 三个命名空间 + 两组同形陷阱
@@ -432,3 +430,5 @@ V8–V11 保持 blocking，V13 保持 warning；V12 的生成拓扑 join 随拓�
 V4 严格失败、原生新增单测进入 Tests 的 blocking 效果和旧机制测试具名退役须单独列入 Owner 审阅集合。
 首次原生 CI 锚点仅能在正式应用后记录，不沿用历史 streak；不以 SKIP 或人工批准充当运行证据。
 远端 required-check/ruleset 未因本次本地差异自动更改。
+
+> *v0.10（2026-10-29）：#608 — working GC 候选检测退出，登记实际 working 目录/深相对链接结构检查；其他 gate 姿态与平台 required contexts 不变。*

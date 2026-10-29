@@ -72,8 +72,16 @@ git log --oneline develop..HEAD   # 确认有 commits to PR
 |---|---|
 | 用户说"开 PR" 但分支 / target 不明 | 自动用 `git branch --show-current` + branch type matrix 确定 template + target |
 | 关联 Issue 不明确 | 询问"这个 PR 是否关联某个 Issue？给出 issue number 或 'no'" |
-| Plan / SPEC / ADR 关联不明 | 跑 `git log` 提取 commit message 中的引用，自动填 `## 关联` |
+| Plan / INTENT / SPEC / ADR 关联不明 | 先核任务记录和真实正本，再用git log作线索；只填明确关联，不从分支数字或顺序猜主要Issue/PR |
 | 信息完整 | 直接装配 PR body |
+
+## 主关联与 Plan / INTENT 链接
+
+读 [创作与引用说明](../../references/working-docs-and-intent.md)，从真实任务记录核关联 Plan/Intake/Report、INTENT或Issue原意正本、SPEC及准确接受基线；支持新嵌套目录与历史根文件。无Plan独立working不补造Plan；路由若需Plan则按现有契约核精确task_id/head/base，不能从目录名生成task_id。
+
+单Issue同时单主PR，通常显式base develop；必要子PR指向具名主分支并登记精确关系。主要PR优先整体交付集成PR，没有明确主要关联就省P，不猜第一条/最新条。创建成功拿到真实PR编号后，仅首次明确/纠错/明确更换主要关联才受控补号同步目录/主文件与活动引用、路由，不追随后续子/补丁/收尾PR反复改名。补号保持历史证据、task_id、INTENT ID和旧决定可恢复；新HEAD平台审核另核。
+
+PR结果分别记录结构检查、独立合成验收、集成、交付及Owner准确版本接受。报告completed/机器PASS/merge都不替代整体任务接受；INTENT状态不随PR完成传播。创建的真实PR须调用客户端attach_artifact附到当前chat，再报告URL/head/base。该关联动作不授权merge或删除。
 
 ## Command Format（非交互模式必须）
 

@@ -49,7 +49,7 @@ digraph post_merge {
   s6 [label="Step 6: Schedule agent?\n(see Schedule Triggers)" shape=diamond];
   s7 [label="Step 7: Branch cleanup\n→ delegate to mj-agent-git-delete (PR-B3)" shape=box];
   s8 [label="Step 8: Develop sync\n→ delegate to mj-agent-git-sync (PR-B3)" shape=box];
-  s9 [label="Step 9: Plan lifecycle mark\n• locate plans/[PLAN]_* / [INTAKE]_*\n• state: active → completed only after AC/usability/Owner acceptance\n• per lifecycle §2" shape=box];
+  s9 [label="Step 9: Plan lifecycle mark\n• locate nested working + legacy roots\n• 主Plan: AC/usability/Owner接受；其他按自身交付条件\n• per lifecycle §2" shape=box];
   s10 [label="Step 10: Follow-up branch handoff\n• 有 follow-up 工作？\n  Yes → 退出 skill + mj-agent-git-branch\n        (开新 worktree;\n         NOT in-place git checkout -b)\n  No  → 闭环结束" shape=diamond];
 
   out [label="Output: Post-merge Checklist\n+ next actions for user" shape=doublecircle];
@@ -214,11 +214,15 @@ PR #<id> merge 触发 in-source canonical body 改动：
 
 > **⚠ Worktree-safe sync（#185 F-8 lesson;M4-FU-F8-SKILL-STEP-8-WORKTREE-SYNC-FIX）**：develop sync 必须是**工作树内**操作（`mj-agent-git-sync` Step 4 `git merge origin/develop`，或 `git pull --ff-only`）——**切勿**用 bare-repo `git update-ref` 直接改 HEAD 指针，那只更新 ref 不更新工作树文件，会留下 stale 文件（#185 曾因此残留 13 个 stale 文件，事后 `git reset --hard HEAD` 救回）。若发现工作树与 HEAD 不一致，先保护未提交成果并报告，不自动 reset；具名恢复方案另获批准。
 
-## Step 9: 结果状态与Owner接受
+## Step 9: 结果状态与 Owner 接受
 
-按 `repo:sdd/lifecycle.md` §2核关联Plan/Intake，分别记录候选集成、验证、交付、待接受、接受、部分完成、延期、失败及未知。PR merged不自动表示任务完成。只有对应AC满足、成果可用且Owner明确接受版本后，才在任务授权内active→completed并更新日期；多PR任务须整体基线满足，非核心延期独立跟踪。缺state先按真实状态补齐，禁止补写假接受。
+按 [创作与引用说明](../../references/working-docs-and-intent.md) 与 `repo:sdd/lifecycle.md` §2，从真实任务记录定位新嵌套目录和历史根文件；目录可只有独立 Intake/Report，不因无 Plan 补造文档。分别记录候选集成、验证、交付、待接受、接受、部分完成、延期、失败及未知。PR merged 不自动表示任务已被接受。
 
-保持原路径、其他frontmatter及历史正文，保存验收包/证据位置、版本环境、授权、在途副作用/未知/延期及下一步停止条件。重入核真实状态，已成功操作不重复；文档提交、远端清理及业务接受各自列状态。
+仅主 Plan active→completed 要求对应 AC 满足、成果可用及 Owner 明确接受准确版本；多 PR 以整个 Plan 承担基线为准。其他 working 可由 Agent 按自身已确定交付条件完成，若其条件含 Owner 接受仍须满足。Report completed 只是文档交付；独立任务整体接受仍由 Owner 在已有 Issue/会话/任务记录表达，不另建接受系统。主 Plan 的一次接受可同时覆盖整体接受，明确范围即可，无须重复确认。
+
+保持原路径和可恢复的旧决定，记录接受基线准确位置、版本/环境/时点、授权、在途副作用、未知/延期及下一步停止条件。废弃 draft 保持 draft 并写原因/恢复条件；completed 原地保留，working 的物理归档/180天GC/候选检测与CI调用已取消，archived 只兼容历史。INTENT 状态/ID 独立，Plan/Issue 完成不传播变更。
+
+目录补号或纠错按受控改名核源目标/Git状态/活动引用/路由；保持 task_id、INTENT ID 和历史基线，部分成功先对账。文档提交、远端清理、平台批准与业务接受分别列状态。
 
 ## 执行App撤销与状态
 
@@ -310,7 +314,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 ### Plan Lifecycle Update（per lifecycle §2）
 - ⏸ skipped — PR 无关联 working plan
 （如有，则）
-- ✅ `plans/[PLAN]_<id>_<desc>.md`: AC/成果可用/Owner接受满足后state `active`→`completed`，updated刷到 <YYYY-MM-DD>
+- ✅ `plans/<topic>/[PLAN]_<topic>.md`: AC/成果可用/Owner接受满足后state `active`→`completed`，updated刷到 <YYYY-MM-DD>
 
 ### Follow-up Branch Handoff（Step 10）
 - 检测：Step 4 follow-up issues / Step 5 EVAL backlog / 用户口述下一步？**NO**
@@ -335,8 +339,8 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 - ❌ 不直接调 定时跟进工具（仅发现后建议）（仅识别 signal + 建议；user 决定）
 - ❌ 不删 main / develop / 受保护分支（仅清 feature/bugfix/maintain/documentation/hotfix）
 - ❌ 不强制清 worktree（如 user 说"保留 worktree 供其他工作"，跳过 Step 7）
-- ❌ 不物理移动 working plan 文件（Step 9 仅改 frontmatter `state` / `updated`；物理归档到 `plans/archive/` 是 Phase 2 GC，由 follow-up issue 引入）
-- ❌ 不修改 plan 正文（仅 frontmatter）
+- working 完成原地保留；仅真实主要关联变化时按受控命名调整目录/文件，物理归档与GC已取消
+- 不改写历史结论/接受；在正文当前检查点记录真实版本、接受范围、未知/延期和路径映射
 - ❌ 不自动把 `state: draft` 改 completed（draft 不应跳 active 直达 completed；Step 9 仅 active → completed）
 - ❌ 不为 follow-up 工作开新分支 / 创建 worktree（属 Stage 2，由 `mj-agent-git-branch` 处理；本 skill 仅做 Step 10 handoff 提醒，不自行 `git worktree add`）
 
@@ -353,7 +357,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 - `repo:sdd/workflows/execution-loop.md` §7（Post-merge sedimentation policy；§7.3 Rule 11 EVAL backlog mj-agent 专属）
 - `repo:sdd/lifecycle.md` §2（Working-doc 生命周期，Step 9 plan state 改 completed 依据；§2.2 Stage 17 自动化 Rule 12）
-- `repo:sdd/lifecycle.md` §2.1（Working 文档 frontmatter 4 态机段）
+- `repo:sdd/lifecycle.md` §2.1（Working draft/active/completed，archived仅历史兼容）
 - `repo:docs/infrastructure/git/[GUIDE]_Git_Branch_Strategy.md`（Branch lifecycle / cleanup）
 - `repo:docs/infrastructure/git/[GUIDE]_PR_Description_Convention.md`（PR description fields；Step 4/5 解析依据）
 - `CHANGELOG.md`（Keep a Changelog format：Unreleased / Added / Changed / Fixed / Removed）
@@ -365,7 +369,7 @@ mj-agent 是 bare repo + worktree-per-branch 模型（见 ADR-008 / `mj-agent-gi
 
 - **不要** 跳过 Step 5 EVAL backlog（mj-agent 专属硬约束；execution-loop §7.3 Rule 11）
 - **不要** 在 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change 触发的 PR 上不开 EVAL backlog ticket（A11 transitional waiver 兜底失效）
-- **不要** 物理移动 plan 文件到 archive（仅改 frontmatter；GC 是 Phase 2 工作）
+- 完成文件保持任务目录原位；working GC 和候选检测已退出活动流程
 - **不要** 自动改 plan `state: draft` → `completed`（违反生命周期；draft 不应跳过 active）
 - **不要** 删受保护分支 main / develop（硬性阻断）
 - **不要** 在当前 worktree（典型 `develop/`）内 `git checkout -b <new-branch>` 起 follow-up 工作（违反 mj-agent worktree-per-PR 约定；execution-loop §4.1 Stage 2 映射（历史源 HITL_Prompt §4.3 Rule 5 + Rules + Fallback）；`mj-agent-git-branch` SKILL §Anti-patterns 第 2 条）。起 follow-up 必须调 `mj-agent-git-branch` 开新 worktree——见 Step 10。

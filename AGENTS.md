@@ -68,6 +68,10 @@ python scripts/sdd/check_native_skills.py
 
 `docs/INDEX.md` 是文档入口，`sdd/workflows/execution-loop.md` 是17阶段工作流；本次请求只执行获授权阶段。技能发现见 `.agents/skills/SKILL_INDEX.md`，模板见 `docs/_templates/`。runtime skill 由 `load_skill()` 去 frontmatter，开发技能由 Codex 发现，两者不能混用。
 
+新 working 放 `plans/<topic>/`，主 `[PLAN]_<topic>.md` 与目录一致；独立目录可只有 Intake/报告。四种真实主要 I/P 命名、受控补号/引用修复和七字段见 `policies/documentation.md` §2.7。仅主 Plan completed 必须 AC/可用成果/Owner准确版本接受；其他 working 按自身交付条件，报告完成不推导整体接受；完成原位保留、不运行 working GC。
+
+原意正本用正式 `docs/intent/` INTENT 或简单任务唯一 Issue 原意区，来源/责任不明仅 working 草稿。ID/九字段/原位退役及原意核对、内容接受、执行授权、交付接受分记见 `policies/documentation.md` §2.8；接受须可恢复完整基线，机器 PASS 不认证真实决定。新增目录/深相对链接检查为 `python scripts/check_working_docs.py`。
+
 创建或维护 mj-agent 项目附属 Site 前，读取并遵循 [Site 命名规范](docs/rule/[STANDARD]_MJ_Agent_Site_Naming_Convention.md)。
 
 Git 新分支只用 worktree；PR显式base（通常develop，hotfix main；release独立发布需接受/授权及未来具名规则映射，当前有限解析器不声称支持，分层关系精确登记）；授权内merge须有效平台审核及门禁满足。提交格式与 scope 以 `docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convention.md` 为准。ADR 编号先核对 `decisions/` 与归档命名空间。报告实施来源、HITL、BDD/TDD、委派和未验证项。

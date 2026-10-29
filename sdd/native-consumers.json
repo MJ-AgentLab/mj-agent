@@ -11,7 +11,7 @@
     "scripts/check_loop_section_refs.py",
     "scripts/check_no_cross_repo_refs.py",
     "scripts/check_wikilinks.py",
-    "scripts/find_old_completed_plans.py",
+    "scripts/check_working_docs.py",
     "scripts/find_stale_docs.py",
     "scripts/mcp/pg-server-start.ps1",
     "scripts/mcp/pg-server-wrapper.mjs",
