@@ -149,5 +149,12 @@ Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub�
 
 原意核对/方案采纳：Owner 最终 A–F 与四项 grilling，由本执行会话交接及 Issue608保存。
 执行授权：本执行会话明确指令与 Issue608 Verification Plan。
-独立技术验收：首轮对24dc29e已通过，报告见上；补号及文档收尾后第2轮待核。
-交付：PR609已建立，实际CI/有效平台审核仍须核。Owner成品接受尚未发生；机器PASS、PR合并或文档完成不代替该决定。
+独立技术验收：首轮对24dc29e通过；最终第2轮对70330318a8a0bf8db2ebc531e272b96555e6e926封板，相关47项回归、9组合成和同SHA五项CI通过，完整报告已收入PR609正文。原失败/修复、SKIP与宿主/Gitee边界保留，不启动本对象第3轮产品验收。
+交付与集成：PR609于2026-10-29 13:48:29 Asia/Taipei合入develop，merge为1d2cad2df6b1b68a354742e6dd51a6fdc2e68239、来源head70330318a8a0bf8db2ebc531e272b96555e6e926。两提交完整tree相同（7d095603200253b62420c0fe3029dbd9dc535f18），原候选证据适用于该相同成品。实际merged_by为ranzuozhou；只读平台reviews及conversation均为空，没有有效Approve记录，不补造历史审核或推定操作路线。
+Owner成品接受尚待本会话明确决定；“PR已合并，继续后续工作”只确认合并与后续执行授权，不替代准确版本接受。当前保持active；Issue608仍OPEN，接受与关闭状态分别核。
+
+## 9. 合并后检查点
+
+2026-10-29：正常fetch后确认7033为origin/develop祖先；本地develop已快进到1d2cad2，原有未跟踪.playwright-mcp保持原样，未复制或清理。状态文档在独立documentation/608-post-merge-closeout worktree维护，base=1d2cad2；只更新本Plan与合并后报告，主题/目录仍以整体主PR609为准，不因收尾PR再次改名。
+
+本次无用户运行时变更，CHANGELOG与runtime EVAL均不触发；不新建重复延期Issue或自动化。Gitee镜像、宿主加载和真实symlink证据保留原延期/未测及恢复条件。本轮删除候选仅原任务worktree及本地分支，待具名授权；origin因当前受控后台没有remote-delete动作而保留，Gitee不在范围。未授权前保留，成功项不重复。当前实际收尾与待决定事项见 [合并后报告](./[REPORT]_post_merge_closeout.md)。
