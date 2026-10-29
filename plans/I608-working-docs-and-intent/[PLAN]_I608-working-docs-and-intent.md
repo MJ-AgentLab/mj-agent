@@ -135,6 +135,8 @@ check_working_docs、check_codex_native、check_native_skills。每条记录命�
 发布前事实：已核同一App5284037/installation170545174/repository1172583390，daily仅metadata read、contents/pull_requests write，短期token撤销CONFIRMED。CI成品变更需要Workflows write，当前尚无本任务权限扩大决定；受影响发布步骤待具名决定，不擅扩权或借身份。Gitee无本任务具名可用执行身份，为非核心镜像NOT_EXECUTED/DEFERRED，恢复须具名合法身份及动作范围，不以该缺能力阻塞本地核心。
 Owner新增指令：真实未决取舍使用Matt Pocock grilling，选项标推荐；提问保持待答，沉默/超时/预选不作决定；已定方案不重问。
 当前未知：最终主 PR编号、最终候选提交、独立验收结果、CI、Owner成品接受。
+2026-10-29 后续检查点：独立第1轮已对24dc29e7d68f892d4455caeb3e27b34231e15785核16AC，技术可交付、无阻塞；完整报告见 [首轮独立验收](./[REPORT]_independent_round_1.md)，报告completed仅自身交付。其发现的hotfix TBD旧GC演进依赖已按既定范围清除，未新增自动建单机制。
+Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub本人认证；Agent经正常平台界面仅更新App5284037及installation170545174的Workflows write，单仓范围未变。受控bootstrap实际audit=EXECUTOR_VERIFIED、短期token撤销CONFIRMED；发布后仍须撤回并逐项核验。权限授权与成品接受分记。
 后续填写验证证据与改名记录，主 Plan 在未获 Owner 明确准确版本接受前保持 active。
 
 ## 8. 接受记录
