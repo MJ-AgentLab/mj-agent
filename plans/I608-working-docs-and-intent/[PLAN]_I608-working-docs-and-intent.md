@@ -128,6 +128,12 @@ check_working_docs、check_codex_native、check_native_skills。每条记录命�
 本 Plan 初建 draft；事实/任务依赖已核定，依据 Owner 对最终 A–F方案的明确采纳与本会话执行授权转 active，不增固定人工停点。
 首批路由回归观察 RED：15 failed / 3 passed；实现后与既有交付边界合跑 GREEN：30 passed，ruff适用文件通过。
 方法为受控 offline runner 红绿；嵌套四命名、受控补号保 task_id、旧布局/无Plan目录、重复块/JSON/路由、逐层重解析点与大小限制均覆盖。
+核心恢复点：7c891f28bb815d8053d2b4e6f8bab268b6dcaba8（路由与完整AC基线，文件即本Plan当时路径）、eb9980e31e5e96fee1ca5cca96c31453d93faf08（校验器/GC/CI）、b68be18a27f97b02e446aee544983eb138943e10（政策/模板/导航）。上述为可恢复完整文件位置，非以hash或摘要替代基线。
+完整本地矩阵：ruff PASS；mypy 57源文件 PASS；受控 offline unit 1936 passed、2 skipped、30 subtests passed（203.81s）。SKIP分别为Windows无权创建真实symlink和非Windows平台专属event-loop用例；不计通过。
+文档：frontmatter161件、working目录/深链接、strict wikilinks、loop章节引用及native schema/resources均PASS；native只STATIC_PASS，host NOT_TESTED/rule_loading UNKNOWN，不冒充加载。
+校验器 focused 136 passed/1 symlink SKIP；mock reparse负例另有覆盖，不当真实symlink创建证据。三个实施Agent已返回实际贡献；独立验收上下文已从Issue16AC建立预期，等待最终候选提交。
+发布前事实：已核同一App5284037/installation170545174/repository1172583390，daily仅metadata read、contents/pull_requests write，短期token撤销CONFIRMED。CI成品变更需要Workflows write，当前尚无本任务权限扩大决定；受影响发布步骤待具名决定，不擅扩权或借身份。Gitee无本任务具名可用执行身份，为非核心镜像NOT_EXECUTED/DEFERRED，恢复须具名合法身份及动作范围，不以该缺能力阻塞本地核心。
+Owner新增指令：真实未决取舍使用Matt Pocock grilling，选项标推荐；提问保持待答，沉默/超时/预选不作决定；已定方案不重问。
 当前未知：最终主 PR编号、最终候选提交、独立验收结果、CI、Owner成品接受。
 后续填写验证证据与改名记录，主 Plan 在未获 Owner 明确准确版本接受前保持 active。
 

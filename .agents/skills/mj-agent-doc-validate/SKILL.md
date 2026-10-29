@@ -3,232 +3,69 @@ name: mj-agent-doc-validate
 description: 适用于 mj-agent 的既有文档格式/元数据/链接审核。输入：文件集合、track、当前规范。流程：frontmatter→wikilinks→半自动OB→track分组→根例外→报告。输出：每项PASS/FAIL/WARN/SKIP及来源；静态审阅明确标记。Use when：检查某GUIDE frontmatter和wikilinks。Do not use for：跑完整lint/types/pytest矩阵；建议flow-verify，不用文档校验替代全验证。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
-
-
 # mj-agent Doc Validator
 
-## 本技能的执行约定
+执行前读取 [共用执行边界](../../references/execution-boundaries.md)。输入为既有文件集合/任务目录与当前政策，输出每项 PASS/FAIL/WARN/SKIP、命令/版本/环境和覆盖限制。只做审核与修复指引；完整 lint/type/offline test 矩阵交 flow-verify，正文创作交 doc-author/flow-plan。
 
-执行前读取 [共用执行边界](../../references/execution-boundaries.md)。先核接受基线、任务授权及实际workspace/ref/SHA；基线内普通实施自主，实质安全/业务/权限/breaking/AC/gate变化先Owner决定。授权未撤销且目标/对象/环境/权限/风险未实质变化时复用，普通内容迭代仍核版本但不逐内容重批。技术拒绝保留原错并返回 `BLOCKED_EXECUTION_ROUTE`，不绕过。独立调用返回本范围结果；完整闭环已获授权时按检查点继续；委派返回协调者。
+## 1. 固定范围与适用 schema
 
+核实际 workspace/ref/SHA、被检文件、引用它们的活动入口和历史基线，读取 `policies/documentation.md`。按真实归属区分 canonical、working、kernel、capability package、原生开发技能和 runtime adapter；不能用一种 schema 代替全部。
 
-## 触发与职责详述
+working/INTENT/改名时先读 [创作与引用说明](../../references/working-docs-and-intent.md)：核四式 topic、真实主要关联与稳定主题、主 Plan 和目录一致/至多一个主 Plan、无 Plan 独立目录与共享报告归属。编号真实性/主要性、原意忠实和接受均须实际证据，checker 仅能验证它所覆盖的结构。
 
-This skill validates mj-agent documentation against Meta v2.2 + Code_Side v1.1 + Agent_Side v1.1 (A1-A6 schema/existence checks + A7-A11 agent-track + A12-A14 engineering-workflow + OB1-OB5 format checks) by wrapping `scripts/check_wikilinks.py` (A4 wikilinks) + `scripts/check_frontmatter.py` (A2/A3 schema + 4-value TRACK_VALUES enum). Returns PASS/FAIL/WARN/SKIP per check. Recognizes project-root markdown 5 件 (README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md) as exempt from A1-A3 per Meta v2.2 §2.6; emits SKIP for those checks. Make sure to use this skill whenever the user says "验证文档", "检查文档格式", "文档合规审计", "文档质量检查", "check docs", "validate documentation", "audit docs compliance", "lint markdown", "wikilinks check", "frontmatter check", "Stage 11 self-review docs gate" in the mj-agent context. Direction-distinct from mj-agent-flow-verify (Stage 10 multi-domain command matrix; calls scripts directly). Do not use for: writing or modifying a document (use mj-agent-doc-author), Stage 10 verification command matrix (use mj-agent-flow-verify which sub-calls this skill's scripts), or full Plan body authoring (use mj-agent-flow-plan).
+## 2. 运行实际入口
 
+从当前仓根显式运行，优先既有锁定环境，不机械 uv sync；每条保存命令、退出码和新输出：
 
-## Overview
-
-包装 mj-agent 已有的 2 个 validator 脚本（`scripts/check_wikilinks.py` + `scripts/check_frontmatter.py`）+ instruction-based 半自动检查。返回 `PASS / FAIL / WARN / SKIP` per check。
-
-> mj-agent **不**像 mj-system 有统一 `validate_doc.py`；本 skill 编排两个脚本 + 半自动 OB 检查 + A6/A12-A14 PR-mode 选项。
-
-**Direction-distinct from `mj-agent-flow-verify`**：
-- **本 skill** (`mj-agent-doc-validate`)：单文档 / docs/ 子集 schema / wikilinks 校验；调 2 个 scripts；交互流程（指引 user 跑 / 解释 fail）
-- **mj-agent-flow-verify** (Stage 10)：多域命令矩阵（lint / mypy / pytest / docker compose / Studio probe / docs validate）；把 2 scripts 作为 Level A 命令直接跑，**不**进入本 skill 交互
-
-## When to Use
-
-**MUST run after**：
-- 创建 / 编辑任何 `docs/**/*.md`
-- 提 PR 含 docs 改动前
-- Stage 11 self-review 本地验证段（mj-agent-flow-self-review Step 3）
-- v2.1 promote / archive workflow 后的全仓 audit（如 PR-B3c-promote 末次自检）
-
-**MAY skip**：
-- 仅 typo 修正（user 决定跳过）
-- `.agents/skills/**` 改动（不在 SCAN_ROOTS；ADR-013 native schema 不走本 skill）
-
-## Workflow
-
-```dot
-digraph validate {
-  rankdir=TB;
-  input [label="Input: docs path or 全仓 audit" shape=doublecircle];
-
-  s1 [label="Step 1: scripts/check_frontmatter.py\n(A2 schema + A3 enum + 4-value TRACK_VALUES)" shape=box];
-
-  s2 [label="Step 2: scripts/check_wikilinks.py\n(A4 living/frozen 引用判定)" shape=box];
-
-  s3 [label="Step 3: 半自动 OB 检查\n(OB1-OB5; instruction-based)" shape=box];
-
-  s4 [label="Step 4: 按 track 分组 A 项\n(A1 path / A5 INDEX / A6 AGENTS.md sync\n+ A7-A11 agent-side / A12-A14 engineering-workflow)" shape=box];
-
-  s5 [label="Step 5: Output report\n[ID] PASS|FAIL|WARN|SKIP per check" shape=doublecircle];
-
-  input -> s1 -> s2 -> s3 -> s4 -> s5;
-}
+```text
+python scripts/check_frontmatter.py
+python scripts/check_wikilinks.py
+python scripts/check_working_docs.py
 ```
 
-## Step 1: scripts/check_frontmatter.py
+这些 CLI 无必需参数；全量范围/兼容行为由真实脚本决定。check_frontmatter 校验通用元数据及 working/INTENT 专属字段、路径/ID/状态/日期和 ID 集合唯一性；check_wikilinks 校验其实际扫描面，按文档位置解析显式相对目标；check_working_docs 对新嵌套 working 执行目录/归属和真实深层 Markdown 相对链接校验。旧根布局兼容读取，不能声称深链接已全量重新验证。
 
-```bash
-# 全仓
-uv run python scripts/check_frontmatter.py
+`.agents/skills/` 变更另运行 `python scripts/sdd/check_native_skills.py`，资源引用用其 `--surface resources`；涉及原生配置再按真实范围运行 `python scripts/sdd/check_codex_native.py`。STATIC_PASS 不证明宿主加载、项目使能或服务可用。infra 冻结摘要只在实际对应技能改变时成组维护，不为 flow/doc 修改刷新冻结内容。
 
-# 单文件 / 子集（脚本内部 SCAN_ROOTS 决定；目前不支持 path 参数，全仓扫）
-```
+## 3. 分类型核结构和状态
 
-校验内容（v2.1 起）：
-- **A2** Frontmatter schema：required fields {type / summary / owner / created / updated / state / track}
-- **A3** state enum：{draft / active / deprecated / completed}
-- **A3** track enum：4 值 {code / agent / engineering-workflow / shared}（v2.1 promote 后启用）
-
-输出：`OK: N canonical docs all pass` 或 `FAIL: N of M docs have violations` + per-doc 违规原因。
-
-## Step 2: scripts/check_wikilinks.py
-
-```bash
-uv run python scripts/check_wikilinks.py
-```
-
-校验：
-- **A4** 内部 wikilink 的仓库目标路径（以 `repo:` 为前缀）在仓库中存在
-- 触及历史 v1.1 / v2.0 archive 路径时按 ADR-011 §5.6 living vs frozen 判定（living refs 必须迁到最新；frozen pin via archive 路径 OK）
-- 跨文档相对路径解析（`../`、`../../` 等）
-
-输出：`OK: 0 violations` 或具体未解析 wikilink 列表 + 文件 + 行号。
-
-## Step 3: 半自动 OB 检查（instruction-based）
-
-mj-agent 当前 OB1-OB5 阈值未完全定稿（per Code_Side v1.1 §7.2 TODO Phase 1）；本 skill 输出建议性 WARN：
-
-| OB# | 维度 | 检查方法 | 阈值（建议） |
-|---|---|---|---|
-| OB1 | 文档长度区间 | wc -l | GUIDE 100-500；RUNBOOK 100-300；ADR 80-300；SPEC 200-600；STANDARD 200-1500；SKILL 150-450 |
-| OB2 | 时态一致性 | 扫"将"vs"已"vs"正在"动词比例 | 主观自评 |
-| OB3 | 内容边界 | 对照 type's MUST NOT list（per Code_Side §3.x / Agent_Side §2-§5） | 边界 → WARN；明显违 → FAIL |
-| OB4 | summary 质量 | summary 字段非空 + 20-60 字符 + 无含糊词 | 自评 |
-| OB5 | 内部一致性 | 同文档不同段落陈述不矛盾 | 自评 |
-
-详见 mj-system `[STANDARD]_Documentation_Management_Framework.md` §7.2（Lite Phase A 占位上游）。
-
-## Step 4: 按 track 分组 A 项
-
-剩余 A 项校验需 manual / PR-mode 判断：
-
-### Code-Side（A1-A6 + OB1-OB5；全部 track 共享）
-
-- **A1** Path + filename 合法（per [TYPE]_Description[_vX.Y].md 模式）
-- **A5** `docs/INDEX.md` 已同步（人工对照新增 canonical doc 是否在 INDEX 表中）
-- **A6** allowlist 文档变更 → AGENTS.md sync（**触发轴**：Meta v2.2 §6.4 **4 类 allowlist** —— 类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 mj-agent 特化 runtime 语义；**落位轴**：v2.2 §6.4.1 三段分流）：
-  - `track: code` → AGENTS/既有指南的 code 主题入口（按当前结构定位）
-  - `track: agent` → AGENTS/既有指南的 agent 主题入口（按当前结构定位）
-  - `track: engineering-workflow` → AGENTS/既有指南的工程主题入口（按当前结构定位）
-  - `track: shared` → 元规则段
-  - 项目根 markdown（无 track）触发 §6.4 任一类时 → 元规则段或对应主题段（per Meta v2.2 §2.6）
-
-### Agent-Side（A7-A11；仅 track: agent 时触发）
-
-- **A7** SKILL 路径与目录一致；Python 实现存在
-- **A8** PROMPT `state: active` 时 `eval_references` 非空（Phase 2 起强制；当前 transitional waiver）
-- **A9** EVAL `state: active` 时 `dataset_path` + `baseline_metric` + `baseline_value` 必填（Phase 2 起强制）
-- **A10** CONTRACT `state: active` 时 `schema_ref` 存在
-- **A11** SKILL `state: active` 时 `eval_references` 非空（Phase D 起强制）
-
-### Engineering-Workflow（A12-A14；v2.1 promote 后启用，仅 track: engineering-workflow）
-
-- **A12** `.agents/skills/<name>/SKILL.md`：ADR-013 native 2 字段；description ≥ 200 chars + 正向触发 + `Do not use for:` 反向触发段
-- **A13** 原生 hooks/rules 保护语义与执行能力核对，按 `repo:.agents/references/execution-boundaries.md`；不改变安全停点。
-- **A14** `.codex/config.toml` server 增删声明 trust posture + credential mode
-
-> **注**：A12-A14 校验当前是 manual review；自动校验留给 Phase 2 CI 实现。
-
-## 项目根 markdown 例外（Meta v2.2 §2.6 + GitHub_Markdown §14.5）
-
-如校验目标是项目根 5 件之一（README / CONTRIBUTING / CHANGELOG / GLOSSARY / AGENTS.md），自动 emit：
-
-```
-[A1]  SKIP — 项目根 markdown 不强制 [TYPE]_ 前缀（per Meta v2.2 §2.6）
-[A2]  SKIP — 项目根 markdown 不要求 frontmatter（per Meta v2.2 §2.6）
-[A3]  SKIP — 项目根 markdown 无 state/track 字段
-[A4]  CHECK — wikilink 完整性仍校验（项目根 markdown 仍受 A4 约束）
-[A5]  CHECK — docs/INDEX.md 同步仍校验（如适用）
-[A6]  CHECK — §6.4 4 类 allowlist 仍触发（AGENTS.md sync 仍受约束）
-```
-
-GitHub_Markdown §14 项目根特例语法（badges / 行内 HTML / ASCII 架构图 / 多语言 README）适用 — 当前 manual review，未自动化。
-
-## Output Format
-
-```
-[A1]  PASS — Path and filename valid for [GUIDE] in docs/guide/
-[A2]  PASS — 7/7 required frontmatter fields present (含 track)
-[A3]  PASS — state=active, track=code, type=guide all valid
-[A4]  PASS — 0 wikilink violations (scripts/check_wikilinks.py)
-[A5]  WARN — docs/INDEX.md 未含本新文档；建议补行
-[A6]  SKIP — 不在 allowlist（仅 framework / 架构 / 核心运行入口触发）
-[A7]  SKIP — track ≠ agent
-[A8]  SKIP — 不是 PROMPT
-[A9]  SKIP — 不是 EVAL
-[A10] SKIP — 不是 CONTRACT
-[A11] SKIP — track ≠ agent
-[A12] SKIP — track ≠ engineering-workflow / 不在 .agents/skills/
-[A13] SKIP — 不动 .codex/hooks.json
-[A14] SKIP — 不动 .codex/config.toml
-[OB1] WARN — 长度 612 行，超 GUIDE 推荐区间 100-500（建议拆分或参考长 GUIDE 范例）
-[OB2] PASS — 时态一致
-[OB3] PASS — 内容在 GUIDE MUST list 内
-[OB4] PASS — summary 字段 35 字符
-[OB5] PASS — 内部一致
-
-总判断: PASS（1 WARN，无 FAIL；可继续 commit）
-```
-
-## Running Full Audit（全仓）
-
-```bash
-# Stage 11 self-review 或 Phase B end 自检
-uv run python scripts/check_frontmatter.py && uv run python scripts/check_wikilinks.py
-```
-
-期望：
-- `OK: 58 canonical docs all pass frontmatter schema check`
-- `OK: 0 violations`
-
-如失败：阅读输出 → 修复 → 重跑。
-
-## What This Skill DOES NOT DO
-
-- ❌ 不写 / 修改文档（仅校验；fix 由 user 决定后用 mj-agent-doc-author / 编辑）
-- ❌ 不替代 `mj-agent-flow-verify`（flow-verify 是 Stage 10 多域命令矩阵；本 skill 仅 docs schema/wikilinks，作为 flow-verify Level A 命令池子集）
-- ❌ 不替代 `mj-agent-flow-self-review`（self-review 是 Stage 11 双段 + 12-item checklist；本 skill 仅 docs 校验，是 self-review §3 本地验证段子项）
-- ❌ 不 auto-fix（仅报告 + 修复指引）
-- ❌ 不强制 OB 阈值（mj-agent v2.1 起首期 OB1-OB5 是 WARN-only；Phase 1 阈值定稿后升级）
-
-## Sub-skill / Tool Calls
-
-| Tool | 用途 |
+| 对象 | 必须核验 |
 |---|---|
-| shell `uv run python scripts/check_frontmatter.py` | Step 1 schema + 4 值 TRACK_VALUES |
-| shell `uv run python scripts/check_wikilinks.py` | Step 2 内部 wikilink |
-| 读取 | Step 3 OB 检查（文档内容） / Step 4 INDEX/AGENTS allowlist 比对 |
-| 文件枚举 | Step 4 A1 path 模式校验 |
-| shell `wc -l` | OB1 长度估算 |
+| 通用 canonical | 政策通用字段和类型专属条件、当前状态/日期/track、准确目录/命名、版本与引用 |
+| working | type=plan/intake/report/assessment；七字段 type/summary/owner/created/updated/state/track，domain/version 不强制 |
+| 新主 Plan | 新建 draft；active 有明确采纳依据，completed 有逐 AC 满足、成果可用和 Owner 准确版本接受 |
+| 其他 working | 按已确定自身交付条件完成；若条件包含 Owner 接受仍须满足；报告 completed 不代表整体任务接受 |
+| INTENT | docs/intent 正式路径；九字段 type/domain/summary/owner/created/updated/state/intent-id/track，type=intent，version 可选；有效日期，ID与文件名一致，状态仅 draft/active/deprecated，含deprecated全量查重 |
+| 已退役/历史对象 | INTENT 原路径/ID/旧决定/原因/后继保留；working archived 仅历史兼容，废弃 draft 保持 draft，完成原地保留；canonical 归档按原政策 |
 
-## Reference Files
+INTENT ID 分配还须人工核保留/撤销历史及共享变更；集合读取失败标 UNKNOWN，不当空集合。跨年/修订/重新接受/拆任务保持 ID，删除撤销不释放；冲突/999耗尽留 Owner 决定。Plan/Issue完成不传播INTENT状态。
 
-- `repo:scripts/check_frontmatter.py`（A2 + A3 + 4 值 TRACK_VALUES enum；v2.1 起首）
-- `repo:scripts/check_wikilinks.py`（A4 wikilink；含 living/frozen archive 判定）
-- `repo:policies/documentation.md` §2.6（项目根 markdown 例外）+ §6（frontmatter / state）+ §7.1（4 类 allowlist）+ §7.2（三段分组）+ §5.1（A1-A6）+ §5.2（OB1-OB5）
-- `repo:policies/documentation.md` §5.1（A1-A6）+ §5.2（OB1-OB5 适用 全 track）
-- `repo:policies/documentation.md` §5.3（A7-A11 仅 agent track 跨轨门禁）+ `repo:sdd/adapters/runtime-skill.md` / `repo:sdd/adapters/prompt.md` / `repo:sdd/adapters/contract.md`
-- A12-A14（engineering-workflow）：A12 → `repo:.agents/references/execution-boundaries.md`「原生配置与文档检查接口」；A13 → `repo:policies/ci-gates.md` §5.1；A14 → `repo:policies/ai-agent.md` §4
-- `repo:docs/rule/[STANDARD]_GitHub_Markdown.md` §14（项目根 README 与 Markdown 特例；语法约束 manual review）
+## 4. 人工内容与接受核验
 
-## Anti-patterns
+INTENT 五正文（问题现状、期望结果、成功判断、范围约束、未决项）及前置可读区完整：提出者/代表、来源准确位置、维护责任、原意核对、内容接受、当前位置与完整适用基线、真实主Issue、AI整理说明。来源/维护责任不明应为真实类型 working 草稿；简单任务 Issue 原意区可作唯一正本。
 
-- **不要** 把 OB 阈值当 FAIL（Phase 1 之前是 WARN-only；硬阻断会误伤）
-- **不要** 跳过 A4 wikilinks（v2.1 promote 后历史路径可能 break；必跑）
-- **不要** 在 .agents/skills/ 子目录跑本 skill（不在 SCAN_ROOTS；ADR-013 native schema 由 mj-agent-git-review-pr D9 校验）
-- **不要** auto-fix AGENTS.md sync（A6 是 manual review；自动 sync 会破坏 Meta v2.2 §6.4 4 类 allowlist + §6.4.1 三段分流意图）
-- **不要** 对项目根 markdown 5 件强制 A1-A3 检查（per Meta v2.2 §2.6 例外；emit SKIP）
+Plan 对目标范围、完整接受基线/承担范围、动作授权、文件入口顺序/依赖、工具身份/输入、停止/恢复、逐AC版本环境批次证据、候选完成/正式生效均有答案。缺关键内容具体列未决与恢复点，结构齐全不算语义可用。
 
-## Handoff
+原意核对、内容接受、执行授权、交付接受分记。接受绑定固定提交文件或完整可恢复快照准确位置；摘要/日期/版本/hash 单独不足。实质变动旧接受只覆盖旧内容，保旧决定及原因/影响；纯路径调整不自动重置业务接受。活动链接按新路径修，历史证据保持可恢复，task_id/INTENT ID不由目录重算。
 
-```
-Validate 完成。
-PASS → 可继续 mj-agent-git-commit
-FAIL / WARN → 阅读修复指引 → 编辑 / mj-agent-doc-author 修 → 重跑本 skill 直至 PASS
-全仓 audit PASS（58 docs all pass + 0 wikilinks）→ 可入 Stage 11 self-review
-```
+## 5. A1–A14 与 OB 报告
+
+| 项 | 检查边界 |
+|---|---|
+| A1–A3 | 路径命名、适用schema、日期与两套状态；机器结果与人工真实性判断分列 |
+| A4 | 实际扫描面的链接可解析；迁移区分活动引用与固定提交/快照/旧决定 |
+| A5 | 新canonical更新导航；working不强制局部INDEX，不复制实时进度 |
+| A6 | 按policy allowlist核高频规则/运行/目录/runtime语义的入口同步与主题落位 |
+| A7–A11 | 仅实际agent adapter类型：实现路径、eval_references/dataset/schema等当前契约与过渡规则；不能对无关working硬套 |
+| A12 | 原生技能name/description schema、正反向触发及资源引用；调用实际native checker |
+| A13–A14 | 原生hooks/rules与MCP实际保护/信任/凭据模式，依共享边界；不扩权限、不绕技术拒绝 |
+
+项目根 README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS 无通用 frontmatter，A1–A3 对对应schema标 SKIP；仍核适用链接/导航/入口。kernel/capability/adapter按各自规则，不能泛化豁免。
+
+OB1–OB5 为长度、时态、内容边界、summary质量和内部一致性，按当前政策阈值区分 WARN/FAIL；不能把建议阈值变成新必要门禁。Report 给真实结论/证据/限制，SPEC给行为/接口/口径，Issue给覆盖进度，类型边界逐项核。
+
+## 返回
+
+每项给 PASS/FAIL/WARN/SKIP/UNKNOWN、文件位置、命令或人工来源、当前版本环境/时点和限制。只静态审阅就写 STATIC_REVIEW，未运行不能写 PASS。机器 PASS 不证明来源忠实、实际授权、真实运行或 Owner接受；把问题交回对应作者在原授权内修，实质未决保持待答，复核受影响项。
+
+依据：`repo:policies/documentation.md`、`repo:sdd/lifecycle.md`、`repo:policies/archive.md`、`repo:scripts/check_frontmatter.py`、`repo:scripts/check_wikilinks.py`、`repo:scripts/sdd/check_native_skills.py`。

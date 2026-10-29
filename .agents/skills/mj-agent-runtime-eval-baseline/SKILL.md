@@ -285,7 +285,7 @@ judges: [<Step 5 选定 list>]
 
 - **Accept** → 本 skill **直接 写入 到 `docs/evaluation/<filename>.md` 落盘** → 同步 update target frontmatter `eval_references` field（用 mj-agent-runtime-skill-doc-improve 或 mj-agent-runtime-prompt-version-bump 的 分析→影响分类→实施/决定 路径改 src/）
 - **Refine** → 回 Step 4-6 调整
-- **Reject** → 取消，记录 review notes（可选写到 plans/[INTAKE]_*.md 或 EVAL backlog ticket close 原因）
+- **Reject** → 取消，记录 review notes（可选写到 plans/<topic>/[INTAKE]_<topic>.md 或 EVAL backlog ticket close 原因）
 
 ## Output Format
 

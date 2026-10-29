@@ -198,7 +198,7 @@ per execution-loop §3.3 7-段格式：
 
 - **Accept** → 本 skill 在 任务授权有效且执行路线可用时**直接 编辑 `src/mj_agent/skills/<name>/SKILL.md` 落盘**（聊天批准不自动解锁 hook）→ mj-agent-flow-self-review 接 Stage 11
 - **Refine** → 回 Step 4 调整
-- **Reject** → 取消，记录 review notes（可选写到 plans/[INTAKE]_*.md）
+- **Reject** → 取消，记录 review notes（可选写到 plans/<topic>/[INTAKE]_<topic>.md）
 
 ## Output Format
 

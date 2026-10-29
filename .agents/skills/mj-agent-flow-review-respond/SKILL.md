@@ -84,12 +84,14 @@ gh pr checks <pr-id>                                         # CI status detail
 ```
 
 定位 linked artifacts（同 mj-agent-flow-scope-drift Step 1）：
-- Plan: `plans/[PLAN]_*.md` / `[INTAKE]_*.md`
+- Plan: `plans/<topic>/[PLAN]_<topic>.md（兼容历史根文件）` / `[INTAKE]_*.md`
 - SPEC: `docs/design/{module}/[SPEC]_*.md`
-- ADR: `docs/adr/[ADR]_*.md`
-- Issue: 从 PR body / branch name 解析
+- ADR: `decisions/ADR-*.md`
+- Issue: 从用户明确链接/PR body/任务记录核本仓真实主要关联，不从分支数字猜
 
 如 PR ID 未给 → 从当前 branch 推断（`gh pr list --head $(git branch --show-current)`）。
+
+反馈涉及原意、接受、目录/编号或working状态时读 [创作与引用说明](../../references/working-docs-and-intent.md)。分别判原意/SPEC实质变化与基线内实现修复，核影响与旧接受适用范围；固定提交/快照/旧决定保留，改活动链接与路由。目录改名保持task_id/INTENT ID，后续子PR不引起反复改名。报告完成不能推定Plan/任务整体接受，补推后核新HEAD平台审核。
 
 ## Step 2: Classify Each Comment
 
@@ -178,7 +180,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
 ## Review Response Report — PR #<id>
 
 ### Linked Artifacts
-- Plan: `plans/[PLAN]_xxx.md`
+- Plan: `plans/<topic>/[PLAN]_<topic>.md`
 - SPEC: `docs/design/<module>/[SPEC]_xxx.md`
 - Issue: #<id>
 
@@ -208,7 +210,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
    - 为什么重要：API 兼容性 + 文档一致性 + 测试覆盖
    - 选项：A. 接受 → 改 SPEC + impl + test / B. push-back → 解释为何不接受 / C. defer → 建 follow-up Issue
    - 推荐：A（reviewer 是 domain expert，需求合理）
-   - 默认假设：A
+   - 待决定：不把推荐或未回答视为同意
    - 实际边界变化需决定：是
 
 2. **Comment #6: reviewer 要改 system.md system prompt body**
@@ -217,7 +219,7 @@ Risk = Low   → continue（auto-applicable per-comment plan）
    - 为什么重要：B 风味 in-source canonical 改动是 §3.1实质风险面 runtime-skill-content-change / prompt-version-or-body-change；version bump 必同步 eval_references；建议走 mj-agent-runtime-prompt-version-bump（PR-C2）
    - 选项：A. 接受扩 scope（变 feature/* PR；本 PR rebase）/ B. defer → follow-up PR / C. 改 SPEC 重对齐
    - 推荐：B（B 风味单独 PR + 独立领域视角核验）
-   - 默认假设：B
+   - 待决定：不把推荐或未回答视为同意
 
 ### Modification Plan（待 HITL 后展开）
 - Comment #1 (bug): 改 service.py:142 boundary check

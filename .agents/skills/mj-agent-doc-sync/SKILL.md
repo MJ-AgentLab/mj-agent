@@ -38,18 +38,18 @@ digraph sync {
 
   p1 [label="Phase 1: Impact Detection\n• mj-agent code-doc mapping\n• 7 modules + biz_catalog + .agents/skills/" shape=box];
 
-  q07 [label="Q-07: 通用变更范围确认?\n(命中 ≥3 文档且非模块专属)" shape=diamond];
+  q07 [label="Q-07: 真实影响/范围是否未决?" shape=diamond];
 
   p2 [label="Phase 2: Content Update\nPer affected doc:\n• 读取 doc + changed code\n• Update outdated sections\n• Update frontmatter `updated`" shape=box];
 
   q08 [label="Q-08: 接口参数描述变更实质性?\n(签名未变但描述变)" shape=diamond];
-  d02 [label="D-02: 大幅删除确认?\n(超 MAX(30 行, 25%))" shape=diamond];
+  d02 [label="D-02: 历史事实/基线丢失?" shape=diamond];
 
   renamed [label="Doc renamed/deleted?" shape=diamond];
 
   p3 [label="Phase 3: Cross-Ref Repair\n• rg wikilinks 整仓\n• Check src/mj_agent/{skills,prompts}/ 反向引用 (mj-agent 扩展)\n• Check Onboarding GUIDE / AGENTS.md / INDEX.md" shape=box];
 
-  d03 [label="D-03: AGENTS.md 修改 > 10 行?" shape=diamond];
+  d03 [label="D-03: 入口同步改变实质边界?" shape=diamond];
 
   p4 [label="Phase 4: Sync\n• INDEX.md entries\n• AGENTS/既有指南按主题归属" shape=box];
 
@@ -92,7 +92,8 @@ digraph sync {
 | `.github/workflows/` | AGENTS.md CI 段 / mj-agent-git-push GUIDE |
 | `.env.example` | `repo:config/README.md`（应用配置）与 `repo:.env.example`（仅公开变量名） / `config/README.md` |
 | `langgraph.json` | `docs/guide/[GUIDE]_Developer_Onboarding.md` §7 |
-| `.agents/skills/<name>/SKILL.md` 改动 | INDEX.md "工程编排技能" 段 / AGENTS.md "Engineering-Workflow Documentation" 段 |
+| `.agents/skills/<name>/SKILL.md` 改动 | `.agents/skills/SKILL_INDEX.md` / 实际高频工程入口；不机械刷新 infra 冻结摘要 |
+| `plans/<topic>/` 或 INTENT 路径/主关联变化 | working/canonical 活动引用、Issue/PR 关联、`task_delivery.py` 实际路由；固定基线分开保留 |
 | `.codex/hooks.json` 改动 | AGENTS.md A13 自检（v2.1 §7.7） |
 | `.codex/config.toml` 改动 | AGENTS.md A14 自检 + 待落地 `[STANDARD]_MCP_Server_Governance_v1.0` |
 
@@ -109,7 +110,7 @@ per affected doc：
 
 **触发条件**：
 - 接口参数描述变但函数签名未变 → **Q-08** 实质性判断
-- 单文档预计删除超 MAX(30 行, 25%) → **D-02** 大幅删除确认
+- 大段改写 → **D-02** 核丢失的事实/旧决定及可恢复性；普通内容更新自主，文件删除另核具名授权
 
 **Substantive change rule**: 仅在改动影响语义或行为指引时更新 `updated`。typo / formatting → **不**更新 `updated`。
 
@@ -117,14 +118,15 @@ per affected doc：
 
 如有 doc renamed / deleted：
 
-1. rg wikilinks 整仓：`docs/`、`AGENTS.md`、`README.md`、`CONTRIBUTING.md`、`.github/`
+1. rg 旧路径/符号与其相对写法：`docs/`、`plans/`、`policies/`、`sdd/`、`.agents/`、入口 markdown、`.github/` 和实际路由消费者；同时检查 Markdown 链接、wikilinks、backtick 路径与路由字段
 2. **mj-agent 扩展（per HITL_Prompt §4.9 Rule 5a）**：grep `src/mj_agent/skills/**/SKILL.md` + `src/mj_agent/prompts/*.md` body 中的 backtick 引用（in-source canonical 是反扫目标）
 3. **Always check**: `docs/guide/[GUIDE]_Developer_Onboarding.md`（高频 cross-reference 目标）
-4. 更新所有命中 references 到新名/位置
+4. 逐命中分活动引用与固定提交/完整快照/旧决定；活动引用按使用文档位置修复，冻结证据保留可恢复，不无差别全替换。来源忠实与基线接受分别核，纯路径调整不重置业务接受，实质内容变化旧接受只覆盖旧内容。
+5. 涉及 working 补号改名时读 [创作与引用说明](../../references/working-docs-and-intent.md)：先核旧/新绝对路径、冲突、Git 状态、引用与路由，改后核完整性和实际 loader。task_id、INTENT ID、历史基线保持；部分成功先对账，旧副本不能成为第二主 Plan。
 
 ## Phase 4: Sync
 
-**执行前 D-03 检查**：AGENTS.md 需修改 > 10 行 → **D-03** 确认
+**入口边界核对**：按下述 allowlist 同步真实入口。行数是复核范围的提示，普通授权内同步自主；改变治理/信任/权限等实质边界才交 Owner 决定。
 
 1. **INDEX.md**：手动更新对应 section 的 entry（mj-agent 当前未有 validator-owned managed-block 自动重建；Phase 2+ 落地）
 2. **AGENTS.md sync 两轴**：
@@ -136,7 +138,7 @@ per affected doc：
      - `track: shared` → 元规则段（顶部）
    - **项目根 markdown 例外**：README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md 改动（per Meta v2.2 §2.6）不进入 tri-track 落位轴（无 `track` 字段）；但若触发 §6.4 任一类（如 README "LLM provider" 段触类 4），仍需 A6 sync 检查
 
-Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 sync。
+Sync 覆盖实际受影响的 canonical、治理入口和 working 活动引用，包括 `plans/**`、`.agents/**`、Issue/PR 关联与交付路由；不把 working 排除在迁移反扫之外。working 不强制局部 INDEX，也不因引用更新批量改写历史正文。Intent/INDEX 不复制实时进度。
 
 ## Phase 5: Validate
 
@@ -146,10 +148,10 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 
 | 时机 | 触发条件 | 抑制条件 | 问题 ID |
 |---|---|---|---|
-| Phase 1 后 | 命中 ≥3 docs 且变更通用工具/配置 | 用户已提供受影响清单 | Q-07 |
+| Phase 1 后 | 真未决范围/目标取舍 | 能查明的技术影响自主查，原授权覆盖的同步继续 | Q-07 |
 | Phase 2 中（接口描述变） | 参数类型/名称描述变但函数签名未变 | 用户说"只改格式/注释" | Q-08 |
-| Phase 2 中（大幅删除） | 单文档删除 > MAX(30 行, 25%) | 用户说"大幅修改/重写" | D-02 |
-| Phase 4 前（AGENTS.md > 10 行） | AGENTS.md 需修改超 10 行 | 用户说"不用更新 AGENTS.md" | D-03 |
+| Phase 2 中（大段改写） | 可能丢失历史事实或接受基线 | 先保存可恢复旧基线；只有新的实质取舍/文件删除才需决定 | D-02 |
+| Phase 4 前（入口边界） | 同步可能改变治理/信任/权限 | 普通入口同步在原授权内继续，实质变化先 Owner | D-03 |
 | Phase 1 后（B 风味命中） | mapping 命中 src/mj_agent/{skills,prompts}/* | 经 mj-agent-runtime-* 分析 + 影响分类 + 实施/决定 | **Q-B1**（mj-agent 专属 §3.1实质风险） |
 
 ### Q-B1（mj-agent 专属）
@@ -161,7 +163,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 (2) 独立领域/Prompt视角核验（不要求真人或固定人数）
 (3) runtime skill在范围授权内落盘 + 再同步 docs
 
-或：(A) 仅 sync 非 in-source 部分（推荐；in-source 留给 runtime skill 单独处理）/ (B) 跳过 B 风味流程直接 sync（user 全责）
+runtime 部分交对应领域技能保持契约与负例证据；其他独立同步继续。技术拒绝保持原错，不通过更换入口跳过边界。
 ```
 
 ## What This Skill DOES NOT DO
@@ -170,7 +172,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 - ❌ 不替代 mj-agent-flow-self-review（self-review §3 本地验证段嵌套调本 skill；本 skill 不输出 11/12-item checklist）
 - ❌ 不直接改 in-source canonical（B 风味必走 propose-via-runtime 流程）
 - ❌ 不删 legacy docs（用 mj-agent-doc-migrate 走 archive workflow）
-- ❌ 不 auto-fix AGENTS.md（D-03 manual review；自动修改会破坏 §6.4.1 三段分流）
+- 入口按 allowlist 与真实主题归属同步，普通更新自主；未决定的治理边界变化保持待答
 
 ## Sub-skill / Tool Calls
 
@@ -196,7 +198,7 @@ Sync 范围限于 canonical docs in `docs/**`。Working docs in `plans/**` 不 s
 - **不要** 绕过 runtime skill 直改 src/mj_agent/{skills,prompts}/（B 风味必经 mj-agent-runtime-* 分析→影响分类→实施/决定）
 - **不要** 未经实质治理决定改变AGENTS边界（§6.4.1三段分流的普通同步自主；治理边界实质变化先Owner决定）
 - **不要** 跳过 §7.2.1 反扫的 mj-agent 扩展（in-source canonical body 是反扫目标）
-- **不要** 在 D-02/D-03 触发时跳过用户确认
+- D-02/D-03 是实质影响核对，行数本身不新增审批；未答实质决定不能当默认或沉默同意
 - **不要** 主动维护项目根 markdown 5 件的 frontmatter（README/CONTRIBUTING/CHANGELOG/GLOSSARY/AGENTS.md）—— per Meta v2.2 §2.6 例外，项目根 markdown 不写 frontmatter；A1-A3 不适用；本 skill 仅在「项目根 markdown 段内容反映了 §6.4 4 类某项」时同步内容，不补 frontmatter
 
 ## Handoff

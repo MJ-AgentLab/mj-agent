@@ -14,19 +14,19 @@ description: 适用于 mj-agent 的Stage0原始需求受理。输入：用户目
 
 ## 触发与职责详述
 
-This skill performs mj-agent task Intake (HITL Stage 0) — converts user requirements into a structured Intake Result with risk-level / scope / documentation needs / HITL decision points, and decides whether to write `plans/[INTAKE]_*.md`. Make sure to use this skill whenever the user says "评估任务", "intake", "Issue 创建前", "task admissibility", "需求收口", "新任务评估", "task intake", "需求评估", or asks to convert a vague description / existing plan / chat / spec into an actionable engineering task in the mj-agent repo. mj-agent-specific risk taxonomy adds 4 §3.1实质风险 triggers: runtime-skill-content-change (src/mj_agent/skills/**/SKILL.md body) / prompt-version-or-body-change (system.md version) / biz-catalog-sync (qcm_catalog.yaml) / sql-guardrail-relax (tools/sql/{guardrail,precheck}.py). Outputs Intake Result + Issue Draft + HITL Questions and stops. Do not use for: GitHub Issue creation (use mj-agent-git-issue), branch creation (use mj-agent-git-branch), repo fact-check (use mj-agent-flow-repo-scan, Stage 3), or full Plan body authoring (use mj-agent-flow-plan, Stage 4).
+This skill performs mj-agent task Intake (HITL Stage 0) — converts user requirements into a structured Intake Result with risk-level / scope / documentation needs / HITL decision points, and decides whether to write `plans/<topic>/[INTAKE]_*.md`. Make sure to use this skill whenever the user says "评估任务", "intake", "Issue 创建前", "task admissibility", "需求收口", "新任务评估", "task intake", "需求评估", or asks to convert a vague description / existing plan / chat / spec into an actionable engineering task in the mj-agent repo. mj-agent-specific risk taxonomy adds 4 §3.1实质风险 triggers: runtime-skill-content-change (src/mj_agent/skills/**/SKILL.md body) / prompt-version-or-body-change (system.md version) / biz-catalog-sync (qcm_catalog.yaml) / sql-guardrail-relax (tools/sql/{guardrail,precheck}.py). Outputs Intake Result + Issue Draft + HITL Questions and stops. Do not use for: GitHub Issue creation (use mj-agent-git-issue), branch creation (use mj-agent-git-branch), repo fact-check (use mj-agent-flow-repo-scan, Stage 3), or full Plan body authoring (use mj-agent-flow-plan, Stage 4).
 
 
 ## Overview
 
-Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flow. Converts user intent (natural language) into a structured Intake Result before any code, branch, or document is created.
+Authoritative entry point for the 17-stage mj-agent AI Engineering Execution flow. Adapts saved original intent into a structured task Intake before implementation. doc-author owns saving an INTENT or Issue original-intent section; this skill preserves that source and maps only this task’s scope.
 
-**Key constraint**: this skill **only outputs** Intake Result + Issue Draft + HITL Questions. It does NOT create Issues, branches, worktrees, or files (except optionally `plans/[INTAKE]_<id>_<brief>.md` when §2.1 落盘判定 triggers).
+**Key constraint**: this skill **only outputs** Intake Result + Issue Draft + HITL Questions. It does NOT create Issues, branches, worktrees, or files (except optionally `plans/<topic>/[INTAKE]_<topic>.md` when §2.1 落盘判定 triggers).
 
 **Workflow position**:
 
 ```text
-[user request] -> [mj-agent-flow-intake] -(HITL Gate confirmed)-> [mj-agent-git-issue] -> [mj-agent-git-branch] -> ...
+[原意正本 / doc-author] -> [mj-agent-flow-intake] -> [mj-agent-git-issue（需要且已授权时）] -> [mj-agent-git-branch] -> ...
 ```
 
 **Reference**:
@@ -49,9 +49,9 @@ digraph intake {
   s7 [label="Step 7: 需要 Plan/SPEC/ADR?" shape=box];
   s8 [label="Step 8: HITL 触发?\n(§3.1实质风险场景)" shape=diamond];
 
-  落盘判定 [label="§2.1 落盘判定\nrisk=High OR\n多模块/in-source canonical/biz catalog OR\nHITL点≥3 OR\n多迭代周期" shape=diamond];
+  落盘判定 [label="§2.1 落盘判定\n真实持久化/交接需要\n按类型保存working草稿" shape=diamond];
 
-  落盘 [label="写入 plans/[INTAKE]_<id>_<brief>.md" shape=box];
+  落盘 [label="写入 plans/<topic>/[INTAKE]_<topic>.md" shape=box];
   对话输出 [label="对话输出 Intake Result" shape=box];
 
   s9 [label="Step 9: 输出 Issue Draft\n(mj-agent 5 类 type → 填 .github/ISSUE_TEMPLATE/)" shape=box];
@@ -108,6 +108,14 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 - 前置依赖（已有 ADR / SPEC / 上游 Issue）
 - 后续独立 PR（避免 scope 膨胀）
 
+## §2.1 原意适配与 Intake 落盘
+
+先读取 [working/INTENT 创作与引用说明](../../references/working-docs-and-intent.md)，核原始来源、提出者/代表、维护责任、实际基线和本任务承担范围。正式 INTENT 或简单任务 Issue 原意区保持唯一正本；一对多/多对一关联注明实际交付、依赖、背景，Issue 汇总总体覆盖，不把拆任务当作换 INTENT ID。
+
+Intake 记录目标/使用者、范围/排除/延期、可观察 AC、授权/环境/停止及未决/恢复点，不复制实施步骤。已有来源缺失或维护责任未知时保留真实类型 working 草稿，不冒充正式 INTENT，也不推定原意已经核对或内容已接受。
+
+仅有持久化/交接需要时保存 `plans/<topic>/[INTAKE]_<topic>.md`，使用 TEMPLATE_INTAKE.md，七字段含 type=intake 与 track；不把所有对话落盘。目录可在 Plan 前建立，也可始终无 Plan。topic 只用真实主要关联，多 PR 无明确整体主要 PR 时省 P，不能从分支数字猜。采纳、文档完成和任务整体接受分别按真实状态记录；Owner 的整体接受仍在既有 Issue/会话/任务记录表达，不另造接受系统。
+
 ## Step 2b: Grilling 逼问纪律（仅前期真歧义）
 
 > **leading word「逼问」**（per `repo:docs/rule/[STANDARD]_MJ_Agent_Skill_Authoring_Craft.md` §6）。**仅对前期真歧义开**、用于把模糊需求逼清——**不是执行门**。
@@ -116,7 +124,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 **逼问纪律**：
 - **一次一问** —— 一次抛多问令人迷失；逐题推进。
-- **每问附推荐答案锚点** —— 给出你的首选答案 + 理由，用户只需 同意 / 改正（对齐 mj-agent `向 Owner 询问`「(Recommended) 首选项放第一」惯例；离散单点用 `向 Owner 询问`，连续追问走对话）。
+- **按问题性质给选项** —— 真实业务原意用中性选项，不用工程偏好替提出者决定；工程、机制、授权取舍标推荐项并给理由。预选、沉默和超时不是回答，未决项保持待答；先继续不依赖该决定的工作。
 - **沿 design tree 逐依赖下钻** —— 上层决定锁定后再问其依赖项。
 - **能查代码 / glossary / catalog 就别臆测** —— 先 `find_biz_context` / 读 `qcm_catalog.yaml` / glossary，查不到再问。
 - **停止判据（checkable）** —— design-tree 每分支标 `resolved` 或 `defer(M-FU)`；全标完即停，进 Step 3。
@@ -125,7 +133,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 ❌ Anti-patterns：
 - 把逼问用于**已定方向**的执行段（= 过度 gate；违反偏好）。
-- 一次抛多问；不给推荐答案、让用户从零回答。
+- 一次抛多问；选项缺少具体影响，或把推荐/预选当成已决定。
 - 能查 catalog / 代码却臆测发问。
 
 ## Step 2c: 术语主动锐化（ubiquitous language）
@@ -190,7 +198,7 @@ mj-agent 5 type（参 `repo:docs/rule/[STANDARD]_MJ_Agent_Commit_Message_Convent
 
 ### 文档需求
 
-按 `repo:sdd/workflows/execution-loop.md` §4.1（Stage 3 → mj-agent-flow-repo-scan · Stage 6 → mj-agent-doc-author；per-stage prompt 未 re-port，历史源 HITL_Prompt §4.4 / §4.6）+ Repo Scan §7.1 决定（10 类：Plan/SPEC/ADR/RUNBOOK/GUIDE/STANDARD/Local ISSUE/ASSESSMENT/CHANGELOG/INDEX）。Stage 3 Repo Scan 会输出完整 §7.1 矩阵；Intake 阶段先做粗略评估。
+按 doc-plan 对本次实际类型逐对象评估 Create/Update/None，Intake 先粗评、Repo Scan 细化；包括 INTENT/Issue 原意、Intake、Plan、Report/Assessment 及必要 SPEC/ADR/运行文档与导航，不以固定十类漏项。Report/Intake 独立任务可以始终无 Plan；本来需要实施计划的任务仍须该工件。
 
 ## Step 8: HITL 触发
 
@@ -276,9 +284,9 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 <§3.3 7-段格式，0-5 个>
 
 ### §2.1 落盘判定
-- 是否落盘 plans/[INTAKE]_*.md: 是 / 否
+- 是否落盘 plans/<topic>/[INTAKE]_*.md: 是 / 否
 - 落盘原因: <若是>
-- 建议路径: plans/[INTAKE]_<id>_<brief>.md
+- 建议路径: plans/<topic>/[INTAKE]_<topic>.md
 
 ### Next Step
 - 明确Issue创建授权后调git-issue，已有授权复用
@@ -303,7 +311,7 @@ Issue body 的结构**来自 `.github/ISSUE_TEMPLATE/`**（8 个模板，`6c84ef
 | shell `git status` / `git branch --show-current` | Step 1 当前上下文 |
 | 文件枚举 / rg | Step 3 影响范围粗扫（不深入；深度扫给 Stage 3 Repo Scan） |
 
-无 sub-skill；本 skill 是 17-stage 闭环的源头，不调用其他 skill。
+需要先保存原意时调用 doc-author；文档缺口细化调用 doc-plan。完整实施计划交 flow-plan，本技能只作原意到任务的适配。
 
 ## Reference Files
 

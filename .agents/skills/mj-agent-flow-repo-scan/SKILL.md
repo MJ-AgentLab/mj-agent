@@ -43,7 +43,7 @@ digraph repo_scan {
   s2 [label="Step 2: 捕获 worktree 状态\n(git status / diff / merge-base..HEAD)" shape=box];
   s3 [label="Step 3: 8-dim 扫描（mj-agent tune）\n7 modules + biz_catalog + cross-边界" shape=box];
   s4 [label="Step 4: §7.2.1 反向扫描\n(扩展到 src/.../{skills,prompts}/ + biz_catalog drift)" shape=box];
-  s5 [label="Step 5: §7.1 Documentation Decision\n(10 行 × 8 列)" shape=box];
+  s5 [label="Step 5: §7.1 Documentation Decision\n(实际受影响对象 × 证据列)" shape=box];
   s6 [label="Step 6: Plan Verdict + 风险再分级\n(按实际安全/业务/权限/AC影响分类)" shape=box];
   s7 [label="Step 7: Verification Plan + HITL Questions" shape=box];
 
@@ -78,25 +78,24 @@ digraph repo_scan {
 
 ```bash
 # 1. GitHub Issue
-branch=$(git branch --show-current)
-issue=$(echo "$branch" | grep -oE '[0-9]+' | head -1)
-[ -n "$issue" ] && gh issue view "$issue" --json title,body,labels
+# Issue 必须来自已明确的本仓真实关联，不从 branch 任意数字推导
+gh issue view <confirmed-issue-number> --repo MJ-AgentLab/mj-agent --json title,body,labels
 
 # 2. 本地 [ISSUE]（canonical 治理产物，Phase D 起首份）
 ls docs/issues/[ISSUE]_*.md 2>/dev/null
 
 # 3. Plan / Intake（working 文档）
-ls plans/[PLAN]_*.md plans/[INTAKE]_*.md 2>/dev/null
+rg --files plans    # 枚举新嵌套目录与历史根文件，再按正文真实关联定位
 
 # 4. SPEC（按 mj-agent 模块定位）
 git diff --name-only HEAD | grep -oE 'src/mj_agent/[a-z_]+/' | sort -u | \
   while read mod; do ls "docs/design/$(basename "$mod")"/[SPEC]_*.md 2>/dev/null; done
 
 # 5. 相关 ADR
-ls docs/adr/[ADR]_*.md
+rg --files decisions
 ```
 
-**为什么重要**：anchors 是 Documentation Decision 的目标对齐基准；Plan/SPEC 缺失意味着 Stage 4/6 必须先做。
+**为什么重要**：锚点让原意/应有行为/实施范围可核。先按实际文档决策判定需要哪些类型；独立报告任务无 Plan 合法，需要而缺失才具体列补齐入口。
 
 ## Step 2: 捕获 worktree 状态
 
@@ -170,28 +169,18 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 
 ## Step 5: Documentation Decision 矩阵（§7.1）
 
-输出 **完整 10 行**（空行用 `None` 占位）：
+按 doc-plan 对每个实际受影响对象判 Create/Update/None，列准确目标/已有正本、理由、来源、track/schema、依赖与必须就绪时点。以当前政策与真实 scope 为准，不固定十行；覆盖 INTENT/Issue 原意、Intake、Plan、Report/Assessment 及必要 SPEC/ADR/其他 canonical、导航。默认对话输出事实扫描，不为表格补造文档。
 
-| Type | Action | Path | Existing Target | Reason | Evidence | Template Notes | Required Before |
-|---|---|---|---|---|---|---|---|
-| Plan | Create / Update / None | `plans/[PLAN]_*.md` | <现有路径或无> | <为什么需要> | <Issue / diff / grep 命中> | 6 段：context/scope/拆解/风险/验证/AC | SPEC / Implementation |
-| SPEC | Create / Update / None | `docs/design/{module}/[SPEC]_*.md` | … | <新接口/新表/行为变化> | <代码/API/biz_catalog/数据流证据> | TEMPLATE_SPEC.md 9 段；含 EVAL coverage 子段 | Implementation |
-| ADR | Create / Update / None | `docs/adr/[ADR]_*.md` | … | <长期架构/数据边界/CI 决策> | <冲突/备选/约束> | TEMPLATE_ADR.md；含 alternatives | SPEC / Implementation |
-| RUNBOOK | Create / Update / None | `docs/runbook/[RUNBOOK]_*.md` 或 `docs/infrastructure/**/[RUNBOOK]_*.md` | … | <运维/回滚/排障> | <部署/容器/Studio 证据> | TEMPLATE_RUNBOOK.md 7 段 | PR / Release |
-| GUIDE | Create / Update / None | `docs/guide/` 或 `docs/infrastructure/**` | … | <开发者上手/操作路径> | <命令/工作流证据> | TEMPLATE_GUIDE.md CN-numbered | PR |
-| STANDARD | Create / Update / None | `docs/rule/[STANDARD]_*_v1.0.md` | … | <长期规则/命名/治理/工程流程> | <规范冲突/重复证据> | MUST/SHOULD/MAY + version 必填 | PR |
-| Local ISSUE | Create / Update / None | `docs/issues/[ISSUE]_*.md` | … | <中高风险长期知识锚点> | <证据/根因/影响> | TEMPLATE_ISSUE.md 八段 | Plan |
-| ASSESSMENT | Create / Update / None | `docs/assessments/[ASSESSMENT]_*_v1.0.md` | … | <优化后基线对比> | <基线/指标证据> | TEMPLATE_ASSESSMENT.md 八维度 | Post-implementation |
-| CHANGELOG | Update / None | `CHANGELOG.md` | … | <user-visible / release> | <行为/发布证据> | 仅 user-visible 或 release | Commit / PR |
-| INDEX | Update / Regenerate / None | `docs/INDEX.md` 或 `docs/**/INDEX.md` | … | <新增/迁移 canonical> | <新文档路径/入口变更> | canonical 入口必须同步 | PR |
+涉及任务目录或原意时读 [创作与引用说明](../../references/working-docs-and-intent.md)：核四式 topic、真实主要关联、无 Plan 的独立目录、共享/子 Plan 归属；检查七/九字段、两套状态与准确接受基线。补号改名只修活动引用，固定提交/旧快照/历史决定保留可恢复；task_id 与 INTENT ID 不由目录重算。
 
-**完成判定**：能让 Stage 4 (Plan) / Stage 6 (SPEC) 作者不再回头查证就动笔 → 通过。
+**完成判定**：每个影响和未决项都有事实来源、结论/限制与恢复点，后续作者能据此动笔；不可得证据保持 UNKNOWN，不用推断补成 PASS。
 
 ## Step 6: Plan Verdict + 风险再分级
 
 ### Plan Verdict（必出一项）
 
 ```
+- No Plan needed           → 独立 Intake/Report 任务；记录其真实交付条件
 - Plan still valid          → Stage 4 修订 / Stage 6 SPEC
 - Plan needs update         → 列出需写回 Plan 的 §
 - Split issue               → 范围过大；建议拆 Issue/PR
@@ -224,6 +213,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
     python -m compileall src
     python scripts/check_wikilinks.py     # 文档变更时
     python scripts/check_frontmatter.py   # 文档变更时
+    python scripts/check_working_docs.py  # working目录/深相对链接
 - Offline external bands（只证明 structured policy skip；凭据不启用）:
     uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/integration
     uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/smoke -m smoke
@@ -279,7 +269,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 - Modules / Code Paths / Studio / Database / Config / CI-Docker / Docs
 
 ## Documentation Decision
-<Step 5 完整 10 行表>
+<Step 5 按实际对象的 Create/Update/None 与证据表>
 
 ## Stale Doc Reverse Scan（§7.2.1，mj-agent 扩展）
 - 已扫改动类型：<rename / move / SQL-rename / DDD-restructure / internal-opt / biz_catalog-drift / runtime-canonical-change / N/A>
@@ -306,7 +296,7 @@ mj-agent **扩展反向扫描目标**：除 mj-system 原 5 类外，新加 in-s
 ## What This Skill DOES NOT DO
 
 - ❌ 不修改 repo-tracked 文件（read-only；不动 src / docs / config / biz_catalog）
-- ❌ 不创建 Repo Scan Result 独立文档（默认对话输出；如需沉淀，由 mj-agent-doc-author 吸收到 Plan/SPEC/ADR/RUNBOOK/ISSUE）
+- 默认对话输出；明确需要持久化时交 doc-author 保存到所属任务目录的真实 working 类型，或吸收到已有 Plan/规范。扫描本身保持只读，不因此强造 Plan。
 - ❌ 不替代 mj-agent-flow-intake（Stage 0 vs Stage 3；intake 在 Issue 创建前，repo-scan 在 branch 创建后）
 - ❌ 不替代 mj-agent-doc-plan（doc-plan 是 §7.1 子集；本 skill 上位包含全量事实核查）
 - ❌ 不进入 Stage 4 Plan / Stage 6 SPEC（Repo Scan Result 输出后由用户决定下游）

@@ -68,9 +68,11 @@ git log -1 --format=%s 2>/dev/null    # 上次 commit 标题（避免重复）
 ```
 
 定位 Linked artifacts（同 mj-agent-flow-scope-drift Step 1）：
-- Plan: `plans/[PLAN]_*.md` / `[INTAKE]_*.md`
+- Plan: `plans/<topic>/[PLAN]_<topic>.md（兼容历史根文件）` / `[INTAKE]_*.md`
 - SPEC: `docs/design/{module}/[SPEC]_*.md`
 - Issue: `gh issue view <id>`
+
+涉及 working 或 INTENT 时读 [创作与引用说明](../../references/working-docs-and-intent.md)。自检真实主关联/目录归属、七/九字段、Plan draft与采纳依据、INTENT独立状态/ID、完整可恢复接受基线。仅主 Plan completed 要求 Owner准确版本接受；Report completed 只说明文档交付，独立任务整体接受仍核已有记录。按实际决策允许无Plan目录，不补造工件。
 
 ## Step 2: Run Scope-Drift Check
 
@@ -95,7 +97,7 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 | Lint / Typecheck | ✅ | `uv run ruff check` / `uv run mypy src/mj_agent` 通过 |
 | Build / Compose | ✅ | `docker compose -f docker/compose.yaml up -d` 启动成功 |
 | 文件存在性 grep | ✅ | `grep -l "..." src/` 命中预期数量 |
-| 文档校验 | ✅ | `python scripts/check_wikilinks.py` / `check_frontmatter.py` 0 violations |
+| 文档校验 | ✅ | `python scripts/check_wikilinks.py` / `check_frontmatter.py` / `check_working_docs.py` 0 violations |
 | Studio probe | ✅ | `uv run langgraph dev` H1/H2/H3/R1/R2 矩阵通过 |
 | Health probe | ✅ | `uv run mj-agent check` 通过 |
 | biz_catalog drift | ✅ | `uv run python scripts/diff_biz_schema.py` 的 **result code**（`PASS_NO_DRIFT` / `DRIFT_DETECTED`）。两个 SKIP 码**不是**验证证据——`SKIP_NO_SNAPSHOT` / `SKIP_STALE_SNAPSHOT` 只能记为「未验证」 |
@@ -147,6 +149,8 @@ self-review 把 drift Severity 纳入最终 risk 判断：
 ```bash
 # 扫描目标（mj-agent 扩展）
 docs/**/*.md
+plans/**/*.md                         # 仅活动引用；冻结提交/快照不改
+.agents/skills/**/SKILL.md             # 开发入口与路由引用
 AGENTS.md
 src/mj_agent/skills/**/SKILL.md         # mj-agent 扩展
 src/mj_agent/prompts/*.md               # mj-agent 扩展
@@ -208,7 +212,7 @@ uv run python scripts/diff_biz_schema.py
 ## Self-Review Report
 
 ### Linked Artifacts
-- Plan: plans/[PLAN]_xxx.md
+- Plan: plans/<topic>/[PLAN]_<topic>.md
 - SPEC: docs/design/{module}/[SPEC]_xxx.md
 - Issue: #<id>
 

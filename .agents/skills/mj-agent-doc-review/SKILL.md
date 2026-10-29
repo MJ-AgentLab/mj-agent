@@ -69,7 +69,7 @@ git diff --name-only develop...HEAD
 - **In-source canonical**（B 风味）：`src/mj_agent/skills/**/SKILL.md`、`src/mj_agent/prompts/*.md`
 - **biz_catalog**: `src/mj_agent/biz_catalog/qcm_catalog.yaml`
 - **Config**: `.env.example`、`langgraph.json`、`docker/`、`config/`、`.github/workflows/`
-- **Docs**: `docs/`、`AGENTS.md`、`CHANGELOG.md`、`README.md`、`CONTRIBUTING.md`
+- **Docs**: `docs/`、`plans/`、`policies/`、`sdd/`、`decisions/` 及实际根入口；区分 canonical/working/独立 INTENT 与冻结证据
 - **Engineering-workflow**: `.agents/skills/`、`.codex/hooks.json`、`.codex/config.toml`
 
 ## Phase 2: §9.4 Cross-Check（mj-agent code-doc mapping）
@@ -95,7 +95,7 @@ per HITL_Prompt §4.6 Rule 5（mj-agent 沿用 mj-system）：
 per documentation change：
 
 1. 跑 `mj-agent-doc-validate` per file
-2. 新建 docs 已加 INDEX.md entry?
+2. 新建 canonical 已同步实际导航？working 不强制局部 INDEX；Intent/INDEX 不复制实时进度
 3. 修改 docs `updated` field current?（per Meta v2.1 §5.4 substantive change rule）
 4. AGENTS.md sync — **触发轴**：Meta v2.2 §6.4 **4 类 allowlist**（类 1 全局高频标准 / 类 2 高频运行信息 / 类 3 项目目录入口 / 类 4 mj-agent 特化 runtime 语义；命中任一才触发 A6 sync）；**落位轴**：§6.4.1 三段分流：
    - `track: code` 改动 → AGENTS/既有指南的 code 主题入口（按当前结构定位）
@@ -104,10 +104,16 @@ per documentation change：
    - `track: shared` → 元规则段
    - **项目根 markdown**（无 track；per Meta v2.2 §2.6 例外）触发 §6.4 任一类时落 元规则段或主题段
 
+### Working / INTENT 专项
+
+读 [创作与引用说明](../../references/working-docs-and-intent.md)，对新目录/主关联/原意变更逐项核：topic四式与真实主要编号、无Plan独立目录合法、七/九字段和类型专属状态、主Plan采纳/准确版本接受、报告完成与任务整体接受分开。正式INTENT五正文与来源责任/四种决定完整、ID不随任务/跨年变化，deprecated仍查重，集合读取失败不当空集。
+
+接受依据必须能恢复固定提交文件或完整快照准确内容；旧接受不自动覆盖新实质内容，纯路径调整不重置业务接受。状态/结构PASS不能替代这些真实判断。新working的深相对链接用check_working_docs实际校验；旧根兼容不代表所有历史链接重新验证。
+
 ## Phase 5: Cross-Reference Integrity（mj-agent 扩展）
 
-1. 是否有 doc renamed/deleted？grep wikilinks 整仓
-2. 改动 doc 内 broken internal links？scripts/check_wikilinks.py 跑
+1. 是否有 doc renamed/deleted/working补号？按doc-sync反扫全部活动引用和路由，包括plans/.agents/policies/sdd；固定提交/快照/旧决定分开保持
+2. 改动 doc 内 broken internal links？运行check_wikilinks.py；新嵌套working同时运行check_working_docs.py，按文档位置核Markdown相对链接
 3. **mj-agent 扩展（per HITL_Prompt §4.9 Rule 5a）**：grep `src/mj_agent/skills/**/SKILL.md` + `prompts/*.md` 中是否引用 renamed 文件 / 列名 / 函数
 
 ## Phase 6: §4.7 PR Description 双段（Meta v2.2 §4.7 — 沿用 v2.0 §4 全部规则；实操 prompt 见 HITL_Prompt v1.1 §4.8 + §4.9）
@@ -115,7 +121,7 @@ per documentation change：
 PR description 必须按 §4.7 拆双段，**严格不可混用**：
 
 **「本地验证」段** — 人类（或 CI）执行**客观可重复检查**：
-- ✅ 接受：`uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests` / `uv run ruff check` / `uv run mypy src/mj_agent` / `python scripts/check_wikilinks.py` / `python scripts/check_frontmatter.py` / `uv run mj-agent check` / Studio probe / docker compose 启动 / mj-agent compose ps
+- ✅ 接受：`uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests` / `uv run ruff check` / `uv run mypy src/mj_agent` / `python scripts/check_wikilinks.py` / `python scripts/check_frontmatter.py` / `python scripts/check_working_docs.py` / `uv run mj-agent check` / Studio probe / docker compose 启动 / mj-agent compose ps
 - ❌ 拒绝："代码看起来正常" / "Codex 已检查" / "文档应该 OK"（属 AI 自检）
 
 **「AI 自检」段** — AI Agent 对生成内容**可信度自查**：

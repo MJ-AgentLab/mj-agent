@@ -93,11 +93,10 @@ digraph implement {
 
 ```bash
 # Linked artifacts
-branch=$(git branch --show-current)
-issue=$(echo "$branch" | grep -oE '[0-9]+' | head -1)
-[ -n "$issue" ] && gh issue view "$issue" --json title,body
+# Issue 取明确的本仓任务关联，不按分支数字猜
+gh issue view <confirmed-issue-number> --repo MJ-AgentLab/mj-agent --json title,body
 
-ls plans/[PLAN]_*.md 2>/dev/null               # Plan body (Stage 4)
+rg --files plans                        # 新布局与历史根文件，按真实关联定位
 ls docs/design/*/[SPEC]_*.md 2>/dev/null       # SPEC (Stage 6)
 
 # Worktree state
@@ -106,7 +105,9 @@ git diff --name-only HEAD
 git diff --stat $(git merge-base develop HEAD)..HEAD
 ```
 
-如 Plan / SPEC 缺失（非 trivial 任务）→ STOP，提示先跑 `mj-agent-flow-plan` 或 `mj-agent-doc-author`。无 plan 编码违反 HITL_Prompt §4.7 Rule 1（保持改动范围最小）。
+先读 [创作与引用说明](../../references/working-docs-and-intent.md)，区分原意正本、应有行为和实施范围。按已有 Documentation Decision 核本任务需要的 Plan/SPEC；本来需要却缺失时先补对应工件，明确豁免或独立 working 无 Plan 不算目录错误。未改变目标/范围/环境/权限/风险时复用原任务授权。
+
+实施逐项对应 INTENT/Issue 的完整基线与 Plan 承担范围，行为/负例证据绑定实际版本环境；内部代码事实不自动改变原意。新Plan草稿/采纳、报告完成、整体任务接受分开。补号改名修活动引用和路由，保持 task_id/历史证据/INTENT ID；机器校验不证明真实来源或接受。
 
 ## Step 2: Classify Task Type + 风味
 

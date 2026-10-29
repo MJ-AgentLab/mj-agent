@@ -14,7 +14,7 @@ description: 适用于 mj-agent 的canonical大/小版本归档与skeleton延迟
 
 ## 触发与职责详述
 
-This skill executes the Major.Minor version archive workflow for mj-agent canonical docs (per ADR-011 §5.6.2 + ADR-014 §决策点 3 skeleton-first 延迟 promote 变体) — moves old version to docs/archive/<subdir>/, flips state to deprecated, adds archive banner, audits corpus-wide wikilinks for living/frozen judgment, updates INDEX.md archive section. Make sure to use this skill whenever the user says "归档文档", "archive doc", "version 升级", "v1.0 → v1.1", "v2.0 → v2.1", "promote PR", "skeleton-first 完成", "迁移到 archive", "doc migrate", "archive workflow" in the mj-agent context. Used by HITL gate at PR review时机；rare operation (~per major version evolution). Do not use for: writing brand new doc (use mj-agent-doc-author), per-file validation (use mj-agent-doc-validate), or in-place daily edits (typo / formatting / minor revision — those stay in-place per ADR-011 HITL A3 mode).
+This skill executes the Major.Minor version archive workflow for mj-agent canonical docs (per ADR-011 §5.6.2 + ADR-014 §决策点 3 skeleton-first 延迟 promote 变体) — moves the old version to the exact canonical archive home chosen by policies/archive.md, flips state to deprecated, adds archive banner, audits corpus-wide wikilinks for living/frozen judgment, updates INDEX.md archive section. Make sure to use this skill whenever the user says "归档文档", "archive doc", "version 升级", "v1.0 → v1.1", "v2.0 → v2.1", "promote PR", "skeleton-first 完成", "迁移到 archive", "doc migrate", "archive workflow" in the mj-agent context. Used by HITL gate at PR review时机；rare operation (~per major version evolution). Do not use for: writing brand new doc (use mj-agent-doc-author), per-file validation (use mj-agent-doc-validate), or in-place daily edits (typo / formatting / minor revision — those stay in-place per ADR-011 HITL A3 mode).
 
 
 ## Overview
@@ -53,12 +53,20 @@ This skill executes the Major.Minor version archive workflow for mj-agent canoni
 **MAY skip when**：
 - 日常 typo / formatting / 小修订（per ADR-011 in-place edit；不触 archive）
 - 仅 frontmatter 元数据微调（如 owner / tags）
-- working layer plans/[PLAN]_*.md（不参与 archive workflow；用 §10.5 lifecycle 改 state: completed）
+- working `plans/<topic>/`（含历史根布局）不参与物理归档/GC；状态按 lifecycle 和自身交付条件，主 Plan completed 另需 Owner准确版本接受
 
 **MUST NOT use for**：
 - 写新文档 → `mj-agent-doc-author`
 - 物理删 legacy → 不允许；archive 仅移动不删
 - v4.5 → v5.x 之类跨主版本迁移 → mj-agent 无此场景（始于 v1.0）
+
+## 先按对象分流
+
+读取 [创作与引用说明](../../references/working-docs-and-intent.md)。working 补号/纠错/明确更换主关联是受控路径同步，不是归档：交 doc-sync 修活动引用和路由，核源/目标、Git状态、冲突、完整性，保 task_id/历史基线/INTENT ID，不留第二主 Plan。历史批量迁移仅按已授权具名清单。
+
+INTENT 退役保持原路径与 ID、旧决定、原因/后继，state 只用 deprecated；标题/修订/跨年/重新接受不换 ID。Plan/Issue 完成不触发 INTENT 迁移或状态变化。它不进入下述普通版本归档 ceremony。
+
+其他 canonical 文档继续依 policies/archive 的实际归档模式。活动引用修当前目标；固定提交/完整快照/旧决定按原内容保持可恢复。接受绑定准确内容位置；实质内容变化保留旧决定及影响，旧接受不自动覆盖新内容，纯路径调整不重置业务接受。
 
 ## Workflow
 
@@ -71,15 +79,15 @@ digraph migrate {
 
   q01 [label="Q-01: HITL judgment\n是否为'正式版本演进'?" shape=diamond];
 
-  p2 [label="Phase 2: Migration Plan\n• 旧文件源路径 → archive 目标路径\n• 新文件名（_vX.Y）\n• 引用 audit 范围（living vs frozen）\n• Present plan to user" shape=box];
+  p2 [label="Phase 2: Migration Plan\n• 旧文件源路径 → archive 目标路径\n• active文件默认无版本后缀\n• 引用 audit 范围（living vs frozen）\n• Present plan to user" shape=box];
 
-  approve [label="User approves?" shape=diamond];
+  approve [label="具名授权/实质决定已具备?" shape=diamond];
 
   p3 [label="Phase 3: Execute（standard）\n• git mv old → archive/<subdir>/\n• 编辑 old: state: deprecated + body banner\n• 新文件 already exists（draft）or create\n• 编辑 new: state: draft → active\n• 引用 audit + 编辑 living refs" shape=box];
 
   p3s [label="Phase 3 alt（skeleton-first）\n• git mv old trio → archive/\n• 编辑 old trio: state → deprecated + banner × 3\n• 编辑 new trio: state: draft → active × 3\n• 引用 audit + 编辑 living refs across" shape=box];
 
-  d04 [label="D-04: 引用修改 > 3 处?" shape=diamond];
+  d04 [label="D-04: living/frozen有实质未决?" shape=diamond];
 
   p4 [label="Phase 4: INDEX.md sync\n• 移 old 出 active 段\n• 加 new 到 active 段\n• 加 archive 表行（new 取代 old + 原因）" shape=box];
 
@@ -98,8 +106,8 @@ digraph migrate {
   approve -> p2 [label="revise"];
   p3 -> d04;
   p3s -> d04;
-  d04 -> p4 [label="≤3 / 用户确认"];
-  d04 -> p4 [label=">3 → 询问后决定"];
+  d04 -> p4 [label="分类明确且已授权"];
+  d04 -> p4 [label="实质未决 → 等实际决定"];
   p4 -> p5 -> p6 -> done;
 }
 ```
@@ -127,19 +135,19 @@ per output doc：
 
 | 维度 | 内容 |
 |---|---|
-| 旧路径 | `docs/<subdir>/[TYPE]_*_v<old>.md` |
-| 归档路径 | `docs/archive/<subdir>/[TYPE]_*_v<old>.md`（保 _vX.Y 后缀） |
-| 新文件名 | `[TYPE]_*_v<new>.md`（已 in `docs/<subdir>/` 或本 PR 创建） |
+| 旧路径 | 实际被替代正本准确位置（active默认无版本后缀） |
+| 归档路径 | 按 policies/archive 确定的精确 archive unit/文件名及 manifest；不机械套历史 docs/archive |
+| 新文件名 | active 默认 `[TYPE]_<topic>.md`，version 在 frontmatter；仅政策明确并存版本例外用后缀 |
 | 引用 audit 范围 | 整仓 grep `[[old_filename` + `[STANDARD]_X_v<old>` |
 | Living vs Frozen 引用判定 | living: 描述 mj-agent 当前状态 → 升 v<new>；frozen: 描述事故时 / 历史规则 → pin v<old> |
 
-**Present plan to user before executing**.
+先形成具体可审阅的路径/引用/恢复方案；已有具名迁移授权覆盖的普通步骤自主执行，新的实质决定或删除另交 Owner，不按每个引用重复询问。
 
 ## Phase 3: Execute（standard mode）
 
 ```bash
 # Step 1: git mv old → archive
-git mv docs/rule/[STANDARD]_X_v<old>.md docs/archive/rule/[STANDARD]_X_v<old>.md
+git mv <confirmed-old-path> <confirmed-archive-path>
 
 # Step 2: 编辑 archived old
 #   frontmatter: state: active → deprecated
@@ -152,7 +160,7 @@ git mv docs/rule/[STANDARD]_X_v<old>.md docs/archive/rule/[STANDARD]_X_v<old>.md
 #   body 顶部加 promote banner（指向 archive + 历史 banner 保留）
 
 # Step 4: 引用 audit
-#   grep -r '\[\[STANDARD\]_X_v<old>' docs/ src/ AGENTS.md
+#   rg 旧准确路径与相对写法，覆盖docs/plans/policies/sdd/.agents/src/入口及路由；逐项判living/frozen
 #   per match：判 living vs frozen
 #   - living → 编辑 升 v<new>
 #   - frozen → 加 archive 路径前缀 ../archive/rule/
@@ -171,6 +179,8 @@ uv run python scripts/check_wikilinks.py
 > **历史状态（<原 banner 保留作 cite-by-vintage>）**：<原 banner 内容>
 ```
 
+按当前 policies/archive 完成适用 manifest、TOMBSTONE、archive INDEX 与必要归档门禁；先核明确源目标/内容/Git状态和重解析点。归档 unit 的可见性与引用边界保持，旧目录示例只作历史来源，不据此改写冻结资料。
+
 ## Phase 3 alt: Execute（skeleton-first delayed promote）
 
 参 PR-B3c-promote #67 实例：
@@ -183,9 +193,9 @@ uv run python scripts/check_wikilinks.py
   - scripts/check_frontmatter.py 同期更新（如新 track 值如 engineering-workflow 加入 TRACK_VALUES）
 - 一次性引用 audit + 编辑 + INDEX/AGENTS sweep
 
-## D-04: 引用修改 > 3 处
+## D-04: Living / Frozen 引用判定
 
-per ADR-011 §5.6.4 living vs frozen 判定：触发 D-04 询问：
+per ADR-011 §5.6.4 逐项判 living/frozen，引用数量本身不触发重批。模糊且影响原意/基线的真未决项交 Owner；其余在具名范围内修复并报告：
 
 ```
 检测到 N 处 wikilinks 引用 v<old>。
@@ -193,7 +203,7 @@ per ADR-011 §5.6.4 living vs frozen 判定：触发 D-04 询问：
 - living: <list> → 自动升 v<new>
 - frozen: <list> → 保 v<old>（加 archive 路径）
 - 模糊: <list> → 用户决定
-确认继续 / 调整分类 / 取消？
+已确定分类据授权执行；模糊项保持待答并列恢复条件。
 ```
 
 ## Phase 4: INDEX.md sync
@@ -202,13 +212,13 @@ per ADR-011 §5.6.4 living vs frozen 判定：触发 D-04 询问：
 
 1. **规则段**：移 old 出，加 new（标 active）
 2. **架构决策段** / **评估段** / etc.：同上原则
-3. **归档段**：加新行 ``archive/rule/X_v<old>`（示例模板） | `rule/X_v<new>`（示例模板） | <原因>`
+3. **归档段**：按实际 archive manifest 重建索引，列真实旧/新路径与原因；active新文件默认无版本后缀
 
 ## Phase 5: 验证
 
 ```bash
 uv run python scripts/check_wikilinks.py     # 所有 wikilink resolve
-uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALUES（如适用）
+uv run python scripts/check_frontmatter.py   # 本次真实集合/schema结果，不缓存文档计数
 ```
 
 ## Phase 6: Validate
@@ -241,7 +251,7 @@ uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALU
 |---|---|---|---|
 | Phase 1 后 | mode 不明确（standard vs skeleton-first） | 用户已说"promote PR" or "v1.0 → v1.1" | Q-01 |
 | Phase 2 制定方案后 | 文档 600-900 行且覆盖 ≥2 类型（mj-agent 无此场景；保留 Q-09） | 用户已指定"拆分"或"整体迁移" | Q-09（rarely触发） |
-| Phase 4 前（Cleanup 开始前） | 迁移后引用修改 > 3 处 | 用户说"先不改引用"或"我来处理" | D-04 |
+| Phase 4 前（引用分类） | 真未决分类影响原意或接受基线 | 明确living/frozen且在原授权内则自主 | D-04 |
 
 ## Reference Files
 
@@ -258,7 +268,7 @@ uv run python scripts/check_frontmatter.py   # 58 docs all pass + new TRACK_VALU
 
 - **不要** physical 删 legacy（archive 是设计意图；ADR-011 §Negative consequences 拒绝物理删）
 - **不要** 跳过 Q-01 mode 判断（standard vs skeleton-first 步骤不同）
-- **不要** 跳过 D-04（>3 处引用 manual review；自动 update 可能错分 living/frozen）
+- **不要** 跳过 D-04 的逐项 living/frozen 证据判定（不能无差别全替换）
 - **不要** 在日常 typo 触发本 skill（违反 in-place edit principle）
 - **不要** 在 archive banner 不指向取代者（违反 ADR-011 §5.6.3 archive 目录语义；reader 找不到下一版）
 
