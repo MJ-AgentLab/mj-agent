@@ -51,7 +51,7 @@ track: engineering-workflow
 | `python scripts/sdd/check_native_skills.py --surface resources` | 0 | STATIC_PASS；host/services NOT_TESTED |
 | `python D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/working-docs-and-intent/2026-10-29/independent-round-1-scenarios.py` | 0 | 9 组独立固定场景全 PASS；含实际 task_delivery 子进程 CLI |
 
-独立场景源码：[independent-round-1-scenarios.py](independent-round-1-scenarios.py)；原始结果：[independent-round-1-scenarios.json](independent-round-1-scenarios.json)。场景脚本仅在系统临时目录建立固定输入，经现有函数/CLI 观察，不生成 expected 来自待测实现，也不改变 runner。最初 harness 的 helper 自身重复传 created 参数导致一次 exit 1/TypeError；仅修正仓外 helper 后，同一候选复跑 exit 0。这不是产品失败，也不是新一轮成品验收。
+独立场景源码与原始结果保留在仓外固定证据目录 `D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/working-docs-and-intent/2026-10-29/`，文件为 `independent-round-1-scenarios.py` 与 `independent-round-1-scenarios.json`。本仓库报告副本按实际位置转引外部附件，未改写原始运行文件。场景脚本仅在系统临时目录建立固定输入，经现有函数/CLI 观察，不生成 expected 来自待测实现，也不改变 runner。最初 harness 的 helper 自身重复传 created 参数导致一次 exit 1/TypeError；仅修正仓外 helper 后，同一候选复跑 exit 0。这不是产品失败，也不是新一轮成品验收。
 
 全量 unit 的两个 SKIP：`test_check_working_docs.py:98` 为宿主无法创建 symlink；`test_runtime_event_loop.py:42` 为非 Windows 专属。重解析标志的受控注入负例实际通过，但不能替代真实 symlink 宿主证据。warning 为 traceloop 依赖的 Pydantic class Config 废弃提示，无本轮测试失败。
 
