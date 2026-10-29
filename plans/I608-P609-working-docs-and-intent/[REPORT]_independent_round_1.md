@@ -92,4 +92,3 @@ track: engineering-workflow
 报告与场景材料仅普通新建于仓外具名目录，未覆盖旧验收报告。独立验收者的下一返回点为协调者 `/root`；不替 Owner 作接受决定。
 
 保存后对账：HEAD 仍为 `24dc29e7d68f892d4455caeb3e27b34231e15785`，当前 `git status --short` 已出现 `M sdd/workflows/hotfix.md`。协调者同步说明这是其在首轮观察后制作的未提交文档收尾，独立验收者未作此修改；它不属于本报告绑定的封板候选，不改变本轮结论，待新候选第2轮核查。
-

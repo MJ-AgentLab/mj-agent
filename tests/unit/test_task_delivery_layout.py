@@ -125,4 +125,3 @@ def test_bad_nested_record_fails_closed(kind: str, tmp_path: Path) -> None:
     record.write_text(content, encoding="utf-8")
     with pytest.raises((ValueError, TypeError)):
         load_task_routes(tmp_path)
-

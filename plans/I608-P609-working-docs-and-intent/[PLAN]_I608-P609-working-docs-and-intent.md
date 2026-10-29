@@ -141,7 +141,8 @@ Owner新增指令：真实未决取舍使用Matt Pocock grilling，选项标推�
 Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub本人认证；Agent经正常平台界面仅更新App5284037及installation170545174的Workflows write，单仓范围未变。受控bootstrap实际audit=EXECUTOR_VERIFIED、短期token撤销CONFIRMED；发布后仍须撤回并逐项核验。权限授权与成品接受分记。
 实际发布检查点：c06734787c11bfa85011e7b26f9707df1a3931c7 已由受控App普通推送，远端ref实际回读相同；PR609创建成功、显式base develop。随即仅撤回Workflows write，App/installation/token三层daily回读均仅metadata read及contents/PR write，token撤销CONFIRMED。仓外证据目录为 `D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/working-docs-and-intent/2026-10-29/`，含push-bootstrap.json、pr-create.json、app-audit-daily-revoked.json及权限前后截图；没有读取既有秘密或改变其他权限/保护。
 受控改名：旧 `plans/I608-working-docs-and-intent/[PLAN]_I608-working-docs-and-intent.md` → 新 `plans/I608-P609-working-docs-and-intent/[PLAN]_I608-P609-working-docs-and-intent.md`；同目录报告一起移动，报告用途名保持。原因仅为真实整体主PR609首次明确。源/目标绝对路径、Git跟踪/未提交/未跟踪/忽略内容、无目标冲突、无后代/源目标重解析点均已核；2文件移动前后完整性一致（controlled-rename.json）。第一次预检仅因Windows路径分隔符比较失败，发生在任何移动前；核实无副作用、统一绝对路径表示后正常完成。没有留下第二主Plan，活动PR正文将同步，固定提交7c891f2的完整基线与首轮报告旧路径证据保持；本任务无分层路由，通用loader仍按实际head/base验证。新HEAD须重新核平台审核。
-当前待核：补号后的最终候选、独立第2轮受影响差异、实际CI与Owner对准确版本的接受。主Plan继续active；不把独立报告completed或权限授权推导为成品接受。
+补号检查点待核事项为最终候选、独立第2轮受影响差异、实际CI与Owner对准确版本的接受；实时CI/head以 [PR609](https://github.com/MJ-AgentLab/mj-agent/pull/609) 为准，独立第2轮证据固定保存到上述仓外目录的 `independent-round-2.md`。主Plan继续active；不把独立报告completed或权限授权推导为成品接受。
+第二轮真实失败与局部修复：287c2e的GitHub CI在 `check_native_governance.py --surface consumers` 报 `unregistered workflow script in: .github/workflows/ci.yml`，本地同命令exit1复现。根因是已批准的新checker调用漏登现有非权限库存 `sdd/native-consumers.json`；最小修复将退休GC项替换为check_working_docs，未改门禁实现、权限或冻结infra。新增回归先RED（2 failed/15 passed），修复后consumers/entries/codex_native/native_skills STATIC_PASS、相关offline48 passed/1真实symlink SKIP、ruff/diff-check PASS。报告副本仅额外去掉EOF空行，仓外原始报告未改。以上发现→修复→最终SHA复核透明纳入尚未封板的第2轮，不另启第3轮；Owner真实接受仍未发生。
 后续填写验证证据与改名记录，主 Plan 在未获 Owner 明确准确版本接受前保持 active。
 
 ## 8. 接受记录
@@ -150,4 +151,3 @@ Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub�
 执行授权：本执行会话明确指令与 Issue608 Verification Plan。
 独立技术验收：首轮对24dc29e已通过，报告见上；补号及文档收尾后第2轮待核。
 交付：PR609已建立，实际CI/有效平台审核仍须核。Owner成品接受尚未发生；机器PASS、PR合并或文档完成不代替该决定。
-
