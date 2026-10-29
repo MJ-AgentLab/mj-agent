@@ -12,7 +12,7 @@ track: engineering-workflow
 
 ## 候选与交付范围
 
-基线1022610eb4d0ada6352312e080965eeb8afe94ee；工作树D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment、分支maintain/codex-config-alignment。初始实现与验证交付检查点为未提交diff；其后Owner明确要求提交PR，已由初始提交d6bc62b经双推建立PR611。当前未合并/未获准确版本接受；本报告completed只表示本报告已交付，主Plan仍active。
+基线1022610eb4d0ada6352312e080965eeb8afe94ee；工作树D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment、分支maintain/codex-config-alignment。初始实现与验证交付检查点为未提交diff；其后Owner明确要求提交PR，已由初始提交d6bc62b经双推建立PR611。本报告初次发布时尚未合并/未获准确版本接受，主Plan当时active；当前合并及Q4接受以 [合并后报告](./[REPORT]_post_merge_closeout.md) 为准。本报告completed只表示本报告已交付，不推导整体接受。
 
 结构对齐保留原8项MCP，后续Owner明确“执行B”，另增ssh-manager共9项MCP；移除approval_policy、sandbox_mode及project_doc_max_bytes覆盖。两项旧自动载体在核跟踪/无改动/普通文件后退出，原内容保存为固定合成fixture，基线Git对象仍可恢复。旧诊断软件不注册为自动hook。CLI对当前MCP-only结构不要求旧加载取证，实际宿主限制和MCP运行状态继续分列。
 
