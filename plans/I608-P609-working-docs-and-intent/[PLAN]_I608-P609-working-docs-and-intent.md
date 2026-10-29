@@ -8,7 +8,7 @@ state: active
 track: engineering-workflow
 ---
 
-# Plan — I608-working-docs-and-intent
+# Plan — I608-P609-working-docs-and-intent
 
 ## 1. 目标、使用者与原意来源
 
@@ -21,8 +21,10 @@ Owner 在创建本执行会话的交接中明确采纳最终 A–F 方案及四�
 ### 1.1 完整接受基线快照
 
 下列为 2026-10-29 从 Issue 正本读取的完整 16 项 AC；本 Plan 在提交后以固定提交位置保存可恢复快照。
-本 Plan 承担全部 AC。主要 Issue 为真实 #608，主要 PR 尚未创建，故 topic 省略 P；后续整体主 PR
-明确时按受控改名补齐，task_id 与固定提交证据不随路径自动变化。没有新增跨任务 INTENT/REQ 系统。
+本 Plan 承担全部 AC。初建时主要 PR 未创建，topic 省略 P；真实整体主 PR 首次明确后已受控补齐 P609。
+主要 Issue: [#608](https://github.com/MJ-AgentLab/mj-agent/issues/608)。
+主要 PR: [#609](https://github.com/MJ-AgentLab/mj-agent/pull/609)，精确 head=maintain/608-working-docs-and-intent、base=develop；作者为 mj-agent-delivery-executor[bot]。
+task_id 与固定提交证据不随路径自动变化。没有新增跨任务 INTENT/REQ 系统。
 
 - [ ] AC-1：任务目录名与主 `[PLAN]_<topic>.md` 的 topic 完全一致；支持 `I<issue>-P<pr>-<slug>`、仅 I、仅 P、无编号四种格式。slug 为小写英文/数字/短横线；编号只来自本仓本任务的真实主要关联，各最多一个。（命名 checker 正负例）
 - [ ] AC-2：主题稳定；主要关联首次明确、编号纠错或明确更换时可受控同步改目录/主文件并修复活动引用；不自动追随后续子/补丁/收尾 PR；不改变 task_id、历史基线或 INTENT ID。（改名/引用/路由回归）
@@ -82,7 +84,7 @@ wikilinks 未覆盖深层 Markdown 相对链接；lifecycle/archive/post-merge �
 | 技能与共享执行说明 | 权威规则与模板 | 按实际分支同步，不刷新冻结 infra | skills Agent |
 | 嵌套路由与安全回归 | 现有 guard 消费接口 | 有限两层扫描、重解析点/大小/重复拒绝 | 主 Agent |
 | 集成、检查、恢复点与主 PR | 上述产物 | 离线矩阵、独立验收、普通提交推送 | 主 Agent |
-| 独立合成验收 | 实际候选提交 | 未参与实现的上下文从 AC 验成品，最多两轮 | 待委派 |
+| 独立合成验收 | 实际候选提交 | 未参与实现的上下文从 AC 验成品，最多两轮 | independent_acceptance，首轮已交付 |
 
 Documentation Decision 按实际类型：Plan Create；INTENT 正式文件 None（Issue 原意区已足够）；
 ADR Create；政策/lifecycle/workflow Update；Plan/SPEC/Assessment/Repo Scan 模板 Update；
@@ -117,7 +119,7 @@ check_working_docs、check_codex_native、check_native_skills。每条记录命�
 1. 问题范围：见 §1–2，交付可运行治理机制而非停在建议。
 2. 权威预期与冲突：Issue/Owner 决定掌原意与接受；政策掌规则；真实代码掌实现行为；旧冻结证据保留。
 3. 文件入口/顺序：AGENTS → 共享边界 → Issue/本 Plan → 目标规则/局部 AGENTS → 对应源码/模板/技能。
-4. 工具身份/输入：真实 worktree/ref/SHA；主要 Issue608；PR 未知先省 P；测试只消费已跟踪明确集合。
+4. 工具身份/输入：真实 worktree/ref/SHA；主要 Issue608/PR609；首次明确前省 P，现已受控补号；测试只消费已跟踪明确集合。
 5. 授权/停止：见 §3，技术拒绝不改写绕过。
 6. 方法/版本/环境/批次：行为红绿测试；文档反扫；最终候选 commit 独立最多两轮，机器结构与语义分记。
 7. 候选完成/正式生效：本地验证及独立验收产生候选交付；主 PR 必要门禁/平台审核与 Owner 接受另记。
@@ -132,17 +134,20 @@ check_working_docs、check_codex_native、check_native_skills。每条记录命�
 完整本地矩阵：ruff PASS；mypy 57源文件 PASS；受控 offline unit 1936 passed、2 skipped、30 subtests passed（203.81s）。SKIP分别为Windows无权创建真实symlink和非Windows平台专属event-loop用例；不计通过。
 文档：frontmatter161件、working目录/深链接、strict wikilinks、loop章节引用及native schema/resources均PASS；native只STATIC_PASS，host NOT_TESTED/rule_loading UNKNOWN，不冒充加载。
 校验器 focused 136 passed/1 symlink SKIP；mock reparse负例另有覆盖，不当真实symlink创建证据。三个实施Agent已返回实际贡献；独立验收上下文已从Issue16AC建立预期，等待最终候选提交。
-发布前事实：已核同一App5284037/installation170545174/repository1172583390，daily仅metadata read、contents/pull_requests write，短期token撤销CONFIRMED。CI成品变更需要Workflows write，当前尚无本任务权限扩大决定；受影响发布步骤待具名决定，不擅扩权或借身份。Gitee无本任务具名可用执行身份，为非核心镜像NOT_EXECUTED/DEFERRED，恢复须具名合法身份及动作范围，不以该缺能力阻塞本地核心。
+发布前检查点（历史）：当时已核同一App5284037/installation170545174/repository1172583390，daily仅metadata read、contents/pull_requests write，短期token撤销CONFIRMED；CI变更所需Workflows write当时尚无本任务权限决定，故待答未执行。其后决定与实际撤回见下。Gitee无本任务具名可用执行身份，为非核心镜像NOT_EXECUTED/DEFERRED，恢复须具名合法身份及动作范围，不以该缺能力阻塞本地核心。
 Owner新增指令：真实未决取舍使用Matt Pocock grilling，选项标推荐；提问保持待答，沉默/超时/预选不作决定；已定方案不重问。
-当前未知：最终主 PR编号、最终候选提交、独立验收结果、CI、Owner成品接受。
+首轮候选检查点（历史）未知为主要PR、最终候选、独立结果、CI与Owner接受；后续实际状态如下。
 2026-10-29 后续检查点：独立第1轮已对24dc29e7d68f892d4455caeb3e27b34231e15785核16AC，技术可交付、无阻塞；完整报告见 [首轮独立验收](./[REPORT]_independent_round_1.md)，报告completed仅自身交付。其发现的hotfix TBD旧GC演进依赖已按既定范围清除，未新增自动建单机制。
 Owner Q1已明确选择本轮临时Workflows write后撤回，Q2已完成GitHub本人认证；Agent经正常平台界面仅更新App5284037及installation170545174的Workflows write，单仓范围未变。受控bootstrap实际audit=EXECUTOR_VERIFIED、短期token撤销CONFIRMED；发布后仍须撤回并逐项核验。权限授权与成品接受分记。
+实际发布检查点：c06734787c11bfa85011e7b26f9707df1a3931c7 已由受控App普通推送，远端ref实际回读相同；PR609创建成功、显式base develop。随即仅撤回Workflows write，App/installation/token三层daily回读均仅metadata read及contents/PR write，token撤销CONFIRMED。仓外证据目录为 `D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/working-docs-and-intent/2026-10-29/`，含push-bootstrap.json、pr-create.json、app-audit-daily-revoked.json及权限前后截图；没有读取既有秘密或改变其他权限/保护。
+受控改名：旧 `plans/I608-working-docs-and-intent/[PLAN]_I608-working-docs-and-intent.md` → 新 `plans/I608-P609-working-docs-and-intent/[PLAN]_I608-P609-working-docs-and-intent.md`；同目录报告一起移动，报告用途名保持。原因仅为真实整体主PR609首次明确。源/目标绝对路径、Git跟踪/未提交/未跟踪/忽略内容、无目标冲突、无后代/源目标重解析点均已核；2文件移动前后完整性一致（controlled-rename.json）。第一次预检仅因Windows路径分隔符比较失败，发生在任何移动前；核实无副作用、统一绝对路径表示后正常完成。没有留下第二主Plan，活动PR正文将同步，固定提交7c891f2的完整基线与首轮报告旧路径证据保持；本任务无分层路由，通用loader仍按实际head/base验证。新HEAD须重新核平台审核。
+当前待核：补号后的最终候选、独立第2轮受影响差异、实际CI与Owner对准确版本的接受。主Plan继续active；不把独立报告completed或权限授权推导为成品接受。
 后续填写验证证据与改名记录，主 Plan 在未获 Owner 明确准确版本接受前保持 active。
 
 ## 8. 接受记录
 
 原意核对/方案采纳：Owner 最终 A–F 与四项 grilling，由本执行会话交接及 Issue608保存。
 执行授权：本执行会话明确指令与 Issue608 Verification Plan。
-独立技术验收：待实际候选提交。
-交付/Owner接受：尚未发生。机器PASS、PR合并或文档完成不代替该决定。
+独立技术验收：首轮对24dc29e已通过，报告见上；补号及文档收尾后第2轮待核。
+交付：PR609已建立，实际CI/有效平台审核仍须核。Owner成品接受尚未发生；机器PASS、PR合并或文档完成不代替该决定。
 
