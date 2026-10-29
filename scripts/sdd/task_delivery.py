@@ -11,30 +11,93 @@ from typing import Any
 _MARKER = re.compile(r"<!-- agent-first-routes\s*\n(.*?)\n-->", re.S)
 
 
+def _direct_info(path: Path, kind: str) -> Any:
+    info = path.lstat()
+    if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
+        raise ValueError(f"indirect task-record {kind}")
+    return info
+
+
+def _plan_records(directory: Path) -> list[Path]:
+    """Only legacy root records and one task-directory level are discoverable."""
+    for parent in (directory, *directory.parents):
+        try:
+            _direct_info(parent, "directory")
+        except FileNotFoundError:
+            continue
+    if not directory.exists():
+        return []
+    if not directory.is_dir():
+        raise ValueError("invalid task-record directory")
+    records: list[Path] = []
+    for entry in sorted(directory.iterdir()):
+        info = _direct_info(entry, "entry")
+        if entry.name.startswith("[PLAN]_") and entry.suffix == ".md":
+            records.append(entry)
+        elif stat.S_ISDIR(info.st_mode) and entry.name != "archive":
+            plans = [path for path in sorted(entry.iterdir())
+                     if path.name.startswith("[PLAN]_") and path.suffix == ".md"]
+            if len(plans) > 1 or (plans and plans[0].name != f"[PLAN]_{entry.name}.md"):
+                raise ValueError("ambiguous task-directory main Plan")
+            records.extend(plans)
+    return records
+
+
+def _validate_route(route: Any) -> None:
+    if not isinstance(route, dict):
+        raise ValueError("invalid task route")
+    task = route.get("task_id")
+    children = route.get("children")
+    if (not isinstance(task, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", task)
+            or route.get("integration") != f"feature/task-{task}-integration"
+            or route.get("mainline") != "develop"
+            or not isinstance(route.get("repo"), str)
+            or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", route["repo"])
+            or not isinstance(children, list) or not children
+            or not all(isinstance(child, str) and re.fullmatch(r"(?:feature|bugfix|documentation|maintain|hotfix)/[a-z0-9][a-z0-9-]*", child) for child in children)
+            or len(set(children)) != len(children)
+            or not isinstance(route.get("active"), bool)):
+        raise ValueError("invalid task route fields")
+
+
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate task routing field")
+        result[key] = value
+    return result
+
+
 def load_task_routes(root: Path) -> list[dict[str, Any]]:
     """Read bounded routing blocks in existing Plan records, not private config."""
     routes: list[dict[str, Any]] = []
-    directory = root / "plans"
-    for parent in (directory, *directory.parents):
-        if not parent.exists():
-            continue
-        info = parent.lstat()
-        if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & 0x400:
-            raise ValueError("indirect task-record directory")
-    for path in sorted(directory.glob("[[]PLAN[]]_*.md")):
-        info = path.lstat()
-        if path.is_symlink() or getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0x400):
-            raise ValueError("indirect task record")
+    for path in _plan_records(root / "plans"):
+        info = _direct_info(path, "file")
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("invalid task record")
         if info.st_size > 1024 * 1024:
             raise ValueError("task record exceeds limit")
-        blocks = _MARKER.findall(path.read_text(encoding="utf-8"))
-        if len(blocks) > 1:
+        content = path.read_text(encoding="utf-8")
+        blocks = _MARKER.findall(content)
+        if len(blocks) > 1 or content.count("<!-- agent-first-routes") != len(blocks):
             raise ValueError("ambiguous task record")
         for block in blocks:
-            payload = json.loads(block)
-            if not isinstance(payload, dict) or payload.get("schema_version") != 1 or not isinstance(payload.get("routes"), list):
+            payload = json.loads(block, object_pairs_hook=_unique_object)
+            if (not isinstance(payload, dict) or type(payload.get("schema_version")) is not int
+                    or payload["schema_version"] != 1 or not isinstance(payload.get("routes"), list)):
                 raise ValueError("invalid task routing block")
+            for route in payload["routes"]:
+                _validate_route(route)
             routes.extend(payload["routes"])
+    relations: set[tuple[str, str, str]] = set()
+    for route in routes:
+        if route["active"]:
+            for child in route["children"]:
+                key = (route["repo"], child, route["integration"])
+                if key in relations:
+                    raise ValueError("ambiguous task route")
+                relations.add(key)
     return routes
 
 
@@ -44,23 +107,14 @@ def valid_pr_base(repo: str, head: str, base: str, routes: list[dict[str, Any]])
     if (not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", head) or '..' in head or '//' in head
             or head.endswith('/') or any(part.startswith('.') or part.endswith(('.', '.lock')) for part in head.split('/'))):
         return False
+    for route in routes:
+        _validate_route(route)
     if base == ("main" if head.startswith("hotfix/") else "develop"):
         return True
     matches = []
     for route in routes:
-        if not isinstance(route, dict):
-            raise ValueError("invalid task route")
-        task = route.get("task_id")
         integration = route.get("integration")
         children = route.get("children")
-        if (not isinstance(task, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", task)
-                or integration != f"feature/task-{task}-integration"
-                or route.get("mainline") != "develop"
-                or not isinstance(children, list) or not children
-                or not all(isinstance(child, str) and re.fullmatch(r"(?:feature|bugfix|documentation|maintain|hotfix)/[a-z0-9][a-z0-9-]*", child) for child in children)
-                or len(set(children)) != len(children)
-                or not isinstance(route.get("active"), bool)):
-            raise ValueError("invalid task route fields")
         if route.get("active") is not True or route.get("repo") != repo:
             continue
         if head in children and base == integration:
