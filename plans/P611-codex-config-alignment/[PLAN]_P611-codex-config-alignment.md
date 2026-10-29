@@ -14,7 +14,7 @@ track: engineering-workflow
 
 原意正本为本旁聊Owner请求：“按照上述结构对齐，并评估为mj-agent配置以下mcp，让codex可以连接”，具名入口为cloud、runner-lan/runner-wan、test-lan/test-wan、prod-lan/prod-wan、dgx-lan/dgx-wan。此前Owner采纳的结构是项目配置主要保留MCP，审批/沙箱取实际宿主设置，退出项目hooks/rules自动加载及专属加载取证要求，保留数据、秘密、Git/Owner与平台边界。退出自动拦截不等于AGENTS或CI提供等价事前强制保护。
 
-代码基线1022610eb4d0ada6352312e080965eeb8afe94ee；已完成608主题不重开。当前无主要Issue/PR，不猜编号。工作树为D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment，分支maintain/codex-config-alignment。原develop和其他任务不写入。
+代码基线1022610eb4d0ada6352312e080965eeb8afe94ee；已完成608主题不重开。本任务无主要Issue；整体主PR已真实建立为 [#611](https://github.com/MJ-AgentLab/mj-agent/pull/611)，head=maintain/codex-config-alignment，base=develop，作者mj-agent-delivery-executor[bot]。原无编号检查点保存在d6bc62b。工作树为D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment，分支maintain/codex-config-alignment。原develop和其他任务不写入。
 
 实施仅本地配置/检查器/相应测试/当前政策技能契约文档。Owner于2026-10-29明确“执行B”：增加一个ssh-manager，全部9历史入口按既有账户接入，含cloud root及生产。原8项保持，加上SSH共9项MCP；仅凭据名称复用，不解密/复制秘密，不改个人配置。可做本地模拟MCP启动/握手，真实主机连接/远程命令不在本轮执行。旧ADR和验收记录不改成PASS。
 
@@ -31,7 +31,7 @@ track: engineering-workflow
 
 ## 授权、风险与停止
 
-Owner已授权结构本地对齐、SSH评估及后续方案B的本地配置/依赖安装/准入同步和模拟验证。退出具名项目载体.codex/hooks.json与.codex/rules/mj-agent.rules属于已采纳结构；两者原Git字节由基线提交恢复，删除前核真实目标、跟踪/改动和重解析点，不清理目录或其他内容。最初仅本地准备；Owner随后明确“提交PR”，授权本主题在当前worktree暂存/提交、推送并向MJ-AgentLab/mj-agent的develop创建PR，不授权merge、账户/个人权限变更或真实主机连接。CI工作流发布所需临时Workflows write及本任务Gitee例外尚需具名决定，依赖步骤先保留待答。B允许的账户范围不等于远程动作授权。
+Owner已授权结构本地对齐、SSH评估及后续方案B的本地配置/依赖安装/准入同步和模拟验证。退出具名项目载体.codex/hooks.json与.codex/rules/mj-agent.rules属于已采纳结构；两者原Git字节由基线提交恢复，删除前核真实目标、跟踪/改动和重解析点，不清理目录或其他内容。最初仅本地准备；Owner随后明确“提交PR”，授权本主题在当前worktree暂存/提交、推送并向MJ-AgentLab/mj-agent的develop创建PR，不授权merge、账户/个人权限变更或真实主机连接。其后本会话Q1已授权本轮临时Workflows write并在发布后撤回；Q2明确“使用双推”，默认Gitee→GitHub，无Gitee延期例外。B允许的账户范围不等于远程动作授权。
 
 旁聊禁止使用子Agent，故本地自检不冒称独立核验。正式交付前需在允许独立核验的主任务完成相关审查及Owner准确版本接受；主Plan保持active。实际技术拒绝只停受影响步骤并保留原错，不换工具或改配置绕过。
 
@@ -39,10 +39,20 @@ Owner已授权结构本地对齐、SSH评估及后续方案B的本地配置/依�
 
 先保留旧守卫的合成fixture，再以新配置正负例红绿验证；同步当前消费者，历史记录保持。SSH评估见 [评估报告](./[ASSESSMENT]_ssh_mcp_access.md)。MCP信任、服务连接和远程运行分开；新会话MCP加载需正常宿主验证。
 
-恢复为基线Git文件与本分支实际diff，不涉及服务器、凭据或数据恢复。状态为本地候选，AC1–6和AC8有静态/离线证据，AC7本轮结果见本地报告。独立核验、真实宿主发现/认证和Owner最终准确版本接受未发生；主Plan保持active，不以文件存在或方向选择推定完成。
+恢复为基线Git文件与本分支实际diff，不涉及服务器、凭据或数据恢复。候选已由PR611发布、尚未集成或接受，AC1–6和AC8有静态/离线证据，AC7本轮结果见本地报告。独立核验、真实宿主发现/认证和Owner最终准确版本接受未发生；主Plan保持active，不以文件存在或方向选择推定完成。
 
-## PR发布准备检查点
+## PR发布准备检查点（历史）
 
 2026-10-29，Owner明确“提交PR”。远端develop以GitHub连接器回读为1022610eb4d0ada6352312e080965eeb8afe94ee，与当前基线相同；maintain/codex-config-alignment尚无远端分支/同分支PR。独立旁聊不派子Agent，自检/本地验证不认证独立审核。普通stage/commit/PR所需准备沿本次请求推进，merge及整体接受未授权。
 
 既有App5284037、installation170545174的daily受控审计为EXECUTOR_VERIFIED，仅metadata read、contents/pull_requests write，单仓repository1172583390；短期token撤销CONFIRMED。候选包含ci.yml变更，当前无Workflows write，尚未尝试被预知不允许的推送；不会使用Owner/MCP身份替代或改权限绕过。准备候选提交和PR正文后，仅就本轮临时Workflows write及Gitee发布范围给Owner具体选项，旧任务授权不移用。
+
+## 本轮发布与真实决定
+
+2026-10-29，本会话Q1明确“授权本轮临时 Workflows write，发布后撤回核验（推荐）”，范围仅App5284037、installation170545174、MJ-AgentLab/mj-agent；Q2明确“使用双推”。初始候选d6bc62bde64f7db230766f31c3f0a2ea54f9a563使用正常Git不可见鉴权先推Gitee，并实时ls-remote读回同SHA；Git协议不返回实际账户ID，不额外认证账户身份。GitHub本人认证由Owner完成，本会话Q3明确完成；不采集或回传口令/验证码。
+
+Agent经正常GitHub权限页仅启用本轮Workflows write并在现有单仓installation接受。受控bootstrap审计确认App/installation/token层仅metadata read、contents/pull_requests/workflows write、单仓repository1172583390，token撤销CONFIRMED。随后固定后台完成origin推送及PR611创建，两次token均CONFIRMED撤销；连接器回读PR611为OPEN、base develop、head d6bc62b、作者既有App，未merged。PR创建后经正常权限页撤回Workflows write，daily审计确认App/installation/token均仅metadata read、contents/pull_requests write，审计token撤销CONFIRMED。
+
+真实主PR611首次明确后，按政策受控改名plans/codex-config-alignment/→plans/P611-codex-config-alignment/，主文件同步为[PLAN]_P611-codex-config-alignment.md；Report/Assessment用途名保持。改名前核3 tracked/0 dirty/0 untracked/0 ignored、无目标冲突和重解析点；git mv后、正文更新前逐文件摘要相同；恢复版本d6bc62b与固定提交旧路径保持，唯一活动主Plan与相对链接再核。主题与branch/task身份未变，没有借用Issue608。活动政策链接同步，后续仅记录/补号文档提交，不改变实现或平台审核有效性要求。
+
+仓外证据：D:/workspace/10-software-project/projects/mj-agent-delivery-evidence/codex-config-alignment/2026-10-29/，含publication-checkpoint、bootstrap/daily audit、push/create结果、权限截图及controlled rename。当前旁聊附加PR卡片工具返回thread not found，未换线程执行；实际GitHub PR可通过上方URL访问。主Plan继续active；独立核验、真实Codex发现、主机认证、平台批准、merge和Owner准确版本接受仍分别未完成/未执行。

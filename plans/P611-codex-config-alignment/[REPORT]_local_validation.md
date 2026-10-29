@@ -12,7 +12,7 @@ track: engineering-workflow
 
 ## 候选与交付范围
 
-基线1022610eb4d0ada6352312e080965eeb8afe94ee；工作树D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment、分支maintain/codex-config-alignment。成果为未提交的本地diff，不是已发布版本；本报告completed只表示本地实现/验证记录已交付，主Plan仍active。
+基线1022610eb4d0ada6352312e080965eeb8afe94ee；工作树D:/workspace/10-software-project/projects/mj-agent/maintain/codex-config-alignment、分支maintain/codex-config-alignment。初始实现与验证交付检查点为未提交diff；其后Owner明确要求提交PR，已由初始提交d6bc62b经双推建立PR611。当前未合并/未获准确版本接受；本报告completed只表示本报告已交付，主Plan仍active。
 
 结构对齐保留原8项MCP，后续Owner明确“执行B”，另增ssh-manager共9项MCP；移除approval_policy、sandbox_mode及project_doc_max_bytes覆盖。两项旧自动载体在核跟踪/无改动/普通文件后退出，原内容保存为固定合成fixture，基线Git对象仍可恢复。旧诊断软件不注册为自动hook。CLI对当前MCP-only结构不要求旧加载取证，实际宿主限制和MCP运行状态继续分列。
 
@@ -47,7 +47,7 @@ Windows、复用develop/.venv与既有uv.lock；uv --frozen --no-sync；pytest�
 - B后最终全量unit：1943 passed、2 skipped、30 subtests passed（208.08s）；无失败。两项SKIP仍为真实symlink及非Windows event-loop用例，不作通过。
 - B后Ruff全仓、mypy 57文件、原生profile/entries/consumers/skills、G1/G2/G3各7P/0F、frontmatter 167文档、working目录/深链接、A4 strict链接、loop 21节、git diff/cached --check均通过。
 - 跨仓引用检查warning：13处/10文件/43扫描文件；以主develop同检查只读回核为同一计数，保留原warning，未作无关清理。
-- CI加入Node 22及相同离线Node测试，本轮未发布或运行远端CI。
+- CI加入Node 22及相同离线Node测试；本地验证交付时尚未发布，后续PR611的真实CI结果以平台当前版本为准。
 
 实际--check只输出公开元数据和状态，五组过程变量均存在，known_hosts文件存在；未打印变量值、读取OS凭据库/应用.env/私钥或更改User环境。以上不证明九个目标都有可信key、当前网络可达或账户有效。
 
@@ -58,3 +58,9 @@ Windows、复用develop/.venv与既有uv.lock；uv --frozen --no-sync；pytest�
 实际diff与结构对齐/B决定一致，原生配置/守卫退休、检查器及当前政策/合同需原子同步，故不按文件数量机械拆出不完整中间版本。本次为单一maintain主题，采用infra类型、省略混合scope。运行时skill/prompt/catalog、SQL/DB与Docker均无改动，5a–5d反扫不触发runtime EVAL或业务schema校验；历史状态与20份证据保持。新Node安全用例纳入既有ci作业，不修改required checks清单或continue-on-error姿态；V13仅改显示名称，继续warning。
 
 12项自检覆盖模块边界、数据来源、公开固定SSH元数据/无秘密值、文档/INDEX/AGENTS同步、infra与maintain类型匹配、scope、双段记录、CHANGELOG、完整PR模板、旧引用与runtime EVAL适用性。公开主机IP/端口/用户来自Owner选择的B清单，明确作为连接元数据保留，不冒称零IP文本；实际凭据仍仅按名注入。GO仅为本地提交候选结论，独立审核、发布临时权限、真实宿主加载和主机认证均不由自检授予。
+
+## PR611发布补记
+
+Owner本会话Q1授权本轮临时Workflows write后撤回，Q2选“使用双推”，Q3自行完成GitHub本人认证。初始候选d6bc62b先正常推Gitee、ls-remote读回，再由既有单仓App推origin并创建[PR611](https://github.com/MJ-AgentLab/mj-agent/pull/611)，base develop，均核同SHA；Git协议未认证Gitee实际账户ID。App bootstrap审计、push、pr-create各次token撤销CONFIRMED；PR创建后临时Workflows write已从App及installation撤回，daily审计EXECUTOR_VERIFIED且token撤销CONFIRMED。未merge，未改主develop或个人配置。
+
+主PR首次明确后仅受控补号、修活动链接及记录真实决定/发布状态；3份working在正文更新前移动摘要相同。原基线和测试代码在d6bc62b保持，新文档diff不要求重复完整软件测试。当前topic=P611-codex-config-alignment，Assessment/Report用途名保持，独立核验/宿主加载/真实主机认证仍未测。补号检查、最终提交/双端tip和CI真实状态据实际返回，不预记未来通过。

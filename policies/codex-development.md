@@ -19,7 +19,7 @@ V11继续阻断非法MCP声明、按名凭据违规和重新引入项目hooks/ru
 
 已发生技术拒绝仍按其实际来源和正常恢复证据处理，不因本政策或删除配置而自动重试。历史ADR/报告/UNKNOWN不改写；如需结束旧加载验收，由Owner明确调整该任务范围并保留替代关系，不能勾成实际加载PASS。
 
-实现与首次本地验证见 [本轮Plan](../plans/codex-config-alignment/[PLAN]_codex-config-alignment.md)。本地候选尚未发布，独立核验/最终接受另记。
+实现与首次本地验证见 [本轮Plan](../plans/P611-codex-config-alignment/[PLAN]_P611-codex-config-alignment.md)。候选已由PR611承载，尚未集成；独立核验/最终接受另记。
 
 ## SSH：Owner选择B
 
