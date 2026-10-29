@@ -1,0 +1,12 @@
+{
+  "name": "mj-agent-codex-ssh",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test ssh-runtime.test.mjs ssh-protocol.test.mjs" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "ssh2": "1.17.0"
+  }
+}

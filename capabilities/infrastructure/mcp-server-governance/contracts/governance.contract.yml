@@ -11,6 +11,7 @@ a14_pr_gate:
   - scripts/mcp/pg-server-start.ps1
   - scripts/mcp/pg-server-wrapper.mjs
   - scripts/mcp/setup-mcp-secrets.ps1
+  - .codex/mcp/
   pr_body_required_block:
     format: '## MCP Server Governance (A14)
 
@@ -75,7 +76,7 @@ quarterly_audit:
   - new_codex_model_release (manual review; no automatic activation)
   tasks:
   - id: re_evaluate_trust_posture
-    action: For each of the eight native inventory entries, review publisher ownership, upstream maintenance and
+    action: For each of the nine native inventory entries, review publisher ownership, upstream maintenance and
       declared trust posture. This migration does not attest current upstream/service health.
     output: evidence/runtime/<YYYY-Q>_mcp_trust_audit.md
   - id: diff_wrapper_baseline
@@ -90,8 +91,9 @@ quarterly_audit:
       '
     output: evidence/runtime/<YYYY-Q>_unmaintained_check.md
   - id: check_secret_sentinel_overrides
-    action: Use synthetic isolated tests to verify only the six approved names are accepted and values are never
-      printed. Actual platform credential setup requires separate approval and evidence.
+    action: Use synthetic isolated tests to verify the six GitHub/memory setup names and five separately injected
+      SSH process names are isolated and values are never printed. No bundle migration is implied; actual platform
+      credential setup requires separate approval and evidence.
     output: evidence/security/<YYYY-Q>_secret_override_validation.md
 cross_capability_governance:
   with_docker_compose:

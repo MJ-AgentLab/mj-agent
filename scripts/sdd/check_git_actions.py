@@ -390,7 +390,7 @@ def review_actions(
             elif diagnostic['errors']:
                 row['status'] = 'UNKNOWN_RULES'
             elif (diagnostic['commands'][0]['status'] in {'INCOMPATIBLE', 'FORBIDDEN'}
-                  or diagnostic['commands'][0]['hook_result'] not in {'ALLOW', CONTEXT}):
+                  or diagnostic['commands'][0]['hook_result'] not in {'ALLOW', CONTEXT, 'NOT_CONFIGURED'}):
                 row['status'] = 'BLOCKED_EXECUTION_ROUTE'
             elif mode not in {'never', 'on-request'}:
                 row['status'] = 'UNKNOWN_MODE'

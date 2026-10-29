@@ -182,6 +182,8 @@ Remove-Item config\secrets.conf  # 切勿提交
 历史 MCP bundle 包含 5 SSH + 10 PG URL；原生 setup 只维护既有 GitHub token 与 memory×5 URL 白名单。历史 bundle 的其他键不迁入，仍走独立 bundle + 独立注入路径（→ `HKCU\Environment`，
 不入 `.env`；详见 §6.4）。加密 / 轮换与 app bundle 并列，但键清单与目标不同：
 
+SSH方案B另准入五个具名MJ_SYS_SSH_SERVER_*_PASSWORD过程变量，由现有正常管线提供给项目SSH启动器；不扩展上述六变量解密脚本，不由模型读取/复制旧秘密，不回退app .env。见 [Codex开发配置](../policies/codex-development.md)。
+
 ```powershell
 # 1. 准备明文
 Copy-Item config\secrets-mcp.example config\secrets-mcp.conf

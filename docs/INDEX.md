@@ -65,6 +65,8 @@ Issue #582：T-007a/b已随#595集成；T-007c Windows synthetic-only来源检�
 
 [ADR-043 Working/INTENT 决策](../decisions/ADR-043_Working_Doc_And_Intent_Governance.md)记录 #608 已定机制、历史兼容及文档完成/整体接受边界。
 
+[ADR-044 MCP-only配置](../decisions/ADR-044_Codex_MCP_Only_Project_Profile.md)及[当前开发配置政策](../policies/codex-development.md)说明项目自动守卫退出、宿主/MCP验证与SSH评估边界。
+
 [ADR-042 Agent-first交付治理](../decisions/ADR-042_Agent_First_Delivery_Governance.md)及[交付指南](guide/[GUIDE]_Agent_First_Delivery.md)定义任务授权、自主闭环、独立核验及Owner结果式接受；平台/宿主启用及actual/部署/恢复延期分别记录。
 
 [交付后续 Plan](../plans/[PLAN]_agent_first_delivery_followups.md)记录旧能力离线软件证据刷新及独立平台/运行待办；[跨宿主归档完整性 SPEC](design/sdd/[SPEC]_Portable_Delivery_Evidence_Verification.md)规定新增只读工程核验，保留原 archive、执行版本与来源限制，不替代行为验收或可信门禁。

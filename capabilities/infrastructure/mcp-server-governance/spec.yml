@@ -10,19 +10,19 @@ last_verified: 2026-05-20
 owner: ranzuozhou
 created: 2026-05-20
 updated: 2026-05-20
-summary: 'Native Codex config declares exactly eight existing project services: GitHub, Playwright, Serena and five
-  memory PG entries. Business PG and ssh-manager are permanently excluded. A14 Owner review, by-name credential
+summary: 'Native Codex config declares nine approved project services: GitHub, Playwright, Serena, five
+  memory PG entries and ssh-manager (nine fixed aliases, Owner choice B). Business PG remains excluded. A14 Owner review, by-name credential
   isolation and fail-closed wrappers remain required. Static checks are not host or service verification.'
 requirements:
 - id: REQ-001
-  statement: .codex/config.toml SHALL declare only the eight retained project services, with trust posture and credential
+  statement: .codex/config.toml SHALL declare only the nine approved project services, with trust posture and credential
     mode recorded in contracts/mcp-server.contract.yml; each change requires the A14 declaration and Owner review.
   rationale: Direct native ownership preserves the existing trust and credential boundary without importing another
     client or user services.
   priority: medium
   bdd:
     examples:
-    - Given native project config / When inspected offline / Then the exact eight services and A14 declaration template
+    - Given native project config / When inspected offline / Then the exact nine services and A14 declaration template
       exist; no service is started.
 - id: REQ-002
   statement: All five memory PG entries SHALL use scripts/mcp/pg-server-start.ps1 and the matching env_vars name,

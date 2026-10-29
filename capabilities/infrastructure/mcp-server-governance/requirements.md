@@ -12,7 +12,7 @@ updated: 2026-05-20
 
 ## REQ-001 — Native inventory and A14
 
-The project config declares exactly GitHub, Playwright, Serena and memory PG ×5. Trust posture and credential mode live in `contracts/mcp-server.contract.yml`. Changes require the declaration in `contracts/governance.contract.yml` and Owner review. Business PG and ssh-manager remain excluded; user/plugin services are not imported.
+The project config declares exactly GitHub, Playwright, Serena, memory PG ×5 and one project ssh-manager (nine approved aliases, five named password variables). Trust posture and credential mode live in `contracts/mcp-server.contract.yml`. Changes require the declaration in `contracts/governance.contract.yml` and Owner review. Business PG remains excluded; user/plugin services are not imported. Owner chose SSH option B with the existing accounts including cloud root and production. Remote commands require their own task authorization. SSH cannot bypass business or secret boundaries; unknown/mismatched host keys fail closed with no alternate route.
 
 Acceptance: native config parses, exact service names/commands/env names match, inline credentials and foreign entries fail. The BDD asserts the declaration structure only; actual review is human, not an implemented PR parser.
 

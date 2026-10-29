@@ -18,10 +18,10 @@ def test_req_001_a14_gate_template_exists():
 def test_req_002_pg_wrapper_consistency():
     pass
 
-@given('native config declares only the eight retained project servers', target_fixture='servers')
+@given('native config declares only the nine approved project servers', target_fixture='servers')
 def servers():
     result = tomllib.loads((ROOT / '.codex/config.toml').read_text('utf-8'))['mcp_servers']
-    assert set(result) == {'github', 'playwright', 'serena', *MEMORY}
+    assert set(result) == {'github', 'playwright', 'serena', 'ssh-manager', *MEMORY}
     return result
 
 @given('the native A14 template defines trust and credential review', target_fixture='governance')

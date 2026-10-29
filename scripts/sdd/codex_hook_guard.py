@@ -1,4 +1,4 @@
-"""Native cooperative guard. No adapter, transcript, credential or user-config reads.
+"""Legacy diagnostic guard, not a registered project hook. No private-context reads.
 
 This is a bounded recognizer, not a shell sandbox. Unrecognized payloads fail
 closed. Path hits provide semantic-risk context; this hook cannot authenticate approval.

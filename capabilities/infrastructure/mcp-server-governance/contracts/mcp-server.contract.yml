@@ -5,7 +5,7 @@ covers_requirements:
 mcp_inventory_file:
   path: .codex/config.toml
   freeze_anchor: .codex/config.toml
-  expected_total_entries: 8
+  expected_total_entries: 9
 servers:
 - name: github
   type: stdio
@@ -130,6 +130,32 @@ servers:
   - -y
   - '@playwright/mcp@latest'
   env_vars: []
+- name: ssh-manager
+  type: stdio
+  invocation: pwsh
+  trust_posture: first-party-wrapper
+  credential_mode: wrapped_script_env_name_resolution
+  purpose: Owner B; nine fixed SSH aliases, existing accounts including root and production; actions separately authorized
+  args:
+  - -NoProfile
+  - -Command
+  - $r = & git rev-parse --show-toplevel 2>$null; if ($LASTEXITCODE -ne 0 -or -not $r) { exit 2 }; & node (Join-Path $r '.codex/mcp/ssh-start.mjs'); exit $LASTEXITCODE
+  env_vars:
+  - MJ_SYS_SSH_SERVER_CLOUD_PASSWORD
+  - MJ_SYS_SSH_SERVER_RUNNER_PASSWORD
+  - MJ_SYS_SSH_SERVER_TEST_PASSWORD
+  - MJ_SYS_SSH_SERVER_PROD_PASSWORD
+  - MJ_SYS_SSH_SERVER_DGX_PASSWORD
+ssh_wrapper:
+  entry: .codex/mcp/ssh-start.mjs
+  implementation: .codex/mcp/ssh-server.mjs
+  roster: .codex/mcp/ssh-servers.json
+  aliases: [cloud, runner-lan, runner-wan, test-lan, test-wan, prod-lan, prod-wan, dgx-lan, dgx-wan]
+  credential_groups: 5
+  tools: [ssh_list_servers, ssh_execute]
+  host_keys: exact comparison with pre-existing OpenSSH known_hosts; no automatic acceptance or writes
+  upstream_dependencies: ["@modelcontextprotocol/sdk@1.32.2", "ssh2@1.17.0"]
+  remote_actions: separate task authorization; no automatic LAN/WAN fallback, retries or database bypass
 wrapper_script_consistency:
   required_wrapper: scripts/mcp/pg-server-start.ps1
   required_for: all 5 pg-mj-agent-memory-* entries
@@ -142,7 +168,7 @@ credential_rules:
   - wrapped_script_env_name_resolution
   prohibited:
   - literal credential/connection URL in project config
-  - business database or ssh MCP entries
+  - business database or non-allowlisted MCP entries
   - application-secret import or fallback URL
   - logging secret values
   mandatory:
@@ -177,4 +203,4 @@ hitl_required:
 - wrapper_script_change
 permanently_excluded:
 - pg-mj-system-biz-*
-- ssh-manager
+- user/plugin/other-source services

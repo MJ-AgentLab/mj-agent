@@ -1,0 +1,11 @@
+[
+  {"id":"CLOUD","host":"8.135.38.175","user":"root","port":22,"description":"00-Cloud-Server","passwordEnv":"MJ_SYS_SSH_SERVER_CLOUD_PASSWORD"},
+  {"id":"RUNNER_LAN","host":"192.168.0.126","user":"mingjian","port":22,"description":"10-Runner-Server-LAN","passwordEnv":"MJ_SYS_SSH_SERVER_RUNNER_PASSWORD"},
+  {"id":"RUNNER_WAN","host":"8.135.38.175","user":"mingjian","port":2201,"description":"11-Runner-Server-WAN","passwordEnv":"MJ_SYS_SSH_SERVER_RUNNER_PASSWORD"},
+  {"id":"TEST_LAN","host":"192.168.0.179","user":"mingjian02","port":22,"description":"20-Test-Server-LAN","passwordEnv":"MJ_SYS_SSH_SERVER_TEST_PASSWORD"},
+  {"id":"TEST_WAN","host":"8.135.38.175","user":"mingjian02","port":2202,"description":"21-Test-Server-WAN","passwordEnv":"MJ_SYS_SSH_SERVER_TEST_PASSWORD"},
+  {"id":"PROD_LAN","host":"192.168.0.106","user":"mingjian03","port":22,"description":"30-Prod-Server-LAN","passwordEnv":"MJ_SYS_SSH_SERVER_PROD_PASSWORD"},
+  {"id":"PROD_WAN","host":"8.135.38.175","user":"mingjian03","port":2203,"description":"31-Prod-Server-WAN","passwordEnv":"MJ_SYS_SSH_SERVER_PROD_PASSWORD"},
+  {"id":"DGX_LAN","host":"192.168.0.189","user":"ranzuozhou","port":22,"description":"40-DGX-Spark-LAN","passwordEnv":"MJ_SYS_SSH_SERVER_DGX_PASSWORD"},
+  {"id":"DGX_WAN","host":"8.135.38.175","user":"ranzuozhou","port":2204,"description":"41-DGX-Spark-WAN","passwordEnv":"MJ_SYS_SSH_SERVER_DGX_PASSWORD"}
+]

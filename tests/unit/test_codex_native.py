@@ -10,7 +10,8 @@ import tomllib
 from pathlib import Path
 
 import pytest
-from scripts.sdd.check_codex_native import approval_status, check
+from scripts.sdd.check_codex_native import approval_status
+from scripts.sdd.check_codex_native import legacy_check as check
 from scripts.sdd.codex_hook_guard import classify, project_payload
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,7 +20,11 @@ ROOT = Path(__file__).resolve().parents[2]
 def candidate(tmp_path: Path) -> Path:
     root = tmp_path / "project with spaces"
     for rel in (".codex", "scripts/mcp"):
-        shutil.copytree(ROOT / rel, root / rel)
+        shutil.copytree(ROOT / rel, root / rel, ignore=shutil.ignore_patterns('node_modules'))
+    # Fixed legacy definitions exercise old diagnostic APIs, never live loading.
+    (root / '.codex/rules').mkdir(parents=True, exist_ok=True)
+    for name, target in [('hooks.json', '.codex/hooks.json'), ('mj-agent.rules', '.codex/rules/mj-agent.rules')]:
+        shutil.copyfile(ROOT / 'tests/fixtures/native_enforcement_legacy' / name, root / target)
     (root / "scripts/sdd").mkdir(parents=True)
     for name in ("codex_hook_guard.py", "git_command_review.py", "task_delivery.py", "check_codex_native.py", "run_codex_hook.ps1"):
         shutil.copyfile(ROOT / "scripts/sdd" / name, root / "scripts/sdd" / name)

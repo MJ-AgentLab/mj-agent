@@ -13,7 +13,7 @@
 - 接受基线和执行授权分记。任务授权列允许动作、对象、环境、权限、副作用、资源与停止条件，目标/对象/环境/权限/风险未实质变化且未撤销时复用。普通 Plan、实现、测试、局部修复及兼容契约自主完成；技能调用不新增权限。
 - 四类 runtime 面按实际语义分类，基线内安全保持可自主；数据范围、SQL 安全、业务口径、外发、breaking、接受标准/必要门禁、信任/权限/生产/供应链来源变化给具体影响方案并停在 `OWNER_APPROVAL_REQUIRED`。
 - stage/commit、普通 push、PR 创建及 merge 可以具名列入任务授权；删除/权限变更及高风险不可逆动作独立列明。平台有效审核、部署授权、运行验证和 Owner 接受分别记录；Owner在聊天对实际成果/SHA作批准或接受决定；Agent依该真实决定以不同于作者/最后推送者的Owner身份执行平台审核，补推须重新取得有效决定/审核，批准与业务接受分记；App作者身份无admin/checks-write/bypass。
-- 独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。项目 MCP 仅既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager 及其他来源服务永久禁入。
+- 项目Codex采用MCP-only结构，现行要求见 `repo:policies/codex-development.md`；实际宿主限制和按需MCP连接分别验证，旧项目守卫加载不作为日常开发前置。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。项目 MCP 为 GitHub、Playwright、Serena、memory×5及B决定的具名ssh-manager；9入口含cloud root/生产，实际远程动作仍须任务授权。biz×5及其他来源服务永久禁入；SSH不准绕业务链或读秘密，细则见 `repo:policies/codex-development.md`。
 - biz 只走 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`、analyst 只读；没有链路停，禁 DB 客户端或 memory 替代。秘密不打开/打印/日志/传输，禁止让用户贴回聊天。
 - 授权不解锁技术拒绝；保留原错、证据定位、未知标未知，返回 `BLOCKED_EXECUTION_ROUTE`。不换工具、编码、改写命令、修改权限/规则或建 receipt 绕过；独立已授权工作继续。
 

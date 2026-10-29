@@ -22,12 +22,14 @@ class NativeMcpScopes(unittest.TestCase):
         self.root = Path(self.temp.name)
         for rel in checker.REQUIRED:
             source = ROOT / rel
+            if rel in {'.codex/hooks.json', '.codex/rules/mj-agent.rules'}:
+                source = ROOT / 'tests/fixtures/native_enforcement_legacy' / Path(rel).name
             target = self.root / rel
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
 
     def test_valid_native_public_fixture(self):
-        self.assertEqual(checker.check(self.root), [])
+        self.assertEqual(checker.legacy_check(self.root), [])
 
     def test_required_inventory_includes_all_enforcement_dependencies(self):
         self.assertLessEqual(set(checker.ENFORCEMENT), set(checker.REQUIRED))
@@ -37,7 +39,7 @@ class NativeMcpScopes(unittest.TestCase):
         self.assertEqual(checker.check_mcp(self.root), [])
         expected = ['missing or indirect required file: scripts/sdd/git_command_review.py']
         self.assertEqual(checker.check_enforcement(self.root), expected)
-        self.assertEqual(checker.check(self.root), expected)
+        self.assertEqual(checker.legacy_check(self.root), expected)
 
     def test_enforcement_drift_does_not_become_v11_failure(self):
         (self.root / '.codex/hooks.json').write_text('{}')

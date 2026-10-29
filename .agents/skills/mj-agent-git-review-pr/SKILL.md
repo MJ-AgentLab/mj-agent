@@ -76,7 +76,7 @@ gh pr diff <number> --stat 2>/dev/null || gh api repos/MJ-AgentLab/mj-agent/pull
 - **SQL guardrail**: `src/mj_agent/tools/sql/{guardrail,precheck}.py`（§3.1实质风险）
 - **Config**: `*.yaml`, `*.yml`, `*.toml`, `.env*`, `langgraph.json`, `docker/*`
 - **Docs**: `docs/**/*.md`, `*.md`
-- **Engineering-workflow**: `.agents/skills/**`, `.codex/hooks.json`, `.codex/config.toml`
+- **Engineering-workflow**: `.agents/skills/**`, 当前`.codex/config.toml`及拟议原生扩展
 - **Other**: 不匹配以上
 
 > **快速模式中断**：用户只要"变更概览" → 输出概览后直接 Handoff。

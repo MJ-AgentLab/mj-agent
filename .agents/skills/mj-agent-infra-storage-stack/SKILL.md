@@ -146,7 +146,7 @@ digraph storage {
 ## Backup / Restore（dev 调试 / PR 验证）
 
 保留能力目标：备份 mj-agent 自有 memory，恢复前核对数据库/环境/备份身份并防止丢失现有 checkpointer 数据。
-Agent 不执行 pg_dump/psql/pg_restore，不获取数据库凭据；当前 8 项 MCP 未验证等价备份恢复能力，登记 `UNMET_DEPENDENCY: backup/restore execution`。
+Agent 不执行 pg_dump/psql/pg_restore，不获取数据库凭据；当前获准MCP未验证等价备份恢复能力；新增SSH接入也不授权备份恢复，登记 `UNMET_DEPENDENCY: backup/restore execution`。
 确认dev目标、备份时间/完整性、数据损失和恢复来源。允许工具链的具名可逆dev操作可在授权内自主；不可逆/高风险或权限越界先Owner决定。缺真实接口记未验证，既有DB/应用秘密不读取或搬迁；新App受控后台例外不扩展到数据库或个人权限。
 不能把源码恢复当作数据恢复；不承诺按 thread 的 pg_dump 过滤选项或未经实测的 SQL 列。生产只交基础设施 snapshot 流程，不由本技能执行。
 返回备份/恢复计划、已收到的脱敏证据与未执行状态。部分恢复失败时保留现场，对账后按有效授权和风险处理，不能自动 DROP/重灌/重复恢复。

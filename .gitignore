@@ -74,5 +74,8 @@ chainlit.md
 # 为 tiktoken 预置的 BPE 缓存（#546）：hash 校验的公开资产，首跑联网一次、其后离线。
 .mj-agent-local/
 
+# Project-local MCP dependencies; install from the committed lock, no global changes.
+.codex/mcp/node_modules/
+
 # ========== 学习材料（本地草稿，不入库） ==========
 learning/

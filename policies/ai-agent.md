@@ -77,7 +77,7 @@ of truth），LSP 仅作交互式辅助.
 
 ### §4.2 技术路线与删除
 
-授权不替代宿主审批。UNKNOWN/FORBIDDEN 或实际拒绝保留原始错误，按 hook、规则、组织策略、宿主权限/占用证据定位；通用 blocked by policy 无法归因时标未知，返回 `BLOCKED_EXECUTION_ROUTE`。不得换工具、编码、改写命令、建 receipt、改权限或规则绕过。独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。
+授权不替代宿主审批。UNKNOWN/FORBIDDEN 或实际拒绝保留原始错误，按 hook、规则、组织策略、宿主权限/占用证据定位；通用 blocked by policy 无法归因时标未知，返回 `BLOCKED_EXECUTION_ROUTE`。不得换工具、编码、改写命令、建 receipt、改权限或规则绕过。项目Codex采用MCP-only结构，现行要求见 `repo:policies/codex-development.md`；实际宿主限制和按需MCP连接分别验证，旧项目守卫加载不作为日常开发前置。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。
 
 删除前核实绝对目标、Git 跟踪与未提交/未跟踪/忽略内容、必要备份、文件占用和目标/后代重解析点。复用当前任务具体清单，不重复确认；变化只暂停受影响项。远端删除另绑定 repo/remote/精确 refs、批准与当前 tip、真实合并证据，main/develop 和其他保护分支保留。双 remote 逐端对账；查询失败不证明不存在。部分成功或超时先核对副作用，成功项不重复，已知拒绝须有条件变化证据后再执行。
 
@@ -95,7 +95,7 @@ Owner 默认依据成品、AC、证据、限制和风险接受，保留深入技
 
 按 §4 的实际影响分类执行，普通 Plan、实现、测试、文档及局部修复不逐项交 Owner。原生资产、冻结摘要和契约直接维护，已批准成组方案由 Agent 正常工具执行；信任/权限/治理标准变化仍核对具体授权。
 
-业务库始终只经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`、analyst 只读工具链，禁直接 DB 客户端、写/DDL 和旁路。现有应用/MCP/DB/个人秘密不打开/打印/记录/传输，不借用其他来源凭据。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。project MCP 只含既有 GitHub、Playwright、Serena、memory×5；biz×5、ssh-manager 及个人/其他来源服务永久禁入。应用和 MCP 凭据分离、仅变量名传递。Docker 供应链及生产变化按 `policies/docker-runtime.md` §4 的实际影响核验。
+业务库始终只经 `find_biz_context → list_biz_tables → describe_biz_table → execute_sql`、analyst 只读工具链，禁直接 DB 客户端、写/DDL 和旁路。现有应用/MCP/DB/个人秘密不打开/打印/记录/传输，不借用其他来源凭据。仅新建单仓mj-agent-delivery-executor App的私钥/短期token允许由受控后台创建、DPAPI保存、签名、注入和撤销；模型、聊天、日志不可见。现有应用/MCP/DB/个人秘密永不读取，该例外不扩大服务、权限或操作授权。project MCP 为 GitHub、Playwright、Serena、memory×5 和B决定的具名 ssh-manager（9入口/既有账户含cloud root及生产），SSH执行仍按任务授权；biz×5及个人/其他来源服务永久禁入。SSH不准绕业务链或读秘密，细则见 policies/codex-development.md。应用和 MCP 凭据分离、仅变量名传递。Docker 供应链及生产变化按 `policies/docker-runtime.md` §4 的实际影响核验。
 
 ## §6 每次任务输出要求
 
@@ -297,7 +297,7 @@ compileall 因不在 "被 flip 的 gate" 范围, 实际却受新 dep 影响. Sub
 
 原生config/hooks/rules、冻结技能、契约和元规则按§4/§5实际影响核对。有限守卫对风险路径和识别Git动作给TASK_AUTHORIZATION_CONTEXT，不认证聊天或语义；确定禁令、未知/异常输入保持block，未命中不等于授权。任务范围未实质变化复用授权；实际拒绝保留原错并返回BLOCKED_EXECUTION_ROUTE，不建凭证、换工具、编码、改写命令或放宽权限绕过。
 
-独立Agent先读取真实原生配置/守卫并复现负例，执行Agent随后仅经宿主正常机制启用本项目信任、核实际加载/canary；不改个人config、不扩大权限、不绕技术拒绝。不支持的步骤如实未验证。CI提供结构/行为证据，有效平台审核、授权及Owner业务接受另记录。
+项目Codex采用MCP-only结构，现行要求见 `repo:policies/codex-development.md`；实际宿主限制和按需MCP连接分别验证，旧项目守卫加载不作为日常开发前置。CI提供结构/行为证据，有效平台审核、授权及Owner业务接受另记录。
 
 ---
 

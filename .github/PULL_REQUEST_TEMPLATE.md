@@ -126,7 +126,7 @@ uv run --frozen --no-sync python scripts/sdd/run_offline_pytest.py tests/contrac
 <summary><b>Legacy Engineering-Workflow checklist</b> (A12-A14) — Phase M5 末迁入 policies/</summary>
 
 - [ ] A12：`.agents/skills/<name>/SKILL.md` 使用 ADR-013 native schema；description ≥ 200 chars + reverse-trigger block
-- [ ] **A13** 原生 `.codex/hooks.json`、rules 与守卫的禁止/风险上下文/允许语义和实际宿主能力已核对；静态检查不替代真实拦截，聊天批准不解锁 hook
+- [ ] **A13** 当前MCP-only配置、宿主权限和实际验证范围口径一致；项目不注册hooks/rules，旧守卫软件测试不作宿主拦截证明；拟新增扩展先由Owner决定
 - [ ] A14：`.codex/config.toml` server 变更声明 trust posture + credential mode（per `capabilities/infrastructure/mcp-server-governance/contracts/governance.contract.yml` §a14_pr_gate）
 
 </details>

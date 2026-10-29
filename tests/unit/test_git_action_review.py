@@ -207,7 +207,7 @@ def test_never_is_evaluated_per_actual_command_before_first_attempt(kind, scope)
     for _ in range(2):
         report = review_actions(items, items, mode='never')
         assert report['known_approval_block'] is False
-        assert report['items'][0]['status'] == ('BLOCKED_EXECUTION_ROUTE' if kind == 'local_delete' else 'READY_FOR_REVIEW')
+        assert report['items'][0]['status'] == 'READY_FOR_REVIEW'
         assert report['items'][0]['last_result'] == 'NOT_EXECUTED'
         assert report['execution'] == 'NOT_ATTEMPTED'
         assert report['owner_approval'] == 'NOT_ASSESSED'

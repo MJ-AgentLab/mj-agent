@@ -1,6 +1,6 @@
 ---
 name: mj-agent-infra-env-setup
-description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：把SSH和biz全部复制到Codex项目MCP；拒绝超8服务/6变量范围，登记不可迁入。新单仓执行App后台创建/DPAPI/签名/注入/撤销不见值，独立Agent核验后正常宿主项目启用；旧秘密永不读。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
+description: 适用于 mj-agent 的环境/依赖/凭据准备指导。输入：工具版本、非秘密profile、Owner状态、锁定依赖。流程：prereq→Owner app/MCP分离维护→脱敏完整性→uv sync→offline/live分开。输出：步骤状态与实际覆盖分开，不以check证明LLM/MCP。Use when：新机器搭建，我自己在终端输入口令。Do not use for：导入白名单外MCP或biz；SSH九入口按已批B政策单独维护，不批量迁移秘密。新单仓执行App后台创建/DPAPI/签名/注入/撤销不见值，独立Agent核验后正常宿主项目启用；旧秘密永不读。授权：按任务范围复用，普通实现自主；安全/业务/权限/breaking/接受标准及门禁实质变化先Owner；技术拒绝不绕过。独立调用完成后结束，委派返回调用者；完整闭环已有授权时按检查点继续，不新增外部授权。
 ---
 
 

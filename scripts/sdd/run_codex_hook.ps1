@@ -1,4 +1,4 @@
-# Direct-maintained project hook bootstrap; P1 candidate, not activated.
+# Legacy synthetic/explicit diagnostic bootstrap; not registered as a project hook.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 try {
